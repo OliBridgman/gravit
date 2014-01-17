@@ -1,0 +1,48 @@
+#toolpanel {
+  position: absolute;
+  top: 0px;
+  /** put on top to  be over header */
+  z-index: 1;
+  height: auto;
+  //width: 30px;
+  background: rgba(255, 255, 255, 0.90);
+}
+
+#toolpanel > button {
+  border: none;
+  background: transparent;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  padding: 0px;
+  margin: 0px;
+  box-shadow: none !important;
+  border-radius: 0px;
+}
+
+#toolpanel > button > span {
+  display: inline-block;
+  width: 23px;
+  height: 26px;
+  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+  filter: gray;
+  -webkit-filter: grayscale(100%);
+}
+
+#toolpanel {
+  > button:hover,  > button:active, > button.g-active {
+    background: rgb(31, 141, 214);
+    color: rgb(255, 255, 255);
+    > span {
+      filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
+      -webkit-filter: grayscale(0%);
+    }
+  }
+}
+
+#toolpanel > span.divider {
+  border-right: 1px solid silver;
+  height: 26px;
+  padding: 0px 2px;
+  display: inline-block;
+}

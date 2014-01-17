@@ -1,0 +1,91 @@
+.palette-properties {
+  padding: 5px 0px;
+
+  .object-tree {
+    div.jqtree-element {
+      display: table;
+
+      > * {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      > :not(:last-child) {
+        padding-right: 5px;
+      }
+
+      > .object-icon {
+        font-size: 14px !important;
+      }
+
+      > .object-icon-light {
+        color: rgb(89, 101, 115);
+      }
+
+      > .object-icon-action {
+        cursor: pointer;
+      }
+
+      > span.jqtree-title {
+        width: 100%;
+        color: black;
+        line-height: 14px;
+      }
+    }
+
+    li.jqtree-selected {
+      > div.jqtree-element {
+        * {
+          color: white;
+        }
+      }
+    }
+
+    ul.jqtree_common {
+      margin-left: 0px;
+    }
+  }
+
+  .properties-panels {
+    padding: 0px 5px;
+
+    > .properties-panel-category, > .properties-panel-content {
+      font-size: 80%;
+    }
+
+    > .properties-panel-category button > i[class^="fa"], > .properties-panel-content button > i[class^="fa"] {
+      font-size: 14px;
+    }
+
+    > .properties-panel-category, > .properties-panel-content label, > .properties-panel-content .properties-table td:nth-child(odd) {
+      text-shadow: rgb(236, 240, 243) 0px 1px 0px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    > .properties-panel-category {
+      color: rgb(89, 101, 115);
+      padding-bottom: 5px;
+      padding-top: 7px;
+
+      > i.fa {
+        padding-right: 3px;
+      }
+    }
+
+    > .properties-panel-content .properties-table {
+      td {
+        padding-bottom: 5px;
+      }
+
+      td:nth-child(odd) { // label
+        padding-right: 5px;
+        text-align: right;
+      }
+
+      td:nth-child(even) { // input
+        padding-right: 10px;
+      }
+    }
+  }
+}
