@@ -6,99 +6,37 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
-    <link rel="stylesheet" href="../../adk/dist/assets/style/gravit.css">
-
-    <!-- build:css(.tmp) assets/style/gravit-express.css -->
-    <link rel="stylesheet" href="assets/style/gravit-express.css">
+    <!-- build:css(.tmp) assets/style/gravit.css -->
+    <link rel="stylesheet" href="assets/style/gravit.css">
     <!-- endbuild -->
 </head>
 <body class="gravit">
+<!-- ############################################################## -->
+<!-- # Lib ######################################################## -->
+<!-- ############################################################## -->
+<!-- build:js scripts/gravit-libraries.js -->
 <script src="bower_components/jquery/jquery.js"></script>
+<!-- endbuild -->
 
-<script src="../../adk/dist/scripts/gravit-core.js"></script>
-<script src="../../adk/dist/scripts/gravit-gui.js"></script>
-<script src="../../adk/dist/scripts/gravit-graphics-core.js"></script>
-<script src="../../adk/dist/scripts/gravit-graphics-editor.js"></script>
-<script src="../../adk/dist/scripts/gravit-api.js"></script>
-<script src="../../adk/dist/scripts/gravit-graphics-convert-freehand.js"></script>
-<script src="../../adk/dist/scripts/gravit-graphics-convert-pdf.js"></script>
+<!-- ############################################################## -->
+<!-- # Infinity ################################################### -->
+<!-- ############################################################## -->
+<!-- build:js scripts/gravit-infinity.js -->
+<script src="infinity/core/object.js"></script>
+<!-- endbuild -->
 
-<!-- build:js scripts/gravit-express.js -->
-<!-- ###Libraries -->
-<script src="bower_components/jqTree/tree.jquery.js"></script>
 
-<!-- Block -->
-<script src="scripts/block/autoblur.js"></script>
-<script src="scripts/block/autoinput.js"></script>
-<script src="scripts/block/colorbox.js"></script>
-<script src="scripts/block/cornertype.js"></script>
-<!-- Action -->
-<script src="scripts/action/cloneselectionaction.js"></script>
-<script src="scripts/action/closeaction.js"></script>
-<script src="scripts/action/closeallaction.js"></script>
-<script src="scripts/action/deleteaction.js"></script>
-<script src="scripts/action/duplicateselectionaction.js"></script>
-<script src="scripts/action/exportaction.js"></script>
-<script src="scripts/action/fitallaction.js"></script>
-<script src="scripts/action/fitcurrentlayeraction.js"></script>
-<script src="scripts/action/fitcurrentpageaction.js"></script>
-<script src="scripts/action/fitselectionaction.js"></script>
-<script src="scripts/action/importaction.js"></script>
-<script src="scripts/action/magnificationaction.js"></script>
-<script src="scripts/action/newaction.js"></script>
-<script src="scripts/action/newwindowaction.js"></script>
-<script src="scripts/action/openaction.js"></script>
-<script src="scripts/action/originalviewaction.js"></script>
-<script src="scripts/action/pixelpreviewaction.js"></script>
-<script src="scripts/action/singlepagemodeaction.js"></script>
-<script src="scripts/action/paintmodeaction.js"></script>
-<script src="scripts/action/redoaction.js"></script>
-<script src="scripts/action/saveaction.js"></script>
-<script src="scripts/action/saveallaction.js"></script>
-<script src="scripts/action/saveasaction.js"></script>
-<script src="scripts/action/shortcutmapaction.js"></script>
-<script src="scripts/action/showpaletteaction.js"></script>
-<script src="scripts/action/showrulersaction.js"></script>
-<script src="scripts/action/showsidebaraction.js"></script>
-<script src="scripts/action/showtoolsaction.js"></script>
-<script src="scripts/action/showwindowaction.js"></script>
-<script src="scripts/action/undoaction.js"></script>
-<script src="scripts/action/zoominaction.js"></script>
-<script src="scripts/action/zoomoutaction.js"></script>
-<!-- Color -->
-<script src="scripts/color/colormatcher.js"></script>
-<script src="scripts/color/analogousmatcher.js"></script>
-<script src="scripts/color/complementarymatcher.js"></script>
-<script src="scripts/color/imagepalettematcher.js"></script>
-<!-- Dialog -->
-<script src="scripts/dialog/scenesettingsdialog.js"></script>
-<!-- Palettes -->
-<script src="scripts/palette/palette.js"></script>
-<script src="scripts/palette/colormatcherpalette.js"></script>
-<script src="scripts/palette/colormixerpalette.js"></script>
-<script src="scripts/palette/colortrendspalette.js"></script>
-<script src="scripts/palette/layerspalette.js"></script>
-<script src="scripts/palette/propertiespalette.js"></script>
-<script src="scripts/palette/pagespalette.js"></script>
-<!-- Properties -->
-<script src="scripts/properties/properties.js"></script>
-<script src="scripts/properties/dimensionsproperties.js"></script>
-<script src="scripts/properties/polygonproperties.js"></script>
-<!-- Workspace -->
-<script src="scripts/workspace/document.js"></script>
-<script src="scripts/workspace/navigation.js"></script>
-<script src="scripts/workspace/sidebar.js"></script>
-<script src="scripts/workspace/toolpanel.js"></script>
-<script src="scripts/workspace/welcome.js"></script>
-<script src="scripts/workspace/window.js"></script>
-<script src="scripts/workspace/windows.js"></script>
-<!-- ROOT -->
-<script src="scripts/application.js"></script>
-<script src="scripts/bootstrap.js"></script>
-<script src="scripts/module.js"></script>
-<!-- I18N -->
-<script src="scripts/i18n/i18n_en.js"></script>
-<script src="scripts/i18n/i18n_de.js"></script>
+<!-- build:js scripts/gravit.js -->
+<!-- ############################################################## -->
+<!-- # Application ################################################ -->
+<!-- ############################################################## -->
+<script src="application/application.js"></script>
+
+<!-- ############################################################## -->
+<!-- # Gravit ##################################################### -->
+<!-- ############################################################## -->
+<script src="gravit/gravit.js"></script>
+
 <!-- endbuild -->
 
 </body>
