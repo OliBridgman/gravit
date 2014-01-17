@@ -1,15 +1,10 @@
 'use strict';
 
 module.exports = function (grunt) {
-    // show elapsed time at the end
-    require('time-grunt')(grunt);
-    // load all grunt tasks
     require('load-grunt-tasks')(grunt);
     
     var buildConfig = {
-        app: 'lib',
-        dist: 'dist',
-        release: '../adk.gravit.io/release'
+        dist: 'dist'
     };
 
     var pkgInfo = grunt.file.readJSON('package.json');
@@ -19,11 +14,11 @@ module.exports = function (grunt) {
         pkg: pkgInfo,
         watch: {
             compass: {
-                files: ['<%= build.app %>/assets/style/{,*/}*.{scss,sass}'],
+                files: ['assets/style/{,*/}*.{scss,sass}'],
                 tasks: ['compass:server', 'autoprefixer']
             },
             styles: {
-                files: ['<%= build.app %>/assets/style/{,*/}*.css'],
+                files: ['assets/style/{,*/}*.css'],
                 tasks: ['copy:styles', 'autoprefixer']
             },
             livereload: {
@@ -31,10 +26,10 @@ module.exports = function (grunt) {
                     livereload: '<%= connect.options.livereload %>'
                 },
                 files: [
-                    '<%= build.app %>/*.html',
+                    'src/*.html',
                     '.tmp/assets/style/{,*/}*.css',
-                    '{.tmp,<%= build.app %>}/scripts/{,*/}*.js,<%= build.app %>}/test/{,*/}*.js',
-                    '<%= build.app %>/assets/image/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    '{.tmp,src/{,*/}*.js,test/{,*/}*.js',
+                    'assets/image/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -50,7 +45,7 @@ module.exports = function (grunt) {
                     open: true,
                     base: [
                         '.tmp',
-                        buildConfig.app
+                        'src'
                     ]
                 }
             },
@@ -59,7 +54,7 @@ module.exports = function (grunt) {
                     base: [
                         '.tmp',
                         'test',
-                        buildConfig.app,
+                        'src'
                     ]
                 }
             },
@@ -83,17 +78,6 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            release: {
-                files: [
-                    {
-                        dot: true,
-                        src: [
-                            '<%= build.release %>/*',
-                            '!<%= build.release %>/.git*'
-                        ]
-                    }
-                ]
-            },
             server: '.tmp'
         },
         jshint: {
@@ -102,7 +86,7 @@ module.exports = function (grunt) {
             },
             all: [
                 'Gruntfile.js',
-                '<%= build.app %>/scripts/{,*/}*.js',
+                'src/{,*/}*.js',
                 'test/spec/**/*.js'
             ]
         },
@@ -116,13 +100,13 @@ module.exports = function (grunt) {
         },
         compass: {
             options: {
-                sassDir: '<%= build.app %>/assets/style',
+                sassDir: 'assets/style',
                 cssDir: '.tmp/assets/style',
                 generatedImagesDir: '.tmp/assets/image/generated',
-                imagesDir: '<%= build.app %>/assets/image/images',
-                javascriptsDir: '<%= build.app %>/scripts',
+                imagesDir: 'assets/image/images',
+                javascriptsDir: 'src',
                 fontsDir: '.tmp/assets/font',
-                importPath: '<%= build.app %>/bower_components',
+                importPath: 'bower_components',
                 httpImagesPath: '/assets/image',
                 httpGeneratedImagesPath: '/assets/image/generated',
                 httpFontsPath: '/assets/font',
@@ -158,7 +142,7 @@ module.exports = function (grunt) {
             options: {
                 dest: '<%= build.dist %>'
             },
-            html: '<%= build.app %>/index.html'
+            html: 'src/index.html'
         },
         usemin: {
             options: {
@@ -172,13 +156,13 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: '<%= build.app %>/assets/image',
+                        cwd: 'assets/image',
                         src: '**/*.{png,jpg,jpeg,gif}',
                         dest: '<%= build.dist %>/assets/image'
                     },
                     {
                         expand: true,
-                        cwd: '<%= build.app %>/assets/icon',
+                        cwd: 'assets/icon',
                         src: '**/*.{png,jpg,jpeg,ico}',
                         dest: '<%= build.dist %>/assets/icon'
                     }
@@ -190,7 +174,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: '<%= build.app %>/assets/image',
+                        cwd: 'assets/image',
                         src: '**/*.svg',
                         dest: '<%= build.dist %>/assets/image'
                     }
@@ -204,7 +188,6 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         dot: true,
-                        cwd: '<%= build.app %>',
                         dest: '<%= build.dist %>',
                         src: [
                             'assets/icon/**/*.ico',
@@ -220,28 +203,17 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            release: {
-                files: [
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: '<%= build.dist %>',
-                        dest: '<%= build.release %>',
-                        src: '**/*.*'
-                    }
-                ]
-            },
             styles: {
                 expand: true,
                 dot: true,
-                cwd: '<%= build.app %>/assets/style',
+                cwd: 'assets/style',
                 dest: '.tmp/assets/style/',
                 src: '{,*/}*.css'
             },
             fonts: {
                 expand: true,
                 dot: true,
-                cwd: '<%= build.app %>/bower_components/font-awesome/fonts',
+                cwd: 'bower_components/font-awesome/fonts',
                 dest: '.tmp/assets/font/',
                 src: '{,*/}*.*'
             }
@@ -298,12 +270,6 @@ module.exports = function (grunt) {
         'uglify',
         'copy:dist',
         'usemin'
-    ]);
-
-    grunt.registerTask('release', [
-        'clean:release',
-        'build',
-        'copy:release'
     ]);
 
     grunt.registerTask('default', [
