@@ -1,0 +1,62 @@
+.g-button {
+  display: inline-block;
+  background: rgb(192, 192, 192) linear-gradient(180deg, rgb(237, 237, 237), rgb(237, 237, 237) 38%, rgb(222, 222, 222));
+  border: 1px solid rgb(128, 128, 128);
+  border-radius: 2px;
+  box-shadow: rgba(0, 0, 0, 0.0784314) 0px 1px 0px 0px, rgba(255, 255, 255, 0.74902) 0px 1px 2px 0px inset;
+  color: rgb(68, 68, 68);
+  cursor: default;
+  text-shadow: rgb(240, 240, 240) 0px 1px 0px;
+  padding: 3px 5px;
+}
+
+.g-button:hover {
+  background-image: linear-gradient(180deg, rgb(240, 240, 240), rgb(240, 240, 240) 38%, rgb(224, 224, 224));
+  box-shadow: rgba(0, 0, 0, 0.117647) 0px 1px 0px 0px, rgba(255, 255, 255, 0.952941) 0px 1px 2px 0px inset;
+}
+
+.g-button:active,
+.g-button.g-active {
+  background-image: linear-gradient(180deg, rgb(231, 231, 231), rgb(231, 231, 231) 38%, rgb(215, 215, 215));
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.247059);
+}
+
+.g-button[disabled="disabled"],
+.g-button.g-disabled {
+  background: rgb(192, 192, 192);
+  border: 1px solid rgba(0, 0, 0, 0.247059);
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.g-input {
+  background: transparent;
+  padding: 5px;
+  border: 1px solid transparent;
+  resize: none;
+}
+
+.g-input:not(.g-flat),
+.g-input.g-flat:hover,
+.g-input.g-flat:focus {
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+/** Flat buttons */
+.g-button.g-flat {
+  border: none;
+  background: transparent;
+  padding: 0px 5px 0px 5px;
+  margin: 0px;
+  box-shadow: none;
+}
+
+.g-button.g-flat:active,
+.g-button.g-flat.g-active {
+  color: $selectionBackground;
+  box-shadow: none;
+}

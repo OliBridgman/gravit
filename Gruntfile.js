@@ -45,7 +45,8 @@ module.exports = function (grunt) {
                     open: true,
                     base: [
                         '.tmp',
-                        'src'
+                        'src',
+                        '.'
                     ]
                 }
             },
@@ -54,7 +55,8 @@ module.exports = function (grunt) {
                     base: [
                         '.tmp',
                         'test',
-                        'src'
+                        'src',
+                        '.'
                     ]
                 }
             },
@@ -106,7 +108,7 @@ module.exports = function (grunt) {
                 imagesDir: 'assets/image/images',
                 javascriptsDir: 'src',
                 fontsDir: '.tmp/assets/font',
-                importPath: 'bower_components',
+                importPath: 'src/bower_components',
                 httpImagesPath: '/assets/image',
                 httpGeneratedImagesPath: '/assets/image/generated',
                 httpFontsPath: '/assets/font',
@@ -213,7 +215,7 @@ module.exports = function (grunt) {
             fonts: {
                 expand: true,
                 dot: true,
-                cwd: 'bower_components/font-awesome/fonts',
+                cwd: 'src/bower_components/font-awesome/fonts',
                 dest: '.tmp/assets/font/',
                 src: '{,*/}*.*'
             }

@@ -5,6 +5,7 @@
         "jquery": "~1.10.2",
         "mousetrap": "~1.4.5",
         "font-awesome": "latest",
+        "iscroll": "~5.0.5",
         "jqTree": "git+https://github.com/gravitio/jqTree#latest",
         "zlib.js": "git+https://github.com/gravitio/zlib.js#latest",
         "FileSaver.js": "git+https://github.com/gravitio/FileSaver.js#latest",

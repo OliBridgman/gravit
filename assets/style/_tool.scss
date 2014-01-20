@@ -1,0 +1,55 @@
+.g-tool-bezigon {
+  @include g-tool('../image/tool/bezigon.png');
+}
+
+.g-tool-ellipse {
+  @include g-tool('../image/tool/ellipse.png');
+}
+
+.g-tool-hand {
+  @include g-tool('../image/tool/hand.png');
+}
+
+.g-tool-line {
+  @include g-tool('../image/tool/line.png');
+}
+
+.g-tool-pen {
+  @include g-tool('../image/tool/pen.png');
+}
+
+.g-tool-pointer {
+  @include g-tool('../image/tool/pointer.png');
+}
+
+.g-tool-polygon {
+  @include g-tool('../image/tool/polygon.png');
+}
+
+.g-tool-rectangle {
+  @include g-tool('../image/tool/rectangle.png');
+}
+
+.g-tool-subselect {
+  @include g-tool('../image/tool/subselect.png');
+}
+
+.g-tool-zoom {
+  @include g-tool('../image/tool/zoom.png');
+}
+
+.g-tool-page {
+  @include g-tool('../image/tool/page.png');
+}
+
+.g-tool-lassoselect {
+  @include g-tool('../image/tool/lassoselect.png');
+}
+
+.g-tool-ellipseselect {
+  @include g-tool('../image/tool/ellipseselect.png');
+}
+
+.g-tool-rectselect {
+  @include g-tool('../image/tool/rectselect.png');
+}

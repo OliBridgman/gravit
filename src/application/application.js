@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * The global application class
-     * @class GUIApplication
+     * @class EXApplication
      * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
-    function GUIApplication() {
+    function EXApplication() {
         document.addEventListener("touchstart", this._touchHandler, true);
         document.addEventListener("touchmove", this._touchHandler, true);
         document.addEventListener("touchend", this._touchHandler, true);
@@ -35,23 +35,218 @@
                 }
             }.bind(this)
         }
-    };
-    GObject.inherit(GUIApplication, GEventTarget);
 
-    // Special action categories
-    GUIApplication.CATEGORY_WINDOW = new GLocale.Key(GUIApplication, "category.window");
+        this._toolManager = new GXToolManager();
+        this._documents = [];
+        this._shortcutMap = new GUIShortcutsDialog();
+
+        // This is a hack to focus our active window
+        // whenever a key is hit down (in capture phase) and
+        // if not an input element is active!
+        document.addEventListener('keydown', function (evt) {
+            var activeWindow = this._windows.getActiveWindow();
+            if (activeWindow && (!document.activeElement || !$(document.activeElement).is("input,select,textArea"))) {
+                activeWindow.getView().focus();
+            }
+        }.bind(this), true);
+
+        // Set default global color to white
+        this._globalColor = new GXColor(GXColor.Type.White);
+    };
+    GObject.inherit(EXApplication, GEventTarget);
+
+    // Constants for pre-defined action categories
+    EXApplication.CATEGORY_WINDOW = new GLocale.Key(EXApplication, "category.window");
+    EXApplication.CATEGORY_FILE = new GLocale.Key(EXApplication, "category.file");
+    EXApplication.CATEGORY_FILE_OPEN = new GLocale.Key(EXApplication, "category.file.open");
+    EXApplication.CATEGORY_FILE_SAVEAS = new GLocale.Key(EXApplication, "category.file.saveas");
+    EXApplication.CATEGORY_FILE_IMPORT = new GLocale.Key(EXApplication, "category.file.import");
+    EXApplication.CATEGORY_FILE_EXPORT = new GLocale.Key(EXApplication, "category.file.export");
+    EXApplication.CATEGORY_EDIT = new GLocale.Key(EXApplication, "category.edit");
+    EXApplication.CATEGORY_VIEW = new GLocale.Key(EXApplication, "category.view");
+    EXApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(EXApplication, "category.view.magnification");
+    EXApplication.CATEGORY_HELP = new GLocale.Key(EXApplication, "category.help");
+
+    /**
+     * Visual parts of the application
+     */
+    EXApplication.Part = {
+        Header: {
+            id: "header"
+        },
+        Navigation: {
+            id: "navigation"
+        },
+        Sidebar: {
+            id: "sidebar"
+        },
+        Windows: {
+            id: "windows"
+        },
+        Toolpanel: {
+            id: "toolpanel"
+        },
+        Welcome: {
+            id: "welcome"
+        }
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // EXApplication.DocumentEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever a document event occurrs
+     * @class EXApplication.DocumentEvent
+     * @extends GEvent
+     * @constructor
+     */
+    EXApplication.DocumentEvent = function (type, document) {
+        this.type = type;
+        this.document = document;
+    };
+    GObject.inherit(EXApplication.DocumentEvent, GEvent);
+
+    /**
+     * Enumeration of view event types
+     * @enum
+     */
+    EXApplication.DocumentEvent.Type = {
+        Added: 0,
+        Removed: 1,
+        Deactivated: 10,
+        Activated: 11,
+        BlobUpdated: 12
+    };
+
+    /**
+     * @type {EXApplication.DocumentEvent.Type}
+     */
+    EXApplication.DocumentEvent.prototype.type = null;
+
+    /**
+     * The affected document
+     * @type {GXScene}
+     */
+    EXApplication.DocumentEvent.prototype.document = null;
+
+    /** @override */
+    EXApplication.DocumentEvent.prototype.toString = function () {
+        return "[Object EXApplication.DocumentEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // EXApplication.GlobalColorChangedEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever the global color has changed
+     * @class EXApplication.GlobalColorChangedEvent
+     * @extends GEvent
+     * @constructor
+     */
+    EXApplication.GlobalColorChangedEvent = function () {
+    }
+    GObject.inherit(EXApplication.GlobalColorChangedEvent, GEvent);
+
+    /** @override */
+    EXApplication.GlobalColorChangedEvent.prototype.toString = function () {
+        return "[Object EXApplication.GlobalColorChangedEvent]";
+    };
+
+    EXApplication.GLOBAL_COLOR_CHANGED_EVENT = new EXApplication.GlobalColorChangedEvent();
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // EXApplication Class
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    EXApplication.prototype._initialized = false;
+
+    /**
+     * @type {GXToolManager}
+     * @private
+     */
+    EXApplication.prototype._toolManager = null;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    EXApplication.prototype._documentUntitledCount = 0;
+
+    /**
+     * @type {Array<EXDocument>}
+     * @private
+     */
+    EXApplication.prototype._documents = null;
+
+    /**
+     * @type {EXDocument}
+     * @private
+     */
+    EXApplication.prototype._activeDocument = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    EXApplication.prototype._view = null;
+
+    /**
+     * @type {EXNavigation}
+     * @private
+     */
+    EXApplication.prototype._navigation = null;
+
+    /**
+     * @type {EXSidebar}
+     * @private
+     */
+    EXApplication.prototype._sidebar = null;
+
+    /**
+     * @type {EXWindows}
+     * @private
+     */
+    EXApplication.prototype._windows = null;
+
+    /**
+     * @type {EXWelcome}
+     * @private
+     */
+    EXApplication.prototype._welcome = null;
+
+    /**
+     * @type {EXToolpanel}
+     * @private
+     */
+    EXApplication.prototype._toolpanel = null;
+
+    /**
+     * @type {GUIShortcutsDialog}
+     * @private
+     */
+    EXApplication.prototype._shortcutMap = null;
+
+    /**
+     * @type {GXColor}
+     * @private
+     */
+    EXApplication.prototype._globalColor = null;
 
     /**
      * @type {Number}
      * @private
      */
-    GUIApplication.prototype._resizeTimerId = null;
+    EXApplication.prototype._resizeTimerId = null;
 
     /**
      * @type {GUIProgressDialog}
      * @private
      */
-    GUIApplication.prototype._progressDialog = null;
+    EXApplication.prototype._progressDialog = null;
 
 
     /**
@@ -59,27 +254,132 @@
      * @type {Array<GUIAction>}
      * @private
      */
-    GUIApplication.prototype._actions = null;
+    EXApplication.prototype._actions = null;
 
     /**
      * Mapping of actions to shortcuts
      * @type {{}}
      * @private
      */
-    GUIApplication.prototype._shortcuts = null;
+    EXApplication.prototype._shortcuts = null;
 
     /**
      * Application menu
      * @type {GUIMenu}
      * @private
      */
-    GUIApplication.prototype._menu = null;
+    EXApplication.prototype._menu = null;
+
+    /**
+     * @returns {GXToolManager}
+     */
+    EXApplication.prototype.getToolManager = function () {
+        return this._toolManager;
+    };
+
+    /**
+     * Returns a list of all opened documents
+     * @return {Array<EXDocument>}
+     */
+    EXApplication.prototype.getDocuments = function () {
+        return this._documents;
+    };
+
+    /**
+     * Returns the currently active document
+     * @return {EXDocument}
+     */
+    EXApplication.prototype.getActiveDocument = function () {
+        return this._activeDocument ? this._activeDocument : null;
+    };
+
+    /**
+     * Return access to the sidebar
+     * @returns {EXSidebar}
+     */
+    EXApplication.prototype.getSidebar = function () {
+        return this._sidebar;
+    };
+
+    /**
+     * Return access to the window container
+     * @returns {EXWindows}
+     */
+    EXApplication.prototype.getWindows = function () {
+        return this._windows;
+    };
+
+    /**
+     * Return access to the tools panel
+     * @returns {EXToolpanel}
+     */
+    EXApplication.prototype.getToolpanel = function () {
+        return this._toolpanel;
+    };
+
+    /**
+     * @returns {GUIShortcutsDialog}
+     */
+    EXApplication.prototype.getShortcutMap = function () {
+        return this._shortcutMap;
+    };
+
+    /**
+     * @return {GXColor}
+     */
+    EXApplication.prototype.getGlobalColor = function () {
+        return this._globalColor;
+    };
+
+    /**
+     * @param {GXColor} color
+     */
+    EXApplication.prototype.setGlobalColor = function (color) {
+        if (!GXColor.equals(color, this._globalColor)) {
+            this._globalColor = color;
+
+            // Trigger update event
+            if (this.hasEventListeners(EXApplication.GlobalColorChangedEvent)) {
+                this.trigger(EXApplication.GLOBAL_COLOR_CHANGED_EVENT);
+            }
+        }
+    };
+
+    /**
+     * Checks if a given part is visible or not
+     * @param {EXApplication.Part} part the part to check for
+     * @returns {boolean} true if part is visible, false if not
+     */
+    EXApplication.prototype.isPartVisible = function (part) {
+        return this.getPart(part).css('display') !== 'none';
+    };
+
+    /**
+     * Make a given part visible or not
+     * @param {EXApplication.Part} part the part
+     * @param visible whether to make the part visible or not
+     */
+    EXApplication.prototype.setPartVisible = function (part, visible) {
+        if (visible != this.isPartVisible(part)) {
+            this.getPart(part).css('display', (visible ? 'block' : 'none'));
+            this._updatedPartVisibilities();
+        }
+    };
+
+    /**
+     * Return reference to a given part
+     * @param {EXApplication.Part} part
+     * @returns {JQuery}
+     */
+    EXApplication.prototype.getPart = function (part) {
+        return this._view.find('#' + part.id);
+    };
 
     /**
      * Get a list of all registered actions
      * @return {Array<GUIAction>} list of registered actions
      */
-    GUIApplication.prototype.getActions = function () {
+    EXApplication.prototype.getActions = function () {
         return this._actions;
     };
 
@@ -87,7 +387,7 @@
      * Get the application menu
      * @return {GUIMenu}
      */
-    GUIApplication.prototype.getMenu = function () {
+    EXApplication.prototype.getMenu = function () {
         return this._menu;
     };
 
@@ -95,7 +395,7 @@
      * Get a list of currently all available, registered actions
      * @return {Array<GUIAction>} list of registered and available actions
      */
-    GUIApplication.prototype.getAvailableActions = function () {
+    EXApplication.prototype.getAvailableActions = function () {
         var result = [];
         for (var i = 0; i < this._actions.length; ++i) {
             if (this._actions[i].isAvailable()) {
@@ -109,7 +409,7 @@
      * Get an action instance by it's given id
      * @param {String} id
      */
-    GUIApplication.prototype.getAction = function (id) {
+    EXApplication.prototype.getAction = function (id) {
         for (var i = 0; i < this._actions.length; ++i) {
             if (this._actions[i].getId() === id) {
                 return this._actions[i];
@@ -118,63 +418,156 @@
         return null;
     };
 
+    /**
+     * Show a file chooser dialog and call the done function
+     * when the call was successfull and a file was chosen
+     * @param {Function} done the callback called when one or
+     * more files have been chosen. If multiple is not true,
+     * a File reference will be send, otherwise an Array of files
+     * @param {Boolean} multiple whether to allow multiple file
+     * selection, defaults to false
+     */
+    EXApplication.prototype.openFile = function (done, multiple) {
+        var fileChooserInput = $('#appFileChooser');
+
+        if (fileChooserInput.length === 0) {
+            // Add a hidden file input for quick file choosing
+            fileChooserInput = $('<input>')
+                .attr('type', 'file')
+                .attr('id', 'appFileChooser')
+                .css({
+                    'display': 'block',
+                    'position': 'absolute',
+                    'top': '0px',
+                    'left': '0px',
+                    'visibility': 'hidden',
+                    'width': '0',
+                    'height': '0'
+                })
+                .appendTo($("body"));
+        }
+
+        fileChooserInput.off();
+
+        fileChooserInput.attr('multiple', multiple ? 'true' : null);
+
+        fileChooserInput.on('change', function (evt) {
+            done(multiple ? evt.target.files : evt.target.files[0]);
+        });
+
+        fileChooserInput.click();
+    };
 
     /**
-     * Register one or more actions. Note that if the current shell is
-     * set to GSystem.Shell.Application then this will also create the
-     * corresponding menu bar entries on the according system! This
-     * should only be called ONCE on startup!
-     * @param {Array<GUIAction>} actions list of actions to be registered
+     * Add a new document and open up a window for it
+     * and mark the view as being active
+     * @param {GXScene|GBlob} source the source to be added, either a scene
+     * or a blob to read the document from
+     * @param {String} temporaryTitle optional temporary title to be used
+     * for the document if no blob is assigned, defaults to null to use
+     * the default naming scheme
      */
-    GUIApplication.prototype.registerActions = function (actions) {
-        // Add all actions, first
-        for (var i = 0; i < actions.length; ++i) {
-            this._actions.push(actions[i]);
-        }
-
-        // Initialize our application menu with the given actions
-        GUIMenu.createActionMenu(this.getAvailableActions(), this._menu);
-
-        // Handle platform specific stuff now
-        if (gSystem.shell === GSystem.Shell.Application) {
-            // Iterate our gui menu and register our bracket menu recursively
-            // TODO : Remove prefix when submenus are supported
-            var _menuDividerIDCount = 0;
-            var _registerBracketMenus = function (parentId, menu, prefix) {
-                for (var i = 0; i < menu.getItemCount(); ++i) {
-                    var item = menu.getItem(i);
-                    switch (item.getType()) {
-                        case GUIMenuItem.Type.Menu:
-                            // TODO : Get this fixed as soon as sub-menus are supported in App-Shell!!!
-                            if (parentId === '') {
-                                appshell.app.addMenu(gLocale.get(item.getCaption()), 'menu' + i.toString(), '', '', function () {
-                                });
-                                _registerBracketMenus('menu' + i.toString(), item.getMenu(), prefix);
-                            } else {
-                                _registerBracketMenus(parentId, item.getMenu(), prefix + gLocale.get(item.getCaption()) + '/');
-                            }
-                            break;
-                        case GUIMenuItem.Type.Item:
-                            appshell.app.addMenuItem(parentId, prefix + gLocale.get(item.getCaption()), item.getAction().getId(), '', '', '', '', function () {
-                            });
-                            break;
-                        case GUIMenuItem.Type.Divider:
-                            // TODO : Fix when submenus are supported
-                            appshell.app.addMenuItem(parentId, '---', "appshell-menuDivider-" + _menuDividerIDCount++, '', '', '', '', function () {
-                            });
-                            break;
-                    }
+    EXApplication.prototype.addDocument = function (source, temporaryTitle) {
+        if (source instanceof GBlob) {
+            // Iterate all documents first and look if the given
+            // blob is already opened and if so, activate the
+            // document's last view
+            var documentAlreadyOpened = false;
+            for (var i = 0; i < this._documents.length; ++i) {
+                var document = this._documents[i];
+                if (document.blob === source) {
+                    this.activateDocument(document);
+                    documentAlreadyOpened = true;
                 }
-            }.bind(this);
-            _registerBracketMenus('', this._menu, '');
-        }
-
-        // Finally register the shortcuts
-        for (var i = 0; i < actions.length; ++i) {
-            var shortcut = actions[i].getShortcut();
-            if (shortcut) {
-                this.setShortcut(actions[i].getId(), shortcut);
             }
+
+            if (!documentAlreadyOpened) {
+                source.restore(function (data) {
+                    var document = null;
+                    try {
+                        scene = GNode.deserialize(data);
+
+                        if (!scene) {
+                            throw new Error('Failure.');
+                        }
+                    } catch (e) {
+                        alert('An error has ocurred while trying to open the document.');
+                    }
+
+                    if (document) {
+                        this._addDocument(scene, source);
+                    }
+                }.bind(this));
+            }
+        } else {
+            this._addDocument(source, null, temporaryTitle);
+        }
+    };
+
+    /**
+     * Mark a given document as being the active one and activates
+     * the first window for the document as well
+     * @param {EXDocument} document may be null to only deactivate the current one
+     * @param {boolean} [noWindowActivation] optional param that, if set, avoids
+     * activating the corresponding window when the document gets activated
+     */
+    EXApplication.prototype.activateDocument = function (document, noWindowActivation) {
+        if (document != this._activeDocument) {
+            // Deactivate previous one if any
+            if (this._activeDocument) {
+                if (this._activeDocument && this.hasEventListeners(EXApplication.DocumentEvent)) {
+                    this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Deactivated, this._activeDocument));
+                }
+
+                this._activeDocument = null;
+            }
+
+            // Activate new one if any
+            if (document) {
+                // Activate lastly activated window of document
+                if (!noWindowActivation) {
+                    this._windows.activateWindow(document.getActiveWindow());
+                }
+
+                // Now assign the active document
+                this._activeDocument = document;
+
+                if (this.hasEventListeners(EXApplication.DocumentEvent)) {
+                    this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Activated, document));
+                }
+            }
+        }
+    };
+
+    /**
+     * Closes and removes a document and all of it's views
+     * @param {EXDocument} document
+     */
+    EXApplication.prototype.closeDocument = function (document) {
+        if (document._windows.length) {
+            // Document has windows so remove them first which
+            // will then trigger this function again
+            while (document._windows.length > 0) {
+                this._windows.closeWindow(document._windows[0]);
+            }
+        } else {
+            // Remove active document if this is the active one
+            if (document === this.getActiveDocument()) {
+                this.activateDocument(null);
+            }
+
+            // Release document editor
+            document.getEditor().close();
+
+            // Remove and trigger event
+            this._documents.splice(this._documents.indexOf(document), 1);
+
+            if (this.hasEventListeners(EXApplication.DocumentEvent)) {
+                this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Removed, document));
+            }
+
+            // Show or hide screen depending if documents are available or not
+            this.setPartVisible(EXApplication.Part.Welcome, this._documents.length === 0);
         }
     };
 
@@ -184,7 +577,7 @@
      * @param {*} args optional args to be supplied to the action
      * @return {*} the result of the action if any
      */
-    GUIApplication.prototype.executeAction = function (id, args) {
+    EXApplication.prototype.executeAction = function (id, args) {
         var actionInstance = this.getAction(id);
 
         if (!actionInstance) {
@@ -208,13 +601,13 @@
      * the action but instead, will add it only to the main menu bar
      * @param {GUIAction} action
      */
-    GUIApplication.prototype.addWindowAction = function (action) {
+    EXApplication.prototype.addWindowAction = function (action) {
         if (gSystem.shell === GSystem.Shell.Application) {
             // TODO : Add support for AppShell
 
             alert('TODO : Implement addWindowAction');
         } else {
-            var windowItem = this._menu.findItem(gLocale.get(GUIApplication.CATEGORY_WINDOW));
+            var windowItem = this._menu.findItem(gLocale.get(EXApplication.CATEGORY_WINDOW));
 
             if (!windowItem) {
                 windowItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
@@ -250,8 +643,8 @@
      * activating a given window.
      * @param {GUIAction} action
      */
-    GUIApplication.prototype.removeWindowAction = function (action) {
-        var windowItem = this._menu.findItem(gLocale.get(GUIApplication.CATEGORY_WINDOW));
+    EXApplication.prototype.removeWindowAction = function (action) {
+        var windowItem = this._menu.findItem(gLocale.get(EXApplication.CATEGORY_WINDOW));
         if (windowItem && windowItem.getMenu()) {
             for (var i = 0; i < windowItem.getMenu().getItemCount(); ++i) {
                 if (windowItem.getMenu().getItem(i).getAction() === action) {
@@ -267,7 +660,7 @@
      * @param {String} the action's id
      * @return {Array<Number>} shortcuts or null for none
      */
-    GUIApplication.prototype.getShortcut = function (id) {
+    EXApplication.prototype.getShortcut = function (id) {
         if (this._shortcuts.hasOwnProperty(id)) {
             return this._shortcuts[id];
         }
@@ -279,7 +672,7 @@
      * @param {String} id the id of the action
      * @param {Array<Number>} shortcut may be null to remove the shortcut
      */
-    GUIApplication.prototype.setShortcut = function (id, shortcut) {
+    EXApplication.prototype.setShortcut = function (id, shortcut) {
         // Remove any previous shortcut
         if (this._shortcuts.hasOwnProperty(id)) {
             if (gSystem.shell == GSystem.Shell.Application) {
@@ -323,7 +716,7 @@
      * @param {GLocale.Key|String} [processTitle] optional title for the process
      * @return {{xhr: XMLHttpRequest, progress: GUIProgress}}
      */
-    GUIApplication.prototype.createAndRegisterHttpProcess = function (processTitle) {
+    EXApplication.prototype.createAndRegisterHttpProcess = function (processTitle) {
         var xhr = new XMLHttpRequest();
         var progress = new GUIProgress(xhr, 'x-amz-meta-content-length');
 
@@ -343,7 +736,7 @@
      * if not yet visible
      * @param {GUIProgress} progress
      */
-    GUIApplication.prototype.registerProgress = function (progress) {
+    EXApplication.prototype.registerProgress = function (progress) {
         if (this._progressDialog == null) {
             this._progressDialog = new GUIProgressDialog();
             this._progressDialog.setCloseMode(GUIProgressDialog.CloseMode.AutoWhenAllFinished);
@@ -355,10 +748,61 @@
         this._progressDialog.addProgress(progress);
     };
 
+    EXApplication.prototype.preInit = function () {
+        // Create our parts
+        var body = $('body');
+
+        this._view = $("<div></div>")
+            .attr('id', 'application')
+            .prependTo(body);
+
+        // Windows-Part
+        var windowsPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Windows.id)
+            .appendTo(this._view);
+
+        this._windows = new EXWindows(windowsPart);
+
+        // Welcome-Part
+        var welcomePart = $("<div></div>")
+            .attr('id', EXApplication.Part.Welcome.id)
+            .appendTo(this._view);
+
+        this._welcome = new EXWelcome(welcomePart);
+
+        // Toolpanel-Part
+        var toolpanelPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Toolpanel.id)
+            .appendTo(this._view);
+
+        this._toolpanel = new EXToolpanel(toolpanelPart);
+
+        // Sidebar-Part
+        var sidebarPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Sidebar.id)
+            .appendTo(this._view);
+
+        this._sidebar = new EXSidebar(sidebarPart);
+
+        // Header won't be available for AppShell
+        if (gSystem.shell !== GSystem.Shell.Application) {
+            // Header-Part
+            var headerPart = $("<div></div>")
+                .attr('id', EXApplication.Part.Header.id)
+                .appendTo(this._view);
+
+            // Navigation-Part
+            var navigationPart = $("<div></div>")
+                .attr('id', EXApplication.Part.Navigation.id)
+                .appendTo(headerPart);
+            this._navigation = new EXNavigation(navigationPart);
+        }
+    };
+
     /**
      * Called to initialize the application
      */
-    GUIApplication.prototype.init = function () {
+    EXApplication.prototype.init = function () {
         var body = $("body");
 
         // Prevent context-menu globally except for input elements
@@ -412,22 +856,235 @@
                 this._resizeTimerId = null;
             }.bind(this), 200);
         }.bind(this));
+
+        // TODO : Order our available palettes by group
+        // TODO : Order our available tools by group
+
+        // -- Register Actions
+        this._registerActions(gExpress.actions);
+
+        // Add all available tools to toolmanager
+        if (gExpress.tools) {
+            for (var i = 0; i < gExpress.tools.length; ++i) {
+                this._toolManager.addTool(gExpress.tools[i]);
+            }
+        }
+
+        // Initialize parts
+        if (this._navigation) {
+            this._navigation.init();
+        }
+
+        this._sidebar.init();
+        this._windows.init();
+        this._welcome.init();
+        this._toolpanel.init();
+
+        // Mark initialized
+        this._initialized = true;
+
+        // Manual call to update part visibilities
+        this._updatedPartVisibilities();
+
+        // Initialize our shortcut maps with available actions
+        var shortcutMaps = [
+            GUIShortcutsDialog.createMapFromAvailableActions(),
+            {
+                // TODO: I18N
+                title: 'Tools',
+                map: []
+            }
+        ];
+
+        // Add tools to shorcut maps
+        var toolCount = this._toolManager.getToolCount();
+        for (var i = 0; i < toolCount; ++i) {
+            var toolInstance = this._toolManager.getTool(i);
+            var toolHint = toolInstance.getHint() ? toolInstance.getHint() : null;
+            if (toolHint) {
+                shortcutMaps[1].map.push(toolHint);
+            }
+        }
+
+        this._shortcutMap.setMaps(shortcutMaps);
+
+        // Subscribe to window events
+        this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
     };
 
     /**
      * Called to relayout the application
      */
-    GUIApplication.prototype.relayout = function () {
-        // NO-OP
+    EXApplication.prototype.relayout = function () {
+        if (!this._initialized) {
+            // ignore
+            return;
+        }
+
+        setTimeout(function () {
+            var headerPart = this.getPart(EXApplication.Part.Header);
+            var headerHeight = headerPart.length > 0 ? headerPart.outerHeight() : 0;
+
+            // Sidebar
+            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
+            sidebarPart.height(this._view.height());
+
+            // Windows
+            var windowsPart = this.getPart(EXApplication.Part.Windows);
+            windowsPart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
+            windowsPart.height(this._view.height());
+
+            // Welcome
+            var welcomePart = this.getPart(EXApplication.Part.Welcome);
+            welcomePart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
+            welcomePart.height(this._view.height() - headerHeight);
+            welcomePart.css('top', headerHeight.toString() + 'px');
+
+            // Toolpanel
+            var toolpanelPart = this.getPart(EXApplication.Part.Toolpanel);
+            toolpanelPart.css('right', (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0) + 'px');
+
+            // Let parts know about relayout
+            if (this._navigation) {
+                this._navigation.relayout();
+            }
+
+            this._sidebar.relayout();
+            this._windows.relayout([0, headerHeight, 0, 0]);
+            this._welcome.relayout();
+            this._toolpanel.relayout();
+        }.bind(this), 0);
+    };
+
+    /**
+     * Part visibilities have been changed
+     */
+    EXApplication.prototype._updatedPartVisibilities = function () {
+        // Update layout as part visibilities have changed
+        this.relayout();
     };
 
 
-    /*
+
+    /**
+     * Add a new document
+     * @param {GXScene} scene
+     * @param {GBlob} blob
+     * @param {String} temporaryTitle
+     * @private
+     */
+    EXApplication.prototype._addDocument = function (scene, blob, temporaryTitle) {
+        // Initiate a new document instance
+        // TODO : I18N
+        var document = new EXDocument(scene, blob, 'Untitled-' + (++this._documentUntitledCount).toString());
+
+        // Send an event
+        if (this.hasEventListeners(EXApplication.DocumentEvent)) {
+            this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Added, document));
+        }
+
+        // Add a window for the document making it activated by default
+        this._windows.addWindow(document);
+
+        // Hide welcome screen as we have a document now
+        this.setPartVisible(EXApplication.Part.Welcome, false);
+
+        // Fit to size by default
+        // TODO : Check if blob contains user view settings and use that one instead
+        this.executeAction(EXFitAllAction.ID);
+    };
+
+    /**
+     * Register one or more actions. Note that if the current shell is
+     * set to GSystem.Shell.Application then this will also create the
+     * corresponding menu bar entries on the according system! This
+     * should only be called ONCE on startup!
+     * @param {Array<GUIAction>} actions list of actions to be registered
+     * @private
+     */
+    EXApplication.prototype._registerActions = function (actions) {
+        // Add all actions, first
+        for (var i = 0; i < actions.length; ++i) {
+            this._actions.push(actions[i]);
+        }
+
+        // Initialize our application menu with the given actions
+        GUIMenu.createActionMenu(this.getAvailableActions(), this._menu);
+
+        // Handle platform specific stuff now
+        if (gSystem.shell === GSystem.Shell.Application) {
+            // Iterate our gui menu and register our bracket menu recursively
+            // TODO : Remove prefix when submenus are supported
+            var _menuDividerIDCount = 0;
+            var _registerBracketMenus = function (parentId, menu, prefix) {
+                for (var i = 0; i < menu.getItemCount(); ++i) {
+                    var item = menu.getItem(i);
+                    switch (item.getType()) {
+                        case GUIMenuItem.Type.Menu:
+                            // TODO : Get this fixed as soon as sub-menus are supported in App-Shell!!!
+                            if (parentId === '') {
+                                appshell.app.addMenu(gLocale.get(item.getCaption()), 'menu' + i.toString(), '', '', function () {
+                                });
+                                _registerBracketMenus('menu' + i.toString(), item.getMenu(), prefix);
+                            } else {
+                                _registerBracketMenus(parentId, item.getMenu(), prefix + gLocale.get(item.getCaption()) + '/');
+                            }
+                            break;
+                        case GUIMenuItem.Type.Item:
+                            appshell.app.addMenuItem(parentId, prefix + gLocale.get(item.getCaption()), item.getAction().getId(), '', '', '', '', function () {
+                            });
+                            break;
+                        case GUIMenuItem.Type.Divider:
+                            // TODO : Fix when submenus are supported
+                            appshell.app.addMenuItem(parentId, '---', "appshell-menuDivider-" + _menuDividerIDCount++, '', '', '', '', function () {
+                            });
+                            break;
+                    }
+                }
+            }.bind(this);
+            _registerBracketMenus('', this._menu, '');
+        }
+
+        // Finally register the shortcuts
+        for (var i = 0; i < actions.length; ++i) {
+            var shortcut = actions[i].getShortcut();
+            if (shortcut) {
+                this.setShortcut(actions[i].getId(), shortcut);
+            }
+        }
+    };
+
+    /**
+     * @param {EXWindows.WindowEvent} evt
+     * @private
+     */
+    EXApplication.prototype._windowEvent = function (evt) {
+        switch (evt.type) {
+            case EXWindows.WindowEvent.Type.Added:
+                // Register a new window show action and attach it to the window
+                evt.window.__action_ = new EXShowWindowAction(evt.window);
+                this.addWindowAction(evt.window.__action_);
+                break;
+            case EXWindows.WindowEvent.Type.Removed:
+                this.removeWindowAction(evt.window.__action_);
+                break;
+            case EXWindows.WindowEvent.Type.Activated:
+                this._toolManager.setView(evt.window.getView());
+                break;
+            case EXWindows.WindowEvent.Type.Deactivated:
+                this._toolManager.setView(null);
+                break;
+            default:
+                break;
+        }
+    };
+
+    /**
      * Handle touch events by converting them into mouse events and stopping
      * every further propagation to guarantee mouse events not being fired twice
      * @private
      */
-    GUIApplication.prototype._touchHandler = function (event) {
+    EXApplication.prototype._touchHandler = function (event) {
         // allow default multi-touch gestures to work
         if (event.touches.length > 1) {
             return;
@@ -469,7 +1126,7 @@
      * @param {String} id id of action to get a menu-item for
      * @private
      */
-    GUIApplication.prototype._getMenuItemForAction = function (id) {
+    EXApplication.prototype._getMenuItemForAction = function (id) {
         var _getItem = function (menu) {
             for (var i = 0; i < menu.getItemCount(); ++i) {
                 var item = menu.getItem(i);
@@ -495,7 +1152,7 @@
      * @returns {String}
      * @private
      */
-    GUIApplication.prototype._shortcutToAppShellShortcut = function (shortcut) {
+    EXApplication.prototype._shortcutToAppShellShortcut = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
@@ -630,7 +1287,7 @@
      * @returns {String}
      * @private
      */
-    GUIApplication.prototype._shortcutToMouseTrapShortcut = function (shortcut) {
+    EXApplication.prototype._shortcutToMouseTrapShortcut = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
@@ -752,6 +1409,6 @@
         return result;
     };
 
-    _.GUIApplication = GUIApplication;
+    _.EXApplication = EXApplication;
     _.gApp = null; // initialized by client
 })(this);

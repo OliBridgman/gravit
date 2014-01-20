@@ -13,7 +13,6 @@
             if (gSystem.operatingSystem !== GSystem.OperatingSystem.OSX_IOS || gSystem.hardware !== GSystem.Hardware.Desktop) {
                 event.metaKey = event.ctrlKey;
             }
-            ;
         };
         document.addEventListener("keydown", function (event) {
             if (!$(document.activeElement).is(":input")) {

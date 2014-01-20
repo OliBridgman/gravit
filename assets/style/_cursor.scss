@@ -1,0 +1,63 @@
+.g-cursor-select {
+  @include g-cursor(select);
+}
+
+.g-cursor-select-inverse {
+  @include g-cursor(select-inverse);
+}
+
+.g-cursor-select-dot {
+  @include g-cursor(select-dot);
+}
+
+.g-cursor-select-dot-inverse {
+  @include g-cursor(select-dot-inverse);
+}
+
+.g-cursor-zoom-plus {
+  @include g-cursor(zoom-plus);
+}
+
+.g-cursor-zoom-minus {
+  @include g-cursor(zoom-minus);
+}
+
+.g-cursor-zoom-none {
+  @include g-cursor(zoom-none);
+}
+
+.g-cursor-hand-open {
+  @include g-cursor(hand-open);
+}
+
+.g-cursor-hand-closed {
+  @include g-cursor(hand-closed);
+}
+
+.g-cursor-cross {
+  @include g-cursor(cross);
+}
+
+.g-cursor-pen {
+  @include g-cursor(pen);
+}
+
+.g-cursor-pen-start {
+  @include g-cursor(pen-start);
+}
+
+.g-cursor-pen-end {
+  @include g-cursor(pen-end);
+}
+
+.g-cursor-pen-plus {
+  @include g-cursor(pen-plus);
+}
+
+.g-cursor-pen-minus {
+  @include g-cursor(pen-minus);
+}
+
+.g-cursor-lasso {
+  @include g-cursor(lasso);
+}

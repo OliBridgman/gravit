@@ -1,0 +1,207 @@
+/** Base styling for ul menu */
+.g-menu {
+  margin: 0px;
+  padding: 0px;
+}
+
+/** Styling for a menu ul if it is not the root */
+.g-menu:not(.g-menu-root) {
+  position: absolute;
+  z-index: 100;
+  background: white;
+  padding: 4px 0px;
+  background: rgba(255, 255, 255, 0.94);
+  color: black;
+  border: 1px solid #c4c4c4;
+  border-bottom-color: #979797;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
+}
+
+/** Clear border-radius depending on direction */
+.g-menu:not(.g-menu-root).g-menu-top {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.g-menu:not(.g-menu-root).g-menu-bottom {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+.g-menu:not(.g-menu-root).g-menu-left {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+.g-menu:not(.g-menu-root).g-menu-right {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+/** Styling for a menu item li */
+.g-menu-item {
+  list-style-type: none;
+  display: table;
+  margin: 0px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/** Set to full width and reduce font-size if not on root */
+.g-menu:not(.g-menu-root) > .g-menu-item {
+  width: 100%;
+  font-size: 12px;
+  padding: 1px 10px 1px 20px;
+}
+
+/* Styling for each span within a menu item */
+.g-menu-item > span {
+  display: table-cell;
+  cursor: default;
+}
+
+/** Fix line-height for sub menu items */
+.g-menu:not(.g-menu-root) > .g-menu-item > span {
+  line-height: 20px;
+}
+
+/** Change tail styling as we might be adding an arrow */
+.g-menu-item-menu > span.g-menu-item-tail {
+  text-align: right;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/** Tail padding for root and submenu are different */
+.g-menu:not(.g-menu-root) > .g-menu-item-menu > span.g-menu-item-tail {
+  padding-left: 20px;
+}
+.g-menu.g-menu-root > .g-menu-item-menu > span.g-menu-item-tail {
+  padding-left: 5px;
+}
+
+/** For root menu items */
+.g-menu:not(.g-menu-root) > .g-menu-item > span {
+  line-height: 20px;
+}
+
+/** Add tail arrow indicator to right and spacing if sub-menu and not root */
+.g-menu:not(.g-menu-root) > .g-menu-item-menu > span.g-menu-item-tail:before {
+  content:$fa-var-caret-right;
+}
+
+/** Add tail arrow indicator to bottom and spacing if sub-menu and root and part of a menu button */
+.g-menu-button > .g-menu-item-menu > span.g-menu-item-tail:before {
+  content:$fa-var-caret-down;
+}
+
+/** Icon needs fixed width */
+.g-menu-item > span.g-menu-item-icon {
+  width: 16px;
+  font-size: 14px;
+}
+
+/** Right align shortcut and give some spacing as well on the left side */
+.g-menu-item > span.g-menu-item-shortcut {
+  text-align: right;
+  padding-left: 20px;
+  color: gray;
+}
+
+/** Define styling of a special "divider" li menu item */
+.g-menu-item-divider {
+  background: #dedede;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 1px;
+  padding: 0px !important;
+}
+
+/** Hide Divider if it is the first- or last-child */
+.g-menu-item-divider:first-child,
+.g-menu-item-divider:last-child {
+  display: none;
+}
+
+/** Make opacity for disabled items */
+.g-menu-item.g-disabled > span {
+  color: gray;
+}
+
+/** Set active/hover color if not disabled */
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled),
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span,
+.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled),
+.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled) > span,
+.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled),
+.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled) > span {
+  @include g-selected;
+}
+
+/** Release left-padding for checked items to have our checkmark fit */
+.g-menu:not(.g-menu-root) > .g-menu-item.g-menu-item-checked {
+  padding-left: 4px;
+}
+
+/** Replace icon with checkmark for checked icons */
+.g-menu-item.g-menu-item-checked > span.g-menu-item-icon {
+  display: inline-block !important;
+  text-align: center;
+  font-size: 12px;
+}
+
+.g-menu-item.g-menu-item-checked > span.g-menu-item-icon:before {
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content:$fa-var-check;
+}
+
+/** Adjustments for menu bar */
+.g-menu-bar > .g-menu {
+  height: 100%;
+  display: inline-block;
+}
+
+.g-menu-bar > .g-menu > .g-menu-item {
+  float: left;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.g-menu-bar > .g-menu > .g-menu-item > span {
+  vertical-align: middle;
+}
+
+.g-menu-bar > .g-menu > .g-menu-item {
+  padding: 0px 5px;
+}
+
+.g-menu-bar > .g-menu > .g-menu-item > span.g-menu-item-tail {
+  padding-left: 0px;
+}
+
+/** Adjustments for menu button */
+.g-menu-button,
+.g-menu-button > .g-menu-item {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.g-menu-button > .g-menu-item {
+  width: 100%;
+  text-align: center;
+}
+
+.g-menu-button > .g-menu-item > span {
+  display: inline;
+}
+
+.g-menu-button > .g-menu-item.g-disabled > span {
+  color: inherit;
+}

@@ -1,4 +1,19 @@
+$fa-font-path : '../font';
+
 @import 'base';
+@import 'variables';
+@import 'mixins';
+@import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
+@import 'cursor';
+@import 'form';
+@import 'tool';
+
+@import 'component_hint';
+@import 'component_menu';
+@import 'component_modal';
+@import 'component_progress';
+@import 'component_dialog';
+
 @import 'mixins';
 @import 'blocks';
 @import 'loader';
@@ -15,6 +30,49 @@
 @import 'palette_layers';
 @import 'palette_pages';
 @import 'palette_properties';
+
+/** General styling within gravit */
+.gravit {
+  /** Prevent double-tap = zoom on windows mobile */
+  -ms-content-zooming: none;
+
+  /** Make everything based on border-box model */
+  *, *:before, *:after {
+    @include box-sizing(border-box);
+  }
+
+  * {
+    /* Disable long-press callouts. */
+    -webkit-touch-callout: none;
+    /* Disable highlighting of links. */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    /* Prevent auto-resizing. */
+    -webkit-text-size-adjust: none;
+  }
+
+  /** No focus and selection outline except for input fields */
+  :not(input):not(select):not(textArea):focus {
+    outline: none !important;
+  }
+
+  /**No selection except for input fields */
+  :not(input):not(select):not(textArea) {
+    @include user-select(none);
+    cursor: default;
+  }
+
+  /** Divider styling */
+  hr {
+    @include g-divider;
+  }
+
+  /** Hide iScroll scrollbars on touch devices */
+  .g-touch {
+    .iScrollVerticalScrollbar, .iScrollHorizontalScrollbar {
+      display: none;
+    }
+  }
+}
 
 body, html {
   margin: 0px;

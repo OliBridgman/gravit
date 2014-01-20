@@ -31,7 +31,7 @@
      * @override
      */
     EXShowToolsAction.prototype.getCategory = function () {
-        return GUIApplication.CATEGORY_WINDOW;
+        return EXApplication.CATEGORY_WINDOW;
     };
 
     /**

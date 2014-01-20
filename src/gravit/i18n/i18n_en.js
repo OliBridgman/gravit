@@ -30,7 +30,6 @@ gLocale.setValues(EXZoomInAction, GLocale.Language.English, ["title"], ["Zoom in
 gLocale.setValues(EXZoomOutAction, GLocale.Language.English, ["title"], ["Zoom out"]);
 
 // Color
-gLocale.setValues(EXColorMatcher, GLocale.Language.English, ["category.harmony", "category.palette"], ["Harmony", "Palette"]);
 gLocale.setValues(EXAnalogousMatcher, GLocale.Language.English, ["title"], ["Analogous"]);
 gLocale.setValues(EXComplementaryMatcher, GLocale.Language.English, ["title"], ["Complementary"]);
 gLocale.setValues(EXImagePaletteMatcher, GLocale.Language.English, ["title"], ["From Image"]);
@@ -42,7 +41,3 @@ gLocale.setValues(EXColorTrendsPalette, GLocale.Language.English, ["title"], ["T
 gLocale.setValues(EXLayersPalette, GLocale.Language.English, ["title"], ["Layers"]);
 gLocale.setValues(EXPropertiesPalette, GLocale.Language.English, ["title"], ["Properties"]);
 gLocale.setValues(EXPagesPalette, GLocale.Language.English, ["title"], ["Pages"]);
-
-// Root
-gLocale.setValues(EXApplication, GLocale.Language.English, ["category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export", "category.edit", "category.view", "category.view.magnification", "category.help"],
-    ["File", "File/Open", "File/Save As", "File/Import", "File/Export", "Edit", "View", "View/Magnification", "Help"]);

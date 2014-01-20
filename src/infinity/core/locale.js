@@ -46,19 +46,6 @@
         Default: 0
     };
 
-    /**
-     * Enumeration of supported date formatters
-     * @enum
-     */
-    GLocale.DateFormat = {
-        /**
-         * Short Date-Format (dd.mm.yyyy)
-         * @type {Number}
-         * @version 1.0
-         */
-        ShortDate: 0
-    };
-
     // -----------------------------------------------------------------------------------------------------------------
     // GLocale.Key Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -141,18 +128,6 @@
     GLocale.prototype.setLanguage = function (language) {
         if (language != this._language) {
             this._language = language;
-
-            // Update moment.js language
-            switch (this._language) {
-                case GLocale.Language.English:
-                    moment.lang('en');
-                    break;
-                case GLocale.Language.German:
-                    moment.lang('de');
-                    break;
-                default:
-                    throw new Error('Unknown language for momentjs: ' + this._language.toString());
-            }
         }
     };
 
