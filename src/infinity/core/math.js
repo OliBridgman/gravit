@@ -411,6 +411,37 @@
     };
 
     /**
+     * For points A(x1, y1), B(x2, y2), C(x3, y3) calculates and returns point C', so that AC' makes
+     * a collinear projection of the AC vector to the direction of vector AB.
+     * @param {Number} x1 - x-coordinate of the point A
+     * @param {Number} y1 - y-coordinate of the point A
+     * @param {Number} x2 - x-coordinate of the point B
+     * @param {Number} y2 - y-coordinate of the point B
+     * @param {Number} x3 - x-coordinate of the point C
+     * @param {Number} y3 - y-coordinate of the point C
+     * @return (GPoint}
+     */
+    GMath.prototype.getPositiveProjection = function (x1, y1, x2, y2, x3, y3) {
+        var ax = x3 - x1;
+        var ay = y3 - y1;
+        var bx = x2 - x1;
+        var by = y2 - y1;
+        // projection vector a onto b
+        //c = ((a * b)/(|b|^2))*b
+
+        var tmp = this.vDotProduct(ax, ay, bx, by) / this.vDotProduct(bx, by, bx, by);
+        var res;
+        if (tmp <= 0.0) {
+            res  = new GPoint(x1, y1);
+        }
+        else {
+            res  = new GPoint(bx * tmp + x1, by * tmp + y1);
+        }
+
+        return res;
+    };
+
+    /**
      * Evaluates cubic polynomial.
      * @param {Number} a - 3rd degree coefficient
      * @param {Number} b - 2nd degree coefficient

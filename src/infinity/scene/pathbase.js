@@ -269,7 +269,7 @@
     GXPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function () {
         if (this._getPath() && this._parent && this.$cl && this.$cr) {
             var prevPt = this._parent.getPreviousPoint(this);
-            return this._parent._getShoulderPoint(this.$x, this.$y, this.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
+            return this._parent._getLeftShoulderPoint(this, prevPt);
         } else {
             return null;
         }
@@ -287,8 +287,7 @@
             var prevPt = this._parent.getPreviousPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var prevPtTr = prevPt._getTransformedCopy(transform);
-            shoulderPt = this._parent._getShoulderPoint(
-                curPtTr.$x, curPtTr.$y, curPtTr.$cl, prevPtTr.$x, prevPtTr.$y, prevPtTr.$cr);
+            shoulderPt = this._parent._getLeftShoulderPoint(curPtTr, prevPtTr);
         }
 
         return shoulderPt;
@@ -301,7 +300,7 @@
     GXPathBase.AnchorPoint.prototype.getRightShoulderPoint = function () {
         if (this._getPath() && this._parent && this.$cl && this.$cr) {
             var nextPt = this._parent.getNextPoint(this);
-            return this._parent._getShoulderPoint(this.$x, this.$y, this.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
+            return this._parent._getRightShoulderPoint(this, nextPt);
         } else {
             return null;
         }
@@ -319,8 +318,7 @@
             var nextPt = this._parent.getNextPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var nextPtTr = nextPt._getTransformedCopy(transform);
-            shoulderPt = this._parent._getShoulderPoint(
-                curPtTr.$x, curPtTr.$y, curPtTr.$cl, nextPtTr.$x, nextPtTr.$y, nextPtTr.$cr);
+            shoulderPt = this._parent._getRightShoulderPoint(curPtTr, nextPtTr);
         }
 
         return shoulderPt;
@@ -466,16 +464,24 @@
                 }
             } else {
                 if (this.$hlx != null && nextPt && !gMath.isEqualEps(dirLenNext, 0)) {
+                    // Use rotation if handle is already set
                     hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
                     hy = this.$y + (this.$y - nextPt.$y) / dirLenNext * hLen;
+                    // TODO: use projection in editor when modifying handle
+                    //var hnd = gMath.getPositiveProjection(this.$x, this.$y,
+                    //    this.$x + (this.$x - nextPt.$x), this.$y + (this.$y - nextPt.$y), this.$hlx, this.$hly);
                     this.setProperties(['hlx', 'hly'], [hx, hy], false, true);
                 }
 
                 if (this.$hrx != null && prevPt && !gMath.isEqualEps(dirLenPrev, 0)) {
+                    // Use rotation if handle is already set
                     hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
                     hy = this.$y + (this.$y - prevPt.$y) / dirLenPrev * hLen;
+                    // TODO: use projection in editor when modifying handle
+                    //var hnd = gMath.getPositiveProjection(this.$x, this.$y,
+                    //   this.$x + (this.$x - prevPt.$x), this.$y + (this.$y - prevPt.$y), this.$hrx, this.$hry);
                     this.setProperties(['hrx', 'hry'], [hx, hy], false, true);
                 }
             }
@@ -895,21 +901,7 @@
             return new GPoint(ap.$x, ap.$y);
         }
 
-        // For curve: use the first curve handle for corner shoulder direction instead of the next point itself
-        var hx = null;
-        var hy = null;
-        if (ap.$hrx != null) {
-            hx = ap.$hrx;
-            hy = ap.$hry;
-        } else if (nextPt.$hlx != null) {
-            hx = nextPt.$hlx;
-            hy = nextPt.$hly;
-        }
-        if (hx != null) {
-            return gMath.getPointAtLength(ap.$x, ap.$y, hx, hy, ap.$cr);
-        } else {
-            return this._getShoulderPoint(ap.$x, ap.$y, ap.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
-        }
+        return this._getRightShoulderPoint(ap, nextPt);
     };
 
     /**
@@ -948,6 +940,58 @@
             sptdst = dist * p1s / len;
         }
         return gMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
+    };
+
+    /**
+     * Returns a right shoulder point for the passed point, using the second passed point as a near point at right
+     * @param {GXPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
+     * @param {GXPathBase.AnchorPoint} [nextPt] an anchor point to be use as a near point at right
+     * @returns {GPoint} a left shoulder point
+     */
+    GXPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt) {
+        // define corner end
+        var hx = null;
+        var hy = null;
+        if (curPt.$hrx != null) {
+            hx = curPt.$hrx;
+            hy = curPt.$hry;
+        } else if (nextPt.$hlx != null) {
+            hx = nextPt.$hlx;
+            hy = nextPt.$hly;
+        }
+        var pt;
+        if (hx != null) {
+            pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
+        } else {
+            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
+        }
+        return pt;
+    };
+
+    /**
+     * Returns a left shoulder point for the passed point, using the second passed point as a near point at left
+     * @param {GXPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
+     * @param {GXPathBase.AnchorPoint} [prevPt] an anchor point to be use as a near point at left
+     * @returns {GPoint} a left shoulder point
+     */
+    GXPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt) {
+        // define corner end
+        var hx = null;
+        var hy = null;
+        if (curPt.$hlx != null) {
+            hx = curPt.$hlx;
+            hy = curPt.$hly;
+        } else if (prevPt.$hrx != null) {
+            hx = prevPt.$hrx;
+            hy = prevPt.$hry;
+        }
+        var pt;
+        if (hx != null) {
+            pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+        } else {
+            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, nextPt.$cr);
+        }
+        return pt;
     };
 
     /**
@@ -1016,21 +1060,7 @@
                 target.addVertex(GXVertex.Command.Curve2, h2x, h2y);
             }
 
-            // define corner end
-            hx = null;
-            hy = null;
-            if (curPt.$hrx != null) {
-                hx = curPt.$hrx;
-                hy = curPt.$hry;
-            } else if (nextPt.$hlx != null) {
-                hx = nextPt.$hlx;
-                hy = nextPt.$hly;
-            }
-            if (hx != null) {
-                pt2 = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
-            } else {
-                pt2 = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
-            }
+            pt2 = this._getRightShoulderPoint(curPt, nextPt);
 
             this._addCornerToVertices(
                 target, pt.getX(), pt.getY(), pt2.getX(), pt2.getY(), curPt.$x, curPt.$y, curPt.$tp);

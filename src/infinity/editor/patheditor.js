@@ -92,14 +92,16 @@
         this._createPathPreviewIfNecessary(partId.point);
 
         switch (partId.type) {
-            // TODO: fix setting of handles for connector points (projection to previous handle should be used)
             case GXPathEditor.PartType.LeftHandle:
                 this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, ratio);
                 break;
             case GXPathEditor.PartType.RightHandle:
                 this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, ratio);
                 break;
-            // TODO : Shoulder lengths
+            case GXPathEditor.PartType.LeftShoulder:
+            case GXPathEditor.PartType.RightShoulder:
+                this._movePreviewPointShoulders(partId, position, ratio);
+                break;
         }
 
         this.requestInvalidation();
@@ -415,7 +417,7 @@
                 var cl = anchorPoint.getProperty('cl');
                 if (cl) {
                     var pt = anchorPoint.getLeftShoulderPoint();
-                    if (pt.getX() !== null && pt.getY() !== null) {
+                    if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.leftShoulderPosition = pt;
                     }
                 }
@@ -423,7 +425,7 @@
                 var cr = anchorPoint.getProperty('cr');
                 if (cr) {
                     var pt = anchorPoint.getRightShoulderPoint();
-                    if (pt.getX() !== null && pt.getY() !== null) {
+                    if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.rightShoulderPosition = pt;
                     }
                 }
@@ -680,6 +682,53 @@
 
             // Assign properties now
             previewPoint.setProperties(propertiesToSet, valuesToSet);
+        }
+    };
+
+    /**
+     * Calculates and set the new values of shoulders making the projection of new mouse position to shoulder vector
+     * @param {{type: partType, point: args.anchorPoint}} partId
+     * @param {GPoint} position - destination position
+     * @param {Boolean} ratio - if true, modify both shoulders the same way
+     * @private
+     */
+    GXPathEditor.prototype._movePreviewPointShoulders = function (partId, position, ratio) {
+        var pathTransform = this._element.getProperty('transform');
+        var sourcePosition = new GPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
+
+        var shoulderPt;
+
+        if (pathTransform) {
+            if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+                shoulderPt = partId.point.getLeftShoulderPointTransformed(pathTransform);
+            } else { // right shoulder
+                shoulderPt = partId.point.getRightShoulderPointTransformed(pathTransform);
+            }
+            sourcePosition = pathTransform.mapPoint(sourcePosition);
+        } else {
+            if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+                shoulderPt = partId.point.getLeftShoulderPoint();
+            } else { // right shoulder
+                shoulderPt = partId.point.getRightShoulderPoint();
+            }
+        }
+
+        var newShoulderPt = gMath.getPositiveProjection(sourcePosition.getX(), sourcePosition.getY(),
+            shoulderPt.getX(), shoulderPt.getY(), position.getX(), position.getY());
+
+        var newVal = gMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
+            sourcePosition.getX(), sourcePosition.getY());
+
+        var previewPoint = this._getPathPointPreview(partId.point);
+        // TODO: discuss:
+        // We do not apply pathTransform to shoulders when generating vertices,
+        // assign new value directly to previewPoint without any further transforms
+        if (ratio) {
+            previewPoint.setProperties(['cl', 'cr'], [newVal, newVal]);
+        } else if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+            previewPoint.setProperty('cl', newVal);
+        } else { // right shoulder
+            previewPoint.setProperty('cr', newVal);
         }
     };
 
