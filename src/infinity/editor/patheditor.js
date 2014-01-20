@@ -412,20 +412,25 @@
                 type !== GXPathBase.AnchorPoint.Type.Smooth &&
                 type !== GXPathBase.AnchorPoint.Type.Connector) {
 
-                // TODO: fix here!!!
                 var cl = anchorPoint.getProperty('cl');
                 if (cl) {
-                    itArgs.leftShoulderPosition = itArgs.position.translated(-cl, -cl);
+                    var pt = anchorPoint.getLeftShoulderPoint();
+                    if (pt.getX() !== null && pt.getY() !== null) {
+                        itArgs.leftShoulderPosition = pt;
+                    }
                 }
 
                 var cr = anchorPoint.getProperty('cr');
                 if (cr) {
-                    itArgs.rightShoulderPosition = itArgs.position.translated(cr, cr);
+                    var pt = anchorPoint.getRightShoulderPoint();
+                    if (pt.getX() !== null && pt.getY() !== null) {
+                        itArgs.rightShoulderPosition = pt;
+                    }
                 }
             }
 
             if (transform) {
-                itArgs.position = transform.mapPoint(itArgs.position);
+                var newPosition = transform.mapPoint(itArgs.position);
 
                 if (itArgs.leftHandlePosition) {
                     itArgs.leftHandlePosition = transform.mapPoint(itArgs.leftHandlePosition);
@@ -435,14 +440,29 @@
                     itArgs.rightHandlePosition = transform.mapPoint(itArgs.rightHandlePosition);
                 }
 
+                // TODO: discuss
+                // We do not apply this transform to shoulders when generating vertices, so should not apply here
+                // directly, instead we should re-generate shoulders for modified anchor points,
+                // as when generating vertices.
+                // As the applied transform is an element's internal transform, which is the same for all points,
+                // let's use the following workaround here
                 if (itArgs.leftShoulderPosition) {
-                    itArgs.leftShoulderPosition = transform.mapPoint(itArgs.leftShoulderPosition);
+                    itArgs.leftShoulderPosition =
+                        //transform.mapPoint(itArgs.leftShoulderPosition); // incorrect!
+                        //itArgs.leftShoulderPosition.subtract(itArgs.position).add(newPosition); // also incorrect!
+                        anchorPoint.getLeftShoulderPointTransformed(transform);
                 }
 
                 if (itArgs.rightShoulderPosition) {
-                    itArgs.rightShoulderPosition = transform.mapPoint(itArgs.rightShoulderPosition);
+                    itArgs.rightShoulderPosition =
+                        //transform.mapPoint(itArgs.rightShoulderPosition);
+                        //itArgs.rightShoulderPosition.subtract(itArgs.position).add(newPosition);
+                        anchorPoint.getRightShoulderPointTransformed(transform);
                 }
+
+                itArgs.position = newPosition;
             }
+
             if (iterator(itArgs) === true) {
                 break;
             }

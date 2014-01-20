@@ -262,6 +262,70 @@
         return pt;
     };
 
+    /**
+     * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
+     * @returns {GPoint} a left shoulder point
+     */
+    GXPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function () {
+        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+            var prevPt = this._parent.getPreviousPoint(this);
+            return this._parent._getShoulderPoint(this.$x, this.$y, this.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
+        } else {
+            return null;
+        }
+    };
+
+    /**
+     * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
+     * Apply a passed transform to points before calculating shoulder point
+     * @returns {GPoint} a left shoulder point
+     */
+    GXPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform) {
+        var shoulderPt = null;
+
+        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+            var prevPt = this._parent.getPreviousPoint(this);
+            var curPtTr = this._getTransformedCopy(transform);
+            var prevPtTr = prevPt._getTransformedCopy(transform);
+            shoulderPt = this._parent._getShoulderPoint(
+                curPtTr.$x, curPtTr.$y, curPtTr.$cl, prevPtTr.$x, prevPtTr.$y, prevPtTr.$cr);
+        }
+
+        return shoulderPt;
+    };
+
+    /**
+     * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
+     * @returns {GPoint} a right shoulder point
+     */
+    GXPathBase.AnchorPoint.prototype.getRightShoulderPoint = function () {
+        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+            var nextPt = this._parent.getNextPoint(this);
+            return this._parent._getShoulderPoint(this.$x, this.$y, this.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
+        } else {
+            return null;
+        }
+    };
+
+    /**
+     * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
+     * Apply a passed transform to points before calculating shoulder point
+     * @returns {GPoint} a right shoulder point
+     */
+    GXPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform) {
+        var shoulderPt = null;
+
+        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+            var nextPt = this._parent.getNextPoint(this);
+            var curPtTr = this._getTransformedCopy(transform);
+            var nextPtTr = nextPt._getTransformedCopy(transform);
+            shoulderPt = this._parent._getShoulderPoint(
+                curPtTr.$x, curPtTr.$y, curPtTr.$cl, nextPtTr.$x, nextPtTr.$y, nextPtTr.$cr);
+        }
+
+        return shoulderPt;
+    };
+
     /** @override */
     GXPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
         var path = this._getPath();
@@ -863,11 +927,25 @@
     GXPathBase.AnchorPoints.prototype._getShoulderPoint = function (pt1x, pt1y, pt1s, pt2x, pt2y, pt2s) {
         var dist = gMath.ptDist(pt1x, pt1y, pt2x, pt2y);
         var sptdst;
-
-        if (dist >= pt1s + pt2s) {
-            sptdst = pt1s;
+        var p1s, p2s;
+        if (pt1s == null || pt1s <= 0) {
+            p1s = 0;
         } else {
-            sptdst = dist * pt1s / (pt1s + pt2s);
+            p1s = pt1s;
+        }
+        if (pt2s == null || pt2s <= 0) {
+            p2s = 0;
+        } else {
+            p2s = pt2s;
+        }
+        var len = p1s + p2s;
+        if (len <= 0) {
+            return null;
+        }
+        if (dist >= len) {
+            sptdst = p1s;
+        } else {
+            sptdst = dist * p1s / len;
         }
         return gMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
     };
