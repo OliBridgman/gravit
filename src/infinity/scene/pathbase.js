@@ -1291,7 +1291,7 @@
         // Special handling when changing closed status of path
         if (change === GXNode._Change.AfterPropertiesChange) {
             if (args.properties.indexOf('closed') >= 0) {
-                var points = this.getFirstChild();
+                var points = this._firstChild;
                 if (points) {
                     points._invalidateRight(points.getFirstChild());
                     points._invalidateLeft(points.getLastChild());
