@@ -19,7 +19,7 @@ ShellWindow::ShellWindow(QWidget *parent) :
 #ifdef QT_DEBUG
     this->m_view->load(QUrl(QLatin1String("http://127.0.0.1:8999")));
 #else
-    this->m_view->load(QUrl(QLatin1String("index.html")));
+    this->m_view->load(QUrl(QLatin1String("file:///Users/aadam/Documents/Customers/Gravit/git/gravit/build/index.html")));
 #endif
 }
 
