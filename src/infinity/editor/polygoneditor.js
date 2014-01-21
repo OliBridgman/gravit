@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * An editor for an ellipse
+     * An editor for a polygon
      * @param {GXPolygon} polygon the polygon this editor works on
      * @class GXPolygonEditor
      * @extends GXPathBaseEditor
@@ -55,7 +55,6 @@
 
         var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
 
-        // Note: Math.atan2(y, x) takes the first y-coordinate
         var angle = Math.atan2(position.getY() - center.getY(), position.getX() - center.getX()) - partData;
         var distance = gMath.ptDist(position.getX(), position.getY(), center.getX(), center.getY());
 

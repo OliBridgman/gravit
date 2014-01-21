@@ -1,22 +1,19 @@
 (function (_) {
     /**
-     * An editor for an ellipse
-     * @param {GXEllipse} ellipse the ellipse this editor works on
-     * @class GXEllipseEditor
+     * An editor for an rectangle
+     * @param {GXRectangle} rectangle the rectangle this editor works on
+     * @class GXRectangleEditor
      * @extends GXPathBaseEditor
      * @constructor
      */
-    function GXEllipseEditor(ellipse) {
-        GXPathBaseEditor.call(this, ellipse);
+    function GXRectangleEditor(rectangle) {
+        GXPathBaseEditor.call(this, rectangle);
     };
-    GObject.inherit(GXEllipseEditor, GXPathBaseEditor);
-    GXElementEditor.exports(GXEllipseEditor, GXEllipse);
-
-    GXEllipseEditor.prototype.START_ANGLE_PART_ID = gUtil.uuid();
-    GXEllipseEditor.prototype.END_ANGLE_PART_ID = gUtil.uuid();
+    GObject.inherit(GXRectangleEditor, GXPathBaseEditor);
+    GXElementEditor.exports(GXRectangleEditor, GXRectangle);
 
     /** @override */
-    GXEllipseEditor.prototype.getBBox = function (transform) {
+    GXRectangleEditor.prototype.getBBox = function (transform) {
         if (this._showSegmentDetails()) {
             // Return our bbox and expand it by the annotation's approx size
             var targetTransform = transform;
@@ -35,7 +32,7 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXRectangleEditor.prototype.movePart = function (partId, partData, position, ratio) {
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);
         } else {
@@ -43,50 +40,43 @@
         }
 
         if (!this._elementPreview) {
-            this._elementPreview = new GXEllipse();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXEllipse.GeometryProperties]);
+            this._elementPreview = new GXRectangle();
+            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXRectangle.GeometryProperties]);
         }
-
-        var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
-
-        var angle = Math.atan2(position.getY() - center.getY(), position.getX() - center.getX()) - partData;
-        
-        var moveStart = this._partSelection.indexOf(GXEllipseEditor.prototype.START_ANGLE_PART_ID) >= 0;
-        var moveEnd = this._partSelection.indexOf(GXEllipseEditor.prototype.END_ANGLE_PART_ID) >= 0;
 
         // TODO : Implement this
 
-        //this._elementPreview.setProperties(['sa', 'ea'], [?,?]);
         this.requestInvalidation();
     };
 
     /** @override */
-    GXEllipseEditor.prototype.resetPartMove = function (partId, partData) {
+    GXRectangleEditor.prototype.resetPartMove = function (partId, partData) {
         this._elementPreview = null;
         this.removeFlag(GXElementEditor.Flag.Outline);
     };
 
     /** @override */
-    GXEllipseEditor.prototype.applyPartMove = function (partId, partData) {
-        var propertyValues = this._elementPreview.getProperties(['sa', 'ea']);
+    GXRectangleEditor.prototype.applyPartMove = function (partId, partData) {
+        // TODO : Implement this properly
+        //var propertyValues = this._elementPreview.getProperties(['sa', 'ea']);
         this.resetPartMove(partId, partData);
-        this._element.setProperties(['sa', 'ea'], propertyValues);
+        //this._element.setProperties(['sa', 'ea'], propertyValues);
     };
 
     /** @override */
-    GXEllipseEditor.prototype._hasCenterCross = function () {
+    GXRectangleEditor.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** @override */
-    GXEllipseEditor.prototype._paintCustom = function (transform, context) {
+    GXRectangleEditor.prototype._paintCustom = function (transform, context) {
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
-            // TODO : Paint start-angle and end-angle annotations
+            // TODO : Paint corner annotations
             /*
             this._element.iterateSegments(function (point, inside, angle) {
                 var annotation = inside ? GXElementEditor.Annotation.Circle : GXElementEditor.Annotation.Diamond;
-                var partId = inside ? GXEllipseEditor.prototype.START_ANGLE_PART_ID : GXEllipseEditor.prototype.END_ANGLE_PART_ID;
+                var partId = inside ? GXRectangleEditor.prototype.START_ANGLE_PART_ID : GXRectangleEditor.prototype.END_ANGLE_PART_ID;
                 this._paintAnnotation(context, transform, point, annotation, this._partSelection && this._partSelection.indexOf(partId) >= 0, false);
             }.bind(this), true);
             */
@@ -94,17 +84,17 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXRectangleEditor.prototype._getPartInfoAt = function (location, transform) {
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             var result = null;
             var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
 
-            // TODO : Get start/end angle part info
+            // TODO : Get corners part info
             /*
             this._element.iterateSegments(function (point, inside, angle) {
                 if (this._getAnnotationBBox(transform, point).expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
-                    var partId = inside ? GXEllipseEditor.prototype.START_ANGLE_PART_ID : GXEllipseEditor.prototype.END_ANGLE_PART_ID;
+                    var partId = inside ? GXRectangleEditor.prototype.START_ANGLE_PART_ID : GXRectangleEditor.prototype.END_ANGLE_PART_ID;
                     result = new GXElementEditor.PartInfo(this, partId, angle, true, true);
                     return true;
                 }
@@ -123,14 +113,14 @@
      * @returns {Boolean}
      * @private
      */
-    GXEllipseEditor.prototype._showSegmentDetails = function () {
+    GXRectangleEditor.prototype._showSegmentDetails = function () {
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
     };
 
     /** @override */
-    GXEllipseEditor.prototype.toString = function () {
-        return "[Object GXEllipseEditor]";
+    GXRectangleEditor.prototype.toString = function () {
+        return "[Object GXRectangleEditor]";
     };
 
-    _.GXEllipseEditor = GXEllipseEditor;
+    _.GXRectangleEditor = GXRectangleEditor;
 })(this);
