@@ -4,7 +4,7 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
     
     var buildConfig = {
-        dist: 'dist'
+        dist: 'build'
     };
 
     var pkgInfo = grunt.file.readJSON('package.json');
