@@ -157,9 +157,13 @@
                 return false;
         }
 
+        if (vertex.command !== GXVertex.Command.Close && this.$transform) {
+            this.$transform.map(vertex);
+        }
+
         this._vertexIterator += 1;
 
-        return GXShape.prototype.readVertex.call(this, vertex);
+        return true;
     };
 
     /** @overide */

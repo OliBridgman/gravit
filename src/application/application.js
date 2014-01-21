@@ -463,7 +463,7 @@
      * and mark the view as being active
      * @param {GXScene|GBlob} source the source to be added, either a scene
      * or a blob to read the document from
-     * @param {String} temporaryTitle optional temporary title to be used
+     * @param {String} [temporaryTitle] optional temporary title to be used
      * for the document if no blob is assigned, defaults to null to use
      * the default naming scheme
      */
@@ -485,7 +485,7 @@
                 source.restore(function (data) {
                     var document = null;
                     try {
-                        scene = GNode.deserialize(data);
+                        var scene = GXNode.deserialize(data);
 
                         if (!scene) {
                             throw new Error('Failure.');
@@ -970,13 +970,13 @@
      * Add a new document
      * @param {GXScene} scene
      * @param {GBlob} blob
-     * @param {String} temporaryTitle
+     * @param {String} [temporaryTitle]
      * @private
      */
     EXApplication.prototype._addDocument = function (scene, blob, temporaryTitle) {
         // Initiate a new document instance
         // TODO : I18N
-        var document = new EXDocument(scene, blob, 'Untitled-' + (++this._documentUntitledCount).toString());
+        var document = new EXDocument(scene, blob, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
 
         // Send an event
         if (this.hasEventListeners(EXApplication.DocumentEvent)) {

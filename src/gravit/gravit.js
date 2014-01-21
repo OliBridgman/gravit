@@ -172,5 +172,5 @@
         return '[Module Gravit]';
     };
 
-    _.gExpress.modules.push(new GModule());
+    gExpress.modules.push(new GModule());
 })(this);
