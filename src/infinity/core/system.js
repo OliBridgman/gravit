@@ -16,7 +16,7 @@
 
         // -- Do some sniffing here to setup our system
         this.shell = (function () {
-            if (window.appshell && window.appshell.app && window.appshell.fs) {
+            if (window.gshell) {
                 return GSystem.Shell.Application;
             } else if (window.device && window.device.cordova) {
                 return GSystem.Shell.Cordova;

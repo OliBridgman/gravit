@@ -87,4 +87,8 @@ $(window).load(function () {
 
     // Finally remove our loading screen and get started
     $("#gravit-loader").remove();
+
+    if (gshell) {
+        gshell.openShell();
+    }
 });

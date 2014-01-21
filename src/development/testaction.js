@@ -22,7 +22,7 @@
      * @override
      */
     TestAction.prototype.getCategory = function () {
-        return 'Development/Test/' + this._test.category;
+        return gLocale.get(EXApplication.CATEGORY_FILE) + '/Development/Test/' + this._test.category;
     };
 
     /**

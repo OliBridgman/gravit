@@ -15,27 +15,6 @@
         this._actions = [];
         this._shortcuts = {};
         this._menu = new GUIMenu();
-
-        if (gSystem.shell === GSystem.Shell.Application) {
-            appshell.shellAPI = {};
-            appshell.shellAPI.executeCommand = function (command) {
-                if (command == 'help.about') {
-                    // TODO : About handling
-                    alert('ABOUT');
-                } else if (command === 'app.before_menupopup') {
-                    // TODO : This sucks, is there a way to figure out
-                    // *which* submenu was opened to only update those actions???
-                    for (var i = 0; i < this._actions.length; ++i) {
-                        var action = this._actions[i];
-                        appshell.app.setMenuItemState(action.getId(), action.isEnabled() ? true : false, action.isChecked() ? true : false, function () {
-                        });
-                    }
-                } else if (typeof command === 'string') {
-                    this.executeAction(command);
-                }
-            }.bind(this)
-        }
-
         this._toolManager = new GXToolManager();
         this._documents = [];
         this._shortcutMap = new GUIShortcutsDialog();
@@ -603,9 +582,7 @@
      */
     EXApplication.prototype.addWindowAction = function (action) {
         if (gSystem.shell === GSystem.Shell.Application) {
-            // TODO : Add support for AppShell
-
-            alert('TODO : Implement addWindowAction');
+            //gshell.addDocument(gLocale.get(action.getTitle()));
         } else {
             var windowItem = this._menu.findItem(gLocale.get(EXApplication.CATEGORY_WINDOW));
 
@@ -677,7 +654,7 @@
         if (this._shortcuts.hasOwnProperty(id)) {
             if (gSystem.shell == GSystem.Shell.Application) {
                 // TODO : Is this supposed to work in AppShell ?
-                appshell.app.setMenuItemShortcut(id.toString(), null, "");
+                //appshell.app.setMenuItemShortcut(id.toString(), null, "");
             } else if (gSystem.hardware === GSystem.Hardware.Desktop) {
                 var menuItem = this._getMenuItemForAction(id);
                 if (menuItem) {
@@ -695,7 +672,7 @@
             this._shortcuts[id] = shortcut;
 
             if (gSystem.shell == GSystem.Shell.Application) {
-                appshell.app.setMenuItemShortcut(id, this._shortcutToAppShellShortcut(shortcut), "");
+                //appshell.app.setMenuItemShortcut(id, this._shortcutToAppShellShortcut(shortcut), "");
             } else if (gSystem.hardware === GSystem.Hardware.Desktop) {
                 var menuItem = this._getMenuItemForAction(id);
                 if (menuItem) {
@@ -965,7 +942,6 @@
     };
 
 
-
     /**
      * Add a new document
      * @param {GXScene} scene
@@ -1013,36 +989,59 @@
 
         // Handle platform specific stuff now
         if (gSystem.shell === GSystem.Shell.Application) {
-            // Iterate our gui menu and register our bracket menu recursively
-            // TODO : Remove prefix when submenus are supported
-            var _menuDividerIDCount = 0;
-            var _registerBracketMenus = function (parentId, menu, prefix) {
+            var _updateShellMenu = function (menu, mappings) {
+                menu.update();
+                for (var i = 0; i < mappings.length; ++i) {
+                    var mapping = mappings[i];
+                    mapping.shellItem.text = gLocale.get(mapping.item.getCaption());
+                    if (mapping.item.isChecked()) {
+                        mapping.shellItem.checkable = true;
+                        mapping.shellItem.checked = true;
+                    } else {
+                        mapping.shellItem.checked = false;
+                    }
+                    mapping.shellItem.enabled = mapping.item.isEnabled();
+                }
+            };
+
+            var _addShellMenuItem = function (shellMenu, menuItem) {
+                var shellItem = gshell.addMenuItem(shellMenu);
+                shellItem.triggered.connect(function () {
+                    this.executeAction(menuItem.getAction().getId());
+                }.bind(this));
+                return shellItem;
+            }.bind(this);
+
+            var _addShellMenu = function (shellParentMenu, menuItem) {
+                var menu = menuItem.getMenu();
+                var shellMappings = [];
+                var shellMenu = gshell.addMenu(shellParentMenu, gLocale.get(menuItem.getCaption()));
+                shellMenu.aboutToShow.connect(function () {
+                    _updateShellMenu(menu, shellMappings);
+                });
+
                 for (var i = 0; i < menu.getItemCount(); ++i) {
                     var item = menu.getItem(i);
                     switch (item.getType()) {
                         case GUIMenuItem.Type.Menu:
-                            // TODO : Get this fixed as soon as sub-menus are supported in App-Shell!!!
-                            if (parentId === '') {
-                                appshell.app.addMenu(gLocale.get(item.getCaption()), 'menu' + i.toString(), '', '', function () {
-                                });
-                                _registerBracketMenus('menu' + i.toString(), item.getMenu(), prefix);
-                            } else {
-                                _registerBracketMenus(parentId, item.getMenu(), prefix + gLocale.get(item.getCaption()) + '/');
-                            }
+                            _addShellMenu(shellMenu, item);
                             break;
                         case GUIMenuItem.Type.Item:
-                            appshell.app.addMenuItem(parentId, prefix + gLocale.get(item.getCaption()), item.getAction().getId(), '', '', '', '', function () {
+                            shellMappings.push({
+                                item: item,
+                                shellItem: _addShellMenuItem(shellMenu, item)
                             });
                             break;
                         case GUIMenuItem.Type.Divider:
-                            // TODO : Fix when submenus are supported
-                            appshell.app.addMenuItem(parentId, '---', "appshell-menuDivider-" + _menuDividerIDCount++, '', '', '', '', function () {
-                            });
+                            gshell.addMenuSeparator(shellMenu);
                             break;
                     }
                 }
-            }.bind(this);
-            _registerBracketMenus('', this._menu, '');
+            };
+
+            for (var i = 0; i < this._menu.getItemCount(); ++i) {
+                _addShellMenu(null, this._menu.getItem(i));
+            }
         }
 
         // Finally register the shortcuts
