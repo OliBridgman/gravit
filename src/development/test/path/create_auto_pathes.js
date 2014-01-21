@@ -47,13 +47,13 @@
                 var transform = new GTransform(0.3, 1.0, 0.0, 1.5, -boxWidth / 2, -boxHeight);
                 transform = transform.rotated(gMath.toRadians(rotate));
                 transform = transform.translated(
-                    page.getProperty(GXPage.PROPERTY_MARGIN_LEFT) + x + boxWidth / 2,
-                    page.getProperty(GXPage.PROPERTY_MARGIN_TOP) + y + boxHeight);
+                    page.getProperty('ml') + x + boxWidth / 2,
+                    page.getProperty('mt') + y + boxHeight);
                 path.transform(transform);
 
                 layer.appendChild(path);
 
-                x += boxWidth + 5;
+                x += boxWidth + 20;
             }
         }
     }

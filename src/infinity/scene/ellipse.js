@@ -114,10 +114,27 @@
             this._firstChild.appendChild(anchorPoint, false);
         }
 
+        var extraPoint = null;
+        if (this._firstChild.getFirstChild().getNext() == this._firstChild.getLastChild()) {
+            // We have only two anchor points, so add one for proper auto-handles, making rounded shape,
+            // and then switch of auto-handles and remove that extra point
+            anchorPoint = new GXPathBase.AnchorPoint();
+            if (gMath.isEqualEps(an, ea)) {
+                an += Math.PI / 2;
+            }
+            anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), 'S', true]);
+            this._firstChild.appendChild(anchorPoint, false);
+            extraPoint = anchorPoint;
+        }
+
         this.setProperty('closed', true);
 
         for (var ap = this._firstChild.getFirstChild(); ap != null; ap = ap.getNext()) {
             ap.setProperty('ah', false);
+        }
+
+        if (extraPoint) {
+            this._firstChild.removeChild(extraPoint);
         }
 
         if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
