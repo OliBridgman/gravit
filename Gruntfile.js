@@ -2,7 +2,7 @@
 
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
-    
+
     var buildConfig = {
         dist: 'build'
     };
@@ -183,6 +183,20 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        htmlmin: {
+            dist: {
+                options: {
+                },
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'src',
+                        src: '*.html',
+                        dest: '<%= build.dist %>'
+                    }
+                ]
+            }
+        },
         // Copy files without replacements
         copy: {
             dist: {
@@ -235,7 +249,8 @@ module.exports = function (grunt) {
                 'copy:styles',
                 'copy:fonts',
                 'imagemin',
-                'svgmin'
+                'svgmin',
+                'htmlmin'
             ]
         }
     });
