@@ -43,10 +43,10 @@ gLocale.setValues(GXTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels 
 gLocale.setValues(GXShapeTool, GLocale.Language.English, ["shortcut.shift", "shortcut.option"], ["Equal sizing of each side", "Draw from the center side"]);
 gLocale.setValues(GXEllipseTool, GLocale.Language.English, ["title"], ["Ellipse"]);
 gLocale.setValues(GXLineTool, GLocale.Language.English, ["title"], ["Line"]);
-//gLocale.setValues(GXPathTool, GLocale.Language.English, ["shortcut.tab"], ["Finish editing and deselect path"]);
+gLocale.setValues(GXPathTool, GLocale.Language.English, ["shortcut.tab"], ["Finish editing and deselect path"]);
 gLocale.setValues(GXHandTool, GLocale.Language.English, ["title"], ["Hand"]);
-//gLocale.setValues(GXPenTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Pen", "%TODO%", "%TODO%"]);
-//gLocale.setValues(GXBezigonTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
+gLocale.setValues(GXPenTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Pen", "%TODO%", "%TODO%"]);
+gLocale.setValues(GXBezigonTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
 gLocale.setValues(GXPolygonTool, GLocale.Language.English, ["title", "shortcut.shift", "shortcut.option"], ["Polygon", "Lock angle to 15° degree steps", "Switch between Polygon and Star"]);
 gLocale.setValues(GXRectangleTool, GLocale.Language.English, ["title"], ["Rectangle"]);
 gLocale.setValues(GXZoomTool, GLocale.Language.English, ["title"], ["Zoom"]);
