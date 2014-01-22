@@ -505,7 +505,7 @@
     };
 
     /**
-     * Returns a reference to the selected path, if it is the only one selected and not closed,
+     * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
      * @return {GXPath} the selected path
      */
@@ -521,6 +521,11 @@
                         break;
                     } else {
                         pathRef = this._selection[i];
+                    }
+                } else {
+                    if (pathRef) {
+                        pathRef = null;
+                        break;
                     }
                 }
             }

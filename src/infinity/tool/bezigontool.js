@@ -74,39 +74,23 @@
             }
 
             this._updateCursor();
-            if (this._mode == GXPathTool.Mode.Append) {
-                anchorPt = this._constructNewPoint(event, clickPt);
-                this._newPoint = anchorPt;
-                anchorPt.setFlag(GXNode.Flag.Selected);
-                if (this._gpathRef) {
-                    this._gpathRef.resetSelectedPts();
-                    this._dpathRef.appendAnchorPoint(anchorPt);
-                    this._updatedVertices();
-                }
+            if (this._mode != GXPathTool.Mode.Edit) {
+                anchorPt = this._constructNewPoint(this._dpathRef, event, clickPt);
+                this._addPoint(anchorPt, true);
             }
         }
     };
 
     GXBezigonTool.prototype._mouseDblClick = function (event) {
-        var anchorPt;
-
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-
-        if (this._mode == GXPathTool.Mode.Append) {
-            anchorPt = this._constructNewPoint(event);
-            if (this._gpathRef) {
-                this._dpathRef.appendAnchorPoint(anchorPt);
-                this._closeIfNeeded();
-                this._updatedVertices();
-            } else {
-                this._createAndAppendPath(anchorPt);
-            }
-            this._gpathRef.commitDraft();
-            this._gpathRef.resetSelectedPts();
-            this._gpathRef.removeFlag(GXNode.Flag.Selected);
+        // do not check mode here, as it has been just checked on _mouseDown
+        if (this._mode != GXPathTool.Mode.Edit) {
+            this._pathEditor.updatePartSelection(false);
+            this._commitChanges();
         }
+        return;
 
-        this._reset();
+//        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+//        this._reset();
     };
 
     /**
@@ -122,11 +106,11 @@
             }
             return;
         }
-
+/*
         curPt = this._view.getViewTransform().mapPoint(event.client);
         this._checkMode();
         this._makeHitTest(curPt);
-        this._updateCursor();
+        this._updateCursor();    */
     };
 
     /**
@@ -134,11 +118,14 @@
      * @private
      */
     GXBezigonTool.prototype._mouseDrag = function (event) {
-        var pt = this._view.getViewTransform().mapPoint(event.client);
-        this._dragStarted = true;
-        this._updatePoint(pt);
-        this._updatedVertices();
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+        if (this._editPt) {
+            var pt = this._view.getViewTransform().mapPoint(event.client);
+            this._dragStarted = true;
+            this._pathEditor.requestInvalidation();
+            this._updatePoint(pt);
+            this._pathEditor.requestInvalidation();
+        }
+        //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
     GXBezigonTool.prototype._updatePoint = function (pt) {
@@ -148,21 +135,20 @@
         var hval;
 
         if (this._dpathRef) {
-            if (this._mode == GXPathTool.Mode.Append && this._newPoint) {
-                anchorPt = this._dpathRef.getLastChild();
-                otherPt = anchorPt.getPrevious();
-            } else if (this._mode == GXPathTool.Mode.Edit && this._editPt) {
+            //if (this._mode == GXPathTool.Mode.Append && this._newPoint) {
+             //   anchorPt = this._dpathRef.getLastChild();
+            //    otherPt = anchorPt.getPrevious();
+            //} else if (this._mode == GXPathTool.Mode.Edit && this._editPt) {
                 anchorPt = this._editPt;
-            }
+            //}
 
-            this._gpathRef.beginUpdate();
-            if (gPlatform.modifiers.shiftKey && otherPt) {
-                this._convertToConstrain(anchorPt, otherPt, pt.getX(), pt.getY());
-            } else if (anchorPt) {
-                if (anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES) ||
-                    anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_CTYPE) == GXPath.AnchorPoint.CType.Connector) {
-                    anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_X, pt.getX());
-                    anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_Y, pt.getY());
+            this._dpathRef.beginUpdate();
+            //if (gPlatform.modifiers.shiftKey && otherPt) {
+            //    this._convertToConstrain(anchorPt, otherPt, pt.getX(), pt.getY());
+            //} else if (anchorPt) {
+                if (anchorPt.getProperty('ah') ||
+                    anchorPt.getProperty('tp') == 'C') {
+                    anchorPt.setProperties(['x', 'y'], [pt.getX(), pt.getY()]);
                 } else {
                     dx = pt.getX() - anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_X);
                     dy = pt.getY() - anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_Y);
@@ -186,12 +172,12 @@
                         anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, hval + dy);
                     }
                 }
-            }
-            this._gpathRef.endUpdate();
+            //}
+            this._dpathRef.endUpdate();
         }
     };
 
-    GXBezigonTool.prototype._constructNewPoint = function (event, pt) {
+    GXBezigonTool.prototype._constructNewPoint = function (path, event, pt) {
         var anchorPt = null;
         var clickPt;
         var otherPt = null;
@@ -201,88 +187,95 @@
         } else {
             clickPt = this._view.getViewTransform().mapPoint(event.client);
         }
-        anchorPt = new GXPath.AnchorPoint(clickPt);
+        anchorPt = new GXPath.AnchorPoint();
+        anchorPt.setProperties(['x', 'y'], [clickPt.getX(), clickPt.getY()]);
 
-        if (gPlatform.modifiers.shiftKey && this._gpathRef) {
+        if (gPlatform.modifiers.shiftKey && path) {
             if (this._mode == GXPathTool.Mode.Append) {
-                otherPt = this._dpathRef.getLastChild();
+                otherPt = path.getLastChild();
+            } else if (this._mode == GXPathTool.Mode.Prepend) {
+                otherPt = path.getFirstChild();
             }
             if (otherPt) {
                 this._convertToConstrain(anchorPt, otherPt, clickPt.getX(), clickPt.getY());
             }
         }
 
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
+        anchorPt.setProperty('ah', true);
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT) {
             if (gPlatform.modifiers.optionKey) {
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Smooth);
+                anchorPt.setProperty('tp', 'S');
             } else {
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Regular);
+                anchorPt.setProperty('tp', 'N');
             }
         } else { // BUTTON_RIGHT && this._AltDown
-            anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Connector);
+            anchorPt.setProperty('tp', 'C');
         }
 
         return anchorPt;
     };
 
     GXBezigonTool.prototype._closeIfNeeded = function () {
-        var vpt;
-        var anchorPt;
-        var otherPt;
-        var px, py;
+        if (this._pathRef && this._newPoint &&
+            (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend)) {
 
-        if (this._gpathRef && this._mode == GXPathTool.Mode.Append) {
-            vpt = new GXVertex();
-            anchorPt = this._dpathRef.getLastChild();
-            otherPt = this._dpathRef.getFirstChild();
-            otherPt.vertexCoord(vpt);
-            px = anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_X);
-            py = anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_Y);
+            var anchorPt;
+            var otherPt;
+            if (this._mode == GXPathTool.Mode.Append) {
+                anchorPt = this._dpathRef.getAnchorPoints().getLastChild();
+                otherPt = this._pathRef.getAnchorPoints().getFirstChild();
+            } else { // this._mode == GXPathTool.Mode.Prepend
+                anchorPt = this._dpathRef.getAnchorPoints().getFirstChild();
+                otherPt = this._pathRef.getAnchorPoints().getLastChild();
+            }
+            var vpt = new GXVertex();
+            vpt.x = otherPt.getProperty('x');
+            vpt.y = otherPt.getProperty('y');
+            var px = anchorPt.getProperty('x');
+            var py = anchorPt.getProperty('y');
             if (gMath.isEqualEps(px - vpt.x, 0, this._hitRaduis) &&
                 gMath.isEqualEps(py - vpt.y, 0, this._hitRaduis)) {
 
-                this._gpathRef.beginUpdate();
+                this._pathRef.beginUpdate();
+                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: otherPt}]);
                 if (gPlatform.modifiers.optionKey) {
-                    otherPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, false);
-                    otherPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Regular);
+                    otherPt.setProperties(['ah', 'tp'], [false, 'N']);
                 }
-                if (!otherPt.getProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES)) {
-                    otherPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X,
-                        anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X));
-                    otherPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y,
-                        anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y));
+                if (!otherPt.getProperty('ah')) {
+                    otherPt.setProperties(['hlx', 'hly'], [anchorPt.getProperty('hlx') ,anchorPt.getProperty('hly')]);
                 }
-                this._dpathRef.removeAnchorPoint(anchorPt);
-                this._gpathRef.setProperty(GXPath.PROPERTY_CLOSED, true);
-                this._gpathRef.endUpdate();
+                this._dpathRef.getAnchorPoints().removeChild(anchorPt);
+                this._pathRef.setProperty('closed', true);
+                this._pathRef.endUpdate();
+                this._pathEditor.requestInvalidation();
             }
         }
     };
 
     /** @override */
     GXBezigonTool.prototype._mouseRelease = function (event) {
-        var anchorPt;
-        var clickPt;
-        var otherPt;
-
         this._released = true;
-
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-        if (this._newPoint && this._mode == GXPathTool.Mode.Append) {
-            if (!this._gpathRef) {
-                anchorPt = this._constructNewPoint(event);
-                this._createAndAppendPath(anchorPt);
-            } else {
-                clickPt = this._view.getViewTransform().mapPoint(event.client);
-                this._updatePoint(clickPt);
+        this._dragStarted = false;
+        //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+        if (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend) {
+            var clickPt = this._view.getViewTransform().mapPoint(event.client);
+            this._updatePoint(clickPt);
+            if (this._newPoint) {
                 this._closeIfNeeded();
-                this._updatedVertices();
-                this._gpathRef.commitDraft();
-                // hit test result becomes invalid if any;
-                this._lastHitTest = new GXPathTool.LastHitTest();
+                if (!this._pathRef.getProperty('closed')) {
+                    this._addPoint(this._editPt, false);
+                }
+            } else if (this._editPt) {
+                this._pathEditor.applyTransform(this._pathRef);
             }
+            this._commitChanges();
+            //
+            //this._updatedVertices();
+
+            // hit test result becomes invalid if any;
+            //this._lastHitTest = new GXPathTool.LastHitTest();
+
             if (this._gpathRef && this._gpathRef.getProperty(GXPath.PROPERTY_CLOSED)) {
                 this._gpathRef.resetSelectedPts();
                 this._gpathRef.removeFlag(GXNode.Flag.Selected);
@@ -303,7 +296,6 @@
 
         this._newPoint = null;
         this._editPt = null;
-        this._dragStarted = false;
     };
 
     /** override */

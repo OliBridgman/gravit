@@ -109,7 +109,7 @@
 
     /** @override */
     GXPathEditor.prototype.resetPartMove = function (partId, partData) {
-        this._releasePathPreview();
+        this.releasePathPreview();
         this.requestInvalidation();
     };
 
@@ -168,7 +168,7 @@
 
     /** @override */
     GXPathEditor.prototype.resetTransform = function () {
-        this._releasePathPreview();
+        this.releasePathPreview();
 
         // Need to invalidate if not having the outline flag
         // which will be removed in the super call and make
@@ -472,6 +472,62 @@
     };
 
     /**
+     * Returns path preview
+     * @param {GXPathBase.AnchorPoint} selectedAnchorPoint - the point for which preview is needed; may be null
+     * @returns {GXPath}
+     */
+    GXPathEditor.prototype.getPathPreview = function (selectedAnchorPoint) {
+        this.requestInvalidation();
+        this._createPathPreviewIfNecessary(selectedAnchorPoint);
+        this.requestInvalidation();
+        return this._elementPreview;
+    };
+
+    /**
+     * Returns path reference
+     * @returns {GXPath}
+     */
+    GXPathEditor.prototype.getPath = function () {
+        return this._element;
+    };
+
+    /**
+     * Indicates how many points and which are selected
+     * @enum
+     */
+    GXPathEditor.PointsSelectionType = {
+        No : 'N',
+        First : 'F',
+        Last : 'L',
+        Middle : 'M',
+        Several: 'S'
+    };
+
+    /**
+     * Checks how many points and which are selected
+     * @returns {GXPathEditor.PointsSelectionType}
+     */
+    GXPathEditor.prototype.getPointsSelectionType = function () {
+        var selType = GXPathEditor.PointsSelectionType.No;
+        if (this._partSelection) {
+            if (this._partSelection.length > 1) {
+                selType = GXPathEditor.PointsSelectionType.Several;
+            } else if (this._partSelection[0].point.hasFlag(GXNode.Flag.Selected)) {
+                var pt = this._partSelection[0].point;
+                if (pt === this._element.getAnchorPoints().getLastChild()) {
+                    selType = GXPathEditor.PointsSelectionType.Last;
+                } else if (pt === this._element.getAnchorPoints().getFirstChild()) {
+                    selType = GXPathEditor.PointsSelectionType.First;
+                } else {
+                    selType = GXPathEditor.PointsSelectionType.Middle;
+                }
+            }
+        }
+
+        return selType;
+    };
+
+    /**
      * Create path preview if not yet existent.
      * @param {GXPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
      * will be taken as the only selected one, if this is not provided, the selected
@@ -611,7 +667,7 @@
      * Release a path preview if there was any
      * @private
      */
-    GXPathEditor.prototype._releasePathPreview = function () {
+    GXPathEditor.prototype.releasePathPreview = function () {
         this._elementPreview = null;
         this._sourceIndexToPreviewIndex = null;
     };

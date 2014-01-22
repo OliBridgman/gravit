@@ -111,6 +111,8 @@
      */
     GXPathTool.prototype._editPt = null;
 
+    GXPathTool.prototype._pathEditor = null;
+
     /**
      * Indicates if the mouse released (all buttons)
      * @type {boolean}
@@ -127,7 +129,8 @@
 
     GXPathTool.Mode = {
         Append: 0,
-        Edit: 1
+        Prepend: 1,
+        Edit: 2
     };
 
     GXPathTool.prototype._mode = GXPathTool.Mode.Append;
@@ -155,6 +158,7 @@
 
     /** @override */
     GXPathTool.prototype.deactivate = function (view, layer) {
+        this._reset();
         GXTool.prototype.deactivate.call(this, view, layer);
 
         layer.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
@@ -204,49 +208,97 @@
         }
     };
 
-    GXPathTool.prototype._checkMode = function () {
-        var selectedPts = [];
+    GXPathTool.prototype._checkPathEditor = function () {
+        var path = this._editor.getPathSelection();
+        if (path) {
+            this._pathEditor = GXElementEditor.openEditor(path);
+        }
+    };
 
-        this._gpathRef = this._editor.getPathSelection();
-        if (this._gpathRef) {
-            this._pathRef = this._gpathRef.getPathRef();
-            this._dpathRef = this._gpathRef.getDraftRef();
-        } else {
+    GXPathTool.prototype._checkMode = function () {
+        this._checkPathEditor();
+        if (!this._pathEditor) {
             this._pathRef = null;
             this._dpathRef = null;
-        }
-
-        if (!this._gpathRef) {
             this._mode = GXPathTool.Mode.Append;
-        } else if (this._gpathRef.getProperty(GXPath.PROPERTY_CLOSED)) {
-            this._mode = GXPathTool.Mode.Edit;
         } else {
-            this._dpathRef.getSelectedPts(selectedPts);
-            if (selectedPts.length > 1) {
-                this._pathRef = null;
-                this._gpathRef = null;
-                this._dpathRef = null;
-                this._mode = GXPathTool.Mode.Append;
-            } else if (selectedPts.length == 0) {
+            this._pathRef = this._pathEditor.getPath();
+            this._dpathRef = this._pathEditor.getPathPreview();
+            if (this._pathRef.getProperty('closed')) {
                 this._mode = GXPathTool.Mode.Edit;
-            } else if (selectedPts[0] == this._pathRef.getLastChild()) {
-                this._mode = GXPathTool.Mode.Append;
-            } else if (selectedPts[0] == this._pathRef.getFirstChild()) {
-                this._gpathRef.switchOrient();
-                this._mode = GXPathTool.Mode.Append;
-                // hit test result becomes invalid if any;
-                this._lastHitTest = new GXPathTool.LastHitTest();
             } else {
-                this._mode = GXPathTool.Mode.Edit;
+                var selType = this._pathEditor.getPointsSelectionType();
+                if (selType == GXPathEditor.PointsSelectionType.No || selType == GXPathEditor.PointsSelectionType.Several) {
+                    this._pathEditor = null;
+                    this._pathRef = null;
+                    this._dpathRef = null;
+                    this._mode = GXPathTool.Mode.Append;
+                } else if (selType == GXPathEditor.PointsSelectionType.Middle) {
+                    this._mode = GXPathTool.Mode.Edit;
+                } else if (selType == GXPathEditor.PointsSelectionType.Last) {
+                    this._mode = GXPathTool.Mode.Append;
+                } else if (selType == GXPathEditor.PointsSelectionType.First) {
+                    this._mode = GXPathTool.Mode.Prepend;
+                    // hit test result becomes invalid if any;
+                    //this._lastHitTest = new GXPathTool.LastHitTest();
+                }
             }
         }
+    };
 
-        this._pixelTransformer = this._pathRef ? new GXVertexPixelAligner(
-            new GXVertexTransformer(this._pathRef, this._view.getViewTransform().clone().invert())) : null;
-        this._dpixelTransformer = this._dpathRef ? new GXVertexPixelAligner(
-            new GXVertexTransformer(this._dpathRef, this._view.getViewTransform().clone().invert())) : null;
-        if (this._dpixelTransformer) {
-            this._paintArea = gVertexInfo.calculateBounds(this._dpixelTransformer, true);
+    GXPathTool.prototype._addPoint = function (anchorPt, draft) {
+        anchorPt.setFlag(GXNode.Flag.Selected);
+        if (draft) {
+            if (!this._pathEditor) {
+                this._createAndAppendPath(anchorPt);
+                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._checkMode();
+                this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
+                this._pathEditor.requestInvalidation();
+            } else {
+                this._pathEditor.requestInvalidation();
+                if (this._mode == GXPathTool.Mode.Append) {
+                    this._dpathRef.getAnchorPoints().getLastChild().removeFlag(GXNode.Flag.Selected);
+                    this._dpathRef.getAnchorPoints().appendChild(anchorPt);
+                    this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
+                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                    this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
+                    this._dpathRef.getAnchorPoints().insertChild(anchorPt, this._dpathRef.getAnchorPoints().getFirstChild());
+                    this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
+                }
+                this._pathEditor.requestInvalidation();
+                this._newPoint = true;
+            }
+        } else {
+            if (!this._pathEditor) {
+                this._createAndAppendPath(anchorPt);
+                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._checkMode();
+                this._pathEditor.requestInvalidation();
+            } else {
+                this._pathEditor.requestInvalidation();
+                if (this._mode == GXPathTool.Mode.Append) {
+                    this._pathRef.getAnchorPoints().appendChild(anchorPt);
+                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                    this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
+                }
+                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._pathEditor.requestInvalidation();
+            }
+        }
+    };
+
+    GXPathTool.prototype._commitChanges = function () {
+        this._pathRef = null;
+        this._dpathRef = null;
+        this._pathEditor.requestInvalidation();
+        this._pathEditor.releasePathPreview();
+        this._pathEditor.requestInvalidation();
+        this._newPoint = false;
+        this._editPt = null;
+        var selType = this._pathEditor.getPointsSelectionType();
+        if (selType == GXPathEditor.PointsSelectionType.No || selType == GXPathEditor.PointsSelectionType.Several) {
+            this._pathEditor = null;
         }
     };
 
@@ -310,39 +362,18 @@
      * @private
      */
     GXPathTool.prototype._createAndAppendPath = function (apt) {
-        var path;
-
-        if (this._newPoint && !this._gpathRef) {
-            // Create the appropriate path now
-            path = new GXPath();
-            path.appendAnchorPoint(apt);
-            this._editor.insertElement(path);
-            // Select the shape after it's creation
-            apt.setFlag(GXNode.Flag.Selected);
-            path.setFlag(GXNode.Flag.Selected);
-            this._pathRef = path.getPathRef();
-            this._dpathRef = path.getDraftRef();
-            this._gpathRef = path;
-            this._pixelTransformer = new GXVertexPixelAligner(
-                new GXVertexTransformer(this._pathRef, this._view.getViewTransform().clone().invert()));
-            this._dpixelTransformer = new GXVertexPixelAligner(
-                new GXVertexTransformer(this._dpathRef, this._view.getViewTransform().clone().invert()));
-            this._updatedVertices();
-        }
-        this._newPoint = null;
+        var path = new GXPath();
+        path.getAnchorPoints().appendChild(apt);
+        apt.setFlag(GXNode.Flag.Selected);
+        path.setFlag(GXNode.Flag.Selected);
+        this._editor.insertElement(path);
+        this._pathEditor = GXElementEditor.openEditor(path);
     };
 
     GXPathTool.prototype._convertToConstrain = function (anchorPt, prevPt, origX, origY) {
-        var newPt;
-        var lastY, lastX;
-
-        lastX = prevPt.getProperty(GXPath.AnchorPoint.PROPERTY_X);
-        lastY = prevPt.getProperty(GXPath.AnchorPoint.PROPERTY_Y);
-        newPt = gMath.convertToConstrain(lastX, lastY, origX, origY);
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_X, newPt.getX());
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_Y, newPt.getY());
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Regular);
+        var newPt = gMath.convertToConstrain(prevPt.getProperty('x'), prevPt.getProperty('y'), origX, origY);
+        anchorPt.setProperties(['x', 'y'], [newPt.getX(), newPt.getY()]);
+//        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
     };
 
     /**
@@ -371,15 +402,12 @@
      * @private
      */
     GXPathTool.prototype._reset = function () {
-        this._gpathRef = null;
-        this._pathRef = null;
         this._dpathRef = null;
-        this._pixelTransformer = null;
-        this._dpixelTransformer = null;
-        this._paintArea = null;
-        this._newPoint = null;
+        this._pathRef = null;
+        this._pathEditor = null;
+        this._newPoint = false;
         this._mode = GXPathTool.Mode.Append;
-        this._lastHitTest = new GXPathTool.LastHitTest();
+        this._editPt = null;
     };
 
     /**
@@ -488,6 +516,7 @@
     };
 
     GXPathTool.prototype._mouseDownOnEdit = function (clickPt) {
+        return;
         var aPrev = null;
         var aNext = null;
 

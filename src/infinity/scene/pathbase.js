@@ -581,7 +581,7 @@
             } else { // type != Smooth && type != Connector as this method should not be called for connector
                 if (prevPt && (prevPt.$x != this.$x || prevPt.$y != this.$y)) {
                     if (prevPt.$tp == GXPathBase.AnchorPoint.Type.Smooth) {
-                        var prevprevPt = this.getPreviousPoint(prevPt);
+                        var prevprevPt = points.getPreviousPoint(prevPt);
                         if (!prevprevPt || (prevPt.$x == prevprevPt.$x && prevPt.$y == prevprevPt.$y)) {
                             hx = this.$x + (prevPt.$x - this.$x) * offs;
                             hy = this.$y + (prevPt.$y - this.$y) * offs;
@@ -622,7 +622,7 @@
 
                 if (nextPt && (nextPt.$x != this.$x || nextPt.$y != this.$y)) {
                     if (nextPt.$tp == GXPathBase.AnchorPoint.Type.Smooth) {
-                        var nextnextPt = this.getNextPoint(nextPt);
+                        var nextnextPt = points.getNextPoint(nextPt);
                         if (!nextnextPt || (nextPt.$x == nextnextPt.$x && nextPt.$y == nextnextPt.$y)) {
                             hx = this.$x + (nextPt.$x - this.$x) * offs;
                             hy = this.$y + (nextPt.$y - this.$y) * offs;
