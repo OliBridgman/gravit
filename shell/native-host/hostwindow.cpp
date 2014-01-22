@@ -1,14 +1,9 @@
-#include "shellwindow.h"
+#include "hostwindow.h"
 
-#include <QtGui>
-#include <QtWebKit>
-#include <QWebView>
-#include <QWebFrame>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QMenuBar>
+#include <QtWidgets>
+#include <QtWebKitWidgets>
 
-ShellWindow::ShellWindow(QWidget *parent) :
+HostWindow::HostWindow(QWidget *parent) :
     QMainWindow(parent),
     m_settings(new QSettings(this)),
     m_view(new QWebView(this)) {
@@ -17,13 +12,14 @@ ShellWindow::ShellWindow(QWidget *parent) :
             SIGNAL(javaScriptWindowObjectCleared()), SLOT(addToJavaScript()));
 
 #ifdef QT_DEBUG
-    this->m_view->load(QUrl(QLatin1String("http://127.0.0.1:8999")));
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Index File", "", "Index File (*.html)");
+    this->m_view->load(QUrl::fromLocalFile(fileName));
 #else
     this->m_view->load(QUrl(QLatin1String("file:///Users/aadam/Documents/Customers/Gravit/git/gravit/build/index.html")));
 #endif
 }
 
-void ShellWindow::openShell() {
+void HostWindow::openShell() {
     QString state = this->m_settings->value("app.state").toString();
     if (state.isEmpty()) {
         // First run ever
@@ -47,7 +43,7 @@ void ShellWindow::openShell() {
     }
 }
 
-QObject* ShellWindow::addMenu(QObject* parent, const QString& title) {
+QObject* HostWindow::addMenu(QObject* parent, const QString& title) {
     QMenu* menu = qobject_cast<QMenu*>(parent);
     if (menu) {
         return menu->addMenu(title);
@@ -56,7 +52,7 @@ QObject* ShellWindow::addMenu(QObject* parent, const QString& title) {
     }
 }
 
-QObject* ShellWindow::addMenuItem(QObject* parent) {
+QObject* HostWindow::addMenuItem(QObject* parent) {
     QMenu* menu = qobject_cast<QMenu*>(parent);
     if (menu) {
         return menu->addAction(QString(""));
@@ -64,20 +60,20 @@ QObject* ShellWindow::addMenuItem(QObject* parent) {
     return NULL;
 }
 
-void ShellWindow::addMenuSeparator(QObject* parent) {
+void HostWindow::addMenuSeparator(QObject* parent) {
     QMenu* menu = qobject_cast<QMenu*>(parent);
     if (menu) {
         menu->addSeparator();
     }
 }
 
-void ShellWindow::resizeEvent(QResizeEvent* event) {
+void HostWindow::resizeEvent(QResizeEvent* event) {
     this->m_view->move(0, 0);
     this->m_view->resize(this->size());
     event->accept();
 }
 
-void ShellWindow::closeEvent(QCloseEvent *event) {
+void HostWindow::closeEvent(QCloseEvent *event) {
     // TODO : Ask app for closing and if denied, ignore event and stop here
     event->accept();
 
@@ -95,7 +91,7 @@ void ShellWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
-void ShellWindow::addToJavaScript()
+void HostWindow::addToJavaScript()
 {
     this->m_view->page()->mainFrame()->addToJavaScriptWindowObject("gshell", this);
 }

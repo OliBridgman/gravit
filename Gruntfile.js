@@ -4,7 +4,8 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
     var buildConfig = {
-        dist: 'build'
+        dist: 'build',
+        deploy: 'deploy'
     };
 
     var pkgInfo = grunt.file.readJSON('package.json');
@@ -76,6 +77,17 @@ module.exports = function (grunt) {
                             '.tmp',
                             '<%= build.dist %>/*',
                             '!<%= build.dist %>/.git*'
+                        ]
+                    }
+                ]
+            },
+            deploy : {
+                files: [
+                    {
+                        dot: true,
+                        src: [
+                            '<%= build.deploy %>/*',
+                            '!<%= build.deploy %>/.git*'
                         ]
                     }
                 ]
@@ -205,6 +217,40 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+            deploy: {
+                files: [
+                    // Web-Shell
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'shell/web/',
+                        dest: '<%= build.deploy %>/web/',
+                        src: '{,*/}*.*'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: '<%= build.dist %>/',
+                        dest: '<%= build.deploy %>/web/',
+                        src: '{,**/}*.*'
+                    },
+                    // Native-Shell
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'shell/native/',
+                        dest: '<%= build.deploy %>/native/',
+                        src: '{,*/}*.*'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: '<%= build.dist %>/',
+                        dest: '<%= build.deploy %>/native/',
+                        src: '{,**/}*.*'
+                    },
+                ]
+            },
             styles: {
                 expand: true,
                 dot: true,
@@ -274,9 +320,19 @@ module.exports = function (grunt) {
         'usemin'
     ]);
 
-    grunt.registerTask('default', [
+    grunt.registerTask('dist', [
         'jshint',
         'test',
         'build'
+    ]);
+
+    grunt.registerTask('deploy', [
+        'dist',
+        'clean:deploy',
+        'copy:deploy'
+    ]);
+
+    grunt.registerTask('default', [
+        'server'
     ]);
 };

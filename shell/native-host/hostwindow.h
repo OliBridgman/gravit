@@ -1,17 +1,17 @@
-#ifndef SHELLWINDOW_H
-#define SHELLWINDOW_H
+#ifndef HOSTWINDOW_H
+#define HOSTWINDOW_H
 
 #include <QMainWindow>
 class QSettings;
 class QWebView;
 
-class ShellWindow : public QMainWindow
+class HostWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ShellWindow(QWidget *parent = 0);
+    explicit HostWindow(QWidget *parent = 0);
 
-// Shell Interface
+// Host Interface
 public:
     Q_INVOKABLE void openShell();
 

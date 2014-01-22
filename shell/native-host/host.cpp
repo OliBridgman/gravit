@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "shellwindow.h"
+#include "hostwindow.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     app.setOrganizationName("Gravit");
     app.setOrganizationDomain("gravit.io");
 
-    ShellWindow window;
+    HostWindow window;
     window.setWindowTitle(app.applicationName());
 
     return app.exec();
