@@ -46,49 +46,28 @@ var gExpress = {
 };
 
 /**
- * @type {EXSidebar}
+ * @type {GShell}
  */
-var gSidebar = null;
+var gShell = null;
+
+/**
+ * @type {EXApplication}
+ */
+var gApp = null;
 
 // Bootstrapping when the DOM is ready
 $(document).ready(function () {
-    // Initialize loader
-    $('<div></div>')
-        .attr('id', 'gravit-loader')
-        .append($('<div></div>')
-            .append($('<div>')
-                .addClass('icon'))
-            .append($('<div></div>')
-                .html('&nbsp;'))
-            .append($('<img>')
-                .addClass('loader')))
-        .appendTo($('body'));
+    if (!gShell) {
+        throw new Error("Shell needs to be initialized, first.");
+    }
 
-    // Initialize Application
     gApp = new EXApplication();
+    gShell.prepareLoad();
 });
 
 
 // Init when everything is finally loaded
 $(window).load(function () {
-    // Pre-init application
-    gApp.preInit();
-    gSidebar = gApp.getSidebar();
-
-    // Iterate modules and let each one initialize
-    for (var i = 0; i < gExpress.modules.length; ++i) {
-        var module = gExpress.modules[i];
-        console.log("Init module <" + module.toString() + ">");
-        module.init();
-    }
-
-    // Init application now
     gApp.init();
-
-    // Finally remove our loading screen and get started
-    $("#gravit-loader").remove();
-
-    if (gshell) {
-        gshell.openShell();
-    }
+    gShell.finishLoad();
 });

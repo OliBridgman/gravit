@@ -66,7 +66,7 @@
      * @override
      */
     EXShowPaletteAction.prototype.execute = function () {
-        gSidebar.setPaletteActive(this._palette.getId(), !gSidebar.isPaletteActive(this._palette.getId()));
+        gApp.getSidebar().setPaletteActive(this._palette.getId(), !gApp.getSidebar().isPaletteActive(this._palette.getId()));
     };
 
     /** @override */

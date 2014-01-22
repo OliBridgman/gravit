@@ -31,8 +31,7 @@ $fa-font-path : '../font';
 @import 'palette_pages';
 @import 'palette_properties';
 
-/** General styling within gravit */
-.gravit {
+body {
   /** Prevent double-tap = zoom on windows mobile */
   -ms-content-zooming: none;
 

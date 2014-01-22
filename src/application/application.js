@@ -725,9 +725,27 @@
         this._progressDialog.addProgress(progress);
     };
 
-    EXApplication.prototype.preInit = function () {
-        // Create our parts
+    /**
+     * Called to initialize the application
+     */
+    EXApplication.prototype.init = function () {
         var body = $('body');
+
+        // Prevent context-menu globally except for input elements
+        body.on("contextmenu", function (evt) {
+            if (!$(evt.target).is(':input')) {
+                evt.preventDefault();
+                return false;
+            }
+            return true;
+        });
+
+        // Iterate modules and let each one initialize
+        for (var i = 0; i < gExpress.modules.length; ++i) {
+            var module = gExpress.modules[i];
+            console.log("Init module <" + module.toString() + ">");
+            module.init();
+        }
 
         this._view = $("<div></div>")
             .attr('id', 'application')
@@ -774,24 +792,6 @@
                 .appendTo(headerPart);
             this._navigation = new EXNavigation(navigationPart);
         }
-    };
-
-    /**
-     * Called to initialize the application
-     */
-    EXApplication.prototype.init = function () {
-        var body = $("body");
-
-        // Prevent context-menu globally except for input elements
-        body.on("contextmenu", function (evt) {
-            if (!$(evt.target).is(':input')) {
-                evt.preventDefault();
-                return false;
-            }
-            return true;
-        });
-
-        body.addClass('gravit');
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -1409,5 +1409,4 @@
     };
 
     _.EXApplication = EXApplication;
-    _.gApp = null; // initialized by client
 })(this);
