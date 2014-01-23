@@ -100,16 +100,25 @@
     GXPathTool.prototype._paintArea = null;
 
     /**
-     * @type {GXPath.AnchorPoint}
+     * Indicates if a new point is created for this._editPt
+     * @type {Boolean}
      * @private
      */
     GXPathTool.prototype._newPoint = null;
 
     /**
+     * Contains reference to preview anchor point to edit
      * @type {GXPath.AnchorPoint}
      * @private
      */
     GXPathTool.prototype._editPt = null;
+
+    /**
+     * Contains reference to original path anchor point to edit in place
+     * @type {GXPath.AnchorPoint}
+     * @private
+     */
+    GXPathTool.prototype._refPt = null;
 
     GXPathTool.prototype._pathEditor = null;
 
@@ -229,9 +238,10 @@
                 this._mode = GXPathTool.Mode.Edit;
             } else {
                 var selType = this._pathEditor.getPointsSelectionType();
-                if (selType == GXPathEditor.PointsSelectionType.No || selType == GXPathEditor.PointsSelectionType.Several) {
-                    this._mode = GXPathTool.Mode.Edit;
-                } else if (selType == GXPathEditor.PointsSelectionType.Middle) {
+                if (selType == GXPathEditor.PointsSelectionType.No ||
+                    selType == GXPathEditor.PointsSelectionType.Several ||
+                    selType == GXPathEditor.PointsSelectionType.Middle) {
+
                     this._mode = GXPathTool.Mode.Edit;
                 } else if (selType == GXPathEditor.PointsSelectionType.Last) {
                     this._mode = GXPathTool.Mode.Append;
@@ -294,6 +304,7 @@
         this._pathEditor.requestInvalidation();
         this._newPoint = false;
         this._editPt = null;
+        this._refPt = null;
         this._pathEditor = null;
     };
 
@@ -533,17 +544,46 @@
         return newAPt;
     };
 
-    GXPathTool.prototype._mouseDownOnEdit = function (clickPt) {
-        // TEMP start
-        if (this._pathEditor) {
-            this._pathEditor.requestInvalidation();
+    GXPathTool.prototype._makePointMajor = function (anchorPt) {
+        this._pathEditor.selectOnePoint(anchorPt);
+        this._dpathRef = this._pathEditor.releasePathPreview();
+        this._pathEditor.requestInvalidation();
+        this._dpathRef = this._pathEditor.getPathPreview(anchorPt);
+    };
+
+    GXPathTool.prototype._mouseDownOnEdit = function (eventPt) {
+        this._pathEditor.requestInvalidation();
+        this._pathEditor.releasePathPreview();
+        this._pathEditor.requestInvalidation();
+
+        var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform());
+        if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
+            var anchorPt = partInfo.id.point;
+            if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getLastChild()) {
+                this._mode = GXPathTool.Mode.Append;
+                this._makePointMajor(anchorPt);
+            } else if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getFirstChild()) {
+                this._mode = GXPathTool.Mode.Prepend;
+                this._makePointMajor(anchorPt);
+            } else { // middlePoint
+                this._refPt = anchorPt;
+            }
+        } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
+            // TODO
+            // TEMP start
+            this._pathEditor = null;
+            this._pathRef = null;
+            this._dpathRef = null;
+            this._mode = GXPathTool.Mode.Append;
+            // TEMP end
+        } else { // no path hit
+            this._pathEditor.updatePartSelection(false);
+            this._commitChanges();
+            this._mode = GXPathTool.Mode.Append;
         }
-        this._pathEditor = null;
-        this._pathRef = null;
-        this._dpathRef = null;
-        this._mode = GXPathTool.Mode.Append;
         return;
-        // TEMP end
+
+
         var aPrev = null;
         var aNext = null;
 
@@ -609,26 +649,29 @@
     };
 
     GXPathTool.prototype._mouseNoDragReleaseOnEdit = function () {
+        if (!this._refPt) {
+            return;
+        }
+        /*
         this._gpathRef.commitDraft();
         // hit test result becomes invalid if any;
         this._lastHitTest = new GXPathTool.LastHitTest();
         this._gpathRef.setWorkingPath(this._pathRef);
+        */
         // remove handles or point itself
-        if (this._editPt.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X) != null ||
-            this._editPt.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y) != null ||
-            this._editPt.getProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X) != null ||
-            this._editPt.getProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y) != null) {
+        if (this._refPt.getProperty('hlx') != null ||
+            this._refPt.getProperty('hly') != null ||
+            this._refPt.getProperty('hrx') != null ||
+            this._refPt.getProperty('hry') != null) {
 
-            this._editPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, false);
-            this._editPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, null);
-            this._editPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, null);
-            this._editPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, null);
-            this._editPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, null);
-            this._updatedVertices();
+            this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
+            this._makePointMajor(this._refPt);
         } else {
-            this._pathRef.removeAnchorPoint(this._editPt);
-            this._updatedVertices();
+            this._pathRef.getAnchorPoints().removeChild(this._refPt);
+            //this._updatedVertices();
         }
+        this._refPt = null;
+        this._commitChanges();
     };
 
     /** override */
