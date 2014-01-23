@@ -122,6 +122,10 @@
         }
     };
 
+    /**
+     * @param {GUIMouseEvent.DblClick} event
+     * @private
+     */
     GXBezigonTool.prototype._mouseDblClick = function (event) {
         this._checkMode();
         if (this._pathEditor) {
@@ -155,7 +159,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag} event
+     * @param {GUIMouseEvent.Drag | GUIMouseEvent.Move} event
      * @private
      */
     GXBezigonTool.prototype._mouseDrag = function (event) {
@@ -175,40 +179,55 @@
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
+    /**
+     * Updates position of edited point, takes into account shiftKey and mode
+     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @private
+     */
     GXBezigonTool.prototype._updatePoint = function (pt) {
         if (this._dpathRef && this._editPt) {
             var newPos = this._constrainIfNeeded(pt, this._pathRef);
 
-            if (this._editPt.getProperty('ah') ||
-                this._editPt.getProperty('tp') == 'C') {
+            if (this._editPt.getProperty('ah')) {
                 this._editPt.setProperties(['x', 'y'], [newPos.getX(), newPos.getY()]);
             } else {
                 var dx = newPos.getX() - this._editPt.getProperty('x');
                 var dy = newPos.getY() - this._editPt.getProperty('y');
 
-                this._dpathRef.beginUpdate();
-                this._editPt.setProperties(['x', 'y'], [newPos.getX(), newPos.getY()]);
                 var hval = this._editPt.getProperty('hlx');
                 if (hval != null) {
-                    this._editPt.setProperty('hlx', hval + dx);
+                    hval += dx;
                 }
+                var hlx = hval;
                 hval = this._editPt.getProperty('hly');
                 if (hval != null) {
-                    this._editPt.setProperty('hly', hval + dy);
+                    hval += dy;
                 }
+                var hly = hval;
                 hval = this._editPt.getProperty('hrx');
                 if (hval != null) {
-                    this._editPt.setProperty('hrx', hval + dx);
+                    hval += dx;
                 }
+                var hrx = hval;
                 hval = this._editPt.getProperty('hry');
                 if (hval != null) {
-                    this._editPt.setProperty('hry', hval + dy);
+                    hval += dy;
                 }
-                this._dpathRef.endUpdate();
+                var hry = hval;
+
+                this._editPt.setProperties(['x', 'y', 'hlx', 'hly', 'hrx', 'hry'], [newPos.getX(), newPos.getY(),
+                    hlx, hly, hrx, hry]);
             }
         }
     };
 
+    /**
+     * Constructs new point, specific to Bezigon Tool, with the given position
+     * @param {GUIMouseEvent} event used to define pressed button
+     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @returns {GXPath.AnchorPoint} newly created anchor point
+     * @private
+     */
     GXBezigonTool.prototype._constructNewPoint = function (event, pt) {
         var anchorPt = new GXPath.AnchorPoint();
         anchorPt.setProperties(['x', 'y', 'ah'], [pt.getX(), pt.getY(), true]);
@@ -226,6 +245,11 @@
         return anchorPt;
     };
 
+    /**
+     * For Append and Prepend mode checks if a point, newly added to preview, is the path other end point.
+     * And if so, closes the path specific for Bezigon Tool way, and removes that extra point from preview.
+     * @private
+     */
     GXBezigonTool.prototype._closeIfNeeded = function () {
         if (this._pathRef && this._newPoint &&
             (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend)) {

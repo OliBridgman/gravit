@@ -18,14 +18,13 @@
      * @private
      */
     GXPathTool.prototype._pathRef = null;
-    GXPathTool.prototype._dpathRef = null;
 
     /**
-     * @type {GXVertexPixelAligner}
+     * Reference to the edited path preview
+     * @type {GXPath}
      * @private
      */
-    GXPathTool.prototype._pixelTransformer = null;
-    GXPathTool.prototype._dpixelTransformer = null;
+    GXPathTool.prototype._dpathRef = null;
 
     /**
      * Indicates if a new point is created for this._editPt
@@ -36,18 +35,23 @@
 
     /**
      * Contains reference to preview anchor point to edit
-     * @type {GXPath.AnchorPoint}
+     * @type {GXPathBase.AnchorPoint}
      * @private
      */
     GXPathTool.prototype._editPt = null;
 
     /**
      * Contains reference to original path anchor point to edit in place
-     * @type {GXPath.AnchorPoint}
+     * @type {GXPathBase.AnchorPoint}
      * @private
      */
     GXPathTool.prototype._refPt = null;
 
+    /**
+     * Contains reference to an editor of the currently edited path
+     * @type {GXPathEditor}
+     * @private
+     */
     GXPathTool.prototype._pathEditor = null;
 
     /**
@@ -64,13 +68,29 @@
      */
     GXPathTool.prototype._dragStarted = false;
 
+    /**
+     * Possible working modes of Path Tool
+     * @type {{Append: number, Prepend: number, Edit: number}}
+     */
     GXPathTool.Mode = {
         Append: 0,
         Prepend: 1,
         Edit: 2
     };
 
+    /**
+     * The current working mode
+     * @type {GXPathTool.Mode}
+     * @private
+     */
     GXPathTool.prototype._mode = GXPathTool.Mode.Append;
+
+    /**
+     * Time in milliseconds of the last mouse down event since 1 Jan 1970.
+     * Used to support properly double-clicks
+     * @type {number}
+     * @private
+     */
     GXPathTool.prototype._mDownTime = 0;
 
     /** @override */
@@ -111,6 +131,10 @@
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
     };
 
+    /**
+     * Stores a reference to an editor of the selected path, if any
+     * @private
+     */
     GXPathTool.prototype._checkPathEditor = function () {
         var path = this._editor.getPathSelection();
         if (path) {
@@ -118,6 +142,10 @@
         }
     };
 
+    /**
+     * Defines current working mode
+     * @private
+     */
     GXPathTool.prototype._checkMode = function () {
         this._checkPathEditor();
         if (!this._pathEditor) {
@@ -147,6 +175,13 @@
         }
     };
 
+    /**
+     * Adds new anchor point to the end of edited path. Creates a new path with one point,
+     * if no path is selected for editing
+     * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path
+     * @param {Boolean} draft - indicates if the path itself or path preview should be used for point insertion
+     * @private
+     */
     GXPathTool.prototype._addPoint = function (anchorPt, draft) {
         anchorPt.setFlag(GXNode.Flag.Selected);
         if (draft) {
@@ -162,13 +197,14 @@
                     this._dpathRef.getAnchorPoints().getLastChild().removeFlag(GXNode.Flag.Selected);
                     this._dpathRef.getAnchorPoints().appendChild(anchorPt);
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
+                    this._newPoint = true;
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
                     this._dpathRef.getAnchorPoints().insertChild(anchorPt, this._dpathRef.getAnchorPoints().getFirstChild());
                     this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
+                    this._newPoint = true;
                 }
                 this._pathEditor.requestInvalidation();
-                this._newPoint = true;
             }
         } else {
             if (!this._pathEditor) {
@@ -180,15 +216,21 @@
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GXPathTool.Mode.Append) {
                     this._pathRef.getAnchorPoints().appendChild(anchorPt);
+                    this._pathEditor.selectOnePoint(anchorPt);
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
+                    this._pathEditor.selectOnePoint(anchorPt);
                 }
-                this._pathEditor.selectOnePoint(anchorPt);
                 this._pathEditor.requestInvalidation();
             }
         }
     };
 
+    /**
+     * Used at the end of any of edit action. Releases path preview, invalidates area
+     * and cleans all the saved data relevant to edited path
+     * @private
+     */
     GXPathTool.prototype._commitChanges = function () {
         this._pathRef = null;
         this._dpathRef = null;
@@ -211,8 +253,8 @@
     };
 
     /**
-     * Create a path shape and add it, based on the current
-     * vertex container
+     * Create a path shape with one point, and adds it for rendering
+     * @param {GXPathBase.AnchorPoint} apt - new anchor point to create path from
      * @private
      */
     GXPathTool.prototype._createAndAppendPath = function (apt) {
@@ -224,10 +266,11 @@
         this._pathEditor = GXElementEditor.openEditor(path);
     };
 
+    // TODO: remove it after Pen Tool implementation
     GXPathTool.prototype._convertToConstrain = function (anchorPt, prevPt, origX, origY) {
         var newPt = gMath.convertToConstrain(prevPt.getProperty('x'), prevPt.getProperty('y'), origX, origY);
         anchorPt.setProperties(['x', 'y'], [newPt.getX(), newPt.getY()]);
-//        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
+//        anchorPt.setProperty(GXPathBase.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
     };
 
     /**
@@ -238,6 +281,10 @@
         this._released = false;
     };
 
+    /**
+     * @param {GUIMouseEvent.DblClick} event
+     * @private
+     */
     GXPathTool.prototype._mouseDblClick = function (event) {
         this._reset();
     };
@@ -255,6 +302,7 @@
      * Reset the tool i.e. when done or canceling
      * @private
      */
+    // TODO: remove it after Pen Tool implementation, use commitChanges instead
     GXPathTool.prototype._reset = function () {
         this._dpathRef = null;
         this._pathRef = null;
@@ -286,12 +334,20 @@
                 this._pathEditor.updatePartSelection(false);
                 this._pathRef.removeFlag(GXNode.Flag.Selected);
                 this._commitChanges();
-                this._pathEditor = null;
-                //this._reset();
             }
         }
     };
 
+    /**
+     * If Shift key is pressed, finds the point, which should be used as a base to constrain location with,
+     * and calculates a new location
+     * @param {GPoint} pt - original point
+     * @param {GXPath} path - a path to look for base point; used only if no orientation point is passed
+     * @param {GXPathBase.AnchorPoint} orientPt - orientation anchor point to be used as a base to constrain location with,
+     * may be null
+     * @returns {GPoint} - original or newly created bounded point
+     * @private
+     */
     GXPathTool.prototype._constrainIfNeeded = function (pt, path, orientPt) {
         var constrPt = pt;
 
@@ -315,13 +371,25 @@
         return constrPt;
     };
 
+    /**
+     * Makes a point the only selected and updates preview accordingly
+     * @param {GXPathBase.AnchorPoint} anchorPt - anchor point, which should be made major
+     * @private
+     */
     GXPathTool.prototype._makePointMajor = function (anchorPt) {
         this._pathEditor.selectOnePoint(anchorPt);
-        this._dpathRef = this._pathEditor.releasePathPreview();
+        this._dpathRef = null;
+        this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
         this._dpathRef = this._pathEditor.getPathPreview(anchorPt);
     };
 
+    /**
+     * In Edit mode hit-tests the path, and then takes appropriate action for mouse down:
+     * selects a point for editing or creates a new one, or just updates the working mode
+     * @param {GPoint} eventPt - unmodified point of mouse click
+     * @private
+     */
     GXPathTool.prototype._mouseDownOnEdit = function (eventPt) {
         this._pathEditor.requestInvalidation();
         this._pathEditor.releasePathPreview();
@@ -359,16 +427,15 @@
         }
     };
 
+    /**
+     * Called when mouse is released in Edit mode and no mouse drag was started.
+     * Removes handles of the hit anchor point, or the point itself, if it doesn't have handles
+     * @private
+     */
     GXPathTool.prototype._mouseNoDragReleaseOnEdit = function () {
         if (!this._refPt) {
             return;
         }
-        /*
-        this._gpathRef.commitDraft();
-        // hit test result becomes invalid if any;
-        this._lastHitTest = new GXPathTool.LastHitTest();
-        this._gpathRef.setWorkingPath(this._pathRef);
-        */
         // remove handles or point itself
         if (this._refPt.getProperty('hlx') != null ||
             this._refPt.getProperty('hly') != null ||
@@ -379,7 +446,6 @@
             this._makePointMajor(this._refPt);
         } else {
             this._pathRef.getAnchorPoints().removeChild(this._refPt);
-            //this._updatedVertices();
         }
         this._refPt = null;
         this._commitChanges();
