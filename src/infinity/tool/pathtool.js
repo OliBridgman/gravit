@@ -134,6 +134,7 @@
     };
 
     GXPathTool.prototype._mode = GXPathTool.Mode.Append;
+    GXPathTool.prototype._mDownTime = 0;
 
     /** @override */
     GXPathTool.prototype.getHint = function () {
@@ -229,10 +230,7 @@
             } else {
                 var selType = this._pathEditor.getPointsSelectionType();
                 if (selType == GXPathEditor.PointsSelectionType.No || selType == GXPathEditor.PointsSelectionType.Several) {
-                    this._pathEditor = null;
-                    this._pathRef = null;
-                    this._dpathRef = null;
-                    this._mode = GXPathTool.Mode.Append;
+                    this._mode = GXPathTool.Mode.Edit;
                 } else if (selType == GXPathEditor.PointsSelectionType.Middle) {
                     this._mode = GXPathTool.Mode.Edit;
                 } else if (selType == GXPathEditor.PointsSelectionType.Last) {
@@ -251,7 +249,7 @@
         if (draft) {
             if (!this._pathEditor) {
                 this._createAndAppendPath(anchorPt);
-                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
                 this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 this._pathEditor.requestInvalidation();
@@ -272,7 +270,7 @@
         } else {
             if (!this._pathEditor) {
                 this._createAndAppendPath(anchorPt);
-                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
                 this._pathEditor.requestInvalidation();
             } else {
@@ -282,7 +280,7 @@
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
                 }
-                this._pathEditor.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+                this._pathEditor.selectOnePoint(anchorPt);
                 this._pathEditor.requestInvalidation();
             }
         }
@@ -296,10 +294,7 @@
         this._pathEditor.requestInvalidation();
         this._newPoint = false;
         this._editPt = null;
-        var selType = this._pathEditor.getPointsSelectionType();
-        if (selType == GXPathEditor.PointsSelectionType.No || selType == GXPathEditor.PointsSelectionType.Several) {
-            this._pathEditor = null;
-        }
+        this._pathEditor = null;
     };
 
     /**
@@ -428,14 +423,37 @@
         // Action should be taken only if mouse released
         if (this._released) {
             this._checkMode();
-            if (this._gpathRef) {
-                this._gpathRef.commitDraft();
-                this._pathRef.resetSelectedPts();
-                this._gpathRef.removeFlag(GXNode.Flag.Selected);
-                this._updatedVertices();
-                this._reset();
+            if (this._pathEditor) {
+                this._pathEditor.updatePartSelection(false);
+                this._pathRef.removeFlag(GXNode.Flag.Selected);
+                this._commitChanges();
+                this._pathEditor = null;
+                //this._reset();
             }
         }
+    };
+
+    GXPathTool.prototype._constrainIfNeeded = function (pt, path, orientPt) {
+        var constrPt = pt;
+
+        if (gPlatform.modifiers.shiftKey) {
+            var otherPt = null;
+            if (orientPt) {
+                otherPt = orientPt;
+            } else if (path) {
+                if (this._mode == GXPathTool.Mode.Append) {
+                    otherPt = path.getAnchorPoints().getLastChild();
+                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                    otherPt = path.getAnchorPoints().getFirstChild();
+                }
+            }
+
+            if (otherPt) {
+                constrPt = gMath.convertToConstrain(
+                    otherPt.getProperty('x'), otherPt.getProperty('y'), pt.getX(), pt.getY());
+            }
+        }
+        return constrPt;
     };
 
     GXPathTool.prototype.splitAtSlope = function (aPrev, aNext, slope, pathRef) {
@@ -516,7 +534,16 @@
     };
 
     GXPathTool.prototype._mouseDownOnEdit = function (clickPt) {
+        // TEMP start
+        if (this._pathEditor) {
+            this._pathEditor.requestInvalidation();
+        }
+        this._pathEditor = null;
+        this._pathRef = null;
+        this._dpathRef = null;
+        this._mode = GXPathTool.Mode.Append;
         return;
+        // TEMP end
         var aPrev = null;
         var aNext = null;
 

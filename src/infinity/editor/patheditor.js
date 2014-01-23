@@ -210,6 +210,25 @@
         GXPathBaseEditor.prototype._detach.call(this);
     };
 
+    /**
+     * Hit-test anchor point's annotation
+     * @param {GXPathBase.AnchorPoint} anchorPt - anchor point to hit-test
+     * @param {GPoint} location
+     * @param {GTransform} transform - a transformation to apply to point's coordinates before hit-testing
+     * @returns {boolean} the result of hit-test
+     */
+    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform) {
+        var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
+        var res = false;
+        if (anchorPt) {
+            res = this._getAnnotationBBox(
+                    transform, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                .expanded(pickDist, pickDist, pickDist, pickDist)
+                .containsPoint(location);
+        }
+        return res;
+    };
+
     /** @override */
     GXPathEditor.prototype._getPartInfoAt = function (location, transform) {
         if (this._showAnnotations()) {
@@ -528,6 +547,14 @@
     };
 
     /**
+     * Updates _partSelection with one selected point
+     * @param {GXPathBase.AnchorPoint} anchorPt - a point to select
+     */
+    GXPathEditor.prototype.selectOnePoint = function(anchorPt) {
+        this.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+    };
+
+    /**
      * Create path preview if not yet existent.
      * @param {GXPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
      * will be taken as the only selected one, if this is not provided, the selected
@@ -675,9 +702,8 @@
     /**
      * Returns a mapping of a source point to it's preview point
      * @param {GXPathBase.AnchorPoint} sourcePoint
-     * @private
      */
-    GXPathEditor.prototype._getPathPointPreview = function (sourcePoint) {
+    GXPathEditor.prototype.getPathPointPreview = function (sourcePoint) {
         var sourceIndex = sourcePoint.getParent().getIndexOfChild(sourcePoint);
         var previewIndex = this._sourceIndexToPreviewIndex[sourceIndex];
         return this._elementPreview.getAnchorPoints().getChildByIndex(previewIndex);
@@ -715,7 +741,7 @@
     GXPathEditor.prototype._transformPreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, transform) {
         var pathTransform = this._element.getProperty('transform');
 
-        var previewPoint = this._getPathPointPreview(sourcePoint);
+        var previewPoint = this.getPathPointPreview(sourcePoint);
         if (previewPoint) {
             // Map source point with transformation and apply it to preview point
             var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
@@ -775,7 +801,7 @@
         var newVal = gMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
             sourcePosition.getX(), sourcePosition.getY());
 
-        var previewPoint = this._getPathPointPreview(partId.point);
+        var previewPoint = this.getPathPointPreview(partId.point);
         // TODO: discuss:
         // We do not apply pathTransform to shoulders when generating vertices,
         // assign new value directly to previewPoint without any further transforms
@@ -795,7 +821,7 @@
      * @private
      */
     GXPathEditor.prototype._assignPreviewPointPropertiesToSourcePoint = function (sourcePoint, properties) {
-        var previewPoint = this._getPathPointPreview(sourcePoint);
+        var previewPoint = this.getPathPointPreview(sourcePoint);
         if (previewPoint) {
             // Simply assign preview position back to source
             sourcePoint.setProperties(properties, previewPoint.getProperties(properties));
