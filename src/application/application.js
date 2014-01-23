@@ -13,11 +13,9 @@
         document.addEventListener("touchcancel", this._touchHandler, true);
 
         this._actions = [];
-        this._shortcuts = {};
-        this._menu = new GUIMenu();
         this._toolManager = new GXToolManager();
         this._documents = [];
-        this._shortcutMap = new GUIShortcutsDialog();
+        this._windowMenuMap = [];
 
         // This is a hack to focus our active window
         // whenever a key is hit down (in capture phase) and
@@ -27,7 +25,7 @@
             if (activeWindow && (!document.activeElement || !$(document.activeElement).is("input,select,textArea"))) {
                 activeWindow.getView().focus();
             }
-        }.bind(this), true);
+        }.bind(this), false);
 
         // Set default global color to white
         this._globalColor = new GXColor(GXColor.Type.White);
@@ -50,20 +48,11 @@
      * Visual parts of the application
      */
     EXApplication.Part = {
-        Header: {
-            id: "header"
-        },
-        Navigation: {
-            id: "navigation"
-        },
         Sidebar: {
             id: "sidebar"
         },
         Windows: {
             id: "windows"
-        },
-        Toolpanel: {
-            id: "toolpanel"
         },
         Welcome: {
             id: "welcome"
@@ -174,12 +163,6 @@
     EXApplication.prototype._view = null;
 
     /**
-     * @type {EXNavigation}
-     * @private
-     */
-    EXApplication.prototype._navigation = null;
-
-    /**
      * @type {EXSidebar}
      * @private
      */
@@ -198,18 +181,6 @@
     EXApplication.prototype._welcome = null;
 
     /**
-     * @type {EXToolpanel}
-     * @private
-     */
-    EXApplication.prototype._toolpanel = null;
-
-    /**
-     * @type {GUIShortcutsDialog}
-     * @private
-     */
-    EXApplication.prototype._shortcutMap = null;
-
-    /**
      * @type {GXColor}
      * @private
      */
@@ -221,12 +192,6 @@
      */
     EXApplication.prototype._resizeTimerId = null;
 
-    /**
-     * @type {GUIProgressDialog}
-     * @private
-     */
-    EXApplication.prototype._progressDialog = null;
-
 
     /**
      * Array of registered actions
@@ -236,18 +201,17 @@
     EXApplication.prototype._actions = null;
 
     /**
-     * Mapping of actions to shortcuts
-     * @type {{}}
+     * Application window shell menu
+     * @type {*}
      * @private
      */
-    EXApplication.prototype._shortcuts = null;
+    EXApplication.prototype._windowMenu = null;
 
     /**
-     * Application menu
-     * @type {GUIMenu}
+     * @type {Array<{window: EXWindow, item: *}>}
      * @private
      */
-    EXApplication.prototype._menu = null;
+    EXApplication.prototype._windowMenuMap = null;
 
     /**
      * @returns {GXToolManager}
@@ -286,21 +250,6 @@
      */
     EXApplication.prototype.getWindows = function () {
         return this._windows;
-    };
-
-    /**
-     * Return access to the tools panel
-     * @returns {EXToolpanel}
-     */
-    EXApplication.prototype.getToolpanel = function () {
-        return this._toolpanel;
-    };
-
-    /**
-     * @returns {GUIShortcutsDialog}
-     */
-    EXApplication.prototype.getShortcutMap = function () {
-        return this._shortcutMap;
     };
 
     /**
@@ -360,28 +309,6 @@
      */
     EXApplication.prototype.getActions = function () {
         return this._actions;
-    };
-
-    /**
-     * Get the application menu
-     * @return {GUIMenu}
-     */
-    EXApplication.prototype.getMenu = function () {
-        return this._menu;
-    };
-
-    /**
-     * Get a list of currently all available, registered actions
-     * @return {Array<GUIAction>} list of registered and available actions
-     */
-    EXApplication.prototype.getAvailableActions = function () {
-        var result = [];
-        for (var i = 0; i < this._actions.length; ++i) {
-            if (this._actions[i].isAvailable()) {
-                result.push(this._actions[i]);
-            }
-        }
-        return result;
     };
 
     /**
@@ -553,7 +480,7 @@
     /**
      * Execute a given action
      * @param {String} id id of the action to execute
-     * @param {*} args optional args to be supplied to the action
+     * @param {*} [args] optional args to be supplied to the action
      * @return {*} the result of the action if any
      */
     EXApplication.prototype.executeAction = function (id, args) {
@@ -572,157 +499,6 @@
         }
 
         return false;
-    };
-
-    /**
-     * Registers a special "window" action that is used for
-     * activating a given window. This will actually not register
-     * the action but instead, will add it only to the main menu bar
-     * @param {GUIAction} action
-     */
-    EXApplication.prototype.addWindowAction = function (action) {
-        if (gSystem.shell === GSystem.Shell.Application) {
-            //gshell.addDocument(gLocale.get(action.getTitle()));
-        } else {
-            var windowItem = this._menu.findItem(gLocale.get(EXApplication.CATEGORY_WINDOW));
-
-            if (!windowItem) {
-                windowItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
-                this._menu.addItem(windowItem);
-            }
-
-            // Add after last separator or add last separator if none yet
-            var hasSeparator = false;
-            var itemCount = windowItem.getMenu().getItemCount();
-            for (var i = 0; i < itemCount; ++i) {
-                var item = windowItem.getMenu().getItem(i);
-                if (item.getType() === GUIMenuItem.Type.Divider) {
-                    if (i + 1 === itemCount || windowItem.getMenu().getItem(i + 1).__window_) {
-                        hasSeparator = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!hasSeparator) {
-                windowItem.getMenu().addItem(new GUIMenuItem(GUIMenuItem.Type.Divider));
-            }
-
-            var actionItem = new GUIMenuItem();
-            actionItem.setAction(action);
-            actionItem.__window_ = true;
-            windowItem.getMenu().addItem(actionItem);
-        }
-    };
-
-    /**
-     * Removes a special "window" action that was used for
-     * activating a given window.
-     * @param {GUIAction} action
-     */
-    EXApplication.prototype.removeWindowAction = function (action) {
-        var windowItem = this._menu.findItem(gLocale.get(EXApplication.CATEGORY_WINDOW));
-        if (windowItem && windowItem.getMenu()) {
-            for (var i = 0; i < windowItem.getMenu().getItemCount(); ++i) {
-                if (windowItem.getMenu().getItem(i).getAction() === action) {
-                    windowItem.getMenu().removeItem(i);
-                    break;
-                }
-            }
-        }
-    };
-
-    /**
-     * Get the registered shortcut for a given action
-     * @param {String} the action's id
-     * @return {Array<Number>} shortcuts or null for none
-     */
-    EXApplication.prototype.getShortcut = function (id) {
-        if (this._shortcuts.hasOwnProperty(id)) {
-            return this._shortcuts[id];
-        }
-        return null;
-    };
-
-    /**
-     * Set the shortcut for a given action
-     * @param {String} id the id of the action
-     * @param {Array<Number>} shortcut may be null to remove the shortcut
-     */
-    EXApplication.prototype.setShortcut = function (id, shortcut) {
-        // Remove any previous shortcut
-        if (this._shortcuts.hasOwnProperty(id)) {
-            if (gSystem.shell == GSystem.Shell.Application) {
-                // TODO : Is this supposed to work in AppShell ?
-                //appshell.app.setMenuItemShortcut(id.toString(), null, "");
-            } else if (gSystem.hardware === GSystem.Hardware.Desktop) {
-                var menuItem = this._getMenuItemForAction(id);
-                if (menuItem) {
-                    menuItem.setShortcutHint(null);
-                }
-
-                Mousetrap.unbind(this._shortcutToMouseTrapShortcut(this._shortcuts[id]));
-            }
-
-            delete this._shortcuts[id];
-        }
-
-        // Assign new shortcut if any
-        if (shortcut) {
-            this._shortcuts[id] = shortcut;
-
-            if (gSystem.shell == GSystem.Shell.Application) {
-                //appshell.app.setMenuItemShortcut(id, this._shortcutToAppShellShortcut(shortcut), "");
-            } else if (gSystem.hardware === GSystem.Hardware.Desktop) {
-                var menuItem = this._getMenuItemForAction(id);
-                if (menuItem) {
-                    menuItem.setShortcutHint(shortcut);
-                }
-
-                Mousetrap.bind([this._shortcutToMouseTrapShortcut(shortcut)], function (e) {
-                    e.preventDefault();
-                    this.executeAction(id);
-                    return false;
-                }.bind(this));
-            }
-        }
-    };
-
-    /**
-     * Create and register a new HTTP-Process
-     * @param {GLocale.Key|String} [processTitle] optional title for the process
-     * @return {{xhr: XMLHttpRequest, progress: GUIProgress}}
-     */
-    EXApplication.prototype.createAndRegisterHttpProcess = function (processTitle) {
-        var xhr = new XMLHttpRequest();
-        var progress = new GUIProgress(xhr, 'x-amz-meta-content-length');
-
-        if (processTitle) {
-            progress.setTitle(processTitle);
-        }
-
-        this.registerProgress(progress);
-        return {
-            xhr: xhr,
-            progress: progress
-        }
-    };
-
-    /**
-     * Register a progress, showing the progress dialog
-     * if not yet visible
-     * @param {GUIProgress} progress
-     */
-    EXApplication.prototype.registerProgress = function (progress) {
-        if (this._progressDialog == null) {
-            this._progressDialog = new GUIProgressDialog();
-            this._progressDialog.setCloseMode(GUIProgressDialog.CloseMode.AutoWhenAllFinished);
-            this._progressDialog.addEventListener(GUIModal.CloseEvent, function () {
-                this._progressDialog = null;
-            }.bind(this));
-            this._progressDialog.open();
-        }
-        this._progressDialog.addProgress(progress);
     };
 
     /**
@@ -765,33 +541,12 @@
 
         this._welcome = new EXWelcome(welcomePart);
 
-        // Toolpanel-Part
-        var toolpanelPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Toolpanel.id)
-            .appendTo(this._view);
-
-        this._toolpanel = new EXToolpanel(toolpanelPart);
-
         // Sidebar-Part
         var sidebarPart = $("<div></div>")
             .attr('id', EXApplication.Part.Sidebar.id)
             .appendTo(this._view);
 
         this._sidebar = new EXSidebar(sidebarPart);
-
-        // Header won't be available for AppShell
-        if (gSystem.shell !== GSystem.Shell.Application) {
-            // Header-Part
-            var headerPart = $("<div></div>")
-                .attr('id', EXApplication.Part.Header.id)
-                .appendTo(this._view);
-
-            // Navigation-Part
-            var navigationPart = $("<div></div>")
-                .attr('id', EXApplication.Part.Navigation.id)
-                .appendTo(headerPart);
-            this._navigation = new EXNavigation(navigationPart);
-        }
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -805,19 +560,6 @@
             case GSystem.Hardware.Phone:
                 body.addClass('g-touch');
                 body.addClass('g-phone');
-                break;
-        }
-
-        // Append the corresponding shell class to our body
-        switch (gSystem.shell) {
-            case GSystem.Hardware.Browser:
-                body.addClass('g-browser');
-                break;
-            case GSystem.Hardware.Application:
-                body.addClass('g-application');
-                break;
-            case GSystem.Hardware.Cordova:
-                body.addClass('g-cordova');
                 break;
         }
 
@@ -838,7 +580,8 @@
         // TODO : Order our available tools by group
 
         // -- Register Actions
-        this._registerActions(gExpress.actions);
+        this._actions = gExpress.actions.slice();
+        this._createMainMenu();
 
         // Add all available tools to toolmanager
         if (gExpress.tools) {
@@ -847,43 +590,15 @@
             }
         }
 
-        // Initialize parts
-        if (this._navigation) {
-            this._navigation.init();
-        }
-
         this._sidebar.init();
         this._windows.init();
         this._welcome.init();
-        this._toolpanel.init();
 
         // Mark initialized
         this._initialized = true;
 
         // Manual call to update part visibilities
         this._updatedPartVisibilities();
-
-        // Initialize our shortcut maps with available actions
-        var shortcutMaps = [
-            GUIShortcutsDialog.createMapFromAvailableActions(),
-            {
-                // TODO: I18N
-                title: 'Tools',
-                map: []
-            }
-        ];
-
-        // Add tools to shorcut maps
-        var toolCount = this._toolManager.getToolCount();
-        for (var i = 0; i < toolCount; ++i) {
-            var toolInstance = this._toolManager.getTool(i);
-            var toolHint = toolInstance.getHint() ? toolInstance.getHint() : null;
-            if (toolHint) {
-                shortcutMaps[1].map.push(toolHint);
-            }
-        }
-
-        this._shortcutMap.setMaps(shortcutMaps);
 
         // Subscribe to window events
         this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
@@ -899,9 +614,6 @@
         }
 
         setTimeout(function () {
-            var headerPart = this.getPart(EXApplication.Part.Header);
-            var headerHeight = headerPart.length > 0 ? headerPart.outerHeight() : 0;
-
             // Sidebar
             var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
             sidebarPart.height(this._view.height());
@@ -914,22 +626,11 @@
             // Welcome
             var welcomePart = this.getPart(EXApplication.Part.Welcome);
             welcomePart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
-            welcomePart.height(this._view.height() - headerHeight);
-            welcomePart.css('top', headerHeight.toString() + 'px');
-
-            // Toolpanel
-            var toolpanelPart = this.getPart(EXApplication.Part.Toolpanel);
-            toolpanelPart.css('right', (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0) + 'px');
-
-            // Let parts know about relayout
-            if (this._navigation) {
-                this._navigation.relayout();
-            }
+            welcomePart.height(this._view.height());
 
             this._sidebar.relayout();
-            this._windows.relayout([0, headerHeight, 0, 0]);
+            this._windows.relayout();
             this._welcome.relayout();
-            this._toolpanel.relayout();
         }.bind(this), 0);
     };
 
@@ -971,84 +672,139 @@
     };
 
     /**
-     * Register one or more actions. Note that if the current shell is
-     * set to GSystem.Shell.Application then this will also create the
-     * corresponding menu bar entries on the according system! This
-     * should only be called ONCE on startup!
-     * @param {Array<GUIAction>} actions list of actions to be registered
+     * Create the main menu based on actions
+     * @param {Array<GUIAction>} actions
      * @private
      */
-    EXApplication.prototype._registerActions = function (actions) {
-        // Add all actions, first
-        for (var i = 0; i < actions.length; ++i) {
-            this._actions.push(actions[i]);
-        }
+    EXApplication.prototype._createMainMenu = function () {
+        // Create our menu structure based on actions
+        // TODO : Order given actions by category & group
 
-        // Initialize our application menu with the given actions
-        GUIMenu.createActionMenu(this.getAvailableActions(), this._menu);
+        var itemToGroupArray = [];
+        var treeRoot = {
+            items: []
+        };
 
-        // Handle platform specific stuff now
-        if (gSystem.shell === GSystem.Shell.Application) {
-            var _updateShellMenu = function (menu, mappings) {
-                menu.update();
-                for (var i = 0; i < mappings.length; ++i) {
-                    var mapping = mappings[i];
-                    mapping.shellItem.text = gLocale.get(mapping.item.getCaption());
-                    if (mapping.item.isChecked()) {
-                        mapping.shellItem.checkable = true;
-                        mapping.shellItem.checked = true;
-                    } else {
-                        mapping.shellItem.checked = false;
-                    }
-                    mapping.shellItem.enabled = mapping.item.isEnabled();
+        var _getGroupForItem = function (item) {
+            for (var i = 0; i < itemToGroupArray.length; ++i) {
+                if (itemToGroupArray[i].item === item) {
+                    return itemToGroupArray[i].group;
                 }
-            };
-
-            var _addShellMenuItem = function (shellMenu, menuItem) {
-                var shellItem = gshell.addMenuItem(shellMenu);
-                shellItem.triggered.connect(function () {
-                    this.executeAction(menuItem.getAction().getId());
-                }.bind(this));
-                return shellItem;
-            }.bind(this);
-
-            var _addShellMenu = function (shellParentMenu, menuItem) {
-                var menu = menuItem.getMenu();
-                var shellMappings = [];
-                var shellMenu = gshell.addMenu(shellParentMenu, gLocale.get(menuItem.getCaption()));
-                shellMenu.aboutToShow.connect(function () {
-                    _updateShellMenu(menu, shellMappings);
-                });
-
-                for (var i = 0; i < menu.getItemCount(); ++i) {
-                    var item = menu.getItem(i);
-                    switch (item.getType()) {
-                        case GUIMenuItem.Type.Menu:
-                            _addShellMenu(shellMenu, item);
-                            break;
-                        case GUIMenuItem.Type.Item:
-                            shellMappings.push({
-                                item: item,
-                                shellItem: _addShellMenuItem(shellMenu, item)
-                            });
-                            break;
-                        case GUIMenuItem.Type.Divider:
-                            gshell.addMenuSeparator(shellMenu);
-                            break;
-                    }
-                }
-            };
-
-            for (var i = 0; i < this._menu.getItemCount(); ++i) {
-                _addShellMenu(null, this._menu.getItem(i));
             }
+        };
+
+        var _addItemGroupAndDivider = function (menu, item, group) {
+            if (menu.items.length > 0) {
+                var lastGroup = _getGroupForItem(menu.items[menu.items.length - 1]);
+                if (lastGroup !== group) {
+                    menu.items.push({
+                        type: 'divider'
+                    });
+                }
+            }
+            itemToGroupArray.push({
+                item: item,
+                group: group
+            });
+        };
+
+        for (var i = 0; i < this._actions.length; ++i) {
+            var action = this._actions[i];
+
+            if (!action.isAvailable()) {
+                continue;
+            }
+
+            var category = gLocale.get(action.getCategory());
+            var group = action.getGroup();
+            var categories = category ? category.split('/') : null;
+            var groups = group ? [""].concat(group.split('/')) : null;
+
+            if (groups && categories && categories.length !== groups.length - 1) {
+                throw new Error("Number of categories different thant number of groups.");
+            }
+
+            // Build up our structure by iterating our categories
+            var currentTree = treeRoot;
+            if (categories) {
+                for (var k = 0; k < categories.length; ++k) {
+                    var category = categories[k];
+                    var group = groups ? groups[k] : null;
+
+                    var item = null;
+                    for (var l = 0; l < currentTree.items.length; ++l) {
+                        if (category == currentTree.items[l].caption) {
+                            item = currentTree.items[l];
+                        }
+                    }
+
+                    if (!item) {
+                        item = {
+                            type: 'menu',
+                            caption: category,
+                            items: [],
+                            windowMenu : EXApplication.CATEGORY_WINDOW === action.getCategory() &&
+                                currentTree === treeRoot
+                        };
+                        _addItemGroupAndDivider(currentTree, item, group);
+
+                        currentTree.items.push(item);
+                    }
+                    currentTree = item;
+                }
+            }
+
+            // Add our action item now
+            var actionItem = {
+                type: 'item',
+                action: action
+            };
+            _addItemGroupAndDivider(currentTree, actionItem, groups ? groups[groups.length - 1] : null);
+
+            currentTree.items.push(actionItem);
         }
 
-        // Finally register the shortcuts
-        for (var i = 0; i < actions.length; ++i) {
-            var shortcut = actions[i].getShortcut();
-            if (shortcut) {
-                this.setShortcut(actions[i].getId(), shortcut);
+        var _createMenuItem = function (item, parentMenu) {
+            if (item.type === 'menu') {
+                item.menu = _createMenu(item, parentMenu);
+            } else if (item.type === 'divider') {
+                item.separator = gShell.addMenuSeparator(parentMenu);
+            } else if (item.type === 'item') {
+                item.item = gShell.addMenuItem(parentMenu,function () {
+                    this.executeAction(item.action.getId());
+                }.bind(this));
+            }
+        }.bind(this);
+
+        // Initiate our menu structure now using our shell
+        var _createMenu = function (tree, parentMenu) {
+            var menu = gShell.addMenu(parentMenu, tree.caption, function () {
+                for (var i = 0; i < tree.items.length; ++i) {
+                    var item = tree.items[i];
+                    if (item.type === 'item') {
+                        gShell.updateMenuItem(item.item, gLocale.get(item.action.getTitle()),
+                            item.action.isEnabled(), item.action.isChecked(), item.action.getShortcut());
+                    }
+                }
+            });
+
+            for (var i = 0; i < tree.items.length; ++i) {
+                _createMenuItem(tree.items[i], menu);
+            }
+
+            return menu;
+        };
+
+        for (var i = 0; i < treeRoot.items.length; ++i) {
+            var item = treeRoot.items[i];
+            var menu = _createMenu(treeRoot.items[i], null);
+
+            // Save window menu
+            if (item.windowMenu) {
+                this._windowMenu = menu;
+
+                // Make sure to append an ending divider for windows
+                gShell.addMenuSeparator(this._windowMenu);
             }
         }
     };
@@ -1060,21 +816,64 @@
     EXApplication.prototype._windowEvent = function (evt) {
         switch (evt.type) {
             case EXWindows.WindowEvent.Type.Added:
-                // Register a new window show action and attach it to the window
-                evt.window.__action_ = new EXShowWindowAction(evt.window);
-                this.addWindowAction(evt.window.__action_);
+                this._addWindowMenuItem(evt.window);
                 break;
             case EXWindows.WindowEvent.Type.Removed:
-                this.removeWindowAction(evt.window.__action_);
+                this._removeWindowMenuItem(evt.window);
                 break;
             case EXWindows.WindowEvent.Type.Activated:
+                this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(evt.window.getView());
                 break;
             case EXWindows.WindowEvent.Type.Deactivated:
+                this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(null);
                 break;
             default:
                 break;
+        }
+    };
+
+    /**
+     * @param {EXWindow} window
+     * @private
+     */
+    EXApplication.prototype._addWindowMenuItem = function (window) {
+        this._windowMenuMap.push({
+            window : window,
+            item : gShell.addMenuItem(this._windowMenu, function () {
+                this._windows.activateWindow(window);
+            }.bind(this))
+        });
+        this._updateWindowMenuItem(window);
+    };
+
+    /**
+     * @param {EXWindow} window
+     * @private
+     */
+    EXApplication.prototype._removeWindowMenuItem = function (window) {
+        for (var i = 0; i < this._windowMenuMap.length; ++i) {
+            var map = this._windowMenuMap[i];
+            if (map.window === window) {
+                gShell.removeMenuItem(this._windowMenu, map.item);
+                this._windowMenuMap.splice(i, 1);
+                break;
+            }
+        }
+    };
+
+    /**
+     * @param {EXWindow} window
+     * @private
+     */
+    EXApplication.prototype._updateWindowMenuItem = function (window) {
+        for (var i = 0; i < this._windowMenuMap.length; ++i) {
+            var map = this._windowMenuMap[i];
+            if (map.window === window) {
+                gShell.updateMenuItem(map.item, map.window.getTitle(), true, map.window === this._windows.getActiveWindow(), null);
+                break;
+            }
         }
     };
 
@@ -1118,294 +917,6 @@
         // Prevent any further processing
         event.preventDefault();
         event.stopPropagation();
-    };
-
-    /**
-     * Get a menu item of global menu bar from given action id
-     * @param {String} id id of action to get a menu-item for
-     * @private
-     */
-    EXApplication.prototype._getMenuItemForAction = function (id) {
-        var _getItem = function (menu) {
-            for (var i = 0; i < menu.getItemCount(); ++i) {
-                var item = menu.getItem(i);
-                if (item.getAction() && item.getAction().getId() === id) {
-                    return item;
-                }
-                if (item.getType() === GUIMenuItem.Type.Menu) {
-                    item = _getItem(item.getMenu());
-                    if (item) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        };
-
-        return _getItem(this._menu);
-    };
-
-    /**
-     * Convert internal key into a AppShell-compatible key
-     * @param {Array<*>} shortcut
-     * @returns {String}
-     * @private
-     */
-    EXApplication.prototype._shortcutToAppShellShortcut = function (shortcut) {
-        var result = "";
-        for (var i = 0; i < shortcut.length; ++i) {
-            if (i > 0) {
-                result += "-";
-            }
-
-            var key = shortcut[i];
-            if (typeof key == 'number') {
-                switch (key) {
-                    case GUIKey.Constant.META:
-                        result += gSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS ? "Cmd" : "Ctrl";
-                        break;
-                    case GUIKey.Constant.OPTION:
-                        result += "Alt";
-                        break;
-                    case GUIKey.Constant.REMOVE:
-                        result += "Delete";
-                        break;
-                    case GUIKey.Constant.SPACE:
-                        result += "Space";
-                        break;
-                    case GUIKey.Constant.ENTER:
-                        result += "Enter";
-                        break;
-                    case GUIKey.Constant.TAB:
-                        result += "Tab";
-                        break;
-                    case GUIKey.Constant.BACKSPACE:
-                        result += "Backspace";
-                        break;
-                    case GUIKey.Constant.CONTROL:
-                        result += "Ctrl";
-                        break;
-                    case GUIKey.Constant.SHIFT:
-                        result += "Shift";
-                        break;
-                    case GUIKey.Constant.ALT:
-                        result += "Alt";
-                        break;
-                    case GUIKey.Constant.LEFT:
-                        result += "Left";
-                        break;
-                    case GUIKey.Constant.UP:
-                        result += "Up";
-                        break;
-                    case GUIKey.Constant.RIGHT:
-                        result += "Right";
-                        break;
-                    case GUIKey.Constant.DOWN:
-                        result += "Down";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.PAGE_UP:
-                        result += "Pageup";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.PAGE_DOWN:
-                        result += "Pagedown";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.HOME:
-                        result += "Home";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.END:
-                        result += "End";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.INSERT:
-                        result += "Ins";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.DELETE:
-                        result += "Del";
-                        break;
-                    // TODO : Get the correct shortcut code
-                    case GUIKey.Constant.ESCAPE:
-                        result += "Esc";
-                        break;
-                    case GUIKey.Constant.COMMAND:
-                        result += "Cmd";
-                        break;
-                    case GUIKey.Constant.F1:
-                        result += "F1";
-                        break;
-                    case GUIKey.Constant.F2:
-                        result += "F2";
-                        break;
-                    case GUIKey.Constant.F3:
-                        result += "F3";
-                        break;
-                    case GUIKey.Constant.F4:
-                        result += "F4";
-                        break;
-                    case GUIKey.Constant.F5:
-                        result += "F5";
-                        break;
-                    case GUIKey.Constant.F6:
-                        result += "F6";
-                        break;
-                    case GUIKey.Constant.F7:
-                        result += "F7";
-                        break;
-                    case GUIKey.Constant.F8:
-                        result += "F8";
-                        break;
-                    case GUIKey.Constant.F9:
-                        result += "F9";
-                        break;
-                    case GUIKey.Constant.F10:
-                        result += "F10";
-                        break;
-                    case GUIKey.Constant.F11:
-                        result += "F11";
-                        break;
-                    case GUIKey.Constant.F12:
-                        result += "F12";
-                        break;
-                    default:
-                        throw new Error("Unknown key code");
-                }
-            } else {
-                result += key.toUpperCase();
-            }
-        }
-        return result;
-    };
-
-    /**
-     * Convert internal key into a mousetrap-compatible key
-     * @param {Array<*>} shortcut
-     * @returns {String}
-     * @private
-     */
-    EXApplication.prototype._shortcutToMouseTrapShortcut = function (shortcut) {
-        var result = "";
-        for (var i = 0; i < shortcut.length; ++i) {
-            if (i > 0) {
-                result += "+";
-            }
-
-            var key = shortcut[i];
-            if (typeof key == 'number') {
-                switch (key) {
-                    case GUIKey.Constant.META:
-                        result += "meta";
-                        break;
-                    case GUIKey.Constant.OPTION:
-                        result += "option";
-                        break;
-                    case GUIKey.Constant.REMOVE:
-                        result += "del";
-                        break;
-                    case GUIKey.Constant.SPACE:
-                        result += "space";
-                        break;
-                    case GUIKey.Constant.ENTER:
-                        result += "enter";
-                        break;
-                    case GUIKey.Constant.TAB:
-                        result += "tab";
-                        break;
-                    case GUIKey.Constant.BACKSPACE:
-                        result += "backspace";
-                        break;
-                    case GUIKey.Constant.CONTROL:
-                        result += "ctrl";
-                        break;
-                    case GUIKey.Constant.SHIFT:
-                        result += "shift";
-                        break;
-                    case GUIKey.Constant.ALT:
-                        result += "alt";
-                        break;
-                    case GUIKey.Constant.LEFT:
-                        result += "left";
-                        break;
-                    case GUIKey.Constant.UP:
-                        result += "up";
-                        break;
-                    case GUIKey.Constant.RIGHT:
-                        result += "right";
-                        break;
-                    case GUIKey.Constant.DOWN:
-                        result += "down";
-                        break;
-                    case GUIKey.Constant.PAGE_UP:
-                        result += "pageup";
-                        break;
-                    case GUIKey.Constant.PAGE_DOWN:
-                        result += "pagedown";
-                        break;
-                    case GUIKey.Constant.HOME:
-                        result += "home";
-                        break;
-                    case GUIKey.Constant.END:
-                        result += "end";
-                        break;
-                    case GUIKey.Constant.INSERT:
-                        result += "ins";
-                        break;
-                    case GUIKey.Constant.DELETE:
-                        result += "del";
-                        break;
-                    case GUIKey.Constant.ESCAPE:
-                        result += "esc";
-                        break;
-                    case GUIKey.Constant.COMMAND:
-                        result += "meta";
-                        break;
-                    case GUIKey.Constant.F1:
-                        result += "f1";
-                        break;
-                    case GUIKey.Constant.F2:
-                        result += "f2";
-                        break;
-                    case GUIKey.Constant.F3:
-                        result += "f3";
-                        break;
-                    case GUIKey.Constant.F4:
-                        result += "f4";
-                        break;
-                    case GUIKey.Constant.F5:
-                        result += "f5";
-                        break;
-                    case GUIKey.Constant.F6:
-                        result += "f6";
-                        break;
-                    case GUIKey.Constant.F7:
-                        result += "f7";
-                        break;
-                    case GUIKey.Constant.F8:
-                        result += "f8";
-                        break;
-                    case GUIKey.Constant.F9:
-                        result += "f9";
-                        break;
-                    case GUIKey.Constant.F10:
-                        result += "f10";
-                        break;
-                    case GUIKey.Constant.F11:
-                        result += "f11";
-                        break;
-                    case GUIKey.Constant.F12:
-                        result += "f12";
-                        break;
-                    default:
-                        throw new Error("Unknown key code");
-                }
-            } else {
-                result += key.toLowerCase();
-            }
-        }
-        return result;
     };
 
     _.EXApplication = EXApplication;

@@ -14,17 +14,6 @@
             return !(testBuffer[4] === 0x0a && testBuffer[5] === 0x0b && testBuffer[6] === 0x0c && testBuffer[7] === 0x0d);
         })();
 
-        // -- Do some sniffing here to setup our system
-        this.shell = (function () {
-            if (window.gshell) {
-                return GSystem.Shell.Application;
-            } else if (window.device && window.device.cordova) {
-                return GSystem.Shell.Cordova;
-            } else {
-                return GSystem.Shell.Browser;
-            }
-        })();
-
         this.hardware = (function () {
             var tablet = !!navigator.userAgent.match(/(iPad|SCH-I800|xoom|kindle)/i);
             var phone = !!navigator.userAgent.match(/(iPhone|iPod|blackberry|android 0.5|htc|lg|midp|mmp|mobile|nokia|opera mini|palm|pocket|psp|sgh|smartphone|symbian|treo mini|Playstation Portable|SonyEricsson|Samsung|MobileExplorer|PalmSource|Benq|Windows Phone|Windows Mobile|IEMobile|Windows CE|Nintendo Wii)/i);
@@ -70,7 +59,7 @@
             return null;
         })();
 
-        console.log('SHELL=' + this.shell + '; HW=' + this.hardware + '; OS=' + this.operatingSystem + '; LANG=' + this.language);
+        console.log('HW=' + this.hardware + '; OS=' + this.operatingSystem + '; LANG=' + this.language);
     };
 
     /**
@@ -128,33 +117,6 @@
     };
 
     /**
-     * @enum
-     * @version 1.0
-     */
-    GSystem.Shell = {
-        /**
-         * Browser shell
-         * @type {Number}
-         * @version 1.0
-         */
-        Browser: 0,
-
-        /**
-         * Application (Standalone Desktop) Shell
-         * @type {Number}
-         * @version 1.0
-         */
-        Application: 1,
-
-        /**
-         * Cordova (mobile) Shell
-         * @type {Number}
-         * @version 1.0
-         */
-        Cordova: 2
-    };
-
-    /**
      * Property defining whether the system is in little endian (true)
      * or in big endian (false) mode
      * @type {Boolean}
@@ -177,14 +139,6 @@
      * @version 1.0
      */
     GSystem.prototype.hardware = null;
-
-    /**
-     * Property defining the shell type
-     * @type {Number}
-     * @see GSystem.Shell
-     * @version 1.0
-     */
-    GSystem.prototype.shell = null;
 
     /**
      * Property defining the system's language

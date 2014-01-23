@@ -45,7 +45,7 @@
      * @override
      */
     EXDuplicateSelectionAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'D'];
+        return [GUIKey.Constant.META, 'D'];
     };
 
     /**

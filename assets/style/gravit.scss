@@ -5,7 +5,6 @@ $fa-font-path : '../font';
 @import 'mixins';
 @import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
 @import 'cursor';
-@import 'form';
 @import 'tool';
 
 @import 'component_hint';
@@ -16,10 +15,9 @@ $fa-font-path : '../font';
 
 @import 'mixins';
 @import 'blocks';
-@import 'loader';
+@import 'form';
 @import 'plugin_jqTree';
 @import 'application';
-@import 'navigation';
 @import 'sidebar';
 @import 'welcome';
 @import 'windows';

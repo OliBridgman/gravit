@@ -159,7 +159,6 @@
             // Window
             new EXNewWindowAction(),
             new EXShowSidebarAction(),
-            new EXShowToolsAction(),
             paletteShowActions,
 
             // Help

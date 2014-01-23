@@ -30,22 +30,6 @@
   box-shadow: none;
 }
 
-.g-input {
-  background: transparent;
-  padding: 5px;
-  border: 1px solid transparent;
-  resize: none;
-}
-
-.g-input:not(.g-flat),
-.g-input.g-flat:hover,
-.g-input.g-flat:focus {
-  border-radius: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.1);
-  background: white;
-}
-
 /** Flat buttons */
 .g-button.g-flat {
   border: none;

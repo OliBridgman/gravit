@@ -1,13 +1,3 @@
-#toolpanel {
-  position: absolute;
-  top: 0px;
-  /** put on top to  be over header */
-  z-index: 1;
-  height: auto;
-  //width: 30px;
-  background: rgba(255, 255, 255, 0.90);
-}
-
 #toolpanel > button {
   border: none;
   background: transparent;

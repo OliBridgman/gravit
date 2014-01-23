@@ -10,6 +10,7 @@
         this._container = $('<div></div>');
         this._document = document;
         this._view = new GXEditorView(this._document.getEditor());
+        this._view.setViewMargin([EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING]);
         this._container.append(this._view._htmlElement);
 
         // Add "hack" to focus the view on clicking
@@ -26,6 +27,12 @@
         }.bind(this));
     };
     GObject.inherit(EXWindow, GEventTarget);
+
+    /**
+     * Constant defining the additional padding for the view
+     * @type {number}
+     */
+    EXWindow.VIEW_PADDING = 10;
 
     /**
      * The view container

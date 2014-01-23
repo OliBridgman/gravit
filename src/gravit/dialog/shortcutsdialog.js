@@ -12,65 +12,6 @@
 
     GObject.inherit(GUIShortcutsDialog, GUIModal);
 
-    /**
-     * Creates a shortcutmap from the platform's globally available actions
-     */
-    GUIShortcutsDialog.createMapFromAvailableActions = function () {
-        var actions = gApp.getAvailableActions();
-        var actionsMap = [];
-        var lastActionCategory = null;
-        var lastHint = null;
-        for (var i = 0; i <= actions.length; ++i) {
-            var action = null, category = null;
-
-            if (i < actions.length) {
-                action = actions[i];
-
-                category = gLocale.get(action.getCategory());
-
-                if (!category) {
-                    continue;
-                }
-            }
-
-            if (lastActionCategory != category || i >= actions.length) {
-                if (lastHint) {
-                    var actionHint = lastHint.asHtml();
-                    if (actionHint && lastHint.getKeys()) {
-                        actionsMap.push(lastHint);
-                    }
-                }
-
-                if (i < actions.length) {
-                    lastHint = new GUIHint();
-                    lastHint.setTitle(action.getCategory());
-                    lastActionCategory = category;
-                }
-            }
-
-            if (i >= actions.length) {
-                break;
-            }
-
-            var actionShortcut = gApp.getShortcut(action.getId());
-            if (!actionShortcut) {
-                continue;
-            }
-
-            lastHint.addKey(actionShortcut, action.getTitle());
-        }
-
-        if (actionsMap.length > 0) {
-            return {
-                // TODO : I18N
-                title: 'Actions',
-                map: actionsMap
-            }
-        } else {
-            return null;
-        }
-    };
-
     // -----------------------------------------------------------------------------------------------------------------
     // GUIShortcutsDialog Class
     // -----------------------------------------------------------------------------------------------------------------

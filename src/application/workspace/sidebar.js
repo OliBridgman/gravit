@@ -6,7 +6,9 @@
      * @version 1.0
      */
     function EXSidebar(htmlElement) {
-        this._htmlElement = $("<div></div>").appendTo($("<div></div>").appendTo(htmlElement));
+        this._htmlElement = $("<div></div>")
+            .addClass('palettes')
+            .appendTo($("<div></div>").appendTo(htmlElement));
         this._palettesInfo = [];
         this._groupsInfo = [];
     };
@@ -16,6 +18,12 @@
      * @private
      */
     EXSidebar.prototype._htmlElement = null;
+
+    /**
+     * @type {EXToolpanel}
+     * @private
+     */
+    EXSidebar.prototype._toolpanel = null;
 
     /**
      * @type {Array<{{palette: GPalette, panel: JQuery, menu: GUIMenu}}>}
@@ -28,6 +36,14 @@
      * @private
      */
     EXSidebar.prototype._groupsInfo = null;
+
+    /**
+     * Return access to the tools panel
+     * @returns {EXToolpanel}
+     */
+    EXSidebar.prototype.getToolpanel = function () {
+        return this._toolpanel;
+    };
 
     /**
      * Group an array of palettes together
@@ -151,6 +167,13 @@
      * Called from the workspace to initialize
      */
     EXSidebar.prototype.init = function () {
+        // Create and append toolpanel to outer container
+        var toolpanelContainer = $('<div></div>')
+            .attr('id', 'toolpanel')
+            .prependTo(this._htmlElement.parent());
+        this._toolpanel = new EXToolpanel(toolpanelContainer);
+        this._toolpanel.init();
+
         /** Array<Array<GPalette>> */
         var grouppedPalettes = [];
 

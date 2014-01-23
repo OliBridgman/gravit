@@ -24,7 +24,6 @@ gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title"], ["To %nam
 gLocale.setValues(EXShortcutMapAction, GLocale.Language.English, ["title"], ["Shortcut Map..."]);
 gLocale.setValues(EXShowRulersAction, GLocale.Language.English, ["title"], ["Rulers"]);
 gLocale.setValues(EXShowSidebarAction, GLocale.Language.English, ["title"], ["Sidebar"]);
-gLocale.setValues(EXShowToolsAction, GLocale.Language.English, ["title"], ["Tools"]);
 gLocale.setValues(EXUndoAction, GLocale.Language.English, ["title"], ["Undo"]);
 gLocale.setValues(EXZoomInAction, GLocale.Language.English, ["title"], ["Zoom in"]);
 gLocale.setValues(EXZoomOutAction, GLocale.Language.English, ["title"], ["Zoom out"]);

@@ -11,12 +11,6 @@
     };
     GObject.inherit(EXWindows, GEventTarget);
 
-    /**
-     * Constant defining the additional padding for the windows
-     * @type {number}
-     */
-    EXWindows.VIEW_PADDING = 10;
-
     // -----------------------------------------------------------------------------------------------------------------
     // EXWindows.WindowEvent Event
     // -----------------------------------------------------------------------------------------------------------------
@@ -83,12 +77,6 @@
     EXWindows.prototype._activeWindow = null;
 
     /**
-     * @type {Array<Number>}
-     * @private
-     */
-    EXWindows.prototype._viewMargin = null;
-
-    /**
      * Returns a list of all opened windows
      * @return {Array<EXWindow>}
      */
@@ -127,12 +115,13 @@
                 gApp.activateDocument(window.getDocument(), true);
             }
 
+            var previousActiveWindow = this._activeWindow;
+            this._activeWindow = window;
+
             // Send deactivation event after document change if we had an active window
             if (this._activeWindow && this.hasEventListeners(EXWindows.WindowEvent)) {
-                this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Deactivated, this._activeWindow));
+                this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Deactivated, previousActiveWindow));
             }
-
-            this._activeWindow = window;
 
             // Activate the new window if we have any
             if (window) {
@@ -226,14 +215,7 @@
     /**
      * Called from the workspace to relayout
      */
-    EXWindows.prototype.relayout = function (offset) {
-        this._viewMargin = [
-            offset[0] + EXWindows.VIEW_PADDING,
-            offset[1] + EXWindows.VIEW_PADDING,
-            offset[2] + EXWindows.VIEW_PADDING,
-            offset[3] + EXWindows.VIEW_PADDING
-        ];
-
+    EXWindows.prototype.relayout = function () {
         if (this._activeWindow) {
             this._relayoutWindow(this._activeWindow);
         }
@@ -251,7 +233,6 @@
         window._container.width(myWidth);
         window._container.height(myHeight);
         window.getView().resize(myWidth, myHeight);
-        window.getView().setViewMargin(this._viewMargin);
     };
 
     /**

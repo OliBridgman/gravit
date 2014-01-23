@@ -164,7 +164,6 @@
 <script src="application/widget/modal.js"></script>
 <script src="application/widget/progress.js"></script>
 <!-- Workspace -->
-<script src="application/workspace/navigation.js"></script>
 <script src="application/workspace/sidebar.js"></script>
 <script src="application/workspace/toolpanel.js"></script>
 <script src="application/workspace/welcome.js"></script>
@@ -210,8 +209,6 @@
 <script src="gravit/action/showpaletteaction.js"></script>
 <script src="gravit/action/showrulersaction.js"></script>
 <script src="gravit/action/showsidebaraction.js"></script>
-<script src="gravit/action/showtoolsaction.js"></script>
-<script src="gravit/action/showwindowaction.js"></script>
 <script src="gravit/action/undoaction.js"></script>
 <script src="gravit/action/zoominaction.js"></script>
 <script src="gravit/action/zoomoutaction.js"></script>
@@ -256,8 +253,14 @@
 <script src="development/testaction.js"></script>
 <script src="development/development.js"></script>
 
-<!-- Include Web-Shell for development -->
-<script src="shell/web/scripts/gravit-shell.js"></script>
+<!-- Include the proper shell for development -->
+<script type="text/javascript">
+    if (window.hasOwnProperty('gHost')) {
+        document.writeln("<script src=\"shell/native/scripts/gravit-shell.js\" type=\"text\/javascript\"><\/script>");
+    } else {
+        document.writeln("<script src=\"shell/web/scripts/gravit-shell.js\" type=\"text\/javascript\"><\/script>");
+    }
+</script>
 
 </body>
 </html>

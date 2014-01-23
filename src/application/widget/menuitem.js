@@ -317,7 +317,7 @@
         if (action !== this._action) {
             if (this._action) {
                 // Remove shortcut if any was set
-                var shortcut = gApp.getShortcut(action);
+                var shortcut = action.getShortcut();
                 if (shortcut && shortcut === this.getShortcutHint()) {
                     this.setShortcutHint(null);
                 }
@@ -327,7 +327,7 @@
 
             if (this._action) {
                 // Check if there's a shortcut for the item and set if any
-                var shortcut = gApp.getShortcut(action);
+                var shortcut = action.getShortcut();
                 if (shortcut) {
                     this.setShortcutHint(shortcut);
                 }

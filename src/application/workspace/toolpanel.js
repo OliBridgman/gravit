@@ -84,13 +84,6 @@
     };
 
     /**
-     * Called from the workspace to relayout
-     */
-    EXToolpanel.prototype.relayout = function () {
-        // NO-OP
-    };
-
-    /**
      * Called whenever the active tool has been changed
      * @param event
      * @private
