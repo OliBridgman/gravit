@@ -18,8 +18,10 @@ public:
     Q_INVOKABLE void openShell();
 
     Q_INVOKABLE QObject* addMenu(QObject* parent, const QString& title);
-    Q_INVOKABLE QObject* addMenuItem(QObject* parent, const QString& shortcut);
+    Q_INVOKABLE QObject* addMenuItem(QObject* parent);
     Q_INVOKABLE void addMenuSeparator(QObject* parent);
+    Q_INVOKABLE void updateMenuItemShortcut(QObject* item, const QString& shortcut);
+    Q_INVOKABLE void removeMenuItem(QObject* parent, QObject* item);
 
 private slots:
     void addToJavaScript();

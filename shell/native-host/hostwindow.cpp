@@ -62,13 +62,10 @@ QObject* HostWindow::addMenu(QObject* parent, const QString& title) {
     }
 }
 
-QObject* HostWindow::addMenuItem(QObject* parent, const QString& shortcut) {
+QObject* HostWindow::addMenuItem(QObject* parent) {
     QMenu* menu = qobject_cast<QMenu*>(parent);
     if (menu) {
         QAction* action = menu->addAction(QString(""));
-        if (!shortcut.isEmpty()) {
-            action->setShortcut(QKeySequence::fromString(shortcut));
-        }
         return action;
     }
     return NULL;
@@ -78,6 +75,25 @@ void HostWindow::addMenuSeparator(QObject* parent) {
     QMenu* menu = qobject_cast<QMenu*>(parent);
     if (menu) {
         menu->addSeparator();
+    }
+}
+
+void HostWindow::updateMenuItemShortcut(QObject* item, const QString& shortcut) {
+    QAction* action = qobject_cast<QAction*>(item);
+    if (action) {
+        if (!shortcut.isEmpty()) {
+            action->setShortcut(QKeySequence::fromString(shortcut));
+        } else {
+            action->setShortcut(QKeySequence());
+        }
+    }
+}
+
+void HostWindow::removeMenuItem(QObject* parent, QObject* item) {
+    QMenu* menu = qobject_cast<QMenu*>(parent);
+    QAction* action = qobject_cast<QAction*>(item);
+    if (menu) {
+        menu->removeAction(action);
     }
 }
 

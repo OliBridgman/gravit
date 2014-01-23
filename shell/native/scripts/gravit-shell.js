@@ -20,60 +20,55 @@
     };
 
     /** @override */
-    GNativeShell.prototype.createMenuBar = function (menu) {
-        var _updateShellMenu = function (menu, mappings) {
-            menu.update();
-            for (var i = 0; i < mappings.length; ++i) {
-                var mapping = mappings[i];
-                mapping.shellItem.text = gLocale.get(mapping.item.getCaption());
-                if (mapping.item.isChecked()) {
-                    mapping.shellItem.checkable = true;
-                    mapping.shellItem.checked = true;
-                } else {
-                    mapping.shellItem.checked = false;
-                }
-                mapping.shellItem.enabled = mapping.item.isEnabled();
-            }
-        };
-
-        var _addShellMenuItem = function (shellMenu, menuItem) {
-            var shellItem = gHost.addMenuItem(shellMenu, menuItem.getShortcutHint() ? _shortcutToHostShortcut(menuItem.getShortcutHint()) : "");
-            shellItem.triggered.connect(function () {
-                gApp.executeAction(menuItem.getAction().getId());
+    GNativeShell.prototype.addMenu = function (parentMenu, title, callback) {
+        var menu = gHost.addMenu(parentMenu, title);
+        if (callback) {
+            menu.aboutToShow.connect(function () {
+                //alert('UPDATEMENU');
+                callback();
             });
-            return shellItem;
-        };
-
-        var _addShellMenu = function (shellParentMenu, menuItem) {
-            var menu = menuItem.getMenu();
-            var shellMappings = [];
-            var shellMenu = gHost.addMenu(shellParentMenu, gLocale.get(menuItem.getCaption()));
-            shellMenu.aboutToShow.connect(function () {
-                _updateShellMenu(menu, shellMappings);
-            });
-
-            for (var i = 0; i < menu.getItemCount(); ++i) {
-                var item = menu.getItem(i);
-                switch (item.getType()) {
-                    case GUIMenuItem.Type.Menu:
-                        _addShellMenu(shellMenu, item);
-                        break;
-                    case GUIMenuItem.Type.Item:
-                        shellMappings.push({
-                            item: item,
-                            shellItem: _addShellMenuItem(shellMenu, item)
-                        });
-                        break;
-                    case GUIMenuItem.Type.Divider:
-                        gHost.addMenuSeparator(shellMenu);
-                        break;
-                }
-            }
-        };
-
-        for (var i = 0; i < menu.getItemCount(); ++i) {
-            _addShellMenu(null, menu.getItem(i));
         }
+        return menu;
+    };
+
+    /** @override */
+    GNativeShell.prototype.addMenuSeparator = function (parentMenu) {
+        return gHost.addMenuSeparator(parentMenu);
+    };
+
+    /** @override */
+    GNativeShell.prototype.addMenuItem = function (parentMenu, callback) {
+        var item = gHost.addMenuItem(parentMenu);
+
+        if (callback) {
+            item.triggered.connect(function () {
+                callback();
+            });
+        }
+
+        return item;
+    };
+
+    /** @override */
+    GNativeShell.prototype.updateMenuItem = function (item, title, enabled, checked, shortcut) {
+        item.text = title;
+
+        if (checked) {
+            item.checkable = true;
+            item.checked = true;
+        } else {
+            item.checkable = false;
+            item.checked = false;
+        }
+
+        item.enabled = enabled;
+
+        gHost.updateMenuItemShortcut(item, shortcut ? _shortcutToHostShortcut(shortcut) : "");
+    };
+
+    /** @override */
+    GNativeShell.prototype.removeMenuItem = function (parentMenu, child) {
+        gHost.removeMenuItem(parentMenu, child);
     };
 
     _.gShell = new GNativeShell;
@@ -83,7 +78,7 @@
      * @param {Array<*>} shortcut
      * @returns {String}
      */
-    function _shortcutToHostShortcut (shortcut) {
+    function _shortcutToHostShortcut(shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
