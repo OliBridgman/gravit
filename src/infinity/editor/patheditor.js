@@ -273,11 +273,20 @@
                 return result;
             } else if (this.hasFlag(GXElementEditor.Flag.Detail)) {
                 // In detail mode we're able to select segments so hit test for one here
-                // TODO : Implement this right
-                var pathHitResult = this._element.hitTest(location, transform, null, false, 0);
-                if (pathHitResult) {
-                    return new GXElementEditor.PartInfo(this, {type: GXPathEditor.PartType.Segment, point: null}, null, false, true);
+                var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') : 3;
+                var outlineWidth = transform ? 1 * transform.getScaleFactor() + (pickDist * 2) : pickDist * 2;
+                var locationInvTransformed;
+                if (transform) {
+                    locationInvTransformed = transform.inverted().mapPoint(location);
+                } else {
+                    locationInvTransformed = location;
                 }
+                var pathHitResult = this._element.hitTest(locationInvTransformed, outlineWidth, false, false);
+                if (pathHitResult) {
+                    return new GXElementEditor.PartInfo(
+                        this, {type: GXPathEditor.PartType.Segment, point: null}, pathHitResult, false, true);
+                }
+                return null;
             }
         }
 

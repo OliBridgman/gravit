@@ -8,81 +8,15 @@
      */
     function GXPathTool() {
         GXTool.call(this);
-        this._lastHitTest = new GXPathTool.LastHitTest();
     }
 
     GObject.inherit(GXPathTool, GXTool);
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GXPathTool.LastHitTest Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * A class to keep the last hit test
-     * @class GXPathTool.LastHitTest
-     * @constructor
-     * @version 1.0
-     */
-    GXPathTool.LastHitTest = function () {
-    };
-
-    GXPathTool.LastHitTest.prototype.hitResult = null;
-
-    GXPathTool.LastHitTest.prototype.testX = null;
-    GXPathTool.LastHitTest.prototype.testY = null;
-    GXPathTool.LastHitTest.HitType = {
-        AnyPt: 0,
-        FirstAPt: 1,
-        LastAPt: 2,
-        MiddleAPt: 3
-    };
-
-    GXPathTool.LastHitTest.prototype.hitType = null;
-
-    GXPathTool.LastHitTest.prototype.getMiddleAPt = function (pathRef) {
-        var aPt;
-        var aptc;
-
-        if (this.hitType != GXPathTool.LastHitTest.HitType.MiddleAPt) {
-            return null;
-        }
-
-        aptc = new GXVertex();
-        for (aPt = pathRef.getFirstChild(); aPt != null; aPt = aPt.getNext()) {
-            aPt.vertexCoord(aptc);
-            if (aptc.x == this.hitResult.x && aptc.y == this.hitResult.y) {
-                break;
-            }
-        }
-
-        return aPt;
-    };
-
-    GXPathTool.LastHitTest.prototype.getAnyPtAPrev = function (pathRef) {
-        var idx = 1;
-        var aPt = pathRef.getFirstChild();
-        while (aPt != null && idx < this.hitResult.segment) {
-            aPt = aPt.getNext();
-            idx++;
-        }
-
-        return aPt;
-    };
-
-    GXPathTool.prototype._lastHitTest = null;
-
-    /**
-     * The distance to be used for hit-testing points and curves
-     * @type {number}
-     * @private
-     */
-    GXPathTool.prototype._hitRaduis = 2.0;
 
     /**
      * Reference to the edited path
      * @type {GXPath}
      * @private
      */
-    GXPathTool.prototype._gpathRef = null;
     GXPathTool.prototype._pathRef = null;
     GXPathTool.prototype._dpathRef = null;
 
@@ -92,12 +26,6 @@
      */
     GXPathTool.prototype._pixelTransformer = null;
     GXPathTool.prototype._dpixelTransformer = null;
-
-    /**
-     * @type {GRect}
-     * @private
-     */
-    GXPathTool.prototype._paintArea = null;
 
     /**
      * Indicates if a new point is created for this._editPt
@@ -164,10 +92,16 @@
         layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
         layer.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
         layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
+
+        // Set detail mode for selection for path tool
+        this._editor.setSelectionDetail(true);
     };
 
     /** @override */
     GXPathTool.prototype.deactivate = function (view, layer) {
+        // Remove detail mode for selection for path tool
+        this._editor.setSelectionDetail(false);
+
         this._reset();
         GXTool.prototype.deactivate.call(this, view, layer);
 
@@ -175,47 +109,6 @@
         layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
         layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
-    };
-
-    /** @override */
-    GXPathTool.prototype.paint = function (context) {
-        if (this._paintArea) {
-            context.canvas.putVertices(this._dpixelTransformer);
-            context.canvas.strokeVertices(context.selectionOutlineColor);
-        }
-    };
-
-    /**
-     * Called to let the path tool know that it's vertices container has been modified
-     * @private
-     */
-    GXPathTool.prototype._updatedVertices = function () {
-        var paintArea = null;
-
-        if (this._dpathRef && this._dpathRef.getFirstChild()) {
-            paintArea = gVertexInfo.calculateBounds(this._dpixelTransformer, true);
-
-            if (paintArea && paintArea.isEmpty()) {
-                paintArea = null;
-            } else if (paintArea) {
-                // expand for outline stroke width
-                paintArea = paintArea.expanded(1, 1, 1, 1);
-            }
-        }
-        if (paintArea == null && this._paintArea ||
-            paintArea && this._paintArea == null ||
-            paintArea && paintArea != this._paintArea) {
-
-            if (this._paintArea) {
-                this.invalidateArea(this._paintArea);
-            }
-
-            this._paintArea = paintArea;
-
-            if (this._paintArea) {
-                this.invalidateArea(this._paintArea);
-            }
-        }
     };
 
     GXPathTool.prototype._checkPathEditor = function () {
@@ -306,51 +199,6 @@
         this._editPt = null;
         this._refPt = null;
         this._pathEditor = null;
-    };
-
-    /**
-     * Hit tests the selected path, stores the result in this._lastHitTest
-     * @param {GPoint} [pt] current mouse point coordinates
-     * @return {GXVertexInfo.HitResult} or null, if no hit
-     * @private
-     */
-    GXPathTool.prototype._makeHitTest = function (pt) {
-        var hitRes;
-        var apt;
-
-        hitRes = new GXVertexInfo.HitResult();
-        if (this._gpathRef &&
-            gVertexInfo.hitTest(pt.getX(), pt.getY(), this._pathRef, this._hitRaduis * 2, false, hitRes)) {
-
-            this._lastHitTest.hitResult = hitRes;
-            this._lastHitTest.testX = pt.getX();
-            this._lastHitTest.testY = pt.getY();
-            if (this._lastHitTest.hitResult.slope == 0 || this._lastHitTest.hitResult.slope == 1) {
-                if (this._gpathRef.getProperty(GXPath.PROPERTY_CLOSED)) {
-                    this._lastHitTest.hitType = GXPathTool.LastHitTest.HitType.MiddleAPt;
-                } else {
-                    apt = new GXVertex();
-                    this._pathRef.getLastChild().vertexCoord(apt);
-                    if (apt.x == this._lastHitTest.hitResult.x && apt.y == this._lastHitTest.hitResult.y) {
-                        this._lastHitTest.hitType = GXPathTool.LastHitTest.HitType.LastAPt;
-                    } else {
-                        this._pathRef.getFirstChild().vertexCoord(apt);
-                        if (apt.x == this._lastHitTest.hitResult.x && apt.y == this._lastHitTest.hitResult.y) {
-                            this._lastHitTest.hitType = GXPathTool.LastHitTest.HitType.FirstAPt;
-                        } else {
-                            this._lastHitTest.hitType = GXPathTool.LastHitTest.HitType.MiddleAPt;
-                        }
-                    }
-                }
-            } else {
-                this._lastHitTest.hitType = GXPathTool.LastHitTest.HitType.AnyPt;
-            }
-        } else {
-            this._lastHitTest.hitResult = null;
-            this._lastHitTest.testX = null;
-            this._lastHitTest.testY = null;
-            this._lastHitTest.hitType = null;
-        }
     };
 
     /**
@@ -467,83 +315,6 @@
         return constrPt;
     };
 
-    GXPathTool.prototype.splitAtSlope = function (aPrev, aNext, slope, pathRef) {
-        var newAPt;
-        var p1x, c1x, c2x, p2x, p1y, c1y, c2y, p2y;
-        var ctrls1X = new Float64Array(4);
-        var ctrls1Y = new Float64Array(4);
-        var ctrls2X = new Float64Array(4);
-        var ctrls2Y = new Float64Array(4);
-        var vt;
-
-        p1x = aPrev.getProperty(GXPath.AnchorPoint.PROPERTY_X);
-        p1y = aPrev.getProperty(GXPath.AnchorPoint.PROPERTY_Y);
-        c1x = aPrev.getProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X);
-        c1y = aPrev.getProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y);
-        if (c1x == null || c1y == null) {
-            c1x = p1x;
-            c1y = p1y;
-        }
-        p2x = aNext.getProperty(GXPath.AnchorPoint.PROPERTY_X);
-        p2y = aNext.getProperty(GXPath.AnchorPoint.PROPERTY_Y);
-        c2x = aNext.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X);
-        c2y = aNext.getProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y);
-        if (c2x == null || c2y == null) {
-            c2x = p2x;
-            c2y = p2y;
-        }
-
-        // If line
-        if (gMath.isEqualEps(c1x, p1x) && gMath.isEqualEps(c1y, p1y) &&
-            gMath.isEqualEps(c2x, p2x) && gMath.isEqualEps(c2y, p2y)) {
-
-            vt = new GPoint(p1x + slope * (p2x - p1x), p1y + slope * (p2y - p1y));
-            newAPt = new GXPath.AnchorPoint(vt, GXPath.AnchorPoint.CType.Regular);
-            pathRef.insertChild(newAPt, aNext);
-        } else { // curve
-            gMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 1, ctrls1X);
-            gMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 1, ctrls1Y);
-            gMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 2, ctrls2X);
-            gMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 2, ctrls2Y);
-
-            if (gMath.isEqualEps(ctrls1X[1], p1x) && gMath.isEqualEps(ctrls1Y[1], p1y)) {
-                aPrev.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, null);
-                aPrev.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, null);
-            } else {
-                aPrev.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, ctrls1X[1]);
-                aPrev.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, ctrls1Y[1]);
-            }
-
-            vt = new GPoint(ctrls1X[3], ctrls1Y[3]);
-            newAPt = new GXPath.AnchorPoint(vt, GXPath.AnchorPoint.CType.Regular);
-            pathRef.insertChild(newAPt, aNext);
-            if (gMath.isEqualEps(ctrls1X[2], ctrls1X[3]) && gMath.isEqualEps(ctrls1Y[2], ctrls1Y[3])) {
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, null);
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, null);
-            } else {
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, ctrls1X[2]);
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, ctrls1Y[2]);
-            }
-            if (gMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && gMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, null);
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, null);
-            } else {
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, ctrls2X[1]);
-                newAPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, ctrls2Y[1]);
-            }
-
-            if (gMath.isEqualEps(ctrls2X[2], ctrls2X[3]) && gMath.isEqualEps(ctrls2Y[2], ctrls2Y[3])) {
-                aNext.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, null);
-                aNext.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, null);
-            } else {
-                aNext.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, ctrls2X[2]);
-                aNext.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, ctrls2Y[2]);
-            }
-        }
-
-        return newAPt;
-    };
-
     GXPathTool.prototype._makePointMajor = function (anchorPt) {
         this._pathEditor.selectOnePoint(anchorPt);
         this._dpathRef = this._pathEditor.releasePathPreview();
@@ -569,82 +340,22 @@
                 this._refPt = anchorPt;
             }
         } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
-            // TODO
-            // TEMP start
-            this._pathEditor = null;
-            this._pathRef = null;
-            this._dpathRef = null;
-            this._mode = GXPathTool.Mode.Append;
-            // TEMP end
+            var anchorPt = this._pathRef.insertHitPoint(partInfo.data);
+            if (anchorPt) {
+                this._makePointMajor(anchorPt);
+                this._editPt = this._pathEditor.getPathPointPreview(anchorPt);
+                this._pathEditor.requestInvalidation();
+                this._mode = GXPathTool.Mode.Edit;
+            } else {
+                this._pathEditor = null;
+                this._pathRef = null;
+                this._dpathRef = null;
+                this._mode = GXPathTool.Mode.Append;
+            }
         } else { // no path hit
             this._pathEditor.updatePartSelection(false);
             this._commitChanges();
             this._mode = GXPathTool.Mode.Append;
-        }
-        return;
-
-
-        var aPrev = null;
-        var aNext = null;
-
-        if (!this._lastHitTest.hitResult || !gMath.isEqualEps(this._lastHitTest.testX, clickPt.getX()) || !gMath.isEqualEps(this._lastHitTest.testY, clickPt.getY())) {
-
-            this._makeHitTest(clickPt);
-        }
-
-        if (this._lastHitTest.hitResult) {
-            if (this._lastHitTest.hitType == GXPathTool.LastHitTest.HitType.LastAPt ||
-                this._lastHitTest.hitType == GXPathTool.LastHitTest.HitType.FirstAPt) {
-
-                if (this._lastHitTest.hitType == GXPathTool.LastHitTest.HitType.FirstAPt) {
-                    this._gpathRef.switchOrient();
-                    // hit test result becomes invalid if any;
-                    this._lastHitTest = new GXPathTool.LastHitTest();
-                }
-
-                this._mode = GXPathTool.Mode.Append;
-                this._gpathRef.resetSelectedPts();
-                this._newPoint = this._dpathRef.getLastChild();
-                this._newPoint.setFlag(GXNode.Flag.Selected);
-                this._updatedVertices();
-                return;
-            } else if (this._lastHitTest.hitType == GXPathTool.LastHitTest.HitType.MiddleAPt) {
-                this._editPt = this._lastHitTest.getMiddleAPt(this._pathRef);
-                this._gpathRef.resetSelectedPts();
-                if (this._editPt) {
-                    this._editPt.setFlag(GXNode.Flag.Selected);
-                    this._gpathRef.setWorkingPath(this._dpathRef);
-                    this._updatedVertices();
-                } else {
-                    this._gpathRef.removeFlag(GXNode.Flag.Selected);
-                    this._reset(); // sets mode to Append
-                }
-            } else { // this._lastHitTest.hitType == GXPathTool.LastHitTest.HitType.AnyPt
-                aPrev = this._lastHitTest.getAnyPtAPrev(this._pathRef);
-                aNext = aPrev ? aPrev.getNext() : null;
-                if (!aPrev || !aNext) {
-                    this._gpathRef.resetSelectedPts();
-                    this._gpathRef.removeFlag(GXNode.Flag.Selected);
-                    this._reset(); // sets mode to Append
-                } else {
-                    this._gpathRef.beginUpdate();
-                    aPrev.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, false);
-                    aNext.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, false);
-
-                    this._editPt = this.splitAtSlope(
-                        aPrev, aNext, this._lastHitTest.hitResult.slope, this._pathRef);
-
-                    this._gpathRef.resetSelectedPts();
-                    this._editPt.setFlag(GXNode.Flag.Selected);
-                    this._gpathRef.setWorkingPath(this._dpathRef);
-                    this._gpathRef.endUpdate();
-                    this._updatedVertices();
-                }
-            }
-        } else {
-            this._gpathRef.resetSelectedPts();
-            this._gpathRef.removeFlag(GXNode.Flag.Selected);
-            this._reset(); // sets mode to Append
         }
     };
 
