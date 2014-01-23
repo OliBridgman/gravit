@@ -333,7 +333,7 @@
      */
     GTransform.prototype.mapRect = function (rect) {
         // If identity nothing to transform so return
-        if (this.isIdentity()) {
+        if (this.isIdentity() || rect == null) {
             return rect;
         }
 

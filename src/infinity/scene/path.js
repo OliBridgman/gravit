@@ -72,17 +72,56 @@
         return clone;
     };
 
-    GXPath.prototype.hitTest = function (location, outlineWidth, area, styled) {
-        var hitResult = new GXVertexInfo.HitResult();
-        this._invalidateVertices(styled);
-        if (gVertexInfo.hitTest(
-            location.getX(), location.getY(), this, outlineWidth, area, hitResult)) {
-            return hitResult;
+    /**
+     * Hit-tests the path for the location. Corner styles are not applied.
+     * @param {GPoint} location
+     * @param {GTransform} transform - a transformation to be applied to the path before hit-testing in addition to
+     * path internal transformation, if any
+     * @param {Boolean} area - indicates if path inside should be tested
+     * @returns {GXElement.HitResult} if hit, or null otherwise; hit result contains all data
+     * in the path native anchor points coordinates
+     */
+    GXPath.prototype.detailHitTest = function (location, transform, area) {
+        var pickDist = this.isAttached() ? this._scene.getProperty('pickDist') : 3;
+        var outlineWidth = 1 + pickDist * 2;
+        var locationInvTransformed = location;
+        var scaleFactor = 1;
+        if (transform) {
+            var invTransform = transform.inverted();
+            locationInvTransformed = invTransform.mapPoint(location);
+            scaleFactor = scaleFactor * invTransform.getScaleFactor();
         }
-        this._verticesDurty = true;
-        return null;
+        var origTransform = null;
+        if (this.$transform) {
+            origTransform = this.$transform;
+            this.$transform = null;
+            var invTransform = origTransform.inverted();
+            locationInvTransformed = invTransform.mapPoint(locationInvTransformed);
+            scaleFactor = scaleFactor * invTransform.getScaleFactor();
+        }
+        this._invalidateVertices(false);
+        var hitResult = new GXVertexInfo.HitResult();
+        var elemHitRes = null;
+        outlineWidth *= scaleFactor;
+        outlineWidth = 10;
+        if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
+                this, outlineWidth, this.$closed ? area : false, hitResult)) {
+
+            elemHitRes = new GXElement.HitResult(this, hitResult);
+        }
+        this._verticesDirty = true;
+        if (origTransform) {
+            this.$transform = origTransform;
+        }
+        this._invalidateVertices(true);
+        return elemHitRes;
     };
 
+    /**
+     * Creates and inserts a new point into the path. The point location is specified in the result of hit-test
+     * @param {GXVertexInfo.HitResult} hitResult
+     * @returns {GXPathBase.AnchorPoint} a newly inserted anchor point, or null if no new point was inserted
+     */
     GXPath.prototype.insertHitPoint = function (hitResult) {
         if (!hitResult || !hitResult.slope ||
             gMath.isEqualEps(hitResult.slope, 0) || gMath.isEqualEps(hitResult.slope, 1)) {

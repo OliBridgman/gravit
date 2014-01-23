@@ -69,6 +69,8 @@
         this._newPoint = null;
         this._editPt = null;
 
+        // TODO: honor path.$transform in _addPoint, _updatePoint, _constrainIfNeeded, hitAnchorPoint
+
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 

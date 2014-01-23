@@ -989,7 +989,7 @@
         if (hx != null) {
             pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
         } else {
-            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, nextPt.$cr);
+            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
         }
         return pt;
     };
@@ -1362,7 +1362,7 @@
 
     /** @override */
     GXPathBase.prototype.rewindVertices = function (index) {
-        if (this._verticesDirty) {
+        if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
             this._invalidateVertices(true);
             this._verticesDirty = false;
         }

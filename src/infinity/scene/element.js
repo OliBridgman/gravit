@@ -149,11 +149,13 @@
     /**
      * A hit result on an element
      * @param {GXElement} element the element that was hit
+     * @param {*} args - other hit-test data
      * @constructor
      * @class GXElement.HitResult
      */
     GXElement.HitResult = function (element, args) {
         this.element = element;
+        this.data = args;
     };
 
     /**
@@ -163,6 +165,11 @@
      */
     GXElement.HitResult.prototype.element = null;
 
+    /**
+     * Additional hit-test data
+     * @type {*}
+     */
+    GXElement.HitResult.prototype.data = null;
 
     // -----------------------------------------------------------------------------------------------------------------
     // GXElement.Pivot Mixin

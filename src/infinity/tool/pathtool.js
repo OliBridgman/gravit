@@ -408,7 +408,7 @@
                 this._refPt = anchorPt;
             }
         } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
-            var anchorPt = this._pathRef.insertHitPoint(partInfo.data);
+            var anchorPt = this._pathRef.insertHitPoint(partInfo.data.data);
             if (anchorPt) {
                 this._makePointMajor(anchorPt);
                 this._editPt = this._pathEditor.getPathPointPreview(anchorPt);
