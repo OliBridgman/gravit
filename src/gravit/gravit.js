@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * Gravit Core Module
-     * @class GModule
+     * @class GravitModule
      * @constructor
      * @extends EXModule
      */
-    function GModule() {
+    function GravitModule() {
     }
-    GObject.inherit(GModule, EXModule);
+    GObject.inherit(GravitModule, EXModule);
 
     /** @override */
-    GModule.prototype.init = function () {
+    GravitModule.prototype.init = function () {
         // Register default palettes
         gExpress.palettes.push(
             new EXColorMixerPalette(),
@@ -60,7 +60,7 @@
      * @returns {Array<GAction>}
      * @private
      */
-    GModule.prototype._createDefaultActions = function () {
+    GravitModule.prototype._createDefaultActions = function () {
         // Collect all storages and create our open
         // and saveAs actions out of it here
         var openActions = [];
@@ -162,9 +162,9 @@
     };
 
     /** @override */
-    GModule.prototype.toString = function () {
+    GravitModule.prototype.toString = function () {
         return '[Module Gravit]';
     };
 
-    gExpress.modules.push(new GModule());
+    gExpress.modules.push(new GravitModule());
 })(this);

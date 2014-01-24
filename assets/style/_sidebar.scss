@@ -2,12 +2,12 @@
   position: absolute;
   width: 250px;
   right: 0px;
-  background: #dde4ea;
-  border-left: 1px solid rgb(156, 172, 188);
+  background: rgb(237, 237, 237);
+  border-left: 1px solid rgb(205, 205, 205);
 }
 
 #sidebar .palettes {
-  border-top: 1px solid rgb(156, 172, 188);
+  border-top: 1px solid rgb(205, 205, 205);
 }
 
 /** Palettes */
@@ -15,11 +15,15 @@
   overflow: hidden;
 }
 
+#sidebar .palette-group {
+  border-bottom: 1px solid rgb(205, 205, 205);
+}
+
 #sidebar .palette-group > .palette-group-header {
   display: table;
   width: 100%;
-  background: #CED7E0 linear-gradient(to bottom, #ECF0F3, #CED7E0);
-  border-bottom: 1px solid #9CACBC;
+  background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
+  border-bottom: 1px solid rgb(205, 205, 205);
   box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
   height: 22px;
 
@@ -32,7 +36,7 @@
   > button, .palette-group-tabs > button {
     padding: 0px;
     margin: 0px;
-    text-shadow: #ECF0F3 0px 1px 0px;
+    text-shadow: rgb(245, 245, 245) 0px 1px 0px;
     font-size: 80%;
     font-weight: bold;
     text-transform: uppercase;

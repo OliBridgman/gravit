@@ -51,7 +51,7 @@
             .css('font-family', 'Tahoma, Arial, serif, sans-serif')
             .css('font-size', '11px')
             .css('margin-bottom', '2px')
-            .css('background', '#CED7E0');
+            .css('background', 'rgb(250, 250, 250)');
         this._menuBar._htmlElement.prependTo($('#sidebar'));
 
         // Remove loader

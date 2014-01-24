@@ -33,7 +33,6 @@
     GObject.inherit(EXApplication, GEventTarget);
 
     // Constants for pre-defined action categories
-    EXApplication.CATEGORY_WINDOW = new GLocale.Key(EXApplication, "category.window");
     EXApplication.CATEGORY_FILE = new GLocale.Key(EXApplication, "category.file");
     EXApplication.CATEGORY_FILE_OPEN = new GLocale.Key(EXApplication, "category.file.open");
     EXApplication.CATEGORY_FILE_SAVEAS = new GLocale.Key(EXApplication, "category.file.saveas");
@@ -42,6 +41,7 @@
     EXApplication.CATEGORY_EDIT = new GLocale.Key(EXApplication, "category.edit");
     EXApplication.CATEGORY_VIEW = new GLocale.Key(EXApplication, "category.view");
     EXApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(EXApplication, "category.view.magnification");
+    EXApplication.CATEGORY_WINDOW = new GLocale.Key(EXApplication, "category.window");
     EXApplication.CATEGORY_HELP = new GLocale.Key(EXApplication, "category.help");
 
     /**
