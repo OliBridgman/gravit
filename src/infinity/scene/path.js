@@ -103,7 +103,6 @@
         var hitResult = new GXVertexInfo.HitResult();
         var elemHitRes = null;
         outlineWidth *= scaleFactor;
-        outlineWidth = 10;
         if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
                 this, outlineWidth, this.$closed ? area : false, hitResult)) {
 

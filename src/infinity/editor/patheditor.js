@@ -214,15 +214,19 @@
      * Hit-test anchor point's annotation
      * @param {GXPathBase.AnchorPoint} anchorPt - anchor point to hit-test
      * @param {GPoint} location
-     * @param {GTransform} transform - a transformation to apply to point's coordinates before hit-testing
+     * @param {GTransform} transform - a transformation to apply to anchor point's coordinates before hit-testing
      * @returns {boolean} the result of hit-test
      */
     GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform) {
         var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
         var res = false;
         if (anchorPt) {
+            var transformToApply = this._element.getProperty('transform');
+            if (transform) {
+                transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
+            }
             res = this._getAnnotationBBox(
-                    transform, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                    transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
                 .expanded(pickDist, pickDist, pickDist, pickDist)
                 .containsPoint(location);
         }
@@ -708,6 +712,61 @@
         var sourceIndex = sourcePoint.getParent().getIndexOfChild(sourcePoint);
         var previewIndex = this._sourceIndexToPreviewIndex[sourceIndex];
         return this._elementPreview.getAnchorPoints().getChildByIndex(previewIndex);
+    };
+
+    /**
+     * Moves single anchor point to a new position. The anchor point should not necessary have source point.
+     * This function may be used for both preview or original path points. If the original path has a transform,
+     * then it is used without any concern, if preview or original path point is moving.
+     * @param {GXPathBase.AnchorPoint} anchorPoint - an anchor point to move to new position
+     * @param {GPoint} newPosition - new point's position
+     * @param {GTransform} transform - transformation to be applied to path points to make their coordinate system
+     * the same in which new position is specified
+     * @param {GXPathBase.AnchorPoint} origPoint - if present, this anchor point is used as a source point instead of
+     * anchor point itself. Useful when dragging an existing point to not lose it's handles accuracy.
+     */
+    GXPathEditor.prototype.movePoint = function (anchorPoint, newPosition, transform, origPoint) {
+        var transformToNewPos = this._element.getProperty('transform');
+        if (transform) {
+            transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
+        }
+        if (!transformToNewPos) {
+            transformToNewPos = new GTransform();
+        }
+        var transformToNative = transformToNewPos.inverted();
+
+        var newNativePos = transformToNative.mapPoint(newPosition);
+
+        if (anchorPoint.getProperty('ah')) {
+            anchorPoint.setProperties(['x', 'y'], [newNativePos.getX(), newNativePos.getY()]);
+        } else {
+            var srcPt = origPoint ? origPoint : anchorPoint;
+            var hlx = srcPt.getProperty('hlx');
+            var hly = srcPt.getProperty('hly');
+            var hrx = srcPt.getProperty('hrx');
+            var hry = srcPt.getProperty('hry');
+            if (hlx != null && hly != null || hrx != null && hry != null) {
+                var origPos = transformToNewPos.mapPoint(
+                    new GPoint(srcPt.getProperty('x'), srcPt.getProperty('y')));
+                var dx = newPosition.getX() - origPos.getX();
+                var dy = newPosition.getY() - origPos.getY();
+
+                if (hlx != null && hly != null) {
+                    var pt = transformToNative.mapPoint(
+                        transformToNewPos.mapPoint(new GPoint(hlx, hly)).translated(dx, dy));
+                    hlx = pt.getX();
+                    hly = pt.getY();
+                }
+                if (hrx != null && hry != null) {
+                    var pt = transformToNative.mapPoint(
+                        transformToNewPos.mapPoint(new GPoint(hrx, hry)).translated(dx, dy));
+                    hrx = pt.getX();
+                    hry = pt.getY();
+                }
+            }
+            anchorPoint.setProperties(['x', 'y', 'hlx', 'hly', 'hrx', 'hry'],
+                [newNativePos.getX(), newNativePos.getY(), hlx, hly, hrx, hry]);
+        }
     };
 
     /**

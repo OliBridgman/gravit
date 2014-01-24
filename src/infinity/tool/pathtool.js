@@ -69,6 +69,13 @@
     GXPathTool.prototype._dragStarted = false;
 
     /**
+     * Contains reference to original path anchor point (if exists) for the case when it's preview is moving
+     * @type {GXPathBase.AnchorPoint}
+     * @private
+     */
+    GXPathTool.prototype._dragStartPt = null;
+
+    /**
      * Possible working modes of Path Tool
      * @type {{Append: number, Prepend: number, Edit: number}}
      */
@@ -178,12 +185,21 @@
     /**
      * Adds new anchor point to the end of edited path. Creates a new path with one point,
      * if no path is selected for editing
-     * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path
+     * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path in scene or path native coordinates
      * @param {Boolean} draft - indicates if the path itself or path preview should be used for point insertion
+     * @param {Boolean} nativeCoord - indicates if the new point already in path native coordinates
      * @private
      */
-    GXPathTool.prototype._addPoint = function (anchorPt, draft) {
+    GXPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord) {
         anchorPt.setFlag(GXNode.Flag.Selected);
+        if (this._pathEditor && !nativeCoord) {
+            var transform = this._pathRef.getProperty('transform');
+            if (transform) {
+                var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                location = transform.inverted().mapPoint(location);
+                anchorPt.setProperties(['x', 'y'], [location.getX(), location.getY()]);
+            }
+        }
         if (draft) {
             if (!this._pathEditor) {
                 this._createAndAppendPath(anchorPt);
@@ -240,6 +256,7 @@
         this._newPoint = false;
         this._editPt = null;
         this._refPt = null;
+        this._dragStartPt = null;
         this._pathEditor = null;
     };
 
@@ -296,6 +313,7 @@
     GXPathTool.prototype._mouseRelease = function (event) {
         this._released = true;
         this._dragStarted = false;
+        this._dragStartPt = null;
     };
 
     /**
@@ -342,13 +360,14 @@
      * If Shift key is pressed, finds the point, which should be used as a base to constrain location with,
      * and calculates a new location
      * @param {GPoint} pt - original point
+     * @param {GTransform} transform - a transformation to apply to base point before using it for constraining
      * @param {GXPath} path - a path to look for base point; used only if no orientation point is passed
      * @param {GXPathBase.AnchorPoint} orientPt - orientation anchor point to be used as a base to constrain location with,
      * may be null
      * @returns {GPoint} - original or newly created bounded point
      * @private
      */
-    GXPathTool.prototype._constrainIfNeeded = function (pt, path, orientPt) {
+    GXPathTool.prototype._constrainIfNeeded = function (pt, transform, path, orientPt) {
         var constrPt = pt;
 
         if (gPlatform.modifiers.shiftKey) {
@@ -364,8 +383,14 @@
             }
 
             if (otherPt) {
+                var basePt = new GPoint(otherPt.getProperty('x'), otherPt.getProperty('y'));
+                var transformToApply = path ? path.getProperty('transform') : null;
+                if (transform) {
+                    transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
+                }
+                basePt = transformToApply ? transformToApply.mapPoint(basePt) : basePt;
                 constrPt = gMath.convertToConstrain(
-                    otherPt.getProperty('x'), otherPt.getProperty('y'), pt.getX(), pt.getY());
+                    basePt.getX(), basePt.getY(), pt.getX(), pt.getY());
             }
         }
         return constrPt;
