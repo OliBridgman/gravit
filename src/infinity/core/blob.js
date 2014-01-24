@@ -55,26 +55,27 @@
     };
 
     /**
-     * Restore the data from the blob. Take care on the
-     * returned data as it might be a hash depending on
-     * whether the storage supportes named data or not
+     * Restore the data from the blob
+     * @param {Boolean} binary whether the data is binary or not
+     * @param {String} encoding the encoding, supported are 'binary'
+     * and 'utf8'
      * @param {Function} callback called with the data restored
-     * @return {*}
+     * @return {String}
      */
-    GBlob.prototype.restore = function (done) {
+    GBlob.prototype.restore = function (binary, encoding, done) {
         throw new Error('Not Supported.');
     };
 
     /**
-     * Store data into the blob. Take care on the
-     * data as it might require a hash depending on
-     * whether the storage supportes named data or not
-     * @param {*} data the data to store
-     * @param {boolean} compress if true, the data should
-     * be compressed, defaults to false
+     * Store data into the blob
+     * @param {String} data the data to store. If binary is
+     * set to true, this should be a base64-encoded string
+     * @param {Boolean} binary whether the data is binary or not
+     * @param {String} encoding the encoding, supported are 'binary'
+     * and 'utf8'
      * @param {Function} callback called when data was stored
      */
-    GBlob.prototype.store = function (data, compress, done) {
+    GBlob.prototype.store = function (data, binary, encoding, done) {
         throw new Error('Not Supported.');
     };
 

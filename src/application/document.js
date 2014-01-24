@@ -116,8 +116,8 @@
      * @return {String}
      */
     EXDocument.prototype.getTitle = function () {
-        if (this.blob) {
-            return this.blob.getName();
+        if (this._blob) {
+            return this._blob.getName();
         } else {
             return this._temporaryTitle;
         }
@@ -131,7 +131,7 @@
      * @return {Boolean}
      */
     EXDocument.prototype.isSaveable = function () {
-        return this.blob && this.editor.getUndoList().hasUndo();
+        return this._blob && this.editor.getUndoList().hasUndo();
     };
 
     /**
@@ -139,8 +139,11 @@
      */
     EXDocument.prototype.save = function () {
         // TODO : Reset undo list/set save point
-        if (this.blob) {
-            this.blob.store(GXNode.serialize(this.scene));
+        if (this._blob) {
+            this._blob.store(GXNode.serialize(this._scene), false, 'binary', function () {
+                // Clear undo list when stored
+                this._editor.getUndoList().clear();
+            });
         }
     };
 

@@ -57,7 +57,7 @@
      */
     EXOpenAction.prototype.execute = function () {
         // TODO : Set first parameter 'reference'
-        this._storage.openBlobPrompt(null, ['gxd'], function (blob) {
+        this._storage.openBlobPrompt(null, ['gravit'], function (blob) {
             gApp.addDocument(blob);
         });
     };

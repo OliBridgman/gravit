@@ -195,7 +195,24 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        // Copy files without replacements
+        concat : {
+            deployweb : {
+                src: ['shell/web/scripts/*.js'],
+                dest: '.tmp/web/scripts'
+            },
+            deploynative : {
+                src: ['shell/native/scripts/*.js'],
+                dest: '.tmp/native/scripts'
+            }
+        },
+        uglify: {
+            deploy: {
+                files: {
+                    '<%= build.deploy %>/web/scripts/gravit-shell.js': ['<%= concat.deployweb.dest %>'],
+                    '<%= build.deploy %>/native/scripts/gravit-shell.js': ['<%= concat.deploynative.dest %>']
+                }
+            }
+        },
         copy: {
             dist: {
                 files: [
@@ -225,7 +242,7 @@ module.exports = function (grunt) {
                         dot: true,
                         cwd: 'shell/web/',
                         dest: '<%= build.deploy %>/web/',
-                        src: '{,*/}*.*'
+                        src: ['{,**/}*.*', '!{,**/}*.js']
                     },
                     {
                         expand: true,
@@ -240,7 +257,7 @@ module.exports = function (grunt) {
                         dot: true,
                         cwd: 'shell/native/',
                         dest: '<%= build.deploy %>/native/',
-                        src: '{,*/}*.*'
+                        src: ['{,**/}*.*', '!{,**/}*.js']
                     },
                     {
                         expand: true,
@@ -248,7 +265,7 @@ module.exports = function (grunt) {
                         cwd: '<%= build.dist %>/',
                         dest: '<%= build.deploy %>/native/',
                         src: '{,**/}*.*'
-                    },
+                    }
                 ]
             },
             styles: {
@@ -329,7 +346,10 @@ module.exports = function (grunt) {
     grunt.registerTask('deploy', [
         'dist',
         'clean:deploy',
-        'copy:deploy'
+        'copy:deploy',
+        'concat:deployweb',
+        'concat:deploynative',
+        'uglify:deploy'
     ]);
 
     grunt.registerTask('default', [

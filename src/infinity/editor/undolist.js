@@ -14,7 +14,6 @@
     /**
      * Maximal number of entries kept before cutting
      * @type {number}
-     * @version 1.0
      */
     GUndoList.MAX_ENTRIES = 100;
 
@@ -151,6 +150,14 @@
     GUndoList.prototype.addAction = function (action) {
         // TODO : Group support
         this._undoActions.push(action);
+    };
+
+    /**
+     * Clear the undo list
+     */
+    GUndoList.prototype.clear = function () {
+        this._redoActions = [];
+        this._undoActions = [];
     };
 
     /** @override */

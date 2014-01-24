@@ -388,10 +388,10 @@
             }
 
             if (!documentAlreadyOpened) {
-                source.restore(function (data) {
-                    var document = null;
+                source.restore(false, 'binary', function (data) {
+                    var scene = null;
                     try {
-                        var scene = GXNode.deserialize(data);
+                        scene = GXNode.deserialize(data);
 
                         if (!scene) {
                             throw new Error('Failure.');
@@ -400,7 +400,7 @@
                         alert('An error has ocurred while trying to open the document.');
                     }
 
-                    if (document) {
+                    if (scene) {
                         this._addDocument(scene, source);
                     }
                 }.bind(this));

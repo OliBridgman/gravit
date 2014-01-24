@@ -11,7 +11,8 @@
 
     /** @override */
     GNativeShell.prototype.prepareLoad = function () {
-        // NO-OP
+        // Register our native storage
+        gExpress.storages.push(new GNativeStorage());
     };
 
     /** @override */

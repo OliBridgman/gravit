@@ -97,6 +97,63 @@ void HostWindow::removeMenuItem(QObject* parent, QObject* item) {
     }
 }
 
+QString HostWindow::openFilePrompt(const QString& filter, const QString& initialDirectory) {
+    return QFileDialog::getOpenFileName(this, QString(), initialDirectory, filter);
+}
+
+QString HostWindow::saveFilePrompt(const QString& filter, const QString& initialDirectory) {
+    return QFileDialog::getSaveFileName(this, QString(), initialDirectory, filter);
+}
+
+QString HostWindow::readFile(const QString& fileLocation, bool binary, const QString& encoding) {
+    QFile file(fileLocation);
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+
+    QByteArray fileContents = file.readAll();
+    file.close();
+
+    if (encoding.compare("binary") == 0) {
+        fileContents = qUncompress(fileContents);
+    }
+
+    QString result;
+    if (binary) {
+        result = QString::fromLocal8Bit(fileContents.toBase64());
+    } else {
+        result = QString::fromUtf8(fileContents);
+    }
+
+    return result;
+}
+
+bool HostWindow::writeFile(const QString& fileLocation, const QString& data, bool binary, const QString& encoding) {
+    QFile file(fileLocation);
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        return false;
+    }
+
+    QByteArray fileContents;
+    if (binary) {
+        fileContents = QByteArray::fromBase64(data.toLocal8Bit());
+    } else {
+        fileContents = data.toUtf8();
+        if (encoding.compare("binary") == 0) {
+            fileContents = qCompress(fileContents, 9);
+        }
+    }
+
+    file.write(fileContents);
+    file.close();
+
+    return true;
+}
+
 void HostWindow::resizeEvent(QResizeEvent* event) {
     this->m_view->move(0, 0);
     this->m_view->resize(this->size());

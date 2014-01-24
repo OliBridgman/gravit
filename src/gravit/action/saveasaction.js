@@ -63,10 +63,10 @@
      * @override
      */
     EXSaveAsAction.prototype.execute = function () {
-        var document = gApp.isEnabled();
+        var document = gApp.getActiveDocument();
 
         // TODO : Set first parameter 'reference'
-        this._storage.saveBlobPrompt(null, document.getTitle(), 'gxd', function (blob) {
+        this._storage.saveBlobPrompt(null, document.getTitle(), 'gravit', function (blob) {
             document.setBlob(blob);
             document.save();
         });

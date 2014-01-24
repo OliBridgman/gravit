@@ -11,11 +11,6 @@
 
     /** @override */
     GModule.prototype.init = function () {
-// Register default storages
-        gExpress.storages.push(
-            new GFileStorage()
-        );
-
         // Register default palettes
         gExpress.palettes.push(
             new EXColorMixerPalette(),

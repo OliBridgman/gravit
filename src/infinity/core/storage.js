@@ -32,17 +32,6 @@
     };
 
     /**
-     * Returns whether this storage uses named data,
-     * means that you need to supply a hash of data
-     * to the blob's store function and will retrieve
-     * a hash of data when restoring it
-     * @return {Boolean}
-     */
-    GStorage.prototype.isNamedData = function () {
-        throw new Error('Not supported.');
-    };
-
-    /**
      * Get the unique protocol of this storage
      * @return {String}
      */
