@@ -123,6 +123,9 @@
                 // Assign palette menu
                 groupInfo.menuButton.setMenu(paletteInfo.menu);
 
+                // Toggle menu button visibility depending on menu items
+                groupInfo.menuButton._htmlElement.css('visibility', paletteInfo.menu.getItemCount() === 0 ? 'hidden' : 'visible');
+
                 // Group needs to be visible and expanded
                 this._setGroupVisible(groupInfo, true);
                 this._setGroupExpanded(groupInfo, true);
