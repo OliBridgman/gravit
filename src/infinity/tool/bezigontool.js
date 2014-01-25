@@ -181,18 +181,6 @@
     };
 
     /**
-     * Updates position of edited point, takes into account shiftKey and mode
-     * @param {GPoint} clickPt - coordinates to be used for new position in view system
-     * @private
-     */
-    GXBezigonTool.prototype._updatePoint = function (clickPt) {
-        if (this._pathRef && this._editPt) {
-            var newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(), this._pathRef);
-            this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
-        }
-    };
-
-    /**
      * Constructs new point, specific to Bezigon Tool, with the given position
      * @param {GUIMouseEvent} event used to define pressed button
      * @param {GPoint} pt - coordinates to be used for new position in world system

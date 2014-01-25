@@ -715,6 +715,22 @@
     };
 
     /**
+     * Returns the combined transformation of the path internal transformation with the supplied
+     * @param {GTransform}transform
+     * @returns {GTransform}
+     */
+    GXPathEditor.prototype.getTransformFromNative = function (transform) {
+        var transformToNewPos = this._element.getProperty('transform');
+        if (transform) {
+            transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
+        }
+        if (!transformToNewPos) {
+            transformToNewPos = new GTransform();
+        }
+        return transformToNewPos;
+    };
+
+    /**
      * Moves single anchor point to a new position. The anchor point should not necessary have source point.
      * This function may be used for both preview or original path points. If the original path has a transform,
      * then it is used without any concern, if preview or original path point is moving.
@@ -726,13 +742,7 @@
      * anchor point itself. Useful when dragging an existing point to not lose it's handles accuracy.
      */
     GXPathEditor.prototype.movePoint = function (anchorPoint, newPosition, transform, origPoint) {
-        var transformToNewPos = this._element.getProperty('transform');
-        if (transform) {
-            transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
-        }
-        if (!transformToNewPos) {
-            transformToNewPos = new GTransform();
-        }
+        var transformToNewPos = this.getTransformFromNative(transform);
         var transformToNative = transformToNewPos.inverted();
 
         var newNativePos = transformToNative.mapPoint(newPosition);

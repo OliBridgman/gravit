@@ -183,6 +183,18 @@
     };
 
     /**
+     * Updates position of edited point, takes into account shiftKey and mode
+     * @param {GPoint} clickPt - coordinates to be used for new position in view system
+     * @private
+     */
+    GXPathTool.prototype._updatePoint = function (clickPt) {
+        if (this._pathRef && this._editPt) {
+            var newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(), this._pathRef);
+            this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
+        }
+    };
+
+    /**
      * Adds new anchor point to the end of edited path. Creates a new path with one point,
      * if no path is selected for editing
      * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path in scene or path native coordinates

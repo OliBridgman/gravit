@@ -54,6 +54,14 @@
      * @private
      */
     GXPenTool.prototype._mouseDown = function (event) {
+        var tm = new Date().getTime();
+        if (tm - this._mDownTime < 300) {
+            // Double-click
+            return;
+        }
+
+        this._mDownTime = tm;
+
         var anchorPt = null;
         var clickPt;
         var pt;
@@ -61,23 +69,45 @@
         var firstPt;
         var fv;
 
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+        //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
         this._released = false;
-        this._newPoint = null;
-        this._editPt = null;
+        this._dragStarted = false;
+        this._dragStartPt = null;
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 
             this._checkMode();
-            clickPt = this._view.getViewTransform().mapPoint(event.client);
 
             if (this._mode == GXPathTool.Mode.Edit) {
-                this._mouseDownOnEdit(clickPt);
+                this._mouseDownOnEdit(event.client);
             }
 
             this._updateCursor();
-            if (this._mode == GXPathTool.Mode.Append) {
+            if (this._mode != GXPathTool.Mode.Edit) {
+                if (this._newPoint && this._pathEditor) {
+                    this._updatePoint(event.client);
+                    // TODO: update point type
+                    this._closeIfNeeded(true); // close preview
+                    if (!this._pathRef.getProperty('closed')) {
+                        //TODO: remove handles if clicked to previous point
+                    } else {
+                        // TODO: switch refPoint
+                        if (this._mode == GXPathTool.Mode.Append) {
+                            this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                        } else { // this._mode == GXPathTool.Mode.Prepend
+                            this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                        }
+                    }
+                    this._pathEditor.requestInvalidation();
+                } else {
+                    // add new point
+                    var pt = this._view.getViewTransform().mapPoint(event.client);
+                    anchorPt = this._constructNewPoint(event, pt);
+                    this._addPoint(anchorPt, true, false);
+                }
+
+                /*
                 if (this._gpathRef) {
                     this._gpathRef.resetSelectedPts();
                     anchorPt = this._dpathRef.getLastChild();
@@ -115,17 +145,18 @@
                     this._gpathRef.endUpdate();
                     this._updatedVertices();
                 }
+                */
             }
         }
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
-    GXPenTool.prototype._closeIfNeeded = function () {
+    GXPenTool.prototype._closeIfNeeded = function (draft) {
         var vpt;
         var anchorPt;
         var otherPt;
         var px, py;
-
+        return;
         if (this._gpathRef && this._mode == GXPathTool.Mode.Append) {
             vpt = new GXVertex();
             anchorPt = this._dpathRef.getLastChild();
@@ -170,8 +201,25 @@
             return;
         }
 
-        curPt = this._view.getViewTransform().mapPoint(event.client);
         this._checkMode();
+        if (this._mode == GXPathTool.Mode.Edit) {
+            //this._makeHitTest(curPt);
+            //this._updateCursor();
+        } else { // _mode == Append || Prepend
+            if (!this._newPoint && this._pathEditor) {
+                var clickPt = this._constrainIfNeeded(event.client, this._view.getWorldTransform(), this._pathRef);
+                // add new point
+                clickPt = this._view.getViewTransform().mapPoint(clickPt);
+                anchorPt = this._constructNewPoint(event, clickPt);
+                this._addPoint(anchorPt, true, false);
+            } else if (this._editPt) {
+                this._pathEditor.requestInvalidation();
+                this._updatePoint(event.client);
+                this._pathEditor.requestInvalidation();
+            }
+        /*
+        curPt = this._view.getViewTransform().mapPoint(event.client);
+
         if (this._mode == GXPathTool.Mode.Edit) {
             this._makeHitTest(curPt);
             this._updateCursor();
@@ -195,6 +243,8 @@
         }
 
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+        */
+        }
     };
 
 
@@ -212,6 +262,12 @@
         var ex, ey;
 
         this._dragStarted = true;
+        if (!this._dragStartPt) {
+            this._dragStartPt = this._editPt;
+        }
+        return;
+
+
         if (this._gpathRef) {
             if (this._mode == GXPathTool.Mode.Append) {
                 anchorPt = this._dpathRef.getLastChild();
@@ -260,11 +316,58 @@
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
+    GXPenTool.prototype._updateHandles = function (newPos) {
+        var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
+        var transformToNative = transformToNewPos.inverted();
+        var newNativePos = transformToNative.mapPoint(newPos);
+
+        var tp = this._editPt.getProperty('tp');
+        var ptx = this._editPt.getProperty('x');
+        var pty = this._editPt.getProperty('y');
+        var hlx, hly, hrx, hry;
+        if (this._mode == GXPathTool.Mode.Append) {
+            if (tp != 'C') {
+                hrx = newNativePos.getX();
+                hry = newNativePos.getY();
+                hlx = ptx + ptx - hrx;
+                hly = pty + pty - hry;
+                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
+                    ['S', hlx, hly, hrx, hry]);
+            }
+            // TODO: make for connector point
+        } else { // this._mode == GXPathTool.Mode.Prepend
+            if (tp != 'C') {
+                hlx = newNativePos.getX();
+                hly = newNativePos.getY();
+                hrx = ptx + ptx - hlx;
+                hry = pty + pty - hly;
+                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
+                    ['S', hlx, hly, hrx, hry]);
+            }
+        }
+        this._pathEditor.requestInvalidation();
+    };
+
     /**
      * @param {GUIMouseEvent.Drag} event
      * @private
      */
     GXPenTool.prototype._mouseDrag = function (event) {
+        if (!this._released && this._editPt) {
+            if (!this._dragStarted) {
+                this._dragStartPt = this._editPt;
+                // TODO: update point type
+            }
+            this._dragStarted = true;
+            var clickPt = this._constrainIfNeeded(
+                event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
+
+            this._pathEditor.requestInvalidation();
+            this._updateHandles(clickPt);
+            this._pathEditor.requestInvalidation();
+        }
+        return;
+
         var clickPt;
         var anchorPt;
         var vertexPt = new GXVertex();
@@ -327,18 +430,25 @@
         }
     };
 
-    GXPenTool.prototype._constructNewPoint = function (event) {
+    /**
+     * Constructs new point, specific to Pen Tool, with the given position
+     * @param {GUIMouseEvent} event used to define pressed button
+     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @returns {GXPath.AnchorPoint} newly created anchor point
+     * @private
+     */
+    GXPenTool.prototype._constructNewPoint = function (event, pt) {
         var anchorPt = null;
-        var newX, newY;
-        var clickPt;
+        //if (event.button == GUIMouseEvent.BUTTON_LEFT ||
+        //    event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 
-        this._checkMode();
+            anchorPt = new GXPath.AnchorPoint();
+            anchorPt.setProperties(['x', 'y'], [pt.getX(), pt.getY()]);
 
-        if (event.button == GUIMouseEvent.BUTTON_LEFT ||
-            event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-            clickPt = this._view.getViewTransform().mapPoint(event.client);
-            anchorPt = new GXPath.AnchorPoint(clickPt);
-        }
+       //     if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+         //       anchorPt.setProperty('tp', 'C');
+        //    }
+        //}
 
         return anchorPt;
     };
@@ -349,17 +459,40 @@
 
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
         this._released = true;
-        if (this._gpathRef && this._mode == GXPathTool.Mode.Edit) {
+        if (this._pathEditor && this._mode == GXPathTool.Mode.Edit) {
             if (!this._dragStarted && this._editPt) {
                 this._mouseNoDragReleaseOnEdit();
+            } else if (this._dragStarted) {
+                // TODO: apply
+                this._commitChanges();
             } else {
-                this._gpathRef.commitDraft();
-                this._updatedVertices();
-                // hit test result becomes invalid if any;
-                this._lastHitTest = new GXPathTool.LastHitTest();
+                // NOOP
+                this._commitChanges();
             }
         } else { // no new path is created yet, or it is openned and mode is Append
             if (this._newPoint) {
+                if (this._dragStarted) {
+                    // TODO: apply
+                }
+                if (!this._dpathRef.getProperty('closed')) {
+                    this._addPoint(this._editPt, false, true);
+                    //this._pathEditor.requestInvalidation();
+                    if (this._mode == GXPathTool.Mode.Append) {
+                        this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                    } else { // this._mode == GXPathTool.Mode.Prepend
+                        this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                    }
+                } else {
+                    if (this._mode == GXPathTool.Mode.Append) {
+                        this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                    } else { // this._mode == GXPathTool.Mode.Prepend
+                        this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                    }
+                }
+                this._makePointMajor(this._refPt);
+                this._mode = GXPathTool.Mode.Edit;
+                this._commitChanges();
+                /*
                 if (!this._gpathRef) {
                     this._createAndAppendPath(this._newPoint);
                 }
@@ -371,11 +504,13 @@
                     this._dpathRef.appendAnchorPoint(anchorPt);
                 }
                 this._updatedVertices();
+                */
             }
 
             this._newPoint = null;
         }
         this._dragStarted = false;
+        this._dragStartPt = null;
     };
 
     /** @override */
@@ -399,19 +534,26 @@
     };
 
     GXPenTool.prototype._mouseDblClick = function (event) {
-        var anchorPt;
+        this._checkMode();
+        if (this._pathEditor) {
+            this._pathEditor.updatePartSelection(false);
+            this._commitChanges();
+        }
+        return;
+
+        /*var anchorPt;
 
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
         if (this._gpathRef && this._mode == GXPathTool.Mode.Append) {
-            this._closeIfNeeded();
+            this._closeIfNeeded(false);
             this._gpathRef.commitDraft();
             this._updatedVertices();
             this._gpathRef.resetSelectedPts();
             this._gpathRef.removeFlag(GXNode.Flag.Selected);
         }
 
-        this._reset();
+        this._reset();*/
     };
 
     /** override */
