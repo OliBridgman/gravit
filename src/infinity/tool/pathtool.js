@@ -229,6 +229,7 @@
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
                     this._dpathRef.getAnchorPoints().insertChild(anchorPt, this._dpathRef.getAnchorPoints().getFirstChild());
+                    this._pathEditor.shiftPreviewTable(1);
                     this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
                     this._newPoint = true;
                 }
@@ -246,7 +247,11 @@
                     this._pathRef.getAnchorPoints().appendChild(anchorPt);
                     this._pathEditor.selectOnePoint(anchorPt);
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
-                    this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
+                    this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
+                    this._pathEditor.requestInvalidation();
+                    this._pathRef.getAnchorPoints().insertChild(
+                        anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
+
                     this._pathEditor.selectOnePoint(anchorPt);
                 }
                 this._pathEditor.requestInvalidation();
@@ -482,7 +487,9 @@
             this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
             this._makePointMajor(this._refPt);
         } else {
-            this._pathRef.getAnchorPoints().removeChild(this._refPt);
+            if (this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) {
+                this._pathRef.getAnchorPoints().removeChild(this._refPt);
+            }
         }
         this._refPt = null;
         this._commitChanges();

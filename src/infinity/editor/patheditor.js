@@ -560,6 +560,75 @@
     };
 
     /**
+     * Changes indices of preview points to some value. Useful when new points are added into preview,
+     * when these points are not in main path yet
+     * @param {Number} shiftVal - preview indices shift value
+     * @param {Number} shiftFrom - update indices starting from shiftFrom source path index. May be null, then 0 is used
+     * @param {Number} shiftTo - update indices up to shiftTo source path index. May be null,
+     * then indices will be updated up to table end
+     */
+    GXPathEditor.prototype.shiftPreviewTable = function (shiftVal, shiftFrom, shiftTo) {
+        shiftFrom = shiftFrom != null ? shiftFrom : 0;
+        shiftTo = shiftTo != null ? shiftTo : this._sourceIndexToPreviewIndex.length - 1;
+        for (var i= shiftFrom ; i < shiftTo ; ++i) {
+            this._sourceIndexToPreviewIndex[i] += shiftVal;
+        }
+    };
+
+    /**
+     * Used to extend preview to full path, when partial preview is getting not enough in some cases
+     */
+    GXPathEditor.prototype.extendPreviewToFull = function () {
+        this._createPathPreviewIfNecessary();
+        var sourceAnchorPoints = this._element.getAnchorPoints();
+        var previewAnchorPoints = this._elementPreview.getAnchorPoints();
+        var firstPreviewPtOrig = previewAnchorPoints.getFirstChild();
+        var ap = sourceAnchorPoints.getFirstChild();
+        var idx = 0;
+        var hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+        var previewIdx = hasPreview ? this._sourceIndexToPreviewIndex[idx] : 0;
+        while (!hasPreview && ap) {
+            var previewAnchorPoint = new GXPathBase.AnchorPoint();
+            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+            if (ap.hasFlag(GXNode.Flag.Selected)) {
+                previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+            }
+
+            // use noEvent = true here, because recalculations in the middle of path copying makes incorrect copy
+            previewAnchorPoints.insertChild(previewAnchorPoint, firstPreviewPtOrig, true);
+            this._sourceIndexToPreviewIndex[idx] = previewIdx;
+            ap = ap.getNext();
+            ++idx;
+            ++previewIdx;
+            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+        }
+        while (hasPreview && ap) {
+            this._sourceIndexToPreviewIndex[idx] = previewIdx;
+            ap = ap.getNext();
+            ++idx;
+            ++previewIdx;
+            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+        }
+        while (!hasPreview && ap) {
+            var previewAnchorPoint = new GXPathBase.AnchorPoint();
+            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+            if (ap.hasFlag(GXNode.Flag.Selected)) {
+                previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+            }
+
+            // use noEvent = true here, because recalculations in the middle of path copying makes incorrect copy
+            previewAnchorPoints.appendChild(previewAnchorPoint, true);
+            this._sourceIndexToPreviewIndex[idx] = previewIdx;
+            ap = ap.getNext();
+            ++idx;
+            ++previewIdx;
+            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+        }
+        // There may be one more hasPreview block, but it should not be updated in this case,
+        // as this is the beginning of preview
+    };
+
+    /**
      * Create path preview if not yet existent.
      * @param {GXPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
      * will be taken as the only selected one, if this is not provided, the selected
@@ -684,13 +753,14 @@
             }
 
             this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
-            // Don't make the path closed if we've created a partial preview only
-            if (this._elementPreview.getProperty('closed')) {
-                if (lastSelPoint) {
+            if (firstSelPoint.getProperty('ah') || lastSelPoint && lastSelPoint.getProperty('ah')) {
+                this.extendPreviewToFull();
+            } else {
+                // Don't make the path closed if we've created a partial preview only
+                if (this._elementPreview.getProperty('closed') && lastSelPoint) {
                     this._elementPreview.setProperty('closed', false);
                 }
             }
-
         }
         return this._elementPreview;
     };

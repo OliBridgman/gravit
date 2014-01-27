@@ -238,9 +238,11 @@
                     otherPt.setProperties(['hlx', 'hly'], [anchorPt.getProperty('hlx'), anchorPt.getProperty('hly')]);
                 }
                 this._dpathRef.getAnchorPoints().removeChild(anchorPt);
+                this._dpathRef.setProperty('closed', true);
                 this._pathRef.setProperty('closed', true);
                 this._pathRef.endUpdate();
                 this._pathEditor.requestInvalidation();
+                this._newPoint = false;
             }
         }
     };
