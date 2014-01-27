@@ -39,20 +39,25 @@
 
     /**
      * An event whenever a modal is closed
+     * @param {*} [args] custom arguments for closing
      * @extends GEvent
      * @constructor
-     * @version 1.0
      */
-    GUIModal.CloseEvent = function () {
+    GUIModal.CloseEvent = function (args) {
+        this.args = args;
     };
     GObject.inherit(GUIModal.CloseEvent, GEvent);
+
+    /**
+     * Custom arguments for closing
+     * @type {*}
+     */
+    GUIModal.prototype.args = null;
 
     /** @override */
     GUIModal.CloseEvent.prototype.toString = function () {
         return "[Object GUIModal.CloseEvent]";
     };
-
-    GUIModal.CLOSE_EVENT = new GUIModal.CloseEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
     // GUIModal Class
@@ -395,8 +400,9 @@
 
     /**
      * Close the modal
+     * @param {*} [args] additional close arguments
      */
-    GUIModal.prototype.close = function () {
+    GUIModal.prototype.close = function (args) {
         if (this._htmlElement) {
             // Remove our background and modal
             this._htmlElementBackground.remove();
@@ -412,7 +418,7 @@
             this._keyCloseListener = null;
 
             // Trigger event that our modal has been closed
-            this.trigger(GUIModal.CLOSE_EVENT);
+            this.trigger(new GUIModal.CloseEvent(args));
         }
     };
 

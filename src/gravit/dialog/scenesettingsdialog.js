@@ -35,12 +35,14 @@
 
     EXSceneSettingsDialog.prototype._initialize = function () {
         this.setWidth(400);
+
         this.setContent($('<table></table>')
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .text('Design for'))
                 .append($('<td></td>')
                     .append($('<select></select>')
+                        .attr('data-control', 'design-target')
                         .append($('<option></option>')
                             .attr('value', 'S')
                             .text('Screen'))
@@ -58,6 +60,41 @@
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .text('Page Margin'))));
+
+        this.setButtons([
+            {
+                title : GLocale.Constant.Ok,
+                click : function () {
+                    if (!this._scene) {
+                        this._scene = new GXScene();
+                    } else {
+                        // TODO : Begin and End Undo Group!!!
+                    }
+                    this._assignSceneSettings();
+
+                    // TODO : Undo group end
+
+                    this.close(this._scene);
+                }.bind(this)
+            },
+            {
+                title : GLocale.Constant.Cancel,
+                click : function () {
+                    this.close();
+                }
+            }
+        ])
+    };
+
+    EXSceneSettingsDialog.prototype._assignSceneSettings = function () {
+        this._scene.setProperties(
+            [
+                'screen'
+            ],
+            [
+                this.getContent().find('[data-control="design-target"]').val() === "S" ? true : false
+            ]
+        );
     };
 
     _.EXSceneSettingsDialog = EXSceneSettingsDialog;

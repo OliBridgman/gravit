@@ -116,6 +116,8 @@
             new EXCloseAction(),
             new EXCloseAllAction(),
 
+            new EXSceneSettingsAction(),
+
             // Edit
             new EXUndoAction(),
             new EXRedoAction(),

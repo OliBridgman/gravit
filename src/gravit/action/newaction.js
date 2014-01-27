@@ -52,9 +52,25 @@
      * @override
      */
     EXNewAction.prototype.execute = function () {
-        var scene = new GXScene();
-        var settings = new EXSceneSettingsDialog(scene);
+        var settings = new EXSceneSettingsDialog();
         settings.open();
+        settings.addEventListener(GUIModal.CloseEvent, function (evt) {
+            if (evt.args) {
+                var scene = evt.args;
+
+                var pageHeight = GXLength.parseLength("297mm").toPoint();
+                var pageWidth = GXLength.parseLength("210mm").toPoint();
+                var marginY = GXLength.parseLength("0.5in").toPoint();
+                var marginX = GXLength.parseLength("0.5in").toPoint();
+                var page = new GXPage();
+                page.setProperties(['x', 'y', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'title'],
+                    [0, 0, pageWidth, pageHeight, marginX, marginY, marginX, marginY, 'Page-1']);
+                scene.getPageSet().appendChild(page);
+
+                gApp.addDocument(scene);
+            }
+        });
+        /*
 
          // TODO : Show dialog for creation
 
@@ -71,6 +87,7 @@
          scene.getPageSet().appendChild(page);
 
          gApp.addDocument(scene);
+         */
     };
 
     /** @override */

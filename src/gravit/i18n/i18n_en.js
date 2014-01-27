@@ -28,6 +28,7 @@ gLocale.setValues(EXRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
 gLocale.setValues(EXSaveAction, GLocale.Language.English, ["title"], ["Save"]);
 gLocale.setValues(EXSaveAllAction, GLocale.Language.English, ["title"], ["Save All"]);
 gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title"], ["To %name%..."]);
+gLocale.setValues(EXSceneSettingsAction, GLocale.Language.English, ["title"], ["Document Settings..."]);
 gLocale.setValues(EXShortcutMapAction, GLocale.Language.English, ["title"], ["Shortcut Map..."]);
 gLocale.setValues(EXShowRulersAction, GLocale.Language.English, ["title"], ["Rulers"]);
 gLocale.setValues(EXShowSidebarAction, GLocale.Language.English, ["title"], ["Sidebar"]);
