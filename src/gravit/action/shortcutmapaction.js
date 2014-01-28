@@ -125,9 +125,50 @@
             }
         }
 
-        var dlg = new GUIShortcutsDialog();
-        dlg.setMaps(shortcutMaps);
-        dlg.open();
+        var dialog = $('<div></div>');
+
+        for (var i = 0; i < shortcutMaps.length; ++i) {
+            var map = shortcutMaps[i];
+            if (!map) {
+                continue;
+            }
+
+            var content = null;
+            for (var k = 0; k < map.map.length; ++k) {
+                var code = map.map[k].asHtml();
+                if (code) {
+                    if (content) {
+                        content += code;
+                    } else {
+                        content = code;
+                    }
+                }
+            }
+
+            if (!content || content === "") {
+                continue;
+            }
+
+            dialog.append($('<h2></h2>')
+                .attr('data-link', "section-" + i.toString())
+                .text(map.title)
+                .append($(content)));
+        }
+
+        dialog
+            .gDialog({
+                // TODO : I18N
+                title: 'Shortcuts',
+                buttons: [
+                    {
+                        title: GLocale.Constant.Close,
+                        click: function () {
+                            $(this).gDialog('close');
+                        }
+                    }
+                ]
+            })
+            .gDialog('open');
     };
 
     /** @override */

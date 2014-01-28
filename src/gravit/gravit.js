@@ -116,7 +116,7 @@
             new EXCloseAction(),
             new EXCloseAllAction(),
 
-            new EXSceneSettingsAction(),
+            new GDocumentSettingsAction(),
 
             // Edit
             new EXUndoAction(),
@@ -159,7 +159,8 @@
             paletteShowActions,
 
             // Help
-            new EXShortcutMapAction()
+            new EXShortcutMapAction(),
+            new GWelcomeAction()
         );
     };
 

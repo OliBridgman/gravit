@@ -7,11 +7,11 @@ $fa-font-path : '../font';
 @import 'cursor';
 @import 'tool';
 
+
+
+
 @import 'component_hint';
 @import 'component_menu';
-@import 'component_modal';
-@import 'component_progress';
-@import 'component_dialog';
 
 @import 'mixins';
 @import 'blocks';
@@ -19,7 +19,6 @@ $fa-font-path : '../font';
 @import 'plugin_jqTree';
 @import 'application';
 @import 'sidebar';
-@import 'welcome';
 @import 'windows';
 @import 'toolpanel';
 @import 'palette_color_mixer';
@@ -28,6 +27,14 @@ $fa-font-path : '../font';
 @import 'palette_layers';
 @import 'palette_pages';
 @import 'palette_properties';
+
+// NEW
+@import 'template/variables';
+@import 'template/typography';
+@import 'template/form';
+
+@import 'block/dialog';
+// END: NEW
 
 body {
   /** Prevent double-tap = zoom on windows mobile */

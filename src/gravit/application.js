@@ -53,9 +53,6 @@
         },
         Windows: {
             id: "windows"
-        },
-        Welcome: {
-            id: "welcome"
         }
     };
 
@@ -173,12 +170,6 @@
      * @private
      */
     EXApplication.prototype._windows = null;
-
-    /**
-     * @type {EXWelcome}
-     * @private
-     */
-    EXApplication.prototype._welcome = null;
 
     /**
      * @type {GXColor}
@@ -472,8 +463,10 @@
                 this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Removed, document));
             }
 
-            // Show or hide screen depending if documents are available or not
-            this.setPartVisible(EXApplication.Part.Welcome, this._documents.length === 0);
+            // Execute welcome dialog if there're no documents available
+            if (this._documents.length === 0) {
+                this.executeAction(GWelcomeAction.ID);
+            }
         }
     };
 
@@ -534,13 +527,6 @@
 
         this._windows = new EXWindows(windowsPart);
 
-        // Welcome-Part
-        var welcomePart = $("<div></div>")
-            .attr('id', EXApplication.Part.Welcome.id)
-            .appendTo(this._view);
-
-        this._welcome = new EXWelcome(welcomePart);
-
         // Sidebar-Part
         var sidebarPart = $("<div></div>")
             .attr('id', EXApplication.Part.Sidebar.id)
@@ -592,7 +578,6 @@
 
         this._sidebar.init();
         this._windows.init();
-        this._welcome.init();
 
         // Mark initialized
         this._initialized = true;
@@ -602,6 +587,11 @@
 
         // Subscribe to window events
         this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
+
+        // Execute welcome dialog if there're no documents available
+        if (this._documents.length === 0) {
+            this.executeAction(GWelcomeAction.ID);
+        }
     };
 
     /**
@@ -623,14 +613,8 @@
             windowsPart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
             windowsPart.height(this._view.height());
 
-            // Welcome
-            var welcomePart = this.getPart(EXApplication.Part.Welcome);
-            welcomePart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
-            welcomePart.height(this._view.height());
-
             this._sidebar.relayout();
             this._windows.relayout();
-            this._welcome.relayout();
         }.bind(this), 0);
     };
 
@@ -662,9 +646,6 @@
 
         // Add a window for the document making it activated by default
         this._windows.addWindow(document);
-
-        // Hide welcome screen as we have a document now
-        this.setPartVisible(EXApplication.Part.Welcome, false);
 
         // Fit to size by default
         // TODO : Check if blob contains user view settings and use that one instead

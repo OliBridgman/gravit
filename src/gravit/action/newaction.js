@@ -52,42 +52,40 @@
      * @override
      */
     EXNewAction.prototype.execute = function () {
-        var settings = new EXSceneSettingsDialog();
-        settings.open();
-        settings.addEventListener(GUIModal.CloseEvent, function (evt) {
-            if (evt.args) {
-                var scene = evt.args;
+        $('<div></div>')
+            .text('NEW_DOC')
+            .gDialog({
+                title: 'New Document',
+                buttons: [
+                    {
+                        title: GLocale.Constant.Create,
+                        click: function () {
+                            var scene = new GXScene();
+                            var pageHeight = GXLength.parseLength("297mm").toPoint();
+                            var pageWidth = GXLength.parseLength("210mm").toPoint();
+                            var marginY = GXLength.parseLength("0.5in").toPoint();
+                            var marginX = GXLength.parseLength("0.5in").toPoint();
+                            var page = new GXPage();
+                            page.setProperties(['x', 'y', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'title'],
+                                [0, 0, pageWidth, pageHeight, marginX, marginY, marginX, marginY, 'Page-1']);
+                            scene.getPageSet().appendChild(page);
 
-                var pageHeight = GXLength.parseLength("297mm").toPoint();
-                var pageWidth = GXLength.parseLength("210mm").toPoint();
-                var marginY = GXLength.parseLength("0.5in").toPoint();
-                var marginX = GXLength.parseLength("0.5in").toPoint();
-                var page = new GXPage();
-                page.setProperties(['x', 'y', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'title'],
-                    [0, 0, pageWidth, pageHeight, marginX, marginY, marginX, marginY, 'Page-1']);
-                scene.getPageSet().appendChild(page);
-
-                gApp.addDocument(scene);
-            }
-        });
-        /*
-
-         // TODO : Show dialog for creation
-
-         var scene = new GXScene();
-         scene.setProperty('unit', GXLength.Unit.MM);
-
-         var pageHeight = GXLength.parseLength("297mm").toPoint();
-         var pageWidth = GXLength.parseLength("210mm").toPoint();
-         var marginY = GXLength.parseLength("0.5in").toPoint();
-         var marginX = GXLength.parseLength("0.5in").toPoint();
-         var page = new GXPage();
-         page.setProperties(['x', 'y', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'title'],
-         [0, 0, pageWidth, pageHeight, marginX, marginY, marginX, marginY, 'Page-1']);
-         scene.getPageSet().appendChild(page);
-
-         gApp.addDocument(scene);
-         */
+                            gApp.addDocument(scene);
+                            $(this).gDialog('close');
+                        },
+                        enabled: function () {
+                            return true;
+                        }
+                    },
+                    {
+                        title: GLocale.Constant.Cancel,
+                        click: function () {
+                            $(this).gDialog('close');
+                        }
+                    }
+                ]
+            })
+            .gDialog('open');
     };
 
     /** @override */

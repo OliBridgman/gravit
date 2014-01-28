@@ -1,61 +1,84 @@
 (function (_) {
+
     /**
-     * The global welcome class
-     * @class EXWelcome
+     * Action showing the welcome dialog
+     * @class GWelcomeAction
+     * @extends GUIAction
      * @constructor
      */
-    function EXWelcome(htmlElement) {
-        this._htmlElement = htmlElement;
+    function GWelcomeAction() {
+    };
+    GObject.inherit(GWelcomeAction, GUIAction);
+
+    GWelcomeAction.ID = 'help.welcome';
+    GWelcomeAction.TITLE = new GLocale.Key(GWelcomeAction, "title");
+
+    /**
+     * @override
+     */
+    GWelcomeAction.prototype.getId = function () {
+        return GWelcomeAction.ID;
     };
 
-    EXWelcome.BG_COLORS = ['rgb(210,220,80)', 'rgb(159,180,0)', 'rgb(255,255,0)', 'rgb(230,0,99)'];
+    /**
+     * @override
+     */
+    GWelcomeAction.prototype.getTitle = function () {
+        return GWelcomeAction.TITLE;
+    };
 
     /**
-     * @type {JQuery}
-     * @private
+     * @override
      */
-    EXWelcome.prototype._htmlElement = null;
+    GWelcomeAction.prototype.getCategory = function () {
+        return EXApplication.CATEGORY_HELP;
+    };
 
     /**
-     * Called from the workspace to initialize
+     * @override
      */
-    EXWelcome.prototype.init = function () {
-        this._htmlElement.append($('<div></div>')
-            .addClass('welcome-screen-container')
-            .append($('<div></div>')
-                .addClass('welcome-screen')
-                .append(this._createBlock(0, 0, 1, 1, 'left', 'rgb(210,220,80)', 'rgb(246,246,164)'))
-                .append(this._createBlock(1, 0, 3, 1, null, 'rgb(159,180,0)')
-                    .append($('<h2></h2>')
+    GWelcomeAction.prototype.getGroup = function () {
+        return "tool";
+    };
+
+    /**
+     * @override
+     */
+    GWelcomeAction.prototype.execute = function () {
+        var welcome = $('<div></div>')
+            .append(this._createBlock(0, 0, 1, 1, 'left', 'rgb(210,220,80)', 'rgb(246,246,164)'))
+            .append(this._createBlock(1, 0, 3, 1, null, 'rgb(159,180,0)')
+                .append($('<h2></h2>')
                     .css('color', 'rgb(255,255,0)')
                     .css('font-size', '18pt')
                     .css('margin-bottom', '10px')
                     .text('Welcome to Gravit'))
-                    .append($('<button></button>')
-                        .text('New Document')
-                        .on('click', function () {
-                           gApp.executeAction(EXNewAction.ID);
-                        }))
-                    /** TODO : Open Document
-                    .append($('<button></button>')
-                        .text('Open Document')
-                        .on('click', function () {
+                .append($('<button></button>')
+                    .css('background', 'yellow')
+                    .text('New Document')
+                    .on('click', function () {
+                        gApp.executeAction(EXNewAction.ID);
+                        welcome.gDialog('close');
+                    }))
+                /** TODO : Open Document
+                 .append($('<button></button>')
+                 .text('Open Document')
+                 .on('click', function () {
                             alert('OPEN DOCUMENT');
                         }))*/)
-                .append(this._createBlock(0, 1, 1, 1, null, 'rgb(255,255,0)'))
-                .append(this._createBlock(1, 1, 3, 1, null, 'rgb(230,0,99)'))
-                .append(this._createBlock(0, 2, 4, 1, 'top', 'rgb(230,0,99)', 'rgb(253,253,169)'))));
+            .append(this._createBlock(0, 1, 1, 1, null, 'rgb(255,255,0)'))
+            .append(this._createBlock(1, 1, 3, 1, null, 'rgb(230,0,99)'))
+            .append(this._createBlock(0, 2, 4, 1, 'top', 'rgb(230,0,99)', 'rgb(253,253,169)'))
+            .gDialog({
+                padding: false,
+                width: 160 * 4,
+                height: 160 * 3
+            })
+            .gDialog('open');
     };
 
-    /**
-     * Called from the workspace to relayout
-     */
-    EXWelcome.prototype.relayout = function () {
-        var screenContainer = this._htmlElement.find('.welcome-screen-container');
-        screenContainer.css('left', ((this._htmlElement.outerWidth() - 160 * 4) / 2).toString() + 'px');
-    };
-
-    EXWelcome.prototype._createBlock = function (col, row, cols, rows, arrowType, bgColor, arrowColor) {
+    /** @private */
+    GWelcomeAction.prototype._createBlock = function (col, row, cols, rows, arrowType, bgColor, arrowColor) {
         var result = $('<div></div>')
             .addClass('block')
             .css('position', 'absolute')
@@ -63,6 +86,7 @@
             .css('top', (row * 160).toString() + 'px')
             .css('width', (cols * 160) + 'px')
             .css('height', (rows * 160) + 'px')
+            .css('padding', '10px')
             .css('background-color', bgColor);
 
         if (arrowType !== null) {
@@ -111,5 +135,11 @@
 
         return result;
     };
-    _.EXWelcome = EXWelcome;
+
+    /** @override */
+    GWelcomeAction.prototype.toString = function () {
+        return "[Object GWelcomeAction]";
+    };
+
+    _.GWelcomeAction = GWelcomeAction;
 })(this);

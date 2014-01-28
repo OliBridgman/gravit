@@ -1,0 +1,56 @@
+.g-block-dialog {
+  @include g-form();
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+
+  * {
+    @include g-font-regular();
+  }
+
+  > .container {
+    position: absolute;
+    top: 0px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.20);
+
+    > .header {
+      display: table;
+      width: 100%;
+      padding: 7px;
+      background: $headerBackgroundColor;
+
+      > div {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      > .title {
+        color: $headerForegroundColor;
+      }
+
+      > .buttons {
+        text-align: right;
+
+        > button {
+          @include g-button();
+          background: $headerForegroundColor;
+          color: black;
+        }
+      }
+    }
+
+    > .content {
+      width: 100%;
+      max-height: 600px;
+      overflow: scroll;
+      background: white;
+
+      &.padding {
+        padding: 7px;
+      }
+    }
+  }
+}
