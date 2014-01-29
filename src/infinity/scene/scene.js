@@ -50,8 +50,6 @@
     GXScene.MetaProperties = {
         /** Version of the scene */
         version: GXScene.VERSION,
-        /** Whether the document is in screen mode or not (=print) */
-        screen: false,
         /** The unit used externally */
         unit: GXLength.Unit.PT,
         /** The snap distance */
@@ -296,18 +294,6 @@
             }
         );
         return result;
-    };
-
-    /** @override */
-    GXScene.prototype._handleChange = function (change, args) {
-        // Always enforce pixel unit if scene has screen mode
-        if (change === GXNode._Change.AfterPropertiesChange) {
-
-            if ((args.properties.indexOf('screen') >= 0 || args.properties.indexOf('unit') >= 0) && this.$screen) {
-                this.setProperty('unit', GXLength.Unit.PX);
-            }
-        }
-        GXElement.prototype._handleChange.call(this, change, args);
     };
 
     /**

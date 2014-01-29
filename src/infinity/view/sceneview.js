@@ -165,17 +165,6 @@
 
             if (this._scene) {
                 this._scene.addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
-
-                // We'll be doing a reasonable default view setup depending on the scene's settings
-                if (scene.getProperty('screen')) {
-                    // screen mode
-                    this._viewConfiguration.singlePageMode = true;
-                    this._viewConfiguration.pixelMode = true;
-                } else {
-                    // print mode
-                    this._viewConfiguration.singlePageMode = false;
-                    this._viewConfiguration.pixelMode = false;
-                }
             }
 
             if (!this._updateViewTransforms()) {

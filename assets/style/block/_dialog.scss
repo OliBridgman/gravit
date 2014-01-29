@@ -1,5 +1,5 @@
 .g-block-dialog {
-  @include g-form();
+  @include g-font-regular();
   position: absolute;
   top: 0px;
   left: 0px;
@@ -7,8 +7,31 @@
   height: 100%;
   background: rgba(255, 255, 255, 0.5);
 
-  * {
+  button {
     @include g-font-regular();
+    padding: $regularPadding;
+    border: none;
+    border-radius: $borderRadius;
+    background: $inputBackgroundColor;
+    color: black;
+
+    &:hover {
+      background: $buttonHoverColor !important;
+    }
+
+    &:active, &.g-active {
+      background: $buttonActiveColor !important;
+      color: white !important;
+    }
+  }
+
+  input, textarea, select {
+    @include g-font-regular();
+    padding: $regularPadding;
+    border: none;
+    border-radius: $borderRadius;
+    border: 1px solid $inputBackgroundColor;
+    color: black;
   }
 
   > .container {
@@ -19,7 +42,7 @@
     > .header {
       display: table;
       width: 100%;
-      padding: 7px;
+      padding: $regularPadding;
       background: $headerBackgroundColor;
 
       > div {
@@ -35,7 +58,6 @@
         text-align: right;
 
         > button {
-          @include g-button();
           background: $headerForegroundColor;
           color: black;
         }
@@ -49,7 +71,7 @@
       background: white;
 
       &.padding {
-        padding: 7px;
+        padding: $regularPadding;
       }
     }
   }

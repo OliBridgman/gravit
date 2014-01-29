@@ -117,6 +117,7 @@
             new EXCloseAllAction(),
 
             new GDocumentSettingsAction(),
+            new GPageSetupAction(),
 
             // Edit
             new EXUndoAction(),

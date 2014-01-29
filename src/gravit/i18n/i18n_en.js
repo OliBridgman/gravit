@@ -21,6 +21,7 @@ gLocale.setValues(EXNewAction, GLocale.Language.English, ["title"], ["New..."]);
 gLocale.setValues(EXNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
 gLocale.setValues(EXOpenAction, GLocale.Language.English, ["title"], ["From %name%..."]);
 gLocale.setValues(EXOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);
+gLocale.setValues(GPageSetupAction, GLocale.Language.English, ["title"], ["Page Setup..."]);
 gLocale.setValues(EXSinglePageModeAction, GLocale.Language.English, ["title"], ["Single Page Mode"]);
 gLocale.setValues(EXPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);
 gLocale.setValues(EXPixelPreviewAction, GLocale.Language.English, ["title"], ["Pixel Preview"]);

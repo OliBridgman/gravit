@@ -11,15 +11,11 @@
                 // Whether to add padding to content or not
                 padding: true,
                 // Dialog can be closed
-                closable: function () {
-                    return true;
-                },
+                closeable: true,
                 // Dialog title
                 title: null,
                 // Dialog buttons
-                buttons: null,
-                // Dialog close callback
-                closed: null
+                buttons: null
             }, options);
 
             var _addButton = function (this_, container, button) {
@@ -77,7 +73,7 @@
                     .addClass('g-block-dialog')
                     .on('click', function (evt) {
                         if ($(evt.target).hasClass('g-block-dialog')) {
-                            if (options.closable()) {
+                            if (options.closeable) {
                                 methods.close.call(self);
                             }
                         }
