@@ -30,8 +30,7 @@
         var _addToolButton = function (toolInstance) {
             var button = $("<button></button>")
                 .attr('class', toolInstance == gApp.getToolManager().getActiveTool() ? 'g-active' : '')
-                .append($("<span></span>")
-                    .addClass(toolInstance.getImageClass()))
+                .append($('<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="18px" height="18px" xml:space="preserve"><path stroke="none" id="cursor-5-icon_5_" d="M5,3v13l4-5h6L5,3z"/></svg>'))
                 .appendTo(this._htmlElement)
                 .on('click', function () {
                     gApp.getToolManager().activateTool(toolInstance);
