@@ -367,8 +367,16 @@
      */
     GXEditor.prototype.setCurrentPage = function (page) {
         if (page !== this._currentPage) {
+            if (this._currentPage) {
+                this._currentPage.removeFlag(GXNode.Flag.Active);
+            }
+
             var previousPage = this._currentPage;
             this._currentPage = page;
+
+            if (this._currentPage) {
+                this._currentPage.setFlag(GXNode.Flag.Active);
+            }
 
             this._updateSelectionForSelectable();
 
