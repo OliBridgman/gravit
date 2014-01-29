@@ -18,8 +18,8 @@
     };
 
     /** @override */
-    GXPointerTool.prototype.getImageClass = function () {
-        return 'g-tool-pointer';
+    GXPointerTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M5.5,21.5v13l4-5h6L5.5,21.5z"/>\n</svg>\n';
     };
 
     /** @override */

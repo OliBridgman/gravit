@@ -17,8 +17,8 @@
     };
 
     /** @override */
-    GXRectangleTool.prototype.getImageClass = function () {
-        return 'g-tool-rectangle';
+    GXRectangleTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M14.5,23.5v8h-10v-8H14.5 M15.5,22.5h-1h-10h-1v1v8v1h1h10h1v-1v-8V22.5L15.5,22.5z"/>\n</svg>\n';
     };
 
     /** @override */

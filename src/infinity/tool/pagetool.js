@@ -24,8 +24,8 @@
     };
 
     /** @override */
-    GXPageTool.prototype.getImageClass = function () {
-        return 'g-tool-page';
+    GXPageTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M14.5,21.5v7h-1v-6h-6v2h-2v8h4v1h-5v-9l3-3H14.5z M10.5,27.5l0,7l2-3h4L10.5,27.5z"/>\n</svg>\n';
     };
 
     /** @override */

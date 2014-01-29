@@ -66,10 +66,10 @@
     };
 
     /**
-     * Should return a css class that specifies the background image of a tool
+     * Should return a complete svg-based icon including a valid viewBox
      * @returns {String}
      */
-    GXTool.prototype.getImageClass = function () {
+    GXTool.prototype.getIcon = function () {
         return null;
     };
 

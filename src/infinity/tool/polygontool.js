@@ -30,8 +30,8 @@
     };
 
     /** @override */
-    GXPolygonTool.prototype.getImageClass = function () {
-        return 'g-tool-polygon';
+    GXPolygonTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M13,33.5H6l-3.5-6l3.5-6h7l3.5,6L13,33.5z M6.5,32.5h6l2.9-5l-2.9-5h-6l-2.9,5L6.5,32.5z"/>\n</svg>\n';
     };
 
     /** @override */

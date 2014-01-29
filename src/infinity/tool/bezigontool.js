@@ -18,8 +18,8 @@
     };
 
     /** @override */
-    GXBezigonTool.prototype.getImageClass = function () {
-        return 'g-tool-bezigon';
+    GXBezigonTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path d="M8,29.5c-1.4-1.4,3.5-9,3.5-9l1,1c-1,1.3-2,3-2.4,4c-0.8,1.5-0.9,2.3-0.9,2.3L14,23l2.5,2.5C16.5,25.5,9.3,30.7,8,29.5z\n\t M15.5,32c0,0.8-0.7,1.5-1.5,1.5c-0.7,0-1.2-0.4-1.4-1H7.5v2h-5v-5h2v-5.1c-0.6-0.2-1-0.8-1-1.4c0-0.8,0.7-1.5,1.5-1.5\n\ts1.5,0.7,1.5,1.5c0,0.7-0.4,1.2-1,1.4v5.1h2v2h5.1c0.2-0.6,0.8-1,1.4-1C14.8,30.5,15.5,31.2,15.5,32z M6.5,30.5h-3v3h3V30.5z" stroke="none"/>\n</svg>';
     };
 
     /** @override */

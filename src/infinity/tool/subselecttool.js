@@ -18,8 +18,8 @@
     };
 
     /** @override */
-    GXSubSelectTool.prototype.getImageClass = function () {
-        return 'g-tool-subselect';
+    GXSubSelectTool.prototype.getIcon = function () {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M5.5,21.5v13l4-5h6L5.5,21.5z M8.5,28l-2,3v-7.5l5.6,4.5H8.5z"/>\n</svg>\n';
     };
 
     /** @override */

@@ -20,17 +20,17 @@ var gExpress = {
     exporters: [],
 
     /**
-     * Array<EXction>
+     * Array<GUIAction>
      */
     actions: [],
 
     /**
-     * Array<GPalette>
+     * Array<EXPalette>
      */
     palettes: [],
 
     /**
-     * Array<GTool>
+     * Array<GXTool>
      */
     tools: [],
 
