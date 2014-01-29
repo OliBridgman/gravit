@@ -38,6 +38,7 @@
   }
 
   > .container {
+    background: white;
     position: absolute;
     top: 0px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.20);
@@ -48,21 +49,23 @@
       padding: $regularPadding;
       background: $headerBackgroundColor;
 
-      > div {
-        display: table-cell;
-        vertical-align: middle;
-      }
-
       > .title {
         color: $headerForegroundColor;
       }
+    }
 
-      > .buttons {
+    > .footer {
+      display: table;
+      width: 100%;
+      padding: 0px $regularPadding $regularPadding $regularPadding;
+
+      > div {
+        display: table-cell;
+        vertical-align: middle;
         text-align: right;
 
-        > button {
-          background: $headerForegroundColor;
-          color: black;
+        > hr {
+          margin-bottom: $regularPadding;
         }
       }
     }
@@ -71,10 +74,33 @@
       width: 100%;
       max-height: 600px;
       overflow: auto;
-      background: white;
 
       &.padding {
         padding: $regularPadding;
+      }
+
+      table {
+        td > label {
+          display: inline-block;
+          width: 100%;
+          text-align: right;
+          padding-right: 5px;
+          padding-left: 10px;
+        }
+
+        td:first-child > label {
+          padding-left: 0px;
+        }
+
+        td > h1 {
+          color: rgb(128, 128, 128);
+          font-size: 12px;
+          font-weight: bold;
+          border-bottom: 1px dotted rgb(192, 192, 192);
+          margin-bottom: 5px;
+          padding-bottom: 3px;
+          padding-top: 7px;
+        }
       }
     }
   }

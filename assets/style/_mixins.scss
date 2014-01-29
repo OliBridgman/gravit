@@ -13,12 +13,3 @@
   background: $selectionBackground;
   color: $selectionForeground;
 }
-
-@mixin g-divider {
-  height: 1px !important;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dotted $borderColor;
-  padding: 0px;
-  margin: 0px;
-}

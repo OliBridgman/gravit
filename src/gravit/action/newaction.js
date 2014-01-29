@@ -95,7 +95,7 @@
                     .css('width', '100%')
                     .append($('<span></span>')
                         .addClass('fa fa-laptop fa-3x'))
-                    .append($('<h2></h2>')
+                    .append($('<h3></h3>')
                         // TODO : I18N
                         .text('Screen Design'))
                     .append($('<p></p>')
@@ -110,7 +110,7 @@
                     .css('width', '100%')
                     .append($('<span></span>')
                         .addClass('fa fa-print fa-3x'))
-                    .append($('<h2></h2>')
+                    .append($('<h3></h3>')
                         // TODO : I18N
                         .text('Print Design'))
                     .append($('<p></p>')

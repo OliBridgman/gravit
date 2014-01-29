@@ -69,18 +69,18 @@
     GPageSetupAction.prototype.execute = function (pages, done) {
         var pages = this._extractPages(pages);
 
-        $('<div></div>')
-            .html('<table>\n    <tr>\n        <td>Title</td>\n        <td colspan="3"><input style="width:100%"></td>\n    </tr>\n    <tr>\n        <td>Bleed</td>\n        <td><input></td>\n        <td>Color</td>\n        <td><input></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h3>Size</h3></td>\n    </tr>\n    <tr>\n        <td colspan="4">\n            <select style="width:100%">\n                <optgroup label="Paper">\n                    <option>A4</option>\n                    <option>A3</option>\n                </optgroup>\n                <optgroup label="Mobile">\n                    <option>iPhone 4</option>\n                    <option>iPad 4</option>\n                </optgroup>\n            </select>\n        </td>\n    </tr>\n    <tr>\n        <td>Width</td>\n        <td><input></td>\n        <td>Height</td>\n        <td><input></td>\n    </tr>\n</table>')
+        var dialog = $('<div></div>')
+            .html('<table>\n    <tr>\n        <td><label>Title</label></td>\n        <td colspan="3"><input data-property="title" style="width:100%"></td>\n    </tr>\n    <tr>\n        <td><label>Bleed</label></td>\n        <td><input data-property="bleed"></td>\n        <td><label>Color</label></td>\n        <td><input data-property="color"></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Size</h1></td>\n    </tr>\n    <tr>\n        <td><label>&nbsp;</label></td>\n        <td colspan="43">\n            <select data-property="size" style="width:100%">\n                <optgroup label="Paper">\n                    <option>A4</option>\n                    <option>A3</option>\n                </optgroup>\n                <optgroup label="Mobile">\n                    <option>iPhone 4</option>\n                    <option>iPad 4</option>\n                </optgroup>\n            </select>\n        </td>\n    </tr>\n    <tr>\n        <td><label>Width</label></td>\n        <td><input data-property="width"></td>\n        <td><label data-property="height">Height</label></td>\n        <td><input></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Margin</h1></td>\n    </tr>\n    <tr>\n        <td><label>Top</label></td>\n        <td><input data-property="margin-top"></td>\n        <td><label>Right</label></td>\n        <td><input data-property="margin-right"></td>\n    </tr>\n    <tr>\n        <td><label>Left</label></td>\n        <td><input data-property="margin-left"></td>\n        <td><label>Bottom</label></td>\n        <td><input data-property="margin-top"></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Grid</h1></td>\n    </tr>\n    <tr>\n        <td><label>Baseline</label></td>\n        <td><input data-property="grid-baseline"></td>\n        <td><label>Gutter</label></td>\n        <td><input data-property="grid-gutter"></td>\n    </tr>\n    <tr>\n        <td><label>Columns</label></td>\n        <td><input data-property="grid-columns"></td>\n        <td><label>Rows</label></td>\n        <td><input data-property="grid-rows"></td>\n    </tr>\n</table>')
             .gDialog({
                 // TODO : I18N
                 title: 'Page Setup',
-                width: 450,
                 buttons: [
                     {
                         title: GLocale.Constant.Ok,
                         click: function () {
                             // TODO : Assign
                             for (var i = 0; i < pages.length; ++i) {
+                                pages[i].setProperty('title', dialog.find('[data-property="title"]').val());
                                 //pages[i].setProperties(['w', 'h'], [640, 480]);
                             }
 
@@ -100,6 +100,8 @@
                 ]
             })
             .gDialog('open');
+
+        dialog.find('[data-property="title"]').val(pages[0].getProperty('title'));
     };
 
     /** @override */

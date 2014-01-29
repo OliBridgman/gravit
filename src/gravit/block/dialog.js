@@ -5,7 +5,7 @@
 
             options = $.extend({
                 // Width of dialog
-                width: 650,
+                width: null,
                 // Height of dialog if any, otherwise auto
                 height: null,
                 // Whether to add padding to content or not
@@ -43,14 +43,25 @@
 
                 content.wrap($('<div></div>')
                     .addClass('container')
-                    .css('width', options.width.toString() + 'px')
+                    .css('width', options.width ? options.width.toString() + 'px' : 'auto')
                     .css('height', options.height ? options.height + 'px' : 'auto'));
 
                 var container = content.parent('.container');
 
-                if (options.title || options.buttons) {
+                if (options.title) {
+                    var title = options.title ? gLocale.get(options.title) : "";
+
+                    container.prepend($('<div></div>')
+                        .addClass('header')
+                        .append($('<h2></h2>')
+                            .addClass('title')
+                                .text(gLocale.get(options.title))));
+                }
+
+                if (options.buttons) {
                     var buttons = $('<div></div>')
-                        .addClass('buttons');
+                        .addClass('buttons')
+                        .append('<hr>');
 
                     if (options.buttons) {
                         for (var i = 0; i < options.buttons.length; ++i) {
@@ -58,14 +69,8 @@
                         }
                     }
 
-                    var title = options.title ? gLocale.get(options.title) : "";
-
-                    container.prepend($('<div></div>')
-                        .addClass('header')
-                        .append($('<div></div>')
-                            .addClass('title')
-                            .append($('<h1></h1>')
-                                .text(title)))
+                    container.append($('<div></div>')
+                        .addClass('footer')
                         .append(buttons));
                 }
 
