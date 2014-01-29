@@ -63,23 +63,30 @@
             // Do scene setup
             if (mode === 'screen') {
                 scene.setProperty('unit', GXLength.Unit.PX);
+                page.setProperties(['w', 'h', 'gb', 'gw', 'gc', 'gr'], [822, 960, 18, 18, 10, 4]);
             } else if (mode === 'print') {
+                page.setProperties(['w', 'h', 'mt', 'mr', 'mb', 'ml'], [210, 297, 12.5, 12.5, 12.5, 12.5]);
                 scene.setProperty('unit', GXLength.Unit.MM);
             }
 
             // Show page properties
-            gApp.executeAction(GPageSetupAction.ID, [page, true]);
+            gApp.executeAction(GPageSetupAction.ID, [page, function () {
+                gApp.addDocument(scene);
 
-            gApp.addDocument(scene);
-
-            // Do view setup
-            if (mode === 'screen') {
+                // Do view setup
                 var view = gApp.getWindows().getActiveWindow().getView();
-                var cfg = view.getViewConfiguration();
-                cfg.singlePageMode = true;
-                cfg.pixelMode = true;
-                view.invalidate();
-            }
+                if (mode === 'screen') {
+                    var cfg = view.getViewConfiguration();
+                    cfg.singlePageMode = true;
+                    cfg.pixelMode = true;
+
+                    // Center on page with 100% for screen mode
+                    view.zoomAtCenter(page.getPaintBBox().getSide(GRect.Side.CENTER));
+                } else {
+                    // Fit to page for print mode
+                    view.zoomAll(page.getPaintBBox(), false);
+                }
+            }]);
         } else {
             var self = this;
 

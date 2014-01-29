@@ -62,32 +62,12 @@
      * @param {*} [pages] Either null to setup active page or an array
      * of one or more page(s) to be setup or a single page instance
      * to be setup
-     * @param {Boolean} [force] if true, user is forced to to setup
-     * the page(s) and cannot cancel the dialog
+     * @param {Function} [done] if provided, this callback will be
+     * called when the user has setup the page.
      * @override
      */
-    GPageSetupAction.prototype.execute = function (pages, force) {
+    GPageSetupAction.prototype.execute = function (pages, done) {
         var pages = this._extractPages(pages);
-        var buttons = [{
-            title: GLocale.Constant.Ok,
-            click: function () {
-                // TODO : Assign
-                for (var i = 0; i < pages.length; ++i) {
-                    pages[i].setProperties(['w', 'h'], [640, 480]);
-                }
-
-                $(this).gDialog('close');
-            }
-        }];
-
-        if (!force) {
-            buttons.push({
-                title: GLocale.Constant.Cancel,
-                click: function () {
-                    $(this).gDialog('close');
-                }
-            });
-        }
 
         $('<div></div>')
             .text('PAGE_SETUP')
@@ -95,8 +75,29 @@
                 // TODO : I18N
                 title: 'Page Setup',
                 width: 450,
-                closeable: !force,
-                buttons: buttons
+                buttons: [
+                    {
+                        title: GLocale.Constant.Ok,
+                        click: function () {
+                            // TODO : Assign
+                            for (var i = 0; i < pages.length; ++i) {
+                                //pages[i].setProperties(['w', 'h'], [640, 480]);
+                            }
+
+                            $(this).gDialog('close');
+
+                            if (done) {
+                                done();
+                            }
+                        }
+                    },
+                    {
+                        title: GLocale.Constant.Cancel,
+                        click: function () {
+                            $(this).gDialog('close');
+                        }
+                    }
+                ]
             })
             .gDialog('open');
     };

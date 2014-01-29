@@ -17,18 +17,24 @@
      * The geometry properties of a page with their default values
      */
     GXPage.GeometryProperties = {
-        /** Page position and size */
+        /** Page position */
         x: 0,
         y: 0,
+        /** Page size */
         w: 0,
         h: 0,
         /** Additional bleeding */
-        bleed: 0,
-        /** Margins (left, top, right, bottom) */
+        bl: 0,
+        /** Margins (left, top, right, bottom, column, row) */
         ml: 0,
         mt: 0,
         mr: 0,
-        mb: 0
+        mb: 0,
+        /** Grid (baseline, gutter width, columns, rows)  */
+        gb: 0,
+        gw: 0,
+        gc: 0,
+        gr: 0
     };
 
     /**
@@ -171,9 +177,45 @@
             context.canvas.fillRect(x, y, w, h, pt);
         }
 
+        // Paint Grid if any
+        if (this.$gc && this.$gc > 1 && this.$gb && this.$gb > 0 && context.configuration.isPageGutterVisible(context)) {
+            var columnWidth = (-this.$gc * this.$gw + this.$w + this.$gw) / this.$gc;
+            var gx1 = marginRect.getX();
+            var gy1 = marginRect.getY();
+            var gx2 = marginRect.getX() + marginRect.getWidth();
+            var gy2 = marginRect.getY() + marginRect.getHeight();
+
+            var rowCount = 0;
+            for (var cy = gy1; cy <= gy2; cy += this.$gb) {
+                var isGutterRow = this.$gr && this.$gr > 0 && rowCount === this.$gr;
+                if (isGutterRow) {
+                    rowCount = 0;
+                } else {
+                    rowCount++;
+                }
+
+                for (var cx = gx1; cx <= gx2; cx += columnWidth + this.$gw) {
+                    var cr = canvasTransform.mapRect(new GRect(cx, cy, columnWidth, this.$gb)).intersected(transformedMarginRect);
+                    ;
+                    var gr = canvasTransform.mapRect(new GRect(cx + columnWidth, cy, this.$gw, this.$gb)).intersected(transformedMarginRect);
+                    // Paint column
+                    context.canvas.fillRect(cr.getX(), cr.getY(), cr.getWidth(), cr.getHeight(), gColor.setAlpha(context.configuration.pageGutterColor, isGutterRow ? 30 : 60));
+
+                    if (!isGutterRow) {
+                        // Paint gutter
+                        context.canvas.fillRect(gr.getX(), gr.getY(), gr.getWidth(), gr.getHeight(), gColor.setAlpha(context.configuration.pageGutterColor, 30));
+                    }
+                }
+
+                // Paint row divider
+                var rr = canvasTransform.mapRect(new GRect(gx1, cy + this.$gb, gx2 - gx1, 1)).intersected(transformedMarginRect);
+                ;
+                context.canvas.fillRect(rr.getX(), rr.getY(), rr.getWidth(), 1, context.configuration.pageGutterColor);
+            }
+        }
+
         // Paint margin on top if desired
         if (this._hasMargin() && context.configuration.isPageMarginVisible(context)) {
-            // TODO : Make color / style configurable
             context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1.0, context.configuration.pageMarginColor);
         }
 

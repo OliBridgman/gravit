@@ -646,10 +646,6 @@
 
         // Add a window for the document making it activated by default
         this._windows.addWindow(document);
-
-        // Fit to size by default
-        // TODO : Check if blob contains user view settings and use that one instead
-        this.executeAction(EXFitAllAction.ID);
     };
 
     /**
