@@ -49,18 +49,8 @@
   .properties-panels {
     padding: 0px 5px;
 
-    > .properties-panel-category, > .properties-panel-content {
-      font-size: 80%;
-    }
-
-    > .properties-panel-category button > i[class^="fa"], > .properties-panel-content button > i[class^="fa"] {
-      font-size: 14px;
-    }
-
-    > .properties-panel-category, > .properties-panel-content label, > .properties-panel-content .properties-table td:nth-child(odd) {
-      text-shadow: rgb(236, 240, 243) 0px 1px 0px;
+    > .properties-panel-category {
       font-weight: bold;
-      text-transform: uppercase;
     }
 
     > .properties-panel-category {

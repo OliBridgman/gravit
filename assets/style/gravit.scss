@@ -1,4 +1,4 @@
-$fa-font-path : '../font';
+$fa-font-path: '../font';
 
 @import 'base';
 @import 'variables';
@@ -6,9 +6,6 @@ $fa-font-path : '../font';
 @import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
 @import 'cursor';
 @import 'tool';
-
-
-
 
 @import 'component_hint';
 @import 'component_menu';
@@ -30,97 +27,68 @@ $fa-font-path : '../font';
 
 // NEW
 @import 'template/variables';
-@import 'template/typography';
 
 @import 'block/dialog';
 // END: NEW
-
-body {
-  /** Prevent double-tap = zoom on windows mobile */
-  -ms-content-zooming: none;
-
-  /** Make everything based on border-box model */
-  *, *:before, *:after {
-    @include box-sizing(border-box);
-  }
-
-  * {
-    /* Disable long-press callouts. */
-    -webkit-touch-callout: none;
-    /* Disable highlighting of links. */
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    /* Prevent auto-resizing. */
-    -webkit-text-size-adjust: none;
-  }
-
-  /** No focus and selection outline except for input fields */
-  :not(input):not(select):not(textArea):focus {
-    outline: none !important;
-  }
-
-  /**No selection except for input fields */
-  :not(input):not(select):not(textArea) {
-    @include user-select(none);
-    cursor: default;
-  }
-
-  /** Divider styling */
-  hr {
-    @include g-divider;
-  }
-
-  /** Hide iScroll scrollbars on touch devices */
-  .g-touch {
-    .iScrollVerticalScrollbar, .iScrollHorizontalScrollbar {
-      display: none;
-    }
-  }
-}
 
 body, html {
   margin: 0px;
   padding: 0px;
   height: 100%;
+  /** Prevent double-tap = zoom on windows mobile */
+  -ms-content-zooming: none;
 }
 
 body, html, * {
-  /** Regular font */
+  /** Regular font, size is set individually */
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  //font-size: 14px; //-> may not be used otherwise firefox goes crazy with select
-}
-
-/** Free iFrames from any styling */
-iframe {
-  border: 0px solid transparent;
-  margin: 0px;
-  padding: 0px;
-}
-
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: 12px;
 }
 
 h1 {
-  font-size: 36px;
+  font-size: 16px;
 }
 
 h2 {
-  font-size: 30px;
-}
-
-h3 {
-  font-size: 24px;
-}
-
-h4 {
-  font-size: 18px;
-}
-
-h5 {
   font-size: 14px;
 }
 
-h6 {
+h3 {
   font-size: 12px;
+  font-weight: bold;
 }
+
+p {
+  line-height: 1.5em;
+}
+
+/** Make everything based on border-box model */
+*, *:before, *:after {
+  @include box-sizing(border-box);
+}
+
+* {
+  /* Disable long-press callouts. */
+  -webkit-touch-callout: none;
+  /* Disable highlighting of links. */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  /* Prevent auto-resizing. */
+  -webkit-text-size-adjust: none;
+}
+
+/** No focus and selection outline except for input fields */
+:not(input):not(select):not(textArea):focus {
+  outline: none !important;
+}
+
+/**No selection except for input fields */
+:not(input):not(select):not(textArea) {
+  @include user-select(none);
+  cursor: default;
+}
+
+/** Divider styling */
+hr {
+  @include g-divider;
+}
+

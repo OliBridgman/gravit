@@ -70,7 +70,7 @@
         var pages = this._extractPages(pages);
 
         $('<div></div>')
-            .text('PAGE_SETUP')
+            .html('<table>\n    <tr>\n        <td>Title</td>\n        <td colspan="3"><input style="width:100%"></td>\n    </tr>\n    <tr>\n        <td>Bleed</td>\n        <td><input></td>\n        <td>Color</td>\n        <td><input></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h3>Size</h3></td>\n    </tr>\n    <tr>\n        <td colspan="4">\n            <select style="width:100%">\n                <optgroup label="Paper">\n                    <option>A4</option>\n                    <option>A3</option>\n                </optgroup>\n                <optgroup label="Mobile">\n                    <option>iPhone 4</option>\n                    <option>iPad 4</option>\n                </optgroup>\n            </select>\n        </td>\n    </tr>\n    <tr>\n        <td>Width</td>\n        <td><input></td>\n        <td>Height</td>\n        <td><input></td>\n    </tr>\n</table>')
             .gDialog({
                 // TODO : I18N
                 title: 'Page Setup',

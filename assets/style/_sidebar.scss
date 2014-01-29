@@ -4,6 +4,10 @@
   right: 0px;
   background: rgb(237, 237, 237);
   border-left: 1px solid rgb(205, 205, 205);
+
+  :not([class^="fa"]) {
+    font-size: 11px;
+  }
 }
 
 #sidebar .palettes {
@@ -37,7 +41,6 @@
     padding: 0px;
     margin: 0px;
     text-shadow: rgb(245, 245, 245) 0px 1px 0px;
-    font-size: 80%;
     font-weight: bold;
     text-transform: uppercase;
   }
@@ -79,10 +82,8 @@
   > .palette-panel {
     position: relative;
     font-family: Tahoma, Arial, Serif, sans-serif;
-    font-size: 11px;
 
     input, select, textarea, button {
-      font-size: 11px;
       margin: 0px;
       padding: 0px;
       line-height: 16px;
@@ -105,14 +106,4 @@
       background: rgba(255, 255, 255, 0.5);
     }
   }
-}
-
-/**
- * Phone Adjustments
- */
-.g-phone #sidebar {
-  width: 100%;
-  right: 0px;
-  left: 0px;
-  display: none;
 }
