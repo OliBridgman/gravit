@@ -18,7 +18,7 @@
 
     /** @override */
     GXLineTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<rect stroke="none" x="8.8" y="19.6" transform="matrix(0.7071 0.7071 -0.7071 0.7071 22.3313 1.587)" width="1" height="16.3"/>\n</svg>\n';
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<rect stroke="none" x="9" y="15.3" transform="matrix(0.7069 0.7074 -0.7074 0.7069 22.2372 1.3418)" width="1" height="24.5"/>\n</svg>\n';
     };
 
     /** @override */

@@ -63,7 +63,7 @@
 
     /** @override */
     GXRectSelectTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M16.5,31.5h-4l-2,3l0-7L16.5,31.5z M16.5,21.5h-1v1l0,0v1h1V21.5z M14.5,22.5h-1v-1h1V22.5z M12.5,22.5h-1v-1h1V22.5z\n\t M10.5,22.5h-1v-1h1V22.5z M8.5,22.5h-1v-1h1V22.5z M6.5,22.5h-1v-1h1V22.5z M4.5,22.5h-1l0,0h-1v-1h2V22.5z M3.5,24.5h-1v-1h1V24.5\n\tz M3.5,26.5h-1v-1h1V26.5z M3.5,28.5h-1v-1h1V28.5z M3.5,30.5h-1v-1h1V30.5z M3.5,32.5L3.5,32.5v1h-1v-1l0,0v-1h1V32.5z M5.5,33.5\n\th-1v-1h1V33.5z M7.5,33.5h-1v-1h1V33.5z M9.5,33.5h-1v-1h1V33.5z M16.5,29.5h-1v-1h1V29.5z M16.5,27.5h-1v-1h1V27.5z M16.5,25.5h-1\n\tv-1h1V25.5z"/>\n</svg>\n';
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M17.5,32.5H12l-3.5,4v-11L17.5,32.5z M1.5,18.5h-1v1h1V18.5z M3.5,18.5h-1v1h1V18.5z M5.5,18.5h-1v1\n\th1V18.5z M7.5,18.5h-1v1h1V18.5z M9.5,18.5h-1v1h1V18.5z M11.5,18.5h-1v1h1V18.5z M13.5,18.5h-1v1h1V18.5z M15.5,18.5h-1v1h1V18.5z\n\t M15.5,20.5h-1v1h1V20.5z M15.5,22.5h-1v1h1V22.5z M15.5,24.5h-1v1h1V24.5z M15.5,26.5h-1v1h1V26.5z M1.5,20.5h-1v1h1V20.5z\n\t M1.5,22.5h-1v1h1V22.5z M1.5,24.5h-1v1h1V24.5z M1.5,26.5h-1v1h1V26.5z M1.5,28.5h-1v1h1V28.5z M1.5,30.5h-1v1h1V30.5z M3.5,30.5\n\th-1v1h1V30.5z M5.5,30.5h-1v1h1V30.5z"/>\n</svg>\n';
     };
 
     /** @override */

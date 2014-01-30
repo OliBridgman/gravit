@@ -10,6 +10,13 @@
 }
 
 #toolpanel {
+  > button {
+    svg {
+      fill: black;
+      stroke: black;
+    }
+  }
+
   > button:hover,  > button:active, > button.g-active {
     background: rgb(31, 141, 214);
 

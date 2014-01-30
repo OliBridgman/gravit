@@ -18,7 +18,7 @@
 
     /** @override */
     GXEllipseTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M9.5,33.5c-3.6,0-6.5-2.7-6.5-6c0-3.3,2.9-6,6.5-6s6.5,2.7,6.5,6C16,30.8,13.1,33.5,9.5,33.5z M9.5,22.5\n    c-3,0-5.5,2.2-5.5,5c0,2.7,2.5,5,5.5,5c3,0,5.5-2.2,5.5-5C15,24.8,12.5,22.5,9.5,22.5z"/>\n</svg>\n';
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<ellipse style="fill:none; stroke: inherit" cx="9.5" cy="27.5" rx="8.5" ry="7.5"/>\n</svg>\n';
     };
 
     /** @override */

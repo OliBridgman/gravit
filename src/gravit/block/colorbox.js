@@ -94,6 +94,11 @@
                             }
                         });
                 }
+
+                $this
+                    .on('click', function () {
+                        alert('CLICKED COLOR');
+                    });
             });
         },
 
@@ -103,6 +108,7 @@
             } else {
                 return this.each(function () {
                     var $this = $(this);
+                    newColor = typeof newColor == 'string' ? GXColor.parseColor(newColor) : newColor;
                     $this.data('ex-colorbox').color = newColor;
                     $this.css('background', newColor ? newColor.asCSSString() : '');
                 });
