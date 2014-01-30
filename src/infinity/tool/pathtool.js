@@ -155,13 +155,10 @@
      */
     GXPathTool.prototype._checkMode = function () {
         this._checkPathEditor();
+        this._renewLinks();
         if (!this._pathEditor) {
-            this._pathRef = null;
-            this._dpathRef = null;
             this._mode = GXPathTool.Mode.Append;
         } else {
-            this._pathRef = this._pathEditor.getPath();
-            this._dpathRef = this._pathEditor.getPathPreview();
             if (this._pathRef.getProperty('closed')) {
                 this._mode = GXPathTool.Mode.Edit;
             } else {
@@ -179,6 +176,20 @@
                     //this._lastHitTest = new GXPathTool.LastHitTest();
                 }
             }
+        }
+    };
+
+    /**
+     * Updates internal links to path and path preview to be consistent with currently edited path
+     * @private
+     */
+    GXPathTool.prototype._renewLinks = function () {
+        if (!this._pathEditor) {
+            this._pathRef = null;
+            this._dpathRef = null;
+        } else {
+            this._pathRef = this._pathEditor.getPath();
+            this._dpathRef = this._pathEditor.getPathPreview();
         }
     };
 
@@ -423,7 +434,7 @@
         this._dpathRef = null;
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
-        this._dpathRef = this._pathEditor.getPathPreview(anchorPt);
+        this._dpathRef = this._pathEditor.getPathPreview(false, anchorPt);
     };
 
     /**

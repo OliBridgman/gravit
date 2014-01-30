@@ -497,12 +497,17 @@
 
     /**
      * Returns path preview
+     * @param {Boolean} full - indicates if full path preview is needed
      * @param {GXPathBase.AnchorPoint} selectedAnchorPoint - the point for which preview is needed; may be null
      * @returns {GXPath}
      */
-    GXPathEditor.prototype.getPathPreview = function (selectedAnchorPoint) {
+    GXPathEditor.prototype.getPathPreview = function (full, selectedAnchorPoint) {
         this.requestInvalidation();
-        this._createPathPreviewIfNecessary(selectedAnchorPoint);
+        if (full) {
+            this.extendPreviewToFull();
+        } else {
+            this._createPathPreviewIfNecessary(selectedAnchorPoint);
+        }
         this.requestInvalidation();
         return this._elementPreview;
     };
@@ -626,6 +631,8 @@
         }
         // There may be one more hasPreview block, but it should not be updated in this case,
         // as this is the beginning of preview
+
+        this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
     };
 
     /**

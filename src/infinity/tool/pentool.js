@@ -159,6 +159,18 @@
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
+    /** overwrite */
+    GXPenTool.prototype._renewLinks = function () {
+        if (!this._pathEditor) {
+            this._pathRef = null;
+            this._dpathRef = null;
+        } else {
+            this._pathRef = this._pathEditor.getPath();
+            this._dpathRef = this._pathEditor.getPathPreview(true);
+            //this._pathEditor.requestInvalidation();
+        }
+    };
+
     GXPenTool.prototype._closeIfNeeded = function (draft) {
         if (this._pathRef && this._newPoint &&
             (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend)) {
@@ -194,8 +206,7 @@
                     this._pathRef.endUpdate();
                     this._pathEditor.requestInvalidation();
                 } else {
-                    this._pathEditor.extendPreviewToFull();
-                    this._dpathRef = this._pathEditor.getPathPreview();
+                    this._dpathRef = this._pathEditor.getPathPreview(true);
                     if (this._mode == GXPathTool.Mode.Append) {
                         this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
                     } else { // this._mode == GXPathTool.Mode.Prepend
