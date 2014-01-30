@@ -512,7 +512,7 @@
         this._released = true;
         if (this._pathEditor && this._mode == GXPathTool.Mode.Edit) {
             if (!this._dragStarted && this._refPt && !this._editPt) {
-                this._mouseNoDragReleaseOnEdit();
+                this._mouseNoDragReleaseOnEdit(event.client);
             } else if (this._dragStarted) {
                 var clickPt = this._constrainIfNeeded(
                     event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
