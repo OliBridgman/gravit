@@ -138,8 +138,9 @@
 
         // Get page & margin rectangle and transform it into world space
         var pageRect = new GRect(this.$x, this.$y, this.$w, this.$h);
-        var transformedRect = canvasTransform.mapRect(pageRect).toAlignedRect();
-        var x = transformedRect.getX(), y = transformedRect.getY(), w = transformedRect.getWidth(), h = transformedRect.getHeight();
+
+        var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
+        var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
         var marginRect = pageRect.expanded(
             -(this.$ml ? this.$ml : 0),
@@ -176,6 +177,15 @@
 
             context.canvas.fillRect(x, y, w, h, pt);
         }
+        
+        // Paint bleed if any
+        if (this.$bl && this.$bl > 0) {
+            var bleedRect = pageRect.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
+            var transformedBleedRect = canvasTransform.mapRect(bleedRect).toAlignedRect().translated(0.5, 0.5);
+
+            context.canvas.strokeRect(transformedBleedRect.getX(), transformedBleedRect.getY(),
+                transformedBleedRect.getWidth(), transformedBleedRect.getHeight(), 1, gColor.build(0, 0, 0));
+        }
 
         // Paint Grid if any
         if (this.$gc && this.$gc > 1 && this.$gb && this.$gb > 0 && context.configuration.isPageGutterVisible(context)) {
@@ -196,7 +206,6 @@
 
                 for (var cx = gx1; cx <= gx2; cx += columnWidth + this.$gw) {
                     var cr = canvasTransform.mapRect(new GRect(cx, cy, columnWidth, this.$gb)).intersected(transformedMarginRect);
-                    ;
                     var gr = canvasTransform.mapRect(new GRect(cx + columnWidth, cy, this.$gw, this.$gb)).intersected(transformedMarginRect);
                     // Paint column
                     context.canvas.fillRect(cr.getX(), cr.getY(), cr.getWidth(), cr.getHeight(), gColor.setAlpha(context.configuration.pageGutterColor, isGutterRow ? 30 : 60));
@@ -232,12 +241,18 @@
 
     /** @override */
     GXPage.prototype._calculateGeometryBBox = function () {
-        return new GRect(this.$x, this.$y, this.$w, this.$h);
+        var box = new GRect(this.$x, this.$y, this.$w, this.$h);
+
+        if (this.$bl && this.$bl > 0) {
+            box = box.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
+        }
+
+        return box;
     };
 
     /** @override */
     GXPage.prototype._calculatePaintBBox = function () {
-        var paintBBox = new GRect(this.$x, this.$y, this.$w, this.$h);
+        var paintBBox = this.getGeometryBBox();
 
         // translate by border-offset (1)
         paintBBox = paintBBox.translated(-1, -1);

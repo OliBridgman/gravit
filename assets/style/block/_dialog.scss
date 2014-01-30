@@ -4,7 +4,7 @@
   left: 0px;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.1);
 
   button {
     padding: $regularPadding;
@@ -34,7 +34,21 @@
   }
 
   input, textArea, select, button {
-    margin: 2px;
+    margin: 0px;
+  }
+
+  input:checked {
+    background: $buttonActiveColor;
+  }
+
+  label > input {
+    vertical-align: middle;
+  }
+
+  label > span {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0px $largePadding 0px $minPadding;
   }
 
   > .container {

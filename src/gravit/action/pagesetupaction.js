@@ -68,6 +68,39 @@
      */
     GPageSetupAction.prototype.execute = function (pages, done) {
         var pages = this._extractPages(pages);
+        var activePage = pages[0];
+
+        // Store source properties for any reset
+        var sourceValues = [];
+        for (var i = 0; i < pages.length; ++i) {
+            sourceValues.push({
+                'title': pages[i].getProperty('title'),
+                'bl': pages[i].getProperty('bl')
+            });
+        }
+
+        var _assignPagesProperties = function (properties, values) {
+            for (var i = 0; i < pages.length; ++i) {
+                pages[i].setProperties(properties, values);
+            }
+        };
+
+        var _updatePageTitles = function () {
+            var title = dialog.find('[data-property="title"]').val();
+            if (title !== "") {
+                var mode = dialog.find('[data-property="title-mode"]:checked').val();
+                for (var i = 0; i < pages.length; ++i) {
+                    var newTitle = title.replace('%n', (i + 1).toString());
+                    if (mode === 'replace') {
+                        pages[i].setProperty('title', newTitle);
+                    } else if (mode === 'append') {
+                        pages[i].setProperty('title', sourceValues[i]['title'] + newTitle);
+                    } else if (mode === 'prepend') {
+                        pages[i].setProperty('title', newTitle + sourceValues[i]['title']);
+                    }
+                }
+            }
+        };
 
         var dialog = $('<div></div>')
             .append($('<table></table>')
@@ -81,27 +114,63 @@
                         .append($('<input>')
                             .attr('data-property', 'title')
                             .css('width', '100%')
-                            .val(pages[0].getProperty('title')))))
+                            .val(activePage.getProperty('title'))
+                            .exAutoBlur()
+                            .on('input', _updatePageTitles))
+                        .append($('<div></div>')
+                            //.css('display', pages.length === 1 ? 'none' : '')
+                            .append($('<label>')
+                                .append($('<input>')
+                                    .attr('type', 'radio')
+                                    .attr('data-property', 'title-mode')
+                                    .attr('name', 'title-mode')
+                                    .attr('value', 'append')
+                                    .on('change', _updatePageTitles))
+                                .append($('<span></span>')
+                                    .text('Append')))
+                            .append($('<label>')
+                                .append($('<input>')
+                                    .attr('type', 'radio')
+                                    .attr('data-property', 'title-mode')
+                                    .attr('name', 'title-mode')
+                                    .attr('value', 'prepend')
+                                    .on('change', _updatePageTitles))
+                                .append($('<span></span>')
+                                    .text('Prepend')))
+                            .append($('<label>')
+                                .append($('<input>')
+                                    .attr('type', 'radio')
+                                    .attr('data-property', 'title-mode')
+                                    .attr('name', 'title-mode')
+                                    .attr('value', 'replace')
+                                    .prop('checked', true)
+                                    .on('change', _updatePageTitles))
+                                .append($('<span></span>')
+                                    .text('Replace'))))))
                 .append($('<tr></tr>')
                     .append($('<td></td>')
                         .append($('<label></label>')
                             // TODO: I18N
                             .text('Bleed')))
                     .append($('<td></td>')
+                        .attr('colspan', '2')
                         .append($('<input>')
                             .attr('data-property', 'bleed')
-                            .val(pages[0].getProperty('bl'))))
+                            .css('width', '100%')
+                            .val(activePage.getProperty('bl'))
+                            .exAutoBlur()
+                            .on('change', function () {
+                                var bleed = parseInt($(this).val());
+                                if (!isNaN(bleed)) {
+                                    _assignPagesProperties(['bl'], [bleed]);
+                                } else {
+                                    $(this).val(activePage.getProperty('bl'));
+                                }
+                            })))
                     .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO: I18N
-                            .text('Color')))
-                    .append($('<td></td>')
-                        .append($('<div></div>')
-                            .attr('data-property', 'color')
-                            .exColorBox({
-                                globalColor : false
-                            })
-                            .exColorBox('color', pages[0].getProperty('color'))))))
+                        .css('text-align', 'right')
+                        .append($('<button></button>')
+                            .text('Color')))))
             //.html('<table>\n    <tr>\n        <td><label>Title</label></td>\n        <td colspan="3"><input data-property="title" style="width:100%"></td>\n    </tr>\n    <tr>\n        <td><label>Bleed</label></td>\n        <td><input data-property="bleed"></td>\n        <td><label>Color</label></td>\n        <td><input data-property="color"></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Size</h1></td>\n    </tr>\n    <tr>\n        <td><label>&nbsp;</label></td>\n        <td colspan="43">\n            <select data-property="size" style="width:100%">\n                <optgroup label="Paper">\n                    <option>A4</option>\n                    <option>A3</option>\n                </optgroup>\n                <optgroup label="Mobile">\n                    <option>iPhone 4</option>\n                    <option>iPad 4</option>\n                </optgroup>\n            </select>\n        </td>\n    </tr>\n    <tr>\n        <td><label>Width</label></td>\n        <td><input data-property="width"></td>\n        <td><label data-property="height">Height</label></td>\n        <td><input></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Margin</h1></td>\n    </tr>\n    <tr>\n        <td><label>Top</label></td>\n        <td><input data-property="margin-top"></td>\n        <td><label>Right</label></td>\n        <td><input data-property="margin-right"></td>\n    </tr>\n    <tr>\n        <td><label>Left</label></td>\n        <td><input data-property="margin-left"></td>\n        <td><label>Bottom</label></td>\n        <td><input data-property="margin-top"></td>\n    </tr>\n    <tr>\n        <td colspan="4"><h1>Grid</h1></td>\n    </tr>\n    <tr>\n        <td><label>Baseline</label></td>\n        <td><input data-property="grid-baseline"></td>\n        <td><label>Gutter</label></td>\n        <td><input data-property="grid-gutter"></td>\n    </tr>\n    <tr>\n        <td><label>Columns</label></td>\n        <td><input data-property="grid-columns"></td>\n        <td><label>Rows</label></td>\n        <td><input data-property="grid-rows"></td>\n    </tr>\n</table>')
             .gDialog({
                 // TODO : I18N
@@ -136,6 +205,15 @@
                     {
                         title: GLocale.Constant.Cancel,
                         click: function () {
+                            // Reset all properties
+                            for (var i = 0; i < pages.length; ++i) {
+                                for (var property_ in sourceValues[i]) {
+                                    if (sourceValues[i].hasOwnProperty(property_)) {
+                                        pages[i].setProperty(property_, sourceValues[i][property_]);
+                                    }
+                                }
+                            }
+
                             $(this).gDialog('close');
                         }
                     }
@@ -155,10 +233,13 @@
             }
         } else {
             if (gApp.getActiveDocument()) {
-                var activePage = gApp.getActiveDocument().getScene().querySingle('page:active');
-                if (activePage) {
-                    result.push(activePage);
-                }
+                /*
+                 var activePage = gApp.getActiveDocument().getScene().querySingle('page:active');
+                 if (activePage) {
+                 result.push(activePage);
+                 }
+                 */
+                result = gApp.getActiveDocument().getScene().queryAll('page');
             }
         }
         return result;
