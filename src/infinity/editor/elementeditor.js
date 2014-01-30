@@ -88,6 +88,27 @@
     };
 
     /**
+     * Type of a drop
+     * @enum
+     */
+    GXElementEditor.DropType = {
+        /**
+         * A color is dropped, the type is GXColor
+         */
+        Color: 0,
+
+        /**
+         * A text is dropped, the type is String
+         */
+        Text: 1,
+
+        /**
+         * An element is dropped, the type is GXElement
+         */
+        Element: 2
+    };
+
+    /**
      * Returns any opened/attached editor on a element if it has any
      * @param {GXElement} element the element to get an open editor for
      * @returns {GXElementEditor} the editor opened on the element or null for none
@@ -697,6 +718,27 @@
             element.transform(this._transform);
         }
         this.resetTransform();
+    };
+
+    /**
+     * Called whenever something has been dropped on this editor.
+     * If the editor is able to handle it, it should return true
+     * to prevent any further handling.
+     * @param {GPoint} position the drop position in scene coordinates
+     * @param {GXElementEditor.DropType} type
+     * @param {*} source the drop source, the type depends on type
+     */
+    GXElementEditor.prototype.acceptDrop = function (position, type, source) {
+        // By default, we'll ask all children editors, first
+        if (this._editors) {
+            for (var i = 0; i < this._editors.length; ++i) {
+                if (this._editors[i].acceptDrop(position, type, source) === true) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     };
 
     /**

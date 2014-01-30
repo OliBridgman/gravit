@@ -25,6 +25,7 @@
             contextMenu.open({x: evt.pageX, y: evt.pageY});
             return true;
         }.bind(this));
+
     };
     GObject.inherit(EXWindow, GEventTarget);
 

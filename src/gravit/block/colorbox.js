@@ -17,10 +17,10 @@
             return this.each(function () {
                 var $this = $(this);
                 $this
+                    .addClass('g-block-colorbox')
                     .data('ex-colorbox', {
                         color: null
-                    })
-                    .addClass('ex-color-box');
+                    });
 
                 if (options.drag) {
                     $this
@@ -49,7 +49,7 @@
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData('gxcolor', color.asString());
+                            event.dataTransfer.setData(GXColor.MIME_TYPE, color.asString());
                             event.dataTransfer.setDragImage(img, previewBoxSize / 2, previewBoxSize / 2);
                             event.dataTransfer.sourceElement = this;
                         });
@@ -72,7 +72,7 @@
                             var event = evt.originalEvent;
                             event.preventDefault();
                             event.stopPropagation();
-                            var sourceColor = event.dataTransfer.getData('gxcolor');
+                            var sourceColor = event.dataTransfer.getData(GXColor.MIME_TYPE);
                             if (sourceColor && sourceColor !== "") {
                                 var color = GXColor.parseColor(sourceColor);
                                 var myColor = $this.data('ex-colorbox').color;
@@ -94,11 +94,6 @@
                             }
                         });
                 }
-
-                $this
-                    .on('click', function () {
-                        alert('CLICKED COLOR');
-                    });
             });
         },
 
@@ -108,7 +103,7 @@
             } else {
                 return this.each(function () {
                     var $this = $(this);
-                    newColor = typeof newColor == 'string' ? GXColor.parseColor(newColor) : newColor;
+                    newColor = typeof newColor === 'string' ? GXColor.parseColor(newColor) : newColor;
                     $this.data('ex-colorbox').color = newColor;
                     $this.css('background', newColor ? newColor.asCSSString() : '');
                 });

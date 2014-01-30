@@ -63,9 +63,9 @@
             // Do scene setup
             if (mode === 'screen') {
                 scene.setProperty('unit', GXLength.Unit.PX);
-                page.setProperties(['w', 'h', 'gb', 'gw', 'gc', 'gr'], [822, 960, 18, 18, 10, 4]);
+                page.setProperties(['w', 'h', 'gb', 'gw', 'gc', 'gr', 'color'], [822, 960, 18, 18, 10, 4, null]);
             } else if (mode === 'print') {
-                page.setProperties(['w', 'h', 'mt', 'mr', 'mb', 'ml'], [210, 297, 12.5, 12.5, 12.5, 12.5]);
+                page.setProperties(['w', 'h', 'mt', 'mr', 'mb', 'ml', 'color'], [210, 297, 12.5, 12.5, 12.5, 12.5, new GXColor(GXColor.Type.RGB, [255, 255, 255, 100]).asString()]);
                 scene.setProperty('unit', GXLength.Unit.MM);
             }
 

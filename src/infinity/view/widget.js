@@ -21,6 +21,36 @@
     GObject.inheritAndMix(GUIWidget, GObject, [GEventTarget]);
 
     /**
+     * Convert a DOM-Mouse-Event client position to internal coordinates
+     * @param htmlElement
+     * @param mouseEvent
+     * @returns {GPoint}
+     */
+    GUIWidget.convertClientPositionFromMousePosition = function (htmlElement, mouseEvent) {
+        var posX = null;
+        var posY = null;
+        if (mouseEvent.target == htmlElement) {
+            if ("absolute" === htmlElement.style.position) {
+                if (mouseEvent.hasOwnProperty("offsetX")) {
+                    posX = mouseEvent.offsetX;
+                    posY = mouseEvent.offsetY;
+                }
+            } else {
+                posX = mouseEvent.clientX;
+                posY = mouseEvent.clientY;
+            }
+        }
+        if (posX == null || posY == null) {
+
+            var box = htmlElement.getBoundingClientRect();
+            posX = mouseEvent.pageX - (box.left + window.pageXOffset - document.documentElement.clientLeft);
+            posY = mouseEvent.pageY - (box.top + window.pageYOffset - document.documentElement.clientTop);
+        }
+
+        return new GPoint(posX, posY);
+    };
+
+    /**
      * The underyling html element
      * @type {HTMLElement}
      * @private
@@ -575,32 +605,11 @@
     GUIWidget.prototype._updateAndTriggerMouseEvent = function (domEvent, event_id) {
         /** @type GUIMouseEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
-
-        var posX = null;
-        var posY = null;
-        if (domEvent.target == this._htmlElement) {
-            if ("absolute" === this._htmlElement.style.position) {
-                if (domEvent.hasOwnProperty("offsetX")) {
-                    posX = domEvent.offsetX;
-                    posY = domEvent.offsetY;
-                }
-            } else {
-                posX = domEvent.clientX;
-                posY = domEvent.clientY;
-            }
-        }
-        if (posX == null || posY == null) {
-
-            var box = this._htmlElement.getBoundingClientRect();
-            posX = domEvent.pageX - (box.left + window.pageXOffset - document.documentElement.clientLeft);
-            posY = domEvent.pageY - (box.top + window.pageYOffset - document.documentElement.clientTop);
-        }
-
-        cachedEvent.client = new GPoint(posX, posY);
+        cachedEvent.client = GUIWidget.convertClientPositionFromMousePosition(this._htmlElement, domEvent);
         cachedEvent.button = domEvent.button;
         this._triggerWidgetEventFromDom(domEvent, cachedEvent);
     };
-
+    
     /**
      * Update the cached key event and trigger it
      * @param {KeyboardEvent} domEvent dom source key event

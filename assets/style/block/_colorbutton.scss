@@ -1,0 +1,17 @@
+.g-block-colorbutton {
+  > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: $minPadding;
+  }
+
+  > *:last-child {
+    margin-right: 0px;
+  }
+
+  > .g-block-colorbox {
+    width: 1em;
+    height: 1em;
+    border: 1px solid black;
+  }
+}

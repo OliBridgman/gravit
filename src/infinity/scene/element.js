@@ -13,6 +13,12 @@
     GObject.inherit(GXElement, GXNode);
 
     /**
+     * Element's mime-type
+     * @type {string}
+     */
+    GXElement.MIME_TYPE = "application/infinity+element";
+
+    /**
      * The visual properties of an element with their default values
      */
     GXElement.VisualProperties = {

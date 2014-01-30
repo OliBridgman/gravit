@@ -12,6 +12,12 @@
     }
 
     /**
+     * Color's mime-type
+     * @type {string}
+     */
+    GXColor.MIME_TYPE = "application/infinity+color";
+
+    /**
      * Parse a string
      * @param string
      */
