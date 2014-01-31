@@ -157,14 +157,16 @@
                         .append($('<input>')
                             .attr('data-property', 'bleed')
                             .css('width', '100%')
-                            .val(activePage.getProperty('bl'))
+                            .val(activePage.getScene().pointToString(activePage.getProperty('bl')))
                             .exAutoBlur()
                             .on('change', function () {
-                                var bleed = parseInt($(this).val());
-                                if (!isNaN(bleed)) {
+                                var $this = $(this);
+                                var bleed = activePage.getScene().stringToPoint($this.val());
+                                if (bleed !== null && typeof bleed === 'number' && bleed >= 0) {
                                     _assignPagesProperties(['bl'], [bleed]);
+                                    $this.val(activePage.getScene().pointToString(bleed));
                                 } else {
-                                    $(this).val(activePage.getProperty('bl'));
+                                    $this.val(activePage.getProperty('bl'));
                                 }
                             })))
                     .append($('<td></td>')
