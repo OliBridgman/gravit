@@ -58,6 +58,10 @@
   @include g-cursor(pen-minus);
 }
 
+.g-cursor-pen-modify {
+  @include g-cursor(pen-modify);
+}
+
 .g-cursor-lasso {
   @include g-cursor(lasso);
 }

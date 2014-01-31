@@ -106,7 +106,7 @@
         Plus : GUICursor.PenPlus,
         Minus : GUICursor.PenMinus,
         Close : GUICursor.PenEnd,
-        Tick : GUICursor.PenMinus
+        Tick : GUICursor.PenModify
     };
 
     GXPathTool.prototype._cursor = GXPathTool.Cursors.XCross;

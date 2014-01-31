@@ -93,11 +93,18 @@
          */
         PenPlus: "pen-plus",
 
+
         /**
          * A pen with a minus indicator
          * @version 1.0
          */
         PenMinus: "pen-minus",
+
+        /**
+         * A pen with a modify indicator
+         * @version 1.0
+         */
+        PenModify: "pen-modify",
 
         /**
          * A lasso
