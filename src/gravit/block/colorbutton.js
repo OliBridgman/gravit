@@ -18,12 +18,16 @@
                 var $this = $(this);
 
                 var colorBox = $('<div></div>')
-                    .exColorBox();
+                    .exColorBox()
+                    .on('g-color-change', function (evt, color) {
+                        $this.trigger('g-color-change', color);
+                    });
 
                 $this
                     .addClass('g-block-colorbutton')
                     .data('g-colorbutton', {
-                        colorbox: colorBox
+                        colorbox: colorBox,
+                        container: null
                     });
 
                 // Save and remove text
@@ -41,20 +45,60 @@
 
                 // Append dropdown indicator
                 $('<span></span>')
-                    .addClass('fa fa-chevron-down')
+                    .addClass('fa fa-caret-down')
                     .appendTo($this);
+
+                // Register for click event
+                $this.on('click', function () {
+                    methods.open.call(self);
+                });
             });
         },
 
-        color: function (newColor) {
-            if (!newColor) {
-                return $(this).data('g-colorbutton').colorbox.exColorBox('color');
-            } else {
-                return this.each(function () {
-                    var $this = $(this);
-                    $this.data('g-colorbutton').colorbox.exColorBox('color', newColor);
-                });
+        open: function () {
+            var $this = $(this);
+            var data = $this.data('g-colorbutton');
+            if (!data.container) {
+                var container = $('<div></div>')
+                    .addClass('g-block-colorbutton-container')
+                    .on('click', function (evt) {
+                        if ($(evt.target).hasClass('g-block-colorbutton-container')) {
+                            methods.close.call(this);
+                        }
+                    }.bind(this))
+                    .appendTo($('body'));
+
+                var offset = $this.offset();
+                $('<div></div>')
+                    .css('top', (offset.top + $this.outerHeight()) + 'px')
+                    .css('left', offset.left + 'px')
+                    .gColorPanel()
+                    .on('g-color-change', function (evt, color) {
+                        methods.close.call(this);
+                        methods.color.call(this, color);
+                        $this.trigger('g-color-change', color);
+                    }.bind(this))
+                    .appendTo(container);
+
+                data.container = container;
             }
+            return this;
+        },
+
+        close: function () {
+            var $this = $(this);
+            var data = $this.data('g-colorbutton');
+            if (data.container) {
+                data.container.remove();
+                data.container = null;
+            }
+            return this;
+        },
+
+        color: function (newColor) {
+            var $this = $(this);
+            $this.data('g-colorbutton').colorbox.exColorBox('color', newColor);
+            return this;
         }
     };
 

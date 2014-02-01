@@ -172,13 +172,13 @@
                 .append($('<div></div>')
                     .attr('data-color-type', 'global')
                     .exColorBox()
-                    .on('ex.color-dropped', function (evt, color) {
+                    .on('g-color-change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     }))
                 .append($('<div></div>')
                     .attr('data-color-type', 'current')
                     .exColorBox()
-                    .on('ex.color-dropped', function (evt, color) {
+                    .on('g-color-change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     })))
             .appendTo(toolbar);

@@ -55,7 +55,7 @@
                         .addClass('header')
                         .append($('<h2></h2>')
                             .addClass('title')
-                                .text(gLocale.get(options.title))));
+                            .text(gLocale.get(options.title))));
                 }
 
                 if (options.buttons) {
@@ -87,39 +87,34 @@
         },
 
         open: function () {
-            var self = this;
+            methods.update.call(this);
 
-            return this.each(function () {
-                methods.update.call(self);
+            var $this = $(this);
+            $this.parents('.g-block-dialog').appendTo($('body'));
 
-                var $this = $(this);
-                $this.parents('.g-block-dialog').appendTo($('body'));
+            var container = $this.parents('.container');
+            container.css('left', (($(window).width() - container.outerWidth()) / 2).toString() + 'px');
 
-                var container = $this.parents('.container');
-                container.css('left', (($(window).width() - container.outerWidth()) / 2).toString() + 'px');
-                //container.css('top', (($(window).height() - container.outerHeight()) / 2).toString() + 'px')
-            });
+            return this;
         },
 
         close: function () {
-            return this.each(function () {
-                var $this = $(this);
-                $this.parents('.g-block-dialog').detach();
-            });
+            var $this = $(this);
+            $this.parents('.g-block-dialog').detach();
+            return this;
         },
 
         update: function () {
-            return this.each(function () {
+            var $this = $(this);
+            var buttons = $this.parents('.container').find('.buttons');
+            buttons.find('button').each(function () {
                 var $this = $(this);
-                var buttons = $this.parents('.container').find('.buttons');
-                buttons.find('button').each(function () {
-                    var $this = $(this);
-                    var button = $this.data('g-button');
-                    $this.text(button.title ? gLocale.get(button.title) : "");
-                    $this.attr('disabled', !button.enabled || (button.enabled && button.enabled()) ? null : 'disabled');
-                    $this.css('display', !button.visible || (button.visible && button.visible()) ? null : 'none');
-                });
+                var button = $this.data('g-button');
+                $this.text(button.title ? gLocale.get(button.title) : "");
+                $this.attr('disabled', !button.enabled || (button.enabled && button.enabled()) ? null : 'disabled');
+                $this.css('display', !button.visible || (button.visible && button.visible()) ? null : 'none');
             });
+            return this;
         }
     };
 

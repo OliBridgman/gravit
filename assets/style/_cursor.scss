@@ -69,3 +69,7 @@
 .g-cursor-lasso {
   @include g-cursor(lasso);
 }
+
+.g-cursor-pipette {
+  @include g-cursor(pipette);
+}

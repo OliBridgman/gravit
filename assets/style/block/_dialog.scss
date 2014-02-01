@@ -28,17 +28,25 @@
     border-radius: $borderRadius;
     border: 1px solid $inputBackgroundColor;
     color: black;
-    -webkit-appearance:none;
-    -moz-appearance:none;
-    appearance:none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 
   input, textArea, select, button {
-    margin: 0px;
+    margin: 3px;
   }
 
   input:checked {
     background: $buttonActiveColor;
+  }
+
+  input, textArea, select, button {
+    padding: $smallPadding;
+  }
+
+  button {
+    padding: 6px 5px 7px 5px;
   }
 
   label > input {

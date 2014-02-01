@@ -116,7 +116,12 @@
          * A lasso
          * @version 1.0
          */
-        Lasso: "lasso"
+        Lasso: "lasso",
+
+        /**
+         * A pipette / eyedropper
+         */
+        Pipette: "pipette"
     };
 
     _.GUICursor = GUICursor;

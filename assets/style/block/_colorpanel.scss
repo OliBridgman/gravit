@@ -1,0 +1,37 @@
+
+
+
+.g-block-colorpanel {
+  /*
+  .preview {
+    height: 1em;
+    width: 3em;
+    border: 1px solid black;
+  }*/
+
+  button {
+    padding: $regularPadding;
+    border: none;
+    border-radius: $borderRadius;
+    background: $inputBackgroundColor;
+    color: black;
+
+    &:hover {
+      background: $buttonHoverColor !important;
+    }
+
+    &:active, &.g-active {
+      background: $buttonActiveColor !important;
+      color:white !important;
+    }
+
+  }
+
+    .color-swatch {
+      width: 10px;
+      height: 10px;
+      margin: 0 1px 1px 0;
+      display: block;
+      float: left;
+    }
+}

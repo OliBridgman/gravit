@@ -78,7 +78,7 @@
                                 var myColor = $this.data('ex-colorbox').color;
                                 if (color && !GXColor.equals(color, myColor)) {
                                     methods.color.call(self, color);
-                                    $this.trigger('ex.color-dropped', color);
+                                    $this.trigger('g-color-change', color);
                                 }
                             }
                             return false;
@@ -98,16 +98,11 @@
         },
 
         color: function (newColor) {
-            if (!newColor) {
-                return $(this).data('ex-colorbox').color;
-            } else {
-                return this.each(function () {
-                    var $this = $(this);
-                    newColor = typeof newColor === 'string' ? GXColor.parseColor(newColor) : newColor;
-                    $this.data('ex-colorbox').color = newColor;
-                    $this.css('background', newColor ? newColor.asCSSString() : '');
-                });
-            }
+            var $this = $(this);
+            newColor = typeof newColor === 'string' ? GXColor.parseColor(newColor) : newColor;
+            $this.data('ex-colorbox').color = newColor;
+            $this.css('background', newColor ? newColor.asCSSString() : 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
+            return this;
         }
     };
 

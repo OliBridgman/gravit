@@ -371,7 +371,7 @@
                 .addClass('layer-color')
                 .exColorBox()
                 .exColorBox('color', GXColor.parseColor(layerOrSet.getProperty('color')))
-                .on('ex.color-dropped', function (evt, color) {
+                .on('g-color-change', function (evt, color) {
                     if (layerOrSet instanceof GXLayerSet) {
                         var myColor = GXColor.parseColor(layerOrSet.getProperty('color'));
 
