@@ -100,16 +100,7 @@
      */
     GXPathTool.prototype._mDownTime = 0;
 
-    GXPathTool.Cursors = {
-        Simple : GUICursor.Pen,
-        XCross : GUICursor.PenStart,
-        Plus : GUICursor.PenPlus,
-        Minus : GUICursor.PenMinus,
-        Close : GUICursor.PenEnd,
-        Tick : GUICursor.PenModify
-    };
-
-    GXPathTool.prototype._cursor = GXPathTool.Cursors.XCross;
+    GXPathTool.prototype._cursor = null;
 
     /** @override */
     GXPathTool.prototype.getHint = function () {
@@ -120,63 +111,6 @@
     /** @override */
     GXPathTool.prototype.getCursor = function () {
         return this._cursor;
-    };
-
-    GXPathTool.prototype.activeCursor = function (cursor, clickPt) {
-        if (cursor !== null) {
-            this._cursor = cursor;
-        } else if (clickPt) {
-            if (!this._pathEditor) {
-                this._checkPathEditor();
-            }
-            if (this._pathEditor) {
-                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform());
-                if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
-                    var anchorPt = partInfo.id.point;
-                    var pathRef = this._pathEditor.getPath();
-                    if (!pathRef.getProperty('closed') &&
-                        (anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
-                        anchorPt === pathRef.getAnchorPoints().getLastChild())) {
-
-                        if (this._mode == GXPathTool.Mode.Append &&
-                            anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
-                            this._mode == GXPathTool.Mode.Prepend &&
-                            anchorPt === pathRef.getAnchorPoints().getLastChild()) {
-
-                            this._cursor = GXPathTool.Cursors.Close;
-                        } else {
-                            this._cursor = GXPathTool.Cursors.Simple;
-                        }
-                    } else { // middlePoint
-                        if (this._mode == GXPathTool.Mode.Edit) {
-                            if (anchorPt.getProperty('hlx') !== null && anchorPt.getProperty('hly') !== null ||
-                                anchorPt.getProperty('hrx') !== null && anchorPt.getProperty('hry') !== null) {
-
-                                this._cursor = GXPathTool.Cursors.Tick;
-                            } else {
-                                this._cursor = GXPathTool.Cursors.Minus;
-                            }
-                        } else {
-                            this._cursor = GXPathTool.Cursors.Simple;
-                        }
-                    }
-                } else if (this._mode == GXPathTool.Mode.Edit) {
-                    if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
-                        this._cursor = GXPathTool.Cursors.Plus;
-                    } else { // no path hit
-                        this._cursor = GXPathTool.Cursors.XCross;
-                    }
-                } else {
-                    this._cursor = GXPathTool.Cursors.Simple;
-                }
-            } else {
-                this._cursor = GXPathTool.Cursors.XCross;
-            }
-        } else {
-            this._cursor = GXPathTool.Cursors.XCross;
-        }
-
-        this.updateCursor();
     };
 
     /** @override */
@@ -190,6 +124,7 @@
 
         // Set detail mode for selection for path tool
         this._editor.setSelectionDetail(true);
+        this._cursor = GUICursor.PenStart;
     };
 
     /** @override */
@@ -450,7 +385,7 @@
                 this._pathRef.removeFlag(GXNode.Flag.Selected);
                 this._commitChanges();
             }
-            this.activeCursor(GXPathTool.Cursors.XCross);
+            this._setCursorForPosition(GUICursor.PenStart);
         }
     };
 
@@ -532,13 +467,13 @@
                 if (this._refPt.getProperty('hlx') !== null && this._refPt.getProperty('hly') !== null ||
                     this._refPt.getProperty('hrx') !== null && this._refPt.getProperty('hry') !== null) {
 
-                    this.activeCursor(GXPathTool.Cursors.Tick);
+                    this._setCursorForPosition(GUICursor.PenModify);
                 } else {
-                    this.activeCursor(GXPathTool.Cursors.Minus);
+                    this._setCursorForPosition(GUICursor.PenMinus);
                 }
             }
         } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
-            this.activeCursor(GXPathTool.Cursors.Plus);
+            this._setCursorForPosition(GUICursor.PenPlus);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.data);
             if (anchorPt) {
                 this._makePointMajor(anchorPt);
@@ -552,7 +487,7 @@
                 this._mode = GXPathTool.Mode.Append;
             }
         } else { // no path hit
-            this.activeCursor(GXPathTool.Cursors.XCross);
+            this._setCursorForPosition(GUICursor.PenStart);
             this._pathEditor.updatePartSelection(false);
             this._commitChanges();
             this._mode = GXPathTool.Mode.Append;
@@ -576,15 +511,72 @@
 
             this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
             this._makePointMajor(this._refPt);
-            this.activeCursor(GXPathTool.Cursors.Minus);
+            this._setCursorForPosition(GUICursor.PenMinus);
         } else {
             if (this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) {
                 this._pathRef.getAnchorPoints().removeChild(this._refPt);
             }
-            this.activeCursor(null, clickPt);
+            this._setCursorForPosition(null, clickPt);
         }
         this._refPt = null;
         this._commitChanges();
+    };
+
+    GXPathTool.prototype._setCursorForPosition = function (cursor, clickPt) {
+        if (cursor !== null) {
+            this._cursor = cursor;
+        } else if (clickPt) {
+            if (!this._pathEditor) {
+                this._checkPathEditor();
+            }
+            if (this._pathEditor) {
+                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform());
+                if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
+                    var anchorPt = partInfo.id.point;
+                    var pathRef = this._pathEditor.getPath();
+                    if (!pathRef.getProperty('closed') &&
+                        (anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
+                            anchorPt === pathRef.getAnchorPoints().getLastChild())) {
+
+                        if (this._mode == GXPathTool.Mode.Append &&
+                            anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
+                            this._mode == GXPathTool.Mode.Prepend &&
+                                anchorPt === pathRef.getAnchorPoints().getLastChild()) {
+
+                            this._cursor = GUICursor.PenEnd;
+                        } else {
+                            this._cursor = GUICursor.Pen;
+                        }
+                    } else { // middlePoint
+                        if (this._mode == GXPathTool.Mode.Edit) {
+                            if (anchorPt.getProperty('hlx') !== null && anchorPt.getProperty('hly') !== null ||
+                                anchorPt.getProperty('hrx') !== null && anchorPt.getProperty('hry') !== null) {
+
+                                this._cursor = GUICursor.PenModify;
+                            } else {
+                                this._cursor = GUICursor.PenMinus;
+                            }
+                        } else {
+                            this._cursor = GUICursor.Pen;
+                        }
+                    }
+                } else if (this._mode == GXPathTool.Mode.Edit) {
+                    if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
+                        this._cursor = GUICursor.PenPlus;
+                    } else { // no path hit
+                        this._cursor = GUICursor.PenStart;
+                    }
+                } else {
+                    this._cursor = GUICursor.Pen;
+                }
+            } else {
+                this._cursor = GUICursor.PenStart;
+            }
+        } else {
+            this._cursor = GUICursor.PenStart;
+        }
+
+        this.updateCursor();
     };
 
     /** override */

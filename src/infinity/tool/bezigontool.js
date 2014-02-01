@@ -40,6 +40,7 @@
         GXPathTool.prototype.activate.call(this, view, layer);
         layer.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
         layer.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+        this._checkMode();
     };
 
     /** @override */
@@ -91,7 +92,7 @@
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform())) {
-                    this.activeCursor(GXPathTool.Cursors.Close);
+                    this._setCursorForPosition(GUICursor.PenEnd);
                     // Close path
                     this._pathRef.setProperty('closed', true);
                     this._makePointMajor(otherPt);
@@ -99,7 +100,7 @@
                     this._editPt = this._pathEditor.getPathPointPreview(otherPt);
                     this._pathEditor.requestInvalidation();
                 } else {
-                    this.activeCursor(GXPathTool.Cursors.Simple);
+                    this._setCursorForPosition(GUICursor.Pen);
                     var prevPt;
                     if (this._pathEditor) {
                         if (this._mode == GXPathTool.Mode.Append) {
@@ -134,7 +135,7 @@
             this._commitChanges();
         }
         this._mode = GXPathTool.Mode.Edit;
-        this.activeCursor(null, event.client);
+        this._setCursorForPosition(null, event.client);
         return;
 
 //        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
@@ -153,7 +154,7 @@
             return;
         }
 
-        this.activeCursor(null, event.client);
+        this._setCursorForPosition(null, event.client);
     };
 
     /**
@@ -183,12 +184,12 @@
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform())) {
-                    this.activeCursor(GXPathTool.Cursors.Close);
+                    this._setCursorForPosition(GUICursor.PenEnd);
                 } else {
-                    this.activeCursor(GXPathTool.Cursors.Simple);
+                    this._setCursorForPosition(GUICursor.Pen);
                 }
             } else {
-                this.activeCursor(GXPathTool.Cursors.Simple);
+                this._setCursorForPosition(GUICursor.Pen);
             }
 
             this._pathEditor.requestInvalidation();
@@ -282,14 +283,14 @@
                 var newPos = this._updatePoint(event.client);
                 this._closeIfNeeded();
                 if (this._pathRef.getProperty('closed')) {
-                    this.activeCursor(GXPathTool.Cursors.Minus);
+                    this._setCursorForPosition(GUICursor.PenMinus);
                     this._mode = GXPathTool.Mode.Edit;
                 } else if (this._newPoint) {
                     this._addPoint(this._editPt, false, true);
-                    this.activeCursor(GXPathTool.Cursors.Simple);
+                    this._setCursorForPosition(GUICursor.Pen);
                 } else if (this._editPt) {
                     this._pathEditor.applyTransform(this._pathRef);
-                    this.activeCursor(GXPathTool.Cursors.Close);
+                    this._setCursorForPosition(GUICursor.PenEnd);
                 }
                 this._commitChanges();
                 // hit test result becomes invalid if any;
@@ -298,7 +299,7 @@
                 if (this._dragStarted && this._editPt) {
                     var newPos = this._updatePoint(event.client);
                     this._pathEditor.applyTransform(this._pathRef);
-                    this.activeCursor(null, newPos);
+                    this._setCursorForPosition(null, newPos);
                     this._commitChanges();
                     // hit test result becomes invalid if any;
                     //this._lastHitTest = new GXPathTool.LastHitTest();
