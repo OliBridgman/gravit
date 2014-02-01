@@ -158,10 +158,11 @@
      */
     GXPathTool.prototype._checkMode = function () {
         this._checkPathEditor();
-        this._renewLinks();
         if (!this._pathEditor) {
             this._mode = GXPathTool.Mode.Append;
+            this._pathRef = null;
         } else {
+            this._pathRef = this._pathEditor.getPath();
             if (this._pathRef.getProperty('closed')) {
                 this._mode = GXPathTool.Mode.Edit;
             } else {
@@ -183,15 +184,13 @@
     };
 
     /**
-     * Updates internal links to path and path preview to be consistent with currently edited path
+     * Updates internal links to path preview to be consistent with currently edited path
      * @private
      */
-    GXPathTool.prototype._renewLinks = function () {
+    GXPathTool.prototype._renewPreviewLink = function () {
         if (!this._pathEditor) {
-            this._pathRef = null;
             this._dpathRef = null;
         } else {
-            this._pathRef = this._pathEditor.getPath();
             this._dpathRef = this._pathEditor.getPathPreview();
         }
     };
@@ -232,6 +231,7 @@
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
+                this._renewPreviewLink();
                 this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 this._pathEditor.requestInvalidation();
             } else {
@@ -255,6 +255,7 @@
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
+                this._renewPreviewLink();
                 this._pathEditor.requestInvalidation();
             } else {
                 this._pathEditor.requestInvalidation();

@@ -75,6 +75,7 @@
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 
             this._checkMode();
+            this._renewPreviewLink();
 
             if (this._mode == GXPathTool.Mode.Edit) {
                 this._mouseDownOnEdit(event.client);

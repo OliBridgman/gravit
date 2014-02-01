@@ -78,6 +78,7 @@
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 
             this._checkMode();
+            this._renewPreviewLink();
 
             if (this._mode == GXPathTool.Mode.Edit) {
                 this._mouseDownOnEdit(event.client);
@@ -160,12 +161,10 @@
     };
 
     /** overwrite */
-    GXPenTool.prototype._renewLinks = function () {
+    GXPenTool.prototype._renewPreviewLink = function () {
         if (!this._pathEditor) {
-            this._pathRef = null;
             this._dpathRef = null;
         } else {
-            this._pathRef = this._pathEditor.getPath();
             this._dpathRef = this._pathEditor.getPathPreview(true);
             //this._pathEditor.requestInvalidation();
         }
@@ -249,6 +248,7 @@
         }
 
         this._checkMode();
+        this._renewPreviewLink();
         if (this._mode == GXPathTool.Mode.Edit) {
             //this._makeHitTest(curPt);
             //this._updateCursor();

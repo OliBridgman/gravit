@@ -607,13 +607,15 @@
             ++previewIdx;
             hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
         }
+        var num = idx - 0;
         while (hasPreview && ap) {
-            this._sourceIndexToPreviewIndex[idx] = previewIdx;
+            this._sourceIndexToPreviewIndex[idx] += num;
+            previewIdx = this._sourceIndexToPreviewIndex[idx];
             ap = ap.getNext();
             ++idx;
-            ++previewIdx;
             hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
         }
+        ++previewIdx;
         while (!hasPreview && ap) {
             var previewAnchorPoint = new GXPathBase.AnchorPoint();
             previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
