@@ -62,6 +62,10 @@
   @include g-cursor(pen-modify);
 }
 
+.g-cursor-pen-drag {
+  @include g-cursor(pen-drag);
+}
+
 .g-cursor-lasso {
   @include g-cursor(lasso);
 }

@@ -240,9 +240,9 @@
 
     /** @override */
     GXPath.prototype._handleChange = function (change, args) {
+        GXPathBase.prototype._handleChange.call(this, change, args);
         this._handleGeometryChangeForProperties(change, args, GXPath.GeometryProperties);
         this._handleGeometryChangeForProperties(change, args, GXPathBase.GeometryProperties);
-        GXPathBase.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

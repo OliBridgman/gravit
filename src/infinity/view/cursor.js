@@ -103,8 +103,14 @@
         /**
          * A pen with a modify indicator
          * @version 1.0
-         */
+            */
         PenModify: "pen-modify",
+
+        /**
+         * A black arrow
+         * @version 1.0
+         */
+        PenDrag: "pen-drag",
 
         /**
          * A lasso
