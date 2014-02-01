@@ -215,20 +215,27 @@
      * @param {GXPathBase.AnchorPoint} anchorPt - anchor point to hit-test
      * @param {GPoint} location
      * @param {GTransform} transform - a transformation to apply to anchor point's coordinates before hit-testing
+     * @param {Boolean} strict - indicates when pick distance should not be used for anchor point hit-testing
      * @returns {boolean} the result of hit-test
      */
-    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform) {
-        var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
+    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, strict) {
         var res = false;
         if (anchorPt) {
             var transformToApply = this._element.getProperty('transform');
             if (transform) {
                 transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
             }
-            res = this._getAnnotationBBox(
-                    transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
-                .expanded(pickDist, pickDist, pickDist, pickDist)
-                .containsPoint(location);
+            if (strict) {
+                res = this._getAnnotationBBox(
+                        transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                    .containsPoint(location);
+            } else {
+                var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
+                res = this._getAnnotationBBox(
+                        transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                    .expanded(pickDist, pickDist, pickDist, pickDist)
+                    .containsPoint(location);
+            }
         }
         return res;
     };

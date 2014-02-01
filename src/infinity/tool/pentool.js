@@ -90,7 +90,7 @@
                     this._updatePoint(event.client);
                     if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
                         this._editPt.setProperty('tp', 'C');
-                    } else {
+                    } else if (!gPlatform.modifiers.optionKey){
                         this._closeIfNeeded(true); // close preview
                     }
                     if (!this._dpathRef.getProperty('closed')) {
@@ -115,46 +115,6 @@
                     anchorPt = this._constructNewPoint(event, pt);
                     this._addPoint(anchorPt, true, false);
                 }
-
-                /* Some code still needed for reference
-                if (this._gpathRef) {
-                    this._gpathRef.resetSelectedPts();
-                    anchorPt = this._dpathRef.getLastChild();
-                    this._gpathRef.beginUpdate();
-                } else {
-                    anchorPt = new GXPath.AnchorPoint(clickPt);
-                }
-                anchorPt.setFlag(GXNode.Flag.Selected);
-
-                px = clickPt.getX();
-                py = clickPt.getY();
-                this._newPoint = anchorPt;
-
-                if (event.button == GUIMouseEvent.BUTTON_LEFT) {
-                    if (gPlatform.modifiers.shiftKey && this._gpathRef) {
-                        this._convertToConstrain(anchorPt, this._pathRef.getLastChild(), px, py);
-                    }
-                    if (!gPlatform.modifiers.optionKey) {
-                        this._closeIfNeeded();
-                    }
-                } else { // BUTTON_RIGHT && AltDown
-                    anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Connector);
-                    pt = anchorPt.getPrevious();
-                    if (pt && pt.getProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X) != null) {
-                        hx = px + (pt.getProperty(GXPath.AnchorPoint.PROPERTY_X) - px) * GXPath.AnchorPoint.HANDLE_COEFF;
-                        hy = py + (pt.getProperty(GXPath.AnchorPoint.PROPERTY_Y) - py) * GXPath.AnchorPoint.HANDLE_COEFF;
-                        if (!gMath.isEqualEps(px - hx, 0) || !gMath.isEqualEps(py - hy, 0)) {
-                            anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, hx);
-                            anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, hy);
-                        }
-                    }
-                }
-
-                if (this._gpathRef) {
-                    this._gpathRef.endUpdate();
-                    this._updatedVertices();
-                }
-                */
             }
         }
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
@@ -283,121 +243,143 @@
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
-
-    /**
-     * @param {GUIMouseEvent.Move} event with right mouse button pressed
-     * @private
-     */
-    GXPenTool.prototype._rightDrag = function (event) {
-        var clickPt;
-        var anchorPt;
-        var vertexPt = new GXVertex();
-        var dirLen, hLen;
-        var prevPt;
-        var vPrev = new GXVertex();
-        var ex, ey;
-
-        this._dragStarted = true;
-        if (!this._dragStartPt) {
-            this._dragStartPt = this._editPt;
-        }
-        // TODO: implement
-        return;
-
-        /* Some code still needed for reference
-        if (this._gpathRef) {
-            if (this._mode == GXPathTool.Mode.Append) {
-                anchorPt = this._dpathRef.getLastChild();
-            } else if (this._editPt) { // && this._mode == GXPathTool.Mode.Edit
-                anchorPt = this._editPt;
-            }
-            this._gpathRef.beginUpdate();
-        } else if (this._newPoint) { // assume this._mode == GXPathTool.Mode.Append
-            anchorPt = this._newPoint;
-        }
-
-        if (!anchorPt) {
-            return;
-        }
-
-        anchorPt.vertexCoord(vertexPt);
-        clickPt = this._view.getViewTransform().mapPoint(event.client);
-
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Connector);
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, null);
-        anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, null);
-
-        // calculate right handle to be projection of click point to the vector,
-        // connecting previous point and this one
-        prevPt = anchorPt.getPrevious();
-        if (prevPt && !(gMath.isEqualEps(clickPt.getX() - vertexPt.x, 0) && gMath.isEqualEps(clickPt.getY() - vertexPt.y, 0))) {
-
-            prevPt.vertexCoord(vPrev);
-            dirLen = Math.sqrt(gMath.ptSqrDist(vertexPt.x, vertexPt.y, vPrev.x, vPrev.y));
-            if (!gMath.isEqualEps(dirLen, 0)) {
-                ex = (vertexPt.x - vPrev.x) / dirLen;
-                ey = (vertexPt.y - vPrev.y) / dirLen;
-                hLen = gMath.vDotProduct(ex, ey, clickPt.getX() - vertexPt.x, clickPt.getY() - vertexPt.y);
-                if (hLen > 0) {
-                    anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, vertexPt.x + ex * hLen);
-                    anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, vertexPt.y + ey * hLen);
-                }
-            }
-        }
-
-        if (this._gpathRef) {
-            this._gpathRef.endUpdate();
-            this._updatedVertices();
-        }
-
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-        */
-    };
-
     GXPenTool.prototype._updateHandles = function (newPos) {
-        var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
-        var transformToNative = transformToNewPos.inverted();
-        var newNativePos = transformToNative.mapPoint(newPos);
-
         var tp = this._editPt.getProperty('tp');
         var ptx = this._editPt.getProperty('x');
         var pty = this._editPt.getProperty('y');
         var hlx, hly, hrx, hry;
-        if (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Edit) {
-            if (tp != 'C' || this._mode == GXPathTool.Mode.Edit) {
-                hrx = newNativePos.getX();
-                hry = newNativePos.getY();
-                hlx = ptx + ptx - hrx;
-                hly = pty + pty - hry;
-                this._editPt.setProperty('ah', false);
-                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                    ['S', hlx, hly, hrx, hry]);
+        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), true)) {
+            if (this._mode != GXPathTool.Mode.Edit) {
+                if (this._mode == GXPathTool.Mode.Append) {
+                    if (this._editPt.getProperty('hlx') !== null && this._editPt.getProperty('hly') !== null) {
+                        this._editPt.setProperties(['tp', 'hrx', 'hry'], ['S', null, null]);
+                    } else {
+                        this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+                    }
+                } else { // _mode == Prepend
+                    if (this._editPt.getProperty('hrx') !== null && this._editPt.getProperty('hry') !== null) {
+                        this._editPt.setProperties(['tp', 'hlx', 'hly'], ['S', null, null]);
+                    } else {
+                        this._editPt.setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
+                    }
+                }
             } else {
-                // TODO: make projection instead of rotation, look at old _rightDrag
-                hrx = newNativePos.getX();
-                hry = newNativePos.getY();
-                hlx = null;
-                hly = null;
-                this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'],
-                    [hlx, hly, hrx, hry]);
+                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], ['N', null, null, null, null]);
             }
-        } else { // this._mode == GXPathTool.Mode.Prepend
-            if (tp != 'C') {
-                hlx = newNativePos.getX();
-                hly = newNativePos.getY();
-                hrx = ptx + ptx - hlx;
-                hry = pty + pty - hly;
-                this._editPt.setProperty('ah', false);
-                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                    ['S', hlx, hly, hrx, hry]);
-            } else {
-                // TODO: make projection instead of rotation, look at old _rightDrag
-                hlx = newNativePos.getX();
-                hly = newNativePos.getY();
-                hrx = null;
-                hry = null;
-                this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'],
-                    [hlx, hly, hrx, hry]);
+        } else {
+            var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
+            var transformToNative = transformToNewPos.inverted();
+            var newNativePos = transformToNative.mapPoint(newPos);
+
+            if (this._mode == GXPathTool.Mode.Edit) {
+                if (!gPlatform.modifiers.optionKey) {
+                    hrx = newNativePos.getX();
+                    hry = newNativePos.getY();
+                    this._editPt.setProperty('ah', false);
+                    hlx = ptx + ptx - hrx;
+                    hly = pty + pty - hry;
+                    this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
+                        ['S', hlx, hly, hrx, hry]);
+                } else {
+                    var dx = newNativePos.getX() - ptx;
+                    var dy = newNativePos.getY() - pty;
+                    this._editPt.setProperty('ah', false);
+                    hrx = this._editPt.getProperty('hrx');
+                    hrx = hrx != null ? hrx + dx : ptx + dx;
+                    hry = this._editPt.getProperty('hry');
+                    hrx = hry != null ? hry + dy : pty + dy;
+                    this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', hrx, hry]);
+                }
+            } else if (this._mode == GXPathTool.Mode.Append) {
+                if (tp != 'C') {
+                    hrx = newNativePos.getX();
+                    hry = newNativePos.getY();
+                    this._editPt.setProperty('ah', false);
+                    if (!gPlatform.modifiers.optionKey) {
+                        hlx = ptx + ptx - hrx;
+                        hly = pty + pty - hry;
+                        this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
+                            ['S', hlx, hly, hrx, hry]);
+                    } else {
+                        this._editPt.setProperties(['hrx', 'hry'], [hrx, hry]);
+                    }
+                } else {
+                    hlx = null;
+                    hly = null;
+
+                    // calculate right handle to be projection of click point to the vector,
+                    // connecting previous point and this one
+                    var prevPt = this._editPt.getPrevious();
+                    if (prevPt) {
+                        var prevX = prevPt.getProperty('x');
+                        var prevY = prevPt.getProperty('y');
+                        var dirLen = Math.sqrt(gMath.ptSqrDist(ptx, pty, prevX, prevY));
+                        if (!gMath.isEqualEps(dirLen, 0)) {
+                            var ex = (ptx - prevX) / dirLen;
+                            var ey = (pty - prevY) / dirLen;
+                            var hLen = gMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            if (hLen > 0) {
+                                hrx = ptx + ex * hLen;
+                                hry = pty + ey * hLen;
+                            } else {
+                                hrx = null;
+                                hry = null;
+                            }
+                        } else {
+                            hrx = newNativePos.getX();
+                            hry = newNativePos.getY();
+                        }
+                    } else {
+                        hrx = newNativePos.getX();
+                        hry = newNativePos.getY();
+                    }
+                    this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'], [hlx, hly, hrx, hry]);
+                }
+            } else { // this._mode == GXPathTool.Mode.Prepend
+                if (tp != 'C') {
+                    hlx = newNativePos.getX();
+                    hly = newNativePos.getY();
+                    this._editPt.setProperty('ah', false);
+                    if (!gPlatform.modifiers.optionKey) {
+                        hrx = ptx + ptx - hlx;
+                        hry = pty + pty - hly;
+                        this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
+                            ['S', hlx, hly, hrx, hry]);
+                    } else {
+                        this._editPt.setProperties(['hlx', 'hly'], [hlx, hly]);
+                    }
+                } else {
+                    hrx = null;
+                    hry = null;
+
+                    // calculate right handle to be projection of click point to the vector,
+                    // connecting previous point and this one
+                    var nextPt = this._editPt.getNext();
+                    if (nextPt) {
+                        var nextX = nextPt.getProperty('x');
+                        var nextY = nextPt.getProperty('y');
+                        var dirLen = Math.sqrt(gMath.ptSqrDist(ptx, pty, nextX, nextY));
+                        if (!gMath.isEqualEps(dirLen, 0)) {
+                            var ex = (ptx - nextX) / dirLen;
+                            var ey = (pty - nextY) / dirLen;
+                            var hLen = gMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            if (hLen > 0) {
+                                hlx = ptx + ex * hLen;
+                                hly = pty + ey * hLen;
+                            } else {
+                                hlx = null;
+                                hly = null;
+                            }
+                        } else {
+                            hlx = newNativePos.getX();
+                            hly = newNativePos.getY();
+                        }
+                    } else {
+                        hlx = newNativePos.getX();
+                        hly = newNativePos.getY();
+                    }
+                    this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'], [hlx, hly, hrx, hry]);
+                }
             }
         }
         this._pathEditor.requestInvalidation();
@@ -433,70 +415,6 @@
             this._updateHandles(clickPt);
             this._pathEditor.requestInvalidation();
         }
-        return;
-
-        /* Some code still needed for reference
-        var clickPt;
-        var anchorPt;
-        var vertexPt = new GXVertex();
-        var handlePt;
-
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-        this._dragStarted = true;
-
-        if (this._gpathRef) {
-            if (this._mode == GXPathTool.Mode.Append) {
-                anchorPt = this._dpathRef.getLastChild();
-            } else if (this._editPt) { // && this._mode == GXPathTool.Mode.Edit
-                anchorPt = this._editPt;
-            }
-            this._gpathRef.setWorkingPath(this._dpathRef);
-            this._gpathRef.beginUpdate();
-        } else if (this._newPoint) {  // assume this._mode == GXPathTool.Mode.Append
-            anchorPt = this._newPoint;
-        }
-
-        if (!anchorPt) {
-            return;
-        }
-
-        anchorPt.vertexCoord(vertexPt);
-        clickPt = this._view.getViewTransform().mapPoint(event.client);
-
-        if (gPlatform.modifiers.shiftKey) {
-            handlePt = gMath.convertToConstrain(vertexPt.x, vertexPt.y,
-                clickPt.getX(), clickPt.getY());
-        } else {
-            handlePt = clickPt;
-        }
-
-        if (gMath.isEqualEps(handlePt.getX() - vertexPt.x, 0) && gMath.isEqualEps(handlePt.getY() - vertexPt.y, 0)) {
-            if (anchorPt.getProperty(GXPath.AnchorPoint.PROPERTY_CTYPE) == GXPath.AnchorPoint.CType.Regular) {
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, null);
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, null);
-            } else {
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Regular);
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, null);
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, null);
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, null);
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, null);
-            }
-        } else {
-            anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_X, handlePt.getX());
-            anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HNEXT_Y, handlePt.getY());
-            if (!gPlatform.modifiers.optionKey) {
-                // we need to construct the left handle to be in line with the right one
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_X, vertexPt.x + vertexPt.x - handlePt.getX());
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_HPREV_Y, vertexPt.y + vertexPt.y - handlePt.getY());
-                anchorPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Smooth);
-            }
-        }
-
-        if (this._gpathRef) {
-            this._gpathRef.endUpdate();
-            this._updatedVertices();
-        }
-        */
     };
 
     /**
@@ -507,17 +425,8 @@
      * @private
      */
     GXPenTool.prototype._constructNewPoint = function (event, pt) {
-        var anchorPt = null;
-        //if (event.button == GUIMouseEvent.BUTTON_LEFT ||
-        //    event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-
-            anchorPt = new GXPath.AnchorPoint();
-            anchorPt.setProperties(['x', 'y'], [pt.getX(), pt.getY()]);
-
-       //     if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-         //       anchorPt.setProperty('tp', 'C');
-        //    }
-        //}
+        var anchorPt = new GXPath.AnchorPoint();
+        anchorPt.setProperties(['x', 'y'], [pt.getX(), pt.getY()]);
 
         return anchorPt;
     };
@@ -582,15 +491,12 @@
                 }
                 this._commitChanges();
             } else {
-                /*if (this._mode == GXPathTool.Mode.Append) {
-                    this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
-                } else { // this._mode == GXPathTool.Mode.Prepend
-                    this._refPt = this._pathRef.getAnchorPoints().getLastChild();
-                } */
-                this._pathEditor.selectOnePoint(this._refPt);
-                this._pathEditor.applyTransform(this._pathRef);
-                this._pathEditor.requestInvalidation();
-                this._pathRef.setProperty('closed', true);
+                if (this._refPt) {
+                    this._pathEditor.selectOnePoint(this._refPt);
+                    this._pathEditor.applyTransform(this._pathRef);
+                    this._pathEditor.requestInvalidation();
+                    this._pathRef.setProperty('closed', true);
+                }
                 this._commitChanges();
                 this._mode = GXPathTool.Mode.Edit;
                 this._setCursorForPosition(null, event.client);
