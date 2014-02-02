@@ -384,8 +384,12 @@
      * @private
      */
     GXPathTool.prototype._modifiersChanged = function (event) {
-        if (event.changed.shiftKey && !this._released) {
-            this._mouseDrag(this._lastMouseEvent);
+        if (event.changed.shiftKey && this._lastMouseEvent) {
+            if (!this._released) {
+                this._mouseDrag(this._lastMouseEvent);
+            } else {
+                this._mouseMove(this._lastMouseEvent);
+            }
         }
     };
 
