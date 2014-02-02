@@ -190,8 +190,10 @@
                     // Work with indices as element might not be ourself
                     var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.point);
                     var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
-                    this._assignPreviewPointPropertiesToSourcePoint(
-                        elSourcePoint, ['x', 'y', 'hlx', 'hly', 'hrx', 'hry', 'ah']);
+                    var previewPoint = this.getPathPointPreview(elSourcePoint);
+                    if (previewPoint) {
+                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                    }
                 }
             }
             this.resetTransform();
