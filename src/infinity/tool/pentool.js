@@ -510,15 +510,6 @@
         this._lastMouseEvent = null;
     };
 
-    GXPenTool.prototype._mouseDblClick = function (event) {
-        this._lastMouseEvent = null;
-        this._checkMode();
-        if (this._pathEditor) {
-            this._pathEditor.updatePartSelection(false);
-            this._commitChanges();
-        }
-    };
-
     /** override */
     GXPenTool.prototype.toString = function () {
         return "[Object GXPenTool]";

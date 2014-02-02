@@ -127,25 +127,6 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DblClick} event
-     * @private
-     */
-    GXBezigonTool.prototype._mouseDblClick = function (event) {
-        this._lastMouseEvent = null;
-        this._checkMode();
-        if (this._pathEditor) {
-            this._pathEditor.updatePartSelection(false);
-            this._commitChanges();
-        }
-        this._mode = GXPathTool.Mode.Edit;
-        this._setCursorForPosition(null, event.client);
-        return;
-
-//        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-//        this._reset();
-    };
-
-    /**
      * @param {GUIMouseEvent.Move} event
      * @private
      */

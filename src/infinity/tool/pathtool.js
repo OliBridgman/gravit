@@ -136,16 +136,11 @@
         layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
-        // Set detail mode for selection for path tool
-        this._editor.setSelectionDetail(true);
         this._cursor = GUICursor.PenStart;
     };
 
     /** @override */
     GXPathTool.prototype.deactivate = function (view, layer) {
-        // Remove detail mode for selection for path tool
-        this._editor.setSelectionDetail(false);
-
         this._reset();
         GXTool.prototype.deactivate.call(this, view, layer);
 
@@ -164,6 +159,7 @@
         var path = this._editor.getPathSelection();
         if (path) {
             this._pathEditor = GXElementEditor.openEditor(path);
+            this._pathEditor.setFlag(GXElementEditor.Flag.Detail);
         }
     };
 
@@ -302,16 +298,10 @@
      * @private
      */
     GXPathTool.prototype._commitChanges = function () {
-        this._pathRef = null;
-        this._dpathRef = null;
         this._pathEditor.requestInvalidation();
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
-        this._newPoint = false;
-        this._editPt = null;
-        this._refPt = null;
-        this._dragStartPt = null;
-        this._pathEditor = null;
+        this._reset();
     };
 
     /**
@@ -325,7 +315,7 @@
         apt.setFlag(GXNode.Flag.Selected);
         path.setFlag(GXNode.Flag.Selected);
         this._editor.insertElement(path);
-        this._pathEditor = GXElementEditor.openEditor(path);
+        this._checkPathEditor();
     };
 
     /**
@@ -341,7 +331,15 @@
      * @private
      */
     GXPathTool.prototype._mouseDblClick = function (event) {
-        this._reset();
+        this._lastMouseEvent = null;
+        this._checkMode();
+        if (this._pathEditor) {
+            this._pathEditor.updatePartSelection(false);
+            this._commitChanges();
+        }
+        this._mode = GXPathTool.Mode.Edit;
+        this._setCursorForPosition(null, event.client);
+        //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
     /**
@@ -358,14 +356,17 @@
      * Reset the tool i.e. when done or canceling
      * @private
      */
-    // TODO: remove it after Pen Tool implementation, use commitChanges instead
     GXPathTool.prototype._reset = function () {
+        if (this._pathEditor) {
+            this._pathEditor.removeFlag(GXElementEditor.Flag.Detail);
+        }
         this._dpathRef = null;
         this._pathRef = null;
         this._pathEditor = null;
         this._newPoint = false;
-        this._mode = GXPathTool.Mode.Append;
         this._editPt = null;
+        this._dragStartPt = null;
+        this._refPt = null;
     };
 
     /**
@@ -502,9 +503,7 @@
                 this._pathEditor.requestInvalidation();
                 this._mode = GXPathTool.Mode.Edit;
             } else {
-                this._pathEditor = null;
-                this._pathRef = null;
-                this._dpathRef = null;
+                this._reset();
                 this._mode = GXPathTool.Mode.Append;
             }
         } else { // no path hit
