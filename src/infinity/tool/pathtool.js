@@ -100,7 +100,20 @@
      */
     GXPathTool.prototype._mDownTime = 0;
 
+    /**
+     * Current active cursor
+     * @type {GUICursor}
+     * @private
+     */
     GXPathTool.prototype._cursor = null;
+
+    /**
+     * Stores the details of the last mouse event, which leaves tool in the state, when it may be needed to
+     * update point's properties is Shift key goes down or up
+     * @type {GUIMouseEvent}
+     * @private
+     */
+    GXPathTool.prototype._lastMouseEvent = null;
 
     /** @override */
     GXPathTool.prototype.getHint = function () {
@@ -121,6 +134,7 @@
         layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
         layer.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
         layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
+        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         // Set detail mode for selection for path tool
         this._editor.setSelectionDetail(true);
@@ -139,6 +153,7 @@
         layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
         layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
+        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /**
@@ -201,11 +216,17 @@
      * @private
      */
     GXPathTool.prototype._updatePoint = function (clickPt) {
+        var newPos = null;
         if (this._pathRef && this._editPt) {
-            var newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(), this._pathRef);
+            if (this._mode != GXPathTool.Mode.Edit) {
+                newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(), this._pathRef);
+            } else {
+                newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(),
+                    this._pathRef, this._dpathRef.getAnchorPoints().getPreviousPoint(this._editPt));
+            }
             this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
-            return newPos;
         }
+        return newPos;
     };
 
     /**
@@ -294,15 +315,6 @@
     };
 
     /**
-     * Updates cursor based on whether the path or an anchor point has been hit
-     * The hit test information is taken from this._lastHitTest
-     * @private
-     */
-    GXPathTool.prototype._updateCursor = function () {
-        // TODO:
-    };
-
-    /**
      * Create a path shape with one point, and adds it for rendering
      * @param {GXPathBase.AnchorPoint} apt - new anchor point to create path from
      * @private
@@ -314,13 +326,6 @@
         path.setFlag(GXNode.Flag.Selected);
         this._editor.insertElement(path);
         this._pathEditor = GXElementEditor.openEditor(path);
-    };
-
-    // TODO: remove it after Pen Tool implementation
-    GXPathTool.prototype._convertToConstrain = function (anchorPt, prevPt, origX, origY) {
-        var newPt = gMath.convertToConstrain(prevPt.getProperty('x'), prevPt.getProperty('y'), origX, origY);
-        anchorPt.setProperties(['x', 'y'], [newPt.getX(), newPt.getY()]);
-//        anchorPt.setProperty(GXPathBase.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
     };
 
     /**
@@ -369,7 +374,18 @@
      */
     GXPathTool.prototype._keyDown = function (event) {
         if (event.key === GUIKey.Constant.TAB) {
+            this._lastMouseEvent = null;
             this._tabAction();
+        }
+    };
+
+    /**
+     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @private
+     */
+    GXPathTool.prototype._modifiersChanged = function (event) {
+        if (event.changed.shiftKey && !this._released) {
+            this._mouseDrag(this._lastMouseEvent);
         }
     };
 

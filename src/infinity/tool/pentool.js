@@ -71,6 +71,7 @@
 
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
         this._released = false;
+        this._lastMouseEvent = event;
         this._dragStarted = false;
         this._dragStartPt = null;
 
@@ -84,7 +85,6 @@
                 this._mouseDownOnEdit(event.client);
             }
 
-            this._updateCursor();
             if (this._mode != GXPathTool.Mode.Edit) {
                 if (this._newPoint && this._pathEditor) {
                     this._updatePoint(event.client);
@@ -207,6 +207,7 @@
             return;
         }
 
+        this._lastMouseEvent = event;
         this._checkMode();
         this._renewPreviewLink();
         if (this._mode == GXPathTool.Mode.Edit) {
@@ -352,8 +353,8 @@
                     hrx = null;
                     hry = null;
 
-                    // calculate right handle to be projection of click point to the vector,
-                    // connecting previous point and this one
+                    // calculate the left handle to be projection of click point to the vector,
+                    // connecting the next point and this one
                     var nextPt = this._editPt.getNext();
                     if (nextPt) {
                         var nextX = nextPt.getProperty('x');
@@ -400,6 +401,7 @@
             this._pathEditor.requestInvalidation();
         }
         if (!this._released && this._editPt) {
+            this._lastMouseEvent = event;
             this._setCursorForPosition(GUICursor.PenDrag);
             if (!this._dragStartPt) {
                 this._dragStartPt = this._editPt;
@@ -505,9 +507,11 @@
         }
         this._dragStarted = false;
         this._dragStartPt = null;
+        this._lastMouseEvent = null;
     };
 
     GXPenTool.prototype._mouseDblClick = function (event) {
+        this._lastMouseEvent = null;
         this._checkMode();
         if (this._pathEditor) {
             this._pathEditor.updatePartSelection(false);

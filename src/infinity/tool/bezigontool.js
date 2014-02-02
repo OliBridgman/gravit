@@ -63,6 +63,7 @@
 
         this._mDownTime = tm;
         this._released = false;
+        this._lastMouseEvent = event;
         var anchorPt = null;
         var clickPt;
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
@@ -130,6 +131,7 @@
      * @private
      */
     GXBezigonTool.prototype._mouseDblClick = function (event) {
+        this._lastMouseEvent = null;
         this._checkMode();
         if (this._pathEditor) {
             this._pathEditor.updatePartSelection(false);
@@ -155,6 +157,7 @@
             return;
         }
 
+        this._lastMouseEvent = event;
         this._setCursorForPosition(null, event.client);
     };
 
@@ -171,6 +174,7 @@
             this._refPt = null;
         }
         if (this._editPt && !this._released) {
+            this._lastMouseEvent = event;
             this._dragStarted = true;
             this._pathEditor.requestInvalidation();
             var newPos = this._updatePoint(event.client);
@@ -315,6 +319,7 @@
             this._dragStarted = false;
             this._dragStartPt = null;
         }
+        this._lastMouseEvent = null;
     };
 
     /** override */
