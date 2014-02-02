@@ -145,17 +145,19 @@
             // Iterate selection and transform all anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var selectedPartId = this._partSelection[i];
-                var selectedPoint = selectedPartId.point;
+                if (selectedPartId.point) {
+                    var selectedPoint = selectedPartId.point;
 
-                this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
+                    this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
 
-                // Make sure to transform handles as well if not auto-handles are set
-                if (!selectedPoint.getProperty('ah')) {
-                    if (selectedPoint.getProperty('hlx') != null && selectedPoint.getProperty('hly') != null) {
-                        this._transformPreviewPointCoordinates(selectedPoint, 'hlx', 'hly', transform);
-                    }
-                    if (selectedPoint.getProperty('hrx') != null && selectedPoint.getProperty('hry') != null) {
-                        this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
+                    // Make sure to transform handles as well if not auto-handles are set
+                    if (!selectedPoint.getProperty('ah')) {
+                        if (selectedPoint.getProperty('hlx') != null && selectedPoint.getProperty('hly') != null) {
+                            this._transformPreviewPointCoordinates(selectedPoint, 'hlx', 'hly', transform);
+                        }
+                        if (selectedPoint.getProperty('hrx') != null && selectedPoint.getProperty('hry') != null) {
+                            this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
+                        }
                     }
                 }
             }
@@ -345,15 +347,19 @@
 
                 if (selection) {
                     for (var k = 0; k < selection.length; ++k) {
-                        if (selection[k].point === part.point) {
+                        if (selection[k].point === part.point && part.point) {
                             isInNewSelection = true;
                             break;
                         }
+                        // TODO: implement for segment
                     }
                 }
 
                 if (!isInNewSelection) {
-                    part.point.removeFlag(GXNode.Flag.Selected);
+                    if (part.point) {
+                        part.point.removeFlag(GXNode.Flag.Selected);
+                    }
+                    // TODO: implement for segment
                 }
             }
         }
@@ -362,7 +368,10 @@
         if (selection) {
             for (var i = 0; i < selection.length; ++i) {
                 var part = selection[i];
-                part.point.setFlag(GXNode.Flag.Selected);
+                if (part.point) {
+                    part.point.setFlag(GXNode.Flag.Selected);
+                }
+                // TODO: implement for segment
             }
         }
 
