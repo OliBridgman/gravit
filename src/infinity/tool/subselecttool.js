@@ -64,7 +64,7 @@
     /** @override */
     GXSubSelectTool.prototype._mouseDragStart = function (event) {
         // When Path point is drag with SubSelect Tool:
-        // - if a point was not selected, it gets the only selected, and drag it
+        // - if a point was not selected - it gets selected and moved (together with other selected if Shift is pressed)
         // - if a point was selected and didn't have right handle - create right handle (correct projection for connector)
         // - if a point was selected and had the right handle,
         //      but not the left - create left (& rotate right handle for smooth point)
@@ -79,19 +79,21 @@
             // Switch to moving mode
             this._updateMode(GXSelectTool._Mode.Moving);
 
-            if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-                this._editorMovePartInfo =
-                    this._editorMovePartInfo.editor.subSelectDragStartAction(this._editorMovePartInfo);
-            } else {
-                var selection = this._editor.getSelection();
-                if (selection && selection.length) {
-                    for (var i = 0; i < selection.length; ++i) {
-                        var editor = GXElementEditor.getEditor(selection[i]);
-                        if (editor) {
-                            var partInfo = editor.subSelectDragStartAction(this._editorMovePartInfo);
-                            if (partInfo) {
-                                this._editorMovePartInfo = partInfo;
-                                break;
+            if (this._editorMovePartInfo) {
+                if (this._editorMovePartInfo.isolated) {
+                    this._editorMovePartInfo =
+                        this._editorMovePartInfo.editor.subSelectDragStartAction(this._editorMovePartInfo);
+                } else {
+                    var selection = this._editor.getSelection();
+                    if (selection && selection.length) {
+                        for (var i = 0; i < selection.length; ++i) {
+                            var editor = GXElementEditor.getEditor(selection[i]);
+                            if (editor) {
+                                var partInfo = editor.subSelectDragStartAction(this._editorMovePartInfo);
+                                if (partInfo) {
+                                    this._editorMovePartInfo = partInfo;
+                                    break;
+                                }
                             }
                         }
                     }

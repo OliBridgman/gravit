@@ -211,7 +211,7 @@
         }
 
         // When Path point is started to be moved with subselect, the options are:
-        // a) if a point was not selected, it gets the only selected, and drag it
+        // a) if a point was not selected - it gets selected and drag it
         // b) if a point was selected and didn't have right handle - create right handle
         // c) if a point was selected and had the right handle, but not the left handle - create the left handle
         // d) if a point was selected and had both handles - drag the point together with other selected points
@@ -226,7 +226,10 @@
             // check option a)
             if (!partInfo.data.apSelected || !aPt.hasFlag(GXNode.Flag.Selected)) {
                 // anchor point should be already selected, but it was not so at the moment of getting the part info
-                this.selectOnePoint(aPt); // make the point the only selected
+
+                if (!aPt.hasFlag(GXNode.Flag.Selected)) { // might be some error, select a point
+                    this.selectOnePoint(aPt);
+                }
                 newPartInfo = new GXElementEditor.PartInfo(
                     this, {type: GXPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
             } else if (hlx === null || hly === null || hrx === null || hry === null) { // option b) or c)
