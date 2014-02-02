@@ -61,6 +61,45 @@
         GXSelectTool.prototype.deactivate.call(this, view, layer);
     };
 
+    /** @override */
+    GXSubSelectTool.prototype._mouseDragStart = function (event) {
+        // When Path point is drag with SubSelect Tool:
+        // - if a point was not selected, it gets the only selected, and drag it
+        // - if a point was selected and didn't have right handle - create right handle (correct projection for connector)
+        // - if a point was selected and had the right handle,
+        //      but not the left - create left (& rotate right handle for smooth point)
+        // - if a point was selected and had both handles - drag the point together with other selected points
+        // If Shift is pressed, new coordinate is constrained against the original point's position
+        // If a point is drag, and Alt is pressed in the last mouse move position, then the path is cloned
+
+        if (this._mode == GXSelectTool._Mode.Move) {
+            // Save start
+            this._moveStart = this._view.getViewTransform().mapPoint(event.client);
+
+            // Switch to moving mode
+            this._updateMode(GXSelectTool._Mode.Moving);
+
+            if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
+                this._editorMovePartInfo =
+                    this._editorMovePartInfo.editor.subSelectDragStartAction(this._editorMovePartInfo);
+            } else {
+                var selection = this._editor.getSelection();
+                if (selection && selection.length) {
+                    for (var i = 0; i < selection.length; ++i) {
+                        var editor = GXElementEditor.getEditor(selection[i]);
+                        if (editor) {
+                            var partInfo = editor.subSelectDragStartAction(this._editorMovePartInfo);
+                            if (partInfo) {
+                                this._editorMovePartInfo = partInfo;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     /** override */
     GXSubSelectTool.prototype.toString = function () {
         return "[Object GXSubSelectTool]";

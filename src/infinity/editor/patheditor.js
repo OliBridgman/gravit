@@ -205,6 +205,65 @@
     };
 
     /** @override */
+    GXPathEditor.prototype.subSelectDragStartAction = function (partInfo) {
+        if (partInfo.editor !== this) {
+            return null;
+        }
+
+        // When Path point is started to be moved with subselect, the options are:
+        // a) if a point was not selected, it gets the only selected, and drag it
+        // b) if a point was selected and didn't have right handle - create right handle
+        // c) if a point was selected and had the right handle, but not the left handle - create the left handle
+        // d) if a point was selected and had both handles - drag the point together with other selected points
+
+        var newPartInfo = partInfo;
+        if (!partInfo.isolated && partInfo.id.type == GXPathEditor.PartType.Point) {
+            var aPt = partInfo.id.point;
+            var hlx = aPt.getProperty('hlx');
+            var hly = aPt.getProperty('hly');
+            var hrx = aPt.getProperty('hrx');
+            var hry = aPt.getProperty('hry');
+            // check option a)
+            if (!partInfo.data.apSelected || !aPt.hasFlag(GXNode.Flag.Selected)) {
+                // anchor point should be already selected, but it was not so at the moment of getting the part info
+                this.selectOnePoint(aPt); // make the point the only selected
+                newPartInfo = new GXElementEditor.PartInfo(
+                    this, {type: GXPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
+            } else if (hlx === null || hly === null || hrx === null || hry === null) { // option b) or c)
+                this.requestInvalidation();
+                this._createPathPreviewIfNecessary(aPt);
+                var previewPoint = this.getPathPointPreview(aPt);
+                if (!previewPoint) {   // might be some error
+                    newPartInfo = null;
+                } else {
+                    var partType = null;
+                    var isolated = true; // all is isolated except points
+                    var selectable = false; // only point is selectable
+
+                    if (hrx === null || hry === null) {
+                        // option b)
+                        partType = GXPathEditor.PartType.RightHandle;
+                        previewPoint.setProperties(
+                            ['ah', 'hrx', 'hry'], [false, aPt.getProperty('x'), hry = aPt.getProperty('y')]);
+                    } else { // hlx === null || hly === null
+                        // option c)
+                        partType = GXPathEditor.PartType.LeftHandle;
+                        previewPoint.setProperties(
+                            ['ah', 'hlx', 'hly'], [false, aPt.getProperty('x'), hry = aPt.getProperty('y')]);
+                    }
+
+                    newPartInfo = new GXElementEditor.PartInfo(
+                        this, {type: partType, point: aPt}, {apSelected: true}, isolated, selectable);
+
+                    this.updatePartSelection(true, [newPartInfo]);
+                }
+            } // else option d) - NOOP
+        }
+
+        return newPartInfo;
+    };
+
+    /** @override */
     GXPathEditor.prototype._detach = function () {
         // Ensure to de-select all selected anchor points when detaching
         for (var anchorPoint = this._element.getAnchorPoints().getFirstChild(); anchorPoint != null; anchorPoint = anchorPoint.getNext()) {
@@ -279,7 +338,9 @@
                 }
 
                 if (partType) {
-                    result = new GXElementEditor.PartInfo(this, {type: partType, point: args.anchorPoint}, null, isolated, selectable);
+                    result = new GXElementEditor.PartInfo(
+                        this, {type: partType, point: args.anchorPoint},
+                        {apSelected: args.anchorPoint.hasFlag(GXNode.Flag.Selected)}, isolated, selectable);
                     return true;
                 }
             }.bind(this));

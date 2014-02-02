@@ -742,6 +742,31 @@
     };
 
     /**
+     * Allow each editor to perform the needed actions when drag is started in SubSelect Tool
+     * @param {GXElementEditor.PartInfo} partInfo - the part info under mouse
+     * @returns {GXElementEditor.PartInfo} - updated part info under mouse
+     */
+    GXElementEditor.prototype.subSelectDragStartAction = function (partInfo) {
+        var newPartInfo = null;
+
+        // By default, we'll ask all children editors, first
+        if (this._editors) {
+            for (var i = 0; i < this._editors.length; ++i) {
+                newPartInfo = this._editors[i].subSelectDragStartAction(partInfo);
+                if (newPartInfo) {
+                    return newPartInfo;
+                }
+            }
+        }
+
+        if (partInfo.editor === this) {
+            newPartInfo = partInfo;
+        }
+
+        return newPartInfo;
+    };
+
+    /**
      * Called when this editor is attached to the node
      */
     GXElementEditor.prototype._attach = function () {
