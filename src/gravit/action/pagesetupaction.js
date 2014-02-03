@@ -72,8 +72,6 @@
         var pages = this._extractPages(pages);
         var activePage = pages[0];
 
-
-
         // Store source properties for any reset
         var sourceValues = [];
         for (var i = 0; i < pages.length; ++i) {
@@ -128,6 +126,7 @@
                                     .attr('value', 'append')
                                     .on('change', _updatePageTitles))
                                 .append($('<span></span>')
+                                    // TODO : I18N
                                     .text('Append')))
                             .append($('<label>')
                                 .append($('<input>')
@@ -137,6 +136,7 @@
                                     .attr('value', 'prepend')
                                     .on('change', _updatePageTitles))
                                 .append($('<span></span>')
+                                    // TODO : I18N
                                     .text('Prepend')))
                             .append($('<label>')
                                 .append($('<input>')
@@ -147,6 +147,7 @@
                                     .prop('checked', true)
                                     .on('change', _updatePageTitles))
                                 .append($('<span></span>')
+                                    // TODO : I18N
                                     .text('Replace'))))))
                 .append($('<tr></tr>')
                     .append($('<td></td>')
@@ -209,9 +210,10 @@
                                 }
                             };
 
-                            if (gApp.getActiveDocument()) {
+                            var editor = GXEditor.getEditor(activePage.getScene())
+                            if (editor) {
                                 // TODO : I18N
-                                gApp.getActiveDocument().getEditor().pushState(action, revert, "Page Settings");
+                                editor.pushState(action, revert, "Page Settings");
                             } else {
                                 action();
                             }

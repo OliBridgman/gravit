@@ -894,7 +894,7 @@
         }.bind(this);
 
         // TODO : I18N
-        this.pushState(action, revert, "Insert Elements", false);
+        this.pushState(action, revert, "Insert Elements", true);
     };
 
     /**
@@ -915,8 +915,8 @@
         }
     };
 
-    
-    GXEditor.prototype.pushState = function (action, revert, name, saveSelection) {
+
+    GXEditor.prototype.pushState = function (action, revert, name, ignoreSelection) {
         this._undoStates.push({
             action : action,
             revert : revert,
