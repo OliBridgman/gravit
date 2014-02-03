@@ -131,7 +131,7 @@
      * @return {Boolean}
      */
     EXDocument.prototype.isSaveable = function () {
-        return this._blob && this.editor.getUndoList().hasUndo();
+        return !!this._blob;
     };
 
     /**
@@ -141,8 +141,7 @@
         // TODO : Reset undo list/set save point
         if (this._blob) {
             this._blob.store(GXNode.serialize(this._scene), false, 'binary', function () {
-                // Clear undo list when stored
-                this._editor.getUndoList().clear();
+                // NO-OP
             });
         }
     };

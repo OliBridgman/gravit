@@ -44,6 +44,11 @@
     };
     GObject.inherit(GXEditor, GEventTarget);
 
+    GXEditor.options = {
+        /** Maximum number of undo-steps */
+        maxUndoSteps : 10
+    };
+
     /**
      * Current Color Type
      * @enum
@@ -334,14 +339,6 @@
             this._selectQuery = query;
             this._updateSelectionForSelectable();
         }
-    };
-
-    /**
-     * Return the underlying undo list for this editor
-     * @return {GUndoList}
-     */
-    GXEditor.prototype.getUndoList = function () {
-        return this._undoList;
     };
 
     /**
@@ -917,6 +914,11 @@
 
 
     GXEditor.prototype.pushState = function (action, revert, name, ignoreSelection) {
+        if (this._undoStates.length >= GXEditor.options.maxUndoSteps) {
+            // Cut undo list of when reaching our undo limit
+            this._undoStates.shift();
+        }
+
         this._undoStates.push({
             action : action,
             revert : revert,
