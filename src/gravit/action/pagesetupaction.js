@@ -13,6 +13,8 @@
     GPageSetupAction.ID = 'file.page-setup';
     GPageSetupAction.TITLE = new GLocale.Key(GPageSetupAction, "title");
 
+    var propertiesToStore = ['title', 'bl', 'color'];
+
     /**
      * @override
      */
@@ -70,13 +72,12 @@
         var pages = this._extractPages(pages);
         var activePage = pages[0];
 
+
+
         // Store source properties for any reset
         var sourceValues = [];
         for (var i = 0; i < pages.length; ++i) {
-            sourceValues.push({
-                'title': pages[i].getProperty('title'),
-                'bl': pages[i].getProperty('bl')
-            });
+            sourceValues.push(pages[i].getProperties(propertiesToStore));
         }
 
         var _assignPagesProperties = function (properties, values) {
@@ -186,20 +187,33 @@
                     {
                         title: GLocale.Constant.Ok,
                         click: function () {
-                            var properties = [];
-                            var values = [];
-
-                            var title = dialog.find('[data-property="title"]').val();
-                            if (title && title.trim() !== "" && title.localeCompare(pages[0].getProperty('title')) !== 0) {
-                                properties.push('title');
-                                values.push(title);
+                            var targetValues = [];
+                            for (var i = 0; i < pages.length; ++i) {
+                                targetValues.push(pages[i].getProperties(propertiesToStore));
                             }
 
                             // TODO : Undo-Group
 
-                            // Assign property values to each page now
-                            for (var i = 0; i < pages.length; ++i) {
-                                pages[i].setProperties(properties, values);
+
+                            var action = function () {
+                                // Assign property values to each page now
+                                for (var i = 0; i < pages.length; ++i) {
+                                    pages[i].setProperties(propertiesToStore, targetValues[i]);
+                                }
+                            };
+
+                            var revert = function () {
+                                // Reset all properties
+                                for (var i = 0; i < pages.length; ++i) {
+                                    pages[i].setProperties(propertiesToStore, sourceValues[i]);
+                                }
+                            };
+
+                            if (gApp.getActiveDocument()) {
+                                // TODO : I18N
+                                gApp.getActiveDocument().getEditor().pushState(action, revert, "Page Settings");
+                            } else {
+                                action();
                             }
 
                             $(this).gDialog('close');
@@ -214,11 +228,7 @@
                         click: function () {
                             // Reset all properties
                             for (var i = 0; i < pages.length; ++i) {
-                                for (var property_ in sourceValues[i]) {
-                                    if (sourceValues[i].hasOwnProperty(property_)) {
-                                        pages[i].setProperty(property_, sourceValues[i][property_]);
-                                    }
-                                }
+                                pages[i].setProperties(propertiesToStore, sourceValues[i]);
                             }
 
                             $(this).gDialog('close');

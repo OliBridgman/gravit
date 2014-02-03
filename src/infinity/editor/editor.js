@@ -10,14 +10,13 @@
     function GXEditor(scene) {
         this._scene = scene;
         this._scene.__graphic_editor__ = this;
-        this._undoList = new GUndoList();
-        this._undoBlock = {};
+        this._undoStates = [];
+        this._redoStates = [];
         this._guides = new GXGuides(this._scene);
 
         // Subscribe to various scene changes
         this._scene.addEventListener(GXNode.AfterInsertEvent, this._afterNodeInsert, this);
         this._scene.addEventListener(GXNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-        this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
         this._scene.addEventListener(GXNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
         this._scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
@@ -213,16 +212,16 @@
     GXEditor.prototype._selectQuery = null;
 
     /**
-     * @type {GUndoList}
+     * @type {Array<*>}
      * @private
      */
-    GXEditor.prototype._undoList = null;
+    GXEditor.prototype._undoStates = null;
 
     /**
-     * @type {{insert: Boolean, remove: Boolean, property: Boolean}}
+     * @type {Array<*>}
      * @private
      */
-    GXEditor.prototype._undoBlock = null;
+    GXEditor.prototype._redoStates = null;
 
     /**
      * @type {GXGuides}
@@ -864,24 +863,38 @@
     GXEditor.prototype.insertElements = function (elements, noDefaults) {
         // Our target is always the currently active layer
         var target = this.getCurrentLayer();
+        var selection = this._selection ? this._selection.slice() : null;
 
-        // Clear current selection
-        this.clearSelection();
+        var action = function () {
+            // Clear current selection
+            this.clearSelection();
 
-        // Handle our elements now
-        for (var i = 0; i < elements.length; ++i) {
-            var element = elements[i];
+            // Handle our elements now
+            for (var i = 0; i < elements.length; ++i) {
+                var element = elements[i];
 
-            if (!noDefaults) {
-                // TODO : Apply current styles / effects
+                if (!noDefaults) {
+                    // TODO : Apply current styles / effects
+                }
+
+                // Append new element
+                target.appendChild(element);
             }
 
-            // Append new element
-            target.appendChild(element);
+            // Select all inserted elements
+            this.updateSelection(false, elements);
+        }.bind(this);
 
-            // Select the element
-            element.setFlag(GXNode.Flag.Selected);
-        }
+        var revert = function () {
+            for (var i = 0; i < elements.length; ++i) {
+                target.removeChild(elements[i]);
+            }
+
+            this.updateSelection(false, selection);
+        }.bind(this);
+
+        // TODO : I18N
+        this.pushState(action, revert, "Insert Elements", false);
     };
 
     /**
@@ -902,35 +915,70 @@
         }
     };
 
+    
+    GXEditor.prototype.pushState = function (action, revert, name, saveSelection) {
+        this._undoStates.push({
+            action : action,
+            revert : revert,
+            name : name ? name : ""
+        });
+
+        action();
+    };
+
+    GXEditor.prototype.hasUndoState = function () {
+        return this._undoStates.length > 0;
+    };
+
+    GXEditor.prototype.hasRedoState = function () {
+        return this._redoStates.length > 0;
+    };
+
+    GXEditor.prototype.getUndoStateName = function () {
+        if (this._undoStates.length > 0) {
+            return this._undoStates[this._undoStates.length - 1].name;
+        }
+        return null;
+    };
+
+    GXEditor.prototype.getRedoStateName = function () {
+        if (this._redoStates.length > 0) {
+            return this._redoStates[this._redoStates.length - 1].name;
+        }
+        return null;
+    };
+
+    GXEditor.prototype.undoState = function () {
+        if (this._undoStates.length > 0) {
+            // Get state and shift it from undo list
+            var state = this._undoStates.pop();
+
+            // Move state into redo list
+            this._redoStates.push(state);
+
+            // Execute revert action of the state
+            state.revert();
+        }
+    };
+
+    GXEditor.prototype.redoState = function () {
+        if (this._redoStates.length > 0) {
+            // Get state and shift it from redo list
+            var state = this._redoStates.pop();
+
+            // Move state into undo list
+            this._undoStates.push(state);
+
+            // Execute action of the state
+            state.action();
+        }
+    };
+
     /**
      * @param {GXNode.AfterInsertEvent} evt
      * @private
      */
     GXEditor.prototype._afterNodeInsert = function (evt) {
-        // Handle undo if desired
-        if (!this._undoBlock.insert) {
-            var self = this;
-            var node = evt.node;
-            var parent = node.getParent();
-            var next = node.getNext();
-
-            this._undoList.addAction(new GUndoList.Action(function () {
-                self._undoBlock.insert = true;
-                try {
-                    parent.insertChild(node, next);
-                } finally {
-                    self._undoBlock.insert = false;
-                }
-            }, function () {
-                self._undoBlock.remove = true;
-                try {
-                    parent.removeChild(node);
-                } finally {
-                    self._undoBlock.remove = false;
-                }
-            }, gLocale.getValue(GXSceneEditor, "action.insert")));
-        }
-
         // If page and we don't have a current one yet, mark it active now
         if (evt.node instanceof GXPage && !this._currentPage) {
             this.setCurrentPage(evt.node);
@@ -977,64 +1025,6 @@
             } else {
                 throw new Error('Unexpected: No layer available.');
             }
-        }
-
-        // Handle undo if desired
-        if (!this._undoBlock.remove) {
-            var self = this;
-            var node = evt.node;
-            var parent = node.getParent();
-            var next = node.getNext();
-
-            this._undoList.addAction(new GUndoList.Action(function () {
-                self._undoBlock.remove = true;
-                try {
-                    parent.removeChild(node);
-                } finally {
-                    self._undoBlock.remove = false;
-                }
-            }, function () {
-                self._undoBlock.insert = true;
-                try {
-                    parent.insertChild(node, next);
-                } finally {
-                    self._undoBlock.insert = false;
-                }
-            }, gLocale.getValue(GXSceneEditor, "action.remove")));
-        }
-    };
-
-    /**
-     * @param {GXNode.AfterPropertiesChangeEvent} evt
-     * @private
-     */
-    GXEditor.prototype._afterPropertiesChange = function (evt) {
-        // Handle undo if desired
-        if (!this._undoBlock.properties) {
-            var self = this;
-            var node = evt.node;
-            var properties = evt.properties;
-            var values = evt.values;
-            var oldValues = [];
-            for (var i = 0; i < evt.properties.length; ++i) {
-                oldValues.push(node.getProperty(evt.properties[i]));
-            }
-
-            this._undoList.addAction(new GUndoList.Action(function () {
-                self._undoBlock.properties = true;
-                try {
-                    node.setProperties(properties, values);
-                } finally {
-                    self._undoBlock.properties = false;
-                }
-            }, function () {
-                self._undoBlock.properties = true;
-                try {
-                    node.setProperties(properties, oldValues);
-                } finally {
-                    self._undoBlock.properties = false;
-                }
-            }, gLocale.getValue(GXSceneEditor, "action.properties")));
         }
     };
 

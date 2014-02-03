@@ -10,7 +10,7 @@
     };
     GObject.inherit(EXRedoAction, GUIAction);
 
-    EXRedoAction.ID = 'edit.undo';
+    EXRedoAction.ID = 'edit.redo';
     EXRedoAction.TITLE = new GLocale.Key(EXRedoAction, "title");
 
     /**
@@ -24,7 +24,12 @@
      * @override
      */
     EXRedoAction.prototype.getTitle = function () {
-        return EXRedoAction.TITLE;
+        var result = gLocale.get(EXRedoAction.TITLE);
+        var document = gApp.getActiveDocument();
+        if (document && document.getEditor().hasRedoState()) {
+            result += " " + document.getEditor().getRedoStateName();
+        }
+        return result;
     };
 
     /**
@@ -53,14 +58,14 @@
      */
     EXRedoAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        return (document && document.getEditor().getUndoList().hasRedo());
+        return (document && document.getEditor().hasRedoState());
     };
 
     /**
      * @override
      */
     EXRedoAction.prototype.execute = function () {
-        gApp.getActiveDocument().getEditor().getUndoList().redo();
+        gApp.getActiveDocument().getEditor().redoState();
     };
 
     /** @override */

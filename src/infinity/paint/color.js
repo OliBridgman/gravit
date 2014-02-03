@@ -413,7 +413,7 @@
      */
     GXColor.prototype.asRGBInt = function () {
         var rgb = this.asRGB();
-        return gColor.build(rgb[0], rgb[1], rgb[2], rgb[3] * 2.5);
+        return gColor.build(rgb[0], rgb[1], rgb[2], rgb[3] * 2.55);
     };
 
     /**

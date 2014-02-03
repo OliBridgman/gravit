@@ -164,7 +164,7 @@
 
         // Paint inner fill either with color if any or as checkboard patterns for transparency (none)
         if (this.$color) {
-            context.canvas.fillRect(x, y, w, h, GXColor.parseColor(this.$color).asRGBInt());
+            context.canvas.fillRect(x, y, w, h, this.$color);
         } else {
             // TODO : Cache pattern
             var cs = context.canvas.createCanvas();

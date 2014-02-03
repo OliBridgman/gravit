@@ -24,7 +24,12 @@
      * @override
      */
     EXUndoAction.prototype.getTitle = function () {
-        return EXUndoAction.TITLE;
+        var result = gLocale.get(EXUndoAction.TITLE);
+        var document = gApp.getActiveDocument();
+        if (document && document.getEditor().hasUndoState()) {
+            result += " " + document.getEditor().getUndoStateName();
+        }
+        return result;
     };
 
     /**
@@ -53,14 +58,14 @@
      */
     EXUndoAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        return (document && document.getEditor().getUndoList().hasUndo());
+        return (document && document.getEditor().hasUndoState());
     };
 
     /**
      * @override
      */
     EXUndoAction.prototype.execute = function () {
-        gApp.getActiveDocument().getEditor().getUndoList().undo();
+        gApp.getActiveDocument().getEditor().undoState();
     };
 
     /** @override */
