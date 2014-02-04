@@ -19,7 +19,8 @@
 
     /**
      * Parse a string into a GXColor
-     * @param string
+     * @param {String} string
+     * @return {GXColor}
      */
     GXColor.parseColor = function (string) {
         if (!string || string === "") {
@@ -44,19 +45,186 @@
     };
 
     /**
-     * Parse a css hex-color string (either #xxx or #xxxxxx) into a GXColor
-     * @param {String} hex
-     * @returns {GXColor}
+     * Parse a CSS Color String
+     * @param {String} cssString
+     * @return {GXColor}
      */
-    GXColor.parseHexColor = function (hex) {
-        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-            return r + r + g + g + b + b;
-        });
+    GXColor.parseCSSColor = function (cssString) {
+        // http://www.w3.org/TR/css3-color/
+        var kCSSColorTable = {
+            "transparent": [0, 0, 0, 0], "aliceblue": [240, 248, 255, 100],
+            "antiquewhite": [250, 235, 215, 100], "aqua": [0, 255, 255, 100],
+            "aquamarine": [127, 255, 212, 100], "azure": [240, 255, 255, 100],
+            "beige": [245, 245, 220, 100], "bisque": [255, 228, 196, 100],
+            "black": [0, 0, 0, 100], "blanchedalmond": [255, 235, 205, 100],
+            "blue": [0, 0, 255, 100], "blueviolet": [138, 43, 226, 100],
+            "brown": [165, 42, 42, 100], "burlywood": [222, 184, 135, 100],
+            "cadetblue": [95, 158, 160, 100], "chartreuse": [127, 255, 0, 100],
+            "chocolate": [210, 105, 30, 100], "coral": [255, 127, 80, 100],
+            "cornflowerblue": [100, 149, 237, 100], "cornsilk": [255, 248, 220, 100],
+            "crimson": [220, 20, 60, 100], "cyan": [0, 255, 255, 100],
+            "darkblue": [0, 0, 139, 100], "darkcyan": [0, 139, 139, 100],
+            "darkgoldenrod": [184, 134, 11, 100], "darkgray": [169, 169, 169, 100],
+            "darkgreen": [0, 100, 0, 100], "darkgrey": [169, 169, 169, 100],
+            "darkkhaki": [189, 183, 107, 100], "darkmagenta": [139, 0, 139, 100],
+            "darkolivegreen": [85, 107, 47, 100], "darkorange": [255, 140, 0, 100],
+            "darkorchid": [153, 50, 204, 100], "darkred": [139, 0, 0, 100],
+            "darksalmon": [233, 150, 122, 100], "darkseagreen": [143, 188, 143, 100],
+            "darkslateblue": [72, 61, 139, 100], "darkslategray": [47, 79, 79, 100],
+            "darkslategrey": [47, 79, 79, 100], "darkturquoise": [0, 206, 209, 100],
+            "darkviolet": [148, 0, 211, 100], "deeppink": [255, 20, 147, 100],
+            "deepskyblue": [0, 191, 255, 100], "dimgray": [105, 105, 105, 100],
+            "dimgrey": [105, 105, 105, 100], "dodgerblue": [30, 144, 255, 100],
+            "firebrick": [178, 34, 34, 100], "floralwhite": [255, 250, 240, 100],
+            "forestgreen": [34, 139, 34, 100], "fuchsia": [255, 0, 255, 100],
+            "gainsboro": [220, 220, 220, 100], "ghostwhite": [248, 248, 255, 100],
+            "gold": [255, 215, 0, 100], "goldenrod": [218, 165, 32, 100],
+            "gray": [128, 128, 128, 100], "green": [0, 128, 0, 100],
+            "greenyellow": [173, 255, 47, 100], "grey": [128, 128, 128, 100],
+            "honeydew": [240, 255, 240, 100], "hotpink": [255, 105, 180, 100],
+            "indianred": [205, 92, 92, 100], "indigo": [75, 0, 130, 100],
+            "ivory": [255, 255, 240, 100], "khaki": [240, 230, 140, 100],
+            "lavender": [230, 230, 250, 100], "lavenderblush": [255, 240, 245, 100],
+            "lawngreen": [124, 252, 0, 100], "lemonchiffon": [255, 250, 205, 100],
+            "lightblue": [173, 216, 230, 100], "lightcoral": [240, 128, 128, 100],
+            "lightcyan": [224, 255, 255, 100], "lightgoldenrodyellow": [250, 250, 210, 100],
+            "lightgray": [211, 211, 211, 100], "lightgreen": [144, 238, 144, 100],
+            "lightgrey": [211, 211, 211, 100], "lightpink": [255, 182, 193, 100],
+            "lightsalmon": [255, 160, 122, 100], "lightseagreen": [32, 178, 170, 100],
+            "lightskyblue": [135, 206, 250, 100], "lightslategray": [119, 136, 153, 100],
+            "lightslategrey": [119, 136, 153, 100], "lightsteelblue": [176, 196, 222, 100],
+            "lightyellow": [255, 255, 224, 100], "lime": [0, 255, 0, 100],
+            "limegreen": [50, 205, 50, 100], "linen": [250, 240, 230, 100],
+            "magenta": [255, 0, 255, 100], "maroon": [128, 0, 0, 100],
+            "mediumaquamarine": [102, 205, 170, 100], "mediumblue": [0, 0, 205, 100],
+            "mediumorchid": [186, 85, 211, 100], "mediumpurple": [147, 112, 219, 100],
+            "mediumseagreen": [60, 179, 113, 100], "mediumslateblue": [123, 104, 238, 100],
+            "mediumspringgreen": [0, 250, 154, 100], "mediumturquoise": [72, 209, 204, 100],
+            "mediumvioletred": [199, 21, 133, 100], "midnightblue": [25, 25, 112, 100],
+            "mintcream": [245, 255, 250, 100], "mistyrose": [255, 228, 225, 100],
+            "moccasin": [255, 228, 181, 100], "navajowhite": [255, 222, 173, 100],
+            "navy": [0, 0, 128, 100], "oldlace": [253, 245, 230, 100],
+            "olive": [128, 128, 0, 100], "olivedrab": [107, 142, 35, 100],
+            "orange": [255, 165, 0, 100], "orangered": [255, 69, 0, 100],
+            "orchid": [218, 112, 214, 100], "palegoldenrod": [238, 232, 170, 100],
+            "palegreen": [152, 251, 152, 100], "paleturquoise": [175, 238, 238, 100],
+            "palevioletred": [219, 112, 147, 100], "papayawhip": [255, 239, 213, 100],
+            "peachpuff": [255, 218, 185, 100], "peru": [205, 133, 63, 100],
+            "pink": [255, 192, 203, 100], "plum": [221, 160, 221, 100],
+            "powderblue": [176, 224, 230, 100], "purple": [128, 0, 128, 100],
+            "red": [255, 0, 0, 100], "rosybrown": [188, 143, 143, 100],
+            "royalblue": [65, 105, 225, 100], "saddlebrown": [139, 69, 19, 100],
+            "salmon": [250, 128, 114, 100], "sandybrown": [244, 164, 96, 100],
+            "seagreen": [46, 139, 87, 100], "seashell": [255, 245, 238, 100],
+            "sienna": [160, 82, 45, 100], "silver": [192, 192, 192, 100],
+            "skyblue": [135, 206, 235, 100], "slateblue": [106, 90, 205, 100],
+            "slategray": [112, 128, 144, 100], "slategrey": [112, 128, 144, 100],
+            "snow": [255, 250, 250, 100], "springgreen": [0, 255, 127, 100],
+            "steelblue": [70, 130, 180, 100], "tan": [210, 180, 140, 100],
+            "teal": [0, 128, 128, 100], "thistle": [216, 191, 216, 100],
+            "tomato": [255, 99, 71, 100], "turquoise": [64, 224, 208, 100],
+            "violet": [238, 130, 238, 100], "wheat": [245, 222, 179, 100],
+            "white": [255, 255, 255, 100], "whitesmoke": [245, 245, 245, 100],
+            "yellow": [255, 255, 0, 100], "yellowgreen": [154, 205, 50, 100]}
 
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? new GXColor(GXColor.Type.RGB, [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 100]) : null;
+        function clamp_css_byte(i) {  // Clamp to integer 0 .. 255.
+            i = Math.round(i);  // Seems to be what Chrome does (vs truncation).
+            return i < 0 ? 0 : i > 255 ? 255 : i;
+        }
+
+        function clamp_css_float(f) {  // Clamp to float 0.0 .. 1.0.
+            return f < 0 ? 0 : f > 1 ? 1 : f;
+        }
+
+        function parse_css_int(str) {  // int or percentage.
+            if (str[str.length - 1] === '%')
+                return clamp_css_byte(parseFloat(str) / 100 * 255);
+            return clamp_css_byte(parseInt(str));
+        }
+
+        function parse_css_float(str) {  // float or percentage.
+            if (str[str.length - 1] === '%')
+                return clamp_css_float(parseFloat(str) / 100);
+            return clamp_css_float(parseFloat(str));
+        }
+
+        function css_hue_to_rgb(m1, m2, h) {
+            if (h < 0) h += 1;
+            else if (h > 1) h -= 1;
+
+            if (h * 6 < 1) return m1 + (m2 - m1) * h * 6;
+            if (h * 2 < 1) return m2;
+            if (h * 3 < 2) return m1 + (m2 - m1) * (2 / 3 - h) * 6;
+            return m1;
+        }
+
+
+        // Remove all whitespace, not compliant, but should just be more accepting.
+        var str = cssString.replace(/ /g, '').toLowerCase();
+
+        // Color keywords (and transparent) lookup.
+        if (str in kCSSColorTable) return new GXColor(GXColor.Type.RGB, [kCSSColorTable[str].slice()]);  // dup.
+
+        // #abc and #abc123 syntax.
+        if (str[0] === '#') {
+            if (str.length === 4) {
+                var iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
+                if (!(iv >= 0 && iv <= 0xfff)) return null;  // Covers NaN.
+                return new GXColor(GXColor.Type.RGB, [((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
+                    (iv & 0xf0) | ((iv & 0xf0) >> 4),
+                    (iv & 0xf) | ((iv & 0xf) << 4),
+                    100]);
+            } else if (str.length === 7) {
+                var iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
+                if (!(iv >= 0 && iv <= 0xffffff)) return null;  // Covers NaN.
+                return new GXColor(GXColor.Type.RGB, [(iv & 0xff0000) >> 16,
+                    (iv & 0xff00) >> 8,
+                    iv & 0xff,
+                    100]);
+            }
+
+            return null;
+        }
+
+        var op = str.indexOf('('), ep = str.indexOf(')');
+        if (op !== -1 && ep + 1 === str.length) {
+            var fname = str.substr(0, op);
+            var params = str.substr(op + 1, ep - (op + 1)).split(',');
+            var alpha = 100;  // To allow case fallthrough.
+            switch (fname) {
+                case 'rgba':
+                    if (params.length !== 4) return null;
+                    alpha = Math.round(parse_css_float(params.pop()) * 100);
+                // Fall through.
+                case 'rgb':
+                    if (params.length !== 3) return null;
+                    return new GXColor(GXColor.Type.RGB, [parse_css_int(params[0]),
+                        parse_css_int(params[1]),
+                        parse_css_int(params[2]),
+                        alpha]);
+                case 'hsla':
+                    if (params.length !== 4) return null;
+                    alpha = Math.round(parse_css_float(params.pop()) * 100);
+                // Fall through.
+                case 'hsl':
+                    if (params.length !== 3) return null;
+                    var h = (((parseFloat(params[0]) % 360) + 360) % 360) / 360;  // 0 .. 1
+                    // NOTE(deanm): According to the CSS spec s/l should only be
+                    // percentages, but we don't bother and let float or percentage.
+                    var s = parse_css_float(params[1]);
+                    var l = parse_css_float(params[2]);
+                    var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
+                    var m1 = l * 2 - m2;
+                    return new GXColor(GXColor.Type.RGB, [clamp_css_byte(css_hue_to_rgb(m1, m2, h + 1 / 3) * 255),
+                        clamp_css_byte(css_hue_to_rgb(m1, m2, h) * 255),
+                        clamp_css_byte(css_hue_to_rgb(m1, m2, h - 1 / 3) * 255),
+                        alpha]);
+                default:
+                    return null;
+            }
+        }
+
+        return null;
     };
 
     /**

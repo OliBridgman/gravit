@@ -65,8 +65,11 @@
                 scene.setProperty('unit', GXLength.Unit.PX);
                 page.setProperties(['w', 'h', 'gb', 'gw', 'gc', 'gr', 'color'], [822, 960, 18, 18, 10, 4, null]);
             } else if (mode === 'print') {
-                page.setProperties(['w', 'h', 'mt', 'mr', 'mb', 'ml', 'color'], [210, 297, 12.5, 12.5, 12.5, 12.5, new GXColor(GXColor.Type.RGB, [255, 255, 255, 100]).asString()]);
                 scene.setProperty('unit', GXLength.Unit.MM);
+                var w = scene.stringToPoint("210mm");
+                var h = scene.stringToPoint("297mm");
+                var m = scene.stringToPoint("12.5mm");
+                page.setProperties(['w', 'h', 'mt', 'mr', 'mb', 'ml', 'color'], [w, h, m, m, m, m, new GXColor(GXColor.Type.RGB, [255, 255, 255, 100]).asString()]);
             }
 
             // Show page properties
