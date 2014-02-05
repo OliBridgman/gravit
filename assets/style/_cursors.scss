@@ -1,3 +1,7 @@
+@mixin g-cursor($cursor) {
+  cursor: url('../cursor/#{$cursor}.cur'), auto !important;
+}
+
 .g-cursor-select {
   @include g-cursor(select);
 }

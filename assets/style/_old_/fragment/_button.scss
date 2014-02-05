@@ -1,0 +1,55 @@
+button, .g-button {
+  height: $regularInputHeight;
+
+  > span.fa {
+    font-size: 14px;
+  }
+
+  > span {
+    vertical-align: middle;
+  }
+}
+
+.g-flat {
+  button, .g-button {
+    border: none;
+    background: transparent;
+    margin: 0px;
+    padding: 0px $smallPadding;
+
+    > span.fa {
+      color: $windowTextShadowColor;
+    }
+
+    &:active, &.g-active {
+      &, > span.fa {
+        color: $highlightFaceColor;
+      }
+    }
+  }
+}
+
+.g-small {
+  button, .g-button {
+    height: $smallInputHeight;
+  }
+}
+
+/*
+button {
+    padding: $regularPadding;
+    border: none;
+    border-radius: $borderRadius;
+    background: $inputBackgroundColor;
+    color: black;
+
+    &:hover {
+      background: $buttonHoverColor !important;
+    }
+
+    &:active, &.g-active {
+      background: $buttonActiveColor !important;
+      color: white !important;
+    }
+  }
+*/

@@ -1,6 +1,13 @@
-$selectionBackground : #1F8DD6;//rgb(55, 161, 251);
-$selectionForeground : #FFFFFF;
+$darkGreen: rgb(159, 180, 0);
+$lightGreen: rgb(246, 245, 164);
+$yellow: rgb(255, 255, 0);
+$magentaColor: rgb(230, 0, 99);
 
-$borderColor : silver;
-$borderColorDark : gray;
-$borderColorLight : #F0F0F0;
+$windowColor: rgb(240, 240, 240);
+$windowFrameColor: rgb(205, 205, 205);
+$windowTextColor: black;
+$windowHeaderColor: $darkGreen;
+$windowHeaderTextColor: $yellow;
+
+$highlightColor: rgb(31, 141, 214);
+$highlightTextColor: white;

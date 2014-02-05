@@ -1,0 +1,16 @@
+.g-swatches {
+  @include g-cursor(pipette);
+  border-collapse: collapse;
+  border-spacing: 0px;
+
+  .swatch {
+    width: 1em;
+    height: 1em;
+    border: 1px solid black;
+    @include g-cursor(pipette);
+
+    &:hover {
+      border: 1px solid aquamarine;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+.g-window {
+  background: $windowColor;
+  color: $windowTextColor;
+  border: 1px solid $windowFrameColor;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.20);
+
+  > .header {
+    background: $windowHeaderColor;
+    color: $windowHeaderTextColor;
+  }
+}

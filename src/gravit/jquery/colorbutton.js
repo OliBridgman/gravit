@@ -1,14 +1,4 @@
 (function ($) {
-    $.valHooks['g-colorbutton'] = {
-        get : function(el) {
-            return $(el).html();
-        },
-        set : function(el, val)
-        {
-            $(el).data('g-colorbutton').colorbox.gColorBox('value', val);
-        }
-    };
-
     var methods = {
         init: function (options) {
             options = $.extend({
@@ -25,11 +15,14 @@
                     });
 
                 $this
-                    .addClass('g-block-colorbutton')
                     .data('g-colorbutton', {
                         colorbox: colorBox,
                         colorpanel: $('<div></div>')
                             .gColorPanel(options)
+                            .gOverlay({
+                                vertical : 'end',
+                                horizontal : 'start'
+                            })
                             .on('change', function (evt, color) {
                                 methods.close.call(this);
                                 methods.value.call(this, color ? color : "");
@@ -66,35 +59,14 @@
         open: function () {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            if (!data.container) {
-                var container = $('<div></div>')
-                    .addClass('g-block-colorbutton-container')
-                    .on('click', function (evt) {
-                        if ($(evt.target).hasClass('g-block-colorbutton-container')) {
-                            methods.close.call(this);
-                        }
-                    }.bind(this))
-                    .appendTo($('body'));
-
-                var offset = $this.offset();
-                data.colorpanel
-                    .css('top', (offset.top + $this.outerHeight()) + 'px')
-                    .css('left', offset.left + 'px')
-                    .appendTo(container);
-
-                data.container = container;
-            }
+            data.colorpanel.gOverlay('open', this);
             return this;
         },
 
         close: function () {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            if (data.container) {
-                data.colorpanel.detach();
-                data.container.remove();
-                data.container = null;
-            }
+            data.colorpanel.gOverlay('close', this);
             return this;
         },
 

@@ -42,45 +42,38 @@
                 }
 
                 content.wrap($('<div></div>')
-                    .addClass('container')
+                    .addClass('g-window g-regular container')
+                    .css('position', 'absolute')
+                    .css('top', '0px')
                     .css('width', options.width ? options.width.toString() + 'px' : 'auto')
                     .css('height', options.height ? options.height + 'px' : 'auto'));
 
                 var container = content.parent('.container');
 
                 if (options.title) {
-                    var title = options.title ? gLocale.get(options.title) : "";
-
                     container.prepend($('<div></div>')
                         .addClass('header')
-                        .append($('<h2></h2>')
-                            .addClass('title')
-                            .text(gLocale.get(options.title))));
+                        .text(gLocale.get(options.title)));
                 }
 
                 if (options.buttons) {
-                    var buttons = $('<div></div>')
-                        .addClass('buttons')
-                        .append('<hr>');
+                    var footer = $('<div></div>')
+                        .addClass('footer')
+                        .css('text-align', 'right')
+                        .appendTo(container);
 
                     if (options.buttons) {
                         for (var i = 0; i < options.buttons.length; ++i) {
-                            _addButton(this, buttons, options.buttons[i]);
+                            _addButton(this, footer, options.buttons[i]);
                         }
                     }
-
-                    container.append($('<div></div>')
-                        .addClass('footer')
-                        .append(buttons));
                 }
 
                 container.wrap($('<div></div>')
-                    .addClass('g-block-dialog')
+                    .addClass('g-modal-background')
                     .on('click', function (evt) {
-                        if ($(evt.target).hasClass('g-block-dialog')) {
-                            if (options.closeable) {
-                                methods.close.call(self);
-                            }
+                        if ($(evt.target).hasClass('g-modal-background')) {
+                            $(evt.target).fadeIn(100).fadeOut(100).fadeIn(100);
                         }
                     }));
             });
@@ -90,7 +83,7 @@
             methods.update.call(this);
 
             var $this = $(this);
-            $this.parents('.g-block-dialog').appendTo($('body'));
+            $this.parents('.g-modal-background').appendTo($('body'));
 
             var container = $this.parents('.container');
             container.css('left', (($(window).width() - container.outerWidth()) / 2).toString() + 'px');
@@ -100,13 +93,13 @@
 
         close: function () {
             var $this = $(this);
-            $this.parents('.g-block-dialog').detach();
+            $this.parents('.g-modal-background').detach();
             return this;
         },
 
         update: function () {
             var $this = $(this);
-            var buttons = $this.parents('.container').find('.buttons');
+            var buttons = $this.parents('.container').find('.footer');
             buttons.find('button').each(function () {
                 var $this = $(this);
                 var button = $this.data('g-button');

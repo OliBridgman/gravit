@@ -1,111 +1,28 @@
+// FontAwesome import
 $fa-font-path: '../font';
-
-@import 'base';
-@import 'variables';
-@import 'mixins';
 @import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
-@import 'cursor';
 
-@import 'component_hint';
-@import 'component_menu';
-
-@import 'mixins';
-@import 'blocks';
+@import 'variables';
+@import 'base';
+@import 'cursors';
 @import 'form';
-@import 'plugin_jqTree';
-@import 'application';
-@import 'sidebar';
-@import 'windows';
-@import 'toolpanel';
-@import 'palette_color_mixer';
-@import 'palette_color_matcher';
-@import 'palette_color_trends';
-@import 'palette_layers';
-@import 'palette_pages';
-@import 'palette_properties';
+@import 'workspace';
 
-// NEW
-@import 'template/variables';
+@import 'fragment/overlay';
+@import 'fragment/form';
+@import 'fragment/window';
+@import 'fragment/swatch';
 
-@import 'block/colorbutton';
-@import 'block/colorpanel';
-@import 'block/dialog';
-@import 'block/form';
-// END: NEW
+@import 'palette/color_matcher';
+@import 'palette/color_mixer';
+@import 'palette/color_trends';
+@import 'palette/layers';
+@import 'palette/pages';
+@import 'palette/properties';
 
-body, html {
-  margin: 0px;
-  padding: 0px;
-  height: 100%;
-  /** Prevent double-tap = zoom on windows mobile */
-  -ms-content-zooming: none;
-}
-
-/** Make everything based on border-box model */
-*, *:before, *:after {
-  @include box-sizing(border-box);
-}
-
-* {
-  /* Disable long-press callouts. */
-  -webkit-touch-callout: none;
-  /* Disable highlighting of links. */
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  /* Prevent auto-resizing. */
-  -webkit-text-size-adjust: none;
-}
-
-/** No focus and selection outline except for input fields */
-:not(input):not(select):not(textArea):focus {
-  outline: none !important;
-}
-
-/**No selection except for input fields */
-:not(input):not(select):not(textArea) {
-  @include user-select(none);
-  cursor: default;
-}
-
-/**
- * Default element styling
- */
-body, html, * {
-  /** Regular font, size is set individually */
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
-}
-
-h1 {
-  font-size: 24px;
-}
-
-h2 {
-  font-size: 16px;
-}
-
-h3 {
-  font-size: 14px;
-}
-
-h4 {
-  font-size: 12px;
-  font-weight: bold;
-}
-
-h5 {
-  font-size: 12px;
-  text-decoration: underline;
-}
-
-p {
-  line-height: 1.5em;
-}
-
-hr {
-  height: 1px !important;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid $inputBackgroundColor;
-  padding: 0px;
-  margin: 0px;
-}
+// TODO : REMOVE
+@import '_old_/variables';
+@import '_old_/mixins';
+@import '_old_/component_hint';
+@import '_old_/component_menu';
+@import '_old_/plugin_jqTree';
