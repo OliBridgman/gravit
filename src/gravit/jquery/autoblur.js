@@ -22,7 +22,7 @@
      * as triggering a change event for input elements even if the
      * value was not changed at all.
      */
-    $.fn.exAutoBlur = function (method) {
+    $.fn.gAutoBlur = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {

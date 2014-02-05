@@ -260,7 +260,7 @@
 
             // Attach an auto-input for editing the page's title
             li.find('.jqtree-title')
-                .exAutoInput({
+                .gAutoSize({
                     getter: function () {
                         return pageOrSet.getProperty('title');
                     },
@@ -274,7 +274,7 @@
             // Hacky: Clicking on a li element should kill any active input editor
             li.on('click', function () {
                 this._htmlTreeContainer.find('.jqtree-title').each(function () {
-                    $(this).exAutoInput('finish');
+                    $(this).gAutoSize('finish');
                 });
             }.bind(this));
 

@@ -17,7 +17,7 @@
         }
 
         // Register test actions
-        gExpress.actions = gExpress.actions.concat(testActions);
+        gravit.actions = gravit.actions.concat(testActions);
     };
 
     /** @override */
@@ -25,5 +25,5 @@
         return '[Module Gravit Development]';
     };
 
-    gExpress.modules.push(new GDevelopmentModule());
+    gravit.modules.push(new GDevelopmentModule());
 })(this);

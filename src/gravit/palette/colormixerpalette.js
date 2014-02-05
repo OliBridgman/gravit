@@ -289,7 +289,7 @@
                     .addClass('color-value')
                     .append($('<input>')
                         .attr('type', 'text')
-                        .exAutoBlur()
+                        .gAutoBlur()
                         .on('input', this._updateToGlobalColor.bind(this))))
                 .append($('<span></span>')
                     .addClass('color-unit'))
@@ -331,14 +331,14 @@
                 .addClass('ex-color-preview')
                 .append($('<div></div>')
                     .attr('data-color-type', 'previous')
-                    .exColorBox()
-                    .on('g-color-change', function (evt, color) {
+                    .gColorBox()
+                    .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     }))
                 .append($('<div></div>')
                     .attr('data-color-type', 'current')
-                    .exColorBox()
-                    .on('g-color-change', function (evt, color) {
+                    .gColorBox()
+                    .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     })))
             .appendTo(toolbar);
@@ -431,10 +431,10 @@
         var colorPreview = this._htmlElement.find('.ex-color-preview');
 
         if (updatePrevious) {
-            colorPreview.find('[data-color-type="previous"]').exColorBox('color', globalColor);
+            colorPreview.find('[data-color-type="previous"]').gColorBox('value', globalColor);
         }
 
-        colorPreview.find('[data-color-type="current"]').exColorBox('color', globalColor);
+        colorPreview.find('[data-color-type="current"]').gColorBox('value', globalColor);
     };
 
     /** @override */

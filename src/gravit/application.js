@@ -510,8 +510,8 @@
         });
 
         // Iterate modules and let each one initialize
-        for (var i = 0; i < gExpress.modules.length; ++i) {
-            var module = gExpress.modules[i];
+        for (var i = 0; i < gravit.modules.length; ++i) {
+            var module = gravit.modules[i];
             console.log("Init module <" + module.toString() + ">");
             module.init();
         }
@@ -566,13 +566,13 @@
         // TODO : Order our available tools by group
 
         // -- Register Actions
-        this._actions = gExpress.actions.slice();
+        this._actions = gravit.actions.slice();
         this._createMainMenu();
 
         // Add all available tools to toolmanager
-        if (gExpress.tools) {
-            for (var i = 0; i < gExpress.tools.length; ++i) {
-                this._toolManager.addTool(gExpress.tools[i]);
+        if (gravit.tools) {
+            for (var i = 0; i < gravit.tools.length; ++i) {
+                this._toolManager.addTool(gravit.tools[i]);
             }
         }
 

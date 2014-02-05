@@ -6,22 +6,7 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.1);
 
-  button {
-    padding: $regularPadding;
-    border: none;
-    border-radius: $borderRadius;
-    background: $inputBackgroundColor;
-    color: black;
 
-    &:hover {
-      background: $buttonHoverColor !important;
-    }
-
-    &:active, &.g-active {
-      background: $buttonActiveColor !important;
-      color: white !important;
-    }
-  }
 
   input, textarea, select {
     padding: $regularPadding;
@@ -101,6 +86,7 @@
         padding: $regularPadding;
       }
 
+      /*
       table {
         td > label {
           display: inline-block;
@@ -124,6 +110,7 @@
           padding-top: 7px;
         }
       }
+      */
     }
   }
 }

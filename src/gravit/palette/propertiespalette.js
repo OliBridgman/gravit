@@ -465,8 +465,8 @@
         }.bind(this);
 
         // Initialize our properties panels
-        for (var i = 0; i < gExpress.properties.length; ++i) {
-            _addPropertiesPanel(gExpress.properties[i]);
+        for (var i = 0; i < gravit.properties.length; ++i) {
+            _addPropertiesPanel(gravit.properties[i]);
         }
     };
 

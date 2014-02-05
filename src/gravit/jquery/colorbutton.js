@@ -1,6 +1,13 @@
 (function ($) {
-
-    var previewBoxSize = 14;
+    $.valHooks['g-colorbutton'] = {
+        get : function(el) {
+            return $(el).html();
+        },
+        set : function(el, val)
+        {
+            $(el).data('g-colorbutton').colorbox.gColorBox('value', val);
+        }
+    };
 
     var methods = {
         init: function (options) {
@@ -18,9 +25,9 @@
                 var $this = $(this);
 
                 var colorBox = $('<div></div>')
-                    .exColorBox()
-                    .on('g-color-change', function (evt, color) {
-                        $this.trigger('g-color-change', color);
+                    .gColorBox()
+                    .on('change', function (evt, color) {
+                        $this.trigger('change', color);
                     });
 
                 $this
@@ -73,10 +80,10 @@
                     .css('top', (offset.top + $this.outerHeight()) + 'px')
                     .css('left', offset.left + 'px')
                     .gColorPanel()
-                    .on('g-color-change', function (evt, color) {
+                    .on('change', function (evt, color) {
                         methods.close.call(this);
-                        methods.color.call(this, color);
-                        $this.trigger('g-color-change', color);
+                        methods.value.call(this, color ? color : "");
+                        $this.trigger('change', color);
                     }.bind(this))
                     .appendTo(container);
 
@@ -95,10 +102,16 @@
             return this;
         },
 
-        color: function (newColor) {
+        value: function (value) {
             var $this = $(this);
-            $this.data('g-colorbutton').colorbox.exColorBox('color', newColor);
-            return this;
+            var colorbox = $this.data('g-colorbutton').colorbox;
+
+            if (!arguments.length) {
+                return colorbox.gColorBox('value');
+            } else {
+                colorbox.gColorBox('value', value);
+                return this;
+            }
         }
     };
 

@@ -57,7 +57,7 @@
                 .attr('type', 'text')
                 .attr('data-dimension', dimension)
                 .css('width', '4.5em')
-                .exAutoBlur()
+                .gAutoBlur()
                 .on('change', function (evt) {
                     self._assignDimension(dimension, $(this).val());
                 });

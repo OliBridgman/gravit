@@ -77,8 +77,8 @@
                                 var color = GXColor.parseColor(sourceColor);
                                 var myColor = $this.data('ex-colorbox').color;
                                 if (color && !GXColor.equals(color, myColor)) {
-                                    methods.color.call(self, color);
-                                    $this.trigger('g-color-change', color);
+                                    methods.value.call(self, color);
+                                    $this.trigger('change', color);
                                 }
                             }
                             return false;
@@ -97,19 +97,23 @@
             });
         },
 
-        color: function (newColor) {
+        value: function (value) {
             var $this = $(this);
-            newColor = typeof newColor === 'string' ? GXColor.parseColor(newColor) : newColor;
-            $this.data('ex-colorbox').color = newColor;
-            $this.css('background', newColor ? newColor.asCSSString() : 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
-            return this;
+            if (!arguments.length) {
+                return $this.data('ex-colorbox').color;
+            } else {
+                value = typeof value === 'string' ? GXColor.parseColor(value) : value;
+                $this.data('ex-colorbox').color = value;
+                $this.css('background', value ? value.asCSSString() : 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
+                return this;
+            }
         }
     };
 
     /**
      * Block to transform divs to draggable color boxes
      */
-    $.fn.exColorBox = function (method) {
+    $.fn.gColorBox = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {

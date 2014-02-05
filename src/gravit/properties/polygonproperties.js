@@ -46,7 +46,7 @@
                     .attr('type', 'text')
                     .attr('data-property', 'pts')
                     .css('width', '3em')
-                    .exAutoBlur()
+                    .gAutoBlur()
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
@@ -75,7 +75,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4.5em')
-                    .exAutoBlur()
+                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -89,7 +89,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3.5em')
-                    .exAutoBlur()
+                    .gAutoBlur()
                     .on('change', function () {
                         var angle = parseFloat($(this).val());
                         if (!isNaN(angle)) {
@@ -103,7 +103,7 @@
                 return $('<select></select>')
                     .attr('data-property', property)
                     .css('width', '4.5em')
-                    .exCornerType()
+                    .gCornerType()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
@@ -112,7 +112,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3.5em')
-                    .exAutoBlur()
+                    .gAutoBlur()
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {

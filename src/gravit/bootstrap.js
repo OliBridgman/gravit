@@ -1,4 +1,4 @@
-var gExpress = {
+var gravit = {
     /**
      * Array<GModule>
      */

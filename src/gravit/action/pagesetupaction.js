@@ -177,12 +177,12 @@
         };
 
         var _updatePageTitles = function () {
-            var title = dialog.find('[data-property="title"]').val();
+            var title = dialog.find('[name="title"]').val();
             if (title !== "") {
                 if (pages.length === 1) {
                     _assignPagesProperties(['title'], [title]);
                 } else {
-                    var mode = dialog.find('[data-property="title-mode"]:checked').val();
+                    var mode = dialog.find('[name="title-mode"]:checked').val();
                     for (var i = 0; i < pages.length; ++i) {
                         var newTitle = title.replace('%n', (i + 1).toString());
                         var srcVal = sourceValues[i][propertiesToStore.indexOf('title')];
@@ -200,36 +200,9 @@
             }
         };
 
-        var _createSizePresets = function () {
-            var result = [];
-
-            result.push($('<option></option>')
-                .attr('value', 'x')
-                // TODO : I18N
-                .text('Custom Size'));
-
-            for (var i = 0; i < GPageSetupAction.options.sizePresets.length; ++i) {
-                var group = GPageSetupAction.options.sizePresets[i];
-                var groupEl = $('<optgroup></optgroup>')
-                    .attr('label', group.name);
-
-                result.push(groupEl);
-
-                for (var k = 0; k < group.sizes.length; ++k) {
-                    var size = group.sizes[k];
-                    $('<option></option>')
-                        .attr('value', i.toString() + ',' + k.toString())
-                        .text(size.name)
-                        .appendTo(groupEl);
-                }
-            }
-
-            return result;
-        };
-
         var _selectSizePreset = function () {
             var foundPreset = false;
-            var presetSelector = dialog.find('[data-property="size-preset"]');
+            var presetSelector = dialog.find('[name="size-preset"]');
 
             var w = activePage.getProperty('w');
             var h = activePage.getProperty('h');
@@ -254,247 +227,262 @@
         };
 
         var dialog = $('<div></div>')
-            .append($('<table></table>')
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO: I18N
-                            .text('Title')))
-                    .append($('<td></td>')
-                        .attr('colspan', '3')
-                        .append($('<input>')
-                            .attr('data-property', 'title')
-                            .css('width', '100%')
-                            .val(activePage.getProperty('title'))
-                            .exAutoBlur()
-                            .on('input', _updatePageTitles))
-                        .append($('<div></div>')
-                            .css('display', pages.length === 1 ? 'none' : '')
-                            .append($('<label>')
-                                .append($('<input>')
-                                    .attr('type', 'radio')
-                                    .attr('data-property', 'title-mode')
-                                    .attr('name', 'title-mode')
-                                    .attr('value', 'ignore')
-                                    .prop('checked', true)
-                                    .on('change', _updatePageTitles))
-                                .append($('<span></span>')
-                                    // TODO : I18N
-                                    .text('Ignore')))
-                            .append($('<label>')
-                                .append($('<input>')
-                                    .attr('type', 'radio')
-                                    .attr('data-property', 'title-mode')
-                                    .attr('name', 'title-mode')
-                                    .attr('value', 'append')
-                                    .on('change', _updatePageTitles))
-                                .append($('<span></span>')
-                                    // TODO : I18N
-                                    .text('Append')))
-                            .append($('<label>')
-                                .append($('<input>')
-                                    .attr('type', 'radio')
-                                    .attr('data-property', 'title-mode')
-                                    .attr('name', 'title-mode')
-                                    .attr('value', 'prepend')
-                                    .on('change', _updatePageTitles))
-                                .append($('<span></span>')
-                                    // TODO : I18N
-                                    .text('Prepend')))
-                            .append($('<label>')
-                                .append($('<input>')
-                                    .attr('type', 'radio')
-                                    .attr('data-property', 'title-mode')
-                                    .attr('name', 'title-mode')
-                                    .attr('value', 'replace')
-                                    .on('change', _updatePageTitles))
-                                .append($('<span></span>')
-                                    // TODO : I18N
-                                    .text('Replace'))))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO: I18N
-                            .text('Bleed')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .css('width', '100%')
-                            .val(scene.pointToString(activePage.getProperty('bl')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('bl', $(evt.target));
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO: I18N
-                            .text('Color')))
-                    .append($('<td></td>')
-                        .append($('<button></button>')
-                            .gColorButton()
-                            .gColorButton('color', activePage.getProperty('color'))
-                            .on('g-color-change', function (evt, color) {
-                                _assignPagesProperties(['color'], [color ? color.asString() : null]);
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .attr('colspan', '4')
-                        .append($('<h1></h1>')
-                            // TODO : I18N
-                            .text('Dimensions'))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            .html('&nbsp;')))
-                    .append($('<td></td>')
-                        .attr('colspan', '3')
-                        .append($('<select></select>')
-                            .css('width', '100%')
-                            .attr('data-property', 'size-preset')
-                            .append(_createSizePresets())
-                            .on('change', function () {
-                                var val = $(this).val();
-                                if (val.indexOf(',') >= 0) {
-                                    var val2 = val.split(',');
-                                    var sz = GPageSetupAction.options.sizePresets[parseInt(val2[0])].sizes[parseInt(val2[1])];
-                                    var wp = scene.stringToPoint(sz.width);
-                                    var hp = scene.stringToPoint(sz.height);
-                                    dialog.find('[data-property="width"]').val(scene.pointToString(wp));
-                                    dialog.find('[data-property="height"]').val(scene.pointToString(hp));
-                                    _assignPagesProperties(['w', 'h'], [wp, hp]);
+            .gForm({
+                sections: [
+                    {
+                        rows: [
+                            {
+                                // TODO : I18N
+                                label: 'Title',
+                                stretch: true,
+                                input: {
+                                    type: 'text',
+                                    name: 'title',
+                                    width: '100%',
+                                    value: activePage.getProperty('title'),
+                                    onInput: _updatePageTitles
                                 }
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Width')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .attr('data-property', 'width')
-                            .val(scene.pointToString(activePage.getProperty('w')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('w', $(evt.target));
-                                _selectSizePreset();
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Height')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .attr('data-property', 'height')
-                            .val(scene.pointToString(activePage.getProperty('h')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('h', $(evt.target));
-                                _selectSizePreset();
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .attr('colspan', '4')
-                        .append($('<h1></h1>')
-                            // TODO : I18N
-                            .text('Margins'))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Top')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('mt')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('mt', $(evt.target));
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Right')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('mr')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('mr', $(evt.target));
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Left')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('ml')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('ml', $(evt.target));
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Bottom')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('mb')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('mb', $(evt.target));
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .attr('colspan', '4')
-                        .append($('<h1></h1>')
-                            // TODO : I18N
-                            .text('Grid'))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Baseline')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('gb')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('gb', $(evt.target));
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Gutter')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('gw')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('gw', $(evt.target));
-                            }))))
-                .append($('<tr></tr>')
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Columns')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('gc')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('gc', $(evt.target));
-                            })))
-                    .append($('<td></td>')
-                        .append($('<label></label>')
-                            // TODO : I18N
-                            .text('Rows')))
-                    .append($('<td></td>')
-                        .append($('<input>')
-                            .val(scene.pointToString(activePage.getProperty('gr')))
-                            .exAutoBlur()
-                            .on('change', function (evt) {
-                                _assignOrResetInputPointProperty('gr', $(evt.target));
-                            }))))
-            )
+                            },
+                            {
+                                stretch: true,
+                                input: function () {
+                                    var result = [];
+                                    var modes = ['ignore', 'append', 'prepend', 'replace'];
+                                    // TODO : I18N
+                                    var titles = ['Ignore', 'Append', 'Prepend', 'Replace'];
+                                    for (var i = 0; i < modes.length; ++i) {
+                                        result.push({
+                                            type: 'check',
+                                            name: 'title-mode',
+                                            unique: true,
+                                            label: titles[i],
+                                            value: modes[i],
+                                            checked: i === 0,
+                                            available: pages.length > 1,
+                                            onChange: _updatePageTitles
+                                        });
+                                    }
+                                    return result;
+                                }
+                            },
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Bleed',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('bl')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('bl', $(this));
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Color',
+                                    input: {
+                                        type: 'color',
+                                        value: activePage.getProperty('color'),
+                                        onChange: function (evt, color) {
+                                            _assignPagesProperties(['color'], [color ? color.asString() : null]);
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    },
+                    {
+                        // TODO : I18N
+                        label: 'Dimensions',
+                        rows: [
+                            {
+                                stretch: true,
+                                input: {
+                                    type: 'select',
+                                    name: 'size-preset',
+                                    width: '100%',
+                                    options: function () {
+                                        var result = [];
+
+                                        result.push($('<option></option>')
+                                            .attr('value', 'x')
+                                            // TODO : I18N
+                                            .text('Custom Size'));
+
+                                        for (var i = 0; i < GPageSetupAction.options.sizePresets.length; ++i) {
+                                            var group = GPageSetupAction.options.sizePresets[i];
+                                            var groupEl = $('<optgroup></optgroup>')
+                                                .attr('label', group.name);
+
+                                            result.push(groupEl);
+
+                                            for (var k = 0; k < group.sizes.length; ++k) {
+                                                var size = group.sizes[k];
+                                                $('<option></option>')
+                                                    .attr('value', i.toString() + ',' + k.toString())
+                                                    .text(size.name)
+                                                    .appendTo(groupEl);
+                                            }
+                                        }
+
+                                        return result;
+                                    },
+                                    onChange: function () {
+                                        var val = $(this).val();
+                                        if (val.indexOf(',') >= 0) {
+                                            var val2 = val.split(',');
+                                            var sz = GPageSetupAction.options.sizePresets[parseInt(val2[0])].sizes[parseInt(val2[1])];
+                                            var wp = scene.stringToPoint(sz.width);
+                                            var hp = scene.stringToPoint(sz.height);
+                                            dialog.find('[name="width"]').val(scene.pointToString(wp));
+                                            dialog.find('[name="height"]').val(scene.pointToString(hp));
+                                            _assignPagesProperties(['w', 'h'], [wp, hp]);
+                                        }
+                                    }
+                                }
+                            },
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Width',
+                                    input: {
+                                        type: 'text',
+                                        name: 'width',
+                                        value: scene.pointToString(activePage.getProperty('w')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('w', $(this));
+                                            _selectSizePreset();
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Height',
+                                    input: {
+                                        type: 'text',
+                                        name: 'height',
+                                        value: scene.pointToString(activePage.getProperty('h')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('h', $(this));
+                                            _selectSizePreset();
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    },
+                    {
+                        // TODO : I18N
+                        label: 'Margins',
+                        checkable: true,
+                        rows: [
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Top',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('mt')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('mt', $(this));
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Right',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('mr')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('mr', $(this));
+                                        }
+                                    }
+                                }
+                            ],
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Left',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('ml')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('ml', $(this));
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Bottom',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('mb')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('mb', $(this));
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    },
+                    {
+                        // TODO : I18N
+                        label: 'Grid',
+                        rows: [
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Baseline',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('gb')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('gb', $(this));
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Gutter',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('gw')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('gw', $(this));
+                                        }
+                                    }
+                                }
+                            ],
+                            [
+                                {
+                                    // TODO : I18N
+                                    label: 'Columns',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('gc')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('gc', $(this));
+                                        }
+                                    }
+                                },
+                                {
+                                    // TODO : I18N
+                                    label: 'Rows',
+                                    input: {
+                                        type: 'text',
+                                        value: scene.pointToString(activePage.getProperty('gr')),
+                                        onChange: function () {
+                                            _assignOrResetInputPointProperty('gr', $(this));
+                                        }
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                ]
+
+            })
             .gDialog({
                 // TODO : I18N
                 title: 'Page Setup',

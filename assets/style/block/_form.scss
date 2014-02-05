@@ -1,0 +1,19 @@
+.g-form {
+  tr.section > td {
+    padding: $regularPadding 0px $minPadding 0px;
+    font-weight: bold;
+    color: gray;
+  }
+  tr.section:first-child > td {
+    padding-top: 0px;
+  }
+
+  td.label {
+    padding-right: $smallPadding;
+    text-align: right;
+  }
+
+  td.label:not(:first-child) {
+    padding-left: $regularPadding;
+  }
+}

@@ -261,7 +261,7 @@
 
             // Attach an auto-input for editing the layer's title
             li.find('.jqtree-title')
-                .exAutoInput({
+                .gAutoSize({
                     getter: function () {
                         return layerOrSet.getProperty('title');
                     },
@@ -275,7 +275,7 @@
             // Hacky: Clicking on a li element should kill any active input editor
             li.on('click', function () {
                 this._htmlTreeContainer.find('.jqtree-title').each(function () {
-                    $(this).exAutoInput('finish');
+                    $(this).gAutoSize('finish');
                 });
             }.bind(this));
 
@@ -369,9 +369,9 @@
             //
             $('<span></span>')
                 .addClass('layer-color')
-                .exColorBox()
-                .exColorBox('color', GXColor.parseColor(layerOrSet.getProperty('color')))
-                .on('g-color-change', function (evt, color) {
+                .gColorBox()
+                .gColorBox('value', GXColor.parseColor(layerOrSet.getProperty('color')))
+                .on('change', function (evt, color) {
                     if (layerOrSet instanceof GXLayerSet) {
                         var myColor = GXColor.parseColor(layerOrSet.getProperty('color'));
 

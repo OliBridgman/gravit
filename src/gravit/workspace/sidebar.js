@@ -183,8 +183,8 @@
         // Add all palettes first and collect their grouping
         var lastGroup = null;
         var lastPalettes = null;
-        for (var i = 0; i < gExpress.palettes.length; ++i) {
-            var palette = gExpress.palettes[i];
+        for (var i = 0; i < gravit.palettes.length; ++i) {
+            var palette = gravit.palettes[i];
 
             this._addPaletteInfo(palette);
 

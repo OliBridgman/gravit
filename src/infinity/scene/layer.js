@@ -137,7 +137,7 @@
                 this._notifyChange(GXElement._Change.InvalidationRequest);
             }
 
-            if (args.properties.indexOf('color') >= 0) {
+            if (args.properties.indexOf('value') >= 0) {
                 // If we're a guide layer and not outlined then we need a repaint
                 if (this.$type === GXLayer.Type.Guide && !this.$outline) {
                     this._notifyChange(GXElement._Change.InvalidationRequest);

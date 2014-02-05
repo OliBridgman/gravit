@@ -32,7 +32,7 @@
      * represents the GXBasePath.CornerType choices
      * TODO : Replace select with visual selector with icons
      */
-    $.fn.exCornerType = function (method) {
+    $.fn.gCornerType = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {

@@ -76,7 +76,7 @@
                     .addClass('color-trend-value')
                     .append($('<input>')
                         .attr('type', 'text')
-                        .exAutoBlur()
+                        .gAutoBlur()
                         .on('input', function (evt) {
                             var val = $(evt.target).val();
                             var newColor = this._updateTrendValue(index, val);
@@ -89,11 +89,11 @@
                 $('<div></div>')
                     .addClass('color-trend-box-' + (i === 10 ? 'current' : i.toString()))
                     .css('width', '10%')
-                    .exColorBox({
+                    .gColorBox({
                         drop: false
                     })
                     .on('click', function (evt) {
-                        this._updateCurrentColor($(evt.target).exColorBox('color'));
+                        this._updateCurrentColor($(evt.target).gColorBox('value'));
                     }.bind(this))
                     .appendTo(preview);
             }
@@ -122,14 +122,14 @@
                 .addClass('ex-color-preview')
                 .append($('<div></div>')
                     .attr('data-color-type', 'global')
-                    .exColorBox()
-                    .on('g-color-change', function (evt, color) {
+                    .gColorBox()
+                    .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     }))
                 .append($('<div></div>')
                     .attr('data-color-type', 'current')
-                    .exColorBox()
-                    .on('g-color-change', function (evt, color) {
+                    .gColorBox()
+                    .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     })))
             .appendTo(toolbar);
@@ -151,7 +151,7 @@
         var sourceColor = gApp.getGlobalColor();
 
         // Update global color preview
-        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').exColorBox('color', sourceColor);
+        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').gColorBox('value', sourceColor);
 
         // Update all trends from global color
         for (var i = 1; i <= 3; ++i) {
@@ -161,7 +161,7 @@
 
                 // Assign to color box
                 container.find('.color-trend-box-' + k.toString())
-                    .exColorBox('color', newColor);
+                    .gColorBox('value', newColor);
 
                 // If this is 50% then assign to current trend box
                 // and update it's text input
@@ -197,7 +197,7 @@
         var newColor = this._colorForTrendAndValue(trend, value);
 
         container.find('.color-trend-box-current')
-            .exColorBox('color', newColor);
+            .gColorBox('value', newColor);
 
         container.find('.color-trend-value > input')
             .val(value);
@@ -243,7 +243,7 @@
             this._currentColor = color;
 
             // Update preview
-            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').exColorBox('color', this._currentColor);
+            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').gColorBox('value', this._currentColor);
         }
     };
 

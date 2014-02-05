@@ -12,7 +12,7 @@
     /** @override */
     GravitModule.prototype.init = function () {
         // Register default palettes
-        gExpress.palettes.push(
+        gravit.palettes.push(
             new EXColorMixerPalette(),
             new EXColorMatcherPalette(),
             new EXColorTrendsPalette(),
@@ -22,7 +22,7 @@
         );
 
         // Register default tools
-        gExpress.tools.push(
+        gravit.tools.push(
             new GXPointerTool(),
             new GXSubSelectTool(),
             new GXPageTool(),
@@ -40,20 +40,20 @@
         );
 
         // Register default color matcher
-        gExpress.colorMatchers.push(
+        gravit.colorMatchers.push(
             new EXAnalogousMatcher(),
             new EXComplementaryMatcher(),
             new EXImagePaletteMatcher()
         );
 
         // Register default properties
-        gExpress.properties.push(
+        gravit.properties.push(
             new EXDimensionsProperties(),
             new EXPolygonProperties()
         );
 
         // Register default actions
-        gExpress.actions = gExpress.actions.concat(this._createDefaultActions());
+        gravit.actions = gravit.actions.concat(this._createDefaultActions());
     };
 
     /**
@@ -68,8 +68,8 @@
 
         var hasDefaultOpen = false;
         var hasDefaultSave = false;
-        for (var i = 0; i < gExpress.storages.length; ++i) {
-            var storage = gExpress.storages[i];
+        for (var i = 0; i < gravit.storages.length; ++i) {
+            var storage = gravit.storages[i];
             if (storage.isAvailable() && storage.isPrompting()) {
                 openActions.push(new EXOpenAction(storage, !hasDefaultOpen));
                 hasDefaultOpen = true;
@@ -85,17 +85,17 @@
         var importActions = [];
         var exportActions = [];
 
-        for (var i = 0; i < gExpress.importers.length; ++i) {
-            importActions.push(new EXImportAction(gExpress.importers[i]));
+        for (var i = 0; i < gravit.importers.length; ++i) {
+            importActions.push(new EXImportAction(gravit.importers[i]));
         }
-        for (var i = 0; i < gExpress.exporters.length; ++i) {
-            exportActions.push(new EXExportAction(gExpress.exporters[i]));
+        for (var i = 0; i < gravit.exporters.length; ++i) {
+            exportActions.push(new EXExportAction(gravit.exporters[i]));
         }
 
         // Collect all palettes and add actions for 'em
         var paletteShowActions = [];
-        for (var i = 0; i < gExpress.palettes.length; ++i) {
-            paletteShowActions.push(new EXShowPaletteAction(gExpress.palettes[i]));
+        for (var i = 0; i < gravit.palettes.length; ++i) {
+            paletteShowActions.push(new EXShowPaletteAction(gravit.palettes[i]));
         }
 
         // TODO : If there's only one storage available,
@@ -170,5 +170,5 @@
         return '[Module Gravit]';
     };
 
-    gExpress.modules.push(new GravitModule());
+    gravit.modules.push(new GravitModule());
 })(this);

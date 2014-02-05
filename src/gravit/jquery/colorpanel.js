@@ -24,11 +24,11 @@
                                 .attr('type', 'text')
                                 // TODO : I18N
                                 .attr('placeholder', 'Paste CSS-Color')
-                                .exAutoBlur()
+                                .gAutoBlur()
                                 .on('change', function (evt) {
                                     var color = GXColor.parseCSSColor($(evt.target).val());
                                     if (color) {
-                                        $this.trigger('g-color-change', color);
+                                        $this.trigger('change', color);
                                     }
                                 }.bind(this))))
                         .append($('<td></td>')
@@ -37,7 +37,7 @@
                                 .append($('<span></span>')
                                     .addClass('fa fa-square-o'))
                                 .on('click', function () {
-                                    $this.trigger('g-color-change', null);
+                                    $this.trigger('change', null);
                                 }))))
                     .append($('<tr></tr>')
                         .append($('<td></td>')
@@ -50,16 +50,16 @@
                  .append($('<div></div>')
                  .addClass('preview'))
                  .append($('<div></div>')
-                 .exColorBox()
-                 .exColorBox('color', null)
+                 .gColorBox()
+                 .gColorBox('value', null)
                  .on('click', function () {
-                 $this.trigger('g-color-change', null);
+                 $this.trigger('change', null);
                  }));
 
                  $('<button></button>')
                  .text('-- None --')
                  .on('click', function () {
-                 $this.trigger('g-color-change', null);
+                 $this.trigger('change', null);
                  })
                  .appendTo($this);
 
@@ -121,7 +121,7 @@
                             $this.find('.preview-value').val($(this).attr('data-color'));
                         })
                         .on('click', function () {
-                            $this.trigger('g-color-change', GXColor.parseCSSColor($(this).attr('data-color')));
+                            $this.trigger('change', GXColor.parseCSSColor($(this).attr('data-color')));
                         })
                         .appendTo(container);
                 }

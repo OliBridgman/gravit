@@ -76,7 +76,7 @@
      * that gets automatically sized to the attached element's size. By
      * default the editor is triggered by a double-click.
      */
-    $.fn.exAutoInput = function (method) {
+    $.fn.gAutoSize = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {
