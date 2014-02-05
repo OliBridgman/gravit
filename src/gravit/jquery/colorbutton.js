@@ -12,12 +12,6 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // Color can be dragged away
-                drag: true,
-                // Color can be droppend
-                drop: true,
-                // Double click assigns global color
-                globalColor: true
             }, options);
 
             var self = this;
@@ -25,7 +19,7 @@
                 var $this = $(this);
 
                 var colorBox = $('<div></div>')
-                    .gColorBox()
+                    .gColorBox(options)
                     .on('change', function (evt, color) {
                         $this.trigger('change', color);
                     });
@@ -34,6 +28,13 @@
                     .addClass('g-block-colorbutton')
                     .data('g-colorbutton', {
                         colorbox: colorBox,
+                        colorpanel: $('<div></div>')
+                            .gColorPanel(options)
+                            .on('change', function (evt, color) {
+                                methods.close.call(this);
+                                methods.value.call(this, color ? color : "");
+                                $this.trigger('change', color);
+                            }.bind(this)),
                         container: null
                     });
 
@@ -76,15 +77,9 @@
                     .appendTo($('body'));
 
                 var offset = $this.offset();
-                $('<div></div>')
+                data.colorpanel
                     .css('top', (offset.top + $this.outerHeight()) + 'px')
                     .css('left', offset.left + 'px')
-                    .gColorPanel()
-                    .on('change', function (evt, color) {
-                        methods.close.call(this);
-                        methods.value.call(this, color ? color : "");
-                        $this.trigger('change', color);
-                    }.bind(this))
                     .appendTo(container);
 
                 data.container = container;
@@ -96,6 +91,7 @@
             var $this = $(this);
             var data = $this.data('g-colorbutton');
             if (data.container) {
+                data.colorpanel.detach();
                 data.container.remove();
                 data.container = null;
             }
@@ -104,12 +100,15 @@
 
         value: function (value) {
             var $this = $(this);
-            var colorbox = $this.data('g-colorbutton').colorbox;
+            var data = $this.data('g-colorbutton');
+            var colorbox = data.colorbox;
+            var colorpanel = data.colorpanel;
 
             if (!arguments.length) {
                 return colorbox.gColorBox('value');
             } else {
                 colorbox.gColorBox('value', value);
+                colorpanel.gColorPanel('value', value);
                 return this;
             }
         }
