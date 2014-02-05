@@ -88,14 +88,16 @@
         }.bind(this);
 
         $('<table></table>')
-            .addClass('properties-table')
+            .addClass('g-form')
             .css('margin', '0px auto')
             .append($('<tr></tr>')
                 .append($('<td></td>')
+                    .addClass('label')
                     .text('X:'))
                 .append($('<td></td>')
                     .append(_createDimensionInput('x')))
                 .append($('<td></td>')
+                    .addClass('label')
                     .text('Y:'))
                 .append($('<td></td>')
                     .append(_createDimensionInput('y')))
@@ -105,11 +107,13 @@
                     .append(_createApplyButton('objects'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
+                    .addClass('label')
                     // TODO : I18N
                     .text('W:'))
                 .append($('<td></td>')
                     .append(_createDimensionInput('w')))
                 .append($('<td></td>')
+                    .addClass('label')
                     // TODO : I18N
                     .text('H:'))
                 .append($('<td></td>')

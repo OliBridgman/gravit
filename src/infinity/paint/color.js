@@ -733,8 +733,14 @@
      */
     GXColor.prototype.asCSSString = function () {
         var rgb = this.asRGB();
-
-        return 'rgba(' + rgb[0].toString() + ',' + rgb[1].toString() + ',' + rgb[2].toString() + ',' + (rgb[3] / 100.0).toString() + ')';
+        if (rgb[3] === 100) {
+            var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+            return '#' + (function (h) {
+                return new Array(7 - h.length).join("0") + h
+            })(bin.toString(16).toUpperCase());
+        } else {
+            return 'rgba(' + rgb[0].toString() + ',' + rgb[1].toString() + ',' + rgb[2].toString() + ',' + (rgb[3] / 100.0).toString() + ')';
+        }
     };
 
     /**

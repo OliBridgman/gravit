@@ -1,0 +1,48 @@
+.palette-color-matcher {
+  padding: 5px;
+
+  .color-matcher-panel {
+    padding-bottom: 5px;
+  }
+
+  > .color-palette-panel {
+    width: 100%;
+    height: 27px;
+
+    > div {
+      display: inline-block;
+      height: 100%;
+    }
+
+    > div:not(:last-child) {
+      border-right: 1px solid white;
+    }
+  }
+
+  > .color-toolbar {
+    display: table;
+    width: 100%;
+    padding-top: 5px;
+
+    > div, ul {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .g-menu-item.g-button {
+      text-transform: uppercase;
+      padding: 0px;
+    }
+
+    > .color-preview {
+      width: 100%;
+      text-align: right;
+
+      > .ex-color-preview > div {
+        display: inline-block;
+        width: 4em;
+        height: 1.5em;
+      }
+    }
+  }
+}

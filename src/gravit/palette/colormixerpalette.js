@@ -148,6 +148,21 @@
             makeColor: function (components) {
                 return new GXColor(GXColor.Type.Tone, components);
             }
+        },
+        {
+            id: 'pick',
+            name: 'Pick',
+            components: [
+                {
+                    icon: 'star-half-o',
+                    min: 0,
+                    max: 100,
+                    unit: '%'
+                }
+            ],
+            makeColor: function (components) {
+                return new GXColor(GXColor.Type.RGB, [0, 0, 0, components[0]]);
+            }
         }
     ];
 
@@ -187,7 +202,7 @@
                     this._modeInfo = modeInfo;
 
                     // Activate button
-                    this._htmlElement.find('.color-modes > .g-button').each(function () {
+                    this._htmlElement.find('.color-modes > button').each(function () {
                         var $this = $(this);
                         if ($this.attr('data-mode-id') === mode) {
                             $this.addClass('g-active');
@@ -201,9 +216,9 @@
                         var componentPanel = this._htmlElement.find('.color-component-' + i.toString());
 
                         if (i >= this._modeInfo.components.length) {
-                            componentPanel.css('visibility', 'hidden');
+                            componentPanel.css('display', 'none');
                         } else {
-                            componentPanel.css('visibility', '');
+                            componentPanel.css('display', '');
 
                             var component = this._modeInfo.components[i];
                             var range = componentPanel.find('input[type="range"]');
@@ -218,6 +233,13 @@
                             range.attr('min', component.min);
                             range.attr('max', component.max);
                         }
+                    }
+
+                    // Special handling for picker
+                    if (mode === 'pick') {
+                        this._htmlElement.find('.color-picker').css('display', '');
+                    } else {
+                        this._htmlElement.find('.color-picker').css('display', 'none');
                     }
 
                     // Update values from global color to
@@ -296,6 +318,17 @@
                 .appendTo(this._htmlElement);
         }.bind(this);
 
+        // Append picker
+        $('<div></div>')
+            .css('display', 'none')
+            .addClass('color-picker')
+            .gColorPanel({
+                noneSelect: false,
+                preview: false
+            })
+            .on('change', this._updateToGlobalColor.bind(this))
+            .appendTo(this._htmlElement);
+
         // Append the components
         for (var i = 0; i < 4; ++i) {
             _addComponent(i);
@@ -314,8 +347,7 @@
         // Initiate component modes
         for (var i = 0; i < EXColorMixerPalette._Modes.length; ++i) {
             var _modeInfo = EXColorMixerPalette._Modes[i];
-            $('<div></div>')
-                .addClass('g-button g-flat')
+            $('<button></button>')
                 .attr('data-mode-id', _modeInfo.id)
                 .text(_modeInfo.name)
                 .on('click', function (evt) {
@@ -326,9 +358,8 @@
 
         // Append component preview container
         $('<div></div>')
-            .addClass('color-preview')
             .append($('<div></div>')
-                .addClass('ex-color-preview')
+                .addClass('g-swatch-preview')
                 .append($('<div></div>')
                     .attr('data-color-type', 'previous')
                     .gColorBox()
@@ -389,9 +420,17 @@
             rangeInput.val(value);
         }
 
+        var newColor = this._modeInfo.makeColor(components);
+
+        // Special hack for picker mode
+        if (this._modeInfo.id === 'pick') {
+            values = this._htmlElement.find('.color-picker').gColorPanel('value').asRGB();
+            newColor = new GXColor(GXColor.Type.RGB, [values[0], values[1], values[2], newColor.asRGB()[3]]);
+        }
+
         // Prevent previous color update as we're setting the global color ourself
         this._noPreviousColorUpdate = true;
-        gApp.setGlobalColor(this._modeInfo.makeColor(components));
+        gApp.setGlobalColor(newColor);
         this._noPreviousColorUpdate = false;
     };
 
@@ -413,22 +452,27 @@
             components = globalColor.asTone();
         } else if (this._modeInfo.id === 'cmyk') {
             components = globalColor.asCMYK();
+        } else if (this._modeInfo.id === 'pick') {
+            components = [globalColor.asRGB()[3]];
+            this._htmlElement.find('.color-picker').gColorPanel('value', globalColor);
         } else {
             throw new Error('Unknown mode.');
         }
 
-        for (var i = 0; i < this._modeInfo.components.length; ++i) {
-            var component = this._modeInfo.components[i];
-            var componentEl = this._htmlElement.find('.color-component-' + i.toString());
-            var textInput = componentEl.find('input[type="text"]');
-            var rangeInput = componentEl.find('input[type="range"]');
-            var val = Math.min(component.max, Math.max(component.min, components[i])).toFixed(0);
+        if (components) {
+            for (var i = 0; i < this._modeInfo.components.length; ++i) {
+                var component = this._modeInfo.components[i];
+                var componentEl = this._htmlElement.find('.color-component-' + i.toString());
+                var textInput = componentEl.find('input[type="text"]');
+                var rangeInput = componentEl.find('input[type="range"]');
+                var val = Math.min(component.max, Math.max(component.min, components[i])).toFixed(0);
 
-            textInput.val(val);
-            rangeInput.val(val);
+                textInput.val(val);
+                rangeInput.val(val);
+            }
         }
 
-        var colorPreview = this._htmlElement.find('.ex-color-preview');
+        var colorPreview = this._htmlElement.find('.g-swatch-preview');
 
         if (updatePrevious) {
             colorPreview.find('[data-color-type="previous"]').gColorBox('value', globalColor);

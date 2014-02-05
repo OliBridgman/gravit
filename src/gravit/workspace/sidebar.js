@@ -8,7 +8,9 @@
     function EXSidebar(htmlElement) {
         this._htmlElement = $("<div></div>")
             .addClass('palettes')
-            .appendTo($("<div></div>").appendTo(htmlElement));
+            .appendTo($("<div></div>")
+                .addClass('g-flat')
+                .appendTo(htmlElement));
         this._palettesInfo = [];
         this._groupsInfo = [];
     };
@@ -347,7 +349,6 @@
 
             // Add Tab & Panel
             tabsContainer.append($('<button></button>')
-                .addClass('g-button g-flat')
                 .attr('data-palette-id', paletteInfo.palette.getId())
                 .text(gLocale.get(paletteInfo.palette.getTitle()))
                 .on('click', function () {
@@ -375,7 +376,6 @@
             menuButton: new GUIMenuButton()
         };
 
-        groupInfo.menuButton._item._htmlElement.addClass('g-flat');
         groupInfo.menuButton.setIcon($('<span></span>')
             .addClass('fa fa-chevron-down'));
 
@@ -384,7 +384,7 @@
             .append($('<div></div>')
                 .addClass('palette-group-header')
                 .append($('<button></button>')
-                    .addClass('g-button g-flat palette-group-collapse')
+                    .addClass('palette-group-collapse')
                     .append($('<span></span>')
                         .addClass('fa fa-angle-double-down'))
                     .on('click', function () {

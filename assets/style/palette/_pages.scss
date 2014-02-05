@@ -1,0 +1,46 @@
+.palette-pages .page-tree {
+  padding: 5px 0px;
+
+  div.jqtree-element {
+    display: table;
+
+    > * {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    > :not(:last-child) {
+      padding-right: 5px;
+    }
+
+    > .page-icon {
+      font-size: 14px !important;
+    }
+
+    > .page-icon-light {
+      color: rgb(89, 101, 115);
+    }
+
+    > .page-icon-action {
+      cursor: pointer;
+    }
+
+    > span.jqtree-title {
+      width: 100%;
+      color: black;
+      line-height: 14px;
+    }
+  }
+
+  li.jqtree-selected {
+    > div.jqtree-element {
+      * {
+        color: white;
+      }
+    }
+  }
+
+  ul.jqtree_common {
+    margin-left: 0px;
+  }
+}

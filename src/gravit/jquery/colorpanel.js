@@ -48,9 +48,7 @@
 
     function createColorCubes(container, hover, activate) {
         var table = $('<table></table>')
-            .attr('background', 'black')
-            .attr('cellspacing', '1')
-            .addClass('g-cursor-pipette')
+            .addClass('g-swatches')
             .appendTo(container);
 
         var parent = $('<tr></tr>').appendTo(table);
@@ -60,8 +58,7 @@
             var color = '#' + COLORCUBES[i];
 
             $('<td></td>')
-                .addClass('color-swatch')
-                .addClass('g-cursor-pipette')
+                .addClass('swatch')
                 .css('background', color)
                 .attr('data-color', color)
                 .on('mouseenter', function () {
@@ -84,9 +81,7 @@
 
     function createColorPalette(container, hover, activate) {
         var table = $('<table></table>')
-            .attr('background', 'black')
-            .attr('cellspacing', '1')
-            .addClass('g-cursor-pipette')
+            .addClass('g-swatches')
             .appendTo(container);
 
         var parent = $('<tr></tr>').appendTo(table);
@@ -103,8 +98,7 @@
             var color = "hsl(" + hsl.H + "," + hsl.S + "%," + hsl.L + "%)";
 
             $('<td></td>')
-                .addClass('color-swatch')
-                .addClass('g-cursor-pipette')
+                .addClass('swatch')
                 .css('background', color)
                 .attr('data-color', color)
                 .on('mouseenter', function () {
@@ -135,6 +129,7 @@
             updatePreviewColor($this, color);
         };
         var colorActivate = function (color) {
+            data.color = color;
             $this.trigger('change', color);
         };
 
@@ -155,10 +150,10 @@
         color = color || $this.data('gcolorpanel').color;
         if (color) {
             $this.find('.preview').css('background', color.asCSSString());
-            $this.find('.preview-value').val(color.asCSSString());
+            $this.find('.css-value').val(color.asCSSString());
         } else {
             $this.find('.preview').css('background', 'transparent');
-            $this.find('.preview-value').val('');
+            $this.find('.css-value').val('');
         }
     }
 
@@ -167,73 +162,90 @@
             options = $.extend({
                 defaultView: 'cubes',
                 availableViews: ['cubes', 'rainbow'], //'picker', 'swatches'],
-                noneSelect: true
+                noneSelect: true,
+                preview: true
             }, options);
 
             var self = this;
             return this.each(function () {
                 var $this = $(this);
-                $this
-                    .addClass('g-block-colorpanel')
-                    .data('gcolorpanel', {
-                        view: options.defaultView
-                    });
-
-                var _create_buttons = function () {
-                    var result = [];
-
-                    if (options.noneSelect) {
-                        result.push($('<button></button>')
-                            // TODO : I18N
-                            .attr('title', 'Transparent')
-                            .append($('<span></span>')
-                                .addClass('fa fa-times'))
-                            .on('click', function () {
-                                $this.trigger('change', null);
-                            }));
-                    }
-
-                    for (var i = 0; i < options.availableViews.length; ++i) {
-                        var view = options.availableViews[i];
-                        result.push($('<button></button>')
-                            .attr('title', VIEWS[view].title)
-                            .attr('data-view', view)
-                            .append($('<span></span>')
-                                .addClass('fa fa-' + VIEWS[view].icon))
-                            .on('click', function () {
-                                methods.view.call(self, $(this).attr('data-view'));
-                            }));
-                    }
-
-                    return result;
+                var data = {
+                    view: options.defaultView
                 };
 
-                $('<table></table>')
-                    .append($('<tr></tr>')
-                        .append($('<td></td>')
-                            .append($('<div></div>')
-                                .addClass('preview')
-                                .html('&nbsp;')))
-                        .append($('<td></td>')
-                            .append($('<input>')
-                                .addClass('preview-value')
-                                .attr('type', 'text')
-                                // TODO : I18N
-                                .attr('placeholder', 'Paste CSS-Color')
-                                .gAutoBlur()
-                                .on('change', function (evt) {
-                                    var color = GXColor.parseCSSColor($(evt.target).val());
-                                    if (color) {
-                                        $this.trigger('change', color);
-                                    }
-                                }.bind(this))))
-                        .append($('<td></td>')
-                            .append(_create_buttons())))
-                    .append($('<tr></tr>')
-                        .append($('<td></td>')
-                            .addClass('container')
-                            .attr('colspan', '3')))
+                $this.data('gcolorpanel', data);
+
+                var table = $('<table></table>')
                     .appendTo($this);
+
+                var toolbar = $('<tr></tr>')
+                    .appendTo(table);
+
+                if (options.preview) {
+                    $('<td></td>')
+                        .append(
+                            $('<div></div>')
+                                .addClass('preview g-swatch'))
+                        .appendTo(toolbar);
+                }
+
+                $('<td></td>')
+                    .append($('<input>')
+                        .addClass('css-value')
+                        .attr('type', 'text')
+                        // TODO : I18N
+                        .attr('placeholder', 'Paste CSS-Color')
+                        .gAutoBlur()
+                        .on('click', function () {
+                            $(this).select();
+                        })
+                        .on('input', function (evt) {
+                            var val = $(evt.target).val();
+                            if (val && val !== "") {
+                                var color = GXColor.parseCSSColor(val);
+                                if (color) {
+                                    data.color = color;
+                                    $this.trigger('change', color);
+                                }
+                            }
+                        }.bind(this)))
+                    .appendTo(toolbar);
+
+                var buttons = $('<td></td>')
+                    .css('text-align', 'right')
+                    .appendTo(toolbar);
+
+                if (options.noneSelect) {
+                    $('<button></button>')
+                        .css('margin-right', '7px')
+                        // TODO : I18N
+                        .attr('title', 'Transparent')
+                        .append($('<span></span>')
+                            .addClass('fa fa-times'))
+                        .on('click', function () {
+                            $this.trigger('change', null);
+                        })
+                        .appendTo(buttons);
+                }
+
+                for (var i = 0; i < options.availableViews.length; ++i) {
+                    var view = options.availableViews[i];
+                    $('<button></button>')
+                        .attr('title', VIEWS[view].title)
+                        .attr('data-view', view)
+                        .append($('<span></span>')
+                            .addClass('fa fa-' + VIEWS[view].icon))
+                        .on('click', function () {
+                            methods.view.call(self, $(this).attr('data-view'));
+                        })
+                        .appendTo(buttons);
+                }
+
+                $('<tr></tr>')
+                    .append($('<td></td>')
+                        .addClass('container')
+                        .attr('colspan', toolbar.find('td').length))
+                    .appendTo(table);
 
                 createColorContainer($this, options.defaultView);
             });

@@ -12,7 +12,7 @@
     /** @override */
     GNativeShell.prototype.prepareLoad = function () {
         // Register our native storage
-        gExpress.storages.push(new GNativeStorage());
+        gravit.storages.push(new GNativeStorage());
     };
 
     /** @override */

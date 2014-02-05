@@ -4,13 +4,39 @@
   border-spacing: 0px;
 
   .swatch {
-    width: 1em;
-    height: 1em;
-    border: 1px solid black;
     @include g-cursor(pipette);
+    border: 1px solid black;
 
     &:hover {
       border: 1px solid aquamarine;
     }
+  }
+}
+
+.g-swatch, .g-swatches .swatch {
+  width: 1em;
+  height: 1em;
+}
+
+div.g-swatch {
+  display: inline-block;
+}
+
+button, .g-button {
+  .g-swatch {
+    border: 1px solid black;
+  }
+}
+
+.g-swatch-preview {
+  display: inline-block;
+  background-color: white;
+  border: 1px solid black;
+  background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0 100%), linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0 100%);
+  background-size: 10px 10px;
+  background-position: 0 0, 5px 5px;
+
+  .g-swatch, .swatch {
+    border: none;
   }
 }

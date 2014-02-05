@@ -1,0 +1,28 @@
+button, .g-button, input, select, textarea {
+  margin: 0px;
+  padding: 0px;
+  line-height: 16px;
+}
+
+button, .g-button {
+  > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 3px;
+  }
+
+  > *:last-child {
+    margin-right: 0px;
+  }
+}
+
+.g-flat {
+  button, .g-button {
+    border: none;
+    background: transparent;
+
+    &:active, &.g-active {
+      color: $highlightColor;
+    }
+  }
+}

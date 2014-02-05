@@ -38,8 +38,8 @@
   }
 
   > button, .palette-group-tabs > button {
-    padding: 0px;
-    margin: 0px;
+    background: transparent;
+    border: none;
     text-shadow: rgb(245, 245, 245) 0px 1px 0px;
     font-weight: bold;
     text-transform: uppercase;

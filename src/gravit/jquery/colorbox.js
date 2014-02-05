@@ -17,8 +17,8 @@
             return this.each(function () {
                 var $this = $(this);
                 $this
-                    .addClass('g-block-colorbox')
-                    .data('ex-colorbox', {
+                    .addClass('g-swatch')
+                    .data('gcolorbox', {
                         color: null
                     });
 
@@ -29,7 +29,7 @@
                         .on('dragstart', function (evt) {
                             var event = evt.originalEvent;
 
-                            var color = $this.data('ex-colorbox').color;
+                            var color = $this.data('gcolorbox').color;
                             if (!color) {
                                 // No dragging without a color
                                 event.preventDefault();
@@ -75,7 +75,7 @@
                             var sourceColor = event.dataTransfer.getData(GXColor.MIME_TYPE);
                             if (sourceColor && sourceColor !== "") {
                                 var color = GXColor.parseColor(sourceColor);
-                                var myColor = $this.data('ex-colorbox').color;
+                                var myColor = $this.data('gcolorbox').color;
                                 if (color && !GXColor.equals(color, myColor)) {
                                     methods.value.call(self, color);
                                     $this.trigger('change', color);
@@ -88,7 +88,7 @@
                 if (options.globalColor) {
                     $this
                         .on('dblclick', function () {
-                            var color = $this.data('ex-colorbox').color;
+                            var color = $this.data('gcolorbox').color;
                             if (color) {
                                 gApp.setGlobalColor(color);
                             }
@@ -100,10 +100,10 @@
         value: function (value) {
             var $this = $(this);
             if (!arguments.length) {
-                return $this.data('ex-colorbox').color;
+                return $this.data('gcolorbox').color;
             } else {
                 value = typeof value === 'string' ? GXColor.parseColor(value) : value;
-                $this.data('ex-colorbox').color = value;
+                $this.data('gcolorbox').color = value;
                 $this.css('background', value ? value.asCSSString() : 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
                 return this;
             }
