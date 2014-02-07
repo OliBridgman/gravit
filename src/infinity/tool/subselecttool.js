@@ -71,6 +71,32 @@
         // - if a point was selected and had both handles - drag the point together with other selected points
         // If Shift is pressed, new coordinate is constrained against the original point's position
         // If a point is drag, and Alt is pressed in the last mouse move position, then the path is cloned
+        //
+        // When Path segment is drag with SubSelect Tool:
+        // If handles are newly created:
+        //      both handles should have the overall length 2/3 from segment length
+        //      a mouse point should divide the distance between handle points in the same proportion as between segment ends
+        //      after movement starts handle end points move synchronously
+        //      after movement starts mouse position defines a point through which should go curve tangent line,
+        // which oriented the same as original segment
+        // To get newly created handles:
+        //      for catch point between handles y position: hdy = dy (mouse) * 4 / 3
+        //      for catch point between handles x position: hdx = dx * 4 / 3
+        //
+        // If both handles existed before, their orientation remains, and:
+        // For segment which is oriented horizontally (catch point at slope t):
+        //      hldx = dx * kl, hldy = 0, hrdx = dx * kr, hrdy = 0; kl = 3*(1 - t) , kr = 3*t
+        // For any segment for each handle:
+        //      1) make projection of movement into handle orientation
+        //      2) if not zero - apply handle coefficient to that projection
+        //      3) add received vector to handle position.
+        //
+        // For one new handle and one existed:
+        //      Exact policy is not defined, lets try this:
+        //      - the same as above for existed handle
+        //      - for new handle h = end p. + 2/3*(catch p. - end p.) + kh*(dx, dy)
+        //
+
 
         if (this._mode == GXSelectTool._Mode.Move) {
             // Save start

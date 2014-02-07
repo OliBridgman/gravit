@@ -419,9 +419,10 @@
      * @param {Number} y2 - y-coordinate of the point B
      * @param {Number} x3 - x-coordinate of the point C
      * @param {Number} y3 - y-coordinate of the point C
+     * @param {Boolean} positiveOnly indicates if only positive projection is needed
      * @return (GPoint}
      */
-    GMath.prototype.getPositiveProjection = function (x1, y1, x2, y2, x3, y3) {
+    GMath.prototype.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
         var ax = x3 - x1;
         var ay = y3 - y1;
         var bx = x2 - x1;
@@ -431,7 +432,7 @@
 
         var tmp = this.vDotProduct(ax, ay, bx, by) / this.vDotProduct(bx, by, bx, by);
         var res;
-        if (tmp <= 0.0) {
+        if (tmp <= 0.0 && positiveOnly) {
             res  = new GPoint(x1, y1);
         }
         else {
