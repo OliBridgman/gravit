@@ -494,9 +494,11 @@
                     this._setCursorForPosition(GUICursor.PenMinus);
                 }
             }
-        } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
+        } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment &&
+                partInfo.data.type == GXPathEditor.SegmentData.HitRes) {
+
             this._setCursorForPosition(GUICursor.PenPlus);
-            var anchorPt = this._pathRef.insertHitPoint(partInfo.data.data);
+            var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
                 this._makePointMajor(anchorPt);
                 this._editPt = this._pathEditor.getPathPointPreview(anchorPt);

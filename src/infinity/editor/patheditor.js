@@ -33,6 +33,12 @@
         LeftShoulder: 5,
         RightShoulder: 6
     };
+
+    GXPathEditor.SegmentData = {
+        HitRes : 1,
+        Handles: 2
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // GXPathEditor Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -138,16 +144,17 @@
             this.requestInvalidation();
             this._createPathPreviewIfNecessary();
 
-            // TODO : If current partId is a segment, move only segments
+            // If current partId is a segment, move segment and other selected points
             // like freehand does, otherwise move all selected points
             // including the ones from segments
 
             // Iterate selection and transform all anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var selectedPartId = this._partSelection[i];
-                if (selectedPartId.point) {
-                    var selectedPoint = selectedPartId.point;
+                //if (selectedPartId.point) {
+
                     if (selectedPartId.type === GXPathEditor.PartType.Point) {
+                        var selectedPoint = selectedPartId.point;
                         this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
 
                         // Make sure to transform handles as well if not auto-handles are set
@@ -159,51 +166,139 @@
                                 this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
                             }
                         }
-                    } else if (selectedPartId.type === GXPathEditor.PartType.LeftHandle) {
-                        var previewPoint = this.getPathPointPreview(selectedPoint);
-                        var dPt = transform.getTranslation();
-                        var xPos = previewPoint.getProperty('x');
-                        var yPos = previewPoint.getProperty('y');
-                        // TODO: store initially set hlx and hly, and get them, as the current may become equal to point itself
-                        var hlx = selectedPartId.hlx;
-                        var hly = selectedPartId.hly;
-                        if (selectedPartId.projection) {
-                            var prPt = gMath.getVectorProjection(xPos, yPos, hlx, hly, xPos + dPt.getX(), yPos + dPt.getY());
-                            var coeff = selectedPartId.coeff === null ? 1 : selectedPartId.coeff;
-                            // TODO: honor internal path transform here
-                            var newTransform = transform.translated(-dPt.getX() + prPt.getX() * coeff,
-                                -dPt.getY() + prPt.getY() * coeff);
-                        } else {
-                            var coeff = selectedPartId.coeff === null ? 1 : selectedPartId.coeff;
-                            // TODO: honor internal path transform here
-                            var newTransform = transform.translated(-dPt.getX() + dPt.getX() * coeff, -dPt.getY() + dPt.getY() * coeff);
-                        }
+                    } else if (selectedPartId.type === GXPathEditor.PartType.Segment &&
+                            this._partIdAreEqual(selectedPartId, partId) &&
+                            partData.type == GXPathEditor.SegmentData.Handles) {
 
-                        this._transformPreviewPointCoordinates(selectedPoint, 'hlx', 'hly', newTransform, new GPoint(hlx, hly));
-                    } else if (selectedPartId.type === GXPathEditor.PartType.RightHandle) {
-                        // TODO: make one 'if' with the upper case
-                        var previewPoint = this.getPathPointPreview(selectedPoint);
+                        var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
+                        var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);
                         var dPt = transform.getTranslation();
-                        var xPos = previewPoint.getProperty('x');
-                        var yPos = previewPoint.getProperty('y');
-                        // TODO: store initially set hrx and hry, and get them, as the current may become equal to point itself
-                        var hrx = selectedPartId.hrx;
-                        var hry = selectedPartId.hry;
-                        if (selectedPartId.projection) {
-                            var prPt = gMath.getVectorProjection(xPos, yPos, hrx, hry, xPos + dPt.getX(), yPos + dPt.getY());
-                            var coeff = selectedPartId.coeff === null ? 1 : selectedPartId.coeff;
-                            // TODO: honor internal path transform here
-                            var newTransform = transform.translated(-dPt.getX() + prPt.getX() * coeff,
-                                -dPt.getY() + prPt.getY() * coeff);
-                        } else {
-                            var coeff = selectedPartId.coeff === null ? 1 : selectedPartId.coeff;
-                            // TODO: honor internal path transform here
-                            var newTransform = transform.translated(-dPt.getX() + dPt.getX() * coeff, -dPt.getY() + dPt.getY() * coeff);
-                        }
+                        var apL = new GPoint(apLeftPreview.getProperty('x'), apLeftPreview.getProperty('y'));
+                        var apR = new GPoint(apRightPreview.getProperty('x'), apRightPreview.getProperty('y'));
 
-                        this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', newTransform, new GPoint(hrx, hry));
+                        if (!partData.fixedHDirLpt && !partData.fixedHDirRpt){
+                            // TODO: honor internal path transform here
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dPt.getX() * partData.cL, -dPt.getY() + dPt.getY() * partData.cL);
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dPt.getX() * partData.cR, -dPt.getY() + dPt.getY() * partData.cR);
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                        } else if (partData.fixedHDirLpt && partData.fixedHDirRpt) {
+                            // dx = k1 * H1.x + k2 * H2.x
+                            // dy = k1 * H1.y + k2 * H2.y
+                            // H1 = coeff1 * dh1, H2 = coeff2 * dh2, k1, k2 - ?
+
+                            var dx = dPt.getX();
+                            var dy = dPt.getY();
+                            var dh1 = partData.apLhr.subtract(apL);
+                            var dh2 = partData.apRhl.subtract(apR);
+                            var h1x = partData.cL * dh1.getX();
+                            var h1y = partData.cL * dh1.getY();
+                            var h2x = partData.cR * dh2.getX();
+                            var h2y = partData.cR * dh2.getY();
+                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
+                            if (kPair === null) { // don't modify handles
+                                kPair = new GPoint(0, 0);
+                            }
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dh1.getX() * kPair.getX(),
+                                -dPt.getY() + dh1.getY() * kPair.getX());
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dh2.getX() * kPair.getY(),
+                                -dPt.getY() + dh2.getY() * kPair.getY());
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                        } else if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
+                            // dx = k1 * H1.x + k2 * H2.x
+                            // dy = k1 * H1.y + k2 * H2.y
+                            // H1 = coeff1 * dh1, H2 = coeff2 * dh2, k1, k2 - ?
+
+                            // For one new handle and one existed:
+                            //      Exact policy is not defined, lets try this:
+                            // the new handle is always directed the same as (dx, dy);
+
+                            var dx = dPt.getX();
+                            var dy = dPt.getY();
+                            var dh1 = partData.apLhr.subtract(apL);
+                            var dh2 = new GPoint(1 / 3* dPt.getX(), 1 / 3 * dPt.getY());
+
+                            var h1x = partData.cL * dh1.getX();
+                            var h1y = partData.cL * dh1.getY();
+                            var h2x = partData.cR * dh2.getX();
+                            var h2y = partData.cR * dh2.getY();
+                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
+                            if (kPair === null) { // don't modify handles
+                                kPair = new GPoint(0, 0);
+                            }
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dh1.getX() * kPair.getX(),
+                                -dPt.getY() + dh1.getY() * kPair.getX());
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dh2.getX() * kPair.getY(),
+                                -dPt.getY() + dh2.getY() * kPair.getY());
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+
+                        } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
+                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                                partData.apRhl.getX(), partData.apRhl.getY(),
+                                apR.getX() + dPt.getX(), apR.getY() + dPt.getY());
+                            var prDPt = prPt.subtract(apR);
+                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() / (1-partData.slope),
+                                  -dPt.getY() + prDPt.getY() / (1 - partData.slope));
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+
+                            var tmppt = new GPoint(apRightPreview.getProperty('hlx'), apRightPreview.getProperty('hly'));
+                            var dx = dPt.getX() - partData.cR * tmppt.subtract(partData.apRhl).getX();
+                            var dy = dPt.getY() - partData.cR * tmppt.subtract(partData.apRhl).getY();
+                            var dh1 = new GPoint(dPt.getX(), dPt.getY());
+                            var dh2 = tmppt.subtract(apR);
+                            var h1x = partData.cL * dh1.getX();
+                            var h1y = partData.cL * dh1.getY();
+                            var h2x = partData.cR * dh2.getX();
+                            var h2y = partData.cR * dh2.getY();
+                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
+                            if (kPair === null) { // don't modify handles
+                                kPair = new GPoint(0, 0);
+                            }
+
+                            var newTransform = transform.translated(
+                                -dPt.getX() + dh1.getX() * kPair.getX(),
+                                -dPt.getY() + dh1.getY() * kPair.getX());
+
+                            //var newTransform = transform.translated(-dPt.getX() + dx / partData.cL, -dPt.getY() + dy / partData.cL)
+
+                            this._transformPreviewPointCoordinates(
+                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                            //var newTransform = transform.translated(
+                            //    -dPt.getX() + dh2.getX() * kPair.getY(),
+                            //    -dPt.getY() + dh2.getY() * kPair.getY());
+
+
+                        }
                     }
-                }
+               //}
             }
 
             this.requestInvalidation();
@@ -232,9 +327,22 @@
             // Iterate selection and apply changes in preview anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
-                if (part.point) {
+                if (part.type === GXPathEditor.PartType.Point) {
                     // Work with indices as element might not be ourself
                     var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.point);
+                    var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
+                    var previewPoint = this.getPathPointPreview(elSourcePoint);
+                    if (previewPoint) {
+                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                    }
+                } else if (part.type === GXPathEditor.PartType.Segment) {
+                    var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.apLeft);
+                    var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
+                    var previewPoint = this.getPathPointPreview(elSourcePoint);
+                    if (previewPoint) {
+                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                    }
+                    var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.apRight);
                     var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
                     var previewPoint = this.getPathPointPreview(elSourcePoint);
                     if (previewPoint) {
@@ -306,9 +414,9 @@
                 }
             } // else option d) - NOOP
         } else if (partInfo.id.type == GXPathEditor.PartType.Segment) {
-            var pathHitResult = partInfo.data.data;
-            var apLeft = this._element.getAnchorPoints().getChildByIndex(pathHitResult.segment - 1);
-            var apRight = apLeft ? this._element.getAnchorPoints().getNextPoint(apLeft) : null;
+            var pathHitResult = partInfo.data.hitRes;
+            var apLeft = partInfo.id.apLeft;
+            var apRight = partInfo.id.apRight;
             if (apLeft && apRight) {
                 this.requestInvalidation();
                 this._createPathPreviewIfNecessary();
@@ -349,77 +457,74 @@
                             [false, pathHitResult.x - leftHDx, pathHitResult.y - leftHDy]);
 
                         var hlx = pathHitResult.x + rightHDx;
-                        var hly = pathHitResult.y + rightHDy
+                        var hly = pathHitResult.y + rightHDy;
                         apRightPreview.setProperties(['ah', 'hlx', 'hly'],
                             [false, pathHitResult.x + rightHDx, pathHitResult.y + rightHDy]);
                         this.requestInvalidation();
-                        // TODO: on mouseDown stage - select segment points and update _partSelection here correctly
 
-                        var newPartInfo1 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.RightHandle, point: apLeft,
-                            coeff: 4 / 3, projection: false, hrx: hrx, hry: hry}, null, false, false);
+                        newPartInfo = new GXElementEditor.PartInfo(
+                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: GXPathEditor.SegmentData.Handles,
+                                cL : 4 / 3, apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
+                                cR : 4 / 3, apRhl : new GPoint(hlx, hly), fixedHDirRpt: false},
+                            null, false, true);
 
-                        var newPartInfo2 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.LeftHandle, point: apRight,
-                            coeff: 4 / 3, projection: false, hlx: hlx, hly: hly}, null, false, false);
-
-                        this.updatePartSelection(true, [newPartInfo1.id, newPartInfo2.id]);
+                        //this.updatePartSelection(true, [newPartInfo.id]);
                     } else if (apLeft.getProperty('hrx') === null || apLeft.getProperty('hry') === null) {
-                        // If both handles existed before, their orientation remains, and:
-                        // For segment which is oriented horizontally (catch point at slope t):
-                        //      hldx = dx * kl, hldy = 0, hrdx = dx * kr, hrdy = 0; kl = 3*(1 - t) , kr = 3*t
-                        // For any segment for each handle:
-                        //      1) make projection of movement into handle orientation
-                        //      2) if not zero - apply handle coefficient to that projection
-                        //      3) add received vector to handle position.
-                        //
                         // For one new handle and one existed:
                         //      Exact policy is not defined, lets try this:
                         //      - the same as above for existed handle
-                        //      - for new handle h = end p. + 2/3*(catch p. - end p.) + kh*(dx, dy)
+                        //      - for new handle h = end p. + 2/3*(catch p. + (dx, dy) - end p.) + kh*(dx, dy)
+                        //
 
-                        apLeftPreview.setProperties(['ah', 'hrx', 'hry'],
+                       /* apLeftPreview.setProperties(['ah', 'hrx', 'hry'],
                             [false, apLeftX + 2 * (pathHitResult.x - apLeftX) / 3,
-                                apLeftY + 2 * (pathHitResult.y - apLeftY) / 3]);
-
-                        var hrx = apLeftPreview.getProperty('hrx');
-                        var hry = apLeftPreview.getProperty('hry');
+                                apLeftY + 2 * (pathHitResult.y - apLeftY) / 3]); */
+                        apLeftPreview.setProperty('ah', false);
                         apRightPreview.setProperty('ah', false);
+                        this.requestInvalidation();
+                        var hrx = apLeftX;
+                        var hry = apLeftY;
                         var hlx = apRightPreview.getProperty('hlx');
                         var hly = apRightPreview.getProperty('hly');
-                        // TODO: on mouseDown stage - select segment points and update _partSelection here correctly
-                        this.requestInvalidation();
-                        var newPartInfo1 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.RightHandle, point: apLeft,
-                            coeff: 3 * (1 - pathHitResult.slope), projection: false, hrx: hrx, hry: hry}, null, false, false);
 
-                        var newPartInfo2 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.LeftHandle, point: apRight,
-                            coeff: 3 * pathHitResult.slope, projection: true, hlx: hlx, hly: hly}, null, false, false);
-
-                        this.updatePartSelection(true, [newPartInfo1.id, newPartInfo2.id]);
+                        newPartInfo = new GXElementEditor.PartInfo(
+                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: GXPathEditor.SegmentData.Handles,
+                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
+                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true,
+                                catchPt: new GPoint(pathHitResult.x, pathHitResult.y), slope: pathHitResult.slope},
+                            false, true);
                     } else if (apRight.getProperty('hlx') === null || apRight.getProperty('hly') === null) {
                         apLeftPreview.setProperty('ah', false);
-
-                        apRightPreview.setProperties(['ah', 'hlx', 'hly'],
-                            [false, apRightX + 2 * (pathHitResult.x - apRightX) / 3,
-                                apRightY + 2 * (pathHitResult.y - apRightY) / 3]);
+                        apRightPreview.setProperty('ah', false);
                         this.requestInvalidation();
                         var hrx = apLeftPreview.getProperty('hrx');
                         var hry = apLeftPreview.getProperty('hry');
-                        var hlx = apRightPreview.getProperty('hlx');
-                        var hly = apRightPreview.getProperty('hly');
+                        var hlx = apRightX;
+                        var hly = apRightY;
 
-                        var newPartInfo1 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.RightHandle, point: apLeft,
-                            coeff: 3 * (1 - pathHitResult.slope), projection: true, hrx: hrx, hry: hry}, null, false, false);
-
-                        var newPartInfo2 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.LeftHandle, point: apRight,
-                            coeff: 3 * pathHitResult.slope, projection: false, hlx: hlx, hly: hly}, null, false, false);
-
-                        this.updatePartSelection(true, [newPartInfo1.id, newPartInfo2.id]);
+                        newPartInfo = new GXElementEditor.PartInfo(
+                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: GXPathEditor.SegmentData.Handles,
+                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
+                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: false,
+                                catchPt: new GPoint(pathHitResult.x, pathHitResult.y)},
+                            false, true);
                     } else { // both handles exist
+                        // If both handles existed before, their orientation remains
+                        // B(t) = (1-t)^3*B0 + 3*(1-t)^2*t*B1 + 3*(1-t)*t^2*B2 + t^3*B3
+                        // dB(t) = 3*(1-t)^2*t*dB1 + 3*(1-t)*t^2*dB2
+                        // dx = a1 * dB1.x + a2 * dB2.x
+                        // dy = a1 * dB1.y + a2 * dB2.y
+                        //
+                        // dx = (k1 * a1 * h1 +  k2 * a2 * h2).x
+                        // dy = (k1 * a1 * h1 + k2 * a2 * h2).y
+
                         apLeftPreview.setProperty('ah', false);
                         apRightPreview.setProperty('ah', false);
                         this.requestInvalidation();
@@ -428,15 +533,15 @@
                         var hlx = apRightPreview.getProperty('hlx');
                         var hly = apRightPreview.getProperty('hly');
 
-                        var newPartInfo1 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.RightHandle, point: apLeft,
-                            coeff: 3 * (1 - pathHitResult.slope), projection: true, hrx: hrx, hry: hry}, null, false, false);
-
-                        var newPartInfo2 = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.LeftHandle, point: apRight,
-                            coeff: 3 * pathHitResult.slope, projection: true, hlx: hlx, hly: hly}, null, false, false);
-
-                        this.updatePartSelection(true, [newPartInfo1.id, newPartInfo2.id]);
+                        newPartInfo = new GXElementEditor.PartInfo(
+                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: GXPathEditor.SegmentData.Handles,
+                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
+                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
+                            false, true);
+                        //this.updatePartSelection(true, [newPartInfo.id]);
                     }
                 }
             } else {
@@ -535,15 +640,16 @@
                 // In detail mode we're able to select segments so hit test for one here
                 var pathHitResult = this._element.detailHitTest(location, transform, false);
                 if (pathHitResult) {
+                    var hitRes = pathHitResult.data;
+                    var apLeft = this._element.getAnchorPoints().getChildByIndex(hitRes.segment - 1);
+                    var apRight = apLeft ? this._element.getAnchorPoints().getNextPoint(apLeft) : null;
                     return new GXElementEditor.PartInfo(
-                        this, {type: GXPathEditor.PartType.Segment, point: null}, pathHitResult, false, true);
+                        this, {type: GXPathEditor.PartType.Segment, point: null, apLeft : apLeft, apRight: apRight},
+                        {type: GXPathEditor.SegmentData.HitRes, hitRes: pathHitResult.data}, false, true);
                 }
                 return null;
             }
         }
-
-        // TODO : Manually make hit test on path here and check whether we've received a segment
-        // and if that is the case, return multiple parts
 
         return null;
     };
@@ -576,7 +682,13 @@
 
     /** @override */
     GXPathEditor.prototype._partIdAreEqual = function (a, b) {
-        return a.type === b.type && a.point === b.point;
+        var eqs = (a.type === b.type);
+        if (eqs && a.type == GXPathEditor.PartType.Point) {
+            eqs = (a.point === b.point);
+        } else if (eqs && a.type == GXPathEditor.PartType.Segment) {
+            eqs = (a.apLeft === b.apLeft && a.apRight == b.apRight);
+        }
+        return eqs;
     };
 
     /** @override */
@@ -592,19 +704,22 @@
 
                 if (selection) {
                     for (var k = 0; k < selection.length; ++k) {
-                        if (selection[k].point === part.point && part.point) {
+                        if (selection[k].point === part.point && part.point ||
+                            part.type == GXPathEditor.PartType.Segment && part.type == selection[k].type &&
+                            part.apLeft == selection[k].apLeft && part.apRight == selection[k].apRight) {
                             isInNewSelection = true;
                             break;
                         }
-                        // TODO: implement for segment
                     }
                 }
 
                 if (!isInNewSelection) {
                     if (part.point) {
                         part.point.removeFlag(GXNode.Flag.Selected);
+                    } else if (part.type == GXPathEditor.PartType.Segment) {
+                        part.apLeft.removeFlag(GXNode.Flag.Selected);
+                        part.apRight.removeFlag(GXNode.Flag.Selected);
                     }
-                    // TODO: implement for segment
                 }
             }
         }
@@ -615,8 +730,10 @@
                 var part = selection[i];
                 if (part.point) {
                     part.point.setFlag(GXNode.Flag.Selected);
+                } else if (part.type == GXPathEditor.PartType.Segment) {
+                    part.apLeft.setFlag(GXNode.Flag.Selected);
+                    part.apRight.setFlag(GXNode.Flag.Selected);
                 }
-                // TODO: implement for segment
             }
         }
 

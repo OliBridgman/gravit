@@ -442,6 +442,43 @@
         return res;
     };
 
+    GMath.prototype.solveLinear2Pseudo = function (a11, a12, b1, a21, a22, b2) {
+        var res = this.getLinesIntersection(a11, a12, -b1, a21, a22, -b2);
+        if (res == null) { // try to find pseudo solution
+            var r1, r2;
+            if (!this.isEqualEps(a11 + a12, 0) && (!this.isEqualEps(b1, 0) || this.isEqualEps(b2, 0))) {
+                r1 = b1 / (a11 + a12);
+                r2 = r1;
+            } else if (!this.isEqualEps(a21 + a22, 0) && (!this.isEqualEps(b2, 0) || this.isEqualEps(b1, 0))) {
+                r1 = b2 / (a21 + a22);
+                r2 = r1;
+            } else if (!this.isEqualEps(a12, 0) || !this.isEqualEps(a22, 0)) {
+                r1 = 0.0;
+                if (!gMath.isEqualEps(a12, 0)) {
+                    r2 = b1 / a12;
+                } else {
+                    r2 = b2 / a22;
+                }
+            } else if (!this.isEqualEps(a11, 0) || !this.isEqualEps(a21, 0)) {
+                r2 = 0.0;
+                if (!this.isEqualEps(a11, 0)) {
+                    r1 = b1 / a11;
+                } else {
+                    r1 = b2 / a21;
+                }
+            } else {
+                r1 = 0.0;
+                r2 = 0.0;
+            }
+
+            if (this.isEqualEps(a11 * r1 + a12 * r2, b1) && this.isEqualEps(a21 * r1 + a22 * r2, b2)) {
+                res = new GPoint(r1, r2);
+            }
+        }
+
+        return res;
+    };
+
     /**
      * Evaluates cubic polynomial.
      * @param {Number} a - 3rd degree coefficient
