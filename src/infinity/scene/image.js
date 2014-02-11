@@ -167,7 +167,7 @@
     };
 
     /** @overide */
-    GXImage.prototype._paintContents = function (context) {
+    GXImage.prototype._paintBackground = function (context) {
         // We'll be painting our image before any other contents
         // but only, if we're not painting outline only!
 
@@ -209,7 +209,7 @@
             context.canvas.setTransform(canvasTransform);
         }
 
-        GXShape.prototype._paintContents.call(this, context);
+        GXShape.prototype._paintBackground.call(this, context);
     };
 
     /** @override */

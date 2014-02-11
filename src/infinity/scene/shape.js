@@ -15,6 +15,7 @@
      */
     function GXShape() {
         this._setDefaultProperties(GXShape.GeometryProperties);
+        this._style = new GXStyle();
     }
 
     GObject.inheritAndMix(GXShape, GXElement, [GXElement.Transform, GXElement.Pivot, GXNode.Properties, GXNode.Container, GXNode.Store, GXVertexSource]);
@@ -23,9 +24,15 @@
      * The geometry properties of a shape with their default values
      */
     GXShape.GeometryProperties = {
-        clipContents: true,
         transform: null
     };
+
+    /**
+     * The root style of the shape
+     * @type {GXStyle}
+     * @private
+     */
+    GXShape.prototype._style = null;
 
     /** @override */
     GXShape.prototype.transform = function (transform) {
@@ -77,6 +84,9 @@
             return;
         }
 
+        // Paint our background before anything else
+        this._paintBackground(context);
+
         if (context.configuration.isOutline(context)) {
             // Outline is painted with non-transformed stroke
             // so we reset transform, transform the vertices
@@ -86,44 +96,40 @@
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
-            this._paintContents(context);
         } else {
-            // TODO : Honor this.$odd (even/odd fill)
-            context.canvas.putVertices(this);//new GXVertexPixelAligner(this));
+            // Paint our styling
+            this._style.paint(context, this);
+        }
 
-            // Paint our styles
-            // TODO : Get this right!!!
-            // TODO : Take care on this.configuration.paintMode === GXPaintConfiguration.PaintMode.Fast to avoid painting too fancy stuff,
-            // though this properly should be moved into the general effects handler (raster effects) so that it'll affects layers as well
-            context.canvas.fillVertices(GXColor.parseColor('rgb180,50,50,100'));
-            context.canvas.strokeVertices(GXColor.parseColor('black'));
-
-            // TODO : Paint contents when found in styles
-            if (this.$clipContents) {
-                context.canvas.clipVertices();
-            }
-
-            this._paintContents(context, false);
-
-            if (this.$clipContents) {
-                context.canvas.resetClip();
-            }
+        // Paint contents if any
+        var fc = this.getFirstChild();
+        if (fc && fc instanceof GXElement) {
+            context.canvas.clipVertices();
+            this._paintForeground(context);
+            context.canvas.resetClip();
         }
 
         this._finishPaint(context);
     };
 
     /**
-     * Called to paint the contents. By default, this simply
-     * class _paintChildren.
+     * Called to paint any backgrounds painted at
+     * first before any styling and contents
      * @param {GXPaintContext} context
      * @private
      */
-    GXShape.prototype._paintContents = function (context) {
-        // Paint children if any
-        if (this.getFirstChild()) {
-            this._paintChildren(context);
-        }
+    GXShape.prototype._paintBackground = function (context) {
+        // NO-OP
+    };
+
+    /**
+     * Called to paint the foreground painted after
+     * any styling. By default this paints the contents
+     * @param {GXPaintContext} context
+     * @private
+     */
+    GXShape.prototype._paintForeground = function (context) {
+        this._paintChildren(context);
     };
 
     /** @override */
