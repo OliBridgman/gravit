@@ -74,7 +74,7 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '6em')
+                    .css('width', '5em')
                     .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
