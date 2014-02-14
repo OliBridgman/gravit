@@ -220,82 +220,56 @@
 
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
-                        } else if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
-                            // dx = k1 * H1.x + k2 * H2.x
-                            // dy = k1 * H1.y + k2 * H2.y
-                            // H1 = coeff1 * dh1, H2 = coeff2 * dh2, k1, k2 - ?
-
+                        } else {
                             // For one new handle and one existed:
-                            //      Exact policy is not defined, lets try this:
-                            // the new handle is always directed the same as (dx, dy);
+                            //      Exact policy of FreeHand looks to be buggy and is not defined, lets try this:
+                            // 1. Convert second-order Bezier curve into third-order Bezier curve so that zero
+                            //      zero movement don't change the curve :
+                            //      CP0 = QP0, CP1 = QP0 + 2/3*(QP1 - QP0), CP2 = QP2 - 2/3*(QP1 - QP2), CP3 = QP2
+                            // 2. Make the projection of movement into existing handle with the coefficient 1 / (a1 + a2)
+                            //       to the pre-existing handle (let's consider CP1)
+                            //       for curve CP = (1-t)^3*CP0 + 3*(1-t)^2*t*CP1 + 3*(1-t)*t^2*CP2 + t^3*CP3 =
+                            //       = a0*CP0 + a1*CP1 + a2*CP2 + a3*CP3
+                            //       CP1' = CP1 + 1/(a1+a2)*pr_CP1(dx, dy)
+                            // 3. Then the second handle should go into:
+                            //       CP2' = CP2 +
+                            //  + (1/a2 * dx - a1/(a2*(a1 + a2)) * pr_CP1x, 1/a2 * dy - a1/(a2*(a1 + a2)) * pr_CP1y)
+
+                            // Setting the described way CP1' and CP2' will make what is needed: CP' = CP + (dx, dy)
 
                             var dx = dPt.getX();
                             var dy = dPt.getY();
-                            var dh1 = partData.apLhr.subtract(apL);
-                            var dh2 = new GPoint(1 / 3* dPt.getX(), 1 / 3 * dPt.getY());
+                            var tmpC = 1 / (partData.cL + partData.cR);
 
-                            var h1x = partData.cL * dh1.getX();
-                            var h1y = partData.cL * dh1.getY();
-                            var h2x = partData.cR * dh2.getX();
-                            var h2y = partData.cR * dh2.getY();
-                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
-                            if (kPair === null) { // don't modify handles
-                                kPair = new GPoint(0, 0);
+                            if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
+                                var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                                    partData.apLhr.getX(), partData.apLhr.getY(),
+                                    apL.getX() + dx, apL.getY() + dy);
+                                var prDPt = prPt.subtract(apL);
+
+                                var dh1x = tmpC * prDPt.getX();
+                                var dh1y = tmpC * prDPt.getY();
+                                var dh2x = dx / partData.cR - partData.cL / partData.cR * dh1x;
+                                var dh2y = dy / partData.cR - partData.cL / partData.cR * dh1y;
+                            } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
+                                var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                                    partData.apRhl.getX(), partData.apRhl.getY(),
+                                    apR.getX() + dx, apR.getY() + dy);
+                                var prDPt = prPt.subtract(apR);
+                                var dh2x = tmpC * prDPt.getX();
+                                var dh2y = tmpC * prDPt.getY();
+                                var dh1x = dx / partData.cL - partData.cR / partData.cL * dh2x;
+                                var dh1y = dy / partData.cL - partData.cR / partData.cL * dh2y;
                             }
-
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dh1.getX() * kPair.getX(),
-                                -dPt.getY() + dh1.getY() * kPair.getX());
+                            var newTransform = transform.translated(-dPt.getX() + dh1x, -dPt.getY() + dh1y);
 
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
 
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dh2.getX() * kPair.getY(),
-                                -dPt.getY() + dh2.getY() * kPair.getY());
+                            var newTransform = transform.translated(-dPt.getX() + dh2x, -dPt.getY() + dh2y);
 
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
-
-                        } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
-                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
-                                partData.apRhl.getX(), partData.apRhl.getY(),
-                                apR.getX() + dPt.getX(), apR.getY() + dPt.getY());
-                            var prDPt = prPt.subtract(apR);
-                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() / (1-partData.slope),
-                                  -dPt.getY() + prDPt.getY() / (1 - partData.slope));
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
-
-                            var tmppt = new GPoint(apRightPreview.getProperty('hlx'), apRightPreview.getProperty('hly'));
-                            var dx = dPt.getX() - partData.cR * tmppt.subtract(partData.apRhl).getX();
-                            var dy = dPt.getY() - partData.cR * tmppt.subtract(partData.apRhl).getY();
-                            var dh1 = new GPoint(dPt.getX(), dPt.getY());
-                            var dh2 = tmppt.subtract(apR);
-                            var h1x = partData.cL * dh1.getX();
-                            var h1y = partData.cL * dh1.getY();
-                            var h2x = partData.cR * dh2.getX();
-                            var h2y = partData.cR * dh2.getY();
-                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
-                            if (kPair === null) { // don't modify handles
-                                kPair = new GPoint(0, 0);
-                            }
-
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dh1.getX() * kPair.getX(),
-                                -dPt.getY() + dh1.getY() * kPair.getX());
-
-                            //var newTransform = transform.translated(-dPt.getX() + dx / partData.cL, -dPt.getY() + dy / partData.cL)
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
-
-                            //var newTransform = transform.translated(
-                            //    -dPt.getX() + dh2.getX() * kPair.getY(),
-                            //    -dPt.getY() + dh2.getY() * kPair.getY());
-
-
                         }
                     }
                //}
@@ -472,21 +446,28 @@
                         //this.updatePartSelection(true, [newPartInfo.id]);
                     } else if (apLeft.getProperty('hrx') === null || apLeft.getProperty('hry') === null) {
                         // For one new handle and one existed:
-                        //      Exact policy is not defined, lets try this:
-                        //      - the same as above for existed handle
-                        //      - for new handle h = end p. + 2/3*(catch p. + (dx, dy) - end p.) + kh*(dx, dy)
-                        //
+                        //      Exact policy of FreeHand looks to be buggy and is not defined, lets try this:
+                        // 1. Convert second-order Bezier curve into third-order Bezier curve so that zero
+                        //      zero movement don't change the curve :
+                        //      CP0 = QP0, CP1 = QP0 + 2/3*(QP1 - QP0), CP2 = QP2 + 2/3*(QP1 - QP2), CP3 = QP2
+                        // 2. Make the projection of movement into existing handle with the coefficient 1 / (a1 + a2)
+                        //       to the pre-existing handle (let's consider CP1)
+                        //       for curve CP = (1-t)^3*CP0 + 3*(1-t)^2*t*CP1 + 3*(1-t)*t^2*CP2 + t^3*CP3 =
+                        //       = a0*CP0 + a1*CP1 + a2*CP2 + a3*CP3
+                        //       CP1' = CP1 + 1/(a1+a2)*pr_CP1(dx, dy)
+                        // 3. Then the second handle should go into:
+                        //       CP2' = CP2 + (1/a2 * dx - a1/(a2*(a1 + a2)) * pr_CP1x, 1/a2 * dy - a1/(a2*(a1 + a2)) * pr_CP1y)
+                        // Setting the described way CP1' and CP2' will make what is needed: CP' = CP + (dx, dy)
 
-                       /* apLeftPreview.setProperties(['ah', 'hrx', 'hry'],
-                            [false, apLeftX + 2 * (pathHitResult.x - apLeftX) / 3,
-                                apLeftY + 2 * (pathHitResult.y - apLeftY) / 3]); */
-                        apLeftPreview.setProperty('ah', false);
-                        apRightPreview.setProperty('ah', false);
-                        this.requestInvalidation();
-                        var hrx = apLeftX;
-                        var hry = apLeftY;
                         var hlx = apRightPreview.getProperty('hlx');
                         var hly = apRightPreview.getProperty('hly');
+                        var hrx = apLeftX + 2 / 3 * (hlx - apLeftX);
+                        var hry = apLeftY + 2 / 3 * (hly - apLeftY);
+                        hlx = apRightX + 2 / 3 * (hlx - apRightX);
+                        hly = apRightY + 2 / 3 * (hly - apRightY);
+                        apLeftPreview.setProperties(['ah', 'hrx', 'hry'], [false, hrx, hry]);
+                        apRightPreview.setProperties(['ah', 'hlx', 'hly'], [false, hlx, hly]);
+                        this.requestInvalidation();
 
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
@@ -494,17 +475,18 @@
                                 cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
                                 cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true,
-                                catchPt: new GPoint(pathHitResult.x, pathHitResult.y), slope: pathHitResult.slope},
+                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     } else if (apRight.getProperty('hlx') === null || apRight.getProperty('hly') === null) {
-                        apLeftPreview.setProperty('ah', false);
-                        apRightPreview.setProperty('ah', false);
-                        this.requestInvalidation();
                         var hrx = apLeftPreview.getProperty('hrx');
                         var hry = apLeftPreview.getProperty('hry');
-                        var hlx = apRightX;
-                        var hly = apRightY;
+                        var hlx = apRightX + 2 / 3 * (hrx - apRightX);
+                        var hly = apRightY + 2 / 3 * (hry - apRightY);
+                        hrx = apLeftX + 2 / 3 * (hrx - apLeftX);
+                        hry = apLeftY + 2 / 3 * (hry - apLeftY);
+                        apLeftPreview.setProperties(['ah', 'hrx', 'hry'], [false, hrx, hry]);
+                        apRightPreview.setProperties(['ah', 'hlx', 'hly'], [false, hlx, hly]);
+                        this.requestInvalidation();
 
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
@@ -512,8 +494,7 @@
                                 cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
                                 cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: false,
-                                catchPt: new GPoint(pathHitResult.x, pathHitResult.y)},
+                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: false},
                             false, true);
                     } else { // both handles exist
                         // If both handles existed before, their orientation remains
