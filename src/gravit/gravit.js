@@ -49,7 +49,9 @@
         // Register default properties
         gravit.properties.push(
             new EXDimensionsProperties(),
-            new EXPolygonProperties()
+            new GShapeProperties(),
+            new EXPolygonProperties(),
+            new GEllipseProperties()
         );
 
         // Register default actions

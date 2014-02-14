@@ -74,7 +74,7 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4.5em')
+                    .css('width', '6em')
                     .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
@@ -88,7 +88,7 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '3.5em')
+                    .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
                         var angle = parseFloat($(this).val());
@@ -102,7 +102,7 @@
             } else if (property === 'ict' || property === 'oct') {
                 return $('<select></select>')
                     .attr('data-property', property)
-                    .css('width', '4.5em')
+                    .css('width', '6em')
                     .gCornerType()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
@@ -111,7 +111,7 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '3.5em')
+                    .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
@@ -206,7 +206,7 @@
             }
         }
 
-        if (this._polygons.length > 0) {
+        if (this._polygons.length === nodes.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
