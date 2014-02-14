@@ -1,53 +1,8 @@
 .palette-properties {
-  padding: 5px 0px;
-
-  .object-tree {
-    div.jqtree-element {
-      display: table;
-
-      > * {
-        display: table-cell;
-        vertical-align: middle;
-      }
-
-      > :not(:last-child) {
-        padding-right: 5px;
-      }
-
-      > .object-icon {
-        font-size: 14px !important;
-      }
-
-      > .object-icon-light {
-        color: rgb(89, 101, 115);
-      }
-
-      > .object-icon-action {
-        cursor: pointer;
-      }
-
-      > span.jqtree-title {
-        width: 100%;
-        color: black;
-        line-height: 14px;
-      }
-    }
-
-    li.jqtree-selected {
-      > div.jqtree-element {
-        * {
-          color: white;
-        }
-      }
-    }
-
-    ul.jqtree_common {
-      margin-left: 0px;
-    }
-  }
+  padding: 0px 0px;
 
   .properties-panels {
-    padding: 0px 5px;
+    padding: 0px 5px 5px 5px;
 
     > .properties-panel-category {
       font-weight: bold;
@@ -55,8 +10,7 @@
 
     > .properties-panel-category {
       color: rgb(89, 101, 115);
-      padding-bottom: 5px;
-      padding-top: 7px;
+      padding: 5px 0px;
 
       > i.fa {
         padding-right: 3px;

@@ -12,6 +12,7 @@ $fa-font-path: '../font';
 @import 'fragment/form';
 @import 'fragment/window';
 @import 'fragment/swatch';
+@import 'fragment/jqTree';
 
 @import 'palette/color_matcher';
 @import 'palette/color_mixer';
@@ -25,4 +26,3 @@ $fa-font-path: '../font';
 @import '_old_/mixins';
 @import '_old_/component_hint';
 @import '_old_/component_menu';
-@import '_old_/plugin_jqTree';
