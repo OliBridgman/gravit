@@ -233,6 +233,7 @@
     GXShapeTool.prototype._modifiersChanged = function (event) {
         if ((this._keepRatio && event.changed.shiftKey) ||
             (this._fromCenter && event.changed.optionKey)) {
+            //(this._fromCenter && event.changed.shiftKey)) {
             this._invalidateShape();
         }
     };
@@ -274,6 +275,7 @@
                 /** @type Array<GPoint> */
                 var dragLine = null;
 
+                //if (this._fromCenter && gPlatform.modifiers.shiftKey) {
                 if (this._fromCenter && gPlatform.modifiers.optionKey) {
                     dragArea = GRect.fromPoints(new GPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new GPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
                     dragLine = [new GPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new GPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
