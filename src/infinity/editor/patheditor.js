@@ -34,6 +34,10 @@
         RightShoulder: 6
     };
 
+    /**
+     * Type of additional data of segment part
+     * @enum
+     */
     GXPathEditor.SegmentData = {
         HitRes : 1,
         Handles: 2
@@ -298,33 +302,23 @@
     /** @override */
     GXPathEditor.prototype.applyTransform = function (element) {
         if (this._partSelection && this._partSelection.length > 0) {
+            var newSelection = [];
             // Iterate selection and apply changes in preview anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
                 if (part.type === GXPathEditor.PartType.Point) {
-                    // Work with indices as element might not be ourself
-                    var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.point);
-                    var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
-                    var previewPoint = this.getPathPointPreview(elSourcePoint);
-                    if (previewPoint) {
-                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
-                    }
+                    this._transferPreviewProperties(part.point, element);
+                    newSelection.push(part);
                 } else if (part.type === GXPathEditor.PartType.Segment) {
-                    var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.apLeft);
-                    var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
-                    var previewPoint = this.getPathPointPreview(elSourcePoint);
-                    if (previewPoint) {
-                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
-                    }
-                    var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(part.apRight);
-                    var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
-                    var previewPoint = this.getPathPointPreview(elSourcePoint);
-                    if (previewPoint) {
-                        elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
-                    }
+                    this._transferPreviewProperties(part.apLeft, element);
+                    this._transferPreviewProperties(part.apRight, element);
+                    // Update now _partSelection to contain segment end points instead of segment itself
+                    newSelection.push({type: GXPathEditor.PartType.Point, point: part.apLeft});
+                    newSelection.push({type: GXPathEditor.PartType.Point, point: part.apRight});
                 }
             }
             this.resetTransform();
+            this.updatePartSelection(false, newSelection);
         } else {
             GXPathBaseEditor.prototype.applyTransform.call(this, element);
         }
@@ -443,7 +437,6 @@
                                 cR : 4 / 3, apRhl : new GPoint(hlx, hly), fixedHDirRpt: false},
                             null, false, true);
 
-                        //this.updatePartSelection(true, [newPartInfo.id]);
                     } else if (apLeft.getProperty('hrx') === null || apLeft.getProperty('hry') === null) {
                         // For one new handle and one existed:
                         //      Exact policy of FreeHand looks to be buggy and is not defined, lets try this:
@@ -522,7 +515,6 @@
                                 cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
                                 apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
-                        //this.updatePartSelection(true, [newPartInfo.id]);
                     }
                 }
             } else {
@@ -676,6 +668,8 @@
     GXPathEditor.prototype._updatePartSelection = function (selection) {
         this.requestInvalidation();
 
+        var newSelection = this._filterSelection(selection);
+
         // Iterate existing selection if any and deselect all anchor points
         // that are no longer in the new selection
         if (this._partSelection) {
@@ -683,11 +677,11 @@
                 var part = this._partSelection[i];
                 var isInNewSelection = false;
 
-                if (selection) {
-                    for (var k = 0; k < selection.length; ++k) {
-                        if (selection[k].point === part.point && part.point ||
-                            part.type == GXPathEditor.PartType.Segment && part.type == selection[k].type &&
-                            part.apLeft == selection[k].apLeft && part.apRight == selection[k].apRight) {
+                if (newSelection) {
+                    for (var k = 0; k < newSelection.length; ++k) {
+                        if (newSelection[k].point === part.point && part.point ||
+                            part.type == GXPathEditor.PartType.Segment && part.type == newSelection[k].type &&
+                            part.apLeft == newSelection[k].apLeft && part.apRight == newSelection[k].apRight) {
                             isInNewSelection = true;
                             break;
                         }
@@ -706,9 +700,9 @@
         }
 
         // Iterate new selection if any and select all anchor points
-        if (selection) {
-            for (var i = 0; i < selection.length; ++i) {
-                var part = selection[i];
+        if (newSelection) {
+            for (var i = 0; i < newSelection.length; ++i) {
+                var part = newSelection[i];
                 if (part.point) {
                     part.point.setFlag(GXNode.Flag.Selected);
                 } else if (part.type == GXPathEditor.PartType.Segment) {
@@ -718,7 +712,7 @@
             }
         }
 
-        this._partSelection = selection;
+        this._partSelection = newSelection;
         this.requestInvalidation();
     };
 
@@ -1341,6 +1335,56 @@
             // Simply assign preview position back to source
             sourcePoint.setProperties(properties, previewPoint.getProperties(properties));
         }
+    };
+
+    /**
+     * Assign all geometry properties of preview point to corresponding point of an element
+     * @param {GXPathBase.AnchorPoint} point - a point to use for finding preview point
+     * @param {GXElement} element the element to which point to apply the transformation,
+     * might be different than the one this editor works on. This will be never null.
+     * @private
+     */
+    GXPathEditor.prototype._transferPreviewProperties = function (point, element) {
+        // Work with indices as element might not be ourself
+        var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(point);
+        var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
+        var previewPoint = this.getPathPointPreview(elSourcePoint);
+        if (previewPoint) {
+            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+        }
+    };
+
+    /**
+     * Filters selection to not include separatly points, which are already included as some segment end-points
+     * @param {Array<*>} selection the part selection to be filtered
+     * @returns {Array<*>} the new filtered selection
+     * @private
+     */
+    GXPathEditor.prototype._filterSelection = function (selection) {
+        if (!selection) {
+            return null;
+        }
+        var newSelection = [];
+        var isInNewSelection;
+        for (var i = 0; i < selection.length; ++i) {
+            if (selection[i].type != GXPathEditor.PartType.Point) {
+                newSelection.push(selection[i]);
+            } else {
+                isInNewSelection = true;
+                for (var k = 0; k < selection.length; ++k) {
+                    if (selection[k].type == GXPathEditor.PartType.Segment &&
+                            (selection[i].point == selection[k].apLeft || selection[i].point == selection[k].apRight)) {
+
+                        isInNewSelection = false;
+                        break;
+                    }
+                }
+                if (isInNewSelection) {
+                    newSelection.push(selection[i]);
+                }
+            }
+        }
+        return newSelection;
     };
 
     /** @override */
