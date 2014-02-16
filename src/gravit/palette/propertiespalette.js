@@ -65,7 +65,10 @@
     EXPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
         var nodes = this.document.getEditor().getSelection();
 
-        // TODO : No Selection should select active page by default
+        // If there's no selection, select the active page
+        if (!nodes || nodes.length === 0) {
+            nodes = this.document.getScene().queryAll('page:active');
+        }
 
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];

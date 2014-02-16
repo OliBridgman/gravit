@@ -2,19 +2,15 @@
   padding: 0px 0px;
 
   .properties-panels {
-    padding: 0px 5px 5px 5px;
-
     > .properties-panel-category {
-      font-weight: bold;
+      padding: 3px 5px;
+      background: rgb(206, 215, 224) linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
+      border-bottom: 1px solid rgb(205, 205, 205);
+      box-shadow: rgb(255, 255, 255) 0px 1px 0px 0px inset, rgb(236, 240, 243) 0px 1px 0px 0px;
     }
 
-    > .properties-panel-category {
-      color: rgb(89, 101, 115);
-      padding: 5px 0px;
-
-      > i.fa {
-        padding-right: 3px;
-      }
+    > .properties-panel-content {
+      padding: 5px;
     }
   }
 }

@@ -8,11 +8,11 @@ $fa-font-path: '../font';
 @import 'form';
 @import 'workspace';
 
-@import 'fragment/overlay';
-@import 'fragment/form';
-@import 'fragment/window';
-@import 'fragment/swatch';
-@import 'fragment/jqTree';
+@import 'jquery/overlay';
+@import 'jquery/form';
+@import 'jquery/window';
+@import 'jquery/swatch';
+@import 'jquery/jqTree';
 
 @import 'palette/color_matcher';
 @import 'palette/color_mixer';

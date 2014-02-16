@@ -69,7 +69,7 @@
                         }))
                     .append($('<span></span>')
                         // TODO : I18N
-                        .html('&nbsp; Even/odd'))
+                        .html('&nbsp;Even/odd'))
             } else if (property === 'ir' || property === 'or') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -228,8 +228,6 @@
     };
 
     /**
-     * @param {Boolean} [noBBoxCalculation] if set, do not recalculate all element's bbox.
-     * Defaults to false.
      * @private
      */
     EXPolygonProperties.prototype._updateProperties = function () {
