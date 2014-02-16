@@ -46,7 +46,7 @@
     };
 
     /** @override */
-    GXEllipseTool.prototype._paintCenterCross = function () {
+    GXEllipseTool.prototype._hasCenterCross = function () {
         return true;
     };
 

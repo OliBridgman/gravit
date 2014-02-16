@@ -186,7 +186,7 @@
                     propertiesToSet.push(prefix + '_sx');
                     valuesToSet.push(this.$tl_sx);
                     propertiesToSet.push(prefix + '_sy');
-                    valuesToSet.push(this.$tl_sx);
+                    valuesToSet.push(this.$tl_sy);
                 } else if (this.isUniformCorner(side)) {
                     propertiesToSet.push(prefix + '_sy');
                     valuesToSet.push(this['$' + prefix + '_sx']);

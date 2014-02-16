@@ -11,6 +11,13 @@
     };
     GObject.inherit(GXShapeEditor, GXElementEditor);
 
+    GXShapeEditor.PartIds = {
+        OrigBaseTopLeft: gUtil.uuid(),
+        OrigBaseTopRight: gUtil.uuid(),
+        OrigBaseBottomRight: gUtil.uuid(),
+        OrigBaseBottomLeft: gUtil.uuid()
+    };
+
     /** @override */
     GXShapeEditor.prototype.paint = function (transform, context) {
         if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
@@ -21,10 +28,6 @@
             if (this._transform) {
                 targetTransform = this._transform.multiplied(transform);
             }
-
-            // Calculate transformed geometry bbox
-            var bbox = element.getGeometryBBox();
-            var transformedBBox = bbox ? targetTransform.mapRect(bbox) : null;
 
             // Work in transformed coordinates to avoid scaling outline
             var transformer = new GXVertexTransformer(element, targetTransform);
@@ -44,6 +47,13 @@
 
             // Paint center cross if desired + selected + in detail mode
             if (this.hasFlag(GXElementEditor.Flag.Selected) && this.hasFlag(GXElementEditor.Flag.Detail) && this._hasCenterCross()) {
+                this._paintCenterCross(targetTransform, context);
+                /*
+
+                 // Calculate transformed geometry bbox
+                 var bbox = element.getGeometryBBox();
+                 var transformedBBox = bbox ? targetTransform.mapRect(bbox) : null;
+
                 var crossSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 4;
 
                 if (transformedBBox && transformedBBox.getWidth() > crossSizeMax && transformedBBox.getHeight() > crossSizeMax) {
@@ -54,11 +64,32 @@
                     context.canvas.strokeLine(cx - cs, cy - cs, cx + cs, cy + cs, 1, context.selectionOutlineColor);
                     context.canvas.strokeLine(cx + cs, cy - cs, cx - cs, cy + cs, 1, context.selectionOutlineColor);
                 }
+                */
             }
         }
 
         // Paint any children editors now
         this._paintChildren(transform, context);
+    };
+
+    /** @override */
+    GXShapeEditor.prototype.resetTransform = function () {
+        this.releaseElementPreview();
+
+        // Need to invalidate if not having the outline flag
+        // which will be removed in the super call and make
+        // the invalidation, instead
+        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
+            this.requestInvalidation();
+        }
+
+        GXElementEditor.prototype.resetTransform.call(this);
+    };
+
+    /** @override */
+    GXShapeEditor.prototype.resetPartMove = function (partId, partData) {
+        this.releaseElementPreview();
+        this.removeFlag(GXElementEditor.Flag.Outline);
     };
 
     /**
@@ -78,6 +109,114 @@
      */
     GXShapeEditor.prototype._paintCustom = function (transform, context) {
         // NO-OP
+    };
+
+    GXShapeEditor.prototype._paintCenterCross = function (transform, context) {
+        var element = this.getPaintElement();
+        var sourceTransform = element.getProperty('transform');
+        var targetTransform = sourceTransform ? sourceTransform : new GTransform(1, 0, 0, 1, 0, 0);
+        targetTransform = transform ? targetTransform.multiplied(transform) : targetTransform;
+        var crossHalfSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 2;
+        var tMatrix = targetTransform.getMatrix();
+
+        if (Math.abs(tMatrix[0]) > crossHalfSizeMax && Math.abs(tMatrix[3]) > crossHalfSizeMax) {
+            var center = targetTransform.mapPoint(new GPoint(0,0));
+            var cx = Math.floor(center.getX()) + 0.5;
+            var cy = Math.floor(center.getY()) + 0.5;
+            var cs = GXElementEditor.OPTIONS.centerCrossSize / 2;
+            context.canvas.strokeLine(cx - cs, cy - cs, cx + cs, cy + cs, 1, context.selectionOutlineColor);
+            context.canvas.strokeLine(cx + cs, cy - cs, cx - cs, cy + cs, 1, context.selectionOutlineColor);
+        }
+    };
+
+    /** @override */
+    GXShapeEditor.prototype._getPartInfoAt = function (location, transform) {
+        var result = null;
+        if (this._showAnnotations()) {
+            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
+            var _isInAnnotationBBox = function (position, smallAnnotation) {
+                if (position) {
+                    return this._getAnnotationBBox(transform, position, smallAnnotation)
+                        .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location);
+                } else {
+                    return false;
+                }
+            }.bind(this);
+
+            this._iterateBaseCorners(false, function (args) {
+                var isolated = false;
+                var selectable = false;
+
+                if (_isInAnnotationBBox(args.position, true)) {
+                    result = new GXElementEditor.PartInfo(
+                        this, args.id,
+                        null, isolated, selectable);
+                    return true;
+                }
+
+                return false;
+            }.bind(this));
+
+            if (result) {
+                return result;
+            } else if (this.hasFlag(GXElementEditor.Flag.Detail)) {
+            }
+        }
+        return result;
+    };
+
+    GXShapeEditor.prototype._iterateBaseCorners = function (paintElement, iterator) {
+        var element = paintElement ? this.getPaintElement() : this._element;
+        var transform = element.getProperty('transform');
+        transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
+        var itArgs = [
+            {id: GXShapeEditor.PartIds.OrigBaseTopLeft,
+             position: transform.mapPoint(new GPoint(-1, -1))},
+            {id: GXShapeEditor.PartIds.OrigBaseTopRight,
+             position: transform.mapPoint(new GPoint(1, -1))},
+            {id: GXShapeEditor.PartIds.OrigBaseBottomRight,
+             position: transform.mapPoint(new GPoint(1, 1))},
+            {id: GXShapeEditor.PartIds.OrigBaseBottomLeft,
+             position: transform.mapPoint(new GPoint(-1, 1))}
+        ];
+
+        for (var i = 0; i < itArgs.length; ++i) {
+            if (iterator(itArgs[i]) === true) {
+                break;
+            }
+        }
+    };
+
+    GXShapeEditor.prototype._getBaseBBox = function () {
+        var minX = null;
+        var minY = null;
+        var maxX = null;
+        var maxY = null;
+
+        this._iterateBaseCorners(true, function(args) {
+            var x = args.position.getX();
+            var y = args.position.getY();
+            if (minX == null || x < minX) {
+                minX = x;
+            }
+            if (maxX == null || x > maxX) {
+                maxX = x;
+            }
+
+            if (minY == null || y < minY) {
+                minY = y;
+            }
+            if (maxY == null || y > maxY) {
+                maxY = y;
+            }
+            return false;
+        });
+
+        if (minX != null && minY != null) {
+            return new GRect(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        return null;
     };
 
     /** @override */

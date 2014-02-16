@@ -87,7 +87,7 @@
     };
 
     /** @override */
-    GXPolygonTool.prototype._paintCenterCross = function () {
+    GXPolygonTool.prototype._hasCenterCross = function () {
         return true;
     };
 

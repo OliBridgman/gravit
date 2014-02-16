@@ -720,6 +720,10 @@
         this.resetTransform();
     };
 
+    GXElementEditor.prototype.releaseElementPreview = function () {
+        this._elementPreview = null;
+    };
+
     /**
      * Called whenever something has been dropped on this editor.
      * If the editor is able to handle it, it should return true

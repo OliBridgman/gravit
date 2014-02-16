@@ -42,7 +42,7 @@
     };
 
     /** @override */
-    GXRectangleTool.prototype._paintCenterCross = function () {
+    GXRectangleTool.prototype._hasCenterCross = function () {
         return true;
     };
 

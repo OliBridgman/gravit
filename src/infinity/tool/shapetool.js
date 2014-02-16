@@ -149,7 +149,7 @@
             context.canvas.strokeVertices(context.selectionOutlineColor);
 
             // Paint center cross if desired
-            if (this._paintCenterCross()) {
+            if (this._hasCenterCross()) {
                 var geometryBBox = this._shape.getGeometryBBox();
                 var crossSizeMax = GXShapeTool.options.centerCrossSize * 4;
 
@@ -353,7 +353,7 @@
      * @return {Boolean} true if a center cross should be painted, false if not (default)
      * @private
      */
-    GXShapeTool.prototype._paintCenterCross = function () {
+    GXShapeTool.prototype._hasCenterCross = function () {
         return false;
     };
 
