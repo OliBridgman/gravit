@@ -13,6 +13,7 @@
 
     EXPalette.GROUP_PROPERTIES = 'properties';
     EXPalette.GROUP_COLOR = 'color';
+    EXPalette.GROUP_STRUCTURE = 'structure';
 
     // -----------------------------------------------------------------------------------------------------------------
     // EXPalette.UpdateEvent Event

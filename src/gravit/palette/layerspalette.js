@@ -494,6 +494,11 @@
     };
 
     /** @override */
+    EXLayersPalette.prototype.getGroup = function () {
+        return EXPalette.GROUP_STRUCTURE;
+    };
+
+    /** @override */
     EXLayersPalette.prototype.getShortcut = function () {
         return ['F2'];
     };

@@ -16,9 +16,9 @@
             new EXColorMixerPalette(),
             new EXColorMatcherPalette(),
             new EXColorTrendsPalette(),
-            new EXPropertiesPalette(),
+            new EXLayersPalette(),
             new EXPagesPalette(),
-            new EXLayersPalette()
+            new EXPropertiesPalette()
         );
 
         // Register default tools
@@ -49,7 +49,7 @@
         // Register default properties
         gravit.properties.push(
             new EXDimensionsProperties(),
-            new GPageProperties(),
+            new GDocumentProperties(),
             new GShapeProperties(),
             new EXPolygonProperties(),
             new GEllipseProperties()

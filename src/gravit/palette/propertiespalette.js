@@ -65,9 +65,9 @@
     EXPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
         var nodes = this.document.getEditor().getSelection();
 
-        // If there's no selection, select the active page
+        // If there's no selection, select the scene instead
         if (!nodes || nodes.length === 0) {
-            nodes = this.document.getScene().queryAll('page:active');
+            nodes = [this.document.getScene()];
         }
 
         for (var i = 0; i < this._propertyPanels.length; ++i) {

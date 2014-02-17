@@ -407,7 +407,7 @@
 
     /** @override */
     EXPagesPalette.prototype.getGroup = function () {
-        return EXPalette.GROUP_PROPERTIES;
+        return EXPalette.GROUP_STRUCTURE;
     };
 
     /** @override */
