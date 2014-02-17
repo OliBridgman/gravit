@@ -88,45 +88,7 @@
         if (partId) {
             this.requestInvalidation();
             this._createEllipsePreviewIfNecessary();
-            var sourceTransform = this._element.getProperty('transform');
-            var translation = transform.getTranslation();
-            if (translation.getX() != 0  || translation.getY() != 0) {
-                if (sourceTransform) {
-                    var sTranslation = sourceTransform.getTranslation();
-                    var oTranslation = sourceTransform.translated(-sTranslation.getX(), -sTranslation.getY())
-                        .inverted().mapPoint(translation);
-                } else {
-                    var oTranslation = translation;
-                }
-                if (partId == GXShapeEditor.PartIds.OrigBaseTopLeft) {
-                    var transformToApply = new GTransform(
-                        1 - oTranslation.getX() / 2, 0,
-                        0, 1 - oTranslation.getY() / 2,
-                        oTranslation.getX() / 2, oTranslation.getY() / 2);
-                } else if (partId == GXShapeEditor.PartIds.OrigBaseTopRight) {
-                    var transformToApply = new GTransform(
-                        1 + oTranslation.getX() / 2, 0,
-                        0, 1 - oTranslation.getY() / 2,
-                        oTranslation.getX() / 2, oTranslation.getY() / 2);
-                } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomRight) {
-                    var transformToApply = new GTransform(
-                        1 + oTranslation.getX() / 2, 0,
-                        0, 1 + oTranslation.getY() / 2,
-                        oTranslation.getX() / 2, oTranslation.getY() / 2);
-                } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomLeft) {
-                    var transformToApply = new GTransform(
-                        1 - oTranslation.getX() / 2, 0,
-                        0, 1 + oTranslation.getY() / 2,
-                        oTranslation.getX() / 2, oTranslation.getY() / 2);
-                }
-                if (sourceTransform) {
-                    transformToApply = transformToApply.multiplied(sourceTransform);
-                }
-            } else {
-                transformToApply = transform.multiplied(sourceTransform);
-            }
-
-            this._elementPreview.setProperty('transform', transformToApply);
+            this._transformBaseBBox(transform, partId);
             this.requestInvalidation();
         } else {
             GXPathBaseEditor.prototype.transform.call(this, transform, partId, partData);

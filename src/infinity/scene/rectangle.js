@@ -69,7 +69,7 @@
 
     /**
      * Iterate all segments of the rectangle
-     * @param {Function(point: GPoint, side: GRect.Side, cornerType: GXPathBase.CornerType, xShoulderLength: Number, yShoulderLength: Number)} iterator
+     * @param {Function(point: GPoint, side: GRect.Side, cornerType: GXPathBase.CornerType, leftShoulderLength: Number, rightShoulderLength: Number, idx: Number)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
      * @param {Boolean} [includeTransform] if true, includes the transformation of the rectangle
      * if any in the returned coordinates. Defaults to false.
@@ -84,16 +84,16 @@
 
             switch (side) {
                 case GRect.Side.TOP_LEFT:
-                    point = new GPoint(0, 0);
+                    point = new GPoint(-1, -1);
                     break;
                 case GRect.Side.TOP_RIGHT:
-                    point = new GPoint(1, 0);
+                    point = new GPoint(1, -1);
                     break;
                 case GRect.Side.BOTTOM_RIGHT:
                     point = new GPoint(1, 1);
                     break;
                 case GRect.Side.BOTTOM_LEFT:
-                    point = new GPoint(0, 1);
+                    point = new GPoint(-1, 1);
                     break;
             }
 
@@ -101,7 +101,7 @@
                 point = transform.mapPoint(point);
             }
 
-            if (iterator(point, side, this['$' + prefix + '_ct'], this['$' + prefix + '_sx'], this['$' + prefix + '_sy']) === true) {
+            if (iterator(point, side, this['$' + prefix + '_ct'], this['$' + prefix + '_sx'], this['$' + prefix + '_sy'], i) === true) {
                 break;
             }
         }
@@ -169,12 +169,21 @@
         return false;
     };
 
+    /**
+     * Return the anchor points of the rectangle
+     * @returns {GXPathBase.AnchorPoints}
+     */
+    GXRectangle.prototype.getAnchorPoints = function () {
+        return this._firstChild;
+    };
+
     /** @override */
     GXRectangle.prototype._handleChange = function (change, args) {
         if (this._handleGeometryChangeForProperties(change, args, GXRectangle.GeometryProperties) && change == GXNode._Change.AfterPropertiesChange) {
             var propertiesToSet = [];
             var valuesToSet = [];
 
+            // TODO: fix here to support uniform changes based not only on top left corner shoulders
             // Handle uniformity of properties
             for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
                 var side = GXRectangle.SIDES[i];
@@ -186,7 +195,7 @@
                     propertiesToSet.push(prefix + '_sx');
                     valuesToSet.push(this.$tl_sx);
                     propertiesToSet.push(prefix + '_sy');
-                    valuesToSet.push(this.$tl_sy);
+                    valuesToSet.push(this.$tl_sx);
                 } else if (this.isUniformCorner(side)) {
                     propertiesToSet.push(prefix + '_sy');
                     valuesToSet.push(this['$' + prefix + '_sx']);
