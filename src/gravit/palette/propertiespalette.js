@@ -56,7 +56,7 @@
         editor.addEventListener(GXEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
         // Clear properties panels
-        this._updatePropertiesPanels(null);
+        this._updateFromSelection();
     };
 
     /**
