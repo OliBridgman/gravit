@@ -47,7 +47,7 @@
             this.requestInvalidation();
         }
         this._createPreviewIfNecessary();
-        var sourceTransform = this._element.getProperty('transform');
+        var sourceTransform = this._element.getTransform();
         var sourcePosition = new GPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
         if (partId.id == GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID) {
             var nearPt = this._element.getAnchorPoints().getPreviousPoint(partId.ap);
@@ -148,7 +148,7 @@
 
                     if (sl != 0 && sr != 0) {
                         var anchorPt = element.getAnchorPoints().getChildByIndex(idx);
-                        var sourceTransform = element.getProperty('transform');
+                        var sourceTransform = element.getTransform();
                         var leftShoulder = sourceTransform ?
                             anchorPt.getLeftShoulderPointTransformed(sourceTransform) :
                             anchorPt.getLeftShoulderPoint();
@@ -193,7 +193,7 @@
                     var element = this.getPaintElement();
                     var anchorPt = element.getAnchorPoints().getChildByIndex(idx);
                     if (sl != 0 && sr != 0) {
-                        var sourceTransform = element.getProperty('transform');
+                        var sourceTransform = element.getTransform();
                         var leftShoulder = sourceTransform ?
                             anchorPt.getLeftShoulderPointTransformed(sourceTransform) :
                             anchorPt.getLeftShoulderPoint();

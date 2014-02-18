@@ -227,13 +227,30 @@
      * @class GXElement.Transform
      * @constructor
      * @mixin
-     * @version 1.0
      */
     GXElement.Transform = function () {
     };
 
     /**
-     * Transforms the element with a given transformation
+     * Returns the actual transformation the element has
+     * @return {GTransform}
+     */
+    GXElement.Transform.prototype.getTransform = function () {
+        throw new Error("Not Supported.");
+    };
+
+    /**
+     * Assigns the actual transformation the element has
+     * @return {GTransform}
+     */
+    GXElement.Transform.prototype.setTransform = function (transform) {
+        throw new Error("Not Supported.");
+    };
+
+    /**
+     * Transforms this element with another given transformation
+     * including multiplication with the existing transformation
+     * the element may already have
      * @param {GTransform} transform the transformation to be applied
      */
     GXElement.Transform.prototype.transform = function (transform) {

@@ -241,19 +241,27 @@
         };
 
         var applyToSelection = this._panel.find('button[data-apply="selection"]').hasClass('g-active');
+        var elements = this._elements.slice();
+        var elementsBBox = this._elementsBBox.clone();
 
-        // TODO : Undo grouping here
-        if (applyToSelection) {
-            var transform = _getTransformation(this._elementsBBox);
-            for (var i = 0; i < this._elements.length; ++i) {
-                this._elements[i].transform(transform);
+        this._document.getEditor().beginTransaction(this._elements);
+
+        var action = function () {
+            if (applyToSelection) {
+                var transform = _getTransformation(elementsBBox);
+                for (var i = 0; i < elements.length; ++i) {
+                    elements[i].transform(transform);
+                }
+            } else {
+                for (var i = 0; i < elements.length; ++i) {
+                    var transform = _getTransformation(elements[i].getGeometryBBox());
+                    elements[i].transform(transform);
+                }
             }
-        } else {
-            for (var i = 0; i < this._elements.length; ++i) {
-                var transform = _getTransformation(this._elements[i].getGeometryBBox());
-                this._elements[i].transform(transform);
-            }
-        }
+        };
+
+        // TODO : I18N
+        this._document.getEditor().commitTransaction(action, 'Change Dimensions');
     };
 
     /** @override */

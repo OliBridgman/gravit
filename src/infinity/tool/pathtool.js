@@ -236,7 +236,7 @@
     GXPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord) {
         anchorPt.setFlag(GXNode.Flag.Selected);
         if (this._pathEditor && !nativeCoord) {
-            var transform = this._pathRef.getProperty('transform');
+            var transform = this._pathRef.getTransform();
             if (transform) {
                 var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                 location = transform.inverted().mapPoint(location);
@@ -439,7 +439,7 @@
 
             if (otherPt) {
                 var basePt = new GPoint(otherPt.getProperty('x'), otherPt.getProperty('y'));
-                var transformToApply = path ? path.getProperty('transform') : null;
+                var transformToApply = path ? path.getTransform() : null;
                 if (transform) {
                     transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
                 }

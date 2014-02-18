@@ -145,7 +145,7 @@
             }
 
             var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
-            var transform = this._pathRef.getProperty('transform');
+            var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
             if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location) ) {

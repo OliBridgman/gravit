@@ -217,6 +217,12 @@
     GXEditor.prototype._selectQuery = null;
 
     /**
+     * @type {{nodes: Array<GXNode>, states: Array<*>}}
+     * @private
+     */
+    GXEditor.prototype._transaction = null;
+
+    /**
      * @type {Array<*>}
      * @private
      */
@@ -860,13 +866,8 @@
     GXEditor.prototype.insertElements = function (elements, noDefaults) {
         // Our target is always the currently active layer
         var target = this.getCurrentLayer();
-        var selection = this._selection ? this._selection.slice() : null;
 
-        var action = function () {
-            // Clear current selection
-            this.clearSelection();
-
-            // Handle our elements now
+        this.executeTransaction(function () {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
 
@@ -880,18 +881,7 @@
 
             // Select all inserted elements
             this.updateSelection(false, elements);
-        }.bind(this);
-
-        var revert = function () {
-            for (var i = 0; i < elements.length; ++i) {
-                target.removeChild(elements[i]);
-            }
-
-            this.updateSelection(false, selection);
-        }.bind(this);
-
-        // TODO : I18N
-        this.pushState(action, revert, "Insert Elements", true);
+        }.bind(this), elements, 'Insert Element(s)');
     };
 
     /**
@@ -912,8 +902,131 @@
         }
     };
 
+    /**
+     * Immediately execute a transaction. This is equal to calling
+     * beginTransaction(nodes) followed by commitTransaction(action, name).
+     *
+     * @param {Function} action the action to be executed when comitting
+     * @param {Array<GXNode>} [nodes] the affected nodes, if null, the selection
+     * is taken as reference
+     * @param {String} name the name of the newly created state
+     */
+    GXEditor.prototype.executeTransaction = function (action, nodes, name) {
+        this.beginTransaction(nodes);
+        this.commitTransaction(action, name);
+    };
 
-    GXEditor.prototype.pushState = function (action, revert, name, ignoreSelection) {
+    /**
+     * Begin a new transaction. This will store all properties and structural
+     * information on a given set of nodes. This needs to be finished be a call
+     * to either commitTransaction or rollbackTransaction or revertTransaction.
+     * There can only be once active transaction at a given time.
+     * @param {Array<GXNode>} [nodes] the affected nodes, if null, the selection
+     * is taken as reference
+     */
+    GXEditor.prototype.beginTransaction = function (nodes) {
+        if (this._transaction) {
+            throw new Error('There already is an active transaction.');
+        }
+
+        var nodes = nodes ? nodes : this._selection;
+        if (!nodes || nodes.length === 0) {
+            throw new Error('No active nodes for state');
+        }
+
+        this._transaction = {
+            nodes : nodes,
+            states : [],
+            revert : function () {
+                for (var i = 0; i < this.states.length; ++i) {
+                    var state = this.states[i];
+                    var node = state.node;
+
+                    if (node.hasMixin(GXNode.Properties)) {
+                        node.setPropertiesMap(state.properties, false);
+                        node.setPropertiesMap(state.customProperties, true);
+                    }
+
+                    if (state.parent !== node.getParent() || state.next !== node.getNext()) {
+                        if (state.parent === null && node.getParent() !== null) {
+                            node.getParent().removeChild(node);
+                        }
+                    }
+                }
+            }
+        };
+
+        for (var i = 0; i < nodes.length; ++i) {
+            var node = nodes[i];
+            var state = {
+                node : node,
+                parent : node.getParent(),
+                next : node.getNext()
+            };
+
+            if (node.hasMixin(GXNode.Properties)) {
+                state.properties = node.getPropertiesMap(false);
+                state.customProperties = node.getPropertiesMap(true);
+            }
+
+            this._transaction.states.push(state);
+        }
+    };
+
+    /**
+     * Commit the active transaction by storing the saved state and
+     * executing a given action. This will also store the active
+     * selection if any and revert to it when reseting to the state.
+     * @param {Function} action the action to be executed when comitting
+     * @param {String} name the name of the newly created state
+     */
+    GXEditor.prototype.commitTransaction = function (action, name) {
+        if (!this._transaction) {
+            throw new Error('No active transaction available.');
+        }
+
+        var transaction = this._transaction;
+        var selection = this._selection ? this._selection.slice() : [];
+        this._transaction = null;
+
+        var revert = function () {
+            transaction.revert();
+            this.updateSelection(false, selection);
+        }.bind(this);
+
+        this.pushState(action, revert, name);
+    };
+
+    /**
+     * Rollback the active transaction which will reset everything to
+     * the state it was when beginTransaction was called.
+     */
+    GXEditor.prototype.rollbackTransaction = function () {
+        if (!this._transaction) {
+            throw new Error('No active transaction available.');
+        }
+        this._transaction.revert();
+        this._transaction = null;
+    };
+
+    /**
+     * Revert the active transaction which will leave any changes
+     * as is but clear the current transaction.
+     */
+    GXEditor.prototype.revertTransaction = function () {
+        if (!this._transaction) {
+            throw new Error('No active transaction available.');
+        }
+        this._transaction = null;
+    };
+
+    /**
+     * Manually push an undo state action
+     * @param {Function} action the action to be executed when executing ("redo")
+     * @param {Function} revert the action to be executed when undoing
+     * @param {String} name a name for the state
+     */
+    GXEditor.prototype.pushState = function (action, revert, name) {
         if (this._undoStates.length >= GXEditor.options.maxUndoSteps) {
             // Cut undo list of when reaching our undo limit
             this._undoStates.shift();
@@ -928,14 +1041,26 @@
         action();
     };
 
+    /**
+     * Returns whether at least one undo state is available or not
+     * @returns {boolean}
+     */
     GXEditor.prototype.hasUndoState = function () {
         return this._undoStates.length > 0;
     };
 
+    /**
+     * Returns whether at least one redo state is available or not
+     * @returns {boolean}
+     */
     GXEditor.prototype.hasRedoState = function () {
         return this._redoStates.length > 0;
     };
 
+    /**
+     * Returns the name of the last undo state if any or null for none
+     * @returns {String}
+     */
     GXEditor.prototype.getUndoStateName = function () {
         if (this._undoStates.length > 0) {
             return this._undoStates[this._undoStates.length - 1].name;
@@ -943,6 +1068,10 @@
         return null;
     };
 
+    /**
+     * Returns the name of the last redo state if any or null for none
+     * @returns {String}
+     */
     GXEditor.prototype.getRedoStateName = function () {
         if (this._redoStates.length > 0) {
             return this._redoStates[this._redoStates.length - 1].name;
@@ -950,6 +1079,9 @@
         return null;
     };
 
+    /**
+     * Undo the latest state if any
+     */
     GXEditor.prototype.undoState = function () {
         if (this._undoStates.length > 0) {
             // Get state and shift it from undo list
@@ -963,6 +1095,9 @@
         }
     };
 
+    /**
+     * Redo the latest state if any
+     */
     GXEditor.prototype.redoState = function () {
         if (this._redoStates.length > 0) {
             // Get state and shift it from redo list

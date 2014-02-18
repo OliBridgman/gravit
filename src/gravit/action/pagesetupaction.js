@@ -153,6 +153,7 @@
         }
 
         var scene = activePage.getScene();
+        var editor = GXEditor.getEditor(scene);
 
         // Store source properties for any reset
         var sourceValues = [];
@@ -225,6 +226,10 @@
                 presetSelector.val('x');
             }
         };
+
+        if (editor) {
+            editor.beginTransaction(pages);
+        }
 
         var dialog = $('<div></div>')
             .gForm({
@@ -490,31 +495,19 @@
                     {
                         title: GLocale.Constant.Ok,
                         click: function () {
-                            var targetValues = [];
-                            for (var i = 0; i < pages.length; ++i) {
-                                targetValues.push(pages[i].getProperties(propertiesToStore));
-                            }
-
-                            var action = function () {
-                                // Assign property values to each page now
-                                for (var i = 0; i < pages.length; ++i) {
-                                    pages[i].setProperties(propertiesToStore, targetValues[i]);
-                                }
-                            };
-
-                            var revert = function () {
-                                // Reset all properties
-                                for (var i = 0; i < pages.length; ++i) {
-                                    pages[i].setProperties(propertiesToStore, sourceValues[i]);
-                                }
-                            };
-
-                            var editor = GXEditor.getEditor(scene)
                             if (editor) {
+                                var targetValues = [];
+                                for (var i = 0; i < pages.length; ++i) {
+                                    targetValues.push(pages[i].getProperties(propertiesToStore));
+                                }
+
                                 // TODO : I18N
-                                editor.pushState(action, revert, "Page Settings");
-                            } else {
-                                action();
+                                editor.commitTransaction(function () {
+                                    // Assign property values to each page now
+                                    for (var i = 0; i < pages.length; ++i) {
+                                        pages[i].setProperties(propertiesToStore, targetValues[i]);
+                                    }
+                                }, 'Page Settings');
                             }
 
                             $(this).gDialog('close');
@@ -527,9 +520,8 @@
                     {
                         title: GLocale.Constant.Cancel,
                         click: function () {
-                            // Reset all properties
-                            for (var i = 0; i < pages.length; ++i) {
-                                pages[i].setProperties(propertiesToStore, sourceValues[i]);
+                            if (editor) {
+                                editor.rollbackTransaction();
                             }
 
                             $(this).gDialog('close');

@@ -35,6 +35,16 @@
     GXShape.prototype._style = null;
 
     /** @override */
+    GXShape.Transform.prototype.getTransform = function () {
+        return this.$transform;
+    };
+
+    /** @override */
+    GXShape.Transform.prototype.setTransform = function (transform) {
+        this.setProperty('transform', transform);
+    };
+
+    /** @override */
     GXShape.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
             this.setProperty('transform', this.$transform ? this.$transform.multiplied(transform) : transform);

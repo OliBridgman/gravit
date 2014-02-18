@@ -142,6 +142,14 @@
     GTransform.prototype._ty;
 
     /**
+     * Clone this instance
+     * @returns {GTransform}
+     */
+    GTransform.prototype.clone = function () {
+        return new GTransform(this._sx, this._shy, this._shx, this._sy, this._tx, this._ty);
+    };
+
+    /**
      * @return {Boolean} whether this transform reprsents an identity matrix or not
      * @version 1.0
      */

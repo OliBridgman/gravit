@@ -583,11 +583,37 @@
      */
     GXNode.Properties.prototype.getProperties = function (properties, custom, def) {
         var result = [];
+
         for (var i = 0; i < properties.length; ++i) {
             var defVal = def && def.length > i ? def[i] : null;
             result.push(this.getProperty(properties[i], custom, defVal));
         }
+
         return result;
+    };
+
+    GXNode.Properties.prototype.getPropertiesMap = function (custom) {
+        var result = {};
+        for (var propName in this) {
+            if (this.hasOwnProperty(propName) && ((propName.charAt(0) === '$' && !custom) || (propName.charAt(0) === '@' && custom))) {
+                result[propName.substr(1)] = this[propName];
+            }
+        }
+        return result;
+    };
+
+    GXNode.Properties.prototype.setPropertiesMap = function (propertiesMap, custom, noEvent) {
+        var properties = [];
+        var values = [];
+
+        for (var propName in propertiesMap) {
+            if (propertiesMap.hasOwnProperty(propName)) {
+                properties.push(propName);
+                values.push(propertiesMap[propName]);
+            }
+        }
+
+        this.setProperties(properties, values, custom, noEvent);
     };
 
     /**

@@ -9,7 +9,6 @@
                     $this.on('keyup', function (evt) {
                         if (evt.keyCode == 13) {
                             $this.blur();
-                            $this.trigger('change');
                         }
                     });
                 }

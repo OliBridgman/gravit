@@ -546,7 +546,7 @@
     GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, strict) {
         var res = false;
         if (anchorPt) {
-            var transformToApply = this._element.getProperty('transform');
+            var transformToApply = this._element.getTransform();
             if (transform) {
                 transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
             }
@@ -747,7 +747,7 @@
     GXPathEditor.prototype._iteratePoints = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
         var anchorPoints = element.getAnchorPoints();
-        var transform = element.getProperty('transform');
+        var transform = element.getTransform();
 
         for (var anchorPoint = anchorPoints.getFirstChild(); anchorPoint != null; anchorPoint = anchorPoint.getNext()) {
             var previousPt = anchorPoints.getPreviousPoint(anchorPoint);
@@ -1154,7 +1154,7 @@
      * @returns {GTransform}
      */
     GXPathEditor.prototype.getTransformFromNative = function (transform) {
-        var transformToNewPos = this._element.getProperty('transform');
+        var transformToNewPos = this._element.getTransform();
         if (transform) {
             transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
         }
@@ -1223,7 +1223,7 @@
      * @private
      */
     GXPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, position, ratio) {
-        var pathTransform = this._element.getProperty('transform');
+        var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
 
         if (pathTransform) {
@@ -1244,7 +1244,7 @@
      * @private
      */
     GXPathEditor.prototype._transformPreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, transform, sourcePos) {
-        var pathTransform = this._element.getProperty('transform');
+        var pathTransform = this._element.getTransform();
 
         var previewPoint = this.getPathPointPreview(sourcePoint);
         if (previewPoint) {
@@ -1284,7 +1284,7 @@
      * @private
      */
     GXPathEditor.prototype._movePreviewPointShoulders = function (partId, position, ratio) {
-        var pathTransform = this._element.getProperty('transform');
+        var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
 
         var shoulderPt;

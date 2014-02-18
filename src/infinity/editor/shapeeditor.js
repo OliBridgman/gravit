@@ -113,7 +113,7 @@
 
     GXShapeEditor.prototype._paintCenterCross = function (transform, context) {
         var element = this.getPaintElement();
-        var sourceTransform = element.getProperty('transform');
+        var sourceTransform = element.getTransform();
         var targetTransform = sourceTransform ? sourceTransform : new GTransform(1, 0, 0, 1, 0, 0);
         targetTransform = transform ? targetTransform.multiplied(transform) : targetTransform;
         var crossHalfSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 2;
@@ -167,7 +167,7 @@
 
     GXShapeEditor.prototype._iterateBaseCorners = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
-        var transform = element.getProperty('transform');
+        var transform = element.getTransform();
         transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
         var itArgs = [
             {id: GXShapeEditor.PartIds.OrigBaseTopLeft,
@@ -220,7 +220,7 @@
     };
 
     GXShapeEditor.prototype._transformBaseBBox = function (transform, partId) {
-        var sourceTransform = this._element.getProperty('transform');
+        var sourceTransform = this._element.getTransform();
         var translation = transform.getTranslation();
         if (translation.getX() != 0  || translation.getY() != 0) {
             if (sourceTransform) {

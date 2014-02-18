@@ -49,7 +49,7 @@
         }
 
         this._createEllipsePreviewIfNecessary();
-        var sourceTransform = this._element.getProperty('transform');
+        var sourceTransform = this._element.getTransform();
         if (sourceTransform) {
             var sPosition = sourceTransform.inverted().mapPoint(position);
         } else {
@@ -177,7 +177,7 @@
 
     GXEllipseEditor.prototype._iterateArcEnds = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
-        var transform = element.getProperty('transform');
+        var transform = element.getTransform();
         var startA = element.getProperty('sa');
         var endA = element.getProperty('ea');
         transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
