@@ -244,9 +244,8 @@
         var elements = this._elements.slice();
         var elementsBBox = this._elementsBBox.clone();
 
-        this._document.getEditor().beginTransaction(this._elements);
-
-        var action = function () {
+        // TODO : I18N
+        this._document.getEditor().executeTransaction(function () {
             if (applyToSelection) {
                 var transform = _getTransformation(elementsBBox);
                 for (var i = 0; i < elements.length; ++i) {
@@ -258,10 +257,7 @@
                     elements[i].transform(transform);
                 }
             }
-        };
-
-        // TODO : I18N
-        this._document.getEditor().commitTransaction(action, 'Change Dimensions');
+        }, this._elements, 'Change Dimensions');
     };
 
     /** @override */

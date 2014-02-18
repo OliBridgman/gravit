@@ -937,6 +937,7 @@
         this._transaction = {
             nodes : nodes,
             states : [],
+            selection : this._selection ? this._selection.slice() : [],
             revert : function () {
                 for (var i = 0; i < this.states.length; ++i) {
                     var state = this.states[i];
@@ -989,12 +990,16 @@
         var selection = this._selection ? this._selection.slice() : [];
         this._transaction = null;
 
-        var revert = function () {
-            transaction.revert();
+        var action_ = function () {
             this.updateSelection(false, selection);
+            action();
+        }.bind(this);
+        var revert_ = function () {
+            transaction.revert();
+            this.updateSelection(false, transaction.selection);
         }.bind(this);
 
-        this.pushState(action, revert, name);
+        this.pushState(action_, revert_, name);
     };
 
     /**
