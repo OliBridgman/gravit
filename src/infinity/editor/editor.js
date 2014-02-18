@@ -581,9 +581,6 @@
 
         if (this._selectQuery && this._selectQuery.trim() !== "") {
             inclusionQuery = this._selectQuery;
-        } else {
-            // By default we'll exclude pages, layers and scene
-            exclusionQuery = 'scene,page,layer';
         }
 
         if (inclusionQuery && !node.filtered(inclusionQuery)) {
@@ -592,6 +589,14 @@
 
         if (exclusionQuery && node.filtered(exclusionQuery)) {
             return false;
+        }
+
+        // If we don't have any in- or ex-clusion queries then
+        // by default we'll allow only shape descendants to be selected
+        if (!inclusionQuery && !exclusionQuery) {
+            if (!(node instanceof GXShape)) {
+                return false;
+            }
         }
 
         if (this.isLockedToCurrentPage() && this.getCurrentPage()) {
