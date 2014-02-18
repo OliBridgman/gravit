@@ -197,11 +197,11 @@ module.exports = function (grunt) {
         },
         concat : {
             deployweb : {
-                src: ['shell/web/scripts/*.js'],
+                src: ['shell/web/*.js'],
                 dest: '.tmp/web/scripts'
             },
             deploynative : {
-                src: ['shell/native/scripts/*.js'],
+                src: ['shell/native/*.js'],
                 dest: '.tmp/native/scripts'
             }
         },
