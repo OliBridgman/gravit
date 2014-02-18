@@ -172,10 +172,13 @@
      * @private
      */
     GEllipseProperties.prototype._assignProperties = function (properties, values) {
-        // TODO : Undo Group
-        for (var i = 0; i < this._ellipses.length; ++i) {
-            this._ellipses[i].setProperties(properties, values);
-        }
+        // TODO : I18N
+        var ellipses = this._ellipses.slice();
+        this._document.getEditor().executeTransaction(function () {
+            for (var i = 0; i < ellipses.length; ++i) {
+                ellipses[i].setProperties(properties, values);
+            }
+        }, ellipses, 'Ellipse Properties');
     };
 
     /** @override */
