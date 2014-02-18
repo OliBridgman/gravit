@@ -35,12 +35,12 @@
     GXShape.prototype._style = null;
 
     /** @override */
-    GXShape.Transform.prototype.getTransform = function () {
+    GXShape.prototype.getTransform = function () {
         return this.$transform;
     };
 
     /** @override */
-    GXShape.Transform.prototype.setTransform = function (transform) {
+    GXShape.prototype.setTransform = function (transform) {
         this.setProperty('transform', transform);
     };
 
