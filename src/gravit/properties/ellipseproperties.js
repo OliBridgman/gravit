@@ -24,7 +24,7 @@
     GEllipseProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXPolygon>}
+     * @type {Array<GXEllipse>}
      * @private
      */
     GEllipseProperties.prototype._ellipses = null;

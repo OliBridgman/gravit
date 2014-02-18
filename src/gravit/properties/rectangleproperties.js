@@ -24,7 +24,7 @@
     GRectangleProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXPolygon>}
+     * @type {Array<GXRectangle>}
      * @private
      */
     GRectangleProperties.prototype._rectangles = null;
@@ -47,7 +47,7 @@
                         .attr('type', 'checkbox')
                         .attr('data-property', 'uniform-corners')
                         .on('change', function () {
-                            self._assignProperty('uf', $(this).prop('checked'));
+                            self._assignProperty('uf', $(this).is(':checked'));
                             self._updateCornerProperties();
                         }))
                     .append($('<span></span>')
