@@ -71,7 +71,7 @@
         // We do not apply element's transform to shoulders when generating vertices,
         // assign new value directly to preview corner shoulder without any further transforms
         var prefix = GXRectangle.getGeometryPropertiesSidePrefix(partId.side);
-        if (ratio || this.getPaintElement().isUniformCorner(partId.side)) {
+        if (ratio || this.getPaintElement().getProperty(prefix + '_uf')) {
             this.getPaintElement().setProperties([prefix + '_sx', prefix + '_sy'], [newVal, newVal]);
         } else if (partId.id == GXPathEditor.PartType.LeftShoulder) {
             this.getPaintElement().setProperty(prefix + '_sx', newVal);

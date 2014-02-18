@@ -19,6 +19,8 @@
      * The geometry properties of a rectangle with their default values
      */
     GXRectangle.GeometryProperties = {
+        /** All corners uniform */
+        uf : true,
         /** Top-Left uniform, corner-type, x-shoulder-length, y-shoulder-length */
         tl_uf: true,
         tl_ct: GXPathBase.CornerType.Rounded,
@@ -107,32 +109,10 @@
         }
     };
 
-    /**
-     * Checks whether one side or all sides are uniform
-     * @param {GRect.Side} [side] the side to check for, if not set to
-     * a valid GRect.Side then returns whether all sides are uniform or not
-     * @returns {Boolean} whether given side or all sides are uniform
-     */
-    GXRectangle.prototype.isUniformCorner = function (side) {
-        if (typeof side != 'number') {
-            for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-                var side = GXRectangle.SIDES[i];
-                var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
-                if (!this['$' + prefix + '_uf']) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
-            return this['$' + prefix + '_uf']
-        }
-    };
-
     /** @override */
     GXRectangle.prototype.store = function (blob) {
         if (GXPathBase.prototype.store.call(this, blob)) {
-            if (this.isUniformCorner()) {
+            if (this.uf) {
                 blob.uf = true; // all uniform
                 blob.ct = this.$tl_ct; // all corner type
                 blob.sl = this.$tl_sx; // all shoulder length
@@ -189,14 +169,16 @@
                 var side = GXRectangle.SIDES[i];
                 var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
 
-                if (this.isUniformCorner()) {
+                if (this.$uf) {
+                    propertiesToSet.push(prefix + '_uf');
+                    valuesToSet.push(this.$tl_uf);
                     propertiesToSet.push(prefix + '_ct');
                     valuesToSet.push(this.$tl_ct);
                     propertiesToSet.push(prefix + '_sx');
                     valuesToSet.push(this.$tl_sx);
                     propertiesToSet.push(prefix + '_sy');
                     valuesToSet.push(this.$tl_sx);
-                } else if (this.isUniformCorner(side)) {
+                } else if (this['$' + prefix + '_uf']) {
                     propertiesToSet.push(prefix + '_sy');
                     valuesToSet.push(this['$' + prefix + '_sx']);
                 }

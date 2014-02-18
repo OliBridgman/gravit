@@ -63,6 +63,8 @@
       > button {
         padding: 0px 5px 0px 5px;
         text-transform: uppercase;
+        border: none;
+        background: transparent;
         border-right: 1px solid silver;
       }
       > button:first-child {

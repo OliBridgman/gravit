@@ -52,6 +52,7 @@
             new GDocumentProperties(),
             new GShapeProperties(),
             new EXPolygonProperties(),
+            new GRectangleProperties(),
             new GEllipseProperties()
         );
 
