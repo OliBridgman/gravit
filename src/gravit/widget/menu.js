@@ -495,41 +495,6 @@
                 rect.height = reference.outerHeight();
             }
 
-            // Correct positions to fit into window
-            switch (horzPosition) {
-                case GUIMenu.Position.Left_Top:
-                    if (rect.x - menuWidth < 0)
-                        horzPosition = GUIMenu.Position.Right_Bottom;
-                    break;
-                case GUIMenu.Position.Center:
-                    if (rect.x + menuWidth >= windowWidth)
-                        horzPosition = GUIMenu.Position.Left_Top;
-                    break;
-                case GUIMenu.Position.Right_Bottom:
-                    if (rect.x + rect.width + menuWidth >= windowWidth)
-                        horzPosition = GUIMenu.Position.Left_Top;
-                    break;
-                default:
-                    throw new Error('Unknown horizontal position');
-            }
-
-            switch (vertPosition) {
-                case GUIMenu.Position.Left_Top:
-                    if (rect.y - menuHeight < 0)
-                        vertPosition = GUIMenu.Position.Right_Bottom;
-                    break;
-                case GUIMenu.Position.Center:
-                    if (rect.y + menuHeight >= windowHeight)
-                        vertPosition = GUIMenu.Position.Left_Top;
-                    break;
-                case GUIMenu.Position.Right_Bottom:
-                    if (rect.y + rect.height + menuHeight >= windowHeight)
-                        vertPosition = GUIMenu.Position.Left_Top;
-                    break;
-                default:
-                    throw new Error('Unknown vertical position');
-            }
-
             // Now find the right x,y position according to rect and position
             var x = 0;
             switch (horzPosition) {
@@ -555,6 +520,20 @@
                 case GUIMenu.Position.Right_Bottom:
                     y = rect.y + rect.height;
                     break;
+            }
+
+            // Correct position to not float outside visible area
+            if (x < 0) {
+                x = 0;
+            }
+            if (x + menuWidth >= windowWidth) {
+                x = windowWidth - menuWidth;
+            }
+            if (y < 0) {
+                y = 0;
+            }
+            if (y + menuHeight >= windowHeight) {
+                y = windowHeight - menuHeight;
             }
 
             // Finally position our menu and set the position classes

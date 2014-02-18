@@ -42,19 +42,64 @@
     };
 
     /**
+     * @param {EXDocument} [document]
      * @override
      */
-    GDocumentSettingsAction.prototype.isEnabled = function () {
-        return !!gApp.getActiveDocument();
+    GDocumentSettingsAction.prototype.isEnabled = function (document) {
+        return !!document || !!gApp.getActiveDocument();
     };
 
     /**
+     * @param {EXDocument} [document]
      * @override
      */
-    GDocumentSettingsAction.prototype.execute = function () {
+    GDocumentSettingsAction.prototype.execute = function (document) {
+        var document = document || gApp.getActiveDocument();
+        var editor = document.getEditor();
+
+        editor.beginTransaction(document.getScene());
+
         $('<div></div>')
             .text('DOCUMENT_SETTINGS')
-            .gDialog()
+            .gDialog({
+                // TODO : I18N
+                title: 'Page Setup',
+                buttons: [
+                    {
+                        title: GLocale.Constant.Ok,
+                        click: function () {
+                            // TODO
+                            /*
+                            if (editor) {
+                                var targetValues = [];
+                                for (var i = 0; i < pages.length; ++i) {
+                                    targetValues.push(pages[i].getProperties(propertiesToStore));
+                                }
+
+                                // TODO : I18N
+                                editor.commitTransaction(function () {
+                                    // Assign property values to each page now
+                                    for (var i = 0; i < pages.length; ++i) {
+                                        pages[i].setProperties(propertiesToStore, targetValues[i]);
+                                    }
+                                }, 'Page Settings');
+                            }
+                            */editor.commitTransaction(function () {
+                                // NO-OP
+                            }, 'Document Settings');
+
+                            $(this).gDialog('close');
+                        }
+                    },
+                    {
+                        title: GLocale.Constant.Cancel,
+                        click: function () {
+                            editor.rollbackTransaction();
+                            $(this).gDialog('close');
+                        }
+                    }
+                ]
+            })
             .gDialog('open');
     };
 
