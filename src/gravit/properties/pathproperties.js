@@ -117,7 +117,12 @@
      * @private
      */
     GPathProperties.prototype._afterFlagChange = function (event) {
-        // TODO
+        if (event.flag === GXNode.Flag.Selected && event.node instanceof GXPathBase.AnchorPoint) {
+            var path = event.node.getParent().getParent();
+            if (path && this._pathes.indexOf(path) >= 0) {
+                console.log('AP SEL CHANGE');
+            }
+        }
     };
 
     /**
