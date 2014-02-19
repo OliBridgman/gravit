@@ -217,7 +217,7 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} event
+     * @param {GXElement.AfterPropertiesChangeEvent} event
      * @private
      */
     EXPolygonProperties.prototype._afterPropertiesChange = function (event) {

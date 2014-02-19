@@ -153,7 +153,7 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} event
+     * @param {GXElement.AfterPropertiesChangeEvent} event
      * @private
      */
     GRectangleProperties.prototype._afterPropertiesChange = function (event) {

@@ -78,6 +78,7 @@
     GPathProperties.prototype.updateFromNodes = function (document, nodes) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange);
             this._document = null;
         }
 
@@ -92,6 +93,7 @@
         if (this._pathes.length === nodes.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -100,7 +102,7 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} event
+     * @param {GXElement.AfterPropertiesChangeEvent} event
      * @private
      */
     GPathProperties.prototype._afterPropertiesChange = function (event) {
@@ -108,6 +110,14 @@
         if (this._pathes.length > 0 && this._pathes[0] === event.node) {
             this._updateProperties();
         }
+    };
+
+    /**
+     * @param {GXElement.AfterFlagChangeEvent} event
+     * @private
+     */
+    GPathProperties.prototype._afterFlagChange = function (event) {
+        // TODO
     };
 
     /**

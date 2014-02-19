@@ -132,7 +132,7 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} event
+     * @param {GXElement.AfterPropertiesChangeEvent} event
      * @private
      */
     GEllipseProperties.prototype._afterPropertiesChange = function (event) {
