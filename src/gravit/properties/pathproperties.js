@@ -106,7 +106,7 @@
                         }))
                     .append($('<span></span>')
                         // TODO : I18N
-                        .html('&nbsp;Auto-Handles'))
+                        .html('&nbsp;Automatic'))
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -155,7 +155,6 @@
                     .addClass('label')
                     .text('Handles:'))
                 .append($('<td></td>')
-                    .attr('colspan', '3')
                     .append($('<button></button>')
                         .append($('<span></span>')
                             .addClass('fa fa-arrow-right'))
@@ -168,6 +167,15 @@
                         .on('click', function () {
                             this._assignPointProperties(['hrx', 'hry'], [null, null]);
                         }.bind(this)))
+                    .append($('<button></button>')
+                        .append($('<span></span>')
+                            .addClass('fa fa-ban'))
+                        .on('click', function () {
+                            this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
+                        }.bind(this))))
+                .append($('<td></td>')
+                    .addClass('label'))
+                .append($('<td></td>')
                     .append(_createPointInput('ah'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
