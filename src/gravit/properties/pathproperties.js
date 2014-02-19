@@ -47,7 +47,7 @@
 
         var _createPathInput = function (property) {
             var self = this;
-            if (property === 'evenodd' || property === 'closed') {
+            if (property === 'evenodd' || property === 'closed') {
                 return $('<label></label>')
                     .append($('<input>')
                         .attr('type', 'checkbox')
@@ -65,7 +65,7 @@
 
         var _createPointInput = function (property) {
             var self = this;
-            if (property === 'x' || property === 'y' || property === 'cl' || property === 'cr') {
+            if (property === 'x' || property === 'y' || property === 'cl' || property === 'cr') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-point-property', property)
@@ -79,24 +79,40 @@
                             self._updatePointProperties();
                         }
                     });
-            } else if (property === 'tp') {
+            } else if (property === 'type') {
                 return $('<select></select>')
                     .attr('data-point-property', property)
-                    .css('width', '100%')
                     .append($('<option></option>')
                         .attr('value', GXPathBase.AnchorPoint.Type.Smooth)
+                        // TODO : I18N
                         .text('Smooth'))
                     .append($('<option></option>')
                         .attr('value', GXPathBase.AnchorPoint.Type.Regular)
+                        // TODO : I18N
                         .text('Regular'))
                     .append($('<option></option>')
                         .attr('value', GXPathBase.AnchorPoint.Type.Connector)
+                        // TODO : I18N
                         .text('Connector'))
+                    .append($('<option></option>')
+                        .attr('value', '-')
+                        // TODO : I18N
+                        .text('Corner'))
+                    .on('change', function () {
+                        var val = $(this).val();
+                        if (val === '-') {
+                            val = GXPathBase.CornerType.Rounded;
+                        }
+                        self._assignPointProperty('tp', val);
+                    });
+            } else if (property === 'corner') {
+                return $('<select></select>')
+                    .attr('data-point-property', property)
                     .gCornerType()
                     .on('change', function () {
-                        self._assignPointProperty(property, $(this).val());
+                        self._assignPointProperty('tp', $(this).val());
                     });
-            } if (property === 'ah') {
+            } else if (property === 'ah') {
                 return $('<label></label>')
                     .append($('<input>')
                         .attr('type', 'checkbox')
@@ -148,7 +164,7 @@
                     .text('Type:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createPointInput('tp'))))
+                    .append(_createPointInput('type'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -156,20 +172,26 @@
                     .text('Handles:'))
                 .append($('<td></td>')
                     .append($('<button></button>')
+                        // TODO : I18N
+                        .attr('title', 'Clear Left Handle')
                         .append($('<span></span>')
-                            .addClass('fa fa-arrow-right'))
+                            .addClass('fa fa-arrow-right fa-fw'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly'], [null, null]);
                         }.bind(this)))
                     .append($('<button></button>')
+                        // TODO : I18N
+                        .attr('title', 'Clear Right Handle')
                         .append($('<span></span>')
-                            .addClass('fa fa-arrow-left'))
+                            .addClass('fa fa-arrow-left fa-fw'))
                         .on('click', function () {
                             this._assignPointProperties(['hrx', 'hry'], [null, null]);
                         }.bind(this)))
                     .append($('<button></button>')
+                        // TODO : I18N
+                        .attr('title', 'Clear Handles')
                         .append($('<span></span>')
-                            .addClass('fa fa-ban'))
+                            .addClass('fa fa-ban fa-fw'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
                         }.bind(this))))
@@ -177,6 +199,14 @@
                     .addClass('label'))
                 .append($('<td></td>')
                     .append(_createPointInput('ah'))))
+            .append($('<tr></tr>')
+                .attr('data-point-property', '_row')
+                .append($('<td></td>')
+                    .addClass('label')
+                    .text('Corner:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createPointInput('corner'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -205,9 +235,9 @@
         for (var i = 0; i < nodes.length; ++i) {
             if (nodes[i] instanceof GXPath) {
                 var path = nodes[i];
-                
+
                 this._pathes.push(nodes[i]);
-                
+
                 for (var ap = path.getAnchorPoints().getFirstChild(); ap !== null; ap = ap.getNext()) {
                     if (ap.hasFlag(GXNode.Flag.Selected)) {
                         this._points.push(ap);
@@ -284,12 +314,27 @@
                 this._document.getScene().pointToString(point.getProperty('x')));
             this._panel.find('input[data-point-property="y"]').val(
                 this._document.getScene().pointToString(point.getProperty('y')));
-            this._panel.find('select[data-point-property="tp"]').val(point.getProperty('tp'));
             this._panel.find('input[data-point-property="ah"]').prop('checked', point.getProperty('ah'));
-            this._panel.find('input[data-point-property="cl"]').val(
-                this._document.getScene().pointToString(point.getProperty('cl')));
-            this._panel.find('input[data-point-property="cr"]').val(
-                this._document.getScene().pointToString(point.getProperty('cr')));
+
+            var isCorner = true;
+            var apType = point.getProperty('tp');
+            for (var p in GXPathBase.AnchorPoint.Type) {
+                if (GXPathBase.AnchorPoint.Type[p] === apType) {
+                    isCorner = false;
+                    break;
+                }
+            }
+
+            this._panel.find('select[data-point-property="type"]').val(isCorner ? '-' : apType);
+            this._panel.find('select[data-point-property="corner"]')
+                .prop('disabled', !isCorner)
+                .val(isCorner ? apType : null);
+            this._panel.find('input[data-point-property="cl"]')
+                .prop('disabled', !isCorner)
+                .val(this._document.getScene().pointToString(point.getProperty('cl')));
+            this._panel.find('input[data-point-property="cr"]')
+                .prop('disabled', !isCorner)
+                .val(this._document.getScene().pointToString(point.getProperty('cr')));
         } else {
             this._panel.find('[data-point-property]').css('visibility', 'hidden');
         }
