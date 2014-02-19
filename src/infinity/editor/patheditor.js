@@ -194,33 +194,25 @@
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
                         } else if (partData.fixedHDirLpt && partData.fixedHDirRpt) {
-                            // dx = k1 * H1.x + k2 * H2.x
-                            // dy = k1 * H1.y + k2 * H2.y
-                            // H1 = coeff1 * dh1, H2 = coeff2 * dh2, k1, k2 - ?
-
                             var dx = dPt.getX();
                             var dy = dPt.getY();
-                            var dh1 = partData.apLhr.subtract(apL);
-                            var dh2 = partData.apRhl.subtract(apR);
-                            var h1x = partData.cL * dh1.getX();
-                            var h1y = partData.cL * dh1.getY();
-                            var h2x = partData.cR * dh2.getX();
-                            var h2y = partData.cR * dh2.getY();
-                            var kPair = gMath.solveLinear2Pseudo(h1x, h2x, dx, h1y, h2y, dy);
-                            if (kPair === null) { // don't modify handles
-                                kPair = new GPoint(0, 0);
-                            }
 
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dh1.getX() * kPair.getX(),
-                                -dPt.getY() + dh1.getY() * kPair.getX());
+                            var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                                partData.apLhr.getX(), partData.apLhr.getY(), apL.getX() + dx, apL.getY() + dy);
+
+                            var prDPt = prPt.subtract(apL);
+                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cL,
+                                                            -dPt.getY() + prDPt.getY() * partData.cL);
 
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
 
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dh2.getX() * kPair.getY(),
-                                -dPt.getY() + dh2.getY() * kPair.getY());
+                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                                partData.apRhl.getX(), partData.apRhl.getY(), apR.getX() + dx, apR.getY() + dy);
+
+                            var prDPt = prPt.subtract(apR);
+                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cR,
+                                -dPt.getY() + prDPt.getY() * partData.cR);
 
                             this._transformPreviewPointCoordinates(
                                 selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
@@ -491,14 +483,6 @@
                             false, true);
                     } else { // both handles exist
                         // If both handles existed before, their orientation remains
-                        // B(t) = (1-t)^3*B0 + 3*(1-t)^2*t*B1 + 3*(1-t)*t^2*B2 + t^3*B3
-                        // dB(t) = 3*(1-t)^2*t*dB1 + 3*(1-t)*t^2*dB2
-                        // dx = a1 * dB1.x + a2 * dB2.x
-                        // dy = a1 * dB1.y + a2 * dB2.y
-                        //
-                        // dx = (k1 * a1 * h1 +  k2 * a2 * h2).x
-                        // dy = (k1 * a1 * h1 + k2 * a2 * h2).y
-
                         apLeftPreview.setProperty('ah', false);
                         apRightPreview.setProperty('ah', false);
                         this.requestInvalidation();
@@ -510,9 +494,9 @@
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: GXPathEditor.SegmentData.Handles,
-                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                cL : 3 * (1 - pathHitResult.slope),
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
-                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                cR : 3 * pathHitResult.slope,
                                 apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     }
