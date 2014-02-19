@@ -956,7 +956,7 @@
                 child.accept(function (node) {
                     // Assign this scene to the node
                     node._scene = self._scene;
-                });
+                }, true);
             }
         }
 
@@ -1005,7 +1005,7 @@
             if (child.accept) {
                 child.accept(function (node) {
                     node._scene = null;
-                });
+                }, true);
             }
         }
 
