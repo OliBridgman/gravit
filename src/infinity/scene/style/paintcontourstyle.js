@@ -31,7 +31,7 @@
 
     /** @override */
     GXPaintContourStyle.prototype.hitTest = function (source, location, transform, tolerance) {
-        var outlineWidth = this.$cw * transform.getScaleFactor() + tolerance;
+        var outlineWidth = this.$cw * transform.getScaleFactor() + tolerance * 2;
         var vertexHit = new GXVertexInfo.HitResult();
         if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
             return new GXStyle.HitResult(this, vertexHit);
