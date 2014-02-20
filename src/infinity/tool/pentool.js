@@ -63,11 +63,6 @@
         this._mDownTime = tm;
 
         var anchorPt = null;
-        var clickPt;
-        var pt;
-        var px, py, hx, hy;
-        var firstPt;
-        var fv;
 
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
         this._released = false;
@@ -162,7 +157,7 @@
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
-            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location) ) {
+            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
                 // Close path
                 if (!draft) {
                     this._pathRef.beginUpdate();
@@ -246,7 +241,7 @@
                 } else { // this._mode == GXPathTool.Mode.Prepend
                     otherPt = this._pathRef.getAnchorPoints().getLastChild();
                 }
-                if (this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform())) {
+                if (this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
                     this._setCursorForPosition(GUICursor.PenEnd);
                 } else {
                     this._setCursorForPosition(GUICursor.Pen);
@@ -263,7 +258,7 @@
         var ptx = this._editPt.getProperty('x');
         var pty = this._editPt.getProperty('y');
         var hlx, hly, hrx, hry;
-        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), true)) {
+        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), 0)) {
             if (this._mode != GXPathTool.Mode.Edit) {
                 if (this._mode == GXPathTool.Mode.Append) {
                     if (this._editPt.getProperty('hlx') !== null && this._editPt.getProperty('hly') !== null) {
@@ -499,7 +494,7 @@
                 }
                 //this._makePointMajor(this._refPt);
                 if (otherPt && otherPt != this._refPt &&
-                    this._pathEditor.hitAnchorPoint(otherPt, event.client, this._view.getWorldTransform())) {
+                    this._pathEditor.hitAnchorPoint(otherPt, event.client, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
 
                     this._setCursorForPosition(GUICursor.PenEnd);
                 } else {

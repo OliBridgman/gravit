@@ -143,14 +143,12 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXPolygonEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             var result = null;
-            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
-
             this._element.iterateSegments(function (point, inside, angle) {
-                if (this._getAnnotationBBox(transform, point).expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+                if (this._getAnnotationBBox(transform, point).expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                     var partId = inside ? GXPolygonEditor.prototype.INSIDE_PART_ID : GXPolygonEditor.prototype.OUTSIDE_PART_ID;
                     result = new GXElementEditor.PartInfo(this, partId, angle, true, true);
                     return true;

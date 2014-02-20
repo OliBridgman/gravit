@@ -78,11 +78,12 @@
      * @param {GTransform} transform - a transformation to be applied to the path before hit-testing in addition to
      * path internal transformation, if any
      * @param {Boolean} area - indicates if path inside should be tested
+     * @param {Boolean} [tolerance] optional hit test tolerance, defaults to zero
      * @returns {GXElement.HitResult} if hit, or null otherwise; hit result contains all data
      * in the path native anchor points coordinates
      */
-    GXPath.prototype.detailHitTest = function (location, transform, area) {
-        var pickDist = this.isAttached() ? this._scene.getProperty('pickDist') : 3;
+    GXPath.prototype.pathHitTest = function (location, transform, area, tolerance) {
+        tolerance = tolerance || 0;
         var locationInvTransformed = location;
         var scaleFactor = 1;
 
@@ -108,7 +109,7 @@
 
         var hitResult = new GXVertexInfo.HitResult();
         var elemHitRes = null;
-        var outlineWidth = scaleFactor + pickDist * 2;
+        var outlineWidth = scaleFactor + tolerance * 2;
 
         if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {

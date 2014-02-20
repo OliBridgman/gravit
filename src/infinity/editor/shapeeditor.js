@@ -127,14 +127,13 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXShapeEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         var result = null;
         if (this._showAnnotations()) {
-            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
             var _isInAnnotationBBox = function (position, smallAnnotation) {
                 if (position) {
                     return this._getAnnotationBBox(transform, position, smallAnnotation)
-                        .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location);
+                        .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location);
                 } else {
                     return false;
                 }

@@ -182,12 +182,10 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXRectangleEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             result = null;
-            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
-
             this.getPaintElement().iterateSegments(function(point, side, ct, sl, sr, idx) {
                 if (ct != GXPathBase.CornerType.Regular) {
                     var element = this.getPaintElement();
@@ -199,7 +197,7 @@
                             anchorPt.getLeftShoulderPoint();
 
                         if (this._getAnnotationBBox(transform, leftShoulder)
-                            .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+                            .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                             result = new GXElementEditor.PartInfo(this,
                                 {id: GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID, side: side,
                                     ap: anchorPt, point: leftShoulder},
@@ -212,7 +210,7 @@
                             anchorPt.getRightShoulderPoint();
 
                         if (this._getAnnotationBBox(transform, rightShoulder)
-                            .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+                            .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                             result = new GXElementEditor.PartInfo(this,
                                 {id: GXRectangleEditor.prototype.RIGHT_SHOULDER_PART_ID, side: side,
                                     ap: anchorPt, point: rightShoulder},
@@ -221,7 +219,7 @@
                         }
                     } else {
                         if (this._getAnnotationBBox(transform, point, true)
-                                .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+                                .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
 
                             result = new GXElementEditor.PartInfo(this,
                                 {id: GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID, side: side, ap: anchorPt, point: point},
@@ -237,7 +235,7 @@
                 return result;
             }
         }
-        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform);
+        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
         if (result) {
             return result;
         }

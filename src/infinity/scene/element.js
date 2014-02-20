@@ -415,9 +415,7 @@
             paintBBox = transform.mapRect(paintBBox);
         }
 
-        var pickDist = this.isAttached() ? this._scene.getProperty('pickDist') : 3;
-
-        if (!paintBBox.expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+        if (!paintBBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
             return null;
         }
 

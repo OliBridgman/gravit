@@ -1363,7 +1363,8 @@
     /** @override */
     GXPathBase.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
-            this._invalidateVertices(true);
+            this._vertices.clearVertices();
+            this._getAnchorPoints()._generateVertices(this._vertices, this.$transform, true);
             this._verticesDirty = false;
         }
         return this._vertices.rewindVertices(index);
@@ -1410,17 +1411,6 @@
             }
         }
         GXShape.prototype._handleChange.call(this, change, args);
-    };
-
-    /**
-     * Called to recalculate anchor points handles and re-generate vertices from points
-     * @param {Boolean} styled - indicates if vertices should be calculated for path with styled corners
-     * @private
-     */
-    GXPathBase.prototype._invalidateVertices = function (styled) {
-        this._vertices.clearVertices();
-        this._getAnchorPoints()._generateVertices(this._vertices, this.$transform, styled);
-        this._verticesDirty = false;
     };
 
     /**

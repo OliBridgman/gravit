@@ -93,7 +93,7 @@
                     }
                 }
 
-                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform())) {
+                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
                     this._setCursorForPosition(GUICursor.PenEnd);
                     // Close path
                     this._pathRef.setProperty('closed', true);
@@ -111,7 +111,7 @@
                             prevPt = this._pathRef.getAnchorPoints().getFirstChild();
                         }
                     }
-                    if (prevPt && this._pathEditor.hitAnchorPoint(prevPt, clickPt, this._view.getWorldTransform())) {
+                    if (prevPt && this._pathEditor.hitAnchorPoint(prevPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
                         this._makePointMajor(prevPt);
                         this._editPt = this._pathEditor.getPathPointPreview(prevPt);
                         this._pathEditor.requestInvalidation();
@@ -169,7 +169,7 @@
                     otherPt = this._pathRef.getAnchorPoints().getLastChild();
                 }
 
-                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform())) {
+                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
                     this._setCursorForPosition(GUICursor.PenEnd);
                 } else {
                     this._setCursorForPosition(GUICursor.Pen);
@@ -232,7 +232,7 @@
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
-            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location) ) {
+            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
                 // Close path
                 this._pathRef.beginUpdate();
                 this._pathEditor.selectOnePoint(otherPt);

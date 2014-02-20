@@ -39,7 +39,7 @@
      * @enum
      */
     GXPathEditor.SegmentData = {
-        HitRes : 1,
+        HitRes: 1,
         Handles: 2
     };
 
@@ -157,118 +157,118 @@
                 var selectedPartId = this._partSelection[i];
                 //if (selectedPartId.point) {
 
-                    if (selectedPartId.type === GXPathEditor.PartType.Point) {
-                        var selectedPoint = selectedPartId.point;
-                        this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
+                if (selectedPartId.type === GXPathEditor.PartType.Point) {
+                    var selectedPoint = selectedPartId.point;
+                    this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
 
-                        // Make sure to transform handles as well if not auto-handles are set
-                        if (!selectedPoint.getProperty('ah')) {
-                            if (selectedPoint.getProperty('hlx') != null && selectedPoint.getProperty('hly') != null) {
-                                this._transformPreviewPointCoordinates(selectedPoint, 'hlx', 'hly', transform);
-                            }
-                            if (selectedPoint.getProperty('hrx') != null && selectedPoint.getProperty('hry') != null) {
-                                this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
-                            }
+                    // Make sure to transform handles as well if not auto-handles are set
+                    if (!selectedPoint.getProperty('ah')) {
+                        if (selectedPoint.getProperty('hlx') != null && selectedPoint.getProperty('hly') != null) {
+                            this._transformPreviewPointCoordinates(selectedPoint, 'hlx', 'hly', transform);
                         }
-                    } else if (selectedPartId.type === GXPathEditor.PartType.Segment &&
-                            this._partIdAreEqual(selectedPartId, partId) &&
-                            partData.type == GXPathEditor.SegmentData.Handles) {
-
-                        var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
-                        var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);
-                        var dPt = transform.getTranslation();
-                        var apL = new GPoint(apLeftPreview.getProperty('x'), apLeftPreview.getProperty('y'));
-                        var apR = new GPoint(apRightPreview.getProperty('x'), apRightPreview.getProperty('y'));
-
-                        if (!partData.fixedHDirLpt && !partData.fixedHDirRpt){
-                            // TODO: honor internal path transform here
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dPt.getX() * partData.cL, -dPt.getY() + dPt.getY() * partData.cL);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
-
-                            var newTransform = transform.translated(
-                                -dPt.getX() + dPt.getX() * partData.cR, -dPt.getY() + dPt.getY() * partData.cR);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
-                        } else if (partData.fixedHDirLpt && partData.fixedHDirRpt) {
-                            var dx = dPt.getX();
-                            var dy = dPt.getY();
-
-                            var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
-                                partData.apLhr.getX(), partData.apLhr.getY(), apL.getX() + dx, apL.getY() + dy);
-
-                            var prDPt = prPt.subtract(apL);
-                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cL,
-                                                            -dPt.getY() + prDPt.getY() * partData.cL);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
-
-                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
-                                partData.apRhl.getX(), partData.apRhl.getY(), apR.getX() + dx, apR.getY() + dy);
-
-                            var prDPt = prPt.subtract(apR);
-                            var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cR,
-                                -dPt.getY() + prDPt.getY() * partData.cR);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
-                        } else {
-                            // For one new handle and one existed:
-                            //      Exact policy of FreeHand looks to be buggy and is not defined, lets try this:
-                            // 1. Convert second-order Bezier curve into third-order Bezier curve so that zero
-                            //      zero movement don't change the curve :
-                            //      CP0 = QP0, CP1 = QP0 + 2/3*(QP1 - QP0), CP2 = QP2 - 2/3*(QP1 - QP2), CP3 = QP2
-                            // 2. Make the projection of movement into existing handle with the coefficient 1 / (a1 + a2)
-                            //       to the pre-existing handle (let's consider CP1)
-                            //       for curve CP = (1-t)^3*CP0 + 3*(1-t)^2*t*CP1 + 3*(1-t)*t^2*CP2 + t^3*CP3 =
-                            //       = a0*CP0 + a1*CP1 + a2*CP2 + a3*CP3
-                            //       CP1' = CP1 + 1/(a1+a2)*pr_CP1(dx, dy)
-                            // 3. Then the second handle should go into:
-                            //       CP2' = CP2 +
-                            //  + (1/a2 * dx - a1/(a2*(a1 + a2)) * pr_CP1x, 1/a2 * dy - a1/(a2*(a1 + a2)) * pr_CP1y)
-
-                            // Setting the described way CP1' and CP2' will make what is needed: CP' = CP + (dx, dy)
-
-                            var dx = dPt.getX();
-                            var dy = dPt.getY();
-                            var tmpC = 1 / (partData.cL + partData.cR);
-
-                            if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
-                                var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
-                                    partData.apLhr.getX(), partData.apLhr.getY(),
-                                    apL.getX() + dx, apL.getY() + dy);
-                                var prDPt = prPt.subtract(apL);
-
-                                var dh1x = tmpC * prDPt.getX();
-                                var dh1y = tmpC * prDPt.getY();
-                                var dh2x = dx / partData.cR - partData.cL / partData.cR * dh1x;
-                                var dh2y = dy / partData.cR - partData.cL / partData.cR * dh1y;
-                            } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
-                                var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
-                                    partData.apRhl.getX(), partData.apRhl.getY(),
-                                    apR.getX() + dx, apR.getY() + dy);
-                                var prDPt = prPt.subtract(apR);
-                                var dh2x = tmpC * prDPt.getX();
-                                var dh2y = tmpC * prDPt.getY();
-                                var dh1x = dx / partData.cL - partData.cR / partData.cL * dh2x;
-                                var dh1y = dy / partData.cL - partData.cR / partData.cL * dh2y;
-                            }
-                            var newTransform = transform.translated(-dPt.getX() + dh1x, -dPt.getY() + dh1y);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
-
-                            var newTransform = transform.translated(-dPt.getX() + dh2x, -dPt.getY() + dh2y);
-
-                            this._transformPreviewPointCoordinates(
-                                selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                        if (selectedPoint.getProperty('hrx') != null && selectedPoint.getProperty('hry') != null) {
+                            this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
                         }
                     }
-               //}
+                } else if (selectedPartId.type === GXPathEditor.PartType.Segment &&
+                    this._partIdAreEqual(selectedPartId, partId) &&
+                    partData.type == GXPathEditor.SegmentData.Handles) {
+
+                    var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
+                    var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);
+                    var dPt = transform.getTranslation();
+                    var apL = new GPoint(apLeftPreview.getProperty('x'), apLeftPreview.getProperty('y'));
+                    var apR = new GPoint(apRightPreview.getProperty('x'), apRightPreview.getProperty('y'));
+
+                    if (!partData.fixedHDirLpt && !partData.fixedHDirRpt) {
+                        // TODO: honor internal path transform here
+                        var newTransform = transform.translated(
+                            -dPt.getX() + dPt.getX() * partData.cL, -dPt.getY() + dPt.getY() * partData.cL);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                        var newTransform = transform.translated(
+                            -dPt.getX() + dPt.getX() * partData.cR, -dPt.getY() + dPt.getY() * partData.cR);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                    } else if (partData.fixedHDirLpt && partData.fixedHDirRpt) {
+                        var dx = dPt.getX();
+                        var dy = dPt.getY();
+
+                        var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                            partData.apLhr.getX(), partData.apLhr.getY(), apL.getX() + dx, apL.getY() + dy);
+
+                        var prDPt = prPt.subtract(apL);
+                        var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cL,
+                            -dPt.getY() + prDPt.getY() * partData.cL);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                        var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                            partData.apRhl.getX(), partData.apRhl.getY(), apR.getX() + dx, apR.getY() + dy);
+
+                        var prDPt = prPt.subtract(apR);
+                        var newTransform = transform.translated(-dPt.getX() + prDPt.getX() * partData.cR,
+                            -dPt.getY() + prDPt.getY() * partData.cR);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                    } else {
+                        // For one new handle and one existed:
+                        //      Exact policy of FreeHand looks to be buggy and is not defined, lets try this:
+                        // 1. Convert second-order Bezier curve into third-order Bezier curve so that zero
+                        //      zero movement don't change the curve :
+                        //      CP0 = QP0, CP1 = QP0 + 2/3*(QP1 - QP0), CP2 = QP2 - 2/3*(QP1 - QP2), CP3 = QP2
+                        // 2. Make the projection of movement into existing handle with the coefficient 1 / (a1 + a2)
+                        //       to the pre-existing handle (let's consider CP1)
+                        //       for curve CP = (1-t)^3*CP0 + 3*(1-t)^2*t*CP1 + 3*(1-t)*t^2*CP2 + t^3*CP3 =
+                        //       = a0*CP0 + a1*CP1 + a2*CP2 + a3*CP3
+                        //       CP1' = CP1 + 1/(a1+a2)*pr_CP1(dx, dy)
+                        // 3. Then the second handle should go into:
+                        //       CP2' = CP2 +
+                        //  + (1/a2 * dx - a1/(a2*(a1 + a2)) * pr_CP1x, 1/a2 * dy - a1/(a2*(a1 + a2)) * pr_CP1y)
+
+                        // Setting the described way CP1' and CP2' will make what is needed: CP' = CP + (dx, dy)
+
+                        var dx = dPt.getX();
+                        var dy = dPt.getY();
+                        var tmpC = 1 / (partData.cL + partData.cR);
+
+                        if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
+                            var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                                partData.apLhr.getX(), partData.apLhr.getY(),
+                                apL.getX() + dx, apL.getY() + dy);
+                            var prDPt = prPt.subtract(apL);
+
+                            var dh1x = tmpC * prDPt.getX();
+                            var dh1y = tmpC * prDPt.getY();
+                            var dh2x = dx / partData.cR - partData.cL / partData.cR * dh1x;
+                            var dh2y = dy / partData.cR - partData.cL / partData.cR * dh1y;
+                        } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
+                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                                partData.apRhl.getX(), partData.apRhl.getY(),
+                                apR.getX() + dx, apR.getY() + dy);
+                            var prDPt = prPt.subtract(apR);
+                            var dh2x = tmpC * prDPt.getX();
+                            var dh2y = tmpC * prDPt.getY();
+                            var dh1x = dx / partData.cL - partData.cR / partData.cL * dh2x;
+                            var dh1y = dy / partData.cL - partData.cR / partData.cL * dh2y;
+                        }
+                        var newTransform = transform.translated(-dPt.getX() + dh1x, -dPt.getY() + dh1y);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
+
+                        var newTransform = transform.translated(-dPt.getX() + dh2x, -dPt.getY() + dh2y);
+
+                        this._transformPreviewPointCoordinates(
+                            selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
+                    }
+                }
+                //}
             }
 
             this.requestInvalidation();
@@ -425,8 +425,8 @@
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: GXPathEditor.SegmentData.Handles,
-                                cL : 4 / 3, apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
-                                cR : 4 / 3, apRhl : new GPoint(hlx, hly), fixedHDirRpt: false},
+                                cL: 4 / 3, apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
+                                cR: 4 / 3, apRhl: new GPoint(hlx, hly), fixedHDirRpt: false},
                             null, false, true);
 
                     } else if (apLeft.getProperty('hrx') === null || apLeft.getProperty('hry') === null) {
@@ -457,10 +457,10 @@
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: GXPathEditor.SegmentData.Handles,
-                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
-                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
+                                cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     } else if (apRight.getProperty('hlx') === null || apRight.getProperty('hly') === null) {
                         var hrx = apLeftPreview.getProperty('hrx');
@@ -476,10 +476,10 @@
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: GXPathEditor.SegmentData.Handles,
-                                cL : 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
+                                cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
-                                cR : 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: false},
+                                cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
+                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: false},
                             false, true);
                     } else { // both handles exist
                         // If both handles existed before, their orientation remains
@@ -494,10 +494,10 @@
                         newPartInfo = new GXElementEditor.PartInfo(
                             this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: GXPathEditor.SegmentData.Handles,
-                                cL : 3 * (1 - pathHitResult.slope),
+                                cL: 3 * (1 - pathHitResult.slope),
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
-                                cR : 3 * pathHitResult.slope,
-                                apRhl : new GPoint(hlx, hly), fixedHDirRpt: true},
+                                cR: 3 * pathHitResult.slope,
+                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     }
                 }
@@ -523,40 +523,33 @@
      * Hit-test anchor point's annotation
      * @param {GXPathBase.AnchorPoint} anchorPt - anchor point to hit-test
      * @param {GPoint} location
-     * @param {GTransform} transform - a transformation to apply to anchor point's coordinates before hit-testing
-     * @param {Boolean} strict - indicates when pick distance should not be used for anchor point hit-testing
+     * @param {GTransform} [transform] a transformation to apply to anchor point's coordinates before hit-testing,
+     * defaults to null
+     * @param {Number} [tolerance] optional tolerance for hit testing, defaults to zero
      * @returns {boolean} the result of hit-test
      */
-    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, strict) {
-        var res = false;
+    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
         if (anchorPt) {
             var transformToApply = this._element.getTransform();
             if (transform) {
                 transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
             }
-            if (strict) {
-                res = this._getAnnotationBBox(
-                        transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
-                    .containsPoint(location);
-            } else {
-                var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
-                res = this._getAnnotationBBox(
-                        transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
-                    .expanded(pickDist, pickDist, pickDist, pickDist)
-                    .containsPoint(location);
-            }
+
+            return this._getAnnotationBBox(
+                    transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                .expanded(tolerance, tolerance, tolerance, tolerance)
+                .containsPoint(location);
         }
-        return res;
+        return false;
     };
 
     /** @override */
-    GXPathEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         if (this._showAnnotations()) {
-            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
             var _isInAnnotationBBox = function (position, smallAnnotation) {
                 if (position) {
                     return this._getAnnotationBBox(transform, position, smallAnnotation)
-                        .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location);
+                        .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location);
                 } else {
                     return false;
                 }
@@ -595,13 +588,13 @@
                 return result;
             } else if (this.hasFlag(GXElementEditor.Flag.Detail)) {
                 // In detail mode we're able to select segments so hit test for one here
-                var pathHitResult = this._element.detailHitTest(location, transform, false);
+                var pathHitResult = this._element.pathHitTest(location, transform, false, this._element.getScene().getProperty('pickDist'));
                 if (pathHitResult) {
                     var hitRes = pathHitResult.data;
                     var apLeft = this._element.getAnchorPoints().getChildByIndex(hitRes.segment - 1);
                     var apRight = apLeft ? this._element.getAnchorPoints().getNextPoint(apLeft) : null;
                     return new GXElementEditor.PartInfo(
-                        this, {type: GXPathEditor.PartType.Segment, point: null, apLeft : apLeft, apRight: apRight},
+                        this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                         {type: GXPathEditor.SegmentData.HitRes, hitRes: pathHitResult.data}, false, true);
                 }
                 return null;
@@ -665,7 +658,7 @@
                     for (var k = 0; k < newSelection.length; ++k) {
                         if (newSelection[k].point === part.point && part.point ||
                             part.type == GXPathEditor.PartType.Segment && part.type == newSelection[k].type &&
-                            part.apLeft == newSelection[k].apLeft && part.apRight == newSelection[k].apRight) {
+                                part.apLeft == newSelection[k].apLeft && part.apRight == newSelection[k].apRight) {
                             isInNewSelection = true;
                             break;
                         }
@@ -864,10 +857,10 @@
      * @enum
      */
     GXPathEditor.PointsSelectionType = {
-        No : 'N',
-        First : 'F',
-        Last : 'L',
-        Middle : 'M',
+        No: 'N',
+        First: 'F',
+        Last: 'L',
+        Middle: 'M',
         Several: 'S'
     };
 
@@ -899,8 +892,10 @@
      * Updates _partSelection with one selected point
      * @param {GXPathBase.AnchorPoint} anchorPt - a point to select
      */
-    GXPathEditor.prototype.selectOnePoint = function(anchorPt) {
-        this.updatePartSelection(false, [{type: GXPathEditor.PartType.Point, point: anchorPt}]);
+    GXPathEditor.prototype.selectOnePoint = function (anchorPt) {
+        this.updatePartSelection(false, [
+            {type: GXPathEditor.PartType.Point, point: anchorPt}
+        ]);
     };
 
     /**
@@ -914,7 +909,7 @@
     GXPathEditor.prototype.shiftPreviewTable = function (shiftVal, shiftFrom, shiftTo) {
         shiftFrom = shiftFrom != null ? shiftFrom : 0;
         shiftTo = shiftTo != null ? shiftTo : this._sourceIndexToPreviewIndex.length - 1;
-        for (var i= shiftFrom ; i < shiftTo ; ++i) {
+        for (var i = shiftFrom; i < shiftTo; ++i) {
             this._sourceIndexToPreviewIndex[i] += shiftVal;
         }
     };
@@ -1021,8 +1016,7 @@
                             // relPt may be == anchorPoint or == prevPt depending on properties of these points
                             relPt = sourceAnchorPoints.getFirstRelatedPoint(nextPt);
                             if (!_anchorPointIsSelected(relPt) &&
-                                    (!sourceAnchorPoints.getPreviousPoint(relPt) ||
-                                    !_anchorPointIsSelected(sourceAnchorPoints.getPreviousPoint(relPt)))) {
+                                (!sourceAnchorPoints.getPreviousPoint(relPt) || !_anchorPointIsSelected(sourceAnchorPoints.getPreviousPoint(relPt)))) {
                                 firstSelPoint = relPt;
                             }
                         }
@@ -1037,8 +1031,7 @@
                             // relPt may be == anchorPoint or == nextPt depending on properties of these points
                             relPt = sourceAnchorPoints.getLastRelatedPoint(prevPt);
                             if (!_anchorPointIsSelected(relPt) &&
-                                    (!sourceAnchorPoints.getNextPoint(relPt) ||
-                                    !_anchorPointIsSelected(sourceAnchorPoints.getNextPoint(relPt)))) {
+                                (!sourceAnchorPoints.getNextPoint(relPt) || !_anchorPointIsSelected(sourceAnchorPoints.getNextPoint(relPt)))) {
 
                                 lastSelPoint = relPt;
                             }
@@ -1357,7 +1350,7 @@
                 isInNewSelection = true;
                 for (var k = 0; k < selection.length; ++k) {
                     if (selection[k].type == GXPathEditor.PartType.Segment &&
-                            (selection[i].point == selection[k].apLeft || selection[i].point == selection[k].apRight)) {
+                        (selection[i].point == selection[k].apLeft || selection[i].point == selection[k].apRight)) {
 
                         isInNewSelection = false;
                         break;

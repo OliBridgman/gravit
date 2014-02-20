@@ -209,7 +209,7 @@
                 var partInfo = docEditor.getPartInfoAt(event.client, this._view.getWorldTransform(), function (editor) {
                     // Ensure to allow selected editors for part, only
                     return editor.hasFlag(GXElementEditor.Flag.Selected);
-                }.bind(this), false);
+                }.bind(this), this._scene.getProperty('pickDist'));
 
                 if (partInfo) {
                     var editor = partInfo.editor;
@@ -501,7 +501,7 @@
                 var partInfo = docEditor.getPartInfoAt(mouse, this._view.getWorldTransform(), function (editor) {
                     // Ensure to allow selected editors for part, only
                     return editor.hasFlag(GXElementEditor.Flag.Selected);
-                }.bind(this), false);
+                }.bind(this), this._scene.getProperty('pickDist'));
 
                 if (partInfo !== this._editorUnderMouseInfo) {
                     this._editorUnderMouseInfo = partInfo;

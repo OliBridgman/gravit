@@ -546,13 +546,17 @@
      * @param {Function} [acceptor] optional callback function getting called
      * for a part and receiving the current editor as it's only parameter.
      * The function should return true to accept the editor or false for not.
+     * @param {Number} [tolerance] optional tolerance for testing the location.
+     * If not provided defaults to zero.
      * @returns {GXElementEditor.PartInfo} null if no part is available or a valid part info
      */
-    GXElementEditor.prototype.getPartInfoAt = function (location, transform, acceptor) {
+    GXElementEditor.prototype.getPartInfoAt = function (location, transform, acceptor, tolerance) {
+        tolerance = tolerance || 0;
+
         // Iterate sub editors, first
         if (this._editors && this._editors.length) {
             for (var i = this._editors.length - 1; i >= 0; --i) {
-                var result = this._editors[i].getPartInfoAt(location, transform, acceptor);
+                var result = this._editors[i].getPartInfoAt(location, transform, acceptor, tolerance);
                 if (result) {
                     return result;
                 }
@@ -567,7 +571,7 @@
         var bbox = this.getBBox(transform);
         if (bbox && !bbox.isEmpty()) {
             if (bbox.containsPoint(location)) {
-                var result = this._getPartInfoAt(location, transform);
+                var result = this._getPartInfoAt(location, transform, tolerance);
                 if (result) {
                     return result;
                 }
@@ -807,9 +811,10 @@
      * iterating any sub editors as well.
      * @param {GPoint} location the location to get a part for in view coordinates
      * @param {GTransform} transform the current transformation of the view
+     * @param {Number} tolerance tolerance for testing the location
      * @returns {*} null if no part is available or an editor-specific part
      */
-    GXElementEditor.prototype._getPartInfoAt = function (location, transform) {
+    GXElementEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         return null;
     };
 

@@ -482,7 +482,7 @@
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
 
-        var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform());
+        var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
         if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
             var anchorPt = partInfo.id.point;
             if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getLastChild()) {
@@ -559,7 +559,7 @@
                 this._checkPathEditor();
             }
             if (this._pathEditor) {
-                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform());
+                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
                 if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
                     var anchorPt = partInfo.id.point;
                     var pathRef = this._pathEditor.getPath();

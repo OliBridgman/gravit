@@ -133,19 +133,17 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype._getPartInfoAt = function (location, transform) {
-        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform);
+    GXEllipseEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
         if (result) {
             return result;
         }
         // If we have segment details then hit-test 'em
         if (this._showSegmentDetails()) {
             result = null;
-            var pickDist = this._element.getScene() ? this._element.getScene().getProperty('pickDist') / 2 : 1.5;
-
             this._iterateArcEnds(false, function (args) {
                 if (this._getAnnotationBBox(transform, args.position)
-                        .expanded(pickDist, pickDist, pickDist, pickDist).containsPoint(location)) {
+                        .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                     result = new GXElementEditor.PartInfo(this, args.id, null, true, true);
                     return true;
                 }
