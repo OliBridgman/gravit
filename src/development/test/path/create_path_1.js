@@ -28,6 +28,13 @@
         ap = path.getAnchorPoints().getFirstChild();
         ap.setProperties(['hlx', 'hly'], [-108.581455,129.002279]);
 
+        //var sGroup = new GXVectorTransformStyle();
+        //sGroup.appendChild(new GXPaintContourStyle());
+        //path.getStyle().appendChild(sGroup);
+
+        path.getStyle().appendChild(new GXPaintContourStyle());
+        path.getStyle().appendChild(new GXPaintFillStyle());
+
         layer.appendChild(path);
 
         view.zoomAll(scene.getPageSet().getPaintBBox(), false);

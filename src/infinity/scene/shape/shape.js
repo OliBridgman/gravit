@@ -15,7 +15,9 @@
      */
     function GXShape() {
         this._setDefaultProperties(GXShape.GeometryProperties);
-        this._style = new GXStyle();
+
+        // Add styleset
+        this.appendChild(new GXShape.Style(), true);
     }
 
     GObject.inheritAndMix(GXShape, GXElement, [GXElement.Transform, GXElement.Pivot, GXNode.Properties, GXNode.Container, GXNode.Store, GXVertexSource]);
@@ -27,12 +29,36 @@
         transform: null
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXShape.Style Class
+    // -----------------------------------------------------------------------------------------------------------------
     /**
-     * The root style of the shape
-     * @type {GXStyle}
-     * @private
+     * The style of a shape
+     * @class GXShape.Style
+     * @extends GXStyleSet
+     * @constructor
      */
-    GXShape.prototype._style = null;
+    GXShape.Style = function () {
+        GXStyleSet.call(this);
+        // GXShapeStyle is a "shadow" node
+        this._flags |= GXNode.Flag.Shadow;
+    }
+
+    GXNode.inheritAndMix("shapeStyle", GXShape.Style, GXStyleSet);
+
+    /** @override */
+    GXShape.Style.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GXShape;
+    };
+
+    /** @override */
+    GXShape.Style.prototype.toString = function () {
+        return "[GXShape.Style]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXShape Class
+    // -----------------------------------------------------------------------------------------------------------------
 
     /** @override */
     GXShape.prototype.getTransform = function () {
@@ -49,6 +75,14 @@
         if (transform && !transform.isIdentity()) {
             this.setProperty('transform', this.$transform ? this.$transform.multiplied(transform) : transform);
         }
+    };
+
+    /**
+     * Returns the style of the shape
+     * @returns {GXShape.Style}
+     */
+    GXShape.prototype.getStyle = function () {
+        return this._firstChild;
     };
 
     /** @override */
@@ -108,7 +142,7 @@
             context.canvas.setTransform(transform);
         } else {
             // Paint our styling
-            this._style.paint(context, this);
+            this._firstChild.paint(context, this);
         }
 
         // Paint contents if any
@@ -149,12 +183,19 @@
 
     /** @override */
     GXShape.prototype._calculatePaintBBox = function () {
+        /*
         var paintBBox = this.getGeometryBBox();
         // TODO : FIX THIS, STYLES SHOULD EXTEND PAINTBOX
         if (paintBBox) {
             paintBBox = paintBBox.expanded(2, 2, 2, 2);
         }
-        return paintBBox;
+        return paintBBox;*/
+        var source = this.getGeometryBBox();
+        if (!source) {
+            return null;
+        }
+
+        return this._firstChild.getBBox(source);
     };
 
     /** @override */
@@ -170,9 +211,11 @@
         // TODO : Make correct vertex hit test here including style and document distance info
         // and return correct hit information from style and path etc. Do also correctly include
         // transformation info for outline width calculation
-        var outlineWidth = 1 * transform.getScaleFactor() + (pickDist * 2);
+        var outlineWidth = 20 * transform.getScaleFactor() + pickDist * 2;
         var hitResult = new GXVertexInfo.HitResult();
+
         if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), outlineWidth, true, hitResult)) {
+        //if (gVertexInfo.hitTest(location.getX(), location.getY(), this, outlineWidth, true, hitResult)) {
             return new GXElement.HitResult(this);
         }
         return null;

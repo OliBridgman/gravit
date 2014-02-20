@@ -573,6 +573,13 @@
             return false;
         }
 
+        // If there's no parent and we're not the document then
+        // we're not paintable at all except if we've been provided
+        // an explicit context which enforces us to paint
+        if (!context && !this.getParent() && !(this instanceof GXScene)) {
+            return false;
+        }
+
         var paintBBox = this.getPaintBBox();
         if (paintBBox == null || paintBBox.isEmpty()) {
             return false;
@@ -737,12 +744,14 @@
                 this._requestInvalidation();
             }
         } else if (change == GXElement._Change.PrepareGeometryUpdate) {
-            if (this.isVisible()) {
+            if (this.isPaintable()) {
                 var paintBBox = this.getPaintBBox();
                 if (paintBBox && !paintBBox.isEmpty()) {
                     this._savedPaintBBox = paintBBox;
                 }
+            }
 
+            if (this.isVisible()) {
                 if (this.isAttached() && this._scene.hasEventListeners(GXElement.GeometryChangeEvent)) {
                     this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.Before));
                 }

@@ -26,7 +26,7 @@
      * @returns {GXPathBase.AnchorPoints}
      */
     GXPath.prototype.getAnchorPoints = function () {
-        return this._firstChild;
+        return this._getAnchorPoints();
     };
 
     /** @override */

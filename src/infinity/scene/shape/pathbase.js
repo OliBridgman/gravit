@@ -705,7 +705,7 @@
 
     /** @override */
     GXPathBase.AnchorPoints.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXPathBase && !parent._firstChild;
+        return parent instanceof GXPathBase;
     };
 
     /** @override */
@@ -1399,7 +1399,7 @@
         // Special handling when changing closed status of path
         if (change === GXNode._Change.AfterPropertiesChange) {
             if (args.properties.indexOf('closed') >= 0) {
-                var points = this._firstChild;
+                var points = this._getAnchorPoints();
                 if (points) {
                     points._invalidateRight(points.getFirstChild());
                     points._invalidateLeft(points.getLastChild());
@@ -1419,8 +1419,16 @@
      */
     GXPathBase.prototype._invalidateVertices = function (styled) {
         this._vertices.clearVertices();
-        this._firstChild._generateVertices(this._vertices, this.$transform, styled);
+        this._getAnchorPoints()._generateVertices(this._vertices, this.$transform, styled);
         this._verticesDirty = false;
+    };
+
+    /**
+     * @returns {GXPathBase.AnchorPoints}
+     * @private
+     */
+    GXPathBase.prototype._getAnchorPoints = function () {
+        return this._firstChild/*style*/._next/*anchor-points*/;
     };
 
     /** @override */

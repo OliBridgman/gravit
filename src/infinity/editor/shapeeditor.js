@@ -48,23 +48,6 @@
             // Paint center cross if desired + selected + in detail mode
             if (this.hasFlag(GXElementEditor.Flag.Selected) && this.hasFlag(GXElementEditor.Flag.Detail) && this._hasCenterCross()) {
                 this._paintCenterCross(targetTransform, context);
-                /*
-
-                 // Calculate transformed geometry bbox
-                 var bbox = element.getGeometryBBox();
-                 var transformedBBox = bbox ? targetTransform.mapRect(bbox) : null;
-
-                var crossSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 4;
-
-                if (transformedBBox && transformedBBox.getWidth() > crossSizeMax && transformedBBox.getHeight() > crossSizeMax) {
-                    var center = transformedBBox.getSide(GRect.Side.CENTER);
-                    var cx = Math.floor(center.getX()) + 0.5;
-                    var cy = Math.floor(center.getY()) + 0.5;
-                    var cs = GXElementEditor.OPTIONS.centerCrossSize / 2;
-                    context.canvas.strokeLine(cx - cs, cy - cs, cx + cs, cy + cs, 1, context.selectionOutlineColor);
-                    context.canvas.strokeLine(cx + cs, cy - cs, cx - cs, cy + cs, 1, context.selectionOutlineColor);
-                }
-                */
             }
         }
 
@@ -90,6 +73,20 @@
     GXShapeEditor.prototype.resetPartMove = function (partId, partData) {
         this.releaseElementPreview();
         this.removeFlag(GXElementEditor.Flag.Outline);
+    };
+
+    /** @override */
+    GXShapeEditor.prototype.acceptDrop = function (position, type, source) {
+        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source) === false) {
+            // We can handle colors so check for a color
+            if (type === GXElementEditor.DropType.Color) {
+                this.getElement().getStyle().getFirstChild().__setFill(source ? source.asString() : null);
+                //this.getElement().setProperty('color', source ? source.asString() : null);
+                return true;
+            }
+            return false;
+        }
+        return true;
     };
 
     /**

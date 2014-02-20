@@ -163,7 +163,7 @@
         var str = cssString.replace(/ /g, '').toLowerCase();
 
         // Color keywords (and transparent) lookup.
-        if (str in kCSSColorTable) return new GXColor(GXColor.Type.RGB, [kCSSColorTable[str].slice()]);  // dup.
+        if (str in kCSSColorTable) return new GXColor(GXColor.Type.RGB, kCSSColorTable[str].slice());  // dup.
 
         // #abc and #abc123 syntax.
         if (str[0] === '#') {
