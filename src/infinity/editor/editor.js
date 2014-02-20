@@ -46,7 +46,7 @@
 
     GXEditor.options = {
         /** Maximum number of undo-steps */
-        maxUndoSteps : 10
+        maxUndoSteps: 10
     };
 
     /**
@@ -877,7 +877,17 @@
                 var element = elements[i];
 
                 if (!noDefaults) {
-                    // TODO : Apply current styles / effects
+                    // Assign default fill and contour style for shapes
+                    // TODO : Better check if element has style support and avoid check for shape here
+                    if (element instanceof GXShape) {
+                        if (this._currentColor[GXEditor.CurrentColorType.Stroke]) {
+                            element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Stroke]);
+                        }
+
+                        if (this._currentColor[GXEditor.CurrentColorType.Fill]) {
+                            element.getStyle().setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
+                        }
+                    }
                 }
 
                 // Append new element
@@ -935,15 +945,15 @@
         }
 
         var nodes = nodes ? nodes : this._selection;
-        if (!nodes || nodes.length === 0) {
+        if (!nodes || nodes.length === 0) {
             throw new Error('No active nodes for state');
         }
 
         this._transaction = {
-            nodes : nodes,
-            states : [],
-            selection : this._selection ? this._selection.slice() : [],
-            revert : function () {
+            nodes: nodes,
+            states: [],
+            selection: this._selection ? this._selection.slice() : [],
+            revert: function () {
                 for (var i = 0; i < this.states.length; ++i) {
                     var state = this.states[i];
                     var node = state.node;
@@ -965,9 +975,9 @@
         for (var i = 0; i < nodes.length; ++i) {
             var node = nodes[i];
             var state = {
-                node : node,
-                parent : node.getParent(),
-                next : node.getNext()
+                node: node,
+                parent: node.getParent(),
+                next: node.getNext()
             };
 
             if (node.hasMixin(GXNode.Properties)) {
@@ -1043,9 +1053,9 @@
         }
 
         this._undoStates.push({
-            action : action,
-            revert : revert,
-            name : name ? name : ""
+            action: action,
+            revert: revert,
+            name: name ? name : ""
         });
 
         action();

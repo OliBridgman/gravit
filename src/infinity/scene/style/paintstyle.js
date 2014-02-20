@@ -3,13 +3,14 @@
     /**
      * A base paint style
      * @class GXPaintStyle
-     * @extends GXStyleSet
+     * @extends GXStyle
      * @constructor
      */
     function GXPaintStyle() {
+        GXStyle.call(this);
     }
 
-    GObject.inherit(GXPaintStyle, GXStyleSet);
+    GObject.inherit(GXPaintStyle, GXStyle);
 
     /** @override */
     GXPaintStyle.prototype.validateInsertion = function (parent, reference) {

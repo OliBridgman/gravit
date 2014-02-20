@@ -265,7 +265,7 @@
     };
 
     /** @override */
-    GXPage.prototype._detailHitTest = function (location, transform, tolerance) {
+    GXPage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         var geoBox = this.getGeometryBBox();
 
         if (transform) {

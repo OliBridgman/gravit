@@ -103,9 +103,9 @@
         Text: 1,
 
         /**
-         * An element is dropped, the type is GXElement
+         * A node is dropped, the type is GXNode
          */
-        Element: 2
+        Node: 2
     };
 
     /**

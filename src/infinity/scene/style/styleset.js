@@ -13,6 +13,50 @@
 
     GXNode.inheritAndMix("styleSet", GXStyleSet, GXStyle, [GXNode.Container]);
 
+    /**
+     * Assign an area. This will assign the area to the topmost
+     * area-style on this set. If there's none, this will create one.
+     * @param {GXColor|GXSwatch} fill
+     */
+    GXStyleSet.prototype.setArea = function (fill) {
+        var targetStyle = null;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof GXPaintAreaStyle) {
+                targetStyle = child;
+                break;
+            }
+        }
+
+        if (!targetStyle) {
+            targetStyle = new GXPaintAreaStyle();
+            this.appendChild(targetStyle);
+        }
+
+        targetStyle.setProperty('fill', fill);
+    };
+
+    /**
+     * Assign a contour. This will assign the fill to the topmost
+     * contour-style on this set. If there's none, this will create one.
+     * @param {GXColor|GXSwatch} fill
+     */
+    GXStyleSet.prototype.setContour = function (fill) {
+        var targetStyle = null;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof GXPaintContourStyle) {
+                targetStyle = child;
+                break;
+            }
+        }
+
+        if (!targetStyle) {
+            targetStyle = new GXPaintContourStyle();
+            this.appendChild(targetStyle);
+        }
+
+        targetStyle.setProperty('fill', fill);
+    };
+
     /** @override */
     GXStyleSet.prototype.paint = function (context, source) {
         // by default, simply paint our style children

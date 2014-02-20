@@ -78,17 +78,17 @@
     /** @override */
     GXShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
-            // If we've hit a style, handle it here
             // TODO : Styles are supposed to gain their own editors so this should become obsolete
-            if (hitData && hitData instanceof GXStyle.HitResult) {
-                // Styles can handle different kind of swatches
-                if (type === GXElementEditor.DropType.Color) {
-                    // TODO : Make this right
-                    hitData.style.__setFill(source ? source.asString() : null);
-                    return true;
+            // TODO : Also support dropping GXSwatch
+            if (type === GXElementEditor.DropType.Color || (type === GXElementEditor.DropType.Node && source instanceof GXSwatch)) {
+                // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
+                if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
+                    hitData.style.setProperty('fill', source);
+                } else {
+                    this.getElement().getStyle().setArea(source);
                 }
+                return true;
             }
-            return false;
         }
         return true;
     };

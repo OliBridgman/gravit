@@ -12,6 +12,12 @@
     GObject.inherit(GXNode, GObject);
 
     /**
+     * Nodes's mime-type
+     * @type {string}
+     */
+    GXNode.MIME_TYPE = "application/infinity+node";
+
+    /**
      * GObject.inherit descendant for nodes
      * @param {String} name the unique name for the node
      * @see GObject.inherit

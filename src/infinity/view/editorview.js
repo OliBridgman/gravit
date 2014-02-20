@@ -182,9 +182,9 @@
                     type = GXElementEditor.DropType.Color;
                     source = dataTransfer.getData(GXColor.MIME_TYPE);
                     source = source && source !== "" ? GXColor.parseColor(source) : null;
-                } else if (item.type === GXElement.MIME_TYPE) {
-                    type = GXElementEditor.DropType.Element;
-                    source = dataTransfer.getData(GXElement.MIME_TYPE);
+                } else if (item.type === GXNode.MIME_TYPE) {
+                    type = GXElementEditor.DropType.Node;
+                    source = dataTransfer.getData(GXNode.MIME_TYPE);
                     source = source && source !== "" ? GXNode.deserialize(source) : null;
                 } else if (item.type === 'text/plain') {
                     type = GXElementEditor.DropType.Text;
@@ -194,7 +194,7 @@
                 // If we've extracted a type, then try to let an editor handle it now
                 if (type !== null) {
                     // Try to gather a stacked hit list underneath drop position
-                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, this._scene.getProperty('pickDist'));
+                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, this._scene.getProperty('pickDist'), true);
 
                     // If we had have one or more hits, iterate them
                     var acceptedDrop = false;
@@ -213,7 +213,7 @@
 
                     // If drop was not yet accepted, try to do some custom handling here depending on type
                     if (!acceptedDrop) {
-                        if (type === GXElementEditor.DropType.Element) {
+                        if (type === GXElementEditor.DropType.Node && source instanceof GXElement) {
                             // Move the element to the drop-position
                             var elBBox = source.getGeometryBBox();
                             source.transform(new GTransform(1, 0, 0, 1,

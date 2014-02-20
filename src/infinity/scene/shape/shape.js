@@ -184,12 +184,12 @@
     /** @override */
     GXShape.prototype._calculatePaintBBox = function () {
         /*
-        var paintBBox = this.getGeometryBBox();
-        // TODO : FIX THIS, STYLES SHOULD EXTEND PAINTBOX
-        if (paintBBox) {
-            paintBBox = paintBBox.expanded(2, 2, 2, 2);
-        }
-        return paintBBox;*/
+         var paintBBox = this.getGeometryBBox();
+         // TODO : FIX THIS, STYLES SHOULD EXTEND PAINTBOX
+         if (paintBBox) {
+         paintBBox = paintBBox.expanded(2, 2, 2, 2);
+         }
+         return paintBBox;*/
         var source = this.getGeometryBBox();
         if (!source) {
             return null;
@@ -205,10 +205,24 @@
     };
 
     /** @override */
-    GXShape.prototype._detailHitTest = function (location, transform, tolerance) {
+    GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
         var styleHit = this.getStyle().hitTest(this, location, transform, tolerance);
         if (styleHit) {
             return new GXElement.HitResult(this, styleHit);
+        } else if (force) {
+            // When forced we'll always hit-test our whole "invisible" outline / fill area
+            var vertexHit = new GXVertexInfo.HitResult();
+            if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), tolerance, true, vertexHit)) {
+                return new GXElement.HitResult(this, vertexHit);
+            }
+        } else {
+            // If we didn't hit a style, then hit-test our "invisible" tolerance outline area if any
+            if (tolerance) {
+                var vertexHit = new GXVertexInfo.HitResult();
+                if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), tolerance, false, vertexHit)) {
+                    return new GXElement.HitResult(this, vertexHit);
+                }
+            }
         }
         return null;
     };

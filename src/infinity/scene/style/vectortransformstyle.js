@@ -7,6 +7,7 @@
      * @constructor
      */
     function GXVectorTransformStyle() {
+        GXVectorStyle.call(this);
     }
 
     GObject.inherit(GXVectorTransformStyle, GXVectorStyle);

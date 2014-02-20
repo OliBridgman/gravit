@@ -7,6 +7,7 @@
      * @constructor
      */
     function GXRasterStyle() {
+        GXStyleSet.call(this);
     }
 
     GObject.inherit(GXRasterStyle, GXStyleSet);

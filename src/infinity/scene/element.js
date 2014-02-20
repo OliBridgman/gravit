@@ -13,12 +13,6 @@
     GObject.inherit(GXElement, GXNode);
 
     /**
-     * Element's mime-type
-     * @type {string}
-     */
-    GXElement.MIME_TYPE = "application/infinity+element";
-
-    /**
      * The visual properties of an element with their default values
      */
     GXElement.VisualProperties = {
@@ -396,10 +390,12 @@
      * all children, a negative value iterates to deepest level. Defaults to -1
      * @param {Number} [tolerance] a tolerance value for hit testing in view coordinates,
      * defaults to zero if not provided.
+     * @param {Boolean} [force] if true, enforce hitting even if something is not visible
+     * or has no area etc. Defaults to false.
      * @returns {Array<GXElement.HitResult>} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance) {
+    GXElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
         tolerance = tolerance || 0;
 
@@ -425,7 +421,7 @@
         if (level !== 0 && this.hasMixin(GXNode.Container)) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
                 if (child instanceof GXElement) {
-                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance);
+                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force);
                     if (subResult) {
                         if (stacked) {
                             if (result) {
@@ -443,7 +439,7 @@
 
         if ((acceptor && acceptor.call(null, this) == true) || !acceptor) {
             // No hit so far so try to hit ourself
-            var myResult = this._detailHitTest(location, transform, tolerance);
+            var myResult = this._detailHitTest(location, transform, tolerance, force);
             if (myResult) {
                 if (stacked && result) {
                     result.push(myResult);
@@ -664,10 +660,12 @@
      * @param {GTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Number} tolerance a tolerance used for hit-testing
+     * @param {Boolean} force if true, enforce hitting even if something is not visible
+     * or has no area etc.
      * @returns {GXElement.HitResult} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype._detailHitTest = function (location, transform, tolerance) {
+    GXElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
         return null;
     };
 

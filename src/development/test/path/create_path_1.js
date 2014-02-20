@@ -60,9 +60,6 @@
         //sGroup.appendChild(new GXPaintContourStyle());
         //path.getStyle().appendChild(sGroup);
 
-        path.getStyle().appendChild(new GXPaintContourStyle());
-        path.getStyle().appendChild(new GXPaintFillStyle());
-
         layer.appendChild(path);
 
         view.zoomAll(scene.getPageSet().getPaintBBox(), false);

@@ -95,31 +95,69 @@
         return null;
     };
 
+    /** @override */
+    GXStyle.prototype._handleChange = function (change, args) {
+        if (change === GXNode._Change.BeforeChildInsert || change === GXNode._Change.BeforeChildRemove) {
+            this._notifyOwnerElementChange(GXElement._Change.PrepareGeometryUpdate);
+        } else if (change === GXNode._Change.AfterChildInsert || change === GXNode._Change.AfterChildRemove) {
+            this._notifyOwnerElementChange(GXElement._Change.FinishGeometryUpdate);
+        }
+
+        // Call super by default and be done with it
+        GXNode.prototype._handleChange.call(this, change, args);
+    };
+
     /**
-     * Called to invalidate the owner element
-     * @param {Boolean} geometry whether to invalidate the owner element's geometry
-     * or not which means to only repaint the element
+     * Called to notify owner element about change
+     * @param {Number} change
+     * @param {Object} [args]
      * @private
      */
-    GXStyle.prototype._invalidateOwnerElement = function (geometry) {
+    GXStyle.prototype._notifyOwnerElementChange = function (change, args) {
         var ownerElement = this.getOwnerElement();
         if (ownerElement) {
-            ownerElement._notifyChange(geometry ? GXElement._Change.ChildGeometryUpdate : GXElement._Change.InvalidationRequest, this);
+            ownerElement._notifyChange(change, args);
         }
     };
 
-    /** @override */
-    GXStyle.prototype._handleChange = function (change, args) {
-        if (change == GXNode._Change.AfterChildInsert) {
-            this._invalidateOwnerElement(true);
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else if (change == GXNode._Change.AfterChildRemove) {
-            this._invalidateOwnerElement(true);
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else {
-            // Call super by default and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
+    /**
+     * This will fire a change event for geometry updates on the owner element
+     * whenever a given property has been changed that affected the geometry.
+     * This is usually called from the _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * geometrical changes
+     * @return {Boolean} true if there was a property change that affected a
+     * change of the geometry and was handled (false i.e. for no owner element)
+     * @private
+     */
+    GXStyle.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        var ownerElement = this.getOwnerElement();
+        if (ownerElement) {
+            return ownerElement._handleGeometryChangeForProperties(change, args, properties);
         }
+        return false;
+    };
+
+    /**
+     * This will fire an invalidation event for visual updates on the owner element
+     * whenever a given property has been changed that affected the visual.
+     * This is usually called from the _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * visual changes
+     * @return {Boolean} true if there was a property change that affected a
+     * visual change and was handled (false i.e. for no owner element)
+     * @private
+     */
+    GXStyle.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        var ownerElement = this.getOwnerElement();
+        if (ownerElement) {
+            return ownerElement._handleVisualChangeForProperties(change, args, properties);
+        }
+        return false;
     };
 
     /** @override */
