@@ -88,6 +88,20 @@
             if (this._mode != GXPathTool.Mode.Edit) {
                 if (this._newPoint && this._pathEditor) {
                     this._updatePoint(event.client);
+                    if (this._mode == GXPathTool.Mode.Append) {
+                        var prevPt = this._editPt.getPrevious();
+                        if (prevPt) {
+                            prevPt.removeFlag(GXNode.Flag.Selected);
+                            this._editPt.setFlag(GXNode.Flag.Selected);
+                        }
+                    } else { // mode == Prepend
+                        var nextPt = this._editPt.getNext();
+                        if (nextPt) {
+                            nextPt.removeFlag(GXNode.Flag.Selected);
+                            this._editPt.setFlag(GXNode.Flag.Selected);
+                        }
+                    }
+                    this._pathEditor.requestInvalidation();
                     if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
                         this._editPt.setProperty('tp', 'C');
                     } else if (!gPlatform.modifiers.optionKey){
@@ -219,7 +233,7 @@
                 // add new point
                 var clickPt = this._view.getViewTransform().mapPoint(newPos);
                 anchorPt = this._constructNewPoint(event, clickPt);
-                this._addPoint(anchorPt, true, false);
+                this._addPoint(anchorPt, true, false, true);
             } else if (this._editPt) {
                 this._pathEditor.requestInvalidation();
                 newPos = this._updatePoint(event.client);

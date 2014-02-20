@@ -231,10 +231,13 @@
      * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path in scene or path native coordinates
      * @param {Boolean} draft - indicates if the path itself or path preview should be used for point insertion
      * @param {Boolean} nativeCoord - indicates if the new point already in path native coordinates
+     * @param {Boolean} oldPreviewSelection - if set, don't update previous preview point
      * @private
      */
-    GXPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord) {
-        anchorPt.setFlag(GXNode.Flag.Selected);
+    GXPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord, oldPreviewSelection) {
+        if (!oldPreviewSelection) {
+            anchorPt.setFlag(GXNode.Flag.Selected);
+        }
         if (this._pathEditor && !nativeCoord) {
             var transform = this._pathRef.getTransform();
             if (transform) {
@@ -254,12 +257,16 @@
             } else {
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GXPathTool.Mode.Append) {
-                    this._dpathRef.getAnchorPoints().getLastChild().removeFlag(GXNode.Flag.Selected);
+                    if (!oldPreviewSelection) {
+                        this._dpathRef.getAnchorPoints().getLastChild().removeFlag(GXNode.Flag.Selected);
+                    }
                     this._dpathRef.getAnchorPoints().appendChild(anchorPt);
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                     this._newPoint = true;
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
-                    this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
+                    if (!oldPreviewSelection) {
+                        this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
+                    }
                     this._dpathRef.getAnchorPoints().insertChild(anchorPt, this._dpathRef.getAnchorPoints().getFirstChild());
                     this._pathEditor.shiftPreviewTable(1);
                     this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
