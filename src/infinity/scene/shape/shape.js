@@ -142,7 +142,7 @@
             context.canvas.setTransform(transform);
         } else {
             // Paint our styling
-            this._firstChild.paint(context, this);
+            this.getStyle().paint(context, this);
         }
 
         // Paint contents if any
@@ -195,7 +195,7 @@
             return null;
         }
 
-        return this._firstChild.getBBox(source);
+        return this.getStyle().getBBox(source);
     };
 
     /** @override */

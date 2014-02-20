@@ -88,14 +88,14 @@
      */
     GXEllipse.prototype._invalidatePath = function () {
         this.beginUpdate();
-        this._firstChild.clearChildren();
+        this._getAnchorPoints().clearChildren();
 
         var an;
         for (an = Math.PI / 2; an <= this.$sa || gMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {}
 
         var anchorPoint = new GXPathBase.AnchorPoint();
         anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), 'S', true]);
-        this._firstChild.appendChild(anchorPoint, false);
+        this._getAnchorPoints().appendChild(anchorPoint, false);
 
         var ea = gMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + gMath.PI2 : this.$ea;
         if (ea < this.$sa) {
@@ -105,17 +105,17 @@
         for (an; an < ea && !gMath.isEqualEps(an, ea); an += Math.PI / 2) {
             anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), 'S', true]);
-            this._firstChild.appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint, false);
         }
 
         if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
             anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), 'S', true]);
-            this._firstChild.appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint, false);
         }
 
         var extraPoint = null;
-        if (this._firstChild.getFirstChild().getNext() == this._firstChild.getLastChild()) {
+        if (this._getAnchorPoints().getFirstChild().getNext() == this._getAnchorPoints().getLastChild()) {
             // We have only two anchor points, so add one for proper auto-handles, making rounded shape,
             // and then switch of auto-handles and remove that extra point
             anchorPoint = new GXPathBase.AnchorPoint();
@@ -123,26 +123,26 @@
                 an += Math.PI / 2;
             }
             anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), 'S', true]);
-            this._firstChild.appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint, false);
             extraPoint = anchorPoint;
         }
 
         this.setProperty('closed', true);
 
-        for (var ap = this._firstChild.getFirstChild(); ap != null; ap = ap.getNext()) {
+        for (var ap = this._getAnchorPoints().getFirstChild(); ap != null; ap = ap.getNext()) {
             ap.setProperty('ah', false);
         }
 
         if (extraPoint) {
-            this._firstChild.removeChild(extraPoint);
+            this._getAnchorPoints().removeChild(extraPoint);
         }
 
         if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
-            this._firstChild.getFirstChild().setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
-            this._firstChild.getLastChild().setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+            this._getAnchorPoints().getFirstChild().setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
+            this._getAnchorPoints().getLastChild().setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
             if (this.$etp == GXEllipse.Type.Pie) {
                 anchorPoint = new GXPathBase.AnchorPoint();
-                this._firstChild.appendChild(anchorPoint, false);
+                this._getAnchorPoints().appendChild(anchorPoint, false);
             } else if (this.$etp == GXEllipse.Type.Arc) {
                 this.setProperty('closed', false);
             }

@@ -154,7 +154,7 @@
      * @returns {GXPathBase.AnchorPoints}
      */
     GXRectangle.prototype.getAnchorPoints = function () {
-        return this._firstChild;
+        return this._getAnchorPoints();
     };
 
     /** @override */
@@ -196,12 +196,12 @@
      */
     GXRectangle.prototype._invalidatePath = function () {
         this.beginUpdate();
-        this._firstChild.clearChildren();
+        this._getAnchorPoints().clearChildren();
 
         this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
             var anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'], [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength]);
-            this._firstChild.appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint, false);
         }.bind(this));
         this.endUpdate();
     };

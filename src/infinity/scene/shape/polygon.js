@@ -116,13 +116,13 @@
      */
     GXPolygon.prototype._invalidatePath = function () {
         this.beginUpdate();
-        this._firstChild.clearChildren();
+        this._getAnchorPoints().clearChildren();
 
         this.iterateSegments(function (point, inside, angle) {
             var anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
                 [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
-            this._firstChild.appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint, false);
         }.bind(this));
         this.endUpdate();
     };
