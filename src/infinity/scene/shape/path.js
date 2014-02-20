@@ -83,14 +83,15 @@
      */
     GXPath.prototype.detailHitTest = function (location, transform, area) {
         var pickDist = this.isAttached() ? this._scene.getProperty('pickDist') : 3;
-        var outlineWidth = 1 + pickDist * 2;
         var locationInvTransformed = location;
         var scaleFactor = 1;
+
         if (transform) {
             var invTransform = transform.inverted();
             locationInvTransformed = invTransform.mapPoint(location);
             scaleFactor = scaleFactor * invTransform.getScaleFactor();
         }
+
         var origTransform = null;
         if (this.$transform) {
             origTransform = this.$transform;
@@ -99,20 +100,25 @@
             locationInvTransformed = invTransform.mapPoint(locationInvTransformed);
             scaleFactor = scaleFactor * invTransform.getScaleFactor();
         }
-        this._invalidateVertices(false);
+
+        // Generate unstyled vertices
+        // TODO : Cache this???
+        var vertices = new GXVertexContainer();
+        this._getAnchorPoints()._generateVertices(vertices, this.$transform, false);
+
         var hitResult = new GXVertexInfo.HitResult();
         var elemHitRes = null;
-        outlineWidth *= scaleFactor;
-        if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
-                this, outlineWidth, this.$closed ? area : false, hitResult)) {
+        var outlineWidth = scaleFactor + pickDist * 2;
 
+        if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
+            vertices, outlineWidth, this.$closed ? area : false, hitResult)) {
             elemHitRes = new GXElement.HitResult(this, hitResult);
         }
-        this._verticesDirty = true;
+
         if (origTransform) {
             this.$transform = origTransform;
         }
-        this._invalidateVertices(true);
+
         return elemHitRes;
     };
 
