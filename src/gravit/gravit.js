@@ -50,7 +50,6 @@
         gravit.properties.push(
             new EXDimensionsProperties(),
             new GDocumentProperties(),
-            new GShapeProperties(),
             new EXPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),
