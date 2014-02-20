@@ -238,7 +238,7 @@
             var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), function (hit) {
                 // Ensure to to allow only nodes that are selectable in editor
                 return this._editor.isSelectable(hit);
-            }.bind(this), stacked);
+            }.bind(this), stacked, -1, this._scene.getProperty('pickDist'));
 
             if (elementHits) {
                 // The element hit array can only contain more than one hit

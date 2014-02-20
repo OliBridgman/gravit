@@ -213,7 +213,7 @@
     };
 
     /** @override */
-    GXImage.prototype._detailHitTest = function (location, transform) {
+    GXImage.prototype._detailHitTest = function (location, transform, tolerance) {
         // TODO : Make correct shape hit test here instead
         return new GXElement.HitResult(this);
     };

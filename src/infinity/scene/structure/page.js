@@ -265,14 +265,17 @@
     };
 
     /** @override */
-    GXPage.prototype._detailHitTest = function (location, transform) {
+    GXPage.prototype._detailHitTest = function (location, transform, tolerance) {
         var geoBox = this.getGeometryBBox();
+
         if (transform) {
             geoBox = transform.mapRect(geoBox);
         }
-        if (geoBox.containsPoint(location)) {
+
+        if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
             return new GXElement.HitResult(this);
         }
+
         return null;
     };
 

@@ -24,6 +24,11 @@
         return this._getChildrenBBox(source);
     };
 
+    /** @override */
+    GXStyleSet.prototype.hitTest = function (source, location, transform, tolerance) {
+        return this._hitTestChildren(source, location, transform, tolerance);
+    };
+
     /** @private */
     GXStyleSet.prototype._paintChildren = function (context, source) {
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
@@ -45,6 +50,19 @@
             }
         }
         return result;
+    };
+
+    /** @private */
+    GXStyleSet.prototype._hitTestChildren = function (source, location, transform, tolerance) {
+        for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
+            if (child instanceof GXStyle) {
+                var result = child.hitTest(source, location, transform, tolerance);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     };
 
     /** @override */

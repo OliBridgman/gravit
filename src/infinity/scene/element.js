@@ -394,11 +394,14 @@
      * location, otherwise returns the topmost one, only. Defaults to false
      * @param {Number} [level] the level of deepness. A value of zero or less ignores
      * all children, a negative value iterates to deepest level. Defaults to -1
+     * @param {Number} [tolerance] a tolerance value for hit testing in view coordinates,
+     * defaults to zero if not provided.
      * @returns {Array<GXElement.HitResult>} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype.hitTest = function (location, transform, acceptor, stacked, level) {
+    GXElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
+        tolerance = tolerance || 0;
 
         // Quick-Test -> if location doesn't fall into our bounding-area
         // or we don't have a bounding area, then we can certainly not
@@ -424,7 +427,7 @@
         if (level !== 0 && this.hasMixin(GXNode.Container)) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
                 if (child instanceof GXElement) {
-                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1);
+                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance);
                     if (subResult) {
                         if (stacked) {
                             if (result) {
@@ -442,7 +445,7 @@
 
         if ((acceptor && acceptor.call(null, this) == true) || !acceptor) {
             // No hit so far so try to hit ourself
-            var myResult = this._detailHitTest(location, transform);
+            var myResult = this._detailHitTest(location, transform, tolerance);
             if (myResult) {
                 if (stacked && result) {
                     result.push(myResult);
@@ -662,10 +665,11 @@
      * in transformed view coordinates (see transform parameter)
      * @param {GTransform} transform the transformation of the scene
      * or null if there's none
+     * @param {Number} tolerance a tolerance used for hit-testing
      * @returns {GXElement.HitResult} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype._detailHitTest = function (location, transform) {
+    GXElement.prototype._detailHitTest = function (location, transform, tolerance) {
         return null;
     };
 

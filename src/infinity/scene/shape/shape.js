@@ -205,18 +205,10 @@
     };
 
     /** @override */
-    GXShape.prototype._detailHitTest = function (location, transform) {
-        var pickDist = this.isAttached() ? this._scene.getProperty('pickDist') : 3;
-
-        // TODO : Make correct vertex hit test here including style and document distance info
-        // and return correct hit information from style and path etc. Do also correctly include
-        // transformation info for outline width calculation
-        var outlineWidth = 20 * transform.getScaleFactor() + pickDist * 2;
-        var hitResult = new GXVertexInfo.HitResult();
-
-        if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), outlineWidth, true, hitResult)) {
-        //if (gVertexInfo.hitTest(location.getX(), location.getY(), this, outlineWidth, true, hitResult)) {
-            return new GXElement.HitResult(this);
+    GXShape.prototype._detailHitTest = function (location, transform, tolerance) {
+        var styleHit = this.getStyle().hitTest(this, location, transform, tolerance);
+        if (styleHit) {
+            return new GXElement.HitResult(this, styleHit);
         }
         return null;
     };
