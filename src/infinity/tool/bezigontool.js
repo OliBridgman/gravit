@@ -75,6 +75,7 @@
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
 
+            this._blockDeactivation();
             this._checkMode();
             this._renewPreviewLink();
 
@@ -98,6 +99,7 @@
                     // Close path
                     this._pathRef.setProperty('closed', true);
                     this._makePointMajor(otherPt);
+                    this._pathEditor.setActiveExtendingMode(false);
                     this._mode = GXPathTool.Mode.Edit;
                     this._editPt = this._pathEditor.getPathPointPreview(otherPt);
                     this._pathEditor.requestInvalidation();
@@ -255,6 +257,7 @@
                 this._pathRef.setProperty('closed', true);
                 this._pathRef.endUpdate();
                 this._pathEditor.requestInvalidation();
+                this._pathEditor.setActiveExtendingMode(false);
                 this._newPoint = false;
             }
         }
@@ -301,6 +304,8 @@
             this._dragStartPt = null;
         }
         this._lastMouseEvent = null;
+
+        this._allowDeactivation();
     };
 
     /** override */

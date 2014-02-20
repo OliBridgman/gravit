@@ -115,6 +115,14 @@
      */
     GXPathTool.prototype._lastMouseEvent = null;
 
+    /**
+     * Indicates if deactivation will not break internal tool's logic
+     * Deactivation is not allowed while mouse is pressed.
+     * @type {boolean}
+     * @private
+     */
+    GXPathTool.prototype._deactivationAllowed = true;
+
     /** @override */
     GXPathTool.prototype.getHint = function () {
         return GXTool.prototype.getHint.call(this)
@@ -137,10 +145,17 @@
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = GUICursor.PenStart;
+        this._initialSelectCorrection();
     };
 
     /** @override */
     GXPathTool.prototype.deactivate = function (view, layer) {
+        if (this._newPoint) {
+            this._pathEditor.requestInvalidation();
+            this._pathEditor.releasePathPreview();
+            this._pathEditor.requestInvalidation();
+        }
+        this._allowDeactivation();
         this._reset();
         GXTool.prototype.deactivate.call(this, view, layer);
 
@@ -149,6 +164,27 @@
         layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+    };
+
+    /** @override */
+    GXPathTool.prototype.isDeactivatable = function () {
+        return this._deactivationAllowed;
+    };
+
+    /**
+     * Remove deactivation blocking flag if any
+     * @private
+     */
+    GXPathTool.prototype._allowDeactivation = function () {
+        this._deactivationAllowed = true;
+    };
+
+    /**
+     * Mark that deactivation should be blocked
+     * @private
+     */
+    GXPathTool.prototype._blockDeactivation = function () {
+        this._deactivationAllowed = false;
     };
 
     /**
@@ -187,9 +223,30 @@
                     this._mode = GXPathTool.Mode.Append;
                 } else if (selType == GXPathEditor.PointsSelectionType.First) {
                     this._mode = GXPathTool.Mode.Prepend;
-                    // hit test result becomes invalid if any;
-                    //this._lastHitTest = new GXPathTool.LastHitTest();
                 }
+            }
+        }
+    };
+
+    /**
+     * Reset selected path points if needed and set selection to the last point,
+     * if selection was changed by temporary tool, and the path continued extension is indicated in path editor
+     * @private
+     */
+    GXPathTool.prototype._initialSelectCorrection = function () {
+        this._checkPathEditor();
+        if (this._pathEditor) {
+            this._pathRef = this._pathEditor.getPath();
+            if (this._pathRef.getProperty('closed')) {
+                this._pathEditor.setActiveExtendingMode(false);
+            } else if (this._pathEditor.isActiveExtendingMode()) {
+                var selType = this._pathEditor.getPointsSelectionType();
+                if (selType != GXPathEditor.PointsSelectionType.Last &&
+                        selType != GXPathEditor.PointsSelectionType.First) {
+
+                    this._pathEditor.selectOnePoint(this._pathRef.getAnchorPoints().getLastChild());
+                }
+                this._cursor = GUICursor.Pen;
             }
         }
     };
@@ -254,6 +311,7 @@
                 this._renewPreviewLink();
                 this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 this._pathEditor.requestInvalidation();
+                this._pathEditor.setActiveExtendingMode(true);
             } else {
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GXPathTool.Mode.Append) {
@@ -263,6 +321,7 @@
                     this._dpathRef.getAnchorPoints().appendChild(anchorPt);
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                     this._newPoint = true;
+                    this._pathEditor.setActiveExtendingMode(true);
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     if (!oldPreviewSelection) {
                         this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
@@ -271,6 +330,7 @@
                     this._pathEditor.shiftPreviewTable(1);
                     this._editPt = this._dpathRef.getAnchorPoints().getFirstChild();
                     this._newPoint = true;
+                    this._pathEditor.setActiveExtendingMode(true);
                 }
                 this._pathEditor.requestInvalidation();
             }
@@ -281,11 +341,13 @@
                 this._checkMode();
                 this._renewPreviewLink();
                 this._pathEditor.requestInvalidation();
+                this._pathEditor.setActiveExtendingMode(true);
             } else {
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GXPathTool.Mode.Append) {
                     this._pathRef.getAnchorPoints().appendChild(anchorPt);
                     this._pathEditor.selectOnePoint(anchorPt);
+                    this._pathEditor.setActiveExtendingMode(true);
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
@@ -293,6 +355,7 @@
                         anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
 
                     this._pathEditor.selectOnePoint(anchorPt);
+                    this._pathEditor.setActiveExtendingMode(true);
                 }
                 this._pathEditor.requestInvalidation();
             }
@@ -342,6 +405,7 @@
         this._checkMode();
         if (this._pathEditor) {
             this._pathEditor.updatePartSelection(false);
+            this._pathEditor.setActiveExtendingMode(false);
             this._commitChanges();
         }
         this._mode = GXPathTool.Mode.Edit;
@@ -411,6 +475,7 @@
             this._checkMode();
             if (this._pathEditor) {
                 this._pathEditor.updatePartSelection(false);
+                this._pathEditor.setActiveExtendingMode(false);
                 this._pathRef.removeFlag(GXNode.Flag.Selected);
                 this._commitChanges();
             }

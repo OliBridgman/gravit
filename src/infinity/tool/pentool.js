@@ -60,19 +60,20 @@
             return;
         }
 
-        this._mDownTime = tm;
-
         var anchorPt = null;
 
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-        this._released = false;
         this._lastMouseEvent = event;
         this._dragStarted = false;
         this._dragStartPt = null;
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+            this._mouseMove(event);
 
+            this._mDownTime = tm;
+            this._released = false;
+            this._blockDeactivation();
             this._checkMode();
             this._renewPreviewLink();
 
@@ -173,6 +174,7 @@
                     this._pathRef.setProperty('closed', true);
                     this._pathRef.endUpdate();
                     this._pathEditor.requestInvalidation();
+                    this._pathEditor.setActiveExtendingMode(false);
                 } else {
                     this._dpathRef = this._pathEditor.getPathPreview(true);
                     if (this._mode == GXPathTool.Mode.Append) {
@@ -507,6 +509,7 @@
                     this._pathEditor.applyTransform(this._pathRef);
                     this._pathEditor.requestInvalidation();
                     this._pathRef.setProperty('closed', true);
+                    this._pathEditor.setActiveExtendingMode(false);
                 }
                 this._commitChanges();
                 this._mode = GXPathTool.Mode.Edit;
@@ -517,6 +520,8 @@
         this._dragStarted = false;
         this._dragStartPt = null;
         this._lastMouseEvent = null;
+
+        this._allowDeactivation();
     };
 
     /** override */

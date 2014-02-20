@@ -53,6 +53,29 @@
      */
     GXPathEditor.prototype._sourceIndexToPreviewIndex = null;
 
+    /**
+     * Indicates if path extension is expected to be continued by path tools
+     * @type {Boolean}
+     * @private
+     */
+    GXPathEditor.prototype._activeExtedingMode = false;
+
+    /**
+     * Returns if path editor is in path actively axtending mode
+     * @returns {Boolean}
+     */
+    GXPathEditor.prototype.isActiveExtendingMode = function () {
+        return this._activeExtedingMode;
+    };
+
+    /**
+     * Sets the value of _activeExtedingMode flag
+     * @param {Boolean} activeFlag - value to set
+     */
+    GXPathEditor.prototype.setActiveExtendingMode = function (activeFlag) {
+        this._activeExtedingMode = activeFlag;
+    };
+
     /** @override */
     GXPathEditor.prototype.getBBox = function (transform) {
         var bbox = GXPathBaseEditor.prototype.getBBox.call(this, transform);
