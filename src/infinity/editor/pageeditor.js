@@ -76,8 +76,8 @@
     };
 
     /** @override */
-    GXPageEditor.prototype.acceptDrop = function (position, type, source) {
-        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source) === false) {
+    GXPageEditor.prototype.acceptDrop = function (position, type, source, hitData) {
+        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
             // We can handle colors so check for a color
             if (type === GXElementEditor.DropType.Color) {
                 this.getElement().setProperty('color', source ? source.asString() : null);

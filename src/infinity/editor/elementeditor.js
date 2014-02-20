@@ -735,12 +735,14 @@
      * @param {GPoint} position the drop position in scene coordinates
      * @param {GXElementEditor.DropType} type
      * @param {*} source the drop source, the type depends on type
+     * @param {*} hitData the GXElement.HitResult.data that was gathered
+     * when hitting the element for this editor, might be null
      */
-    GXElementEditor.prototype.acceptDrop = function (position, type, source) {
+    GXElementEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         // By default, we'll ask all children editors, first
         if (this._editors) {
             for (var i = 0; i < this._editors.length; ++i) {
-                if (this._editors[i].acceptDrop(position, type, source) === true) {
+                if (this._editors[i].acceptDrop(position, type, source, hitData) === true) {
                     return true;
                 }
             }

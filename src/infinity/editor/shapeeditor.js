@@ -76,13 +76,17 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype.acceptDrop = function (position, type, source) {
-        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source) === false) {
-            // We can handle colors so check for a color
-            if (type === GXElementEditor.DropType.Color) {
-                this.getElement().getStyle().getFirstChild().__setFill(source ? source.asString() : null);
-                //this.getElement().setProperty('color', source ? source.asString() : null);
-                return true;
+    GXShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
+        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
+            // If we've hit a style, handle it here
+            // TODO : Styles are supposed to gain their own editors so this should become obsolete
+            if (hitData && hitData instanceof GXStyle.HitResult) {
+                // Styles can handle different kind of swatches
+                if (type === GXElementEditor.DropType.Color) {
+                    // TODO : Make this right
+                    hitData.style.__setFill(source ? source.asString() : null);
+                    return true;
+                }
             }
             return false;
         }

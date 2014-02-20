@@ -78,6 +78,12 @@
     GXEditorView.prototype._editorConfiguration = null;
 
     /**
+     * @type {GXEditor}
+     * @private
+     */
+    GXEditorView.prototype._editor = null;
+
+    /**
      * Return the editor this view is rendering
      * @returns {GXEditor}
      */
@@ -87,7 +93,7 @@
 
     /**
      * Assign the editor this view is rendering
-     * @param {editor} editor
+     * @param {GXEditor} editor
      */
     GXEditorView.prototype.setEditor = function (editor) {
         if (editor != this._editor) {
@@ -197,7 +203,7 @@
                             var hit = stackedHits[i];
                             // Create a temporary editor for the hit element which gets not attached
                             var editor = GXElementEditor.createEditor(hit.element);
-                            if (editor && editor.acceptDrop(scenePosition, type, source)) {
+                            if (editor && editor.acceptDrop(scenePosition, type, source, hit.data)) {
                                 // Drop was accepted so we're done here
                                 acceptedDrop = true;
                                 break;
