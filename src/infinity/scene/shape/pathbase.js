@@ -125,9 +125,9 @@
         hry: null,
         /** Whether handles are auto-calculated or not */
         ah: false,
-        /** The left shoulder length */
+        /** The left corner length */
         cl: 0,
-        /** The right shoulder length */
+        /** The right corner length */
         cr: 0
     };
 
