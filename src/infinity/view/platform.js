@@ -8,21 +8,13 @@
      * @version 1.0
      */
     function GUIPlatform() {
-        function normalizeMetaKey(event) {
-            // Normalize meta key property of event
-            if (gSystem.operatingSystem !== GSystem.OperatingSystem.OSX_IOS || gSystem.hardware !== GSystem.Hardware.Desktop) {
-                event.metaKey = event.ctrlKey;
-            }
-        };
         document.addEventListener("keydown", function (event) {
             if (!$(document.activeElement).is(":input")) {
-                normalizeMetaKey(event);
                 this._updateModifiers(event);
             }
         }.bind(this), true);
         document.addEventListener("keyup", function (event) {
             if (!$(document.activeElement).is(":input")) {
-                normalizeMetaKey(event);
                 this._updateModifiers(event);
             }
         }.bind(this), true);
@@ -144,10 +136,12 @@
         var metaKey = false;
         var spaceKey = false;
 
+        var _evMetaKey  = (gSystem.operatingSystem !== GSystem.OperatingSystem.OSX_IOS || gSystem.hardware !== GSystem.Hardware.Desktop) ? event.ctrlKey : event.metaKey;
+
         // Update global modifiers
-        if (event.metaKey != this.modifiers.metaKey) {
+        if (_evMetaKey != this.modifiers.metaKey) {
             metaKey = true;
-            this.modifiers.metaKey = event.metaKey;
+            this.modifiers.metaKey = _evMetaKey;
         }
 
         if (event.altKey != this.modifiers.optionKey) {
