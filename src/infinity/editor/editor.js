@@ -1284,6 +1284,11 @@
                     node.getParent().setFlag(GXNode.Flag.Active);
                 }
             }
+        } else if (node instanceof GXNode && node.hasFlag(GXNode.Flag.Selected)) {
+            // Trigger selection change event
+            if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
+                this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
+            }
         }
     };
 
@@ -1332,6 +1337,11 @@
                 if (node.getParent() instanceof GXLayer && !sameParentInSelection) {
                     node.getParent().removeFlag(GXNode.Flag.Active);
                 }
+            }
+        }  else if (node instanceof GXNode && node.hasFlag(GXNode.Flag.Selected)) {
+            // Trigger selection change event
+            if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
+                this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
             }
         }
     };

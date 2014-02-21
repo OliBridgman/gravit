@@ -1562,14 +1562,14 @@
             /** @type {GXNode} */
             var child = args;
             if (this.isAttached() && this._scene.hasEventListeners(GXNode.BeforeRemoveEvent)) {
-                this._scene.trigger(new GXNode.BeforeRemoveEvent(child, this));
+                this._scene.trigger(new GXNode.BeforeRemoveEvent(child));
             }
         }
         else if (change == GXNode._Change.AfterChildRemove) {
             /** @type {GXNode} */
             var child = args;
             if (this.isAttached() && this._scene.hasEventListeners(GXNode.AfterRemoveEvent)) {
-                this._scene.trigger(new GXNode.AfterRemoveEvent(child, this));
+                this._scene.trigger(new GXNode.AfterRemoveEvent(child));
             }
         } else if (change == GXNode._Change.BeforePropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
