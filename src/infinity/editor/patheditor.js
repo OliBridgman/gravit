@@ -156,10 +156,8 @@
                 this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['hrx', 'hry', 'ah']);
                 break;
             case GXPathEditor.PartType.LeftShoulder:
-                this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['cl']);
-                break;
             case GXPathEditor.PartType.RightShoulder:
-                this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['cr']);
+                this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['cl', 'cr']);
                 break;
         }
         this.resetPartMove(partId, partData);
