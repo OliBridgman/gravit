@@ -566,6 +566,24 @@
         return false;
     };
 
+    GXPathEditor.prototype.setPathProperties = function(properties, values) {
+        this._element.setProperties(properties, values);
+        if (this._elementPreview) {
+            this.releasePathPreview();
+            this.requestInvalidation();
+        }
+        return true;
+    };
+
+    GXPathEditor.prototype.setPointProperties = function(point, properties, values) {
+        point.setProperties(properties, values);
+        if (this._elementPreview) {
+            this.releasePathPreview();
+            this.requestInvalidation();
+        }
+        return true;
+    };
+
     /** @override */
     GXPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         if (this._showAnnotations()) {

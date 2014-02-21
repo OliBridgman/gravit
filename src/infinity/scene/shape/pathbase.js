@@ -151,11 +151,11 @@
         var stream = [];
 
         // Encoding: TYPE | AH | X | Y | 'h' | HLX | HLY | 'H' | HRX | HRY | 'C' | CL | CR
-        if (this.$tp !== null && this.$tp !== GXPath.AnchorPoint.GeometryProperties.tp) {
+        if (this.$tp !== null && this.$tp !== GXPathBase.AnchorPoint.GeometryProperties.tp) {
             stream.push(this.$tp);
         }
 
-        if (this.$ah && this.$ah !== GXPath.AnchorPoint.GeometryProperties.ah) {
+        if (this.$ah && this.$ah !== GXPathBase.AnchorPoint.GeometryProperties.ah) {
             stream.push(this.$ah);
         }
 
@@ -183,8 +183,8 @@
         }
 
         // Corner shoulder
-        if ((this.$cl !== null && !gMath.isEqualEps(this.$cl, GXPath.AnchorPoint.GeometryProperties.cl)) ||
-            (this.$cr !== null && !gMath.isEqualEps(this.$cr, GXPath.AnchorPoint.GeometryProperties.cr))) {
+        if ((this.$cl !== null && !gMath.isEqualEps(this.$cl, GXPathBase.AnchorPoint.GeometryProperties.cl)) ||
+            (this.$cr !== null && !gMath.isEqualEps(this.$cr, GXPathBase.AnchorPoint.GeometryProperties.cr))) {
             stream.push('C');
             stream.push(this.$cl);
             stream.push(this.$cr);

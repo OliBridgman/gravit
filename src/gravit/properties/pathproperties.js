@@ -359,7 +359,8 @@
         var pathes = this._pathes.slice();
         this._document.getEditor().executeTransaction(function () {
             for (var i = 0; i < pathes.length; ++i) {
-                pathes[i].setProperties(properties, values);
+                var pathEditor = GXElementEditor.openEditor(pathes[i]);
+                pathEditor.setPathProperties(properties, values);
             }
         }, pathes, 'Path Properties');
     };
@@ -383,7 +384,14 @@
         var points = this._points.slice();
         this._document.getEditor().executeTransaction(function () {
             for (var i = 0; i < points.length; ++i) {
-                points[i].setProperties(properties, values);
+                var point = points[i];
+                var path = point.getParent() ? point.getParent().getParent() : null;
+                if (path) {
+                    var pathEditor = GXElementEditor.openEditor(path);
+                    pathEditor.setPointProperties(point, properties, values);
+                } else {
+                    points[i].setProperties(properties, values);
+                }
             }
         }, points, 'Point Properties');
     };
