@@ -183,19 +183,19 @@
 
     /** @override */
     GXShape.prototype._calculatePaintBBox = function () {
-        /*
-         var paintBBox = this.getGeometryBBox();
-         // TODO : FIX THIS, STYLES SHOULD EXTEND PAINTBOX
-         if (paintBBox) {
-         paintBBox = paintBBox.expanded(2, 2, 2, 2);
-         }
-         return paintBBox;*/
         var source = this.getGeometryBBox();
         if (!source) {
             return null;
         }
 
-        return this.getStyle().getBBox(source);
+        var result = this.getStyle().getBBox(source);
+
+        // Extend our bbox a bit to honor aa-pixels
+        if (result) {
+            return result.expanded(1, 1, 1, 1);
+        }
+
+        return null;
     };
 
     /** @override */
