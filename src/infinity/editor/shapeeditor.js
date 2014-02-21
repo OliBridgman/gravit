@@ -81,9 +81,14 @@
             // TODO : Styles are supposed to gain their own editors so this should become obsolete
             // TODO : Also support dropping GXSwatch
             if (type === GXElementEditor.DropType.Color || (type === GXElementEditor.DropType.Node && source instanceof GXSwatch)) {
+                var editor = GXEditor.getEditor(this.getElement().getScene());
+
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
                 if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
-                    hitData.style.setProperty('fill', source);
+                    // TODO : I18N
+                    editor.executeTransaction(function () {
+                        hitData.style.setProperty('fill', source);
+                    }, [hitData.style], 'Drop Style Fill');
                 } else {
                     this.getElement().getStyle().setArea(source);
                 }
