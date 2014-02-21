@@ -99,6 +99,10 @@
                 }
                 return value;
             });
+
+            // Store style
+            blob.style = GXNode.store(this.getStyle());
+
             return true;
         }
         return false;
@@ -113,6 +117,10 @@
                 }
                 return value;
             });
+
+            // Restore style
+            this.getStyle().restore(blob.style);
+
             return true;
         }
         return false;

@@ -32,7 +32,8 @@
             this.appendChild(targetStyle);
         }
 
-        targetStyle.setProperty('fill', fill);
+        // TODO : REMOVE AS STRING
+        targetStyle.setProperty('fill', fill && fill instanceof GXColor ? fill.asString() : fill);
     };
 
     /**
@@ -54,7 +55,8 @@
             this.appendChild(targetStyle);
         }
 
-        targetStyle.setProperty('fill', fill);
+        // TODO : REMOVE AS STRING
+        targetStyle.setProperty('fill', fill && fill instanceof GXColor ? fill.asString() : fill);
     };
 
     /** @override */

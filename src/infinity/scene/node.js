@@ -1154,16 +1154,12 @@
         if (blob.hasOwnProperty('$') && this.hasMixin(GXNode.Container)) {
             var children = blob['$'];
             if (children.length > 0) {
-                this.beginUpdate();
-
                 for (var i = 0; i < children.length; ++i) {
                     var child = GXNode.restore(children[i]);
                     if (child) {
                         this.appendChild(child, true);
                     }
                 }
-
-                this.endUpdate();
             }
         }
 
