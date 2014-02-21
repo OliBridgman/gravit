@@ -533,10 +533,23 @@
     };
 
     /** @override */
+    GXPathEditor.prototype._attach = function () {
+        var scene = this._element.getScene();
+        if (scene != null) {
+            scene.addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
+        }
+    };
+
+    /** @override */
     GXPathEditor.prototype._detach = function () {
         // Ensure to de-select all selected anchor points when detaching
         for (var anchorPoint = this._element.getAnchorPoints().getFirstChild(); anchorPoint != null; anchorPoint = anchorPoint.getNext()) {
             anchorPoint.removeFlag(GXNode.Flag.Selected);
+        }
+
+        var scene = this._element.getScene();
+        if (scene != null) {
+            scene.removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
         }
 
         GXPathBaseEditor.prototype._detach.call(this);
@@ -564,24 +577,6 @@
                 .containsPoint(location);
         }
         return false;
-    };
-
-    GXPathEditor.prototype.setPathProperties = function(properties, values) {
-        this._element.setProperties(properties, values);
-        if (this._elementPreview) {
-            this.releasePathPreview();
-            this.requestInvalidation();
-        }
-        return true;
-    };
-
-    GXPathEditor.prototype.setPointProperties = function(point, properties, values) {
-        point.setProperties(properties, values);
-        if (this._elementPreview) {
-            this.releasePathPreview();
-            this.requestInvalidation();
-        }
-        return true;
     };
 
     /** @override */
@@ -1162,6 +1157,12 @@
      */
     GXPathEditor.prototype.getPathPointPreview = function (sourcePoint) {
         var sourceIndex = sourcePoint.getParent().getIndexOfChild(sourcePoint);
+        if (!this._sourceIndexToPreviewIndex) {
+            this.extendPreviewToFull();
+        } else if (this._sourceIndexToPreviewIndex[sourceIndex] == null) {
+            this._createPathPreviewIfNecessary(sourcePoint);
+        }
+        this.requestInvalidation();
         var previewIndex = this._sourceIndexToPreviewIndex[sourceIndex];
         return this._elementPreview.getAnchorPoints().getChildByIndex(previewIndex);
     };
@@ -1403,6 +1404,20 @@
             }
         }
         return newSelection;
+    };
+
+    /**
+     * If the path is updated (may be way around of this path editor), handle this by updating preview
+     * @param {GXElement.GeometryChangeEvent} evt
+     * @private
+     */
+    GXPathEditor.prototype._geometryChange = function(evt) {
+        if (evt.type == GXElement.GeometryChangeEvent.Type.After) {
+            if (this._elementPreview) {
+                this.releasePathPreview();
+                this.requestInvalidation();
+            }
+        }
     };
 
     /** @override */

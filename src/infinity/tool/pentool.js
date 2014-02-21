@@ -133,10 +133,24 @@
     /** overwrite */
     GXPenTool.prototype._renewPreviewLink = function () {
         if (!this._pathEditor) {
+            this._editPt = null;
+            this._newPoint = false;
             this._dpathRef = null;
         } else {
-            this._dpathRef = this._pathEditor.getPathPreview(true);
-            //this._pathEditor.requestInvalidation();
+            var newDPathRef = this._pathEditor.getPathPreview(true);
+            if (this._editPt) {
+                var checkPt;
+                if (this._mode == GXPathTool.Mode.Append) {
+                    checkPt = newDPathRef.getAnchorPoints().getLastChild();
+                } else { // this._mode == GXPathTool.Mode.Prepend
+                    checkPt = newDPathRef.getAnchorPoints().getFirstChild();
+                }
+                if (this._editPt != checkPt) {
+                    this._newPoint = false;
+                    this._editPt = null;
+                }
+            }
+            this._dpathRef = newDPathRef;
         }
     };
 
