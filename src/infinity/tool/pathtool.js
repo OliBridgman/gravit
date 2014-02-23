@@ -101,6 +101,12 @@
     GXPathTool.prototype._mDownTime = 0;
 
     /**
+     * Time in milliseconds, which is used to distinguish two single clicks from double-click
+     * @type {number}
+     */
+    GXPathTool.DBLCLICKTM = 150;
+
+    /**
      * Current active cursor
      * @type {GUICursor}
      * @private

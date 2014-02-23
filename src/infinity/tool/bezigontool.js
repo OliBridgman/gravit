@@ -56,7 +56,7 @@
      */
     GXBezigonTool.prototype._mouseDown = function (event) {
         var tm = new Date().getTime();
-        if (tm - this._mDownTime < 300) {
+        if (tm - this._mDownTime < GXPathTool.DBLCLICKTM) {
             // Double-click
             return;
         }
