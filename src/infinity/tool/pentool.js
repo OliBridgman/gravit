@@ -290,7 +290,11 @@
                     }
                 }
             } else {
-                this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], ['N', null, null, null, null]);
+                if (!gPlatform.modifiers.optionKey) {
+                    this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], ['N', null, null, null, null]);
+                } else {
+                    this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+                }
             }
         } else {
             var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
@@ -310,10 +314,10 @@
                     var dx = newNativePos.getX() - ptx;
                     var dy = newNativePos.getY() - pty;
                     this._editPt.setProperty('ah', false);
-                    hrx = this._editPt.getProperty('hrx');
-                    hrx = hrx != null ? hrx + dx : ptx + dx;
-                    hry = this._editPt.getProperty('hry');
-                    hrx = hry != null ? hry + dy : pty + dy;
+                    var hrxOrig = this._dragStartPt.getProperty('hrx');
+                    hrx = hrxOrig != null ? hrxOrig + dx : newNativePos.getX();
+                    var hryOrig = this._dragStartPt.getProperty('hry');
+                    hry = hryOrig != null ? hryOrig + dy : newNativePos.getY();
                     this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', hrx, hry]);
                 }
             } else if (this._mode == GXPathTool.Mode.Append) {
@@ -429,7 +433,7 @@
             this._lastMouseEvent = event;
             this._setCursorForPosition(GUICursor.PenDrag);
             if (!this._dragStartPt) {
-                this._dragStartPt = this._editPt;
+                this._dragStartPt = this._refPt ? this._refPt : this._editPt;
                 if (event.button == GUIMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != 'C') {
                     this._editPt.setProperty('tp', 'S');
                 }

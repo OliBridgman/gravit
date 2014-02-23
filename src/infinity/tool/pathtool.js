@@ -463,6 +463,11 @@
                 this._mouseMove(this._lastMouseEvent);
             }
         }
+        if (event.changed.optionKey) {
+            if (!this._released) {
+                this._mouseDrag(this._lastMouseEvent);
+            }
+        }
     };
 
     /**
@@ -573,6 +578,7 @@
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
                 this._makePointMajor(anchorPt);
+                this._refPt = anchorPt;
                 this._editPt = this._pathEditor.getPathPointPreview(anchorPt);
                 this._pathEditor.requestInvalidation();
                 this._mode = GXPathTool.Mode.Edit;
