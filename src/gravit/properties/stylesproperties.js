@@ -109,7 +109,7 @@
             .attr('data-property', 'cw')
             .gAutoBlur()
             .on('change', function () {
-                var value = parseInt($(this).val());
+                var value = self._style.getScene().stringToPoint($(this).val());
                 if (!isNaN(value)) {
                     self._properties._assignStyleProperty(self._style, 'cw', value);
                 } else {
@@ -122,7 +122,7 @@
     GStylesProperties._PaintContourProperties.prototype.update = function (style) {
         GStylesProperties._PaintFillProperties.prototype.update.call(this, style);
 
-        this._panel.find('input[data-property="cw"]').val(style.getProperty('cw'));
+        this._panel.find('input[data-property="cw"]').val(style.getScene().pointToString(style.getProperty('cw')));
     };
 
     // -----------------------------------------------------------------------------------------------------------------

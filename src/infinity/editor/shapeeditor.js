@@ -90,7 +90,7 @@
                         hitData.style.setProperty('fill', source);
                     }, [hitData.style], 'Drop Style Fill');
                 } else {
-                    this.getElement().getStyle(true).setArea(source);
+                    this.getElement().getStyle(true).applyStyleProperties(GXPaintAreaStyle, ['fill'], [source]);
                 }
                 return true;
             }
