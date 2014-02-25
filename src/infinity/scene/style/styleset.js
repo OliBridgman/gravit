@@ -13,6 +13,11 @@
 
     GXNode.inheritAndMix("styleSet", GXStyleSet, GXStyle, [GXNode.Container]);
 
+    /** @override */
+    GXStyleSet.prototype.validateInsertion = function (parent, reference) {
+        return (parent instanceof GXElement && parent.hasMixin(GXElement.Style)) || (parent instanceof GXStyleSet);
+    };
+
     /**
      * Assign an area. This will assign the area to the topmost
      * area-style on this set. If there's none, this will create one.

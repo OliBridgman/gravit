@@ -49,7 +49,7 @@
                     .append($('<button>STROKE</button>')
                         .gColorButton()
                         .on('change', function (evt, color) {
-                            gApp.getActiveDocument().getEditor().setCurrentColor(GXEditor.CurrentColorType.Stroke, color);
+                            gApp.getActiveDocument().getEditor().setCurrentColor(GXEditor.CurrentColorType.Contour, color);
                         }))))
             .append($('<div></div>')
                 .addClass('section')

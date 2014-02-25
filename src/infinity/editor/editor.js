@@ -54,7 +54,7 @@
      * @enum
      */
     GXEditor.CurrentColorType = {
-        Stroke: 0,
+        Contour: 0,
         Fill: 1
     };
 
@@ -509,11 +509,10 @@
             if (this._selection) {
                 for (var i = 0; i < this._selection.length; ++i) {
                     var element = this._selection[i];
-                    // TODO : Better check if element has style support and avoid check for shape here
-                    if (element instanceof GXShape) {
+                    if (element.hasMixin(GXElement.Style)) {
                         switch (type) {
-                            case GXEditor.CurrentColorType.Stroke:
-                                element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Stroke]);
+                            case GXEditor.CurrentColorType.Contour:
+                                element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
                                 break;
                             case GXEditor.CurrentColorType.Fill:
                                 element.getStyle().setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
@@ -894,10 +893,9 @@
 
                 if (!noDefaults) {
                     // Assign default fill and contour style for shapes
-                    // TODO : Better check if element has style support and avoid check for shape here
-                    if (element instanceof GXShape) {
-                        if (this._currentColor[GXEditor.CurrentColorType.Stroke]) {
-                            element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Stroke]);
+                    if (element.hasMixin(GXElement.Style)) {
+                        if (this._currentColor[GXEditor.CurrentColorType.Contour]) {
+                            element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
                         }
 
                         if (this._currentColor[GXEditor.CurrentColorType.Fill]) {

@@ -7,6 +7,7 @@
      * @extends GXElement
      * @mixes GXElement.Transform
      * @mixes GXElement.Pivot
+     * @mixes GXElement.Style
      * @mixes GXNode.Properties
      * @mixes GXNode.Container
      * @mixes GXNode.Store
@@ -15,12 +16,9 @@
      */
     function GXShape() {
         this._setDefaultProperties(GXShape.GeometryProperties);
-
-        // Add styleset
-        this.appendChild(new GXShape.Style(), true);
     }
 
-    GObject.inheritAndMix(GXShape, GXElement, [GXElement.Transform, GXElement.Pivot, GXNode.Properties, GXNode.Container, GXNode.Store, GXVertexSource]);
+    GObject.inheritAndMix(GXShape, GXElement, [GXElement.Transform, GXElement.Pivot, GXElement.Style, GXNode.Properties, GXNode.Container, GXNode.Store, GXVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -28,34 +26,6 @@
     GXShape.GeometryProperties = {
         transform: null
     };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GXShape.Style Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * The style of a shape
-     * @class GXShape.Style
-     * @extends GXStyleSet
-     * @constructor
-     */
-    GXShape.Style = function () {
-        GXStyleSet.call(this);
-        // GXShapeStyle is a "shadow" node
-        this._flags |= GXNode.Flag.Shadow;
-    }
-
-    GXNode.inheritAndMix("shapeStyle", GXShape.Style, GXStyleSet);
-
-    /** @override */
-    GXShape.Style.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXShape;
-    };
-
-    /** @override */
-    GXShape.Style.prototype.toString = function () {
-        return "[GXShape.Style]";
-    };
-
     // -----------------------------------------------------------------------------------------------------------------
     // GXShape Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -77,14 +47,6 @@
         }
     };
 
-    /**
-     * Returns the style of the shape
-     * @returns {GXShape.Style}
-     */
-    GXShape.prototype.getStyle = function () {
-        return this._firstChild;
-    };
-
     /** @override */
     GXShape.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GXLayer || parent instanceof GXShapeSet;
@@ -100,9 +62,6 @@
                 return value;
             });
 
-            // Store style
-            blob.style = GXNode.store(this.getStyle());
-
             return true;
         }
         return false;
@@ -117,9 +76,6 @@
                 }
                 return value;
             });
-
-            // Restore style
-            this.getStyle().restore(blob.style);
 
             return true;
         }

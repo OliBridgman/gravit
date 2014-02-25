@@ -12,7 +12,8 @@
         this._setDefaultProperties(GXPathBase.VisualProperties);
 
         // Add anchor points
-        this.appendChild(new GXPathBase.AnchorPoints(), true);
+        this._anchorPoints = new GXPathBase.AnchorPoints();
+        this.appendChild(this._anchorPoints, true);
 
         this._vertices = new GXVertexContainer();
         this._verticesDirty = true;
@@ -1360,6 +1361,12 @@
      */
     GXPathBase.prototype._verticesDirty = false;
 
+    /**
+     * @type {GXPathBase.AnchorPoints}
+     * @private
+     */
+    GXPathBase.prototype._anchorPoints = null;
+
     /** @override */
     GXPathBase.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
@@ -1418,7 +1425,7 @@
      * @private
      */
     GXPathBase.prototype._getAnchorPoints = function () {
-        return this._firstChild/*style*/._next/*anchor-points*/;
+        return this._anchorPoints;
     };
 
     /** @override */

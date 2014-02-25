@@ -257,6 +257,47 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GXElement.Style Mixin
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * Marks an element to be styleable
+     * @class GXElement.Style
+     * @constructor
+     * @mixin
+     */
+    GXElement.Style = function () {
+    };
+
+    /**
+     * @type {GXElement.Style.Set}
+     * @private
+     */
+    GXElement.Style._styleSet = null;
+
+    GXElement.Style.prototype.getStyle = function () {
+        if (!this._styleSet) {
+            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
+                if (child instanceof GXStyleSet) {
+                    this._styleSet = child;
+                    break;
+                }
+            }
+
+            if (!this._styleSet) {
+                this._styleSet = new GXStyleSet();
+                this.insertChild(this._styleSet, this.getFirstChild(), true);
+            }
+        }
+
+        return this._styleSet;
+    };
+
+    /** @override */
+    GXElement.Style.prototype.toString = function () {
+        return "[Mixin GXElement.Style]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GXElement
     // -----------------------------------------------------------------------------------------------------------------
     /**
