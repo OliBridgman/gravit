@@ -47,6 +47,4 @@ gLocale.setValues(EXImagePaletteMatcher, GLocale.Language.English, ["title"], ["
 gLocale.setValues(EXColorMatcherPalette, GLocale.Language.English, ["title"], ["Matcher"]);
 gLocale.setValues(EXColorMixerPalette, GLocale.Language.English, ["title"], ["Mixer"]);
 gLocale.setValues(EXColorTrendsPalette, GLocale.Language.English, ["title"], ["Trends"]);
-gLocale.setValues(EXLayersPalette, GLocale.Language.English, ["title"], ["Layers"]);
 gLocale.setValues(EXPropertiesPalette, GLocale.Language.English, ["title"], ["Properties"]);
-gLocale.setValues(EXPagesPalette, GLocale.Language.English, ["title"], ["Pages"]);

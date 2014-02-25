@@ -1,115 +1,62 @@
-#application {
-  position: relative;
+#workspace {
   width: 100%;
   height: 100%;
+  position: relative;
   overflow: hidden;
+}
 
-  #windows {
+#header {
+  position: absolute;
+  width: 100%;
+  height: 20px;
+}
+
+#toolbar {
+  position: absolute;
+  top: 20px;
+  height: 26px;
+  width: 100%;
+  background: #AAAAAA;
+
+  > div {
     position: absolute;
-  }
+    top: 0px;
+    height: 100%;
 
-  #sidebar {
-    position: absolute;
-    width: 250px;
-    right: 0px;
-    background: $windowColor;
-    color: $windowTextColor;
-    border-left: 1px solid $windowFrameColor;
+    &.section {
+      border-left: 1px solid black;
+    }
 
-    .palettes {
-      border-top: 1px solid $windowFrameColor;
-
-      .palette-group {
+    &[data-section="left"] {
+      > div:last-child {
+        display: block;
         overflow: hidden;
-        border-bottom: 1px solid $windowFrameColor;
 
-        > .palette-group-header {
-          display: table;
+        select {
           width: 100%;
-          background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
-          border-bottom: 1px solid rgb(205, 205, 205);
-          box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
-          height: 22px;
-
-          > * {
-            display: table-cell;
-            height: 100%;
-            vertical-align: middle;
-          }
-
-          > button, .palette-group-tabs > button {
-            background: transparent;
-            border: none;
-            text-shadow: rgb(245, 245, 245) 0px 1px 0px;
-            font-weight: bold;
-            text-transform: uppercase;
-          }
-
-          > button:not(:active), .palette-group-tabs > button:not(:active):not(.g-active) {
-            color: #596573;
-          }
-
-          > .palette-group-collapse, > .palette-group-menu {
-            text-align: center;
-          }
-
-          > .palette-group-collapse {
-            width: 20px;
-          }
-
-          > .palette-group-tabs {
-            width: 100%;
-          }
-
-          > .palette-group-tabs > button {
-            margin-right: 5px;
-            border-left: 1px solid rgb(192, 192, 192);
-            padding-left: 5px;
-          }
-
-          > .palette-group-tabs > button:first-child {
-            padding-left: 0px;
-            border-left: none;
-          }
-
-          > .g-menu-button > li > .g-menu-item-tail {
-            display: none;
-          }
-        }
-
-        .palette-panel {
-          position: relative;
-
-          &, *:not(.fa) {
-            font-family: Tahoma, Arial, Serif, sans-serif;
-            font-size: 11px;
-          }
-
-          .fa {
-            font-size: 12px;
-          }
-
-          > .panel-disabled-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0px;
-            left: 0px;
-            background: rgba(255, 255, 255, 0.5);
-          }
         }
       }
+      > div.actions {
+        display: block;
+        float: right;
+      }
     }
-  }
 
-  #toolpanel {
+    > div {
+      display: inline-block;
+      height: 100%;
+    }
+
+    > .colors {
+      float: right;
+    }
+
     button {
       border: none;
       background: transparent;
-      width: 26px;
-      height: 26px;
-      padding: 0px;
-      margin: 0px 0px 2px 0px;
+      height: 100%;
+      padding: 0px 3px;
+      margin: 0px 2px;
       box-shadow: none !important;
       border-radius: 0px;
 
@@ -128,13 +75,174 @@
       }
     }
 
-    span.divider {
-      background: silver;
+    .divider {
+      background: gray;
       height: 26px;
       width: 1px;
-      margin: 0px 2px;
+      margin: 0px 5px;
       display: inline-block;
       vertical-align: top;
+    }
+  }
+}
+
+#content {
+  position: absolute;
+  top: 46px;
+  width: 100%;
+}
+
+#sidebar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 200px;
+  height: 100%;
+  background: silver;
+
+  .layer-tree {
+    padding: 5px 0px;
+
+    div.jqtree-element {
+      display: table;
+
+      > * {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      > :not(:last-child) {
+        padding-right: 5px;
+      }
+
+      > .layer-icon {
+        font-size: 14px !important;
+      }
+
+      > .layer-icon-light {
+        color: rgb(89, 101, 115);
+      }
+
+      > .layer-icon-action {
+        cursor: pointer;
+      }
+
+      > .layer-color {
+        min-width: 14px;
+        max-width: 14px;
+        border: 1px solid black;
+      }
+
+      > span.jqtree-title {
+        width: 100%;
+        color: black;
+        line-height: 14px;
+      }
+    }
+
+    li.jqtree-selected {
+      > div.jqtree-element {
+        * {
+          color: white;
+        }
+      }
+    }
+
+    ul.jqtree_common {
+      margin-left: 0px;
+    }
+  }
+}
+
+#windows {
+  position: absolute;
+  top: 0px;
+  left: 200px;
+  right: 250px;
+  height: 100%;
+  background: white;
+}
+
+#palettes {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 250px;
+  height: 100%;
+  background: silver;
+  border-left: 1px solid $windowFrameColor;
+
+  .palette-group {
+    overflow: hidden;
+    border-bottom: 1px solid $windowFrameColor;
+
+    > .palette-group-header {
+      display: table;
+      width: 100%;
+      background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
+      border-bottom: 1px solid rgb(205, 205, 205);
+      box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
+      height: 22px;
+
+      > * {
+        display: table-cell;
+        height: 100%;
+        vertical-align: middle;
+      }
+
+      > button, .palette-group-tabs > button {
+        background: transparent;
+        border: none;
+        text-shadow: rgb(245, 245, 245) 0px 1px 0px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      > button:not(:active), .palette-group-tabs > button:not(:active):not(.g-active) {
+        color: #596573;
+      }
+
+      > .palette-group-tabs {
+        padding-left: 5px;
+        width: 100%;
+      }
+
+      > .palette-group-tabs > button {
+        margin-right: 5px;
+        border-left: 1px solid rgb(192, 192, 192);
+        padding-left: 5px;
+      }
+
+      > .palette-group-tabs > button:first-child {
+        padding-left: 0px;
+        border-left: none;
+      }
+
+      > .g-menu-button > li > .g-menu-item-tail {
+        display: none;
+      }
+    }
+
+    .palette-panel {
+      position: relative;
+
+      &, *:not(.fa) {
+        font-family: Tahoma, Arial, Serif, sans-serif;
+        font-size: 11px;
+      }
+
+      .fa {
+        font-size: 12px;
+      }
+
+      > .panel-disabled-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+        background: rgba(255, 255, 255, 0.5);
+      }
     }
   }
 }

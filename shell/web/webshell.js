@@ -44,15 +44,11 @@
 
     /** @override */
     GWebShell.prototype.finishLoad = function () {
-        // Append our menu bar element
+        // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
-            .css('height', '22px')
-            .css('font-family', 'Tahoma, Arial, serif, sans-serif')
-            .css('font-size', '11px')
-            .css('margin-bottom', '2px')
-            .css('background', 'rgb(250, 250, 250)');
-        this._menuBar._htmlElement.prependTo($('#sidebar'));
+            .css('height', '100%')
+            .prependTo($('#header'));
 
         // Remove loader
         $("#gravit-loader").remove();

@@ -92,12 +92,6 @@
     EXPalette.prototype._documentStates = null;
 
     /**
-     * @type {JQuery}
-     * @private
-     */
-    EXPalette.prototype._disabledLayer = null;
-
-    /**
      * Get the unique id of the palette.
      */
     EXPalette.prototype.getId = function () {

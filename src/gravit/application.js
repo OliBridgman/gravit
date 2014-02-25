@@ -48,11 +48,23 @@
      * Visual parts of the application
      */
     EXApplication.Part = {
+        Header: {
+            id: "header"
+        },
+        Toolbar: {
+            id: "toolbar"
+        },
+        Content: {
+            id: "content"
+        },
         Sidebar: {
             id: "sidebar"
         },
         Windows: {
             id: "windows"
+        },
+        Palettes: {
+            id: "palettes"
         }
     };
 
@@ -160,6 +172,18 @@
     EXApplication.prototype._view = null;
 
     /**
+     * @type {GHeader}
+     * @private
+     */
+    EXApplication.prototype._header = null;
+
+    /**
+     * @type {GToolbar}
+     * @private
+     */
+    EXApplication.prototype._toolbar = null;
+
+    /**
      * @type {EXSidebar}
      * @private
      */
@@ -170,6 +194,12 @@
      * @private
      */
     EXApplication.prototype._windows = null;
+
+    /**
+     * @type {GPalettes}
+     * @private
+     */
+    EXApplication.prototype._palettes = null;
 
     /**
      * @type {GXColor}
@@ -228,6 +258,22 @@
     };
 
     /**
+     * Return access to the header
+     * @returns {GHeader}
+     */
+    EXApplication.prototype.getHeader = function () {
+        return this._header;
+    };
+
+    /**
+     * Return access to the toolbar
+     * @returns {GToolbar}
+     */
+    EXApplication.prototype.getToolbar = function () {
+        return this._toolbar;
+    };
+
+    /**
      * Return access to the sidebar
      * @returns {EXSidebar}
      */
@@ -241,6 +287,14 @@
      */
     EXApplication.prototype.getWindows = function () {
         return this._windows;
+    };
+
+    /**
+     * Return access to the palettes container
+     * @returns {GPalettes}
+     */
+    EXApplication.prototype.getPalettes = function () {
+        return this._palettes;
     };
 
     /**
@@ -517,22 +571,48 @@
         }
 
         this._view = $("<div></div>")
-            .attr('id', 'application')
+            .attr('id', 'workspace')
             .prependTo(body);
 
-        // Windows-Part
-        var windowsPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Windows.id)
+        // Header-Part
+        var headerPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Header.id)
             .appendTo(this._view);
 
-        this._windows = new EXWindows(windowsPart);
+        this._header = new GHeader(headerPart);
+
+        // Toolbar-Part
+        var toolbarPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Toolbar.id)
+            .appendTo(this._view);
+
+        this._toolbar = new GToolbar(toolbarPart);
+
+        // Content-Part
+        var contentPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Content.id)
+            .appendTo(this._view);
 
         // Sidebar-Part
         var sidebarPart = $("<div></div>")
             .attr('id', EXApplication.Part.Sidebar.id)
-            .appendTo(this._view);
+            .appendTo(contentPart);
 
         this._sidebar = new EXSidebar(sidebarPart);
+
+        // Palettes-Part
+        var palettesPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Palettes.id)
+            .appendTo(contentPart);
+
+        this._palettes = new GPalettes(palettesPart);
+
+        // Windows-Part
+        var windowsPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Windows.id)
+            .appendTo(contentPart);
+
+        this._windows = new EXWindows(windowsPart);
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -576,8 +656,11 @@
             }
         }
 
+        this._header.init();
+        this._toolbar.init();
         this._sidebar.init();
         this._windows.init();
+        this._palettes.init();
 
         // Mark initialized
         this._initialized = true;
@@ -604,17 +687,17 @@
         }
 
         setTimeout(function () {
-            // Sidebar
-            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
-            sidebarPart.height(this._view.height());
+            var headerPart = this.getPart(EXApplication.Part.Header);
+            var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
 
-            // Windows
-            var windowsPart = this.getPart(EXApplication.Part.Windows);
-            windowsPart.width(this._view.width() - (this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0));
-            windowsPart.height(this._view.height());
+            var contentPart = this.getPart(EXApplication.Part.Content);
+            contentPart.height(this._view.height() - headerPart.outerHeight() - toolbarPart.outerHeight());
 
+            this._header.relayout();
+            this._toolbar.relayout();
             this._sidebar.relayout();
             this._windows.relayout();
+            this._palettes.relayout();
         }.bind(this), 0);
     };
 
@@ -625,7 +708,6 @@
         // Update layout as part visibilities have changed
         this.relayout();
     };
-
 
     /**
      * Add a new document

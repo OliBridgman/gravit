@@ -6,14 +6,484 @@
      * @version 1.0
      */
     function EXSidebar(htmlElement) {
-        this._htmlElement = $("<div></div>")
-            .addClass('palettes')
-            .appendTo($("<div></div>")
-                .addClass('g-flat')
-                .appendTo(htmlElement));
-        this._palettesInfo = [];
-        this._groupsInfo = [];
+        this._htmlElement = htmlElement;
+        this._htmlElement.append($('<div></div>')
+            .addClass('layer-tree-container'));
+        this._documentStates = [];
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // EXSidebar.DocumentState Class
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @class EXSidebar.DocumentState
+     * @constructor
+     */
+    EXSidebar.DocumentState = function (document) {
+        this.document = document;
+
+        // Initiate our tree container widget
+        this._htmlTreeContainer = $('<div></div>')
+            .addClass('layer-tree')
+            .tree({
+                data: [],
+                dragAndDrop: true,
+                openFolderDelay: 0,
+                slide: false,
+                onIsMoveHandle: function ($element) {
+                    return ($element.is('.jqtree-title'));
+                },
+                onCreateLi: this._createListItem.bind(this),
+                onCanMoveTo: this._canMoveTreeNode.bind(this)
+            })
+            .on('tree.click', this._clickTreeNode.bind(this))
+            .on('tree.move', this._moveTreeNode.bind(this));
+
+        // Create empty tree node mapping table
+        this._treeNodeMap = [];
+    };
+
+    /**
+     * @type {EXDocument}
+     */
+    EXSidebar.DocumentState.prototype.document = null;
+
+    /**
+     * The container for the layers tree
+     * @type {JQuery}
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._htmlTreeContainer = null;
+
+    /**
+     * A mapping of GXNode to Tree nodes
+     * @type {Array<{{node: GXNode, treeId: String}}>}
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._treeNodeMap = null;
+
+    EXSidebar.DocumentState.prototype.init = function () {
+        var scene = this.document.getScene();
+        var editor = this.document.getEditor();
+
+        // Subscribe to the document scene's events
+        scene.addEventListener(GXNode.AfterInsertEvent, this._insertEvent, this);
+        scene.addEventListener(GXNode.AfterRemoveEvent, this._removeEvent, this);
+        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent, this);
+        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent, this);
+
+        // Subscribe to the editor's events
+        editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
+
+        // Add the root layerSet
+        this._insertLayerOrSet(scene.getLayerSet());
+    };
+
+    EXSidebar.DocumentState.prototype.release = function () {
+        var scene = this.document.getScene();
+        var editor = this.document.getEditor();
+
+        // Unsubscribe from the document scene's events
+        scene.removeEventListener(GXNode.AfterInsertEvent, this._insertEvent);
+        scene.removeEventListener(GXNode.AfterRemoveEvent, this._removeEvent);
+        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent);
+        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent);
+
+        // Unsubscribe from the editor's events
+        editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
+    };
+
+    /**
+     * @param {GXNode.AfterInsertEvent} event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._insertEvent = function (event) {
+        //if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
+        this._insertLayerOrSet(event.node);
+        //}
+    };
+
+    /**
+     * @param {GXNode.AfterRemoveEvent} event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._removeEvent = function (event) {
+        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
+            var _removeMapping = function (layerOrSet) {
+                for (var i = 0; i < this._treeNodeMap.length; ++i) {
+                    if (this._treeNodeMap[i].node === layerOrSet) {
+                        this._treeNodeMap.splice(i, 1);
+                        break;
+                    }
+                }
+
+                // For layerSets we'll remove the sublayer mappings, too
+                if (layerOrSet instanceof GXLayerSet) {
+                    for (var layer = layerOrSet.getFirstChild(); layer !== null; layer = layer.getNext()) {
+                        _removeMapping(layer);
+                    }
+                }
+            }.bind(this);
+
+            // Remove Tree Node, first
+            this._htmlTreeContainer.tree('removeNode', this._getTreeNode(event.node));
+
+            // Remove all tree node mappings noew
+            _removeMapping(event.node);
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._propertiesChangeEvent = function (event) {
+        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
+            this._updateLayerOrSet(event.node);
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterFlagChangeEvent} event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._flagChangeEvent = function (event) {
+        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
+            if (event.flag === GXNode.Flag.Active) {
+                this._updateLayerOrSet(event.node);
+            }
+        }
+    };
+
+    /**
+     * @param {GXEditor.CurrentLayerChangedEvent} event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._currentLayerChanged = function (event) {
+        if (event.previousLayer) {
+            this._updateLayerOrSet(event.previousLayer);
+        }
+        var currentLayer = this.document.getEditor().getCurrentLayer();
+        if (currentLayer) {
+            this._updateLayerOrSet(currentLayer);
+        }
+    };
+
+    /**
+     * @param {GXLayerSet|GXLayer} layerOrSet
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._insertLayerOrSet = function (layerOrSet) {
+        // Only add layer/layerSets which have a layerSet as parent
+        //if (layerOrSet.getParent() instanceof GXLayerSet) {
+        if (layerOrSet instanceof GXElement) {
+            // Create an unique treeId for the new layer/layerSet
+            var treeId = gUtil.uuid();
+
+            // Either insert before or append
+            var nextNode = layerOrSet.getNext() ? this._getTreeNode(layerOrSet.getNext()) : null;
+            if (nextNode) {
+                this._htmlTreeContainer.tree('addNodeBefore', { id: treeId, layerOrSet: layerOrSet }, nextNode);
+            } else {
+                var parentTreeNode = layerOrSet.getParent() === layerOrSet.getScene().getLayerSet() ? null : this._getTreeNode(layerOrSet.getParent());
+                this._htmlTreeContainer.tree('appendNode', { id: treeId, layerOrSet: layerOrSet }, parentTreeNode);
+            }
+
+            // Insert the mapping
+            this._treeNodeMap.push({
+                node: layerOrSet,
+                treeId: treeId
+            });
+
+            // Make an initial update
+            this._updateLayerOrSet(layerOrSet);
+        }
+
+        // For layerSets we'll add the sublayers
+        if (layerOrSet.hasMixin(GXNode.Container)) {
+            // We'll always add layers in reverse order to have the topmost layer being on top
+            for (var layer = layerOrSet.getFirstChild(); layer !== null; layer = layer.getNext()) {
+                this._insertLayerOrSet(layer);
+            }
+        }
+    };
+
+    /**
+     * @param {GXLayerSet|GXLayer} layerOrSet
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._updateLayerOrSet = function (layerOrSet) {
+        this._htmlTreeContainer.tree('updateNode', this._getTreeNode(layerOrSet), {
+            label: layerOrSet instanceof GXLayerBase ? layerOrSet.getProperty('title') : layerOrSet.getNodeNameTranslated(),
+            layerOrSet: layerOrSet
+        });
+    };
+
+    /**
+     * @param {GXNode} node
+     * @return {*}
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._getTreeNodeId = function (node) {
+        for (var i = 0; i < this._treeNodeMap.length; ++i) {
+            if (this._treeNodeMap[i].node === node) {
+                return this._treeNodeMap[i].treeId;
+            }
+        }
+    };
+
+    /**
+     * @param {GXNode} node
+     * @return {*}
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._getTreeNode = function (node) {
+        return this._htmlTreeContainer.tree('getNodeById', this._getTreeNodeId(node));
+    };
+
+    /**
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._createListItem = function (node, li) {
+        if (node.layerOrSet) {
+            var layerOrSet = node.layerOrSet;
+            var scene = this.document.getScene();
+            var editor = this.document.getEditor();
+
+            // Mark our list element selected if either our layer has the active flag
+            // or the editor doesn't have a selection and our layer is the current one
+            if (layerOrSet.hasFlag(GXNode.Flag.Active) || (!editor.hasSelection() && layerOrSet === editor.getCurrentLayer())) {
+                li.addClass('jqtree-selected');
+            } else {
+                li.removeClass('jqtree-selected');
+            }
+
+            // Attach an auto-input for editing the layer's title
+            li.find('.jqtree-title')
+                .gAutoSize({
+                    getter: function () {
+                        return layerOrSet.getProperty('title');
+                    },
+                    setter: function (value) {
+                        if (value && value.trim() !== "") {
+                            layerOrSet.setProperty('title', value.trim());
+                        }
+                    }
+                });
+
+            // Hacky: Clicking on a li element should kill any active input editor
+            li.on('click', function () {
+                this._htmlTreeContainer.find('.jqtree-title').each(function () {
+                    $(this).gAutoSize('finish');
+                });
+            }.bind(this));
+
+            // Gather our container for insertions
+            var container = li.find('div.jqtree-element');
+
+            // Iterate parents up and collect information about them
+            var parentHidden = false;
+            var parentLocked = false;
+            var parentOutlined = false;
+
+            for (var p = layerOrSet.getParent(); p !== null; p = p.getParent()) {
+                if (p.hasMixin(GXNode.Properties)) {
+                    // Stop on root layerSet
+                    if (p === scene.getLayerSet()) {
+                        break;
+                    }
+
+                    // Query information
+                    parentHidden = p.getProperty('visible') === false || parentHidden;
+                    //parentLocked = p.hasFlag(GXNode.Flag.Locked.Flag.Hidden) || parentHidden;
+                    parentOutlined = p.getProperty('outline') === true || parentOutlined;
+
+                    // Append a hidden toggler to ensure proper spacing
+                    container.prepend($('<a class="jqtree_common jqtree-toggler" style="visibility: hidden;">▼</a>'));
+                }
+            }
+
+            //
+            // Add folder marker if any
+            //
+            if (layerOrSet instanceof GXLayerSet) {
+                $('<span></span>')
+                    .addClass('layer-icon fa fa-folder-o')
+                    // TODO : I18N
+                    .attr('title', 'Layer-Set')
+                    .insertBefore(container.find('.jqtree-title'));
+            }
+
+            //
+            // Add visibility marker
+            //
+            if (node.layerOrSet instanceof GXLayerBase) {
+                var isHidden = parentHidden || layerOrSet.getProperty('visible') === false;
+                $('<span></span>')
+                    .addClass('layer-icon layer-icon-action fa')
+                    .addClass(isHidden ? 'layer-icon-light fa-eye-slash' : 'fa-eye')
+                    // TODO : I18N
+                    .attr('title', 'Click to show/hide layer')
+                    .on('click', function (evt) {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+
+                        layerOrSet.setProperty('visible', !layerOrSet.getProperty('visible'));
+                    })
+                    .prependTo(container);
+            }
+
+            //
+            // Add lock marker
+            //
+            if (node.layerOrSet instanceof GXLayerBase) {
+                var isLocked = parentLocked;// || layerOrSet.getProperty(GXLayer.PROPERTY_LOCKED) === false;
+                $('<span></span>')
+                    .addClass('layer-icon layer-icon-action fa')
+                    .addClass(isLocked ? 'fa-lock' : 'layer-icon-light fa-unlock-alt')
+                    // TODO : I18N
+                    .attr('title', 'Click to lock/unlock layer')
+                    .on('click', function (evt) {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+
+                        //layerOrSet.setProperty(GXLayer.PROPERTY_LOCKED, !layerOrSet.getProperty(GXLayer.PROPERTY_LOCKED));
+                    })
+                    .appendTo(container);
+            }
+
+            //
+            // Add outline marker
+            //
+            if (node.layerOrSet instanceof GXLayerBase) {
+                var isOutline = parentOutlined || layerOrSet.getProperty('outline') === true;
+                $('<span></span>')
+                    .addClass('layer-icon layer-icon-action fa')
+                    .addClass(isOutline ? 'fa-circle-o' : 'layer-icon-light fa-circle')
+                    // TODO : I18N
+                    .attr('title', 'Click to show/hide outline of layer')
+                    .on('click', function (evt) {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+
+                        layerOrSet.setProperty('outline', !layerOrSet.getProperty('outline'));
+                    })
+                    .appendTo(container);
+            }
+
+            //
+            // Add color marker
+            //
+            $('<span></span>')
+                .addClass('layer-color')
+                .gColorBox()
+                .gColorBox('value', GXColor.parseColor(layerOrSet.getProperty('color')))
+                .on('change', function (evt, color) {
+                    if (layerOrSet instanceof GXLayerSet) {
+                        var myColor = GXColor.parseColor(layerOrSet.getProperty('color'));
+
+                        // TODO : Undo group
+
+                        // Apply color to all child layers recursively that
+                        // do have the same color as our layer
+                        layerOrSet.acceptChildren(function (node) {
+                            if (node instanceof GXLayerBase) {
+                                var childColor = GXColor.parseColor(node.getProperty('color'));
+                                if (GXColor.equals(childColor, myColor)) {
+                                    node.setProperty('color', color.asString());
+                                }
+                            }
+                        });
+                    } else {
+                        layerOrSet.setProperty('color', color.asString());
+                    }
+                })
+                .appendTo(container);
+        }
+    };
+
+    /**
+     * @param event
+     * @return {{parent: GXNode, before: GXNode, source: GXNode}} the result of the move
+     * or null if the actual move is not allowed
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
+        if (source && target && position !== 'none') {
+            var parent = null;
+            var before = null;
+
+            if (position === 'inside') {
+                parent = target;
+                before = target.getFirstChild();
+            } else if (position === 'before') {
+                parent = target.getParent();
+                before = target;
+            } else if (position == 'after') {
+                parent = target.getParent();
+                before = target.getNext();
+            }
+
+            if (source.validateInsertion(parent, before)) {
+                return {
+                    parent: parent,
+                    before: before,
+                    source: source
+                };
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+        return this._getMoveTreeNodeInfo(position, moved_node.layerOrSet, target_node.layerOrSet) !== null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._moveTreeNode = function (event) {
+        event.preventDefault();
+
+        var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
+            event.move_info.moved_node.layerOrSet, event.move_info.target_node.layerOrSet);
+
+        if (moveInfo) {
+            // TODO : UNDO-GROUP HERE
+
+            // Save and reset if layer is current layer
+            var wasCurrentLayer = moveInfo.source === this.document.getEditor().getCurrentLayer();
+
+            moveInfo.source.getParent().removeChild(moveInfo.source);
+            moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
+
+            if (wasCurrentLayer) {
+                this.document.getEditor().setCurrentLayer(moveInfo.source);
+            }
+        }
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXSidebar.DocumentState.prototype._clickTreeNode = function (event) {
+        event.preventDefault();
+        if (event.node && event.node.layerOrSet && event.node.layerOrSet instanceof GXLayer) {
+            this.document.getEditor().setCurrentLayer(event.node.layerOrSet);
+        }
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // EXSidebar Class
+    // -----------------------------------------------------------------------------------------------------------------    
 
     /**
      * @type {HTMLDivElement}
@@ -22,207 +492,16 @@
     EXSidebar.prototype._htmlElement = null;
 
     /**
-     * @type {EXToolpanel}
+     * @type {Array<EXSidebar.DocumentState>}
      * @private
      */
-    EXSidebar.prototype._toolpanel = null;
-
-    /**
-     * @type {Array<{{palette: GPalette, panel: JQuery, menu: GUIMenu}}>}
-     * @private
-     */
-    EXSidebar.prototype._palettesInfo = null;
-
-    /**
-     * @type {Array<{{expanded: Boolean, visible: Boolean, activePalette: String, palettes: []}}>}
-     * @private
-     */
-    EXSidebar.prototype._groupsInfo = null;
-
-    /**
-     * Return access to the tools panel
-     * @returns {EXToolpanel}
-     */
-    EXSidebar.prototype.getToolpanel = function () {
-        return this._toolpanel;
-    };
-
-    /**
-     * Group an array of palettes together
-     * @param {Array<GPalette>} palettes
-     */
-    EXSidebar.prototype.groupPalettes = function (palettes) {
-        // Detach palettes, first
-        for (var i = 0; i < palettes.length; ++i) {
-            this._detachPaletteFromGroup(palettes[i].getId());
-        }
-
-        // Initiate a new group for them
-        var group = this._addGroupInfo();
-
-        // Attach palettes to the group
-        for (var i = 0; i < palettes.length; ++i) {
-            this._attachPaletteToGroup(group, palettes[i].getId());
-        }
-    };
-
-    /**
-     * Returns whether a given palette is active or not. Note that this
-     * will also return false if the palette's group is not visible
-     * or not expanded
-     * @param {String} paletteId
-     * @return {Boolean}
-     */
-    EXSidebar.prototype.isPaletteActive = function (paletteId) {
-        var groupInfo = this._getGroupInfoForPalette(paletteId);
-        if (groupInfo) {
-            return groupInfo.activePalette === paletteId && groupInfo.visible && groupInfo.expanded;
-        }
-        return false;
-    };
-
-    /**
-     * Assigns whether a given palette is active or not within it's group.
-     * Note that when the palette should be activated then the system
-     * will ensure that a) the sidebar is visible b) the palette is visible
-     * and c) the palette's group is expanded
-     * @param {String} paletteId
-     * @param {Boolean} active whether to activate or deactivate
-     */
-    EXSidebar.prototype.setPaletteActive = function (paletteId, active) {
-        var groupInfo = this._getGroupInfoForPalette(paletteId);
-
-        if (groupInfo && (groupInfo.activePalette !== paletteId || !active || !groupInfo.visible || !groupInfo.expanded)) {
-            if (!active) {
-                // Simply hide our group and be done w/ it
-                this._setGroupVisible(groupInfo, false);
-            } else {
-                var paletteInfo = this._getPaletteInfo(paletteId);
-
-                // Assign active palette
-                groupInfo.activePalette = paletteId;
-
-                // Iterate each tab and mark active/non-active
-                groupInfo.container.find('.palette-group-tabs > button').each(function () {
-                    var el = $(this);
-                    if (el.attr('data-palette-id') === paletteId) {
-                        el.addClass('g-active');
-                    } else {
-                        el.removeClass('g-active');
-                    }
-                });
-
-                // Iterate each panel and mark visible/hidden
-                groupInfo.container.find('.palette-group-panels > div').each(function () {
-                    var el = $(this);
-                    if (el.attr('data-palette-id') === paletteId) {
-                        el.css('display', '');
-                    } else {
-                        el.css('display', 'none');
-                    }
-                });
-
-                // Assign palette menu
-                groupInfo.menuButton.setMenu(paletteInfo.menu);
-
-                // Toggle menu button visibility depending on menu items
-                groupInfo.menuButton._htmlElement.css('visibility', paletteInfo.menu.getItemCount() === 0 ? 'hidden' : 'visible');
-
-                // Group needs to be visible and expanded
-                this._setGroupVisible(groupInfo, true);
-                this._setGroupExpanded(groupInfo, true);
-            }
-        }
-    };
-
-    /**
-     * Returns whether a given palette is enabled or not.
-     * @param {String} paletteId
-     * @return {Boolean}
-     */
-    EXSidebar.prototype.isPaletteEnabled = function (paletteId) {
-        var paletteInfo = this._getPaletteInfo(paletteId);
-        if (paletteInfo) {
-            return paletteInfo.panel.find('.panel-disabled-overlay').length == 0;
-        }
-        return false;
-    };
-
-    /**
-     * Enable or disable a palette
-     * @param {String} paletteId
-     * @param {Boolean} enabled
-     */
-    EXSidebar.prototype.setPaletteEnabled = function (paletteId, enabled) {
-        var paletteInfo = this._getPaletteInfo(paletteId);
-        if (paletteInfo) {
-            var overlay = paletteInfo.panel.find('.panel-disabled-overlay');
-
-            if (enabled && overlay.length > 0) {
-                overlay.remove();
-            } else if (!enabled && overlay.length === 0) {
-                overlay = $('<div></div>')
-                    .addClass('panel-disabled-overlay')
-                    .appendTo(paletteInfo.panel);
-            }
-        }
-    };
+    EXSidebar.prototype._documentStates = null;
 
     /**
      * Called from the workspace to initialize
      */
     EXSidebar.prototype.init = function () {
-        // Create and append toolpanel to outer container
-        var toolpanelContainer = $('<div></div>')
-            .attr('id', 'toolpanel')
-            .prependTo(this._htmlElement.parent());
-        this._toolpanel = new EXToolpanel(toolpanelContainer);
-        this._toolpanel.init();
-
-        /** Array<Array<GPalette>> */
-        var grouppedPalettes = [];
-
-        // Add all palettes first and collect their grouping
-        var lastGroup = null;
-        var lastPalettes = null;
-        for (var i = 0; i < gravit.palettes.length; ++i) {
-            var palette = gravit.palettes[i];
-
-            this._addPaletteInfo(palette);
-
-            var group = palette.getGroup();
-            if (!group) {
-                group = palette.getId();
-            }
-
-            if (!lastGroup || lastGroup !== group) {
-                if (lastPalettes) {
-                    grouppedPalettes.push(lastPalettes);
-                }
-                lastPalettes = [];
-                lastGroup = group;
-            }
-
-            lastPalettes.push(palette);
-        }
-
-        if (lastPalettes) {
-            grouppedPalettes.push(lastPalettes);
-        }
-
-        // Group palettes now which'll create our groups
-        for (var i = 0; i < grouppedPalettes.length; ++i) {
-            this.groupPalettes(grouppedPalettes[i]);
-
-            // Active first palette by default
-            this.setPaletteActive(grouppedPalettes[i][0].getId(), true);
-
-            // Update enabled status if palettes
-            for (var k = 0; k < grouppedPalettes[i].length; ++k) {
-                var palette = grouppedPalettes[i][k];
-                this.setPaletteEnabled(palette.getId(), palette.isEnabled());
-            }
-        }
+        gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
     };
 
     /**
@@ -231,211 +510,60 @@
     EXSidebar.prototype.relayout = function () {
         // NO-OP
     };
-    EXSidebar.prototype._addPaletteInfo = function (palette) {
-        // Create panel and menu
-        var panel = $('<div></div>')
-            .attr('data-palette-id', palette.getId())
-            .addClass('palette-panel')
-            .addClass('palette-' + palette.getId())
-            .css('display', 'none');
-        var menu = new GUIMenu();
 
-        // Let palette init itself on panel and menu
-        palette.init(panel, menu);
+    /**
+     * @param {EXApplication.DocumentEvent} event
+     * @private
+     */
+    EXSidebar.prototype._documentEvent = function (event) {
+        switch (event.type) {
+            case EXApplication.DocumentEvent.Type.Added:
+                // Initiate a new state and add it
+                var state = new EXSidebar.DocumentState(event.document);
+                state.init();
+                this._documentStates.push(state);
+                break;
+            case EXApplication.DocumentEvent.Type.Removed:
+                // Find and release state
+                var state = this._findDocumentState(event.document);
+                if (state) {
+                    state.release();
+                    this._documentStates.splice(this._documentStates.indexOf(state), 1);
+                }
+                break;
+            case EXApplication.DocumentEvent.Type.Activated:
+                // Find and activate state
+                var state = this._findDocumentState(event.document);
+                if (state) {
+                    //state.activate();
+                    // Attach the state's tree to ourself
+                    state._htmlTreeContainer.appendTo(this._htmlElement.find('.layer-tree-container'));
+                }
+                break;
+            case EXApplication.DocumentEvent.Type.Deactivated:
+                // Find and deactivate state
+                var state = this._findDocumentState(event.document);
+                if (state) {
+                    //state.deactivate();
+                    // Detach the state's tree from ourself
+                    state._htmlTreeContainer.detach();
+                }
+                break;
 
-        //
-        // Add default actions to menu
-        //
-        // TODO : Properly support below actions
-        /*
-         if (menu.getItemCount() > 0) {
-         menu.addItem(new GUIMenuItem(GUIMenuItem.Type.Divider));
-         }
-
-         var groupWithItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
-         menu.addItem(groupWithItem);
-         // TODO : I18N
-         groupWithItem.setCaption('Group ' + gLocale.get(palette.getTitle()) + ' with');
-         groupWithItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
-         // Clear all sub-items and re-add possible palettes to group with
-         });
-
-         var moveGroupUpItem = new GUIMenuItem();
-         menu.addItem(moveGroupUpItem);
-         // TODO : I18N
-         moveGroupUpItem.setCaption('Move Group Up');
-         moveGroupUpItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Move Group Up');
-         });
-
-         var moveGroupDownItem = new GUIMenuItem();
-         menu.addItem(moveGroupDownItem);
-         // TODO : I18N
-         moveGroupDownItem.setCaption('Move Group Down');
-         moveGroupDownItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Move Group Down');
-         });
-
-         var pinGroupItem = new GUIMenuItem();
-         menu.addItem(pinGroupItem);
-         // TODO : I18N
-         pinGroupItem.setCaption('Pin Group');
-         pinGroupItem.setIcon('fa fa-thumb-tack');
-         pinGroupItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Pin Group');
-         });
-
-         menu.addItem(new GUIMenuItem(GUIMenuItem.Type.Divider));
-
-         var closePanelItem = new GUIMenuItem();
-         menu.addItem(closePanelItem);
-         // TODO : I18N
-         closePanelItem.setCaption('Close Group');
-         closePanelItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Close Group');
-         });
-         */
-
-        //
-        // Initiate our palette info object and add it to our array
-        //
-        var paletteInfo = {
-            palette: palette,
-            panel: panel,
-            menu: menu
-        };
-        this._palettesInfo.push(paletteInfo);
-
-        // Add update listener to palette
-        palette.addEventListener(EXPalette.UpdateEvent, function () {
-            this.setPaletteEnabled(palette.getId(), palette.isEnabled());
-            // TODO : Update title, shortcut, etc.
-        }.bind(this));
-
-        return paletteInfo;
-    };
-
-    EXSidebar.prototype._getPaletteInfo = function (paletteId) {
-        for (var i = 0; i < this._palettesInfo.length; ++i) {
-            if (this._palettesInfo[i].palette.getId() === paletteId) {
-                return this._palettesInfo[i];
-            }
-        }
-        return null;
-    };
-
-    EXSidebar.prototype._detachPaletteFromGroup = function (paletteId) {
-        var group = this._getGroupInfoForPalette(paletteId);
-        var paletteInfo = this._getPaletteInfo(paletteId);
-
-        if (group && paletteInfo) {
-            // Remove Tab & Panel
-            group.container.find('.palette-group-tabs > button[data-palette-id="' + paletteId + '"]').remove();
-
-            // Important: only detach, not remove our panel as it will be re-used!!
-            group.container.find('.palette-group-panels > div[data-palette-id="' + paletteId + '"]').detach();
-
-            // Remove from palettes
-            group.palettes.slice(group.palettes.indexOf(paletteId));
+            default:
+                break;
         }
     };
 
-    EXSidebar.prototype._attachPaletteToGroup = function (groupInfo, paletteId) {
-        var paletteInfo = this._getPaletteInfo(paletteId);
-
-        if (paletteInfo) {
-            var tabsContainer = groupInfo.container.find('.palette-group-tabs');
-            var panelsContainer = groupInfo.container.find('.palette-group-panels');
-
-            // Add Tab & Panel
-            tabsContainer.append($('<button></button>')
-                .attr('data-palette-id', paletteInfo.palette.getId())
-                .text(gLocale.get(paletteInfo.palette.getTitle()))
-                .on('click', function () {
-                    // If palette already is active, change collapse state instead
-                    if (this.isPaletteActive(paletteInfo.palette.getId())) {
-                        this._setGroupExpanded(groupInfo, !groupInfo.expanded);
-                    } else {
-                        this.setPaletteActive(paletteInfo.palette.getId(), true);
-                    }
-                }.bind(this)));
-
-            panelsContainer.append(paletteInfo.panel);
-
-            // Add to palettes
-            groupInfo.palettes.push(paletteId);
-        }
-    };
-
-    EXSidebar.prototype._addGroupInfo = function () {
-        var groupInfo = {
-            expanded: true,
-            visible: true,
-            activePalette: null,
-            palettes: [],
-            menuButton: new GUIMenuButton()
-        };
-
-        groupInfo.menuButton.setIcon($('<span></span>')
-            .addClass('fa fa-chevron-down'));
-
-        groupInfo.container = $('<div></div>')
-            .addClass('palette-group')
-            .append($('<div></div>')
-                .addClass('palette-group-header')
-                .append($('<button></button>')
-                    .addClass('palette-group-collapse')
-                    .append($('<span></span>')
-                        .addClass('fa fa-angle-double-down'))
-                    .on('click', function () {
-                        this._setGroupExpanded(groupInfo, !groupInfo.expanded);
-                    }.bind(this)))
-                .append($('<div></div>')
-                    .addClass('palette-group-tabs'))
-                .append(groupInfo.menuButton._htmlElement))
-            .append($('<div></div>')
-                .addClass('palette-group-panels'))
-            .appendTo(this._htmlElement);
-
-        this._groupsInfo.push(groupInfo);
-
-        return groupInfo;
-    };
-
-    EXSidebar.prototype._getGroupInfoForPalette = function (paletteId) {
-        for (var i = 0; i < this._groupsInfo.length; ++i) {
-            if (this._groupsInfo[i].palettes.indexOf(paletteId) >= 0) {
-                return this._groupsInfo[i];
-            }
-        }
-        return null;
-    };
-
-    EXSidebar.prototype._setGroupExpanded = function (groupInfo, expanded) {
-        if (expanded !== groupInfo.expanded) {
-            groupInfo.expanded = expanded;
-
-            var buttonSpan = groupInfo.container.find('.palette-group-collapse > span');
-
-            if (groupInfo.expanded) {
-                groupInfo.container.css('height', '');
-                buttonSpan.attr('class', 'fa  fa-angle-double-down');
-            } else {
-                var header = groupInfo.container.find('.palette-group-header');
-                groupInfo.container.height(header.outerHeight());
-                buttonSpan.attr('class', 'fa  fa-angle-double-right');
-            }
-        }
-    };
-
-    EXSidebar.prototype._setGroupVisible = function (groupInfo, visible) {
-        if (visible !== groupInfo.visible) {
-            groupInfo.visible = visible;
-
-            if (groupInfo.visible) {
-                groupInfo.container.css('display', '');
-            } else {
-                groupInfo.container.css('display', 'none');
+    /**
+     * @param {EXDocument} document
+     * @return {EXSidebar.DocumentState}
+     * @private
+     */
+    EXSidebar.prototype._findDocumentState = function (document) {
+        for (var i = 0; i < this._documentStates.length; ++i) {
+            if (this._documentStates[i].document === document) {
+                return this._documentStates[i];
             }
         }
     };

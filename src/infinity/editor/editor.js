@@ -502,10 +502,26 @@
             var oldColor = this._currentColor[type];
 
             // Assign new color
-            this._currentColor = color;
+            this._currentColor[type] = color;
 
             // Assign to selection if any and assignable
-            // TODO
+            // TODO : Correct undo/redo
+            if (this._selection) {
+                for (var i = 0; i < this._selection.length; ++i) {
+                    var element = this._selection[i];
+                    // TODO : Better check if element has style support and avoid check for shape here
+                    if (element instanceof GXShape) {
+                        switch (type) {
+                            case GXEditor.CurrentColorType.Stroke:
+                                element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Stroke]);
+                                break;
+                            case GXEditor.CurrentColorType.Fill:
+                                element.getStyle().setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
+                                break;
+                        }
+                    }
+                }
+            }
 
             // Trigger event
             if (this.hasEventListeners(GXEditor.CurrentColorChangedEvent)) {

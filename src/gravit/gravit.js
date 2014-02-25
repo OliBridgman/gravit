@@ -16,8 +16,6 @@
             new EXColorMixerPalette(),
             new EXColorMatcherPalette(),
             new EXColorTrendsPalette(),
-            new EXLayersPalette(),
-            new EXPagesPalette(),
             new EXPropertiesPalette()
         );
 
