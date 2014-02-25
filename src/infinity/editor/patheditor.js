@@ -320,16 +320,17 @@
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
                 if (part.type === GXPathEditor.PartType.Point) {
-                    this._transferPreviewProperties(part.point, element);
+                    this._transferPreviewProperties(part.point, element, (i != this._partSelection.length - 1));
                     newSelection.push(part);
                 } else if (part.type === GXPathEditor.PartType.Segment) {
-                    this._transferPreviewProperties(part.apLeft, element);
-                    this._transferPreviewProperties(part.apRight, element);
+                    this._transferPreviewProperties(part.apLeft, element, true);
+                    this._transferPreviewProperties(part.apRight, element, (i != this._partSelection.length - 1));
                     // Update now _partSelection to contain segment end points instead of segment itself
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apLeft});
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apRight});
                 }
             }
+            this.requestInvalidation();
             this.resetTransform();
             this.updatePartSelection(false, newSelection);
         } else {
@@ -962,7 +963,7 @@
         var previewIdx = hasPreview ? this._sourceIndexToPreviewIndex[idx] : 0;
         while (!hasPreview && ap) {
             var previewAnchorPoint = new GXPathBase.AnchorPoint();
-            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties], true);
             if (ap.hasFlag(GXNode.Flag.Selected)) {
                 previewAnchorPoint.setFlag(GXNode.Flag.Selected);
             }
@@ -986,7 +987,7 @@
         ++previewIdx;
         while (!hasPreview && ap) {
             var previewAnchorPoint = new GXPathBase.AnchorPoint();
-            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties], true);
             if (ap.hasFlag(GXNode.Flag.Selected)) {
                 previewAnchorPoint.setFlag(GXNode.Flag.Selected);
             }
@@ -1018,7 +1019,8 @@
             this._sourceIndexToPreviewIndex = {};
 
             this._elementPreview = new GXPath();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXPath.GeometryProperties], true);
 
             var _anchorPointIsSelected = function (anchorPoint) {
                 return (selectedAnchorPoint && anchorPoint === selectedAnchorPoint) || (!selectedAnchorPoint && anchorPoint.hasFlag(GXNode.Flag.Selected));
@@ -1105,7 +1107,7 @@
             var anchorPoint = firstSelPoint;
             while (!finished) {
                 var previewAnchorPoint = new GXPathBase.AnchorPoint();
-                previewAnchorPoint.transferProperties(anchorPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                previewAnchorPoint.transferProperties(anchorPoint, [GXPathBase.AnchorPoint.GeometryProperties], true);
                 if (_anchorPointIsSelected(anchorPoint)) {
                     previewAnchorPoint.setFlag(GXNode.Flag.Selected);
                 }
@@ -1127,7 +1129,8 @@
                 }
             }
 
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXPath.GeometryProperties], true);
             if (firstSelPoint.getProperty('ah') || lastSelPoint && lastSelPoint.getProperty('ah')) {
                 this.extendPreviewToFull();
             } else {
@@ -1361,13 +1364,14 @@
      * might be different than the one this editor works on. This will be never null.
      * @private
      */
-    GXPathEditor.prototype._transferPreviewProperties = function (point, element) {
+    GXPathEditor.prototype._transferPreviewProperties = function (point, element, noEvent) {
         // Work with indices as element might not be ourself
         var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(point);
         var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
         var previewPoint = this.getPathPointPreview(elSourcePoint);
         if (previewPoint) {
-            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties],
+                noEvent ? noEvent : false);
         }
     };
 
