@@ -512,10 +512,10 @@
                     if (element.hasMixin(GXElement.Style)) {
                         switch (type) {
                             case GXEditor.CurrentColorType.Contour:
-                                element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
+                                element.getStyle(true).setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
                                 break;
                             case GXEditor.CurrentColorType.Fill:
-                                element.getStyle().setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
+                                element.getStyle(true).setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
                                 break;
                         }
                     }
@@ -895,11 +895,11 @@
                     // Assign default fill and contour style for shapes
                     if (element.hasMixin(GXElement.Style)) {
                         if (this._currentColor[GXEditor.CurrentColorType.Contour]) {
-                            element.getStyle().setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
+                            element.getStyle(true).setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
                         }
 
                         if (this._currentColor[GXEditor.CurrentColorType.Fill]) {
-                            element.getStyle().setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
+                            element.getStyle(true).setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
                         }
                     }
                 }

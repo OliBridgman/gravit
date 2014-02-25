@@ -269,12 +269,20 @@
     };
 
     /**
-     * @type {GXElement.Style.Set}
+     * @type {GXStyleSet}
      * @private
      */
     GXElement.Style._styleSet = null;
 
-    GXElement.Style.prototype.getStyle = function () {
+    /**
+     * Returns the style for the element. If the element doesn't yet
+     * have a style, one can be created when requested.
+     *
+     * @param {Boolean} [create] if set, creates a new styleset and appends
+     * it if not yet existing. Defaults to false.
+     * @returns {GXStyleSet}
+     */
+    GXElement.Style.prototype.getStyle = function (create) {
         if (!this._styleSet) {
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
                 if (child instanceof GXStyleSet) {
@@ -283,13 +291,38 @@
                 }
             }
 
-            if (!this._styleSet) {
+            if (!this._styleSet && create) {
                 this._styleSet = new GXStyleSet();
                 this.insertChild(this._styleSet, this.getFirstChild(), true);
             }
         }
 
         return this._styleSet;
+    };
+
+    /**
+     * Returns a collection of all styles of this element including the
+     * ones of any parents recursively in the appropriate order.
+     *
+     * @returns {Array<GXStyleSet>} the array of styles or null for none
+     */
+    GXElement.Style.prototype.getStyles = function () {
+        var result = null;
+
+        for (var el = this; el !== null; el = el.getParent()) {
+            if (el.hasMixin(GXElement.Style)) {
+                var style = el.getStyle();
+
+                if (style) {
+                    if (!result) {
+                        result = []
+                    }
+                    result.unshift(style);
+                }
+            }
+        }
+
+        return result;
     };
 
     /** @override */

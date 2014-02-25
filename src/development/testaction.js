@@ -43,7 +43,12 @@
 
         gApp.addDocument(scene);
 
-        return this._test.test(scene, page, scene.getLayerSet().getLastChild(),
+        var layer = scene.getLayerSet().getLastChild();
+        var contour = new GXPaintContourStyle();
+        contour.setProperty('fill', GXColor.parseCSSColor('black'));
+        layer.getStyle(true).appendChild(contour);
+
+        return this._test.test(scene, page, layer,
             gApp.getWindows().getActiveWindow().getView());
     };
 

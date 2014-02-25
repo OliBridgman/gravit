@@ -12,7 +12,7 @@
         this._setDefaultProperties(GXLayerBase.MetaProperties);
     }
 
-    GObject.inheritAndMix(GXLayerBase, GXGroup, [GXNode.Properties, GXNode.Store]);
+    GObject.inheritAndMix(GXLayerBase, GXGroup, [GXElement.Style, GXNode.Properties, GXNode.Store]);
 
     /**
      * The meta properties of a layer base and their defaults

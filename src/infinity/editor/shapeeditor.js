@@ -90,7 +90,7 @@
                         hitData.style.setProperty('fill', source);
                     }, [hitData.style], 'Drop Style Fill');
                 } else {
-                    this.getElement().getStyle().setArea(source);
+                    this.getElement().getStyle(true).setArea(source);
                 }
                 return true;
             }

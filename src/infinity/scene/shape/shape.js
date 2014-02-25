@@ -83,7 +83,7 @@
     };
 
     /** @override */
-    GXShape.prototype.paint = function (context) {
+    GXShape.prototype.paint = function (context, style) {
         if (!this.rewindVertices(0)) {
             return;
         }
@@ -105,8 +105,12 @@
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
         } else {
-            // Paint our styling
-            this.getStyle().paint(context, this);
+            var styles = this.getStyles();
+            if (styles && styles.length) {
+                for (var i = 0; i < styles.length; ++i) {
+                    styles[i].paint(context, this);
+                }
+            }
         }
 
         // Paint contents if any
@@ -152,11 +156,21 @@
             return null;
         }
 
-        var result = this.getStyle().getBBox(source);
+
+        var result = source;
+        var styles = this.getStyles();
+        if (styles && styles.length) {
+            for (var i = 0; i < styles.length; ++i) {
+                var styleBBox = styles[i].getBBox(source);
+                if (styleBBox && !styleBBox.isEmpty()) {
+                    result = result.united(styleBBox);
+                }
+            }
+        }
 
         // Extend our bbox a bit to honor aa-pixels
         if (result) {
-            return result.expanded(1, 1, 1, 1);
+            return result.expanded(2, 2, 2, 2);
         }
 
         return null;
@@ -170,7 +184,18 @@
 
     /** @override */
     GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        var styleHit = this.getStyle().hitTest(this, location, transform, tolerance);
+        var styleHit = null;
+
+        var styles = this.getStyles();
+        if (styles && styles.length) {
+            for (var i = styles.length - 1; i >= 0; --i) {
+                styleHit = styles[i].hitTest(this, location, transform, tolerance);
+                if (styleHit) {
+                    break;
+                }
+            }
+        }
+
         if (styleHit) {
             return new GXElement.HitResult(this, styleHit);
         } else if (force) {
