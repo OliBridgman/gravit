@@ -509,16 +509,7 @@
             if (this._selection) {
                 for (var i = 0; i < this._selection.length; ++i) {
                     var element = this._selection[i];
-                    if (element.hasMixin(GXElement.Style)) {
-                        switch (type) {
-                            case GXEditor.CurrentColorType.Contour:
-                                element.getStyle(true).setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
-                                break;
-                            case GXEditor.CurrentColorType.Fill:
-                                element.getStyle(true).setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
-                                break;
-                        }
-                    }
+                    this._applyCurrentColor(element, type);
                 }
             }
 
@@ -893,15 +884,8 @@
 
                 if (!noDefaults) {
                     // Assign default fill and contour style for shapes
-                    if (element.hasMixin(GXElement.Style)) {
-                        if (this._currentColor[GXEditor.CurrentColorType.Contour]) {
-                            element.getStyle(true).setContour(this._currentColor[GXEditor.CurrentColorType.Contour]);
-                        }
-
-                        if (this._currentColor[GXEditor.CurrentColorType.Fill]) {
-                            element.getStyle(true).setArea(this._currentColor[GXEditor.CurrentColorType.Fill]);
-                        }
-                    }
+                    this._applyCurrentColor(element, GXEditor.CurrentColorType.Fill);
+                    this._applyCurrentColor(element, GXEditor.CurrentColorType.Contour);
                 }
 
                 // Append new element
@@ -1402,6 +1386,38 @@
 
             if (clearCount > 0) {
                 this.clearSelection(markedForExclusion)
+            }
+        }
+    };
+
+    GXEditor.prototype._applyCurrentColor = function (element, currentColorType) {
+        // TODO : Undo / Redo
+        if (element.hasMixin(GXElement.Style)) {
+            var styleClass = null;
+            var styleColor = this._currentColor[currentColorType];
+
+            switch (currentColorType) {
+                case GXEditor.CurrentColorType.Contour:
+                    styleClass = GXPaintContourStyle;
+                    break;
+                case GXEditor.CurrentColorType.Fill:
+                    styleClass = GXPaintAreaStyle;
+                    break;
+            }
+
+            if (styleColor) {
+                element.getStyle(true).applyStyleProperties(styleClass, ['fill'], [styleColor]);
+            } else {
+                // Remove style class if any (root only)
+                var style = element.getStyle();
+                if (style) {
+                    for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
+                        if (child.constructor === styleClass) {
+                            style.removeChild(child);
+                            break;
+                        }
+                    }
+                }
             }
         }
     };

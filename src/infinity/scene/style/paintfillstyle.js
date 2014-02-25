@@ -56,7 +56,7 @@
 
     /** @override */
     GXPaintFillStyle.prototype._handleChange = function (change, args) {
-        this._handleGeometryChangeForProperties(change, args, GXPaintFillStyle.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GXPaintFillStyle.VisualProperties);
         GXPaintStyle.prototype._handleChange.call(this, change, args);
     };
 

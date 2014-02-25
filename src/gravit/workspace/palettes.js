@@ -357,6 +357,13 @@
             .addClass('palette-group')
             .append($('<div></div>')
                 .addClass('palette-group-header')
+                .append($('<button></button>')
+                    .addClass('palette-group-collapse')
+                    .append($('<span></span>')
+                        .addClass('fa fa-angle-double-down'))
+                    .on('click', function () {
+                        this._setGroupExpanded(groupInfo, !groupInfo.expanded);
+                    }.bind(this)))
                 .append($('<div></div>')
                     .addClass('palette-group-tabs'))
                 .append(groupInfo.menuButton._htmlElement))

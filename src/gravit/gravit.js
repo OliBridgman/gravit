@@ -47,6 +47,7 @@
         // Register default properties
         gravit.properties.push(
             new EXDimensionsProperties(),
+            new GStylesProperties(),
             new GDocumentProperties(),
             new EXPolygonProperties(),
             new GPathProperties(),

@@ -19,49 +19,28 @@
     };
 
     /**
-     * Assign an area. This will assign the area to the topmost
-     * area-style on this set. If there's none, this will create one.
-     * @param {GXColor|GXSwatch} fill
+     * Apply properties to a given style class. If the given style class does not
+     * yet exist on the root of this styleSet, it'll be created and appended, first
+     *
+     * @param {Function} styleClass the style class to assign properties to
+     * @param {Array<String>} properties the properties to assign
+     * @param {Array<*>} values the values to assign
      */
-    GXStyleSet.prototype.setArea = function (fill) {
+    GXStyleSet.prototype.applyStyleProperties = function (styleClass, properties, values) {
         var targetStyle = null;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GXPaintAreaStyle) {
+            if (child.constructor === styleClass) {
                 targetStyle = child;
                 break;
             }
         }
 
         if (!targetStyle) {
-            targetStyle = new GXPaintAreaStyle();
+            targetStyle = new styleClass();
             this.appendChild(targetStyle);
         }
 
-        // TODO : REMOVE AS STRING
-        targetStyle.setProperty('fill', fill && fill instanceof GXColor ? fill.asString() : fill);
-    };
-
-    /**
-     * Assign a contour. This will assign the fill to the topmost
-     * contour-style on this set. If there's none, this will create one.
-     * @param {GXColor|GXSwatch} fill
-     */
-    GXStyleSet.prototype.setContour = function (fill) {
-        var targetStyle = null;
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GXPaintContourStyle) {
-                targetStyle = child;
-                break;
-            }
-        }
-
-        if (!targetStyle) {
-            targetStyle = new GXPaintContourStyle();
-            this.appendChild(targetStyle);
-        }
-
-        // TODO : REMOVE AS STRING
-        targetStyle.setProperty('fill', fill && fill instanceof GXColor ? fill.asString() : fill);
+        targetStyle.setProperties(properties, values);
     };
 
     /** @override */
