@@ -57,6 +57,7 @@
         var tm = new Date().getTime();
         if (tm - this._mDownTime < GXPathTool.DBLCLICKTM) {
             // Double-click
+            this._mouseDblClick(event);
             return;
         }
 
@@ -464,76 +465,78 @@
 
     /** @override */
     GXPenTool.prototype._mouseRelease = function (event) {
-        var anchorPt;
+        if (!this._released) {
+            var anchorPt;
 
-        this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-        this._released = true;
-        if (this._pathEditor && this._mode == GXPathTool.Mode.Edit) {
-            if (!this._dragStarted && this._refPt && !this._editPt) {
-                this._mouseNoDragReleaseOnEdit(event.client);
-            } else if (this._dragStarted) {
-                var clickPt = this._constrainIfNeeded(
-                    event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
+            this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+            this._released = true;
+            if (this._pathEditor && this._mode == GXPathTool.Mode.Edit) {
+                if (!this._dragStarted && this._refPt && !this._editPt) {
+                    this._mouseNoDragReleaseOnEdit(event.client);
+                } else if (this._dragStarted) {
+                    var clickPt = this._constrainIfNeeded(
+                        event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
 
-                this._pathEditor.requestInvalidation();
-                this._updateHandles(clickPt);
-                this._pathEditor.requestInvalidation();
-                this._pathEditor.applyTransform(this._pathRef);
-                this._commitChanges();
-                this._setCursorForPosition(null, event.client);
-            } else {
-                // NOOP on release
-                this._commitChanges();
-                this._setCursorForPosition(null, event.client);
-            }
-        } else if (this._dpathRef) {
-            if (this._dragStarted) {
-                var clickPt = this._constrainIfNeeded(
-                    event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
-
-                this._pathEditor.requestInvalidation();
-                this._updateHandles(clickPt);
-                this._pathEditor.requestInvalidation();
-            }
-            if (!this._dpathRef.getProperty('closed')) {
-                if (this._newPoint) {
-                    this._addPoint(this._editPt, false, true);
                     this._pathEditor.requestInvalidation();
-                }
-                var otherPt;
-                if (this._mode == GXPathTool.Mode.Append) {
-                    this._refPt = this._pathRef.getAnchorPoints().getLastChild();
-                    otherPt = this._pathRef.getAnchorPoints().getFirstChild();
-                } else { // this._mode == GXPathTool.Mode.Prepend
-                    this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
-                    otherPt = this._pathRef.getAnchorPoints().getLastChild();
-                }
-                if (!this._newPoint) {
-                    this._pathEditor.selectOnePoint(this._refPt);
+                    this._updateHandles(clickPt);
+                    this._pathEditor.requestInvalidation();
                     this._pathEditor.applyTransform(this._pathRef);
-                }
-                //this._makePointMajor(this._refPt);
-                if (otherPt && otherPt != this._refPt &&
-                    this._pathEditor.hitAnchorPoint(otherPt, event.client, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-
-                    this._setCursorForPosition(GUICursor.PenEnd);
+                    this._commitChanges();
+                    this._setCursorForPosition(null, event.client);
                 } else {
-                    this._setCursorForPosition(GUICursor.Pen);
+                    // NOOP on release
+                    this._commitChanges();
+                    this._setCursorForPosition(null, event.client);
                 }
-                this._commitChanges();
-            } else {
-                if (this._refPt) {
-                    this._pathEditor.selectOnePoint(this._refPt);
-                    this._pathEditor.applyTransform(this._pathRef);
+            } else if (this._dpathRef) {
+                if (this._dragStarted) {
+                    var clickPt = this._constrainIfNeeded(
+                        event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
+
                     this._pathEditor.requestInvalidation();
-                    this._pathRef.setProperty('closed', true);
-                    this._pathEditor.setActiveExtendingMode(false);
+                    this._updateHandles(clickPt);
+                    this._pathEditor.requestInvalidation();
                 }
-                this._commitChanges();
-                this._mode = GXPathTool.Mode.Edit;
-                this._setCursorForPosition(null, event.client);
+                if (!this._dpathRef.getProperty('closed')) {
+                    if (this._newPoint) {
+                        this._addPoint(this._editPt, false, true);
+                        this._pathEditor.requestInvalidation();
+                    }
+                    var otherPt;
+                    if (this._mode == GXPathTool.Mode.Append) {
+                        this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                        otherPt = this._pathRef.getAnchorPoints().getFirstChild();
+                    } else { // this._mode == GXPathTool.Mode.Prepend
+                        this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                        otherPt = this._pathRef.getAnchorPoints().getLastChild();
+                    }
+                    if (!this._newPoint) {
+                        this._pathEditor.selectOnePoint(this._refPt);
+                        this._pathEditor.applyTransform(this._pathRef);
+                    }
+                    //this._makePointMajor(this._refPt);
+                    if (otherPt && otherPt != this._refPt &&
+                        this._pathEditor.hitAnchorPoint(otherPt, event.client, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+
+                        this._setCursorForPosition(GUICursor.PenEnd);
+                    } else {
+                        this._setCursorForPosition(GUICursor.Pen);
+                    }
+                    this._commitChanges();
+                } else {
+                    if (this._refPt) {
+                        this._pathEditor.selectOnePoint(this._refPt);
+                        this._pathEditor.applyTransform(this._pathRef);
+                        this._pathEditor.requestInvalidation();
+                        this._pathRef.setProperty('closed', true);
+                        this._pathEditor.setActiveExtendingMode(false);
+                    }
+                    this._commitChanges();
+                    this._mode = GXPathTool.Mode.Edit;
+                    this._setCursorForPosition(null, event.client);
+                }
+                this._refPt = null;
             }
-            this._refPt = null;
         }
         this._dragStarted = false;
         this._dragStartPt = null;

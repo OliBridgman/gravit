@@ -115,16 +115,25 @@
      * @private
      */
     GXPolygon.prototype._invalidatePath = function () {
-        this.beginUpdate();
-        this._getAnchorPoints().clearChildren();
+        var anchorPoints = this._getAnchorPoints();
 
-        this.iterateSegments(function (point, inside, angle) {
-            var anchorPoint = new GXPathBase.AnchorPoint();
-            anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
-                [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
-            this._getAnchorPoints().appendChild(anchorPoint);
-        }.bind(this));
-        this.endUpdate();
+        this.beginUpdate();
+        anchorPoints._beginBlockCompositeEvents(true, true, true);
+        try {
+            // Clear old path points
+            anchorPoints.clearChildren();
+
+            this.iterateSegments(function (point, inside, angle) {
+                var anchorPoint = new GXPathBase.AnchorPoint();
+                anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
+                    [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
+                anchorPoints.appendChild(anchorPoint);
+            }.bind(this));
+
+        } finally {
+            this.endUpdate();
+            anchorPoints._endBlockCompositeEvents(true, true, true);
+        }
     };
 
     /** @override */

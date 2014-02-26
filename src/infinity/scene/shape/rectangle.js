@@ -20,7 +20,7 @@
      */
     GXRectangle.GeometryProperties = {
         /** All corners uniform */
-        uf : true,
+        uf: true,
         /** Top-Left uniform, corner-type, x-shoulder-length, y-shoulder-length */
         tl_uf: true,
         tl_ct: GXPathBase.CornerType.Rounded,
@@ -195,15 +195,24 @@
      * @private
      */
     GXRectangle.prototype._invalidatePath = function () {
-        this.beginUpdate();
-        this._getAnchorPoints().clearChildren();
+        var anchorPoints = this._getAnchorPoints();
 
-        this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
-            var anchorPoint = new GXPathBase.AnchorPoint();
-            anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'], [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength]);
-            this._getAnchorPoints().appendChild(anchorPoint);
-        }.bind(this));
-        this.endUpdate();
+        this.beginUpdate();
+        anchorPoints._beginBlockCompositeEvents(true, true, true);
+        try {
+            // Clear old path points
+            anchorPoints.clearChildren();
+
+            this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
+                var anchorPoint = new GXPathBase.AnchorPoint();
+                anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'], [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength]);
+                anchorPoints.appendChild(anchorPoint);
+            }.bind(this));
+
+        } finally {
+            this.endUpdate();
+            anchorPoints._endBlockCompositeEvents(true, true, true);
+        }
     };
 
     /** @override */

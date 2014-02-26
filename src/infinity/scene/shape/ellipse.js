@@ -93,7 +93,7 @@
         anchorPoints._beginBlockCompositeEvents(true, true, true);
         try {
             // Clear old path points
-            anchorPoints.clearChildren(false);
+            anchorPoints.clearChildren();
 
             var an;
             for (an = Math.PI / 2; an <= this.$sa || gMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {

@@ -254,7 +254,8 @@
     GXRectangleEditor.prototype._createPreviewIfNecessary = function () {
         if (!this._elementPreview) {
             this._elementPreview = new GXRectangle();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXRectangle.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXRectangle.GeometryProperties], true);
         }
     };
 
