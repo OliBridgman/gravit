@@ -49,7 +49,7 @@
 
     /** @override */
     GXShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXLayer || parent instanceof GXShapeSet;
+        return parent instanceof GXLayer || parent instanceof GXShapeSet || parent instanceof GXShape;
     };
 
     /** @override */
