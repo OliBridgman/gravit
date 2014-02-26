@@ -57,7 +57,7 @@
     /** @override */
     GXPaintContourStyle.prototype.restore = function (blob) {
         if (GXPaintFillStyle.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPaintContourStyle.GeometryProperties, true);
+            this.restoreProperties(blob, GXPaintContourStyle.GeometryProperties);
             return true;
         }
         return false;

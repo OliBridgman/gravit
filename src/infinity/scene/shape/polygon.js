@@ -96,7 +96,7 @@
     /** @override */
     GXPolygon.prototype.restore = function (blob) {
         if (GXPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPolygon.GeometryProperties, true);
+            this.restoreProperties(blob, GXPolygon.GeometryProperties);
             this._invalidatePath();
             return true;
         }
@@ -122,7 +122,7 @@
             var anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
                 [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
-            this._getAnchorPoints().appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint);
         }.bind(this));
         this.endUpdate();
     };

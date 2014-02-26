@@ -49,7 +49,7 @@
     /** @override */
     GXPageSet.prototype.restore = function (blob) {
         if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPageSet.MetaProperties, true);
+            this.restoreProperties(blob, GXPageSet.MetaProperties);
             return true;
         }
         return false;

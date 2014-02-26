@@ -598,41 +598,16 @@
         return result;
     };
 
-    GXNode.Properties.prototype.getPropertiesMap = function (custom) {
-        var result = {};
-        for (var propName in this) {
-            if (this.hasOwnProperty(propName) && ((propName.charAt(0) === '$' && !custom) || (propName.charAt(0) === '@' && custom))) {
-                result[propName.substr(1)] = this[propName];
-            }
-        }
-        return result;
-    };
-
-    GXNode.Properties.prototype.setPropertiesMap = function (propertiesMap, custom, noEvent) {
-        var properties = [];
-        var values = [];
-
-        for (var propName in propertiesMap) {
-            if (propertiesMap.hasOwnProperty(propName)) {
-                properties.push(propName);
-                values.push(propertiesMap[propName]);
-            }
-        }
-
-        this.setProperties(properties, values, custom, noEvent);
-    };
-
     /**
-     * This is the same as calling setProperties([property], [value], noEvent)
+     * This is the same as calling setProperties([property], [value])
      * @param {String} property the name of the property
      * @param {*} value the new value of the property
      * @param {Boolean} [custom] whether property is a custom one or not, defaults to false
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
      * Defaults to false.
      * @see setProperties
      */
-    GXNode.Properties.prototype.setProperty = function (property, value, custom, noEvent) {
-        return this.setProperties([property], [value], noEvent, custom);
+    GXNode.Properties.prototype.setProperty = function (property, value, custom) {
+        return this.setProperties([property], [value], custom);
     };
 
     /**
@@ -640,12 +615,11 @@
      * @param {Array<String>} properties the property names in the same order as values
      * @param {Array<*>} values the new values in the same order as property names
      * @param {Boolean} [custom] whether properties are a custom ones or not, defaults to false
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
      * Defaults to false.
      * @return {Boolean} true if at least one property has been modified, false if not (i.e. because
      * the property was already set to the specified value)
      */
-    GXNode.Properties.prototype.setProperties = function (properties, values, custom, noEvent) {
+    GXNode.Properties.prototype.setProperties = function (properties, values, custom) {
         if (properties.length !== values.length) {
             throw new Error('Properties length does not match values length');
         }
@@ -669,10 +643,7 @@
             return false;
         }
 
-        // Notificate about the future change
-        if (!noEvent) {
-            this._notifyChange(GXNode._Change.BeforePropertiesChange, {properties: propertiesToModify, values: valuesToModify});
-        }
+        this._notifyChange(GXNode._Change.BeforePropertiesChange, {properties: propertiesToModify, values: valuesToModify});
 
         // Assign new property values now
         var previousValues = [];
@@ -682,10 +653,7 @@
             this[propName] = valuesToModify[i];
         }
 
-        // Send change notification
-        if (!noEvent) {
-            this._notifyChange(GXNode._Change.AfterPropertiesChange, {properties: propertiesToModify, values: previousValues});
-        }
+        this._notifyChange(GXNode._Change.AfterPropertiesChange, {properties: propertiesToModify, values: previousValues});
 
         return true;
     };
@@ -715,12 +683,10 @@
      * doesn't contain a given property, the default value will be used instead.
      * @param {*} blob the blob to restore from
      * @param {*} properties a hashmap of properties to their default values to be restored
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
-     * Defaults to false.
      * @param {Function} [filter] custom filter function (property,value} to return
      * the value to be deserialized for a given property
      */
-    GXNode.Properties.prototype.restoreProperties = function (blob, properties, noEvent, filter) {
+    GXNode.Properties.prototype.restoreProperties = function (blob, properties, filter) {
         filter = filter || function (property, value) {
             return value;
         }
@@ -738,7 +704,7 @@
             }
         }
 
-        this.setProperties(propertiesToSet, valuesToSet, false, noEvent);
+        this.setProperties(propertiesToSet, valuesToSet, false);
     };
 
     /**
@@ -746,10 +712,9 @@
      * doesn't contain a given property, the default value will be used instead.
      * @param {GXNode} node a properties node to transfer from
      * @param {Array<*>} properties array of hashmaps of properties to their default values to be transfered
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
      * Defaults to false.
      */
-    GXNode.Properties.prototype.transferProperties = function (source, properties, noEvent) {
+    GXNode.Properties.prototype.transferProperties = function (source, properties) {
         var propertiesToSet = [];
         var valuesToSet = [];
 
@@ -765,7 +730,7 @@
             }
         }
 
-        this.setProperties(propertiesToSet, valuesToSet, false, noEvent);
+        this.setProperties(propertiesToSet, valuesToSet, false);
     };
 
     /**
@@ -893,22 +858,17 @@
     /**
      * Append a new node as child to this node
      * @param {GXNode} child the child to append to this one
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
-     * Defaults to false.
-     * @version 1.0
      */
-    GXNode.Container.prototype.appendChild = function (child, noEvent) {
-        this.insertChild(child, null, noEvent);
+    GXNode.Container.prototype.appendChild = function (child) {
+        this.insertChild(child, null);
     };
 
     /**
      * Insert a new child at a certain position
      * @param {GXNode} child the child to append to into this one
      * @param {GXNode} reference reference to insert before, can be null to append
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
-     * Defaults to false.
      */
-    GXNode.Container.prototype.insertChild = function (child, reference, noEvent) {
+    GXNode.Container.prototype.insertChild = function (child, reference) {
         if (child._scene != null) {
             throw new Error("Child is already appended somewhere else");
         }
@@ -919,10 +879,7 @@
             throw new Error("Child insertion validation failed.");
         }
 
-        if (!noEvent) {
-            // Send before change notification
-            this._notifyChange(GXNode._Change.BeforeChildInsert, child);
-        }
+        this._notifyChange(GXNode._Change.BeforeChildInsert, child);
 
         // Link our new child now
         child._parent = this;
@@ -966,19 +923,14 @@
             }
         }
 
-        if (!noEvent) {
-            // Send after change notification
-            this._notifyChange(GXNode._Change.AfterChildInsert, child);
-        }
+        this._notifyChange(GXNode._Change.AfterChildInsert, child);
     };
 
     /**
      * Remove an existing child from this node
      * @param {GXNode} child the child to remove from this one
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
-     * Defaults to false.
      */
-    GXNode.Container.prototype.removeChild = function (child, noEvent) {
+    GXNode.Container.prototype.removeChild = function (child) {
         if (child._parent != this) {
             throw new Error("Child is not a child of this node");
         }
@@ -986,7 +938,7 @@
             throw new Error("Child removal validation failed.");
         }
 
-        // Send before change notification
+
         this._notifyChange(GXNode._Change.BeforeChildRemove, child);
 
         if (this._firstChild == child) {
@@ -1015,7 +967,7 @@
             }
         }
 
-        // Send after change notification
+
         this._notifyChange(GXNode._Change.AfterChildRemove, child);
     };
 
@@ -1023,12 +975,10 @@
      * Remove all children of this node
      * @param {Boolean} [shadow] if true, remove also shadow nodes,
      * defaults to false
-     * @param {Boolean} [noEvent] if set to true, no event will be send.
-     * Defaults to false.
      */
-    GXNode.Container.prototype.clearChildren = function (shadow, noEvent) {
+    GXNode.Container.prototype.clearChildren = function (shadow) {
         while (this.getFirstChild(shadow)) {
-            this.removeChild(this.getFirstChild(shadow), noEvent);
+            this.removeChild(this.getFirstChild(shadow));
         }
     };
 
@@ -1157,7 +1107,7 @@
                 for (var i = 0; i < children.length; ++i) {
                     var child = GXNode.restore(children[i]);
                     if (child) {
-                        this.appendChild(child, true);
+                        this.appendChild(child);
                     }
                 }
             }
@@ -1483,16 +1433,17 @@
 
     /**
      * Block one or more changes
+     * @param {Array<Number>} changes the array of changes to be blocked
      * @private
      */
-    GXNode.prototype._beginBlockChanges = function () {
+    GXNode.prototype._beginBlockChanges = function (changes) {
         if (!(this._blockedChanges)) {
             this._blockedChanges = {};
             this._blockedChanges._counter = 0;
         }
 
-        for (var i = 0; i < arguments.length; ++i) {
-            var change = arguments[i];
+        for (var i = 0; i < changes.length; ++i) {
+            var change = changes[i];
             if (change in this._blockedChanges) {
                 this._blockedChanges[change]++;
             } else {
@@ -1504,13 +1455,13 @@
 
     /**
      * Finish blocking one or more changes
+     * @param {Array<Number>} changes the array of changes to be unblocked
      * @private
      */
-    GXNode.prototype._endBlockChanges = function () {
+    GXNode.prototype._endBlockChanges = function (changes) {
         if (this._blockedChanges) {
-
-            for (var i = 0; i < arguments.length; ++i) {
-                var change = arguments[i];
+            for (var i = 0; i < changes.length; ++i) {
+                var change = changes[i];
                 if (change in this._blockedChanges) {
                     if (--this._blockedChanges[change] == 0) {
                         if (--this._blockedChanges._counter == 0) {
@@ -1523,6 +1474,106 @@
     };
 
     /**
+     * Block one or more events
+     * @param {Array<*>} eventClasses the array of event classes to be blocked
+     * @private
+     */
+    GXNode.prototype._beginBlockEvents = function (eventClasses) {
+        if (!(this._blockedEvents)) {
+            this._blockedEvents = {};
+            this._blockedEvents._counter = 0;
+        }
+
+        for (var i = 0; i < eventClasses.length; ++i) {
+            var event_id = GObject.getTypeId(eventClasses[i]);
+            if (event_id in this._blockedEvents) {
+                this._blockedEvents[event_id]++;
+            } else {
+                this._blockedEvents[event_id] = 1;
+            }
+            this._blockedEvents._counter++;
+        }
+    };
+
+    /**
+     * Finish blocking one or more events.
+     * @param {Array<*>} eventClasses the array of event classes to be unblocked
+     * @private
+     */
+    GXNode.prototype._endBlockEvents = function (eventClasses) {
+        if (this._blockedEvents) {
+            for (var i = 0; i < eventClasses.length; ++i) {
+                var event_id = GObject.getTypeId(eventClasses[i]);
+                if (event_id in this._blockedEvents) {
+                    if (--this._blockedEvents[event_id] == 0) {
+                        if (--this._blockedEvents._counter == 0) {
+                            delete this._blockedEvents;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * Util function to return a composite array of events
+     * @param {Boolean} structural structural events (insert, remove)
+     * @param {Boolean} [properties] property events
+     * @param {Boolean} [flags] flag events
+     * @private
+     */
+    GXNode.prototype._getCompositeEvents = function (structural, properties, flags) {
+        var events = [];
+
+        if (structural) {
+            events = events.concat([
+                GXNode.BeforeInsertEvent,
+                GXNode.AfterInsertEvent,
+                GXNode.BeforeRemoveEvent,
+                GXNode.AfterRemoveEvent
+            ]);
+        }
+
+        if (properties) {
+            events = events.concat([
+                GXNode.BeforePropertiesChangeEvent,
+                GXNode.AfterPropertiesChangeEvent
+            ]);
+        }
+
+        if (flags) {
+            events = events.concat([
+                GXNode.BeforeFlagChangeEvent,
+                GXNode.AfterFlagChangeEvent
+            ]);
+        }
+
+        return events;
+    };
+
+    /**
+     * Util function to block a composite number of events
+     * @param {Boolean} structural block structural events (insert, remove)
+     * @param {Boolean} [properties] block property events
+     * @param {Boolean} [flags] block flag events
+     * @private
+     */
+    GXNode.prototype._beginBlockCompositeEvents = function (structural, properties, flags) {
+        this._beginBlockEvents(this._getCompositeEvents(structural, properties, flags));
+    };
+
+    /**
+     * Util function to unblock a composite number of events
+     * @param {Boolean} structural unblock structural events (insert, remove)
+     * @param {Boolean} [properties] unblock property events
+     * @param {Boolean} [flags] unblock flag events
+     * @private
+     */
+    GXNode.prototype._endBlockCompositeEvents = function (structural, properties, flags) {
+        this._endBlockEvents(this._getCompositeEvents(structural, properties, flags));
+    };
+
+    /**
      * Notify about a change and handle it if not blocked
      * @param {Number} change the change we got notified
      * @param {Object} [args] the arguments for the change, it's value
@@ -1531,9 +1582,30 @@
      * @private
      */
     GXNode.prototype._notifyChange = function (change, args) {
-        if (!(this._blockedChanges) || !(this._blockedChanges[change])) {
+        if (!this._blockedChanges || !this._blockedChanges[change]) {
             this._handleChange(change, args);
         }
+    };
+
+    /**
+     * Returns whether a given event can be send which is only the case
+     * when the node is attached, the scene has a listener for the event
+     * and the event is not blocked
+     * @param eventClass
+     * @returns {Boolean}
+     * @private
+     */
+    GXNode.prototype._canEventBeSend = function (eventClass) {
+        if (!this.isAttached()) {
+            return false;
+        }
+
+        if (!this._scene.hasEventListeners(eventClass)) {
+            return false;
+        }
+
+        var event_id = GObject.getTypeId(eventClass);
+        return !this._blockedEvents || !this._blockedEvents[event_id];
     };
 
     /**
@@ -1548,53 +1620,53 @@
         if (change == GXNode._Change.BeforeChildInsert) {
             /** @type {GXNode} */
             var child = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.BeforeInsertEvent)) {
+            if (this._canEventBeSend(GXNode.BeforeInsertEvent)) {
                 this._scene.trigger(new GXNode.BeforeInsertEvent(child));
             }
         }
         else if (change == GXNode._Change.AfterChildInsert) {
             /** @type {GXNode} */
             var child = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.AfterInsertEvent)) {
+            if (this._canEventBeSend(GXNode.AfterInsertEvent)) {
                 this._scene.trigger(new GXNode.AfterInsertEvent(child));
             }
         } else if (change == GXNode._Change.BeforeChildRemove) {
             /** @type {GXNode} */
             var child = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.BeforeRemoveEvent)) {
+            if (this._canEventBeSend(GXNode.BeforeRemoveEvent)) {
                 this._scene.trigger(new GXNode.BeforeRemoveEvent(child));
             }
         }
         else if (change == GXNode._Change.AfterChildRemove) {
             /** @type {GXNode} */
             var child = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.AfterRemoveEvent)) {
+            if (this._canEventBeSend(GXNode.AfterRemoveEvent)) {
                 this._scene.trigger(new GXNode.AfterRemoveEvent(child));
             }
         } else if (change == GXNode._Change.BeforePropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.BeforePropertiesChangeEvent)) {
+            if (this._canEventBeSend(GXNode.BeforePropertiesChangeEvent)) {
                 this._scene.trigger(new GXNode.BeforePropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
         }
         else if (change == GXNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.AfterPropertiesChangeEvent)) {
+            if (this._canEventBeSend(GXNode.AfterPropertiesChangeEvent)) {
                 this._scene.trigger(new GXNode.AfterPropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
         } else if (change == GXNode._Change.BeforeFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.BeforeFlagChangeEvent)) {
+            if (this._canEventBeSend(GXNode.BeforeFlagChangeEvent)) {
                 this._scene.trigger(new GXNode.BeforeFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }
         else if (change == GXNode._Change.AfterFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
-            if (this.isAttached() && this._scene.hasEventListeners(GXNode.AfterFlagChangeEvent)) {
+            if (this._canEventBeSend(GXNode.AfterFlagChangeEvent)) {
                 this._scene.trigger(new GXNode.AfterFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }

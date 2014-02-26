@@ -70,7 +70,7 @@
     /** @override */
     GXShape.prototype.restore = function (blob) {
         if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXShape.GeometryProperties, true, function (property, value) {
+            this.restoreProperties(blob, GXShape.GeometryProperties, function (property, value) {
                 if (property === 'transform' && value) {
                     return GTransform.deserialize(value);
                 }

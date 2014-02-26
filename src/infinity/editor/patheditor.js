@@ -320,11 +320,11 @@
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
                 if (part.type === GXPathEditor.PartType.Point) {
-                    this._transferPreviewProperties(part.point, element, (i != this._partSelection.length - 1));
+                    this._transferPreviewProperties(part.point, element);
                     newSelection.push(part);
                 } else if (part.type === GXPathEditor.PartType.Segment) {
-                    this._transferPreviewProperties(part.apLeft, element, true);
-                    this._transferPreviewProperties(part.apRight, element, (i != this._partSelection.length - 1));
+                    this._transferPreviewProperties(part.apLeft, element);
+                    this._transferPreviewProperties(part.apRight, element);
                     // Update now _partSelection to contain segment end points instead of segment itself
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apLeft});
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apRight});
@@ -961,48 +961,62 @@
         var idx = 0;
         var hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
         var previewIdx = hasPreview ? this._sourceIndexToPreviewIndex[idx] : 0;
-        while (!hasPreview && ap) {
-            var previewAnchorPoint = new GXPathBase.AnchorPoint();
-            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties], true);
-            if (ap.hasFlag(GXNode.Flag.Selected)) {
-                previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+
+
+        previewAnchorPoints._beginBlockChanges([
+            GXNode._Change.BeforeChildInsert,
+            GXNode._Change.AfterChildInsert
+        ]);
+
+        try {
+            while (!hasPreview && ap) {
+                var previewAnchorPoint = new GXPathBase.AnchorPoint();
+                previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+                if (ap.hasFlag(GXNode.Flag.Selected)) {
+                    previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                }
+
+                previewAnchorPoints.insertChild(previewAnchorPoint, firstPreviewPtOrig);
+                this._sourceIndexToPreviewIndex[idx] = previewIdx;
+                ap = ap.getNext();
+                ++idx;
+                ++previewIdx;
+                hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
             }
 
-            // use noEvent = true here, because recalculations in the middle of path copying makes incorrect copy
-            previewAnchorPoints.insertChild(previewAnchorPoint, firstPreviewPtOrig, true);
-            this._sourceIndexToPreviewIndex[idx] = previewIdx;
-            ap = ap.getNext();
-            ++idx;
-            ++previewIdx;
-            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
-        }
-        var num = idx - 0;
-        while (hasPreview && ap) {
-            this._sourceIndexToPreviewIndex[idx] += num;
-            previewIdx = this._sourceIndexToPreviewIndex[idx];
-            ap = ap.getNext();
-            ++idx;
-            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
-        }
-        ++previewIdx;
-        while (!hasPreview && ap) {
-            var previewAnchorPoint = new GXPathBase.AnchorPoint();
-            previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties], true);
-            if (ap.hasFlag(GXNode.Flag.Selected)) {
-                previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+            var num = idx - 0;
+            while (hasPreview && ap) {
+                this._sourceIndexToPreviewIndex[idx] += num;
+                previewIdx = this._sourceIndexToPreviewIndex[idx];
+                ap = ap.getNext();
+                ++idx;
+                hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
             }
-
-            // use noEvent = true here, because recalculations in the middle of path copying makes incorrect copy
-            previewAnchorPoints.appendChild(previewAnchorPoint, true);
-            this._sourceIndexToPreviewIndex[idx] = previewIdx;
-            ap = ap.getNext();
-            ++idx;
             ++previewIdx;
-            hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+
+            while (!hasPreview && ap) {
+                var previewAnchorPoint = new GXPathBase.AnchorPoint();
+                previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
+                if (ap.hasFlag(GXNode.Flag.Selected)) {
+                    previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                }
+
+                previewAnchorPoints.appendChild(previewAnchorPoint);
+                this._sourceIndexToPreviewIndex[idx] = previewIdx;
+                ap = ap.getNext();
+                ++idx;
+                ++previewIdx;
+                hasPreview = (this._sourceIndexToPreviewIndex[idx] != null);
+            }
+        } finally {
+            previewAnchorPoints._endBlockChanges([
+                GXNode._Change.BeforeChildInsert,
+                GXNode._Change.AfterChildInsert
+            ]);
         }
+
         // There may be one more hasPreview block, but it should not be updated in this case,
         // as this is the beginning of preview
-
         this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
     };
 
@@ -1019,8 +1033,7 @@
             this._sourceIndexToPreviewIndex = {};
 
             this._elementPreview = new GXPath();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXPath.GeometryProperties], true);
+            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
 
             var _anchorPointIsSelected = function (anchorPoint) {
                 return (selectedAnchorPoint && anchorPoint === selectedAnchorPoint) || (!selectedAnchorPoint && anchorPoint.hasFlag(GXNode.Flag.Selected));
@@ -1105,32 +1118,42 @@
             firstSelPoint = firstSelPoint ? firstSelPoint : sourceAnchorPoints.getFirstChild();
             var finished = false;
             var anchorPoint = firstSelPoint;
-            while (!finished) {
-                var previewAnchorPoint = new GXPathBase.AnchorPoint();
-                previewAnchorPoint.transferProperties(anchorPoint, [GXPathBase.AnchorPoint.GeometryProperties], true);
-                if (_anchorPointIsSelected(anchorPoint)) {
-                    previewAnchorPoint.setFlag(GXNode.Flag.Selected);
-                }
 
-                // use noEvent = true here, because recalculations in the middle of path copying makes incorrect copy
-                previewAnchorPoints.appendChild(previewAnchorPoint, true);
+            previewAnchorPoints._beginBlockChanges([
+                GXNode._Change.BeforeChildInsert,
+                GXNode._Change.AfterChildInsert
+            ]);
+            try {
+                while (!finished) {
+                    var previewAnchorPoint = new GXPathBase.AnchorPoint();
+                    previewAnchorPoint.transferProperties(anchorPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                    if (_anchorPointIsSelected(anchorPoint)) {
+                        previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                    }
 
-                // Add index mappings
-                var sourceIndex = sourceAnchorPoints.getIndexOfChild(anchorPoint);
-                var previewIndex = previewAnchorPoints.getIndexOfChild(previewAnchorPoint);
-                this._sourceIndexToPreviewIndex[sourceIndex] = previewIndex;
+                    previewAnchorPoints.appendChild(previewAnchorPoint);
 
-                if (anchorPoint == lastSelPoint) {
-                    finished = true;
+                    // Add index mappings
+                    var sourceIndex = sourceAnchorPoints.getIndexOfChild(anchorPoint);
+                    var previewIndex = previewAnchorPoints.getIndexOfChild(previewAnchorPoint);
+                    this._sourceIndexToPreviewIndex[sourceIndex] = previewIndex;
+
+                    if (anchorPoint == lastSelPoint) {
+                        finished = true;
+                    }
+                    anchorPoint = sourceAnchorPoints.getNextPoint(anchorPoint);
+                    if (!anchorPoint || anchorPoint == firstSelPoint) {
+                        finished = true;
+                    }
                 }
-                anchorPoint = sourceAnchorPoints.getNextPoint(anchorPoint);
-                if (!anchorPoint || anchorPoint == firstSelPoint) {
-                    finished = true;
-                }
+            } finally {
+                previewAnchorPoints._endBlockChanges([
+                    GXNode._Change.BeforeChildInsert,
+                    GXNode._Change.AfterChildInsert
+                ]);
             }
 
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXPath.GeometryProperties], true);
+            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
             if (firstSelPoint.getProperty('ah') || lastSelPoint && lastSelPoint.getProperty('ah')) {
                 this.extendPreviewToFull();
             } else {
@@ -1364,14 +1387,13 @@
      * might be different than the one this editor works on. This will be never null.
      * @private
      */
-    GXPathEditor.prototype._transferPreviewProperties = function (point, element, noEvent) {
+    GXPathEditor.prototype._transferPreviewProperties = function (point, element) {
         // Work with indices as element might not be ourself
         var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(point);
         var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
         var previewPoint = this.getPathPointPreview(elSourcePoint);
         if (previewPoint) {
-            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties],
-                noEvent ? noEvent : false);
+            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
         }
     };
 
@@ -1413,7 +1435,7 @@
      * @param {GXElement.GeometryChangeEvent} evt
      * @private
      */
-    GXPathEditor.prototype._geometryChange = function(evt) {
+    GXPathEditor.prototype._geometryChange = function (evt) {
         if (evt.type == GXElement.GeometryChangeEvent.Type.After) {
             if (this._elementPreview) {
                 this.releasePathPreview();

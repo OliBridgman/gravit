@@ -34,7 +34,7 @@
     /** @override */
     GXPaintFillStyle.prototype.restore = function (blob) {
         if (GXPaintStyle.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPaintFillStyle.VisualProperties, true);
+            this.restoreProperties(blob, GXPaintFillStyle.VisualProperties);
             return true;
         }
         return false;

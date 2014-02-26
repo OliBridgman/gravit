@@ -36,7 +36,7 @@
     /** @override */
     GXLayerBase.prototype.restore = function (blob) {
         if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXLayerBase.MetaProperties, true);
+            this.restoreProperties(blob, GXLayerBase.MetaProperties);
             return true;
         }
         return false;

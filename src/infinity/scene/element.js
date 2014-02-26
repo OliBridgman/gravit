@@ -293,7 +293,7 @@
 
             if (!this._styleSet && create) {
                 this._styleSet = new GXStyleSet();
-                this.insertChild(this._styleSet, this.getFirstChild(), true);
+                this.insertChild(this._styleSet, this.getFirstChild());
             }
         }
 
@@ -586,7 +586,6 @@
      * heavy operations that may result in multiple modifications. This function
      * is recursive, i.e. multiple calls to this functions need to be finished
      * with the corresponding numbers of endUpdate calls.
-     * @version 1.0
      */
     GXElement.prototype.beginUpdate = function () {
         if (!this._updateCounter) {
@@ -604,7 +603,6 @@
      * corresponding endUpdate call has taken place.
      * @param {Boolean} [noGeometryInvalidation] if set then does not invalidate the geometry,
      * otherwise this will ensure to invalidate the geometry. Defaults to false.
-     * @version 1.0
      */
     GXElement.prototype.endUpdate = function (noGeometryInvalidation) {
         if (this._updateCounter != null && --this._updateCounter == 0) {
@@ -748,12 +746,12 @@
      * @private
      */
     GXElement.prototype._blockUpdateChanges = function () {
-        this._beginBlockChanges(
+        this._beginBlockChanges([
             GXElement._Change.InvalidationRequest,
             GXElement._Change.PrepareGeometryUpdate,
             GXElement._Change.FinishGeometryUpdate,
             GXElement._Change.ChildGeometryUpdate
-        );
+        ]);
     };
 
     /**
@@ -761,12 +759,12 @@
      * @private
      */
     GXElement.prototype._releaseUpdateChanges = function () {
-        this._endBlockChanges(
+        this._endBlockChanges([
             GXElement._Change.InvalidationRequest,
             GXElement._Change.PrepareGeometryUpdate,
             GXElement._Change.FinishGeometryUpdate,
             GXElement._Change.ChildGeometryUpdate
-        );
+        ]);
     };
 
     /**

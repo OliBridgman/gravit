@@ -15,8 +15,8 @@
         this._setDefaultProperties(GXScene.MetaProperties);
 
         // Append our page and layer sets
-        this.appendChild(new GXPageSet(), true);
-        this.appendChild(new GXLayerSet(), true);
+        this.appendChild(new GXPageSet());
+        this.appendChild(new GXLayerSet());
 
         // Append our default layers which are, from top to bottom:
         // - Foreground layer (marked as active by default)
@@ -172,7 +172,7 @@
 
         // Now call default implementation and do further work
         if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXScene.MetaProperties, true);
+            this.restoreProperties(blob, GXScene.MetaProperties);
             return true;
         }
         return false;

@@ -357,8 +357,7 @@
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
-                    this._pathRef.getAnchorPoints().insertChild(
-                        anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
+                    this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
 
                     this._pathEditor.selectOnePoint(anchorPt);
                     this._pathEditor.setActiveExtendingMode(true);

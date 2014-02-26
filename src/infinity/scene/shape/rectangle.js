@@ -201,7 +201,7 @@
         this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
             var anchorPoint = new GXPathBase.AnchorPoint();
             anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'], [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength]);
-            this._getAnchorPoints().appendChild(anchorPoint, false);
+            this._getAnchorPoints().appendChild(anchorPoint);
         }.bind(this));
         this.endUpdate();
     };

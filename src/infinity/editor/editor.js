@@ -17,6 +17,7 @@
         // Subscribe to various scene changes
         this._scene.addEventListener(GXNode.AfterInsertEvent, this._afterNodeInsert, this);
         this._scene.addEventListener(GXNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+        this._scene.addEventListener(GXNode.BeforePropertiesChangeEvent, this._beforePropertiesChange, this);
         this._scene.addEventListener(GXNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
         this._scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
@@ -563,7 +564,7 @@
 
         this._scene.removeEventListener(GXNode.AfterInsertEvent, this._afterNodeInsert);
         this._scene.removeEventListener(GXNode.BeforeRemoveEvent, this._beforeNodeRemove);
-        this._scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+        this._scene.removeEventListener(GXNode.BeforePropertiesChangeEvent, this._beforePropertiesChange);
         this._scene.removeEventListener(GXNode.BeforeFlagChangeEvent, this._beforeFlagChange);
         this._scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
         this._scene.removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
@@ -953,8 +954,9 @@
         }
 
         if (this._transaction.actions.length > 0) {
-            var actions = this._transaction.actions.slice();
-            var selection = this._transaction.selection.slice();
+            var transaction = this._transaction;
+            var actions = transaction.actions.slice();
+            var selection = transaction.selection ? transaction.selection.slice() : null;
             var newSelection = this._saveSelection();
 
             // push a new state
@@ -963,14 +965,14 @@
                     actions[i].action();
                 }
                 this._loadSelection(newSelection);
-            };
+            }.bind(this);
 
             var revert = function () {
                 for (var i = 0; i < actions.length; ++i) {
                     actions[i].revert();
                 }
                 this._loadSelection(selection);
-            };
+            }.bind(this);
 
             this.pushState(action, revert, name);
         }
@@ -995,8 +997,6 @@
             revert: revert,
             name: name ? name : ""
         });
-
-        action();
     };
 
     /**
@@ -1074,13 +1074,32 @@
      * @private
      */
     GXEditor.prototype._afterNodeInsert = function (evt) {
+        // If we have an active transaction, we need to record the action
+        if (this._transaction) {
+            var node = evt.node;
+            var parent = node.getParent();
+            var next = node.getNext();
+
+            this._transaction.actions.push({
+                action : function () {
+                    // Simply re-insert the node
+                    parent.insertChild(node, next);
+                },
+
+                revert : function () {
+                    // Simply remove the node
+                    parent.removeChild(node);
+                }
+            });
+        };
+
+        // Try to add newly inserted node into internal selection
+        this._tryAddToSelection(evt.node);
+
         // If page and we don't have a current one yet, mark it active now
         if (evt.node instanceof GXPage && !this._currentPage) {
             this.setCurrentPage(evt.node);
         }
-
-        // Try to add newly inserted node into internal selection
-        this._tryAddToSelection(evt.node);
     };
 
     /**
@@ -1088,6 +1107,25 @@
      * @private
      */
     GXEditor.prototype._beforeNodeRemove = function (evt) {
+        // If we have an active transaction, we need to record the action
+        if (this._transaction) {
+            var node = evt.node;
+            var parent = node.getParent();
+            var next = node.getNext();
+
+            this._transaction.actions.push({
+                action : function () {
+                    // Simply remove the node
+                    parent.removeChild(node);
+                },
+
+                revert : function () {
+                    // Simply re-insert the node
+                    parent.insertChild(node, next);
+                }
+            });
+        };
+
         // Try to remove node from internal selection, first
         this._tryRemoveFromSelection(evt.node);
 
@@ -1121,6 +1159,35 @@
                 throw new Error('Unexpected: No layer available.');
             }
         }
+    };
+
+    /**
+     * @param {GXNode.BeforePropertiesChangeEvent} evt
+     * @private
+     */
+    GXEditor.prototype._beforePropertiesChange = function (evt) {
+        // If we have an active transaction, we need to record the action
+        if (this._transaction) {
+            var node = evt.node;
+            var properties = evt.properties;
+            var values = evt.values;
+            var oldValues = [];
+            for (var i = 0; i < evt.properties.length; ++i) {
+                oldValues.push(node.getProperty(evt.properties[i]));
+            }
+
+            this._transaction.actions.push({
+                action : function () {
+                    // Simply assign the property values
+                    node.setProperties(properties, values);
+                },
+
+                revert : function () {
+                    // Simply assign the previous property values
+                    node.setProperties(properties, oldValues);
+                }
+            });
+        };
     };
 
     /**

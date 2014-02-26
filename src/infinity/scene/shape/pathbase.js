@@ -13,7 +13,7 @@
 
         // Add anchor points
         this._anchorPoints = new GXPathBase.AnchorPoints();
-        this.appendChild(this._anchorPoints, true);
+        this.appendChild(this._anchorPoints);
 
         this._vertices = new GXVertexContainer();
         this._verticesDirty = true;
@@ -450,18 +450,18 @@
                     hLen = dirLenNext * GXPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
                     hy = this.$y + (this.$y - prevPt.$y) / dirLenPrev * hLen;
-                    this.setProperties(['hrx', 'hry'], [hx, hy], false, true);
+                    this.setProperties(['hrx', 'hry'], [hx, hy]);
                 } else {
-                    this.setProperties(['hrx', 'hry'], [null, null], false, true);
+                    this.setProperties(['hrx', 'hry'], [null, null]);
                 }
                 if (prevPt && nextPt && prevPt.$tp == GXPathBase.AnchorPoint.Type.Smooth && !gMath.isEqualEps(dirLenNext, 0) && !gMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenPrev * GXPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
                     hy = this.$y + (this.$y - nextPt.$y) / dirLenNext * hLen;
-                    this.setProperties(['hlx', 'hly'], [hx, hy], false, true);
+                    this.setProperties(['hlx', 'hly'], [hx, hy]);
                 } else {
-                    this.setProperties(['hlx', 'hly'], [null, null], false, true);
+                    this.setProperties(['hlx', 'hly'], [null, null]);
                 }
             } else {
                 if (this.$hlx != null && nextPt && !gMath.isEqualEps(dirLenNext, 0)) {
@@ -472,7 +472,7 @@
                     // TODO: use projection in editor when modifying handle
                     //var hnd = gMath.getPositiveProjection(this.$x, this.$y,
                     //    this.$x + (this.$x - nextPt.$x), this.$y + (this.$y - nextPt.$y), this.$hlx, this.$hly);
-                    this.setProperties(['hlx', 'hly'], [hx, hy], false, true);
+                    this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
 
                 if (this.$hrx != null && prevPt && !gMath.isEqualEps(dirLenPrev, 0)) {
@@ -483,7 +483,7 @@
                     // TODO: use projection in editor when modifying handle
                     //var hnd = gMath.getPositiveProjection(this.$x, this.$y,
                     //   this.$x + (this.$x - prevPt.$x), this.$y + (this.$y - prevPt.$y), this.$hrx, this.$hry);
-                    this.setProperties(['hrx', 'hry'], [hx, hy], false, true);
+                    this.setProperties(['hrx', 'hry'], [hx, hy]);
                 }
             }
         }
@@ -501,7 +501,7 @@
                     hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - this.$hrx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hry) / dirLen * hLen;
-                    this.setProperties(['hlx', 'hly'], [hx, hy], false, true);
+                    this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
             } else { // the right handle shall be rotated to be in line with the left one
                 dirLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
@@ -509,7 +509,7 @@
                     hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - this.$hlx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hly) / dirLen * hLen;
-                    this.setProperties(['hrx', 'hry'], [hx, hy], false, true);
+                    this.setProperties(['hrx', 'hry'], [hx, hy]);
                 }
             }
         }
@@ -573,10 +573,10 @@
                         }
 
                         hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
-                        this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen], false, true);
+                        this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
 
                         hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
-                        this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen], false, true);
+                        this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                     }
                 }
             } else { // type != Smooth && type != Connector as this method should not be called for connector
@@ -586,7 +586,7 @@
                         if (!prevprevPt || (prevPt.$x == prevprevPt.$x && prevPt.$y == prevprevPt.$y)) {
                             hx = this.$x + (prevPt.$x - this.$x) * offs;
                             hy = this.$y + (prevPt.$y - this.$y) * offs;
-                            this.setProperties(['hlx', 'hly'], [hx, hy], false, true);
+                            this.setProperties(['hlx', 'hly'], [hx, hy]);
                         } else {
                             // calculate left handle to be tangent circle(triag(this, prevPt, prevprevPt))
                             ccntr = gMath.getCircumcircleCenter(
@@ -595,7 +595,7 @@
                             if (ccntr == null) { // this and prevprev points are the same, make handle to be perpendicular
                                 dx = (this.$y - prevPt.$y) * offs;
                                 dy = (prevPt.$x - this.$x) * offs;
-                                this.setProperties(['hlx', 'hly'], [this.$x - dx, this.$y - dy], false, true);
+                                this.setProperties(['hlx', 'hly'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
                                 dirLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
@@ -613,11 +613,11 @@
                                 }
 
                                 hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
-                                this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen], false, true);
+                                this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
                             }
                         }
                     } else { // prevPt.$tp != GXPathBase.AnchorPoint.Type.Smooth
-                        this.setProperties(['hlx', 'hly'], [null, null], false, true);
+                        this.setProperties(['hlx', 'hly'], [null, null]);
                     }
                 }
 
@@ -627,7 +627,7 @@
                         if (!nextnextPt || (nextPt.$x == nextnextPt.$x && nextPt.$y == nextnextPt.$y)) {
                             hx = this.$x + (nextPt.$x - this.$x) * offs;
                             hy = this.$y + (nextPt.$y - this.$y) * offs;
-                            this.setProperties(['hrx', 'hry'], [hx, hy], false, true);
+                            this.setProperties(['hrx', 'hry'], [hx, hy]);
                         } else {
                             // calculate right handle to be tangent circle(triag(this, nextPt, nextnextPt))
                             ccntr = gMath.getCircumcircleCenter(
@@ -636,7 +636,7 @@
                             if (ccntr == null) { // this and nextnext points are the same, make handle to be perpendicular
                                 dx = (this.$y - nextPt.$y) * offs;
                                 dy = (nextPt.$x - this.$x) * offs;
-                                this.setProperties(['hrx', 'hry'], [this.$x - dx, this.$y - dy], false, true);
+                                this.setProperties(['hrx', 'hry'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
                                 dirLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
@@ -654,14 +654,13 @@
                                 }
 
                                 hLen = Math.sqrt(gMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
-                                this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen], false, true);
+                                this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                             }
                         }
                     } else {
-                        this.setProperties(['hrx', 'hry'], [null, null], false, true);
+                        this.setProperties(['hrx', 'hry'], [null, null]);
                     }
                 }
-
             }
         }
     };
@@ -734,7 +733,7 @@
         for (var i = 0; i < stream.length; ++i) {
             var pt = new GXPathBase.AnchorPoint();
             pt.deserialize(stream[i]);
-            this.appendChild(pt, true);
+            this.appendChild(pt);
         }
     };
 
@@ -1394,7 +1393,7 @@
     /** @override */
     GXPathBase.prototype.restore = function (blob) {
         if (GXShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPathBase.VisualProperties, true);
+            this.restoreProperties(blob, GXPathBase.VisualProperties);
             return true;
         }
         return false;

@@ -114,7 +114,7 @@
     /** @override */
     GXImage.prototype.restore = function (blob) {
         if (GXShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXImage.VisualProperties, true);
+            this.restoreProperties(blob, GXImage.VisualProperties);
             this._updatedImage();
             return true;
         }

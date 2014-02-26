@@ -44,7 +44,7 @@
     /** @override */
     GXPath.prototype.restore = function (blob) {
         if (GXPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPath.GeometryProperties, true);
+            this.restoreProperties(blob, GXPath.GeometryProperties);
 
             // Restore our anchor points
             if (blob.hasOwnProperty('pts')) {

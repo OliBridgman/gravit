@@ -80,7 +80,7 @@
     /** @override */
     GXLayer.prototype.restore = function (blob) {
         if (GXLayerBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXLayer.MetaProperties, true);
+            this.restoreProperties(blob, GXLayer.MetaProperties);
             return true;
         }
         return false;

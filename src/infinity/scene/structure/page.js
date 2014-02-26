@@ -118,9 +118,9 @@
     /** @override */
     GXPage.prototype.restore = function (blob) {
         if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPage.GeometryProperties, true);
-            this.restoreProperties(blob, GXPage.VisualProperties, true);
-            this.restoreProperties(blob, GXPage.MetaProperties, true);
+            this.restoreProperties(blob, GXPage.GeometryProperties);
+            this.restoreProperties(blob, GXPage.VisualProperties);
+            this.restoreProperties(blob, GXPage.MetaProperties);
             return true;
         }
         return false;
