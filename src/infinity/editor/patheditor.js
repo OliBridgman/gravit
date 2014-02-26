@@ -390,8 +390,6 @@
 
                     newPartInfo = new GXElementEditor.PartInfo(
                         this, {type: partType, point: aPt}, {apSelected: true}, isolated, selectable);
-
-                    this.updatePartSelection(true, [newPartInfo.id]);
                 }
             } // else option d) - NOOP
         } else if (partInfo.id.type == GXPathEditor.PartType.Segment) {
