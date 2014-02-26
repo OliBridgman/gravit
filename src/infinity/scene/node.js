@@ -89,28 +89,58 @@
     };
 
     /**
-     * Serialize a given node into a string
-     * @param {GXNode} node the node to serialize
+     * Serialize a given node or an array of nodes into a string
+     * @param {GXNode|Array<GXNode>} node the node to serialize
+     * or an array of nodes to serialize
      * @param {Boolean} [beautify] whether to beautify, defaults to false
      * @param {String} serialized json code or null for failure
      */
     GXNode.serialize = function (node, beautify) {
-        var blob = GXNode.store(node);
-        if (blob) {
-            return JSON.stringify(blob, null, beautify ? 4 : null);
+        if (node instanceof Array) {
+            var blobs = [];
+
+            for (var i = 0; i < node.length; ++i) {
+                var blob = GXNode.store(node[i]);
+                if (blob) {
+                    blobs.push(blob);
+                }
+            }
+
+            if (blobs.length > 0) {
+                return JSON.stringify(blobs, null, beautify ? 4 : null);
+            }
+        } else {
+            var blob = GXNode.store(node);
+            if (blob) {
+                return JSON.stringify(blob, null, beautify ? 4 : null);
+            }
         }
+
         return null;
     };
 
     /**
-     * Deserialize a node from a given json string
+     * Deserialize a node or any array of nodes from a given json string
      * @param {String} source the json string source to deserialize from
-     * @returns {GXNode} the deserialized node or null for failure
+     * @returns {GXNode|Array<GXNode>} the deserialized node
+     * or array of nodes or null for failure
      */
     GXNode.deserialize = function (source) {
         if (source) {
             var blob = JSON.parse(source);
-            if (blob) {
+
+            if (blob && blob instanceof Array) {
+                var nodes = [];
+
+                for (var i = 0; i < blob.length; ++i) {
+                    var node = GXNode.restore(blob[i]);
+                    if (node) {
+                        nodes.push(node);
+                    }
+                }
+
+                return nodes && nodes.length > 0 ? nodes : null;
+            } else {
                 return GXNode.restore(blob);
             }
         }

@@ -387,7 +387,7 @@
         path.getAnchorPoints().appendChild(apt);
         apt.setFlag(GXNode.Flag.Selected);
         path.setFlag(GXNode.Flag.Selected);
-        this._editor.insertElement(path);
+        this._editor.insertElements([path]);
         this._checkPathEditor();
     };
 

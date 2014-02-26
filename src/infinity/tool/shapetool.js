@@ -310,7 +310,7 @@
         this._updateShape(shape, dragArea, dragLine);
 
         // Call editor for new insertion
-        this._editor.insertElement(shape);
+        this._editor.insertElements([shape]);
     };
 
     /**

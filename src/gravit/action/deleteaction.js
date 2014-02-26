@@ -38,7 +38,7 @@
      * @override
      */
     EXDeleteAction.prototype.getGroup = function () {
-        return "cut_copy_paste_remove";
+        return "ccp";
     };
 
     /**
@@ -53,7 +53,7 @@
      */
     EXDeleteAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        return document && document.getEditor().getSelection() != null;
+        return document && !!document.getEditor().getSelection();
     };
 
     /**

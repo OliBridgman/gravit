@@ -125,6 +125,11 @@
             // Edit
             new EXUndoAction(),
             new EXRedoAction(),
+
+            new GCutAction(),
+            new GCopyAction(),
+            new GPasteAction(),
+            new GPasteInsideAction(),
             new EXDeleteAction(),
 
             new EXDuplicateSelectionAction(),

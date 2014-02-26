@@ -66,13 +66,39 @@
         throw new Error("Not Supported.");
     };
 
-
     /**
      * Called whenever a menu item shall be removed
      * @param {*} parentMenu the parent menu to remove a child from
      * @param {*} child the child to be removed
      */
     GShell.prototype.removeMenuItem = function (parentMenu, child) {
+        throw new Error("Not Supported.");
+    };
+
+    /**
+     * Called to return all available mime-types from the clipboard
+     * @return {Array<String>} a list of mime-types available on clipboard
+     * or null if there's nothing
+     */
+    GShell.prototype.getClipboardMimeTypes = function () {
+        throw new Error("Not Supported.");
+    };
+
+    /**
+     * Called to return clipboard contents of a given mime-type
+     * @return {*} the clipboard contents of the given mime-type
+     * or null if there's none
+     */
+    GShell.prototype.getClipboarContent = function (mimeType) {
+        throw new Error("Not Supported.");
+    };
+
+    /**
+     * Called to push something into the clipboard
+     * @param {String} mimeType the mime-type of the contents
+     * @param {*} content the contents to push into clipboard
+     */
+    GShell.prototype.setClipboardContent = function (mimeType, content) {
         throw new Error("Not Supported.");
     };
 

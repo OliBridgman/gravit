@@ -164,7 +164,7 @@
                         var image = new GXImage();
                         image.setProperties(['src'], [event.target.result]);
                         image.transform(new GTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY()));
-                        this._editor.insertElement(image);
+                        this._editor.insertElements([image]);
                     }.bind(this)
                     reader.readAsDataURL(file);
                 }
@@ -220,7 +220,7 @@
                                 scenePosition.getX() - (elBBox ? elBBox.getX() : 0), scenePosition.getY() - (elBBox ? elBBox.getY() : 0)))
 
                             // Insert element and select it
-                            this._editor.insertElement(source);
+                            this._editor.insertElements([source]);
                             acceptedDrop = true;
                         }
                     }

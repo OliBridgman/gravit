@@ -908,28 +908,23 @@
     };
 
     /**
-     * Insert an element and handle it's insertion.
-     * This is a shortcut for insertElements([element])
-     * @param {GXElement} element the element to be inserted
-     * @see insertElements
-     */
-    GXEditor.prototype.insertElement = function (element) {
-        this.insertElements([element]);
-    };
-
-    /**
      * Inserts one or more elements into the right target parent
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
      * @param {Array<GXElement>} elements the elements to be inserted
      * @param {Boolean} noDefaults if true, no defaults like default style
      * will be applied. This defaults to false.
+     * @param {Boolean} [noTransaction] if true, will not create a
+     * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.insertElements = function (elements, noDefaults) {
+    GXEditor.prototype.insertElements = function (elements, noDefaults, noTransaction) {
         // Our target is always the currently active layer
         var target = this.getCurrentLayer();
 
-        this.beginTransaction();
+        if (!noTransaction) {
+            this.beginTransaction();
+        }
+
         try {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
@@ -947,8 +942,10 @@
             // Select all inserted elements
             this.updateSelection(false, elements);
         } finally {
-            // TODO : I18N
-            this.commitTransaction('Insert Element(s)');
+            if (!noTransaction) {
+                // TODO : I18N
+                this.commitTransaction('Insert Element(s)');
+            }
         }
     };
 

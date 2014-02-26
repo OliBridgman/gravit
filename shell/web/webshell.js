@@ -7,6 +7,7 @@
      */
     function GWebShell() {
         this._menuBar = new GUIMenuBar();
+        this._clipboardMimeTypes = {};
     };
     GObject.inherit(GWebShell, GShell);
 
@@ -15,6 +16,12 @@
      * @private
      */
     GWebShell.prototype._menuBar = null;
+
+    /**
+     * @type {*}
+     * @private
+     */
+    GWebShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
     GWebShell.prototype.prepareLoad = function () {
@@ -103,6 +110,24 @@
     /** @override */
     GWebShell.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.removeItem(parentMenu.indexOf(child));
+    };
+
+    /** @override */
+    GWebShell.prototype.getClipboardMimeTypes = function () {
+        return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
+    };
+
+    /** @override */
+    GWebShell.prototype.getClipboarContent = function (mimeType) {
+        if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
+            return this._clipboardMimeTypes[mimeType];
+        }
+        return null;
+    };
+
+    /** @override */
+    GWebShell.prototype.setClipboardContent = function (mimeType, content) {
+        this._clipboardMimeTypes[mimeType] = content;
     };
 
     _.gShell = new GWebShell;
