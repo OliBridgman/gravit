@@ -84,13 +84,16 @@
                 var editor = GXEditor.getEditor(this.getElement().getScene());
 
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
-                if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
-                    // TODO : I18N
-                    editor.executeTransaction(function () {
+                editor.beginTransaction();
+                try {
+                    if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
                         hitData.style.setProperty('fill', source);
-                    }, [hitData.style], 'Drop Style Fill');
-                } else {
-                    this.getElement().getStyle(true).applyStyleProperties(GXPaintAreaStyle, ['fill'], [source]);
+                    } else {
+                        this.getElement().getStyle(true).applyStyleProperties(GXPaintAreaStyle, ['fill'], [source]);
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Drop Style Fill');
                 }
                 return true;
             }
@@ -126,7 +129,7 @@
         var tMatrix = targetTransform.getMatrix();
 
         if (Math.abs(tMatrix[0]) > crossHalfSizeMax && Math.abs(tMatrix[3]) > crossHalfSizeMax) {
-            var center = targetTransform.mapPoint(new GPoint(0,0));
+            var center = targetTransform.mapPoint(new GPoint(0, 0));
             var cx = Math.floor(center.getX()) + 0.5;
             var cy = Math.floor(center.getY()) + 0.5;
             var cs = GXElementEditor.OPTIONS.centerCrossSize / 2;
@@ -176,13 +179,13 @@
         transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
         var itArgs = [
             {id: GXShapeEditor.PartIds.OrigBaseTopLeft,
-             position: transform.mapPoint(new GPoint(-1, -1))},
+                position: transform.mapPoint(new GPoint(-1, -1))},
             {id: GXShapeEditor.PartIds.OrigBaseTopRight,
-             position: transform.mapPoint(new GPoint(1, -1))},
+                position: transform.mapPoint(new GPoint(1, -1))},
             {id: GXShapeEditor.PartIds.OrigBaseBottomRight,
-             position: transform.mapPoint(new GPoint(1, 1))},
+                position: transform.mapPoint(new GPoint(1, 1))},
             {id: GXShapeEditor.PartIds.OrigBaseBottomLeft,
-             position: transform.mapPoint(new GPoint(-1, 1))}
+                position: transform.mapPoint(new GPoint(-1, 1))}
         ];
 
         for (var i = 0; i < itArgs.length; ++i) {
@@ -198,7 +201,7 @@
         var maxX = null;
         var maxY = null;
 
-        this._iterateBaseCorners(true, function(args) {
+        this._iterateBaseCorners(true, function (args) {
             var x = args.position.getX();
             var y = args.position.getY();
             if (minX == null || x < minX) {
@@ -227,7 +230,7 @@
     GXShapeEditor.prototype._transformBaseBBox = function (transform, partId) {
         var sourceTransform = this._element.getTransform();
         var translation = transform.getTranslation();
-        if (translation.getX() != 0  || translation.getY() != 0) {
+        if (translation.getX() != 0 || translation.getY() != 0) {
             if (sourceTransform) {
                 var sTranslation = sourceTransform.getTranslation();
                 var oTranslation = sourceTransform.translated(-sTranslation.getX(), -sTranslation.getY())

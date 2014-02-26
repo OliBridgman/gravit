@@ -57,8 +57,6 @@
         var document = document || gApp.getActiveDocument();
         var editor = document.getEditor();
 
-        editor.beginTransaction(document.getScene());
-
         $('<div></div>')
             .text('DOCUMENT_SETTINGS')
             .gDialog({
@@ -84,9 +82,7 @@
                                     }
                                 }, 'Page Settings');
                             }
-                            */editor.commitTransaction(function () {
-                                // NO-OP
-                            }, 'Document Settings');
+                            */
 
                             $(this).gDialog('close');
                         }
@@ -94,7 +90,6 @@
                     {
                         title: GLocale.Constant.Cancel,
                         click: function () {
-                            editor.rollbackTransaction();
                             $(this).gDialog('close');
                         }
                     }

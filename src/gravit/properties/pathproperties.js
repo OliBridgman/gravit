@@ -355,14 +355,16 @@
      * @private
      */
     GPathProperties.prototype._assignPathProperties = function (properties, values) {
-        // TODO : I18N
-        var pathes = this._pathes.slice();
-        this._document.getEditor().executeTransaction(function () {
-            for (var i = 0; i < pathes.length; ++i) {
-                var pathEditor = GXElementEditor.openEditor(pathes[i]);
-                pathEditor.setPathProperties(properties, values);
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._pathes.length; ++i) {
+                this._pathes[i].setProperties(properties, values);
             }
-        }, pathes, 'Path Properties');
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Path Properties');
+        }
     };
 
     /**
@@ -380,20 +382,16 @@
      * @private
      */
     GPathProperties.prototype._assignPointProperties = function (properties, values) {
-        // TODO : I18N
-        var points = this._points.slice();
-        this._document.getEditor().executeTransaction(function () {
-            for (var i = 0; i < points.length; ++i) {
-                var point = points[i];
-                var path = point.getParent() ? point.getParent().getParent() : null;
-                if (path) {
-                    var pathEditor = GXElementEditor.openEditor(path);
-                    pathEditor.setPointProperties(point, properties, values);
-                } else {
-                    points[i].setProperties(properties, values);
-                }
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._points.length; ++i) {
+                this._points[i].setProperties(properties, values);
             }
-        }, points, 'Point Properties');
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Point Properties');
+        }
     };
 
     /** @override */

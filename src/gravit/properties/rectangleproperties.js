@@ -231,13 +231,16 @@
      * @private
      */
     GRectangleProperties.prototype._assignProperties = function (properties, values) {
-        // TODO : I18N
-        var rectangles = this._rectangles.slice();
-        this._document.getEditor().executeTransaction(function () {
-            for (var i = 0; i < rectangles.length; ++i) {
-                rectangles[i].setProperties(properties, values);
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._rectangles.length; ++i) {
+                this._rectangles[i].setProperties(properties, values);
             }
-        }, rectangles, 'Rectangle Properties');
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Rectangle Properties');
+        }
     };
 
     /** @override */

@@ -241,23 +241,25 @@
         };
 
         var applyToSelection = this._panel.find('button[data-apply="selection"]').hasClass('g-active');
-        var elements = this._elements.slice();
-        var elementsBBox = this._elementsBBox.clone();
 
-        // TODO : I18N
-        this._document.getEditor().executeTransaction(function () {
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
             if (applyToSelection) {
-                var transform = _getTransformation(elementsBBox);
-                for (var i = 0; i < elements.length; ++i) {
-                    elements[i].transform(transform);
+                var transform = _getTransformation(this._elementsBBox);
+                for (var i = 0; i < this._elements.length; ++i) {
+                    this._elements[i].transform(transform);
                 }
             } else {
-                for (var i = 0; i < elements.length; ++i) {
-                    var transform = _getTransformation(elements[i].getGeometryBBox());
-                    elements[i].transform(transform);
+                for (var i = 0; i < this._elements.length; ++i) {
+                    var transform = _getTransformation(this._elements[i].getGeometryBBox());
+                    this._elements[i].transform(transform);
                 }
             }
-        }, this._elements, 'Change Dimensions');
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Dimensions');
+        }
     };
 
     /** @override */

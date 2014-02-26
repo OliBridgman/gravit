@@ -227,10 +227,6 @@
             }
         };
 
-        if (editor) {
-            editor.beginTransaction(pages);
-        }
-
         var dialog = $('<div></div>')
             .gForm({
                 sections: [
@@ -502,12 +498,14 @@
                                 }
 
                                 // TODO : I18N
+                                /*
                                 editor.commitTransaction(function () {
                                     // Assign property values to each page now
                                     for (var i = 0; i < pages.length; ++i) {
                                         pages[i].setProperties(propertiesToStore, targetValues[i]);
                                     }
                                 }, 'Page Settings');
+                                */
                             }
 
                             $(this).gDialog('close');
@@ -520,9 +518,6 @@
                     {
                         title: GLocale.Constant.Cancel,
                         click: function () {
-                            if (editor) {
-                                editor.rollbackTransaction();
-                            }
 
                             $(this).gDialog('close');
                         }

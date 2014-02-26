@@ -266,13 +266,16 @@
      * @private
      */
     EXPolygonProperties.prototype._assignProperties = function (properties, values) {
-        // TODO : I18N
-        var polygons = this._polygons.slice();
-        this._document.getEditor().executeTransaction(function () {
-            for (var i = 0; i < polygons.length; ++i) {
-                polygons[i].setProperties(properties, values);
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._polygons.length; ++i) {
+                this._polygons[i].setProperties(properties, values);
             }
-        }, polygons, 'Polygon Properties');
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Polygon Properties');
+        }
     };
 
     /** @override */

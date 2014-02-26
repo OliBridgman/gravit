@@ -217,7 +217,7 @@
     GXEditor.prototype._selectQuery = null;
 
     /**
-     * @type {{nodes: Array<GXNode>, states: Array<*>}}
+     * @type {{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: GXElement, parts: Array<*>}>}}
      * @private
      */
     GXEditor.prototype._transaction = null;
@@ -505,11 +505,16 @@
             this._currentColor[type] = color;
 
             // Assign to selection if any and assignable
-            // TODO : Correct undo/redo
             if (this._selection) {
-                for (var i = 0; i < this._selection.length; ++i) {
-                    var element = this._selection[i];
-                    this._applyCurrentColor(element, type);
+                this.beginTransaction();
+                try {
+                    for (var i = 0; i < this._selection.length; ++i) {
+                        var element = this._selection[i];
+                        this._applyCurrentColor(element, type);
+                    }
+                } finally {
+                    // TODO : I18N
+                    this.commitTransaction('Apply Color');
                 }
             }
 
@@ -878,23 +883,27 @@
         // Our target is always the currently active layer
         var target = this.getCurrentLayer();
 
-        this.executeTransaction(function () {
+        this.beginTransaction();
+        try {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
+
+                // Append new element
+                target.appendChild(element);
 
                 if (!noDefaults) {
                     // Assign default fill and contour style for shapes
                     this._applyCurrentColor(element, GXEditor.CurrentColorType.Fill);
                     this._applyCurrentColor(element, GXEditor.CurrentColorType.Contour);
                 }
-
-                // Append new element
-                target.appendChild(element);
             }
 
             // Select all inserted elements
             this.updateSelection(false, elements);
-        }.bind(this), elements, 'Insert Element(s)');
+        } finally {
+            // TODO : I18N
+            this.commitTransaction('Insert Element(s)');
+        }
     };
 
     /**
@@ -916,125 +925,56 @@
     };
 
     /**
-     * Immediately execute a transaction. This is equal to calling
-     * beginTransaction(nodes) followed by commitTransaction(action, name).
-     *
-     * @param {Function} action the action to be executed when comitting
-     * @param {Array<GXNode>} [nodes] the affected nodes, if null, the selection
-     * is taken as reference
-     * @param {String} name the name of the newly created state
+     * Begin a new transaction. This will catch all structural
+     * modifications including property changes to be replayed
+     * as undo / redo states.
      */
-    GXEditor.prototype.executeTransaction = function (action, nodes, name) {
-        this.beginTransaction(nodes);
-        this.commitTransaction(action, name);
-    };
-
-    /**
-     * Begin a new transaction. This will store all properties and structural
-     * information on a given set of nodes. This needs to be finished be a call
-     * to either commitTransaction or rollbackTransaction or revertTransaction.
-     * There can only be once active transaction at a given time.
-     * @param {Array<GXNode>} [nodes] the affected nodes, if null, the selection
-     * is taken as reference
-     */
-    GXEditor.prototype.beginTransaction = function (nodes) {
+    GXEditor.prototype.beginTransaction = function () {
         if (this._transaction) {
             throw new Error('There already is an active transaction.');
         }
 
-        var nodes = nodes ? nodes : this._selection;
-        if (!nodes || nodes.length === 0) {
-            throw new Error('No active nodes for state');
+        if (!this._transaction) {
+            this._transaction = {
+                actions: [],
+                selection: this._saveSelection()
+            }
+        }
+    };
+
+    /**
+     * Commit the current transaction. If the transaction doesn't
+     * include any changes, no undo/redo state will be committed.
+     * @param {String} name
+     */
+    GXEditor.prototype.commitTransaction = function (name) {
+        if (!this._transaction) {
+            throw new Error('No active transaction to be committed.');
         }
 
-        this._transaction = {
-            nodes: nodes,
-            states: [],
-            selection: this._selection ? this._selection.slice() : [],
-            revert: function () {
-                for (var i = 0; i < this.states.length; ++i) {
-                    var state = this.states[i];
-                    var node = state.node;
+        if (this._transaction.actions.length > 0) {
+            var actions = this._transaction.actions.slice();
+            var selection = this._transaction.selection.slice();
+            var newSelection = this._saveSelection();
 
-                    if (node.hasMixin(GXNode.Properties)) {
-                        node.setPropertiesMap(state.properties, false);
-                        node.setPropertiesMap(state.customProperties, true);
-                    }
-
-                    if (state.parent !== node.getParent() || state.next !== node.getNext()) {
-                        if (state.parent === null && node.getParent() !== null) {
-                            node.getParent().removeChild(node);
-                        }
-                    }
+            // push a new state
+            var action = function () {
+                for (var i = 0; i < actions.length; ++i) {
+                    actions[i].action();
                 }
-            }
-        };
-
-        for (var i = 0; i < nodes.length; ++i) {
-            var node = nodes[i];
-            var state = {
-                node: node,
-                parent: node.getParent(),
-                next: node.getNext()
+                this._loadSelection(newSelection);
             };
 
-            if (node.hasMixin(GXNode.Properties)) {
-                state.properties = node.getPropertiesMap(false);
-                state.customProperties = node.getPropertiesMap(true);
-            }
+            var revert = function () {
+                for (var i = 0; i < actions.length; ++i) {
+                    actions[i].revert();
+                }
+                this._loadSelection(selection);
+            };
 
-            this._transaction.states.push(state);
-        }
-    };
-
-    /**
-     * Commit the active transaction by storing the saved state and
-     * executing a given action. This will also store the active
-     * selection if any and revert to it when reseting to the state.
-     * @param {Function} action the action to be executed when comitting
-     * @param {String} name the name of the newly created state
-     */
-    GXEditor.prototype.commitTransaction = function (action, name) {
-        if (!this._transaction) {
-            throw new Error('No active transaction available.');
+            this.pushState(action, revert, name);
         }
 
-        var transaction = this._transaction;
-        var selection = this._selection ? this._selection.slice() : [];
-        this._transaction = null;
-
-        var action_ = function () {
-            this.updateSelection(false, selection);
-            action();
-        }.bind(this);
-        var revert_ = function () {
-            transaction.revert();
-            this.updateSelection(false, transaction.selection);
-        }.bind(this);
-
-        this.pushState(action_, revert_, name);
-    };
-
-    /**
-     * Rollback the active transaction which will reset everything to
-     * the state it was when beginTransaction was called.
-     */
-    GXEditor.prototype.rollbackTransaction = function () {
-        if (!this._transaction) {
-            throw new Error('No active transaction available.');
-        }
-        this._transaction.revert();
-        this._transaction = null;
-    };
-
-    /**
-     * Revert the active transaction which will leave any changes
-     * as is but clear the current transaction.
-     */
-    GXEditor.prototype.revertTransaction = function () {
-        if (!this._transaction) {
-            throw new Error('No active transaction available.');
-        }
         this._transaction = null;
     };
 
@@ -1336,7 +1276,7 @@
                     node.getParent().removeFlag(GXNode.Flag.Active);
                 }
             }
-        }  else if (node instanceof GXNode && node.hasFlag(GXNode.Flag.Selected)) {
+        } else if (node instanceof GXNode && node.hasFlag(GXNode.Flag.Selected)) {
             // Trigger selection change event
             if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
                 this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
@@ -1390,6 +1330,12 @@
         }
     };
 
+    /**
+     * Apply current color on a given element if it supports styling at all
+     * @param {GXElement} element the element to assign the given color to
+     * @param {GXEditor.CurrentColorType} currentColorType the current color type to assign
+     * @private
+     */
     GXEditor.prototype._applyCurrentColor = function (element, currentColorType) {
         // TODO : Undo / Redo
         if (element.hasMixin(GXElement.Style)) {
@@ -1416,6 +1362,59 @@
                             style.removeChild(child);
                             break;
                         }
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * Saves and returns the current selection
+     * @return {Array<{element: GXElement, parts: Array<*>}>}
+     * @private
+     */
+    GXEditor.prototype._saveSelection = function () {
+        if (!this._selection || this._selection.length === 0) {
+            return null;
+        }
+
+        var result = [];
+        for (var i = 0; i < this._selection.length; ++i) {
+            var element = this._selection[i];
+            var editor = GXElementEditor.getEditor(element);
+            var parts = editor ? editor.getPartSelection() : null;
+            result.push({
+                element: element,
+                parts: parts ? parts.slice() : null
+            })
+        }
+
+        return result;
+    };
+
+    /**
+     * Loads a saved selection
+     * @param {Array<{element: GXElement, parts: Array<*>}>} selection
+     * @private
+     */
+    GXEditor.prototype._loadSelection = function (selection) {
+        if (!selection || selection.length === 0) {
+            this.clearSelection();
+        } else {
+            var newSelection = [];
+
+            for (var i = 0; i < selection.length; ++i) {
+                newSelection.push(selection[i].element);
+            }
+
+            this.updateSelection(false, newSelection);
+
+            // Iterate selection again and assign part selections if any
+            for (var i = 0; i < selection.length; ++i) {
+                if (selection[i].parts) {
+                    var editor = GXElementEditor.getEditor(selection[i].element);
+                    if (editor) {
+                        editor.updatePartSelection(false, selection[i].parts);
                     }
                 }
             }
