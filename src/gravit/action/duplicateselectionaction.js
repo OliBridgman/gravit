@@ -61,8 +61,14 @@
      */
     EXDuplicateSelectionAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
-        editor.moveSelection(new GPoint(10, 10), false);
-        editor.applySelectionTransform(true);
+        editor.beginTransaction();
+        try {
+            editor.moveSelection(new GPoint(10, 10), false);
+            editor.applySelectionTransform(true, true);
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Duplicate Selection');
+        }
     };
 
     /** @override */

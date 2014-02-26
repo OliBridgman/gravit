@@ -119,6 +119,22 @@
     };
 
     /**
+     * Returns a new array with an ordered direction
+     * of a given set of nodes depending on their
+     * position in the tree
+     * @param {Array<GXNode>} nodes an array of nodes to be ordered
+     * @param {Boolean} [reverse] if true, orders the way that
+     * parent comes first, last child comes first, otherwise
+     * orders that parent comes first, first child comes first,
+     * defaults to false
+     * @return {Array<GXNode>} A new, ordered array
+     */
+    GXNode.order = function (nodes, reverse) {
+        // TODO : Implement this!!
+        return nodes.slice();
+    };
+
+    /**
      * Map of node-class type-ids to their names
      * @type {Object}
      * @private

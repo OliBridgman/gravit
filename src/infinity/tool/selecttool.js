@@ -347,7 +347,18 @@
     GXSelectTool.prototype._mouseDragEnd = function (event) {
         if (this._mode == GXSelectTool._Mode.Moving) {
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-                this._editorMovePartInfo.editor.applyPartMove(this._editorMovePartInfo.id, this._editorMovePartInfo.data);
+                this._editor.beginTransaction();
+                try {
+                    this._editorMovePartInfo.editor.applyPartMove(this._editorMovePartInfo.id, this._editorMovePartInfo.data);
+                } finally {
+                    var nodeNameTranslated = this._editorMovePartInfo.editor.getElement().getNodeNameTranslated();
+
+                    // TODO : I18N
+                    if (!nodeNameTranslated) {
+                        nodeNameTranslated = 'Element';
+                    }
+                    this._editor.commitTransaction('Modify ' + nodeNameTranslated);
+                }
             } else {
                 // Holding option key when we've transformed the whole selection
                 // will actually clone the current selection and apply the transformation

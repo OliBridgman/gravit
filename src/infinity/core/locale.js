@@ -152,13 +152,12 @@
      * @param {String} [default_] default value to be returned if key not found
      * @return {String} a localized value
      * @throws Error when the value was not found
-     * @version 1.0
      */
     GLocale.prototype.getValue = function (clazz, key, default_) {
         var type_id = GObject.getTypeId(clazz);
 
         var result = this._getValue(this._language, type_id, key);
-        if (!result && this._language != GLocale.Language.Default && typeof default_ == 'undefined') {
+        if (!result && this._language != GLocale.Language.Default/* && typeof default_ == 'undefined'*/) {
             result = this._getValue(GLocale.Language.Default, type_id, key);
         }
         if (!result && typeof default_ == 'undefined') {

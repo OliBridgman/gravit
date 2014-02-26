@@ -61,12 +61,7 @@
      */
     EXDeleteAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
-
-        // TODO : Begin / End Undo Group
-        var selectedNodes = editor.getSelection();
-        for (var i = 0; i < selectedNodes.length; ++i) {
-            selectedNodes[i].getParent().removeChild(selectedNodes[i]);
-        }
+        editor.deleteSelection();
     };
 
     /** @override */

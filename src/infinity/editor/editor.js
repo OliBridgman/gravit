@@ -637,34 +637,71 @@
 
     /**
      * Clone current selection (if any) and make it the new selection
+     * @param {Boolean} [noTransaction] if true, will not create a
+     * transaction (undo/redo), defaults to false
      * @return {Array<GXElement>} the array of clones or null for no clones
      */
-    GXEditor.prototype.cloneSelection = function () {
+    GXEditor.prototype.cloneSelection = function (noTransaction) {
         if (this._selection && this._selection.length > 0) {
-            // TODO : Begin Undo Group
-            var clonedSelection = [];
+            if (!noTransaction) {
+                this.beginTransaction();
+            }
 
-            for (var i = 0; i < this._selection.length; ++i) {
-                var selElement = this._selection[i];
-                if (selElement.hasMixin(GXNode.Store)) {
-                    var clone = selElement.clone();
-                    if (clone) {
-                        // Append clone to parent of selected item
-                        this._selection[i].getParent().appendChild(clone);
+            try {
+                var clonedSelection = [];
 
-                        // Add clone to new selection
-                        clonedSelection.push(clone);
+                for (var i = 0; i < this._selection.length; ++i) {
+                    var selElement = this._selection[i];
+                    if (selElement.hasMixin(GXNode.Store)) {
+                        var clone = selElement.clone();
+                        if (clone) {
+                            // Append clone to parent of selected item
+                            this._selection[i].getParent().appendChild(clone);
+
+                            // Add clone to new selection
+                            clonedSelection.push(clone);
+                        }
                     }
                 }
+
+                // Update current selection if any
+                if (clonedSelection.length > 0) {
+                    this.updateSelection(false, clonedSelection);
+                    return clonedSelection;
+                }
+            } finally {
+                if (!noTransaction) {
+                    // TODO : I18N
+                    this.commitTransaction('Clone Selection');
+                }
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Delete current selection (if any)
+     * @param {Boolean} [noTransaction] if true, will not create a
+     * transaction (undo/redo), defaults to false
+     */
+    GXEditor.prototype.deleteSelection = function (noTransaction) {
+        if (this._selection && this._selection.length > 0) {
+            if (!noTransaction) {
+                this.beginTransaction();
             }
 
-            // Update current selection if any
-            if (clonedSelection.length > 0) {
-                this.updateSelection(false, clonedSelection);
-                return clonedSelection;
+            try {
+                var orderedSelection = GXNode.order(this._selection, true);
+                for (var i = 0; i < orderedSelection.length; ++i) {
+                    var selElement = orderedSelection[0];
+                    selElement.getParent().removeChild(selElement);
+                }
+            } finally {
+                if (!noTransaction) {
+                    // TODO : I18N
+                    this.commitTransaction('Delete Selection');
+                }
             }
-
-            // TODO : End Undo Group
         }
         return null;
     };
@@ -817,49 +854,57 @@
      * selection keeps untouched
      * @param {Boolean} [cloneSelection] whether to apply to a clone or not,
      * defaults to false if not provided
+     * @param {Boolean} [noTransaction] if true, will not create a
+     * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.applySelectionTransform = function (cloneSelection) {
-        // TODO : Begin Undo Group
-
+    GXEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
         if (this._selection && this._selection.length) {
-            var clonedSelection = [];
+            if (!noTransaction) {
+                this.beginTransaction();
+            }
 
-            for (var i = 0; i < this._selection.length; ++i) {
-                var item = this._selection[i];
-                var editor = GXElementEditor.getEditor(item);
-                if (editor) {
-                    var selectionElement = this._selection[i];
-                    var elementToApplyTransform = selectionElement;
+            try {
+                var clonedSelection = [];
+                for (var i = 0; i < this._selection.length; ++i) {
+                    var item = this._selection[i];
+                    var editor = GXElementEditor.getEditor(item);
+                    if (editor) {
+                        var selectionElement = this._selection[i];
+                        var elementToApplyTransform = selectionElement;
 
-                    if (cloneSelection) {
-                        if (selectionElement.hasMixin(GXNode.Store)) {
-                            elementToApplyTransform = selectionElement.clone();
+                        if (cloneSelection) {
+                            if (selectionElement.hasMixin(GXNode.Store)) {
+                                elementToApplyTransform = selectionElement.clone();
 
-                            // Append clone to parent of selected item
-                            selectionElement.getParent().appendChild(elementToApplyTransform);
+                                // Append clone to parent of selected item
+                                selectionElement.getParent().appendChild(elementToApplyTransform);
 
-                            // Push clone into new selection
-                            clonedSelection.push(elementToApplyTransform);
+                                // Push clone into new selection
+                                clonedSelection.push(elementToApplyTransform);
+                            } else {
+                                elementToApplyTransform = null;
+                            }
+                        }
+
+                        if (elementToApplyTransform) {
+                            editor.applyTransform(elementToApplyTransform);
                         } else {
-                            elementToApplyTransform = null;
+                            editor.resetTransform();
                         }
                     }
+                }
 
-                    if (elementToApplyTransform) {
-                        editor.applyTransform(elementToApplyTransform);
-                    } else {
-                        editor.resetTransform();
-                    }
+                // Update current selection if we cloned it
+                if (clonedSelection.length > 0) {
+                    this.updateSelection(false, clonedSelection);
+                }
+            } finally {
+                if (!noTransaction) {
+                    // TODO : I18N
+                    this.commitTransaction(cloneSelection ? 'Transform & Clone Selection' : 'Transform Selection');
                 }
             }
-
-            // Update current selection if we cloned it
-            if (clonedSelection.length > 0) {
-                this.updateSelection(false, clonedSelection);
-            }
         }
-
-        // TODO : Finish Undo Group
     };
 
     /**
@@ -1081,17 +1126,18 @@
             var next = node.getNext();
 
             this._transaction.actions.push({
-                action : function () {
+                action: function () {
                     // Simply re-insert the node
                     parent.insertChild(node, next);
                 },
 
-                revert : function () {
+                revert: function () {
                     // Simply remove the node
                     parent.removeChild(node);
                 }
             });
-        };
+        }
+        ;
 
         // Try to add newly inserted node into internal selection
         this._tryAddToSelection(evt.node);
@@ -1114,17 +1160,18 @@
             var next = node.getNext();
 
             this._transaction.actions.push({
-                action : function () {
+                action: function () {
                     // Simply remove the node
                     parent.removeChild(node);
                 },
 
-                revert : function () {
+                revert: function () {
                     // Simply re-insert the node
                     parent.insertChild(node, next);
                 }
             });
-        };
+        }
+        ;
 
         // Try to remove node from internal selection, first
         this._tryRemoveFromSelection(evt.node);
@@ -1177,17 +1224,18 @@
             }
 
             this._transaction.actions.push({
-                action : function () {
+                action: function () {
                     // Simply assign the property values
                     node.setProperties(properties, values);
                 },
 
-                revert : function () {
+                revert: function () {
                     // Simply assign the previous property values
                     node.setProperties(properties, oldValues);
                 }
             });
-        };
+        }
+        ;
     };
 
     /**
@@ -1417,6 +1465,9 @@
                     styleClass = GXPaintAreaStyle;
                     break;
             }
+
+            // TODO : Remove this when serialization works
+            styleColor = styleColor ? styleColor.asString() : null;
 
             if (styleColor) {
                 element.getStyle(true).applyStyleProperties(styleClass, ['fill'], [styleColor]);
