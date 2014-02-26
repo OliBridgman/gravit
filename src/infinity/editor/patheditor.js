@@ -330,7 +330,6 @@
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apRight});
                 }
             }
-            this.requestInvalidation();
             this.resetTransform();
             this.updatePartSelection(false, newSelection);
         } else {
@@ -1003,7 +1002,8 @@
         // There may be one more hasPreview block, but it should not be updated in this case,
         // as this is the beginning of preview
 
-        this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+        this._elementPreview.transferProperties(this._element,
+            [GXShape.GeometryProperties, GXPath.GeometryProperties], true);
     };
 
     /**

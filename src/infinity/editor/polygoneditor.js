@@ -50,7 +50,8 @@
 
         if (!this._elementPreview) {
             this._elementPreview = new GXPolygon();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPolygon.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
         }
 
         var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);

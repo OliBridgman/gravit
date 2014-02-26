@@ -169,7 +169,8 @@
     GXEllipseEditor.prototype._createEllipsePreviewIfNecessary = function () {
         if (!this._elementPreview) {
             this._elementPreview = new GXEllipse();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXEllipse.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXEllipse.GeometryProperties], true);
         }
     };
 
