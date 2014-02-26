@@ -114,11 +114,13 @@
         }
 
         // Paint contents if any
-        var fc = this.getFirstChild();
-        if (fc && fc instanceof GXElement) {
-            context.canvas.clipVertices();
-            this._paintForeground(context);
-            context.canvas.resetClip();
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof GXElement) {
+                context.canvas.clipVertices();
+                this._paintForeground(context);
+                context.canvas.resetClip();
+                break;
+            }
         }
 
         this._finishPaint(context);
