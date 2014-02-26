@@ -104,7 +104,7 @@
      * Time in milliseconds, which is used to distinguish two single clicks from double-click
      * @type {number}
      */
-    GXPathTool.DBLCLICKTM = 150;
+    GXPathTool.DBLCLICKTM = 200;
 
     /**
      * Current active cursor
@@ -146,7 +146,6 @@
 
         layer.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
-        layer.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
         layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
@@ -167,7 +166,6 @@
 
         layer.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
-        layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };

@@ -58,6 +58,7 @@
         var tm = new Date().getTime();
         if (tm - this._mDownTime < GXPathTool.DBLCLICKTM) {
             // Double-click
+            this._mouseDblClick(event);
             return;
         }
 
