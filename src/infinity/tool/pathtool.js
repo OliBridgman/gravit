@@ -76,6 +76,28 @@
     GXPathTool.prototype._dragStartPt = null;
 
     /**
+     * Possible transaction types
+     * @enum
+     */
+    GXPathTool.Transaction = {
+        NoTransaction: 0,
+        InsertPoint: 1,
+        AppendPoint: 2,
+        MovePoint: 3,
+        DeletePoint: 4,
+        ModifyPointProperties: 5,
+        ModifyPathProperties: 6,
+        InsertElement: 7
+    };
+
+    /**
+     * Stores transaction type between transaction begin and end, or indicates that no transaction is started
+     * @type {GXPathTool.Transaction}
+     * @private
+     */
+    GXPathTool.prototype._transactionType = GXPathTool.Transaction.NoTransaction;
+
+    /**
      * Possible working modes of Path Tool
      * @type {{Append: number, Prepend: number, Edit: number}}
      */
@@ -150,6 +172,7 @@
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = GUICursor.PenStart;
+        this._transactionType = GXPathTool.Transaction.NoTransaction;
         this._initialSelectCorrection();
     };
 
@@ -160,6 +183,7 @@
             this._pathEditor.releasePathPreview();
             this._pathEditor.requestInvalidation();
         }
+        this._finishTransaction();
         this._allowDeactivation();
         this._reset();
         GXTool.prototype.deactivate.call(this, view, layer);
@@ -309,6 +333,7 @@
         }
         if (draft) {
             if (!this._pathEditor) {
+                this._startTransaction(GXPathTool.Transaction.InsertElement);
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
@@ -340,6 +365,7 @@
             }
         } else {
             if (!this._pathEditor) {
+                this._startTransaction(GXPathTool.Transaction.InsertElement);
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
@@ -349,12 +375,16 @@
             } else {
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GXPathTool.Mode.Append) {
+                    this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
+                    this._pathEditor.requestInvalidation();
+                    this._startTransaction(GXPathTool.Transaction.AppendPoint);
                     this._pathRef.getAnchorPoints().appendChild(anchorPt);
                     this._pathEditor.selectOnePoint(anchorPt);
                     this._pathEditor.setActiveExtendingMode(true);
                 } else if (this._mode == GXPathTool.Mode.Prepend) {
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
+                    this._startTransaction(GXPathTool.Transaction.AppendPoint);
                     this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
 
                     this._pathEditor.selectOnePoint(anchorPt);
@@ -387,7 +417,7 @@
         path.getAnchorPoints().appendChild(apt);
         apt.setFlag(GXNode.Flag.Selected);
         path.setFlag(GXNode.Flag.Selected);
-        this._editor.insertElements([path]);
+        this._editor.insertElements([path], null, true);
         this._checkPathEditor();
     };
 
@@ -545,6 +575,59 @@
     };
 
     /**
+     * Starts transaction, if it was not started earlier, updates this._transactionType
+     * @param {GXPathTool.Transaction} transactionType - transaction type of the current transaction to be set
+     * @private
+     */
+    GXPathTool.prototype._startTransaction = function (transactionType) {
+        if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+            this._editor.beginTransaction();
+        }
+        this._transactionType = transactionType;
+    };
+
+    /**
+     * Commit transaction if it was started, sets this._transactionType to GXPathTool.Transaction.NoTransaction
+     * @private
+     */
+    GXPathTool.prototype._finishTransaction = function () {
+        try {
+            switch (this._transactionType) {
+                case GXPathTool.Transaction.AppendPoint:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Append Point');
+                    break;
+                case GXPathTool.Transaction.InsertElement:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Insert Element(s)');
+                    break;
+                case GXPathTool.Transaction.InsertPoint:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Insert Point');
+                    break;
+                case GXPathTool.Transaction.MovePoint:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Move Point');
+                    break;
+                case GXPathTool.Transaction.DeletePoint:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Delete Point');
+                    break;
+                case GXPathTool.Transaction.ModifyPointProperties:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Modify Point Properties');
+                    break;
+                case GXPathTool.Transaction.ModifyPathProperties:
+                    // TODO : I18N
+                    this._editor.commitTransaction('Modify Path Properties');
+                    break;
+            }
+        } finally {
+            this._transactionType = GXPathTool.Transaction.NoTransaction;
+        }
+    };
+
+    /**
      * In Edit mode hit-tests the path, and then takes appropriate action for mouse down:
      * selects a point for editing or creates a new one, or just updates the working mode
      * @param {GPoint} eventPt - unmodified point of mouse click
@@ -578,6 +661,7 @@
                 partInfo.data.type == GXPathEditor.SegmentData.HitRes) {
 
             this._setCursorForPosition(GUICursor.PenPlus);
+            this._startTransaction(GXPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
                 this._makePointMajor(anchorPt);
@@ -586,6 +670,7 @@
                 this._pathEditor.requestInvalidation();
                 this._mode = GXPathTool.Mode.Edit;
             } else {
+                this._finishTransaction();
                 this._reset();
                 this._mode = GXPathTool.Mode.Append;
             }
@@ -612,11 +697,19 @@
             this._refPt.getProperty('hrx') != null ||
             this._refPt.getProperty('hry') != null) {
 
+            if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+                this._startTransaction(GXPathTool.Transaction.ModifyPointProperties);
+            }
             this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
             this._makePointMajor(this._refPt);
             this._setCursorForPosition(GUICursor.PenMinus);
         } else {
             if (this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) {
+                if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+                    this._startTransaction(GXPathTool.Transaction.DeletePoint);
+                } else {
+                    this._transactionType = GXPathTool.Transaction.DeletePoint;
+                }
                 this._pathRef.getAnchorPoints().removeChild(this._refPt);
             }
             this._setCursorForPosition(null, clickPt);

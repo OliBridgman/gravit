@@ -97,6 +97,7 @@
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
                     this._setCursorForPosition(GUICursor.PenEnd);
+                    this._startTransaction(GXPathTool.Transaction.ModifyPathProperties);
                     // Close path
                     this._pathRef.setProperty('closed', true);
                     this._makePointMajor(otherPt);
@@ -236,6 +237,11 @@
             location = transform ? transform.mapPoint(location) : location;
 
             if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
+                if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+                    this._startTransaction(GXPathTool.Transaction.ModifyPathProperties);
+                } else {
+                    this._transactionType = GXPathTool.Transaction.ModifyPathProperties;
+                }
                 // Close path
                 this._pathRef.beginUpdate();
                 this._pathEditor.selectOnePoint(otherPt);
@@ -267,42 +273,52 @@
     /** @override */
     GXBezigonTool.prototype._mouseRelease = function (event) {
         if (!this._released) {
-            this._released = true;
-            //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-            if (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend) {
-                var newPos = this._updatePoint(event.client);
-                this._closeIfNeeded();
-                if (this._pathRef.getProperty('closed')) {
-                    this._setCursorForPosition(GUICursor.PenMinus);
-                    this._mode = GXPathTool.Mode.Edit;
-                } else if (this._newPoint) {
-                    this._addPoint(this._editPt, false, true);
-                    this._setCursorForPosition(GUICursor.Pen);
-                } else if (this._editPt) {
-                    this._pathEditor.applyTransform(this._pathRef);
-                    this._setCursorForPosition(GUICursor.PenEnd);
-                }
-                this._commitChanges();
-                // hit test result becomes invalid if any;
-                //this._lastHitTest = new GXPathTool.LastHitTest();
-            } else if (this._mode == GXPathTool.Mode.Edit && (this._editPt || this._refPt)) {
-                if (this._dragStarted && this._editPt) {
+            try {
+                this._released = true;
+                //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
+                if (this._mode == GXPathTool.Mode.Append || this._mode == GXPathTool.Mode.Prepend) {
                     var newPos = this._updatePoint(event.client);
-                    this._pathEditor.applyTransform(this._pathRef);
-                    this._setCursorForPosition(null, newPos);
+                    this._closeIfNeeded();
+                    if (this._pathRef.getProperty('closed')) {
+                        this._setCursorForPosition(GUICursor.PenMinus);
+                        this._mode = GXPathTool.Mode.Edit;
+                    } else if (this._newPoint) {
+                        this._addPoint(this._editPt, false, true);
+                        this._setCursorForPosition(GUICursor.Pen);
+                    } else if (this._editPt) {
+                        if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+                            this._startTransaction(GXPathTool.Transaction.MovePoint);
+                        }
+                        this._pathEditor.applyTransform(this._pathRef);
+                        this._setCursorForPosition(GUICursor.PenEnd);
+                    }
                     this._commitChanges();
                     // hit test result becomes invalid if any;
                     //this._lastHitTest = new GXPathTool.LastHitTest();
-                } else {
-                    if (this._editPt) { // The case when path has just been closed on mouseDown
+                } else if (this._mode == GXPathTool.Mode.Edit && (this._editPt || this._refPt)) {
+                    if (this._dragStarted && this._editPt) {
+                        var newPos = this._updatePoint(event.client);
+                        if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+                            this._startTransaction(GXPathTool.Transaction.MovePoint);
+                        }
+                        this._pathEditor.applyTransform(this._pathRef);
+                        this._setCursorForPosition(null, newPos);
                         this._commitChanges();
-                    } else { // this._refPt
-                        this._mouseNoDragReleaseOnEdit(event.client);
+                        // hit test result becomes invalid if any;
+                        //this._lastHitTest = new GXPathTool.LastHitTest();
+                    } else {
+                        if (this._editPt) { // The case when path has just been closed on mouseDown
+                            this._commitChanges();
+                        } else { // this._refPt
+                            this._mouseNoDragReleaseOnEdit(event.client);
+                        }
                     }
                 }
+                this._dragStarted = false;
+                this._dragStartPt = null;
+            } finally {
+                this._finishTransaction();
             }
-            this._dragStarted = false;
-            this._dragStartPt = null;
         }
         this._lastMouseEvent = null;
 
