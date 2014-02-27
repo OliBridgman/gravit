@@ -26,7 +26,7 @@
                         .append($('<span></span>')
                             .addClass('fa fa-folder-o'))
                         .on('click', function () {
-                            gApp.getActiveDocument().getEditor().getCurrentPage().appendChild(new GXLayer());
+                            gApp.executeAction(GInsertLayerAction.ID);
                         })))
                 .append($('<div></div>')
                     .append($('<select></select>')

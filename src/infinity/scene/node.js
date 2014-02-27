@@ -1326,6 +1326,16 @@
     };
 
     /**
+     * Query for all nodes within this one and return their sum
+     * @param {String} selector a CSS3-compatible selector
+     * @returns {Number} the count, zero for none
+     */
+    GXNode.prototype.queryCount = function (selector) {
+        var result = GXSelector.queryAll(selector, this);
+        return result ? result.length : 0;
+    };
+
+    /**
      * Query for all nodes within this one
      * @param {String} selector a CSS3-compatible selector
      * @returns {Array<GXNode>} all matched nodes or empty array for none

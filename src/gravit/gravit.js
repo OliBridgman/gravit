@@ -143,6 +143,7 @@
             new GUngroupAction(),
 
             new GInsertPagesAction(),
+            new GInsertLayerAction(),
 
             // View
             new EXOriginalViewAction(),

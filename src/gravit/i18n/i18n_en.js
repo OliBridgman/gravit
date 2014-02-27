@@ -21,6 +21,7 @@ gLocale.setValues(EXFitCurrentPageAction, GLocale.Language.English, ["title"], [
 gLocale.setValues(EXFitSelectionAction, GLocale.Language.English, ["title"], ["Fit Selection"]);
 gLocale.setValues(GGroupAction, GLocale.Language.English, ["title"], ["Group Selection"]);
 gLocale.setValues(EXImportAction, GLocale.Language.English, ["title"], ["%name%..."]);
+gLocale.setValues(GInsertLayerAction, GLocale.Language.English, ["title"], ["Insert Layer"]);
 gLocale.setValues(GInsertPagesAction, GLocale.Language.English, ["title"], ["Insert Page(s)..."]);
 gLocale.setValues(EXNewAction, GLocale.Language.English, ["title"], ["New..."]);
 gLocale.setValues(EXNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);

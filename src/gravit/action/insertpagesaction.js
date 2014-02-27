@@ -10,7 +10,7 @@
     };
     GObject.inherit(GInsertPagesAction, GUIAction);
 
-    GInsertPagesAction.ID = 'modify.add-pages';
+    GInsertPagesAction.ID = 'modify.insert-pages';
     GInsertPagesAction.TITLE = new GLocale.Key(GInsertPagesAction, "title");
 
     GInsertPagesAction.options = {
@@ -117,6 +117,16 @@
     /**
      * @param {GXScene} [scene] specific scene to add pages to,
      * if not provided (default), takes the active document
+     * @override
+     */
+    GInsertPagesAction.prototype.isEnabled = function (scene) {
+        var scene = scene || gApp.getActiveDocument().getScene();
+        return !!scene;
+    };
+
+    /**
+     * @param {GXScene} [scene] specific scene to add pages to,
+     * if not provided (default), takes the active document
      * @param {Function} [done] if provided, this callback will be
      * called when the user has setup the page(s)
      * @override
@@ -130,14 +140,14 @@
 
         // Assign page properties
         page.setProperties([
-            'title',
+            'name',
             'x',
             'y',
             'w',
             'h',
             'color'
         ], [
-            'Page ' + (scene.getPageCount() + 1).toString(),
+            'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),
             insertPos.getY(),
             480,

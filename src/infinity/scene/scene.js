@@ -182,20 +182,6 @@
     };
 
     /**
-     * Returns the number of pages in this scene
-     * @returns {Number} the number of pages in this scene
-     */
-    GXScene.prototype.getPageCount = function () {
-        var count = 0;
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GXPage) {
-                count++;
-            }
-        }
-        return count;
-    };
-
-    /**
      * Returns a point for a new page to be inserted
      * @returns {GPoint}
      */
