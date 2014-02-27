@@ -132,6 +132,9 @@
             new GPasteInsideAction(),
             new EXDeleteAction(),
 
+            new GCopyStyleAction(),
+            new GPasteStyleAction(),
+
             new EXDuplicateSelectionAction(),
             new EXCloneSelectionAction(),
 

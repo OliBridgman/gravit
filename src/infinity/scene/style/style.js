@@ -12,6 +12,12 @@
 
     GObject.inheritAndMix(GXStyle, GXNode, [GXNode.Store]);
 
+    /**
+     * Style's mime-type
+     * @type {string}
+     */
+    GXStyle.MIME_TYPE = "application/infinity+style";
+
     // -----------------------------------------------------------------------------------------------------------------
     // GXStyle.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------

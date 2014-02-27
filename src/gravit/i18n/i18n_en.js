@@ -10,6 +10,7 @@ gLocale.setValues(EXCloneSelectionAction, GLocale.Language.English, ["title"], [
 gLocale.setValues(EXCloseAction, GLocale.Language.English, ["title"], ["Close"]);
 gLocale.setValues(EXCloseAllAction, GLocale.Language.English, ["title"], ["Close All"]);
 gLocale.setValues(GCopyAction, GLocale.Language.English, ["title"], ["Copy"]);
+gLocale.setValues(GCopyStyleAction, GLocale.Language.English, ["title"], ["Copy Style"]);
 gLocale.setValues(GCutAction, GLocale.Language.English, ["title"], ["Cut"]);
 gLocale.setValues(EXDeleteAction, GLocale.Language.English, ["title"], ["Delete"]);
 gLocale.setValues(EXDuplicateSelectionAction, GLocale.Language.English, ["title"], ["Duplicate"]);
@@ -28,6 +29,7 @@ gLocale.setValues(EXSinglePageModeAction, GLocale.Language.English, ["title"], [
 gLocale.setValues(EXPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);
 gLocale.setValues(GPasteAction, GLocale.Language.English, ["title"], ["Paste"]);
 gLocale.setValues(GPasteInsideAction, GLocale.Language.English, ["title"], ["Paste Inside Selection"]);
+gLocale.setValues(GPasteStyleAction, GLocale.Language.English, ["title"], ["Paste Style"]);
 gLocale.setValues(EXPixelPreviewAction, GLocale.Language.English, ["title"], ["Pixel Preview"]);
 gLocale.setValues(EXRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
 gLocale.setValues(EXSaveAction, GLocale.Language.English, ["title"], ["Save"]);

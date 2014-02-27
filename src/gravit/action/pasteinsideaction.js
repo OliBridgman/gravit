@@ -55,7 +55,16 @@
         var cpMimeTypes = gShell.getClipboardMimeTypes();
         if (cpMimeTypes && cpMimeTypes.indexOf(GXNode.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
-            return document && !!document.getEditor().getSelection();
+            if (document) {
+                var selection = document.getEditor().getSelection();
+                if (selection) {
+                    for (var i = 0; i < selection.length; ++i) {
+                        if (selection[i].hasMixin(GXNode.Container)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     };

@@ -45,7 +45,7 @@
      * @override
      */
     EXShowSidebarAction.prototype.getShortcut = function () {
-        return ['F4'];
+        return null;
     };
 
     /**
