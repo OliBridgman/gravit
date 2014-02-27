@@ -2,56 +2,56 @@
 
     /**
      * Action for cloning the selection from the current document
-     * @class EXDuplicateSelectionAction
+     * @class GDuplicateAction
      * @extends GUIAction
      * @constructor
      */
-    function EXDuplicateSelectionAction() {
+    function GDuplicateAction() {
     };
-    GObject.inherit(EXDuplicateSelectionAction, GUIAction);
+    GObject.inherit(GDuplicateAction, GUIAction);
 
-    EXDuplicateSelectionAction.ID = 'edit.duplicate';
-    EXDuplicateSelectionAction.TITLE = new GLocale.Key(EXDuplicateSelectionAction, "title");
+    GDuplicateAction.ID = 'edit.duplicate';
+    GDuplicateAction.TITLE = new GLocale.Key(GDuplicateAction, "title");
 
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.getId = function () {
-        return EXDuplicateSelectionAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXDuplicateSelectionAction.prototype.getTitle = function () {
-        return EXDuplicateSelectionAction.TITLE;
+    GDuplicateAction.prototype.getId = function () {
+        return GDuplicateAction.ID;
     };
 
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.getCategory = function () {
+    GDuplicateAction.prototype.getTitle = function () {
+        return GDuplicateAction.TITLE;
+    };
+
+    /**
+     * @override
+     */
+    GDuplicateAction.prototype.getCategory = function () {
         return EXApplication.CATEGORY_EDIT;
     };
 
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.getGroup = function () {
+    GDuplicateAction.prototype.getGroup = function () {
         return "selection";
     };
 
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.getShortcut = function () {
+    GDuplicateAction.prototype.getShortcut = function () {
         return [GUIKey.Constant.META, 'D'];
     };
 
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.isEnabled = function () {
+    GDuplicateAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         return document && document.getEditor().getSelection() != null;
     };
@@ -59,7 +59,7 @@
     /**
      * @override
      */
-    EXDuplicateSelectionAction.prototype.execute = function () {
+    GDuplicateAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
         editor.beginTransaction();
         try {
@@ -72,9 +72,9 @@
     };
 
     /** @override */
-    EXDuplicateSelectionAction.prototype.toString = function () {
-        return "[Object EXDuplicateSelectionAction]";
+    GDuplicateAction.prototype.toString = function () {
+        return "[Object GDuplicateAction]";
     };
 
-    _.EXDuplicateSelectionAction = EXDuplicateSelectionAction;
+    _.GDuplicateAction = GDuplicateAction;
 })(this);

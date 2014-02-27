@@ -64,12 +64,6 @@
     GXScenePaintConfiguration.prototype.pixelMode = false;
 
     /**
-     * Whether to render single page only or not (will also not paint page decorations)
-     * @type {Boolean}
-     */
-    GXScenePaintConfiguration.prototype.singlePageMode = false;
-
-    /**
      * Whether to show guides or not
      * @type {Boolean}
      */

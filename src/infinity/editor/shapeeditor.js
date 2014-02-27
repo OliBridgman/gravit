@@ -57,7 +57,7 @@
 
     /** @override */
     GXShapeEditor.prototype.resetTransform = function () {
-        this.releaseElementPreview();
+        this._elementPreview = null;
 
         // Need to invalidate if not having the outline flag
         // which will be removed in the super call and make
@@ -71,7 +71,7 @@
 
     /** @override */
     GXShapeEditor.prototype.resetPartMove = function (partId, partData) {
-        this.releaseElementPreview();
+        this._elementPreview = null;
         this.removeFlag(GXElementEditor.Flag.Outline);
     };
 

@@ -487,15 +487,6 @@
      */
     GXSceneView.prototype._paintContentLayer = function (context) {
         if (this._scene) {
-            // For single page mode we'll limit to the active page (or first one if there's no active one)
-            var targetPage = null;
-            if (this._viewConfiguration.singlePageMode) {
-                targetPage = this._scene.getPageSet().querySingle("page:active");
-                if (!targetPage) {
-                    targetPage = this._scene.getPageSet().getFirstChild();
-                }
-            }
-
             // Before any painting we need to convert our dirty matcher's
             // dirty regions back into scene coordinates in any case
             if (context.dirtyMatcher) {
@@ -503,18 +494,14 @@
             }
 
             // Fill Canvas with pasteboard color in either single page mode or output paint mode
-            if (this._viewConfiguration.paintMode === GXScenePaintConfiguration.PaintMode.Output || targetPage) {
-                context.canvas.fillRect(0, 0, context.canvas.getWidth(), context.canvas.getHeight(), this._viewConfiguration.pasteboardColor);
-            }
+            //if (this._viewConfiguration.paintMode === GXScenePaintConfiguration.PaintMode.Output || targetPage) {
+            //    context.canvas.fillRect(0, 0, context.canvas.getWidth(), context.canvas.getHeight(), this._viewConfiguration.pasteboardColor);
+            //}
 
             // Paint either target page and/or pageSet before anything else
-            var oldCanvasTransform = context.canvas.setTransform(this._worldToViewTransform);
-            if (targetPage) {
-                targetPage.paint(context, true);
-            } else {
-                this._scene.getPageSet().paint(context);
-            }
-            context.canvas.setTransform(oldCanvasTransform);
+            //var oldCanvasTransform = context.canvas.setTransform(this._worldToViewTransform);
+            //this._scene.getPageSet().paint(context);
+            //context.canvas.setTransform(oldCanvasTransform);
 
             // Handle rendering in pixel mode but only if we're not at 100%
             if (this._isPixelMode()) {
@@ -531,7 +518,7 @@
                 // Save source canvas, exchange it with pixel content canvas and paint the scene
                 var sourceCanvas = context.canvas;
                 context.canvas = this._pixelContentCanvas;
-                this._scene.paint(context, targetPage);
+                this._scene.paint(context);//, targetPage);
                 this._pixelContentCanvas.finish();
 
                 // Now render our pixel content canvas at the given scale on our source canvas
@@ -544,7 +531,7 @@
                 // Render regular vectors
                 this._pixelContentCanvas = null;
                 context.canvas.setTransform(this._worldToViewTransform);
-                this._scene.paint(context, targetPage);
+                this._scene.paint(context);//, targetPage);
             }
         }
     };

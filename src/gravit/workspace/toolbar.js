@@ -14,22 +14,19 @@
                     .addClass('actions')
                     .append($('<button></button>')
                         // TODO : I18N
-                        .attr('title', 'Add Page')
+                        .attr('title', gLocale.get(GInsertPagesAction.TITLE))
                         .append($('<span></span>')
                             .addClass('fa fa-file-o'))
                         .on('click', function () {
-                            var page = new GXPage();
-                            page.setProperty('title', 'Page-123');
-                            gApp.getActiveDocument().getScene().getPageSet().appendChild(page);
+                            gApp.executeAction(GInsertPagesAction.ID);
                         }))
                     .append($('<button></button>')
                         // TODO : I18N
-                        .attr('title', 'Add Set')
+                        .attr('title', 'Add Layer')
                         .append($('<span></span>')
                             .addClass('fa fa-folder-o'))
                         .on('click', function () {
-                            var set_ = new GXShapeSet();
-                            gApp.getActiveDocument().getEditor().getCurrentLayer().appendChild(set_);
+                            gApp.getActiveDocument().getEditor().getCurrentPage().appendChild(new GXLayer());
                         })))
                 .append($('<div></div>')
                     .append($('<select></select>')

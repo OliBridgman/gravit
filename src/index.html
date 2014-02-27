@@ -70,7 +70,9 @@
 <script src="infinity/scene/selector.js"></script>
 <script src="infinity/scene/node.js"></script>
 <script src="infinity/scene/element.js"></script>
-<script src="infinity/scene/group.js"></script>
+<script src="infinity/scene/item.js"></script>
+<script src="infinity/scene/itemcontainer.js"></script>
+<script src="infinity/scene/itemcompound.js"></script>
 <script src="infinity/scene/scene.js"></script>
 <script src="infinity/scene/style/style.js"></script>
 <script src="infinity/scene/style/styleset.js"></script>
@@ -80,13 +82,10 @@
 <script src="infinity/scene/style/paintareastyle.js"></script>
 <script src="infinity/scene/style/paintcontourstyle.js"></script>
 <script src="infinity/scene/style/vectortransformstyle.js"></script>
-<script src="infinity/scene/structure/layerbase.js"></script>
+<script src="infinity/scene/structure/group.js"></script>
 <script src="infinity/scene/structure/layer.js"></script>
-<script src="infinity/scene/structure/layerset.js"></script>
 <script src="infinity/scene/structure/page.js"></script>
-<script src="infinity/scene/structure/pageset.js"></script>
 <script src="infinity/scene/shape/shape.js"></script>
-<script src="infinity/scene/shape/shapeset.js"></script>
 <script src="infinity/scene/shape/pathbase.js"></script>
 <script src="infinity/scene/shape/image.js"></script>
 <script src="infinity/scene/shape/polygon.js"></script>
@@ -101,6 +100,7 @@
 <script src="infinity/editor/shapeeditor.js"></script>
 <script src="infinity/editor/pathbaseeditor.js"></script>
 <script src="infinity/editor/ellipseeditor.js"></script>
+<script src="infinity/editor/groupeditor.js"></script>
 <script src="infinity/editor/rectangleeditor.js"></script>
 <script src="infinity/editor/polygoneditor.js"></script>
 <script src="infinity/editor/patheditor.js"></script>
@@ -176,20 +176,22 @@
 <script src="gravit/workspace/window.js"></script>
 <script src="gravit/workspace/windows.js"></script>
 <!-- Action -->
-<script src="gravit/action/cloneselectionaction.js"></script>
+<script src="gravit/action/cloneaction.js"></script>
 <script src="gravit/action/closeaction.js"></script>
 <script src="gravit/action/closeallaction.js"></script>
 <script src="gravit/action/copyaction.js"></script>
 <script src="gravit/action/copystyleaction.js"></script>
 <script src="gravit/action/cutaction.js"></script>
 <script src="gravit/action/deleteaction.js"></script>
-<script src="gravit/action/duplicateselectionaction.js"></script>
+<script src="gravit/action/duplicateaction.js"></script>
 <script src="gravit/action/exportaction.js"></script>
 <script src="gravit/action/fitallaction.js"></script>
 <script src="gravit/action/fitcurrentlayeraction.js"></script>
 <script src="gravit/action/fitcurrentpageaction.js"></script>
 <script src="gravit/action/fitselectionaction.js"></script>
+<script src="gravit/action/groupaction.js"></script>
 <script src="gravit/action/importaction.js"></script>
+<script src="gravit/action/insertpagesaction.js"></script>
 <script src="gravit/action/magnificationaction.js"></script>
 <script src="gravit/action/newaction.js"></script>
 <script src="gravit/action/newwindowaction.js"></script>
@@ -197,7 +199,6 @@
 <script src="gravit/action/originalviewaction.js"></script>
 <script src="gravit/action/pagesetupaction.js"></script>
 <script src="gravit/action/pixelpreviewaction.js"></script>
-<script src="gravit/action/singlepagemodeaction.js"></script>
 <script src="gravit/action/paintmodeaction.js"></script>
 <script src="gravit/action/pasteaction.js"></script>
 <script src="gravit/action/pasteinsideaction.js"></script>
@@ -212,6 +213,7 @@
 <script src="gravit/action/showrulersaction.js"></script>
 <script src="gravit/action/showsidebaraction.js"></script>
 <script src="gravit/action/undoaction.js"></script>
+<script src="gravit/action/ungroupaction.js"></script>
 <script src="gravit/action/welcomeaction.js"></script>
 <script src="gravit/action/zoominaction.js"></script>
 <script src="gravit/action/zoomoutaction.js"></script>

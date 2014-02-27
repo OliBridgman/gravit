@@ -706,6 +706,17 @@
     };
 
     /**
+     * Called to test whether the current transformation of this editor
+     * can be applied to the element
+     * @return {Boolean} true if the transformation can be applied,
+     * false if not
+     */
+    GXElementEditor.prototype.canApplyTransform = function () {
+        // Only a valid transform can be applied by default
+        return this._transform && !this._transform.isIdentity();
+    };
+
+    /**
      * Called whenever the transformation of the editor shell be applied.
      * Note that the caller might decide that the transformation shall be
      * applied to another element and not the one the editor is currently
@@ -722,10 +733,6 @@
             element.transform(this._transform);
         }
         this.resetTransform();
-    };
-
-    GXElementEditor.prototype.releaseElementPreview = function () {
-        this._elementPreview = null;
     };
 
     /**

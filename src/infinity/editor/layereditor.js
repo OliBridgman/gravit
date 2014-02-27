@@ -1,13 +1,13 @@
 (function (_) {
     /**
      * An editor for a layer
-     * @param {GXGroup} group the group this editor works on
+     * @param {GXLayer} layer the layer this editor works on
      * @class GXLayerEditor
      * @extends GXElementEditor
      * @constructor
      */
-    function GXLayerEditor(group) {
-        GXElementEditor.call(this, group);
+    function GXLayerEditor(layer) {
+        GXElementEditor.call(this, layer);
     };
     GObject.inherit(GXLayerEditor, GXElementEditor);
     GXElementEditor.exports(GXLayerEditor, GXLayer);

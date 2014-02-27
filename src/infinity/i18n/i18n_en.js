@@ -27,12 +27,10 @@ gLocale.setValues(GUIKey, GLocale.Language.English, ["key.30", "key.31", "key.32
 // Scene
 gLocale.setValues(GXEllipse, GLocale.Language.English, ["name"], ["Ellipse"]);
 gLocale.setValues(GXRectangle, GLocale.Language.English, ["name"], ["Rectangle"]);
-gLocale.setValues(GXLayer, GLocale.Language.English, ["name", "type.vector", "type.draft", "type.guide"], ["Layer", "Vector", "Draft", "Guide"]);
-gLocale.setValues(GXLayerSet, GLocale.Language.English, ["name"], ["Layer-Set"]);
+gLocale.setValues(GXLayer, GLocale.Language.English, ["name", "type.output", "type.draft", "type.guide"], ["Layer", "Output", "Draft", "Guide"]);
 gLocale.setValues(GXScene, GLocale.Language.English, ["name"], ["Scene"]);
 gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polystar"]);
 gLocale.setValues(GXPage, GLocale.Language.English, ["name"], ["Page"]);
-gLocale.setValues(GXPageSet, GLocale.Language.English, ["name"], ["Page-Set"]);
 gLocale.setValues(GXPathBase, GLocale.Language.English, ["corner.rounded", "corner.inverse-rounded", "corner.bevel", "corner.inset", "corner.fancy"],
     ["Round", "Inverse Round", "Bevel", "Inset", "Fancy"]);
 gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);

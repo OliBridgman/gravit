@@ -7,18 +7,14 @@
      * @extends GXElement
      * @mixes GXElement.Transform
      * @mixes GXElement.Pivot
-     * @mixes GXElement.Style
-     * @mixes GXNode.Properties
-     * @mixes GXNode.Container
-     * @mixes GXNode.Store
      * @mixes GXVertexSource
      * @constructor
      */
     function GXShape() {
+        GXItemCompound.call(this);
         this._setDefaultProperties(GXShape.GeometryProperties);
     }
-
-    GObject.inheritAndMix(GXShape, GXElement, [GXElement.Transform, GXElement.Pivot, GXElement.Style, GXNode.Properties, GXNode.Container, GXNode.Store, GXVertexSource]);
+    GObject.inheritAndMix(GXShape, GXItemCompound, [GXElement.Transform, GXElement.Pivot, GXVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -49,12 +45,12 @@
 
     /** @override */
     GXShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXLayer || parent instanceof GXShapeSet || parent instanceof GXShape;
+        return parent instanceof GXItemContainer;
     };
 
     /** @override */
     GXShape.prototype.store = function (blob) {
-        if (GXNode.Store.prototype.store.call(this, blob)) {
+        if (GXItemCompound.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXShape.GeometryProperties, function (property, value) {
                 if (property === 'transform' && value) {
                     return GTransform.serialize(value);
@@ -69,7 +65,7 @@
 
     /** @override */
     GXShape.prototype.restore = function (blob) {
-        if (GXNode.Store.prototype.restore.call(this, blob)) {
+        if (GXItemCompound.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXShape.GeometryProperties, function (property, value) {
                 if (property === 'transform' && value) {
                     return GTransform.deserialize(value);
@@ -181,7 +177,7 @@
     /** @override */
     GXShape.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, GXShape.GeometryProperties);
-        GXElement.prototype._handleChange.call(this, change, args);
+        GXItemCompound.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

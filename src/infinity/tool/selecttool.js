@@ -279,8 +279,11 @@
                         }
                     }
 
-                    // Switch to move mode
-                    this._updateMode(GXSelectTool._Mode.Move);
+                    // Switch to move mode if there's any selection in editor
+                    var selection = this._editor.getSelection();
+                    if (selection && selection.length > 0) {
+                        this._updateMode(GXSelectTool._Mode.Move);
+                    }
                 }
             } else {
                 // No hit at all so update without any nodes

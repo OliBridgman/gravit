@@ -39,6 +39,7 @@
     EXApplication.CATEGORY_FILE_IMPORT = new GLocale.Key(EXApplication, "category.file.import");
     EXApplication.CATEGORY_FILE_EXPORT = new GLocale.Key(EXApplication, "category.file.export");
     EXApplication.CATEGORY_EDIT = new GLocale.Key(EXApplication, "category.edit");
+    EXApplication.CATEGORY_MODIFY = new GLocale.Key(EXApplication, "category.modify");
     EXApplication.CATEGORY_VIEW = new GLocale.Key(EXApplication, "category.view");
     EXApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(EXApplication, "category.view.magnification");
     EXApplication.CATEGORY_WINDOW = new GLocale.Key(EXApplication, "category.window");

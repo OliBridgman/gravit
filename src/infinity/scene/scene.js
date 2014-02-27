@@ -8,39 +8,23 @@
      * @mixes GXNode.Store
      * @mixes GEventTarget
      * @constructor
-     * @version 1.0
      */
     function GXScene() {
         this._scene = this;
         this._setDefaultProperties(GXScene.MetaProperties);
-
-        // Append our page and layer sets
-        this.appendChild(new GXPageSet());
-        this.appendChild(new GXLayerSet());
-
-        // Append our default layers which are, from top to bottom:
-        // - Foreground layer (marked as active by default)
-        // - Guide layer
-        // - Background layer
-        var backgroundLayer = new GXLayer();
-        backgroundLayer.setProperties(['title', 'type'], ['Background', GXLayer.Type.Draft]);
-        this.getLayerSet().appendChild(backgroundLayer, true);
-
-        var guideLayer = new GXLayer();
-        guideLayer.setProperties(['title', 'type'], ['Guides', GXLayer.Type.Guide]);
-        this.getLayerSet().appendChild(guideLayer, true);
-
-        var foregroundLayer = new GXLayer();
-        foregroundLayer.setProperties(['title', 'type'], ['Foreground', GXLayer.Type.Vector]);
-        this.getLayerSet().appendChild(foregroundLayer, true);
     }
 
     GXNode.inheritAndMix("scene", GXScene, GXElement, [GXNode.Container, GXNode.Properties, GXNode.Store, GEventTarget]);
 
     /**
+     * The padding between pages
+     * @type {number}
+     */
+    GXScene.PAGE_SPACING = 10;
+
+    /**
      * The current version of scenes
      * @type {Number}
-     * @version 1.0
      */
     GXScene.VERSION = 1;
 
@@ -104,43 +88,10 @@
     // -----------------------------------------------------------------------------------------------------------------
     // GXScene Class
     // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @type {GXPageSet}
-     * @private
-     */
-    GXScene.prototype._pageSet = null;
-
-    /**
-     * @type {GXLayerSet}
-     * @private
-     */
-    GXScene.prototype._layerSet = null;
-
-    /**
-     * @returns {GXPageSet}
-     */
-    GXScene.prototype.getPageSet = function () {
-        if (!this._pageSet) {
-            this._pageSet = this.querySingle("pageSet");
-        }
-        return this._pageSet;
-    };
-
-    /**
-     * @returns {GXLayerSet}
-     */
-    GXScene.prototype.getLayerSet = function () {
-        if (!this._layerSet) {
-            this._layerSet = this.querySingle("layerSet");
-        }
-        return this._layerSet;
-    };
-
     /** @override */
     GXScene.prototype.store = function (blob) {
         if (GXNode.Store.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXScene.MetaProperties);
-            blob.version = this.$version;
             return true;
         }
         return false;
@@ -148,77 +99,11 @@
 
     /** @override */
     GXScene.prototype.restore = function (blob) {
-        // Make sure to extract pageSet and layerSet
-        // from our blob's children first and remove them
-        // from the blob to avoid restoring them
-        if (blob.hasOwnProperty('$')) {
-            var index = 0;
-            while (index < blob.$.length) {
-                var child = blob.$[index];
-                var type = child['@'];
-
-                if (type === 'pageSet' || type === 'layerSet') {
-                    if ((type === 'pageSet' && !this.getPageSet().restore(child)) ||
-                        (type === 'layerSet' && !this.getLayerSet().restore(child))) {
-                        return false;
-                    }
-
-                    blob.$.splice(index, 1);
-                } else {
-                    ++index;
-                }
-            }
-        }
-
-        // Now call default implementation and do further work
         if (GXNode.Store.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXScene.MetaProperties);
             return true;
         }
         return false;
-    };
-
-    /** @override */
-    GXScene.prototype.paint = function (context, clipToPage) {
-        if (!this._preparePaint(context)) {
-            return;
-        }
-
-        // If we're either in output mode or in single page mode we'll
-        // be clipping to the corresponding page(s) if their areas
-        // are falling within the dirty area
-        var cfg = context.configuration;
-        var hasClipped = false;
-        if (cfg.paintMode === GXScenePaintConfiguration.PaintMode.Output || clipToPage) {
-            // Reset canvas transform and save it
-            var canvasTransform = context.canvas.resetTransform();
-
-            // Clip by pages now if any
-            for (var page = this._pageSet.getFirstChild(); page !== null; page = page.getNext()) {
-                if (!clipToPage || page === clipToPage) {
-                    var pageBBox = page.getGeometryBBox();
-                    if (!context.dirtyMatcher || (context.dirtyMatcher && context.dirtyMatcher.isDirty(pageBBox))) {
-                        pageBBox = canvasTransform.mapRect(pageBBox).toAlignedRect();
-                        context.canvas.clipRect(pageBBox.getX(), pageBBox.getY(), pageBBox.getWidth(), pageBBox.getHeight());
-                        hasClipped = true;
-                    }
-                }
-            }
-
-            // Assign original transform again
-            context.canvas.setTransform(canvasTransform);
-        }
-
-        // Paint layers now eventually clipped by pages
-        this._layerSet.paint(context);
-
-        // Reset clipping if we had have any
-        if (hasClipped) {
-            context.canvas.resetClip();
-        }
-
-        // Finishing painting
-        this._finishPaint(context);
     };
 
     /**
@@ -297,6 +182,56 @@
     };
 
     /**
+     * Returns the number of pages in this scene
+     * @returns {Number} the number of pages in this scene
+     */
+    GXScene.prototype.getPageCount = function () {
+        var count = 0;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof GXPage) {
+                count++;
+            }
+        }
+        return count;
+    };
+
+    /**
+     * Returns a point for a new page to be inserted
+     * @returns {GPoint}
+     */
+    GXScene.prototype.getPageInsertPosition = function () {
+        // TODO : Figure better way to avoid any potential intersection of the page with others
+        for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
+            if (child instanceof GXPage) {
+                return new GPoint(
+                    child.getProperty('x') + child.getProperty('w') + GXScene.PAGE_SPACING,
+                    child.getProperty('y')
+                );
+            }
+        }
+        return new GPoint(0, 0);
+    };
+
+    /**
+     * Checks and returns wether a given page will intersect with
+     * any other page(s) with a given pageRect
+     * @param {GXPage} page the page to test for intersection w/ others
+     * @param {GRect} pageRect the new page rect to test for intersection w/ others
+     */
+    GXScene.prototype.willPageIntersectWithOthers = function (page, pageRect) {
+        pageRect = pageRect.expanded(GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING);
+        for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
+            if (child instanceof GXPage && child !== page) {
+                var currentPageRect = child.getGeometryBBox();
+                if (currentPageRect && currentPageRect.intersectsRect(pageRect)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    /**
      * Invalidate something
      * @param {GRect} [area] optional dirty area, if null marks the whole scene as being dirty
      * @private
@@ -305,14 +240,6 @@
         if (this.hasEventListeners(GXScene.InvalidationRequestEvent)) {
             this.trigger(new GXScene.InvalidationRequestEvent(area));
         }
-    };
-
-    /**
-     * Apply imported ICC Profile
-     * @param {GXICCProfileData} iccProfileData
-     */
-    GXScene.prototype.applyICCProfile = function (iccProfileData) {
-        // TODO
     };
 
     _.GXScene = GXScene;

@@ -100,7 +100,7 @@
   height: 100%;
   background: silver;
 
-  .layer-tree {
+  .structure-tree {
     padding: 5px 0px;
 
     div.jqtree-element {
@@ -115,23 +115,25 @@
         padding-right: 5px;
       }
 
-      > .layer-icon {
+      > .icon {
         font-size: 14px !important;
       }
 
-      > .layer-icon-light {
+      > .icon-light {
         color: rgb(89, 101, 115);
       }
 
-      > .layer-icon-action {
+      > .icon-action {
         cursor: pointer;
       }
 
+      /*
       > .layer-color {
         min-width: 14px;
         max-width: 14px;
         border: 1px solid black;
       }
+      */
 
       > span.jqtree-title {
         width: 100%;

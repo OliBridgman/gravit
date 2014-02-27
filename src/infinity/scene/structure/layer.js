@@ -1,16 +1,16 @@
 (function (_) {
     /**
-     * An element representing a layer which can also have child layers
+     * An element representing a layer
      * @class GXLayer
-     * @extends GXLayerBase
+     * @extends GXItemContainer
      * @constructor
      */
     function GXLayer() {
-        GXLayerBase.call(this);
-        this._setDefaultProperties(GXLayer.MetaProperties);
+        GXItemContainer.call(this);
+        this._setDefaultProperties(GXLayer.VisualProperties, GXLayer.MetaProperties);
     }
 
-    GXNode.inherit("layer", GXLayer, GXLayerBase);
+    GXNode.inherit("layer", GXLayer, GXItemContainer);
 
     GXLayer.GUIDE_COLOR_DEFAULT = new GXColor(GXColor.Type.RGB, [0, 255, 255, 100]).asString();
 
@@ -20,10 +20,10 @@
      */
     GXLayer.Type = {
         /**
-         * A vector layer consisting of vector shapes,
-         * will make it into the output
+         * An output layer, will make it into
+         * the actual output
          */
-        Vector: 'V',
+        Output: 'Output',
 
         /**
          * A draft layer consisting of vector shapes
@@ -40,24 +40,32 @@
     };
 
     /**
-     * The meta properties of a layer and their defaults
+     * The visual properties of a layer with their default values
+     */
+    GXLayer.VisualProperties = {
+        outline: false,
+        color: new GXColor(GXColor.Type.RGB, [0, 168, 255, 100]).asString()
+    };
+
+    /**
+     * The meta properties of a layer with their default values
      */
     GXLayer.MetaProperties = {
-        type: GXLayer.Type.Vector
+        type: GXLayer.Type.Output
     };
 
     /**
      * Localized names for GXLayer.Type
      */
     GXLayer.TypeName = {
-        'V': new GLocale.Key(GXLayer, 'type.vector'),
+        'O': new GLocale.Key(GXLayer, 'type.output'),
         'D': new GLocale.Key(GXLayer, 'type.draft'),
         'G': new GLocale.Key(GXLayer, 'type.guide')
     };
 
     /** @override */
     GXLayer.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXLayerSet;
+        return parent instanceof GXLayer || parent instanceof GXPage || parent instanceof GXScene;
     };
 
     /** @override */
@@ -70,7 +78,8 @@
 
     /** @override */
     GXLayer.prototype.store = function (blob) {
-        if (GXLayerBase.prototype.store.call(this, blob)) {
+        if (GXItemContainer.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, GXLayer.VisualProperties);
             this.storeProperties(blob, GXLayer.MetaProperties);
             return true;
         }
@@ -79,7 +88,8 @@
 
     /** @override */
     GXLayer.prototype.restore = function (blob) {
-        if (GXLayerBase.prototype.restore.call(this, blob)) {
+        if (GXItemContainer.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, GXLayer.VisualProperties);
             this.restoreProperties(blob, GXLayer.MetaProperties);
             return true;
         }
@@ -88,7 +98,7 @@
 
     /** @override */
     GXLayer.prototype._preparePaint = function (context) {
-        if (GXLayerBase.prototype._preparePaint.call(this, context)) {
+        if (GXItemContainer.prototype._preparePaint.call(this, context)) {
             if (this.$type === GXLayer.Type.Guide) {
                 if (!context.configuration.isGuidesVisible(context)) {
                     return false;
@@ -118,7 +128,7 @@
             // TODO : Reset marked draft layers like changed opacity etc.
         }
 
-        GXLayerBase.prototype._finishPaint.call(this, context);
+        GXItemContainer.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
@@ -130,8 +140,8 @@
 
                 // Switch type from guide <-> * must reset colors if defaults are set
                 if (oldTypeValue === GXLayer.Type.Guide && this.$color === GXLayer.GUIDE_COLOR_DEFAULT) {
-                    this.$color = GXLayerBase.MetaProperties.color;
-                } else if (this.$type === GXLayer.Type.Guide && this.$color === GXLayerBase.MetaProperties.color) {
+                    this.$color = GXLayer.VisualProperties.color;
+                } else if (this.$type === GXLayer.Type.Guide && this.$color === GXLayer.VisualProperties.color) {
                     this.$color = GXLayer.GUIDE_COLOR_DEFAULT;
                 }
                 this._notifyChange(GXElement._Change.InvalidationRequest);
@@ -145,7 +155,7 @@
             }
         }
 
-        GXLayerBase.prototype._handleChange.call(this, change, args);
+        GXItemContainer.prototype._handleChange.call(this, change, args);
     };
 
     _.GXLayer = GXLayer;

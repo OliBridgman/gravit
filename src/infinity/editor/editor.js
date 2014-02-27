@@ -30,15 +30,10 @@
             }
         }
 
-        // Mark active page and layer if any
-        if (this._scene.getPageSet().getFirstChild()) {
-            this.setCurrentPage(this._scene.getPageSet().getFirstChild());
-        }
-
-        if (this._scene.getLayerSet().getLastChild()) {
-            this.setCurrentLayer(this._scene.getLayerSet().getLastChild());
-        } else {
-            throw new Error('Missing active layer.');
+        // Mark first found page on scene as current if there's any
+        var firstPage = this._scene.querySingle('page');
+        if (firstPage) {
+            this.setCurrentPage(firstPage);
         }
 
         this._currentColor = [new GXColor(GXColor.Type.Black), null];
@@ -254,18 +249,6 @@
     GXEditor.prototype._currentLayer = null;
 
     /**
-     * @type {boolean}
-     * @private
-     */
-    GXEditor.prototype._lockedToCurrentPage = false;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    GXEditor.prototype._lockedToCurrentLayer = false;
-
-    /**
      * @type {Array<GXColor>}
      * @private
      */
@@ -440,52 +423,6 @@
     };
 
     /**
-     * Returns whether the editor is locked to the current page
-     * which will i.e. allow selection only within the current page
-     * @param locked
-     */
-    GXEditor.prototype.isLockedToCurrentPage = function () {
-        return this._lockedToCurrentPage;
-    };
-
-    /**
-     * Assign whether the editor is locked to the current page
-     * which will i.e. allow selection only within the current page
-     * @param locked
-     */
-    GXEditor.prototype.setLockedToCurrentLayer = function (locked) {
-        if (locked !== this._lockedToCurrentPage) {
-            this._lockedToCurrentPage = locked;
-            if (locked) {
-                this._updateSelectionForSelectable();
-            }
-        }
-    };
-
-    /**
-     * Returns whether the editor is locked to the current layer
-     * which will i.e. allow selection only within the current layer
-     * @param locked
-     */
-    GXEditor.prototype.isLockedToCurrentLayer = function () {
-        return this._lockedToCurrentLayer;
-    };
-
-    /**
-     * Assign whether the editor is locked to the current layer
-     * which will i.e. allow selection only within the current layer
-     * @param locked
-     */
-    GXEditor.prototype.setLockedToActiveLayer = function (locked) {
-        if (locked !== this._lockedToCurrentLayer) {
-            this._lockedToCurrentLayer = locked;
-            if (locked) {
-                this._updateSelectionForSelectable();
-            }
-        }
-    };
-
-    /**
      * Get a current color for a given type
      * @param {GXEditor.CurrentColorType} type
      */
@@ -603,34 +540,16 @@
             return false;
         }
 
+        // TODO : FIX THIS!!!!
         // If we don't have any in- or ex-clusion queries then
         // by default we'll allow only shape descendants to be selected
+        /*
         if (!inclusionQuery && !exclusionQuery) {
-            if (!(node instanceof GXShape)) {
+            if (!(node instanceof GXItemCompound)) {
                 return false;
             }
         }
-
-        if (this.isLockedToCurrentPage() && this.getCurrentPage()) {
-            if (node instanceof GXElement && !this.getCurrentPage().isPagePart(node)) {
-                return false;
-            }
-        }
-
-        if (this.isLockedToCurrentLayer() && this.getCurrentLayer()) {
-            var foundLayer = false;
-
-            for (var p = node.getParent(); p !== null; p = p.getParent()) {
-                if (p instanceof GXLayer && p === this.getCurrentLayer()) {
-                    foundLayer = true;
-                    break;
-                }
-            }
-
-            if (!foundLayer) {
-                return false;
-            }
-        }
+        */
 
         return true;
     };
@@ -859,49 +778,68 @@
      */
     GXEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
         if (this._selection && this._selection.length) {
-            if (!noTransaction) {
-                this.beginTransaction();
-            }
-
-            try {
-                var clonedSelection = [];
-                for (var i = 0; i < this._selection.length; ++i) {
-                    var item = this._selection[i];
-                    var editor = GXElementEditor.getEditor(item);
-                    if (editor) {
-                        var selectionElement = this._selection[i];
-                        var elementToApplyTransform = selectionElement;
-
-                        if (cloneSelection) {
-                            if (selectionElement.hasMixin(GXNode.Store)) {
-                                elementToApplyTransform = selectionElement.clone();
-
-                                // Append clone to parent of selected item
-                                selectionElement.getParent().appendChild(elementToApplyTransform);
-
-                                // Push clone into new selection
-                                clonedSelection.push(elementToApplyTransform);
-                            } else {
-                                elementToApplyTransform = null;
-                            }
-                        }
-
-                        if (elementToApplyTransform) {
-                            editor.applyTransform(elementToApplyTransform);
-                        } else {
-                            editor.resetTransform();
-                        }
+            // Filter selection by editors that can not be transformed
+            // and reset those instead here
+            var newSelection = [];
+            for (var i = 0; i < this._selection.length; ++i) {
+                var item = this._selection[i];
+                var editor = GXElementEditor.getEditor(item);
+                if (editor) {
+                    if (!editor.canApplyTransform()) {
+                        // Reset editor transformation
+                        editor.resetTransform();
+                    } else {
+                        // Push item to array of new selection
+                        newSelection.push(item);
                     }
                 }
+            }
 
-                // Update current selection if we cloned it
-                if (clonedSelection.length > 0) {
-                    this.updateSelection(false, clonedSelection);
-                }
-            } finally {
+            if (newSelection && newSelection.length > 0) {
                 if (!noTransaction) {
-                    // TODO : I18N
-                    this.commitTransaction(cloneSelection ? 'Transform & Clone Selection' : 'Transform Selection');
+                    this.beginTransaction();
+                }
+
+                try {
+                    var clonedSelection = [];
+                    for (var i = 0; i < newSelection.length; ++i) {
+                        var item = newSelection[i];
+                        var editor = GXElementEditor.getEditor(item);
+                        if (editor) {
+                            var selectionElement = newSelection[i];
+                            var elementToApplyTransform = selectionElement;
+
+                            if (cloneSelection) {
+                                if (selectionElement.hasMixin(GXNode.Store)) {
+                                    elementToApplyTransform = selectionElement.clone();
+
+                                    // Append clone to parent of selected item
+                                    selectionElement.getParent().appendChild(elementToApplyTransform);
+
+                                    // Push clone into new selection
+                                    clonedSelection.push(elementToApplyTransform);
+                                } else {
+                                    elementToApplyTransform = null;
+                                }
+                            }
+
+                            if (elementToApplyTransform) {
+                                editor.applyTransform(elementToApplyTransform);
+                            } else {
+                                editor.resetTransform();
+                            }
+                        }
+                    }
+
+                    // Update current selection if we cloned it
+                    if (clonedSelection.length > 0) {
+                        this.updateSelection(false, clonedSelection);
+                    }
+                } finally {
+                    if (!noTransaction) {
+                        // TODO : I18N
+                        this.commitTransaction(cloneSelection ? 'Transform & Clone Selection' : 'Transform Selection');
+                    }
                 }
             }
         }
@@ -919,7 +857,7 @@
      */
     GXEditor.prototype.insertElements = function (elements, noDefaults, noTransaction) {
         // Our target is always the currently active layer
-        var target = this.getCurrentLayer();
+        var target = this.getCurrentPage();// this.getCurrentLayer();
 
         if (!noTransaction) {
             this.beginTransaction();

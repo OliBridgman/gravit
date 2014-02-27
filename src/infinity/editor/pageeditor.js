@@ -64,11 +64,47 @@
     };
 
     /** @override */
+    GXPageEditor.prototype.canApplyTransform = function () {
+        // Page transforms can be applied only if the page doesn't
+        // intersect with any other page
+        if (this._transform && !this._transform.isIdentity()) {
+            var pageRect = this._transform.mapRect(new GRect(
+                this._element.getProperty('x'), this._element.getProperty('y'),
+                this._element.getProperty('w'), this._element.getProperty('h')));
+
+            if (this._element.getScene().willPageIntersectWithOthers(this._element, pageRect)) {
+                return false;
+            }
+
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     GXPageEditor.prototype.applyTransform = function () {
         if (this._transform && !this._transform.isIdentity()) {
             var pageRect = this._transform.mapRect(new GRect(
                 this._element.getProperty('x'), this._element.getProperty('y'),
                 this._element.getProperty('w'), this._element.getProperty('h')));
+
+            // If new page rect somewhat intersects any other pages including spacing
+            // then ignore the transformation aka don't assign it
+            var allPages = this._element.getScene().queryAll('page');
+            if (allPages) {
+                for (var i = 0; i < allPages.length; ++i) {
+                    if (allPages[i] === this._element) {
+                        continue;
+                    }
+
+                    var geoBBox = allPages[i].getGeometryBBox();
+                    if (geoBBox && geoBBox.expanded(GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING).intersectsRect(pageRect)) {
+                        // Reset transform and be done here
+                        this.resetTransform();
+                        return;
+                    }
+                }
+            }
 
             this._element.setProperties(['x', 'y', 'w', 'h'], [pageRect.getX(), pageRect.getY(), pageRect.getWidth(), pageRect.getHeight()]);
             this._transform = null;
@@ -80,12 +116,12 @@
         if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
             // TODO : Make optional as most of the time this sucks
             /*
-            // We can handle colors so check for a color
-            if (type === GXElementEditor.DropType.Color) {
-                this.getElement().setProperty('color', source ? source.asString() : null);
-                return true;
-            }
-            */
+             // We can handle colors so check for a color
+             if (type === GXElementEditor.DropType.Color) {
+             this.getElement().setProperty('color', source ? source.asString() : null);
+             return true;
+             }
+             */
         }
         return true;
     };

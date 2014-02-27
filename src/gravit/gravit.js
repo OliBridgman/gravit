@@ -135,8 +135,14 @@
             new GCopyStyleAction(),
             new GPasteStyleAction(),
 
-            new EXDuplicateSelectionAction(),
-            new EXCloneSelectionAction(),
+            new GDuplicateAction(),
+            new GCloneAction(),
+
+            // Modify
+            new GGroupAction(),
+            new GUngroupAction(),
+
+            new GInsertPagesAction(),
 
             // View
             new EXOriginalViewAction(),
@@ -161,7 +167,6 @@
             new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Output),
 
             new EXPixelPreviewAction(),
-            new EXSinglePageModeAction(),
 
             new EXShowRulersAction(),
 

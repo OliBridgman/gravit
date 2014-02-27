@@ -5,19 +5,10 @@
      * @class GXElement
      * @extends GXNode
      * @constructor
-     * @version 1.0
      */
     function GXElement() {
     }
-
     GObject.inherit(GXElement, GXNode);
-
-    /**
-     * The visual properties of an element with their default values
-     */
-    GXElement.VisualProperties = {
-        visible: true
-    };
 
     /**
      * Known flags for a geometry
@@ -27,9 +18,14 @@
         /**
          * Defines a flag for being hidden
          * @type {Number}
-         * @version 1.0
          */
-        Hidden: 1 << 21
+        Hidden: 1 << 21,
+
+        /**
+         * Defines a flag for being locked
+         * @type {Number}
+         */
+        Locked: 1 << 22
     };
 
     /**
@@ -901,45 +897,6 @@
             // If child is an element, notify about the change
             if (args instanceof GXElement) {
                 this._notifyChange(GXElement._Change.ChildGeometryUpdate, args);
-            }
-
-            // Call super and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else if (change == GXNode._Change.AfterPropertiesChange) {
-            /** @type {{properties: Array<String>, values: Array<*>}} */
-            var propertyArgs = args;
-
-            // React on various known property changes
-            if (propertyArgs.properties.indexOf('visible') >= 0) {
-                var isVisible = this.getProperty('visible');
-
-                // Save our old paint bbox if we're getting hidden
-                var oldPaintBBox = !isVisible ? this.getPaintBBox() : null;
-
-                // Change hidden flag of this and all elemental children and invalidate their geometry
-                this.accept(function (node) {
-                    if (node instanceof GXElement) {
-                        if (isVisible) {
-                            node.removeFlag(GXElement.Flag.Hidden);
-                        } else {
-                            node.setFlag(GXElement.Flag.Hidden);
-                        }
-                        node._invalidateGeometry();
-                    }
-                });
-
-                // Deliver child geometry update to parent
-                if (this.getParent()) {
-                    this.getParent()._notifyChange(GXElement._Change.ChildGeometryUpdate, this);
-                }
-
-                // Request a repaint of either old paint bbox if getting hidden or from
-                // the current paint bbox if getting visible
-                if (isVisible) {
-                    this._handleChange(GXElement._Change.InvalidationRequest);
-                } else {
-                    this._requestInvalidationArea(oldPaintBBox);
-                }
             }
 
             // Call super and be done with it

@@ -45,7 +45,7 @@
      * @override
      */
     GPasteInsideAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.SHIFT, 'V'];
+        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'V'];
     };
 
     /**

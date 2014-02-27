@@ -25,7 +25,7 @@
 
         // Initiate our tree container widget
         this._htmlTreeContainer = $('<div></div>')
-            .addClass('layer-tree')
+            .addClass('structure-tree')
             .tree({
                 data: [],
                 dragAndDrop: true,
@@ -73,11 +73,13 @@
         scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent, this);
         scene.addEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent, this);
 
+        // Add our document root
+
         // Subscribe to the editor's events
-        editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
+        //editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
 
         // Add the root layerSet
-        this._insertLayerOrSet(scene.getLayerSet());
+        //this._insertLayerOrSet(scene.getLayerSet());
     };
 
     EXSidebar.DocumentState.prototype.release = function () {
@@ -89,9 +91,6 @@
         scene.removeEventListener(GXNode.AfterRemoveEvent, this._removeEvent);
         scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent);
         scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent);
-
-        // Unsubscribe from the editor's events
-        editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
     };
 
     /**
@@ -99,9 +98,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._insertEvent = function (event) {
-        //if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
-        this._insertLayerOrSet(event.node);
-        //}
+        // NO-OP
     };
 
     /**
@@ -109,29 +106,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._removeEvent = function (event) {
-        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
-            var _removeMapping = function (layerOrSet) {
-                for (var i = 0; i < this._treeNodeMap.length; ++i) {
-                    if (this._treeNodeMap[i].node === layerOrSet) {
-                        this._treeNodeMap.splice(i, 1);
-                        break;
-                    }
-                }
-
-                // For layerSets we'll remove the sublayer mappings, too
-                if (layerOrSet instanceof GXLayerSet) {
-                    for (var layer = layerOrSet.getFirstChild(); layer !== null; layer = layer.getNext()) {
-                        _removeMapping(layer);
-                    }
-                }
-            }.bind(this);
-
-            // Remove Tree Node, first
-            this._htmlTreeContainer.tree('removeNode', this._getTreeNode(event.node));
-
-            // Remove all tree node mappings noew
-            _removeMapping(event.node);
-        }
+        // NO-OP
     };
 
     /**
@@ -139,9 +114,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._propertiesChangeEvent = function (event) {
-        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
-            this._updateLayerOrSet(event.node);
-        }
+        // NO-OP
     };
 
     /**
@@ -149,75 +122,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._flagChangeEvent = function (event) {
-        if (event.node instanceof GXLayerSet || event.node instanceof GXLayer) {
-            if (event.flag === GXNode.Flag.Active) {
-                this._updateLayerOrSet(event.node);
-            }
-        }
-    };
-
-    /**
-     * @param {GXEditor.CurrentLayerChangedEvent} event
-     * @private
-     */
-    EXSidebar.DocumentState.prototype._currentLayerChanged = function (event) {
-        if (event.previousLayer) {
-            this._updateLayerOrSet(event.previousLayer);
-        }
-        var currentLayer = this.document.getEditor().getCurrentLayer();
-        if (currentLayer) {
-            this._updateLayerOrSet(currentLayer);
-        }
-    };
-
-    /**
-     * @param {GXLayerSet|GXLayer} layerOrSet
-     * @private
-     */
-    EXSidebar.DocumentState.prototype._insertLayerOrSet = function (layerOrSet) {
-        // Only add layer/layerSets which have a layerSet as parent
-        //if (layerOrSet.getParent() instanceof GXLayerSet) {
-        if (layerOrSet instanceof GXElement) {
-            // Create an unique treeId for the new layer/layerSet
-            var treeId = gUtil.uuid();
-
-            // Either insert before or append
-            var nextNode = layerOrSet.getNext() ? this._getTreeNode(layerOrSet.getNext()) : null;
-            if (nextNode) {
-                this._htmlTreeContainer.tree('addNodeBefore', { id: treeId, layerOrSet: layerOrSet }, nextNode);
-            } else {
-                var parentTreeNode = layerOrSet.getParent() === layerOrSet.getScene().getLayerSet() ? null : this._getTreeNode(layerOrSet.getParent());
-                this._htmlTreeContainer.tree('appendNode', { id: treeId, layerOrSet: layerOrSet }, parentTreeNode);
-            }
-
-            // Insert the mapping
-            this._treeNodeMap.push({
-                node: layerOrSet,
-                treeId: treeId
-            });
-
-            // Make an initial update
-            this._updateLayerOrSet(layerOrSet);
-        }
-
-        // For layerSets we'll add the sublayers
-        if (layerOrSet.hasMixin(GXNode.Container)) {
-            // We'll always add layers in reverse order to have the topmost layer being on top
-            for (var layer = layerOrSet.getFirstChild(); layer !== null; layer = layer.getNext()) {
-                this._insertLayerOrSet(layer);
-            }
-        }
-    };
-
-    /**
-     * @param {GXLayerSet|GXLayer} layerOrSet
-     * @private
-     */
-    EXSidebar.DocumentState.prototype._updateLayerOrSet = function (layerOrSet) {
-        this._htmlTreeContainer.tree('updateNode', this._getTreeNode(layerOrSet), {
-            label: layerOrSet instanceof GXLayerBase ? layerOrSet.getProperty('title') : layerOrSet.getNodeNameTranslated(),
-            layerOrSet: layerOrSet
-        });
+        // NO-OP
     };
 
     /**
@@ -246,161 +151,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._createListItem = function (node, li) {
-        if (node.layerOrSet) {
-            var layerOrSet = node.layerOrSet;
-            var scene = this.document.getScene();
-            var editor = this.document.getEditor();
-
-            // Mark our list element selected if either our layer has the active flag
-            // or the editor doesn't have a selection and our layer is the current one
-            if (layerOrSet.hasFlag(GXNode.Flag.Active) || (!editor.hasSelection() && layerOrSet === editor.getCurrentLayer())) {
-                li.addClass('jqtree-selected');
-            } else {
-                li.removeClass('jqtree-selected');
-            }
-
-            // Attach an auto-input for editing the layer's title
-            li.find('.jqtree-title')
-                .gAutoSize({
-                    getter: function () {
-                        return layerOrSet.getProperty('title');
-                    },
-                    setter: function (value) {
-                        if (value && value.trim() !== "") {
-                            layerOrSet.setProperty('title', value.trim());
-                        }
-                    }
-                });
-
-            // Hacky: Clicking on a li element should kill any active input editor
-            li.on('click', function () {
-                this._htmlTreeContainer.find('.jqtree-title').each(function () {
-                    $(this).gAutoSize('finish');
-                });
-            }.bind(this));
-
-            // Gather our container for insertions
-            var container = li.find('div.jqtree-element');
-
-            // Iterate parents up and collect information about them
-            var parentHidden = false;
-            var parentLocked = false;
-            var parentOutlined = false;
-
-            for (var p = layerOrSet.getParent(); p !== null; p = p.getParent()) {
-                if (p.hasMixin(GXNode.Properties)) {
-                    // Stop on root layerSet
-                    if (p === scene.getLayerSet()) {
-                        break;
-                    }
-
-                    // Query information
-                    parentHidden = p.getProperty('visible') === false || parentHidden;
-                    //parentLocked = p.hasFlag(GXNode.Flag.Locked.Flag.Hidden) || parentHidden;
-                    parentOutlined = p.getProperty('outline') === true || parentOutlined;
-
-                    // Append a hidden toggler to ensure proper spacing
-                    container.prepend($('<a class="jqtree_common jqtree-toggler" style="visibility: hidden;">▼</a>'));
-                }
-            }
-
-            //
-            // Add folder marker if any
-            //
-            if (layerOrSet instanceof GXLayerSet) {
-                $('<span></span>')
-                    .addClass('layer-icon fa fa-folder-o')
-                    // TODO : I18N
-                    .attr('title', 'Layer-Set')
-                    .insertBefore(container.find('.jqtree-title'));
-            }
-
-            //
-            // Add visibility marker
-            //
-            if (node.layerOrSet instanceof GXLayerBase) {
-                var isHidden = parentHidden || layerOrSet.getProperty('visible') === false;
-                $('<span></span>')
-                    .addClass('layer-icon layer-icon-action fa')
-                    .addClass(isHidden ? 'layer-icon-light fa-eye-slash' : 'fa-eye')
-                    // TODO : I18N
-                    .attr('title', 'Click to show/hide layer')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-                        evt.preventDefault();
-
-                        layerOrSet.setProperty('visible', !layerOrSet.getProperty('visible'));
-                    })
-                    .prependTo(container);
-            }
-
-            //
-            // Add lock marker
-            //
-            if (node.layerOrSet instanceof GXLayerBase) {
-                var isLocked = parentLocked;// || layerOrSet.getProperty(GXLayer.PROPERTY_LOCKED) === false;
-                $('<span></span>')
-                    .addClass('layer-icon layer-icon-action fa')
-                    .addClass(isLocked ? 'fa-lock' : 'layer-icon-light fa-unlock-alt')
-                    // TODO : I18N
-                    .attr('title', 'Click to lock/unlock layer')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-                        evt.preventDefault();
-
-                        //layerOrSet.setProperty(GXLayer.PROPERTY_LOCKED, !layerOrSet.getProperty(GXLayer.PROPERTY_LOCKED));
-                    })
-                    .appendTo(container);
-            }
-
-            //
-            // Add outline marker
-            //
-            if (node.layerOrSet instanceof GXLayerBase) {
-                var isOutline = parentOutlined || layerOrSet.getProperty('outline') === true;
-                $('<span></span>')
-                    .addClass('layer-icon layer-icon-action fa')
-                    .addClass(isOutline ? 'fa-circle-o' : 'layer-icon-light fa-circle')
-                    // TODO : I18N
-                    .attr('title', 'Click to show/hide outline of layer')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-                        evt.preventDefault();
-
-                        layerOrSet.setProperty('outline', !layerOrSet.getProperty('outline'));
-                    })
-                    .appendTo(container);
-            }
-
-            //
-            // Add color marker
-            //
-            $('<span></span>')
-                .addClass('layer-color')
-                .gColorBox()
-                .gColorBox('value', GXColor.parseColor(layerOrSet.getProperty('color')))
-                .on('change', function (evt, color) {
-                    if (layerOrSet instanceof GXLayerSet) {
-                        var myColor = GXColor.parseColor(layerOrSet.getProperty('color'));
-
-                        // TODO : Undo group
-
-                        // Apply color to all child layers recursively that
-                        // do have the same color as our layer
-                        layerOrSet.acceptChildren(function (node) {
-                            if (node instanceof GXLayerBase) {
-                                var childColor = GXColor.parseColor(node.getProperty('color'));
-                                if (GXColor.equals(childColor, myColor)) {
-                                    node.setProperty('color', color.asString());
-                                }
-                            }
-                        });
-                    } else {
-                        layerOrSet.setProperty('color', color.asString());
-                    }
-                })
-                .appendTo(container);
-        }
+        // NO-OP
     };
 
     /**
