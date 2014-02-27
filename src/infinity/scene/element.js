@@ -824,7 +824,7 @@
             }
 
             if (this.isVisible()) {
-                if (this.isAttached() && this._scene.hasEventListeners(GXElement.GeometryChangeEvent)) {
+                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
                     this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.Before));
                 }
             }
@@ -857,7 +857,7 @@
                     }
                 }
 
-                if (this.isAttached() && this._scene.hasEventListeners(GXElement.GeometryChangeEvent)) {
+                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
                     this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.After));
                 }
 
@@ -869,7 +869,7 @@
             if (this.isVisible()) {
                 this._invalidateGeometry();
 
-                if (this.isAttached() && this._scene.hasEventListeners(GXElement.GeometryChangeEvent)) {
+                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
                     this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.Child));
                 }
 

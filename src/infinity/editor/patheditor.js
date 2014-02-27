@@ -315,15 +315,22 @@
     /** @override */
     GXPathEditor.prototype.applyTransform = function (element) {
         if (this._partSelection && this._partSelection.length > 0) {
+            this._element._beginBlockEvents([GXElement.GeometryChangeEvent]);
             var newSelection = [];
             // Iterate selection and apply changes in preview anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
                 if (part.type === GXPathEditor.PartType.Point) {
+                    if (i == this._partSelection.length - 1) {
+                        this._element._endBlockEvents([GXElement.GeometryChangeEvent]);
+                    }
                     this._transferPreviewProperties(part.point, element);
                     newSelection.push(part);
                 } else if (part.type === GXPathEditor.PartType.Segment) {
                     this._transferPreviewProperties(part.apLeft, element);
+                    if (i == this._partSelection.length - 1) {
+                        this._element._endBlockEvents([GXElement.GeometryChangeEvent]);
+                    }
                     this._transferPreviewProperties(part.apRight, element);
                     // Update now _partSelection to contain segment end points instead of segment itself
                     newSelection.push({type: GXPathEditor.PartType.Point, point: part.apLeft});
