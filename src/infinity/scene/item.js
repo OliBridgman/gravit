@@ -30,6 +30,17 @@
         locked: false
     };
 
+    /**
+     * Returns the name of this item
+     * @return {String}
+     */
+    GXItem.prototype.getItemName = function () {
+        if (this.$name && this.$name !== "") {
+            return this.$name;
+        }
+        return this.getNodeNameTranslated();
+    };
+
     /** @override */
     GXItem.prototype.store = function (blob) {
         if (GXNode.Store.prototype.store.call(this, blob)) {

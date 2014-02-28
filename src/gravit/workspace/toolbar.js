@@ -190,39 +190,14 @@
      * @private
      */
     GToolbar.prototype._registerDocument = function (document) {
-        var select = this._htmlElement.find('select.hierarchy');
-        select.empty();
+        var scene = document.getScene();
 
-        // Add all marker
-        // TODO : I18N
-        select.append($('<option></option>')
-            .text('- All Pages -'));
+        this._updateHierachy(scene);
 
-        // Add pages
-        select.append($('<optgroup></optgroup>')
-            .attr('data-category', 'pages')
-            // TODO : I18N
-            .attr('label', 'Pages'));
-
-        var pages = document.getScene().queryAll('> page');
-        for (var i = 0; i < pages.length; ++i) {
-            select.find('[data-category="pages"]').append($('<option></option>').text(pages[i].getProperty('name')));
-        }
-
-        // Add master-pages
-        select.append($('<optgroup></optgroup>')
-            // TODO : I18N
-            .attr('label', 'Master Pages'));
-
-        // Add shared-layers
-        select.append($('<optgroup></optgroup>')
-            // TODO : I18N
-            .attr('label', 'Shared Layers'));
-
-        // Add symbols
-        select.append($('<optgroup></optgroup>')
-            // TODO : I18N
-            .attr('label', 'Symbols'));
+        // Subscribe to structural changes
+        scene.addEventListener(GXNode.AfterInsertEvent, this._insertEvent, this);
+        scene.addEventListener(GXNode.AfterRemoveEvent, this._removeEvent, this);
+        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent, this);
     };
 
     /**
@@ -230,8 +205,118 @@
      * @private
      */
     GToolbar.prototype._unregisterDocument = function (document) {
-        this._htmlElement.find('select.hierarchy')
-            .empty();
+        var scene = document.getScene();
+
+        // Unsubscribe from structural changes
+        scene.removeEventListener(GXNode.AfterInsertEvent, this._insertEvent);
+        scene.removeEventListener(GXNode.AfterRemoveEvent, this._removeEvent);
+        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent);
+
+        this._updateHierachy(null);
+    };
+
+    /**
+     * @param {GXNode} node
+     * @private
+     */
+    GToolbar.prototype._isHierarchyNode = function (node) {
+        return (node instanceof GXPage) ||
+            (node instanceof GXLayer && node.getParent() instanceof GXScene);
+    };
+
+    /**
+     * @param {GXNode.AfterInsertEvent} event
+     * @private
+     */
+    GToolbar.prototype._insertEvent = function (event) {
+        if (this._isHierarchyNode(event.node)) {
+            this._updateHierachy(event.node.getScene())
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterRemoveEvent} event
+     * @private
+     */
+    GToolbar.prototype._removeEvent = function (event) {
+        if (this._isHierarchyNode(event.node)) {
+            this._updateHierachy(event.node.getScene())
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    GToolbar.prototype._propertiesChangeEvent = function (event) {
+        if (this._isHierarchyNode(event.node) && event.properties.indexOf('name') >= 0) {
+            this._updateHierachy(event.node.getScene())
+        }
+    };
+
+    /**
+     * @param {EXDocument} document
+     * @private
+     */
+    GToolbar.prototype._updateHierachy = function (scene) {
+        var select = this._htmlElement.find('select.hierarchy');
+        select.empty();
+
+        if (!scene) {
+            // done here, there's no scene at all
+            return;
+        }
+
+        // Add special marker
+        select.append($('<option></option>')
+            .data('type', 'all')
+            // TODO : I18N
+            .text('- Everything -'));
+        select.append($('<option></option>')
+            .data('type', 'all-pages')
+            // TODO : I18N
+            .text('- Only Pages -'));
+        select.append($('<option></option>')
+            .data('type', 'all-shared-layers')
+            // TODO : I18N
+            .text('- Only Shared Layers -'));
+
+        // Append categories
+        var pagesCategory = $('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Pages')
+            .appendTo(select);
+        var masterPagesCategory = $('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Master Pages')
+            .appendTo(select);
+        var sharedLayersCategory = $('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Shared Layers')
+            .appendTo(select);
+        var symbolsCategory = $('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Symbols')
+            .appendTo(select);
+
+        // Iterate scene
+        for (var child = scene.getFirstChild(); child !== null; child = child.getNext()) {
+            var targetCategory = null;
+
+            if (child instanceof GXPage) {
+                // TODO : Support for master pages
+                targetCategory = pagesCategory;
+            } else if (child instanceof GXLayer) {
+                targetCategory = sharedLayersCategory;
+            }
+
+            if (targetCategory) {
+                $('<option></option>')
+                    .data('item', child)
+                    .text(child.getItemName())
+                    .appendTo(targetCategory);
+            }
+        }
     };
 
     _.GToolbar = GToolbar;

@@ -948,7 +948,8 @@
             }.bind(this);
 
             var revert = function () {
-                for (var i = 0; i < actions.length; ++i) {
+                // Revert needs to play the actions backwards
+                for (var i = actions.length - 1; i >= 0; --i) {
                     actions[i].revert();
                 }
                 this._loadSelection(selection);
