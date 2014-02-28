@@ -103,7 +103,7 @@
 
     /**
      * The affected document
-     * @type {GXScene}
+     * @type {EXDocument}
      */
     EXApplication.DocumentEvent.prototype.document = null;
 

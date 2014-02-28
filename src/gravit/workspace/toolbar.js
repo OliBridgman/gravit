@@ -127,7 +127,8 @@
             _addToolButton(toolInstance);
         }
 
-        // Subscribe to the manager's tool change event
+        // Subscribe to some events
+        gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
         gApp.getToolManager().addEventListener(GXToolManager.ToolChangedEvent, this._toolChanged, this);
     };
 
@@ -164,6 +165,73 @@
         if (event.newTool && this._toolTypeToButtonMap[GObject.getTypeId(event.newTool)]) {
             this._toolTypeToButtonMap[GObject.getTypeId(event.newTool)].addClass('g-active');
         }
+    };
+
+    /**
+     * @param {EXApplication.DocumentEvent} event
+     * @private
+     */
+    GToolbar.prototype._documentEvent = function (event) {
+        switch (event.type) {
+            case EXApplication.DocumentEvent.Type.Activated:
+                this._registerDocument(event.document);
+                break;
+            case EXApplication.DocumentEvent.Type.Deactivated:
+                this._unregisterDocument(event.document);
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    /**
+     * @param {EXDocument} document
+     * @private
+     */
+    GToolbar.prototype._registerDocument = function (document) {
+        var select = this._htmlElement.find('select.hierarchy');
+        select.empty();
+
+        // Add all marker
+        // TODO : I18N
+        select.append($('<option></option>')
+            .text('- All Pages -'));
+
+        // Add pages
+        select.append($('<optgroup></optgroup>')
+            .attr('data-category', 'pages')
+            // TODO : I18N
+            .attr('label', 'Pages'));
+
+        var pages = document.getScene().queryAll('> page');
+        for (var i = 0; i < pages.length; ++i) {
+            select.find('[data-category="pages"]').append($('<option></option>').text(pages[i].getProperty('name')));
+        }
+
+        // Add master-pages
+        select.append($('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Master Pages'));
+
+        // Add shared-layers
+        select.append($('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Shared Layers'));
+
+        // Add symbols
+        select.append($('<optgroup></optgroup>')
+            // TODO : I18N
+            .attr('label', 'Symbols'));
+    };
+
+    /**
+     * @param {EXDocument} document
+     * @private
+     */
+    GToolbar.prototype._unregisterDocument = function (document) {
+        this._htmlElement.find('select.hierarchy')
+            .empty();
     };
 
     _.GToolbar = GToolbar;
