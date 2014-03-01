@@ -1,0 +1,12 @@
+#sidebar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 200px;
+  height: 100%;
+  border-right: 1px solid $frameBorderColor;
+
+  .structure-tree {
+    //padding: 5px 0px;
+  }
+}

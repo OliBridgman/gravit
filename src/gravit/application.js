@@ -601,19 +601,19 @@
 
         this._sidebar = new EXSidebar(sidebarPart);
 
-        // Palettes-Part
-        var palettesPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Palettes.id)
-            .appendTo(contentPart);
-
-        this._palettes = new GPalettes(palettesPart);
-
         // Windows-Part
         var windowsPart = $("<div></div>")
             .attr('id', EXApplication.Part.Windows.id)
             .appendTo(contentPart);
 
         this._windows = new EXWindows(windowsPart);
+
+        // Palettes-Part
+        var palettesPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Palettes.id)
+            .appendTo(contentPart);
+
+        this._palettes = new GPalettes(palettesPart);
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -688,11 +688,27 @@
         }
 
         setTimeout(function () {
+            var topOffset = 0;
+
             var headerPart = this.getPart(EXApplication.Part.Header);
             var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
 
+            topOffset += this.isPartVisible(EXApplication.Part.Header) ? headerPart.outerHeight() : 0;
+
+            toolbarPart.css('top', topOffset.toString() + 'px');
+
+            topOffset += this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerHeight() : 0;
+
             var contentPart = this.getPart(EXApplication.Part.Content);
-            contentPart.height(this._view.height() - headerPart.outerHeight() - toolbarPart.outerHeight());
+            contentPart.css('top', topOffset.toString() + 'px');
+            contentPart.height(this._view.height() - topOffset);
+
+            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
+            var palettesPart = this.getPart(EXApplication.Part.Palettes);
+
+            var windowsPart = this.getPart(EXApplication.Part.Windows);
+            windowsPart.css('left', this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0);
+            windowsPart.css('right', this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0);
 
             this._header.relayout();
             this._toolbar.relayout();

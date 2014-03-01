@@ -1,0 +1,68 @@
+#toolbar {
+  position: absolute;
+  padding: 1px 2px 2px 2px;
+  width: 100%;
+  border-top: 1px solid $frame3DLightColor;
+  border-bottom: 1px solid $frame3DShadowColor;
+
+  > div.section {
+    display: table-cell;
+    height: 100%;
+
+    &, * {
+      line-height: 25px;
+      vertical-align: middle;
+    }
+
+    div {
+      display: inline-block;
+    }
+
+    button, select, input {
+      height: 25px;
+      border: none;
+      padding: 0px 4px;
+    }
+
+    .divider {
+      background: $frameBorderColor;
+      width: 1px;
+      margin: 0px 3px;
+      height: 25px;
+      vertical-align: top;
+    }
+
+    &:not(:first-child) {
+      border-left: 1px solid $frameBorderColor;
+    }
+
+    &[data-section="left"] {
+      > div:last-child {
+        display: block;
+        overflow: hidden;
+
+        select {
+          width: 100%;
+        }
+      }
+      > div.actions {
+        display: block;
+        float: right;
+      }
+    }
+
+    &[data-section="center"] {
+      > .colors {
+        float: right;
+
+        > button > span.fa:first-child {
+          font-size: 16px;
+        }
+
+        > button[data-color-button="contour"] {
+          margin-left: 3px;
+        }
+      }
+    }
+  }
+}

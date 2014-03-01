@@ -41,6 +41,29 @@
     };
 
     /**
+     * Returns the fill color
+     * @return {GXColor} color
+     */
+    GXPaintFillStyle.prototype.getColor = function () {
+        // TODO : Support for other fill types
+        if (this.$fill && this.$fill instanceof GXColor) {
+            return this.$fill;
+        }
+        return null;
+    };
+
+    /**
+     * Assigns the fill color
+     * @param {GXColor} color
+     */
+    GXPaintFillStyle.prototype.setColor = function (color) {
+        // TODO : Support for other fill types
+        if (this.$fill && this.$fill instanceof GXColor) {
+            this.setProperty('fill', color);
+        }
+    };
+
+    /**
      * Checks whether this style has a paintable fill. Invalid or
      * completely transparent fills are considered to be not paintable.
      */

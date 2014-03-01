@@ -22,7 +22,7 @@
      * Apply properties to a given style class. If the given style class does not
      * yet exist on the root of this styleSet, it'll be created and appended, first
      *
-     * @param {Function} styleClass the style class to assign properties to
+     * @param {GXStyle} styleClass the style class to assign properties to
      * @param {Array<String>} properties the properties to assign
      * @param {Array<*>} values the values to assign
      */
@@ -41,6 +41,32 @@
         }
 
         targetStyle.setProperties(properties, values);
+    };
+
+    /**
+     * Get the color of the first area paint if any
+     * @returns {GXColor}
+     */
+    GXStyleSet.prototype.getAreaColor = function () {
+        return this._getFillColor(GXPaintAreaStyle);
+    };
+
+    /**
+     * Set the color of the first area paint if any,
+     * automatically creating a new area paint if there's none
+     * and automatically removing an area if color is nul
+     * @param {GXColor} color
+     */
+    GXStyleSet.prototype.setAreaColor = function (color) {
+        this._setFillColor(GXPaintAreaStyle, color);
+    };
+
+    GXStyleSet.prototype.getContourColor = function () {
+        return this._getFillColor(GXPaintContourStyle);
+    };
+
+    GXStyleSet.prototype.setContourColor = function (color) {
+        return this._setFillColor(GXPaintContourStyle, color);
     };
 
     /** @override */
@@ -93,6 +119,47 @@
             }
         }
         return null;
+    };
+
+    /**
+     * @param {GXPaintStyle} fillStyleClass
+     * @returns {GXColor}
+     * @private
+     */
+    GXStyleSet.prototype._getFillColor = function (fillStyleClass) {
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child.constructor == fillStyleClass) {
+                return child.getColor();
+            }
+        }
+        return null;
+    };
+
+    /**
+     * @param {GXPaintStyle} fillStyleClass
+     * @param {GXColor} color
+     * @private
+     */
+    GXStyleSet.prototype._setFillColor = function (fillStyleClass, color) {
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child.constructor == fillStyleClass) {
+                // If there's no color, we'll remove the style instead
+                if (!color) {
+                    this.removeChild(child);
+                } else {
+                    child.setColor(color);
+                }
+
+                // return here as we're done
+                return;
+            }
+        }
+
+        // Coming here means nothing has happend and if we have a color,
+        // we'll be assigning it now
+        if (color) {
+            this.applyStyleProperties(fillStyleClass, ['fill'], [color]);
+        }
     };
 
     /** @override */

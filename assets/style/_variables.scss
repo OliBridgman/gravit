@@ -1,13 +1,53 @@
+$font: caption;
+$smallFont: small-caption;
+
+$frameColor: rgb(77, 80, 82);
+$frameDarkColor: rgb(57, 57, 57);
+$frameBorderColor: rgb(46, 49, 50);
+$frame3DLightColor: rgb(100, 102, 104);
+$frame3DShadowColor: rgb(49, 52, 53);
+
+$textColor: rgb(199, 199, 199);
+$disabledTextColor: gray;
+
+$highlightColor: blue;
+$highlightTextColor: white;
+
+$selectedColor: rgb(31, 141, 214);
+$selectedTextColor: white;
+
+$activeColor: $frameDarkColor;
+$activeTextColor: white;
+
+
+/*
+
+
+$light_0: rgb(240, 240, 240);
+$light_1: rgb(199, 199, 199);
+$light_2: rgb(158, 158, 158);
+$light_3: rgb(100, 102, 104);
+
+$shade_0: rgb(49, 51, 53);
+$shade_1: rgb(57, 57, 57);
+$shade_2: rgb(64, 67, 69);
+$shade_3: rgb(77, 80, 82);
+
+
+$bg_1: rgb(77, 80, 82);
+$bgRegular: rgb(57, 57, 57);
+$bgDark: rgb(57, 57, 57);
+
+$windowColor1: rgb(57, 57, 57);
+
 $darkGreen: rgb(159, 180, 0);
 $lightGreen: rgb(246, 245, 164);
 $yellow: rgb(255, 255, 0);
 $magentaColor: rgb(230, 0, 99);
 
-$windowColor: rgb(240, 240, 240);
-$windowFrameColor: rgb(205, 205, 205);
-$windowTextColor: black;
 $windowHeaderColor: $darkGreen;
 $windowHeaderTextColor: $yellow;
 
 $highlightColor: rgb(31, 141, 214);
 $highlightTextColor: white;
+*/

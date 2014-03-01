@@ -359,16 +359,16 @@
         // Append component preview container
         $('<div></div>')
             .append($('<div></div>')
-                .addClass('g-swatch-preview')
+                .addClass('g-color-swatch-preview')
                 .append($('<div></div>')
                     .attr('data-color-type', 'previous')
-                    .gColorBox()
+                    .gColorSwatch()
                     .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     }))
                 .append($('<div></div>')
                     .attr('data-color-type', 'current')
-                    .gColorBox()
+                    .gColorSwatch()
                     .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     })))
@@ -472,13 +472,13 @@
             }
         }
 
-        var colorPreview = this._htmlElement.find('.g-swatch-preview');
+        var colorPreview = this._htmlElement.find('.g-color-swatch-preview');
 
         if (updatePrevious) {
-            colorPreview.find('[data-color-type="previous"]').gColorBox('value', globalColor);
+            colorPreview.find('[data-color-type="previous"]').gColorSwatch('value', globalColor);
         }
 
-        colorPreview.find('[data-color-type="current"]').gColorBox('value', globalColor);
+        colorPreview.find('[data-color-type="current"]').gColorSwatch('value', globalColor);
     };
 
     /** @override */

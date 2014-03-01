@@ -8,15 +8,21 @@
 #header {
   position: absolute;
   width: 100%;
-  height: 20px;
+  height: 22px;
+  color: $light_1;
+  background: $shade_3;
+  border-bottom: 1px solid $windowFrameColor;
 }
 
 #toolbar {
   position: absolute;
-  top: 20px;
-  height: 26px;
+  top: 22px;
+  height: 30px;
+  padding: 2px 0px;
   width: 100%;
-  background: #AAAAAA;
+  background: $windowColor;
+  border-top: 1px solid $light_3;
+  border-bottom: 1px solid $windowFrameColor;
 
   > div {
     position: absolute;
@@ -65,7 +71,7 @@
         stroke: black;
       }
 
-      &:hover,  &:active, &.g-active {
+      &:hover, &:active, &.g-active {
         background: $highlightColor;
 
         svg {
@@ -88,7 +94,7 @@
 
 #content {
   position: absolute;
-  top: 46px;
+  top: 52px;
   width: 100%;
 }
 
@@ -98,7 +104,8 @@
   left: 0px;
   width: 200px;
   height: 100%;
-  background: silver;
+  background: $shade_3;
+  border-right: 1px solid $windowFrameColor;
 
   .structure-tree {
     padding: 5px 0px;
@@ -137,21 +144,19 @@
 
       > span.jqtree-title {
         width: 100%;
-        color: black;
         line-height: 14px;
       }
     }
 
-    li.jqtree-selected {
-      > div.jqtree-element {
-        * {
-          color: white;
-        }
-      }
-    }
+    /*
+    ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+  background: rgb(31, 141, 214);
+  color: white;
+}*/
 
     ul.jqtree_common {
-      margin-left: 0px;
+      //margin-left: 0px;
     }
   }
 }
@@ -162,7 +167,7 @@
   left: 200px;
   right: 250px;
   height: 100%;
-  background: white;
+  background: $shade_1;
 }
 
 #palettes {
@@ -171,8 +176,8 @@
   right: 0px;
   width: 250px;
   height: 100%;
-  background: silver;
-  border-left: 1px solid $windowFrameColor;
+  background: $shade_3;
+  border-left: 1px solid $shade_0;
 
   .palette-group {
     overflow: hidden;
@@ -229,8 +234,11 @@
       position: relative;
 
       &, *:not(.fa) {
+        font: small-caption;
+        /*
         font-family: Tahoma, Arial, Serif, sans-serif;
         font-size: 11px;
+        */
       }
 
       .fa {

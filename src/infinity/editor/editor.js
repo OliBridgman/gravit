@@ -51,7 +51,7 @@
      */
     GXEditor.CurrentColorType = {
         Contour: 0,
-        Fill: 1
+        Area: 1
     };
 
     /**
@@ -442,27 +442,13 @@
             // Assign new color
             this._currentColor[type] = color;
 
-            // Assign to selection if any and assignable
-            if (this._selection) {
-                this.beginTransaction();
-                try {
-                    for (var i = 0; i < this._selection.length; ++i) {
-                        var element = this._selection[i];
-                        this._applyCurrentColor(element, type);
-                    }
-                } finally {
-                    // TODO : I18N
-                    this.commitTransaction('Apply Color');
-                }
-            }
-
             // Trigger event
             if (this.hasEventListeners(GXEditor.CurrentColorChangedEvent)) {
                 this.trigger(new GXEditor.CurrentColorChangedEvent(type, oldColor));
             }
         }
     };
-
+    
     /**
      * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
@@ -871,9 +857,19 @@
                 target.appendChild(element);
 
                 if (!noDefaults) {
-                    // Assign default fill and contour style for shapes
-                    this._applyCurrentColor(element, GXEditor.CurrentColorType.Fill);
-                    this._applyCurrentColor(element, GXEditor.CurrentColorType.Contour);
+                    var areaColor = this._currentColor[GXEditor.CurrentColorType.Area];
+                    var contourColor = this._currentColor[GXEditor.CurrentColorType.Contour];
+
+                    // Assign default area and contour style for shapes
+                    if ((areaColor || contourColor) && element.hasMixin(GXElement.Style)) {
+                        var style = element.getStyle(true);
+                        if (areaColor) {
+                            style.setAreaColor(areaColor);
+                        }
+                        if (contourColor) {
+                            style.setContourColor(contourColor);
+                        }
+                    }
                 }
             }
 
@@ -1377,47 +1373,6 @@
 
             if (clearCount > 0) {
                 this.clearSelection(markedForExclusion)
-            }
-        }
-    };
-
-    /**
-     * Apply current color on a given element if it supports styling at all
-     * @param {GXElement} element the element to assign the given color to
-     * @param {GXEditor.CurrentColorType} currentColorType the current color type to assign
-     * @private
-     */
-    GXEditor.prototype._applyCurrentColor = function (element, currentColorType) {
-        // TODO : Undo / Redo
-        if (element.hasMixin(GXElement.Style)) {
-            var styleClass = null;
-            var styleColor = this._currentColor[currentColorType];
-
-            switch (currentColorType) {
-                case GXEditor.CurrentColorType.Contour:
-                    styleClass = GXPaintContourStyle;
-                    break;
-                case GXEditor.CurrentColorType.Fill:
-                    styleClass = GXPaintAreaStyle;
-                    break;
-            }
-
-            // TODO : Remove this when serialization works
-            styleColor = styleColor ? styleColor.asString() : null;
-
-            if (styleColor) {
-                element.getStyle(true).applyStyleProperties(styleClass, ['fill'], [styleColor]);
-            } else {
-                // Remove style class if any (root only)
-                var style = element.getStyle();
-                if (style) {
-                    for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
-                        if (child.constructor === styleClass) {
-                            style.removeChild(child);
-                            break;
-                        }
-                    }
-                }
             }
         }
     };

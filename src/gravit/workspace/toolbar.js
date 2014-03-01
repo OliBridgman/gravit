@@ -38,21 +38,35 @@
                     .addClass('toolpanel'))
                 .append($('<div></div>')
                     .addClass('colors')
-                    .append($('<button>FILL</button>')
-                        .gColorButton()
+                    .append($('<button></button>')
+                        .attr('data-color-button', 'area')
+                        // TODO : I18N
+                        .attr('title', 'Area Color')
+                        .append($('<span></span>'))
+                        .gColorButton({
+                            swatch: false
+                        })
                         .on('change', function (evt, color) {
-                            gApp.getActiveDocument().getEditor().setCurrentColor(GXEditor.CurrentColorType.Fill, color);
-                        }))
-                    .append($('<button>STROKE</button>')
-                        .gColorButton()
+                            this._assignCurrentColor(GXEditor.CurrentColorType.Area, color);
+                        }.bind(this)))
+                    .append($('<button></button>')
+                        .attr('data-color-button', 'contour')
+                        // TODO : I18N
+                        .attr('title', 'Contour Color')
+                        .append($('<span></span>'))
+                        .gColorButton({
+                            swatch: false
+                        })
                         .on('change', function (evt, color) {
-                            gApp.getActiveDocument().getEditor().setCurrentColor(GXEditor.CurrentColorType.Contour, color);
-                        }))))
+                            this._assignCurrentColor(GXEditor.CurrentColorType.Contour, color);
+                        }.bind(this)))))
             .append($('<div></div>')
                 .addClass('section')
                 .attr('data-section', 'right'));
 
         this._toolTypeToButtonMap = {};
+
+        this._updateColorButtons();
     };
 
     /**
@@ -140,9 +154,9 @@
         var center = this._htmlElement.find('[data-section="center"]');
         var right = this._htmlElement.find('[data-section="right"]');
 
-        var sidebarWidth = gApp.getPart(EXApplication.Part.Sidebar).outerWidth();
-        var windowsWidth = gApp.getPart(EXApplication.Part.Windows).outerWidth();
-        var palettesWidth = gApp.getPart(EXApplication.Part.Palettes).outerWidth();
+        var sidebarWidth = gApp.getPart(EXApplication.Part.Sidebar).width() - 1;
+        var windowsWidth = gApp.getPart(EXApplication.Part.Windows).width() - 1;
+        var palettesWidth = gApp.getPart(EXApplication.Part.Palettes).width() - 1;
 
         left.width(sidebarWidth);
 
@@ -175,9 +189,14 @@
         switch (event.type) {
             case EXApplication.DocumentEvent.Type.Activated:
                 this._registerDocument(event.document);
+                this._updateColorButtons();
                 break;
             case EXApplication.DocumentEvent.Type.Deactivated:
                 this._unregisterDocument(event.document);
+                this._updateColorButtons();
+                break;
+            case EXApplication.DocumentEvent.Type.Removed:
+                this._updateColorButtons();
                 break;
 
             default:
@@ -191,13 +210,17 @@
      */
     GToolbar.prototype._registerDocument = function (document) {
         var scene = document.getScene();
+        var editor = document.getEditor();
 
         this._updateHierachy(scene);
 
-        // Subscribe to structural changes
+        // Subscribe to scene changes
         scene.addEventListener(GXNode.AfterInsertEvent, this._insertEvent, this);
         scene.addEventListener(GXNode.AfterRemoveEvent, this._removeEvent, this);
         scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent, this);
+
+        // Subscribe to editor changes
+        editor.addEventListener(GXEditor.SelectionChangedEvent, this._selectionChangedEvent, this);
     };
 
     /**
@@ -206,11 +229,15 @@
      */
     GToolbar.prototype._unregisterDocument = function (document) {
         var scene = document.getScene();
+        var editor = document.getEditor();
 
-        // Unsubscribe from structural changes
+        // Unsubscribe from scene changes
         scene.removeEventListener(GXNode.AfterInsertEvent, this._insertEvent);
         scene.removeEventListener(GXNode.AfterRemoveEvent, this._removeEvent);
         scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent);
+
+        // Unsubscribe from editor changes
+        editor.removeEventListener(GXEditor.SelectionChangedEvent, this._selectionChangedEvent);
 
         this._updateHierachy(null);
     };
@@ -252,6 +279,14 @@
         if (this._isHierarchyNode(event.node) && event.properties.indexOf('name') >= 0) {
             this._updateHierachy(event.node.getScene())
         }
+    };
+
+    /**
+     * @param {GXEditor.SelectionChangedEvent} event
+     * @private
+     */
+    GToolbar.prototype._selectionChangedEvent = function (event) {
+        this._updateColorButtons();
     };
 
     /**
@@ -317,6 +352,86 @@
                     .appendTo(targetCategory);
             }
         }
+    };
+
+    /**
+     * @private
+     */
+    GToolbar.prototype._updateColorButtons = function () {
+        var areaButton = this._htmlElement.find('[data-color-button="area"]');
+        var contourButton = this._htmlElement.find('[data-color-button="contour"]');
+
+        var editor = gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor() : null;
+
+        areaButton.prop('disabled', !editor);
+        contourButton.prop('disabled', !editor);
+
+        if (editor) {
+            var selection = editor.getSelection();
+
+            var areaColor = editor.getCurrentColor(GXEditor.CurrentColorType.Area);
+            var contourColor = editor.getCurrentColor(GXEditor.CurrentColorType.Contour);
+
+            // If there's a selection, take area and contour color from it.
+            // If selection is more than one, set both to null
+            if (selection) {
+                areaColor = null;
+                contourColor = null;
+
+                if (selection.length === 1 && selection[0].hasMixin(GXElement.Style)) {
+                    var style = selection[0].getStyle(false);
+                    if (style) {
+                        areaColor = style.getAreaColor();
+                        contourColor = style.getContourColor();
+                    }
+                }
+            }
+
+            areaButton.gColorButton('value', areaColor);
+            contourButton.gColorButton('value', contourColor);
+
+            areaButton.find('> span:first-child')
+                .css('color', areaColor ? areaColor.asCSSString() : '')
+                .attr('class', 'fa fa-' + (areaColor ? 'circle' : 'ban'));
+
+            contourButton.find('> span:first-child')
+                .css('color', contourColor ? contourColor.asCSSString() : '')
+                .attr('class', 'fa fa-' + (contourColor ? 'circle-o' : 'ban'));
+        }
+    };
+
+    /**
+     * @private
+     */
+    GToolbar.prototype._assignCurrentColor = function (type, color) {
+        var editor = gApp.getActiveDocument().getEditor();
+        var selection = editor.getSelection();
+
+        if (selection && selection.length > 0) {
+            // If there's a selection then assign color to selection instead
+            editor.beginTransaction();
+            try {
+                for (var i = 0; i < selection.length; ++i) {
+                    var element = selection[i];
+                    var style = element.getStyle(!!color);
+                    if (style) {
+                        if (type === GXEditor.CurrentColorType.Area) {
+                            style.setAreaColor(color);
+                        } else if (type === GXEditor.CurrentColorType.Contour) {
+                            style.setContourColor(color);
+                        }
+                    }
+                }
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Apply Color');
+            }
+        } else {
+            // Otherwise without selection assign the current color
+            editor.setCurrentColor(type, color);
+        }
+
+        this._updateColorButtons();
     };
 
     _.GToolbar = GToolbar;

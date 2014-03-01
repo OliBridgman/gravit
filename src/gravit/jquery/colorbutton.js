@@ -2,21 +2,28 @@
     var methods = {
         init: function (options) {
             options = $.extend({
+                // Whether to show a swatch or not
+                swatch : true
             }, options);
 
             var self = this;
             return this.each(function () {
                 var $this = $(this);
 
-                var colorBox = $('<div></div>')
-                    .gColorBox(options)
-                    .on('change', function (evt, color) {
-                        $this.trigger('change', color);
-                    });
+                var colorswatch = null;
+
+                if (options.swatch) {
+                    colorswatch = $('<div></div>')
+                        .gColorSwatch(options)
+                        .on('change', function (evt, color) {
+                            $this.trigger('change', color);
+                        });
+                }
 
                 $this
+                    .addClass('g-color-button')
                     .data('g-colorbutton', {
-                        colorbox: colorBox,
+                        colorswatch: colorswatch,
                         colorpanel: $('<div></div>')
                             .gColorPanel(options)
                             .gOverlay({
@@ -35,16 +42,17 @@
                 var text = $this.text();
                 $this.text('');
 
-                // Append color box
-                colorBox
-                    .appendTo($this);
+                // Append swatch if any
+                if (colorswatch) {
+                    $this.append(colorswatch);
+                }
 
                 // Append text
                 $('<span></span>')
                     .text(text)
                     .appendTo($this);
 
-                // Append dropdown indicator
+                // Append dropdown indicator with space
                 $('<span></span>')
                     .addClass('fa fa-caret-down')
                     .appendTo($this);
@@ -73,13 +81,16 @@
         value: function (value) {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            var colorbox = data.colorbox;
+            var colorswatch = data.colorswatch;
             var colorpanel = data.colorpanel;
 
             if (!arguments.length) {
-                return colorbox.gColorBox('value');
+                colorpanel.gColorPanel('value', value);
             } else {
-                colorbox.gColorBox('value', value);
+                if (colorswatch) {
+                    colorswatch.gColorSwatch('value', value);
+                }
+
                 colorpanel.gColorPanel('value', value);
                 return this;
             }

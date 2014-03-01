@@ -48,7 +48,7 @@
 
     function createColorCubes(container, hover, activate) {
         var table = $('<table></table>')
-            .addClass('g-swatches')
+            .addClass('g-color-swatches')
             .appendTo(container);
 
         var parent = $('<tr></tr>').appendTo(table);
@@ -81,7 +81,7 @@
 
     function createColorPalette(container, hover, activate) {
         var table = $('<table></table>')
-            .addClass('g-swatches')
+            .addClass('g-color-swatches')
             .appendTo(container);
 
         var parent = $('<tr></tr>').appendTo(table);
@@ -185,7 +185,7 @@
                     $('<td></td>')
                         .append(
                             $('<div></div>')
-                                .addClass('preview g-swatch'))
+                                .addClass('preview g-color-swatch'))
                         .appendTo(toolbar);
                 }
 

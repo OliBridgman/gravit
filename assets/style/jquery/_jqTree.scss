@@ -109,5 +109,28 @@ ul.jqtree-tree .jqtree-element {
 ul.jqtree-tree li.jqtree-selected > .jqtree-element,
 ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
   background: rgb(31, 141, 214);
-  color: white;
+  color: $light_0;
+}
+
+ul.jqtree-tree li.jqtree-active > .jqtree-element,
+ul.jqtree-tree li.jqtree-active > .jqtree-element:hover {
+  background: rgb(13, 56, 79);
+  color: $light_1;
+}
+
+div.jqtree-element {
+  display: table;
+
+  > * {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  > :not(:last-child) {
+    padding-right: 5px;
+  }
+
+  > span.jqtree-title {
+    width: 100%;
+  }
 }

@@ -171,13 +171,13 @@
                 .addClass('ex-color-preview')
                 .append($('<div></div>')
                     .attr('data-color-type', 'global')
-                    .gColorBox()
+                    .gColorSwatch()
                     .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     }))
                 .append($('<div></div>')
                     .attr('data-color-type', 'current')
-                    .gColorBox()
+                    .gColorSwatch()
                     .on('change', function (evt, color) {
                         gApp.setGlobalColor(color);
                     })))
@@ -208,10 +208,10 @@
 
             $('<div></div>')
                 .css('width', width.toString() + '%')
-                .gColorBox({
+                .gColorSwatch({
                     drop: false
                 })
-                .gColorBox('value', color)
+                .gColorSwatch('value', color)
                 .on('click', function () {
                     this._updateCurrentColor(color);
                 }.bind(this))
@@ -241,7 +241,7 @@
      */
     EXColorMatcherPalette.prototype._updateFromGlobalColor = function () {
         // Update global color preview
-        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').gColorBox('value', gApp.getGlobalColor());
+        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').gColorSwatch('value', gApp.getGlobalColor());
 
         // Update matches if current matcher requires reference color
         if (this._matcher.isReferenceColorBased()) {
@@ -258,7 +258,7 @@
             this._currentColor = color;
 
             // Update preview
-            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').gColorBox('value', this._currentColor);
+            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').gColorSwatch('value', this._currentColor);
         }
     };
 

@@ -5,9 +5,36 @@ $fa-font-path: '../font';
 @import 'variables';
 @import 'base';
 @import 'cursors';
-@import 'form';
-@import 'workspace';
 
+@import 'component/button';
+@import 'component/select';
+@import 'component/hint';
+@import 'component/menu';
+@import 'component/colorbutton';
+@import 'component/colorswatch';
+
+@import 'workspace/workspace';
+@import 'workspace/header';
+@import 'workspace/toolbar';
+@import 'workspace/content';
+@import 'workspace/sidebar';
+@import 'workspace/windows';
+@import 'workspace/palettes';
+
+
+
+
+
+
+
+
+
+
+
+//@import 'form';
+//@import 'workspace';
+
+/*
 @import 'jquery/overlay';
 @import 'jquery/form';
 @import 'jquery/window';
@@ -17,8 +44,6 @@ $fa-font-path: '../font';
 @import 'palette/color_matcher';
 @import 'palette/color_mixer';
 @import 'palette/color_trends';
-@import 'palette/layers';
-@import 'palette/pages';
 @import 'palette/properties';
 
 // TODO : REMOVE
@@ -26,3 +51,4 @@ $fa-font-path: '../font';
 @import '_old_/mixins';
 @import '_old_/component_hint';
 @import '_old_/component_menu';
+*/
