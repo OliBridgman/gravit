@@ -1944,49 +1944,60 @@
      * @param {Number} prevY - y coordinate of the previous point
      * @param {Number} origX - originally supplied x coordinate for the new point
      * @param {Number} origY - originally supplied y coordinate for the new point
+     * @param {Number} rotation - if supplied, means angle in radians at which axes should be rotated before constraining
      * @returns {GPoint} new point, making constrain segment with the previous point
      * @version 1.0
      */
-    GMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY) {
+    GMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
         var dx, dy;
         var tan;
         var tanPIdiv8 = 0.4142;
         var newY, newX;
 
-        dx = Math.abs(prevX - origX);
-        dy = Math.abs(prevY - origY);
+        var backTransform = new GTransform(1, 0, 0, 1, 0, 0);
+        if (rotation) {
+            backTransform = backTransform.rotated(rotation);
+        }
+        backTransform = backTransform.translated(prevX, prevY);
+        var transform = backTransform.inverted();
+
+        var origTransformed = transform.mapPoint(new GPoint(origX, origY));
+        var origTrX = origTransformed.getX();
+        var origTrY = origTransformed.getY();
+        dx = Math.abs(origTrX);
+        dy = Math.abs(origTrY);
         if (!this.isEqualEps(dx, 0) && !this.isEqualEps(dy, 0) && !this.isEqualEps(dx - dy, 0)) {
             if (dx > dy) {
-                newX = origX;
+                newX = origTrX;
                 tan = dy / dx;
                 if (tan < tanPIdiv8) {
-                    newY = prevY;
+                    newY = 0;
                 } else {
-                    if (prevY > origY) {
-                        newY = prevY - dx;
+                    if (0 > origTrY) {
+                        newY = -dx;
                     } else {
-                        newY = prevY + dx;
+                        newY = dx;
                     }
                 }
             } else {
-                newY = origY;
+                newY = origTrY;
                 tan = dx / dy;
                 if (tan < tanPIdiv8) {
-                    newX = prevX;
+                    newX = 0;
                 } else {
-                    if (prevX > origX) {
-                        newX = prevX - dy;
+                    if (0 > origTrX) {
+                        newX = -dy;
                     } else {
-                        newX = prevX + dy;
+                        newX = dy;
                     }
                 }
             }
         } else {
-            newX = origX;
-            newY = origY;
+            newX = origTrX;
+            newY = origTrY;
         }
 
-        return new GPoint(newX, newY);
+        return backTransform.mapPoint(new GPoint(newX, newY));
     };
 
     _.gMath = new GMath();

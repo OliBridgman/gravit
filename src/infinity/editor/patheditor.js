@@ -120,20 +120,21 @@
 
 
     /** @override */
-    GXPathEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
         this.requestInvalidation();
         this._createPathPreviewIfNecessary(partId.point);
 
         switch (partId.type) {
             case GXPathEditor.PartType.LeftHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, ratio);
+                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, ratio);
                 break;
             case GXPathEditor.PartType.RightHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, ratio);
+                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, ratio);
                 break;
             case GXPathEditor.PartType.LeftShoulder:
             case GXPathEditor.PartType.RightShoulder:
-                this._movePreviewPointShoulders(partId, position, ratio);
+                var newPos = viewToWorldTransform.mapPoint(position);
+                this._movePreviewPointShoulders(partId, newPos, ratio);
                 break;
         }
 
@@ -1033,6 +1034,26 @@
     };
 
     /**
+     * Constrains position against base point with the step aliquot to 45% from scene constraint property
+     * @param {GPoint} position - original position to be constrained in view coordinates
+     * @param {GTransform} worldToViewTransform - current scene transformation
+     * @param sourcePoint - a base point
+     * @returns {GPoint} - new constrained position
+     */
+    GXPathEditor.prototype.constrainPosition = function (position, worldToViewTransform, sourcePoint) {
+        var basePt = new GPoint(sourcePoint.getProperty('x'), sourcePoint.getProperty('y'));
+        var transformToApply = this._element.getTransform();
+        transformToApply = transformToApply ? transformToApply.multiplied(worldToViewTransform) : worldToViewTransform;
+
+        basePt = transformToApply.mapPoint(basePt);
+        var constrPt = gMath.convertToConstrain(
+            basePt.getX(), basePt.getY(), position.getX(), position.getY(),
+            this._element.getScene().getProperty('crConstraint'));
+
+        return constrPt;
+    };
+
+    /**
      * Create path preview if not yet existent.
      * @param {GXPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
      * will be taken as the only selected one, if this is not provided, the selected
@@ -1226,7 +1247,7 @@
      * @param {GXPathBase.AnchorPoint} anchorPoint - an anchor point to move to new position
      * @param {GPoint} newPosition - new point's position
      * @param {GTransform} transform - transformation to be applied to path points to make their coordinate system
-     * the same in which new position is specified
+     * the same in which new position is specified (usually worldToViewTransform)
      * @param {GXPathBase.AnchorPoint} origPoint - if present, this anchor point is used as a source point instead of
      * anchor point itself. Useful when dragging an existing point to not lose it's handles accuracy.
      */
@@ -1273,11 +1294,19 @@
      * @param {GXPathBase.AnchorPoint} sourcePoint
      * @param {String} xProperty
      * @param {String} yProperty
-     * @param {GPoint} position
+     * @param {GPoint} position - a destination position in view coordinates
+     * @param {GTransform} viewToWorldTransform - the transformation to apply to destination position
      * @param {Boolean} ratio
      * @private
      */
-    GXPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, position, ratio) {
+    GXPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty,
+                                                                    position, viewToWorldTransform, ratio) {
+        var newPos = position;
+        if (ratio) {
+            var worldToViewTransform = viewToWorldTransform.inverted();
+            newPos = this.constrainPosition(position, worldToViewTransform, sourcePoint);
+        }
+        newPos = viewToWorldTransform.mapPoint(newPos);
         var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
 
@@ -1286,7 +1315,7 @@
         }
 
         this._transformPreviewPointCoordinates(sourcePoint, xProperty, yProperty,
-            new GTransform(1, 0, 0, 1, position.getX() - sourcePosition.getX(), position.getY() - sourcePosition.getY()));
+            new GTransform(1, 0, 0, 1, newPos.getX() - sourcePosition.getX(), newPos.getY() - sourcePosition.getY()));
     };
 
     /**

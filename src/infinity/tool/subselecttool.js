@@ -100,7 +100,8 @@
 
         if (this._mode == GXSelectTool._Mode.Move) {
             // Save start
-            this._moveStart = this._view.getViewTransform().mapPoint(event.client);
+            this._moveStart = event.client;
+            this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
 
             // Switch to moving mode
             this._updateMode(GXSelectTool._Mode.Moving);

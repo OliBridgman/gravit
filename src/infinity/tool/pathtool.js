@@ -548,14 +548,7 @@
             }
 
             if (otherPt) {
-                var basePt = new GPoint(otherPt.getProperty('x'), otherPt.getProperty('y'));
-                var transformToApply = path ? path.getTransform() : null;
-                if (transform) {
-                    transformToApply = transformToApply ? transformToApply.multiplied(transform) : transform;
-                }
-                basePt = transformToApply ? transformToApply.mapPoint(basePt) : basePt;
-                constrPt = gMath.convertToConstrain(
-                    basePt.getX(), basePt.getY(), pt.getX(), pt.getY());
+                constrPt = this._pathEditor.constrainPosition(pt, transform, otherPt);
             }
         }
         return constrPt;

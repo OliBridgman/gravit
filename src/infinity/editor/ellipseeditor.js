@@ -41,7 +41,8 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+        var newPos = viewToWorldTransform.mapPoint(position);
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);
         } else {
@@ -51,9 +52,9 @@
         this._createEllipsePreviewIfNecessary();
         var sourceTransform = this._element.getTransform();
         if (sourceTransform) {
-            var sPosition = sourceTransform.inverted().mapPoint(position);
+            var sPosition = sourceTransform.inverted().mapPoint(newPos);
         } else {
-            var sPosition = position;
+            var sPosition = newPos;
         }
         var angle = Math.atan2(sPosition.getY(), sPosition.getX());
         var sa = this._element.getProperty('sa');

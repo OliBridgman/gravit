@@ -40,7 +40,9 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+        var newPos = viewToWorldTransform.mapPoint(position);
+
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);
         } else {
@@ -62,7 +64,7 @@
         }
 
         var newShoulderPt = gMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
-            nearPosition.getX(), nearPosition.getY(), position.getX(), position.getY(), true);
+            nearPosition.getX(), nearPosition.getY(), newPos.getX(), newPos.getY(), true);
 
         var newVal = gMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
             partId.point.getX(), partId.point.getY());

@@ -69,6 +69,7 @@
      * @private
      */
     GXSelectTool.prototype._moveStart = null;
+    GXSelectTool.prototype._moveStartTransformed = null;
 
     /**
      * The current position of moving
@@ -300,6 +301,7 @@
         // Reset some stuff in any case
         this._editorMovePartInfo = null;
         this._moveStart = null;
+        this._moveStartTransformed = null;
         this._moveCurrent = null;
         this._updateMode(null);
         this._updateEditorUnderMouse(event.client);
@@ -312,7 +314,8 @@
     GXSelectTool.prototype._mouseDragStart = function (event) {
         if (this._mode == GXSelectTool._Mode.Move) {
             // Save start
-            this._moveStart = this._view.getViewTransform().mapPoint(event.client);
+            this._moveStart = event.client;
+            this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
 
             // Switch to moving mode
             this._updateMode(GXSelectTool._Mode.Moving);
@@ -326,7 +329,7 @@
     GXSelectTool.prototype._mouseDrag = function (event) {
         if (this._mode == GXSelectTool._Mode.Moving) {
             // Save current
-            this._moveCurrent = this._view.getViewTransform().mapPoint(event.client);
+            this._moveCurrent = event.client;
 
             // Update transform
             this._updateSelectionTransform();
@@ -468,21 +471,20 @@
      * @private
      */
     GXSelectTool.prototype._updateSelectionTransform = function () {
+        var position = this._editor.getGuides().mapPoint(this._moveCurrent);
         if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-            var position = this._editor.getGuides().mapPoint(this._moveCurrent);
-            this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data, position, gPlatform.modifiers.shiftKey);
+            this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
+                position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey);
         } else {
-            var moveDelta;
-
             if (gPlatform.modifiers.shiftKey) {
                 // Calculate move delta by locking our vector to 45° steps starting with constraint
                 var crConstraint = this._scene.getProperty('crConstraint');
-
-                // TODO : Calculate correct moveDelta (start=crConstraint, step = crConstraint + i * PI/4)
-                moveDelta = this._moveCurrent.subtract(this._moveStart);
-            } else {
-                moveDelta = this._moveCurrent.subtract(this._moveStart);
+                position = gMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
+                    position.getX(), position.getY(), crConstraint);
             }
+
+            position = this._view.getViewTransform().mapPoint(position);
+            var moveDelta = position.subtract(this._moveStartTransformed);
 
             this._editor.moveSelection(moveDelta, true,
                 this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);

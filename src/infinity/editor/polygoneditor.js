@@ -41,12 +41,14 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);
         } else {
             this.requestInvalidation();
         }
+
+        var newPos = viewToWorldTransform.mapPoint(position);
 
         if (!this._elementPreview) {
             this._elementPreview = new GXPolygon();
@@ -56,8 +58,8 @@
 
         var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
 
-        var angle = Math.atan2(position.getY() - center.getY(), position.getX() - center.getX()) - partData;
-        var distance = gMath.ptDist(position.getX(), position.getY(), center.getX(), center.getY());
+        var angle = Math.atan2(newPos.getY() - center.getY(), newPos.getX() - center.getX()) - partData;
+        var distance = gMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
 
         var oa = this._element.getProperty('oa');
         var or = this._element.getProperty('or');

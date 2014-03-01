@@ -646,11 +646,12 @@
      * Called whenever a part of this editor shell be moved
      * @param {*} partId the id of the editor part to be moved
      * @param {*} partData the data of the editor part to be moved
-     * @param {Boolean} ratio whether to keep any ratios or not
-     * @param {GPoint} position the new position in scene coordinates
+     * @param {GPoint} position the new position in view coordinates
      * the part should be moved to
+     * @param {GTransform} viewToWorldTransform - the transformation to apply to position
+     * @param {Boolean} ratio whether to keep any ratios or not
      */
-    GXElementEditor.prototype.movePart = function (partId, partData, position, ratio) {
+    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
         // NO-OP by default
     };
     /**
@@ -819,7 +820,7 @@
      * editor for faster lookup as well as the caller is responsible for
      * iterating any sub editors as well.
      * @param {GPoint} location the location to get a part for in view coordinates
-     * @param {GTransform} transform the current transformation of the view
+     * @param {GTransform} transform - the current transformation of the scene {worldToViewTransform}
      * @param {Number} tolerance tolerance for testing the location
      * @returns {*} null if no part is available or an editor-specific part
      */
