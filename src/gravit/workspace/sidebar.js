@@ -8,7 +8,7 @@
     function EXSidebar(htmlElement) {
         this._htmlElement = htmlElement;
         this._htmlElement.append($('<div></div>')
-            .addClass('layer-tree-container'));
+            .addClass('structure-tree-container'));
         this._documentStates = [];
     };
 
@@ -51,7 +51,7 @@
     EXSidebar.DocumentState.prototype.document = null;
 
     /**
-     * The container for the layers tree
+     * The container for the structure tree
      * @type {JQuery}
      * @private
      */
@@ -76,12 +76,6 @@
 
         // Add our root
         this._insertItem(scene);
-
-        // Subscribe to the editor's events
-        //editor.addEventListener(GXEditor.CurrentLayerChangedEvent, this._currentLayerChanged, this);
-
-        // Add the root layerSet
-        //this._insertLayerOrSet(scene.getLayerSet());
     };
 
     EXSidebar.DocumentState.prototype.release = function () {
@@ -274,13 +268,9 @@
             var item = event.node.item;
             //item.setFlag(GXNode.Flag.Selected);
 
-            this.document.getEditor().updateSelection(gPlatform.modifiers.shiftKey, [item]);
+            this.document.getEditor().updateSelection(gPlatform.modifiers.metaKey, [item]);
 
-        }/*
-
-        if (event.node && event.node.layerOrSet && event.node.layerOrSet instanceof GXLayer) {
-            this.document.getEditor().setCurrentLayer(event.node.layerOrSet);
-        }*/
+        }
     };
 
     /**
@@ -305,7 +295,7 @@
         // Recursively add items
         item.accept(function (node) {
             if (node instanceof GXItem) {
-                // Create an unique treeId for the new layer/layerSet
+                // Create an unique treeId for the new item
                 var treeId = gUtil.uuid();
 
                 // Insert into tree
@@ -385,7 +375,7 @@
                 if (state) {
                     //state.activate();
                     // Attach the state's tree to ourself
-                    state._htmlTreeContainer.appendTo(this._htmlElement.find('.layer-tree-container'));
+                    state._htmlTreeContainer.appendTo(this._htmlElement.find('.structure-tree-container'));
                 }
                 break;
             case EXApplication.DocumentEvent.Type.Deactivated:

@@ -154,17 +154,14 @@
         var center = this._htmlElement.find('[data-section="center"]');
         var right = this._htmlElement.find('[data-section="right"]');
 
-        var sidebarWidth = gApp.getPart(EXApplication.Part.Sidebar).width() - 1;
-        var windowsWidth = gApp.getPart(EXApplication.Part.Windows).width() - 1;
-        var palettesWidth = gApp.getPart(EXApplication.Part.Palettes).width() - 1;
+        var sidebarWidth = gApp.getPart(EXApplication.Part.Sidebar).width();
+        var windowsWidth = gApp.getPart(EXApplication.Part.Windows).width();
+        var palettesWidth = gApp.getPart(EXApplication.Part.Palettes).width();
 
-        left.width(sidebarWidth);
-
-        center.css('left', sidebarWidth.toString() + 'px');
-        center.width(windowsWidth);
-
-        right.css('left', (sidebarWidth + windowsWidth).toString() + 'px');
-        right.width(palettesWidth);
+        //left.width(sidebarWidth);
+        left.css('width', sidebarWidth.toString() + 'px');
+        center.css('width', windowsWidth.toString() + 'px');
+        right.css('width', palettesWidth.toString() + 'px');
     };
 
     /**

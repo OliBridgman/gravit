@@ -6,7 +6,12 @@
   height: 100%;
   border-right: 1px solid $frameBorderColor;
 
-  .structure-tree {
-    //padding: 5px 0px;
+  > .structure-tree-container {
+    > .structure-tree {
+      //padding: 5px 0px;
+      &, * {
+        font: $smallFont;
+      }
+    }
   }
 }
