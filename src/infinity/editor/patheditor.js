@@ -313,6 +313,11 @@
     };
 
     /** @override */
+    GXPathEditor.prototype.canApplyTransform = function () {
+        return this._partSelection && this._partSelection.length > 0;
+    };
+
+    /** @override */
     GXPathEditor.prototype.applyTransform = function (element) {
         if (this._partSelection && this._partSelection.length > 0) {
             this._element._beginBlockEvents([GXElement.GeometryChangeEvent]);
