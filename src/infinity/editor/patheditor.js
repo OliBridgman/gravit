@@ -177,7 +177,6 @@
             // Iterate selection and transform all anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var selectedPartId = this._partSelection[i];
-                //if (selectedPartId.point) {
 
                 if (selectedPartId.type === GXPathEditor.PartType.Point) {
                     var selectedPoint = selectedPartId.point;
@@ -290,7 +289,6 @@
                             selectedPartId.apRight, 'hlx', 'hly', newTransform, partData.apRhl);
                     }
                 }
-                //}
             }
 
             this.requestInvalidation();

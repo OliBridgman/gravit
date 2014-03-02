@@ -70,6 +70,11 @@
     };
 
     /** @override */
+    GXShapeEditor.prototype.canApplyTransform = function () {
+        return this._elementPreview || this._transform && !this._transform.isIdentity();
+    };
+
+    /** @override */
     GXShapeEditor.prototype.resetPartMove = function (partId, partData) {
         this._elementPreview = null;
         this.removeFlag(GXElementEditor.Flag.Outline);

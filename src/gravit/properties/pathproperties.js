@@ -74,7 +74,7 @@
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
-                            self._assignPointProperty(property, value < 0 ? 0 : value);
+                            self._assignPointProperty(property, value);
                         } else {
                             self._updatePointProperties();
                         }
@@ -373,7 +373,29 @@
      * @private
      */
     GPathProperties.prototype._assignPointProperty = function (property, value) {
-        this._assignPointProperties([property], [value]);
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._points.length; ++i) {
+                var point = this._points[i];
+                if (property === 'x') {
+                    var dx = value - point.getProperty('x');
+                    var hlx = point.getProperty('hlx') ? point.getProperty('hlx') + dx : null;
+                    var hrx = point.getProperty('hrx') ? point.getProperty('hrx') + dx : null;
+                    point.setProperties(['x', 'hlx', 'hrx'], [value, hlx, hrx]);
+                } else if (property === 'y') {
+                    var dy = value - point.getProperty('y');
+                    var hly = point.getProperty('hly') ? point.getProperty('hly') + dy : null;
+                    var hry = point.getProperty('hry') ? point.getProperty('hry') + dy : null;
+                    point.setProperties(['y', 'hly', 'hry'], [value, hly, hry]);
+                } else {
+                    point.setProperties([property], [value]);
+                }
+            }
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Point Properties');
+        }
     };
 
     /**
