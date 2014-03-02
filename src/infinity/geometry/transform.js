@@ -8,12 +8,12 @@
      * @version 1.0
      */
     function GTransform(sx, shy, shx, sy, tx, ty) {
-        this._sx = sx ? sx : 1.0;
-        this._shy = shy ? shy : 0.0;
-        this._shx = shx ? shx : 0.0;
-        this._sy = sy ? sy : 1.0;
-        this._tx = tx ? tx : 0.0;
-        this._ty = ty ? ty : 0.0;
+        this._sx = sx != null ? sx : 1.0;
+        this._shy = shy != null ? shy : 0.0;
+        this._shx = shx != null  ? shx : 0.0;
+        this._sy = sy != null ? sy : 1.0;
+        this._tx = tx != null ? tx : 0.0;
+        this._ty = ty != null ? ty : 0.0;
     }
 
     /**
