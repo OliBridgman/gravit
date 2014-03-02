@@ -313,7 +313,8 @@
 
     /** @override */
     GXPathEditor.prototype.canApplyTransform = function () {
-        return this._partSelection && this._partSelection.length > 0;
+        return this._partSelection && this._partSelection.length > 0 ||
+            this._transform && !this._transform.isIdentity();
     };
 
     /** @override */
