@@ -867,6 +867,8 @@
         // the last point, !path.$closed
         if (!nextPt) {
             this._addPathEndVertices(target, transform);
+        } else {
+            target.addVertex(GXVertex.Command.Close, 0, 0);
         }
     };
 
