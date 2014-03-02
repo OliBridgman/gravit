@@ -22,7 +22,10 @@ $fa-font-path: '../font';
 @import 'workspace/windows';
 @import 'workspace/palettes';
 
-
+@import 'palette/color_matcher';
+@import 'palette/color_mixer';
+@import 'palette/color_trends';
+@import 'palette/properties';
 
 
 
@@ -41,11 +44,6 @@ $fa-font-path: '../font';
 @import 'jquery/window';
 @import 'jquery/swatch';
 @import 'jquery/jqTree';
-
-@import 'palette/color_matcher';
-@import 'palette/color_mixer';
-@import 'palette/color_trends';
-@import 'palette/properties';
 
 // TODO : REMOVE
 @import '_old_/variables';

@@ -13,9 +13,10 @@
     > .palette-group-header {
       display: table;
       width: 100%;
-      background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
-      border-bottom: 1px solid rgb(205, 205, 205);
-      box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
+      //background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
+      border-top: 1px solid $frame3DLightColor;
+      border-bottom: 1px solid $frame3DShadowColor;
+      //box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
       height: 22px;
 
       > * {
@@ -27,7 +28,7 @@
       > button, .palette-group-tabs > button {
         background: transparent;
         border: none;
-        text-shadow: rgb(245, 245, 245) 0px 1px 0px;
+        //text-shadow: rgb(245, 245, 245) 0px 1px 0px;
         font-weight: bold;
         text-transform: uppercase;
       }
