@@ -1,5 +1,5 @@
 (function() {
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var anchorCTypes = [
             GXPathBase.AnchorPoint.Type.Regular,
             GXPathBase.AnchorPoint.Type.Connector,
@@ -51,7 +51,8 @@
                     page.getProperty('mt') + y + boxHeight);
                 path.transform(transform);
 
-                layer.appendChild(path);
+                var editor = GXEditor.getEditor(scene);
+                editor.insertElements([path]);
 
                 x += boxWidth + 20;
             }

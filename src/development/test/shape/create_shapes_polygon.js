@@ -7,7 +7,7 @@
         return Math.floor(getRandom(min, max));
     }
 
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var polySize = 100;
         var spaceX = 5, spaceY = 5;
         var x = spaceX, y = spaceY;
@@ -29,7 +29,9 @@
             var polygon = new GXPolygon();
             polygon.setProperties(['pts', 'cx', 'cy', 'ir', 'or', 'ia', 'oa', 'icr', 'ocr'],
                 [segments, x + polySize / 2, y + polySize / 2, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness])
-            layer.appendChild(polygon);
+
+            var editor = GXEditor.getEditor(scene);
+            editor.insertElements([polygon]);
 
             x += polySize + spaceX;
         }

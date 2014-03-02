@@ -36,7 +36,8 @@
                 .rotated(gMath.toRadians(getRandomInt(0, 360)))
                 .translated(+(x + rectSize/2), + (y + rectSize/2)));
 
-            layer.appendChild(rect);
+            var editor = GXEditor.getEditor(scene);
+            editor.insertElements([rect]);
 
             x += rectSize + spaceX;
         }

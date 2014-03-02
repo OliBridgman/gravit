@@ -13,7 +13,7 @@
         GXEllipse.Type.Arc
     ];
 
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var size = 40;
         var spaceX = 10, spaceY = 10;
         var x = page.getProperty('ml') + spaceX, y = page.getProperty('mt') + spaceY;
@@ -33,7 +33,8 @@
                 //.rotated(gMath.toRadians(getRandomInt(0, 360))));
                 .translated(x + size/2,  y + size/2));
 
-            layer.appendChild(ellipse);
+            var editor = GXEditor.getEditor(scene);
+            editor.insertElements([ellipse]);
 
             x += size + spaceX;
             if (x + size + spaceX >= page.getProperty('w') - page.getProperty('mr')) {

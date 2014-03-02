@@ -1,5 +1,5 @@
 (function () {
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var start = new Date().getTime();
 
         var rectWidth = 5, rectHeight = 5;
@@ -22,7 +22,8 @@
                 .rotated(gMath.toRadians(rotate))
                 .translated(+(x + rectWidth/2), + (y + rectHeight/2)));
 
-            layer.appendChild(rect);
+            var editor = GXEditor.getEditor(scene);
+            editor.insertElements([rect]);
 
             x += rectWidth + spaceX;
 

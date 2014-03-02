@@ -1,5 +1,5 @@
 (function() {
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var anchorCTypes = [
             GXPathBase.CornerType.Rounded,
             GXPathBase.CornerType.InverseRounded,
@@ -45,7 +45,8 @@
                     page.getProperty('mt')+ y + pathHeight / 2);
                 path.transform(transform);
 
-                layer.appendChild(path);
+                var editor = GXEditor.getEditor(scene);
+                editor.insertElements([path]);
 
                 x += pathWidth + 20;
             }

@@ -39,17 +39,12 @@
         var page = new GXPage();
         page.setProperties(['x', 'y', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'title'],
             [0, 0, pageWidth, pageHeight, marginX, marginY, marginX, marginY, 'Page-1']);
-        scene.getPageSet().appendChild(page);
+        scene.appendChild(page);
 
         gApp.addDocument(scene);
+        var view = gApp.getWindows().getActiveWindow().getView();
 
-        var layer = scene.getLayerSet().getLastChild();
-        var contour = new GXPaintContourStyle();
-        contour.setProperty('fill', GXColor.parseCSSColor('black'));
-        layer.getStyle(true).appendChild(contour);
-
-        return this._test.test(scene, page, layer,
-            gApp.getWindows().getActiveWindow().getView());
+        return this._test.test(scene, page, view);
     };
 
     /** @override */

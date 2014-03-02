@@ -1,5 +1,5 @@
 (function() {
-    function test(scene, page, layer, view) {
+    function test(scene, page, view) {
         var path = new GXPath();
         path.setProperty('closed', true);
         /*
@@ -56,13 +56,10 @@
         ap = path.getAnchorPoints().getFirstChild();
         ap.setProperties(['hlx', 'hly'], [251.140545,393.280279]);
 
-        //var sGroup = new GXVectorTransformStyle();
-        //sGroup.appendChild(new GXPaintContourStyle());
-        //path.getStyle().appendChild(sGroup);
+        var editor = GXEditor.getEditor(scene);
+        editor.insertElements([path]);
 
-        layer.appendChild(path);
-
-        view.zoomAll(scene.getPageSet().getPaintBBox(), false);
+        view.zoomAll(scene.getPaintBBox(), false);
     }
 
     gDevelopment.tests.push({
