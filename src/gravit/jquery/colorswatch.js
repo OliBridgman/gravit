@@ -20,7 +20,8 @@
                     .addClass('g-color-swatch')
                     .data('gcolorswatch', {
                         color: null
-                    });
+                    })
+                    .html('&nbsp;');
 
                 if (options.drag) {
                     $this

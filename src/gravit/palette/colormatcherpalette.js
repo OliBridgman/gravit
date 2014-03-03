@@ -103,7 +103,7 @@
 
         // Append the palette panel
         $('<div></div>')
-            .addClass('color-palette-panel ex-color-preview')
+            .addClass('color-palette-panel')
             .appendTo(this._htmlElement);
 
         // Append toolbar
@@ -168,19 +168,17 @@
         $('<div></div>')
             .addClass('color-preview')
             .append($('<div></div>')
-                .addClass('ex-color-preview')
-                .append($('<div></div>')
-                    .attr('data-color-type', 'global')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    }))
-                .append($('<div></div>')
-                    .attr('data-color-type', 'current')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    })))
+                .attr('data-color-type', 'global')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
+            .append($('<div></div>')
+                .attr('data-color-type', 'current')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
             .appendTo(toolbar);
 
         // Set first matcher available
@@ -241,7 +239,7 @@
      */
     EXColorMatcherPalette.prototype._updateFromGlobalColor = function () {
         // Update global color preview
-        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').gColorSwatch('value', gApp.getGlobalColor());
+        this._htmlElement.find('.color-preview [data-color-type="global"]').gColorSwatch('value', gApp.getGlobalColor());
 
         // Update matches if current matcher requires reference color
         if (this._matcher.isReferenceColorBased()) {
@@ -258,7 +256,7 @@
             this._currentColor = color;
 
             // Update preview
-            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').gColorSwatch('value', this._currentColor);
+            this._htmlElement.find('.color-preview [data-color-type="current"]').gColorSwatch('value', this._currentColor);
         }
     };
 

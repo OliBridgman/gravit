@@ -357,13 +357,14 @@
             .addClass('palette-group')
             .append($('<div></div>')
                 .addClass('palette-group-header')
-                .append($('<button></button>')
+                .append($('<div></div>')
                     .addClass('palette-group-collapse')
-                    .append($('<span></span>')
-                        .addClass('fa fa-angle-double-down'))
-                    .on('click', function () {
-                        this._setGroupExpanded(groupInfo, !groupInfo.expanded);
-                    }.bind(this)))
+                    .append($('<button></button>')
+                        .append($('<span></span>')
+                            .addClass('fa fa-angle-double-down'))
+                        .on('click', function () {
+                            this._setGroupExpanded(groupInfo, !groupInfo.expanded);
+                        }.bind(this))))
                 .append($('<div></div>')
                     .addClass('palette-group-tabs'))
                 .append(groupInfo.menuButton._htmlElement))
@@ -389,7 +390,7 @@
         if (expanded !== groupInfo.expanded) {
             groupInfo.expanded = expanded;
 
-            var buttonSpan = groupInfo.container.find('.palette-group-collapse > span');
+            var buttonSpan = groupInfo.container.find('.palette-group-collapse > button > span');
 
             if (groupInfo.expanded) {
                 groupInfo.container.css('height', '');

@@ -27,28 +27,56 @@
                     color: '#00aeef',
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var cmyk = components;
+                        return [
+                            new GXColor(GXColor.Type.CMYK, [0, cmyk[1], cmyk[2], cmyk[3]]),
+                            new GXColor(GXColor.Type.CMYK, [100, cmyk[1], cmyk[2], cmyk[3]]),
+                        ];
+                    }
                 },
                 {
                     icon: 'tint',
                     color: '#ec008c',
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var cmyk = components;
+                        return [
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], 0, cmyk[2], cmyk[3]]),
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], 100, cmyk[2], cmyk[3]]),
+                        ];
+                    }
                 },
                 {
                     icon: 'tint',
                     color: '#d8c800',
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var cmyk = components;
+                        return [
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], 0, cmyk[3]]),
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], 100, cmyk[3]]),
+                        ];
+                    }
                 },
                 {
                     icon: 'tint',
                     color: '#231f20',
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var cmyk = components;
+                        return [
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 0]),
+                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 100]),
+                        ];
+                    }
                 }
             ],
             makeColor: function (components) {
@@ -64,21 +92,42 @@
                     color: 'red',
                     min: 0,
                     max: 255,
-                    unit: ' '
+                    unit: ' ',
+                    stops: function (components) {
+                        var rgba = components;
+                        return [
+                            new GXColor(GXColor.Type.RGB, [0, rgba[1], rgba[2], 100]),
+                            new GXColor(GXColor.Type.RGB, [255, rgba[1], rgba[2], 100]),
+                        ];
+                    }
                 },
                 {
                     icon: 'circle-o',
                     color: 'green',
                     min: 0,
                     max: 255,
-                    unit: ' '
+                    unit: ' ',
+                    stops: function (components) {
+                        var rgba = components;
+                        return [
+                            new GXColor(GXColor.Type.RGB, [rgba[0], 0, rgba[2], 100]),
+                            new GXColor(GXColor.Type.RGB, [rgba[0], 255, rgba[2], 100]),
+                        ];
+                    }
                 },
                 {
                     icon: 'circle-o',
                     color: 'blue',
                     min: 0,
                     max: 255,
-                    unit: ' '
+                    unit: ' ',
+                    stops: function (components) {
+                        var rgba = components;
+                        return [
+                            new GXColor(GXColor.Type.RGB, [rgba[0], rgba[1], 0, 100]),
+                            new GXColor(GXColor.Type.RGB, [rgba[0], rgba[1], 255, 100]),
+                        ];
+                    }
                 },
                 {
                     icon: 'star-half-o',
@@ -97,24 +146,47 @@
             components: [
                 {
                     icon: 'circle-o',
-                    color: 'black',
+                    color: null,
                     min: 0,
                     max: 360,
-                    unit: '° '
+                    unit: '° ',
+                    stops: function (components) {
+                        var hsla = components;
+                        var result = [];
+                        var steps = 60;
+                        for (var i = 0; i <= 360; i += steps) {
+                            result.push(new GXColor(GXColor.Type.HSL, [i, hsla[1], hsla[2], 100]));
+                        }
+                        return result;
+                    }
                 },
                 {
                     icon: 'adjust',
-                    color: 'black',
+                    color: null,
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var hsla = components;
+                        return [
+                            new GXColor(GXColor.Type.HSL, [hsla[0], 0, hsla[2], 100]),
+                            new GXColor(GXColor.Type.HSL, [hsla[0], 100, hsla[2], 100]),
+                        ];
+                    }
                 },
                 {
                     icon: 'sun-o',
-                    color: 'black',
+                    color: null,
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        var hsla = components;
+                        return [
+                            new GXColor(GXColor.Type.HSL, [hsla[0], hsla[1], 0, 100]),
+                            new GXColor(GXColor.Type.HSL, [hsla[0], hsla[1], 100, 100]),
+                        ];
+                    }
                 },
                 {
                     icon: 'star-half-o',
@@ -133,10 +205,13 @@
             components: [
                 {
                     icon: 'circle-o',
-                    color: 'gray',
+                    color: null,
                     min: 0,
                     max: 100,
-                    unit: '%'
+                    unit: '%',
+                    stops: function (components) {
+                        return [GXColor.parseCSSColor('white'), GXColor.parseCSSColor('black')];
+                    }
                 },
                 {
                     icon: 'star-half-o',
@@ -228,7 +303,7 @@
                             icon.attr('class', 'color-icon fa fa-fw fa-' + component.icon);
                             unit.text(component.unit);
                             unit.css('display', component.unit != '' ? '' : 'none');
-                            icon.css('color', component.color ? component.color : 'black');
+                            icon.css('color', component.color ? component.color : '');
 
                             range.attr('min', component.min);
                             range.attr('max', component.max);
@@ -358,20 +433,19 @@
 
         // Append component preview container
         $('<div></div>')
+            .addClass('color-preview')
             .append($('<div></div>')
-                .addClass('g-color-swatch-preview')
-                .append($('<div></div>')
-                    .attr('data-color-type', 'previous')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    }))
-                .append($('<div></div>')
-                    .attr('data-color-type', 'current')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    })))
+                .attr('data-color-type', 'previous')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
+            .append($('<div></div>')
+                .attr('data-color-type', 'current')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
             .appendTo(toolbar);
 
         // Set our initial mode
@@ -467,12 +541,32 @@
                 var rangeInput = componentEl.find('input[type="range"]');
                 var val = Math.min(component.max, Math.max(component.min, components[i])).toFixed(0);
 
+                var stopsFunc = this._modeInfo.components[i].stops;
+                var stops = stopsFunc ? stopsFunc(components) : null;
+
+                if (stops) {
+                    if (stops.length === 1) {
+                        rangeInput.css('background', stops[0].asCSSString());
+                    } else {
+                        var cssStops = '';
+                        for (var s = 0; s < stops.length; ++s) {
+                            if (cssStops !== '') {
+                                cssStops += ',';
+                            }
+                            cssStops += stops[s].asCSSString();
+                        }
+                        rangeInput.css('background', 'linear-gradient(90deg, ' + cssStops + ')');
+                    }
+                } else {
+                    rangeInput.css('background', '');
+                }
+
                 textInput.val(val);
                 rangeInput.val(val);
             }
         }
 
-        var colorPreview = this._htmlElement.find('.g-color-swatch-preview');
+        var colorPreview = this._htmlElement.find('.color-preview');
 
         if (updatePrevious) {
             colorPreview.find('[data-color-type="previous"]').gColorSwatch('value', globalColor);

@@ -1,3 +1,6 @@
+@import "compass/css3/user-interface";
+@import "compass/css3/box-sizing";
+
 // FontAwesome import
 $fa-font-path: '../font';
 @import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
@@ -6,11 +9,13 @@ $fa-font-path: '../font';
 @import 'base';
 @import 'cursors';
 
-@import 'component/button';
-@import 'component/select';
+@import 'component/input';
+@import 'component/form';
 @import 'component/hint';
 @import 'component/menu';
 @import 'component/tree';
+@import 'component/window';
+@import 'component/overlay';
 @import 'component/colorbutton';
 @import 'component/colorswatch';
 

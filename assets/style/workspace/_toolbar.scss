@@ -1,19 +1,15 @@
 #toolbar {
   position: absolute;
-  padding: 1px 0px 2px 0px;
+  padding: 2px 0px;
+  line-height: 25px;
   width: 100%;
   border-top: 1px solid $frame3DLightColor;
   border-bottom: 1px solid $frame3DShadowColor;
 
   > div.section {
     display: table-cell;
-    height: 100%;
     padding: 0px 3px;
-
-    &, * {
-      line-height: 25px;
-      vertical-align: middle;
-    }
+    vertical-align: middle;
 
     div {
       display: inline-block;
@@ -22,7 +18,14 @@
     button, select, input {
       height: 25px;
       border: none;
-      padding: 0px 4px;
+      border-radius: 0px;
+      background-color: transparent;
+      box-shadow: none;
+      padding: 3px 5px;
+
+      &:hover, &:active, &.g-active {
+        background-color: $activeColor;
+      }
     }
 
     .divider {

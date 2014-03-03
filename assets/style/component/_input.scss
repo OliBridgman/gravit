@@ -1,0 +1,114 @@
+button, .g-button, input, select, .g-input {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  margin: 0px;
+  padding: 3px;
+  line-height: 1em;
+  //height: 1em;
+  vertical-align: middle;
+  background: $frameColor;
+  color: $textColor;
+}
+
+
+button, .g-button {
+  border: 1px solid $frame3DLightColor;
+  border-right: 1px solid $frame3DShadowColor;
+  border-bottom: 1px solid $frame3DShadowColor;
+
+  &, * {
+    vertical-align: middle;
+    text-align: center;
+    color: $textColor;
+  }
+
+  svg {
+    fill: $textColor;
+    stroke: $textColor;
+  }
+
+  &:active, &.g-active {
+    background: $activeColor;
+  }
+
+  &:active, &.g-active {
+    border: 1px solid $frame3DShadowColor;
+    border-right: 1px solid $frame3DLightColor;
+    border-bottom: 1px solid $frame3DLightColor;
+
+    &, * {
+      color: $activeTextColor;
+    }
+
+    svg {
+      fill: $activeTextColor;
+      stroke: $activeTextColor;
+    }
+  }
+
+  &:disabled {
+    background: $frameColor !important;
+
+    &, * {
+      color: $disabledTextColor !important;
+    }
+
+    svg {
+      fill: $disabledTextColor !important;
+      stroke: $disabledTextColor !important;
+    }
+  }
+}
+
+select, input, textArea, .g-input {
+  border: 1px solid $frameDarkColor;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.25) inset, 0 -1px 0 rgba(0,0,0,0.05) inset;
+
+  &:disabled {
+    background: transparent !important;
+    color: $disabledTextColor !important;
+  }
+
+  &:focus {
+    outline: none;
+    border: 1px solid $selectedColor;
+  }
+}
+
+select {
+  text-indent: 0.01px;
+  text-overflow: '';
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PSc1Jz4NCjxwb2x5Z29uIHBvaW50cz0iMCwwIDEwLDAgNSw1IiBmaWxsPSJyZ2IoMTk5LCAxOTksIDE5OSkiLz4NCjwvc3ZnPg==");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+input[type="range"] {
+  height: 1em;
+
+  &::-moz-range-track {
+    border: none;
+    background: none;
+  }
+
+  &::-moz-range-thumb {
+    background: $textColor;
+    border: 1px solid $frameBorderColor;
+    width: 1em;
+    height: 1em;
+    border-radius: 2em;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: $textColor;
+    border: 1px solid $frameBorderColor;
+    width: 1em;
+    height: 1em;
+    border-radius: 2em;
+    padding: 3px;
+  }
+}

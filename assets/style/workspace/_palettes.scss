@@ -8,15 +8,14 @@
 
   .palette-group {
     overflow: hidden;
-    //border-bottom: 1px solid $windowFrameColor;
+    border-bottom: 1px solid $frame3DShadowColor;
 
     > .palette-group-header {
       display: table;
       width: 100%;
-      //background: #CED7E0 linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
+      background: #CED7E0 linear-gradient(to top, $frameDarkColor, $frameColor);
       border-top: 1px solid $frame3DLightColor;
       border-bottom: 1px solid $frame3DShadowColor;
-      //box-shadow: #FFF 0px 1px 0px 0px inset, #ECF0F3 0px 1px 0px 0px;
       height: 22px;
 
       > * {
@@ -25,32 +24,32 @@
         vertical-align: middle;
       }
 
-      > button, .palette-group-tabs > button {
+      button {
         background: transparent;
         border: none;
-        //text-shadow: rgb(245, 245, 245) 0px 1px 0px;
-        font-weight: bold;
-        text-transform: uppercase;
-      }
-
-      > button:not(:active), .palette-group-tabs > button:not(:active):not(.g-active) {
-        color: #596573;
       }
 
       > .palette-group-tabs {
-        padding-left: 5px;
+        padding-left: 1px;
         width: 100%;
-      }
 
-      > .palette-group-tabs > button {
-        margin-right: 5px;
-        border-left: 1px solid rgb(192, 192, 192);
-        padding-left: 5px;
-      }
+        > button {
+          margin-right: 5px;
+          border-left: 1px solid $frameBorderColor;
+          padding-left: 5px;
+          font-weight: bold;
+          text-transform: uppercase;
+          color: $selectedColor;
+        }
 
-      > .palette-group-tabs > button:first-child {
-        padding-left: 0px;
-        border-left: none;
+        button:not(:active):not(.g-active) {
+          color: $textColor;
+        }
+
+        > button:first-child {
+          padding-left: 0px;
+          border-left: none;
+        }
       }
 
       > .g-menu-button > li > .g-menu-item-tail {
@@ -75,7 +74,7 @@
         height: 100%;
         top: 0px;
         left: 0px;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(0, 0, 0, 0.5);
       }
     }
   }

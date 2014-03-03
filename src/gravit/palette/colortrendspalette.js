@@ -71,7 +71,7 @@
                 .append($('<div></div>')
                     .addClass('color-palette')
                     .append($('<div></div>')
-                        .addClass('ex-color-preview')))
+                        .addClass('color-preview')))
                 .append($('<div></div>')
                     .addClass('color-trend-value')
                     .append($('<input>')
@@ -84,7 +84,7 @@
                         }.bind(this))))
                 .appendTo(this._htmlElement);
 
-            var preview = container.find('.ex-color-preview');
+            var preview = container.find('.color-preview');
             for (var i = 1; i <= 10; ++i) {
                 $('<div></div>')
                     .addClass('color-trend-box-' + (i === 10 ? 'current' : i.toString()))
@@ -109,29 +109,29 @@
             .addClass('color-toolbar')
             .appendTo(this._htmlElement);
 
-        // Append swatch chooser
-        // TODO : Implement this properly
-        var swatchChooserButton = new GUIMenuButton();
-        swatchChooserButton._item._htmlElement.addClass('g-flat');
-        toolbar.append(swatchChooserButton._htmlElement);
+        // Append swatch / color chooser
+        // TODO : Enable only swatches & make visible
+        $('<button></button>')
+            .css('visibility', 'hidden')
+            .gColorButton()
+            .appendTo(toolbar);
 
         // Append preview container
         $('<div></div>')
             .addClass('color-preview')
+            .addClass('color-preview')
             .append($('<div></div>')
-                .addClass('ex-color-preview')
-                .append($('<div></div>')
-                    .attr('data-color-type', 'global')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    }))
-                .append($('<div></div>')
-                    .attr('data-color-type', 'current')
-                    .gColorSwatch()
-                    .on('change', function (evt, color) {
-                        gApp.setGlobalColor(color);
-                    })))
+                .attr('data-color-type', 'global')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
+            .append($('<div></div>')
+                .attr('data-color-type', 'current')
+                .gColorSwatch()
+                .on('change', function (evt, color) {
+                    gApp.setGlobalColor(color);
+                }))
             .appendTo(toolbar);
 
         // Make an initial update
@@ -151,7 +151,7 @@
         var sourceColor = gApp.getGlobalColor();
 
         // Update global color preview
-        this._htmlElement.find('.ex-color-preview [data-color-type="global"]').gColorSwatch('value', sourceColor);
+        this._htmlElement.find('.color-preview [data-color-type="global"]').gColorSwatch('value', sourceColor);
 
         // Update all trends from global color
         for (var i = 1; i <= 3; ++i) {
@@ -243,7 +243,7 @@
             this._currentColor = color;
 
             // Update preview
-            this._htmlElement.find('.ex-color-preview [data-color-type="current"]').gColorSwatch('value', this._currentColor);
+            this._htmlElement.find('.color-preview [data-color-type="current"]').gColorSwatch('value', this._currentColor);
         }
     };
 

@@ -1,6 +1,3 @@
-@import "compass/css3/box-sizing";
-@import "compass/css3/user-interface";
-
 body, html {
   margin: 0px;
   padding: 0px;
@@ -17,11 +14,6 @@ body, html {
 
   *.fa {
     font-size: 14px;
-  }
-
-  /** Make everything based on border-box model */
-  *, *:before, *:after {
-    @include box-sizing(border-box);
   }
 
   button, input {

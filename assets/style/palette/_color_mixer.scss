@@ -4,7 +4,7 @@
   > .color-component {
     display: table;
     width: 100%;
-    padding-bottom: 3px;
+    margin-bottom: 3px;
 
     > div, > span {
       display: table-cell;
@@ -18,7 +18,7 @@
 
     > .color-range {
       width: 100%;
-      padding-right: 5px;
+      padding-right: 12px;
 
       > input {
         width: 100%;
@@ -28,7 +28,7 @@
     > .color-value {
       min-width: 3em;
       max-width: 3em;
-      padding-right: 5px;
+      padding-right: 14px;
 
       > input {
         width: 100%;
@@ -65,7 +65,7 @@
         text-transform: uppercase;
         border: none;
         background: transparent;
-        border-right: 1px solid silver;
+        border-right: 1px solid $frameBorderColor;
       }
       > button:first-child {
         padding-left: 0px;
@@ -75,12 +75,18 @@
       }
     }
 
-    .g-swatch-preview {
-      height: 16px;
+    > .color-preview {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0px;
+      width: 60px;
+      border: 1px solid $frameBorderColor;
 
-      > .g-swatch {
+      > .g-color-swatch {
+        @include box-sizing(border-box);
+        border: none;
+        width: 50%;
         height: 100%;
-        width: 30px;
       }
     }
   }

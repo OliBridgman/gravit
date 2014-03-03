@@ -27,18 +27,20 @@
         width: 100%;
         // TODO : Fix this, how to get height if input (12px), 1em gives only 7px???
         height: 16px;
+        border: 1px solid $frameBorderColor;
 
         > div {
           display: inline-block;
           height: 100%;
+          @include box-sizing(border-box);
         }
 
         > div:not(:last-child) {
-          border-right: 1px solid white;
+          border-right: 1px solid $frameBorderColor;
         }
 
         > div:last-child {
-          border: 1px solid black;
+          border-left: 3px solid $frameColor;
         }
       }
     }
@@ -46,6 +48,7 @@
     > .color-trend-value {
       min-width: 3em;
       max-width: 3em;
+      padding-right: 8px;
 
       > input {
         width: 100%;
@@ -61,26 +64,33 @@
   > .color-toolbar {
     display: table;
     width: 100%;
-    padding-top: 5px;
+    padding-top: 7px;
 
     > div, ul {
       display: table-cell;
       vertical-align: middle;
     }
 
-    .g-menu-item.g-button {
+    .g-color-button {
+      padding: 0px 5px 0px 0px;
       text-transform: uppercase;
-      padding: 0px;
+      text-align: left;
+      border: none;
+      background: transparent;
     }
 
     > .color-preview {
-      width: 100%;
-      text-align: right;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0px;
+      width: 60px;
+      border: 1px solid $frameBorderColor;
 
-      > .ex-color-preview > div {
-        display: inline-block;
-        width: 4em;
-        height: 1.5em;
+      > .g-color-swatch {
+        @include box-sizing(border-box);
+        border: none;
+        width: 50%;
+        height: 100%;
       }
     }
   }

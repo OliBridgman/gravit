@@ -107,6 +107,7 @@
 
         panel.append($('<input>')
             .attr('data-property', 'cw')
+            .attr('type', 'text')
             .gAutoBlur()
             .on('change', function () {
                 var value = self._style.getScene().stringToPoint($(this).val());

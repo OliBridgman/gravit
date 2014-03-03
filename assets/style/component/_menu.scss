@@ -3,6 +3,13 @@
   margin: 0px;
   padding: 0px;
   font: $font;
+
+  &, * {
+    /** Make everything based on border-box model */
+    *, *:before, *:after {
+      @include box-sizing(border-box);
+    }
+  }
 }
 
 /** Styling for a menu ul if it is not the root */
@@ -63,7 +70,7 @@
 /** Change tail styling as we might be adding an arrow */
 .g-menu-item-menu > span.g-menu-item-tail {
   text-align: right;
-  font-family: FontAwesome;
+  font-family: FontAwesome !important;
   font-style: normal;
   font-weight: normal;
   line-height: 1;
@@ -151,7 +158,7 @@
 }
 
 .g-menu-item.g-menu-item-checked > span.g-menu-item-icon:before {
-  font-family: FontAwesome;
+  font-family:  FontAwesome !important;
   font-style: normal;
   font-weight: normal;
   line-height: 1;
