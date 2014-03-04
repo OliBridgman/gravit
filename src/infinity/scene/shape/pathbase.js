@@ -126,6 +126,8 @@
         hry: null,
         /** Whether handles are auto-calculated or not */
         ah: false,
+        /** Whether corner lengths are uniform or not */
+        cu: true,
         /** The left corner length */
         cl: 0,
         /** The right corner length */

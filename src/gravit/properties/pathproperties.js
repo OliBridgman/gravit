@@ -81,6 +81,7 @@
                     });
             } else if (property === 'type') {
                 return $('<select></select>')
+                    .css('width', '100%')
                     .attr('data-point-property', property)
                     .append($('<option></option>')
                         .attr('value', GXPathBase.AnchorPoint.Type.Smooth)
@@ -123,6 +124,16 @@
                     .append($('<span></span>')
                         // TODO : I18N
                         .html('&nbsp;Automatic'))
+            } else if (property === 'cu') {
+                return $('<button></button>')
+                    .addClass('g-flat')
+                    .attr('data-point-property', property)
+                    .append($('<span></span>')
+                        .addClass('fa fa-lock fa-fw'))
+                    .on('click', function () {
+                        self._assignPointProperty(property, !$(this).hasClass('g-active'));
+                        self._updatePointProperties();
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -143,8 +154,10 @@
                 .append($('<td></td>')
                     .append(_createPathInput('closed'))))
             .append($('<tr></tr>')
-                .attr('colspan', '4')
-                .append($('<td></td>')))
+                .attr('data-point-property', '_row')
+                .append($('<td></td>')
+                    .attr('colspan', 4)
+                    .append($('<hr>'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -157,14 +170,6 @@
                     .text('Y:'))
                 .append($('<td></td>')
                     .append(_createPointInput('y'))))
-            .append($('<tr></tr>')
-                .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Type:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createPointInput('type'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -196,9 +201,22 @@
                             this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
                         }.bind(this))))
                 .append($('<td></td>')
-                    .addClass('label'))
-                .append($('<td></td>')
+                    .attr('colspan', '2')
+                    .css('text-align', 'right')
                     .append(_createPointInput('ah'))))
+            .append($('<tr></tr>')
+                .attr('data-point-property', '_row')
+                .append($('<td></td>')
+                    .addClass('label')
+                    .text('Type:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createPointInput('type'))))
+            .append($('<tr></tr>')
+                .attr('data-point-property', '_row')
+                .append($('<td></td>')
+                    .attr('colspan', 4)
+                    .append($('<hr>'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -213,10 +231,9 @@
                     .addClass('label')
                     .text('Smooth:'))
                 .append($('<td></td>')
-                    .append(_createPointInput('cl')))
-                .append($('<td></td>')
-                    .addClass('label'))
-                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createPointInput('cl'))
+                    .append(_createPointInput('cu'))
                     .append(_createPointInput('cr'))))
             .appendTo(panel);
     };
@@ -335,6 +352,9 @@
             this._panel.find('input[data-point-property="cr"]')
                 .prop('disabled', !isCorner)
                 .val(this._document.getScene().pointToString(point.getProperty('cr')));
+            this._panel.find('button[data-point-property="cu"]')
+                .prop('disabled', !isCorner)
+                .toggleClass('g-active', point.getProperty('cu'));
         } else {
             this._panel.find('[data-point-property]').css('visibility', 'hidden');
         }
