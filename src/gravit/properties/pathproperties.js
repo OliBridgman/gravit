@@ -83,35 +83,35 @@
                 return $('<select></select>')
                     .css('width', '100%')
                     .attr('data-point-property', property)
-                    .append($('<option></option>')
-                        .attr('value', GXPathBase.AnchorPoint.Type.Smooth)
+                    .append($('<optgroup></optgroup>')
                         // TODO : I18N
-                        .text('Smooth'))
-                    .append($('<option></option>')
-                        .attr('value', GXPathBase.AnchorPoint.Type.Regular)
+                        .attr('label', 'Curve')
+                        .append($('<option></option>')
+                            .attr('value', GXPathBase.AnchorPoint.Type.Symmetric)
+                            // TODO : I18N
+                            .text('Symmetric'))
+                        .append($('<option></option>')
+                            .attr('value', GXPathBase.AnchorPoint.Type.Asymmetric)
+                            // TODO : I18N
+                            .text('Asymmetric'))
+                        .append($('<option></option>')
+                            .attr('value', GXPathBase.AnchorPoint.Type.Mirror)
+                            // TODO : I18N
+                            .text('Mirror'))
+                        .append($('<option></option>')
+                            .attr('value', GXPathBase.AnchorPoint.Type.Connector)
+                            // TODO : I18N
+                            .text('Connector')))
+                    .append($('<optgroup></optgroup>')
                         // TODO : I18N
-                        .text('Regular'))
-                    .append($('<option></option>')
-                        .attr('value', GXPathBase.AnchorPoint.Type.Connector)
-                        // TODO : I18N
-                        .text('Connector'))
-                    .append($('<option></option>')
-                        .attr('value', '-')
-                        // TODO : I18N
-                        .text('Corner'))
+                        .attr('label', 'Corner'))
+                    .gCornerType()
                     .on('change', function () {
                         var val = $(this).val();
                         if (val === '-') {
                             val = GXPathBase.CornerType.Rounded;
                         }
                         self._assignPointProperty('tp', val);
-                    });
-            } else if (property === 'corner') {
-                return $('<select></select>')
-                    .attr('data-point-property', property)
-                    .gCornerType()
-                    .on('change', function () {
-                        self._assignPointProperty('tp', $(this).val());
                     });
             } else if (property === 'ah') {
                 return $('<label></label>')
@@ -207,24 +207,16 @@
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
-                    .addClass('label')
-                    .text('Type:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createPointInput('type'))))
-            .append($('<tr></tr>')
-                .attr('data-point-property', '_row')
-                .append($('<td></td>')
                     .attr('colspan', 4)
                     .append($('<hr>'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
                     .addClass('label')
-                    .text('Corner:'))
+                    .text('Type:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createPointInput('corner'))))
+                    .append(_createPointInput('type'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -342,10 +334,8 @@
                 }
             }
 
-            this._panel.find('select[data-point-property="type"]').val(isCorner ? '-' : apType);
-            this._panel.find('select[data-point-property="corner"]')
-                .prop('disabled', !isCorner)
-                .val(isCorner ? apType : null);
+            this._panel.find('select[data-point-property="type"]').val(apType);
+
             this._panel.find('input[data-point-property="cl"]')
                 .prop('disabled', !isCorner)
                 .val(this._document.getScene().pointToString(point.getProperty('cl')));

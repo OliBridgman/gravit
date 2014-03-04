@@ -793,7 +793,7 @@
             if (anchorPoint.hasFlag(GXNode.Flag.Selected)) {
                 if (type === GXPathBase.AnchorPoint.Type.Connector) {
                     itArgs.annotation = GXElementEditor.Annotation.Diamond;
-                } else if (type === GXPathBase.AnchorPoint.Type.Smooth) {
+                } else if (type === GXPathBase.AnchorPoint.Type.Symmetric) {
                     itArgs.annotation = GXElementEditor.Annotation.Circle;
                 }
             }
@@ -813,8 +813,8 @@
             }
 
             if (anchorPoint.hasFlag(GXNode.Flag.Selected) &&
-                type !== GXPathBase.AnchorPoint.Type.Regular &&
-                type !== GXPathBase.AnchorPoint.Type.Smooth &&
+                type !== GXPathBase.AnchorPoint.Type.Asymmetric &&
+                type !== GXPathBase.AnchorPoint.Type.Symmetric &&
                 type !== GXPathBase.AnchorPoint.Type.Connector) {
 
                 var cl = anchorPoint.getProperty('cl');

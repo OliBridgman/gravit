@@ -200,12 +200,12 @@
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT) {
             if (gPlatform.modifiers.optionKey) {
-                anchorPt.setProperty('tp', 'S');
+                anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Symmetric);
             } else {
-                anchorPt.setProperty('tp', 'N');
+                anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Asymmetric);
             }
         } else { // BUTTON_RIGHT && this._AltDown
-            anchorPt.setProperty('tp', 'C');
+            anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
         }
 
         return anchorPt;
@@ -246,7 +246,7 @@
                 this._pathRef.beginUpdate();
                 this._pathEditor.selectOnePoint(otherPt);
                 if (gPlatform.modifiers.optionKey) {
-                    otherPt.setProperties(['ah', 'tp'], [false, 'N']);
+                    otherPt.setProperties(['ah', 'tp'], [false, GXPathBase.AnchorPoint.Type.Asymmetric]);
                 }
                 if (!otherPt.getProperty('ah')) {
                     otherPt.setProperties(['hlx', 'hly'], [anchorPt.getProperty('hlx'), anchorPt.getProperty('hly')]);

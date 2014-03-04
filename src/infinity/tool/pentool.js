@@ -100,7 +100,7 @@
                     }
                     this._pathEditor.requestInvalidation();
                     if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-                        this._editPt.setProperty('tp', 'C');
+                        this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
                     } else if (!gPlatform.modifiers.optionKey){
                         this._closePreviewIfNeeded();
                     }
@@ -181,7 +181,7 @@
                 } else { // this._mode == GXPathTool.Mode.Prepend
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 }
-                this._editPt.setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
+                this._editPt.setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
                 // It is significant to remove auto-handles in separate command here if set
                 this._editPt.setProperty('ah', false);
                 this._dpathRef.getAnchorPoints().removeChild(anchorPt);
@@ -262,22 +262,22 @@
             if (this._mode != GXPathTool.Mode.Edit) {
                 if (this._mode == GXPathTool.Mode.Append) {
                     if (this._editPt.getProperty('hlx') !== null && this._editPt.getProperty('hly') !== null) {
-                        this._editPt.setProperties(['tp', 'hrx', 'hry'], ['S', null, null]);
+                        this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Symmetric, null, null]);
                     } else {
-                        this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+                        this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
                     }
                 } else { // _mode == Prepend
                     if (this._editPt.getProperty('hrx') !== null && this._editPt.getProperty('hry') !== null) {
-                        this._editPt.setProperties(['tp', 'hlx', 'hly'], ['S', null, null]);
+                        this._editPt.setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Symmetric, null, null]);
                     } else {
-                        this._editPt.setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
+                        this._editPt.setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
                     }
                 }
             } else {
                 if (!gPlatform.modifiers.optionKey) {
-                    this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], ['N', null, null, null, null]);
+                    this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null, null, null]);
                 } else {
-                    this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+                    this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
                 }
             }
         } else {
@@ -293,7 +293,7 @@
                     hlx = ptx + ptx - hrx;
                     hly = pty + pty - hry;
                     this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                        ['S', hlx, hly, hrx, hry]);
+                        [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
                 } else {
                     var dx = newNativePos.getX() - ptx;
                     var dy = newNativePos.getY() - pty;
@@ -302,10 +302,10 @@
                     hrx = hrxOrig != null ? hrxOrig + dx : newNativePos.getX();
                     var hryOrig = this._dragStartPt.getProperty('hry');
                     hry = hryOrig != null ? hryOrig + dy : newNativePos.getY();
-                    this._editPt.setProperties(['tp', 'hrx', 'hry'], ['N', hrx, hry]);
+                    this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, hrx, hry]);
                 }
             } else if (this._mode == GXPathTool.Mode.Append) {
-                if (tp != 'C') {
+                if (tp != GXPathBase.AnchorPoint.Type.Connector) {
                     hrx = newNativePos.getX();
                     hry = newNativePos.getY();
                     this._editPt.setProperty('ah', false);
@@ -313,7 +313,7 @@
                         hlx = ptx + ptx - hrx;
                         hly = pty + pty - hry;
                         this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                            ['S', hlx, hly, hrx, hry]);
+                            [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
                     } else {
                         this._editPt.setProperties(['hrx', 'hry'], [hrx, hry]);
                     }
@@ -350,7 +350,7 @@
                     this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'], [hlx, hly, hrx, hry]);
                 }
             } else { // this._mode == GXPathTool.Mode.Prepend
-                if (tp != 'C') {
+                if (tp != GXPathBase.AnchorPoint.Type.Connector) {
                     hlx = newNativePos.getX();
                     hly = newNativePos.getY();
                     this._editPt.setProperty('ah', false);
@@ -358,7 +358,7 @@
                         hrx = ptx + ptx - hlx;
                         hry = pty + pty - hly;
                         this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                            ['S', hlx, hly, hrx, hry]);
+                            [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
                     } else {
                         this._editPt.setProperties(['hlx', 'hly'], [hlx, hly]);
                     }
@@ -409,7 +409,7 @@
             this._editPt = this._pathEditor.getPathPointPreview(this._refPt);
             this._dragStartPt = this._refPt;
             if (event.button == GUIMouseEvent.BUTTON_LEFT) {
-                this._editPt.setProperty('tp', 'S');
+                this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Symmetric);
             }
             this._pathEditor.requestInvalidation();
         }
@@ -418,8 +418,8 @@
             this._setCursorForPosition(GUICursor.PenDrag);
             if (!this._dragStartPt) {
                 this._dragStartPt = this._refPt ? this._refPt : this._editPt;
-                if (event.button == GUIMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != 'C') {
-                    this._editPt.setProperty('tp', 'S');
+                if (event.button == GUIMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != GXPathBase.AnchorPoint.Type.Connector) {
+                    this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Symmetric);
                 }
             }
             this._dragStarted = true;

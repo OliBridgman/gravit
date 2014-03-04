@@ -13,12 +13,19 @@
             options = $.extend({
             }, options);
 
-            var self = this;
             return this.each(function () {
                 var $this = $(this);
                 if ($this.is("select")) {
+                    // If the last item is an optgroup, use that as a target
+                    var target = $this;
+                    var lastElement = $this.find(':last');
+                    if (lastElement.is('optgroup')) {
+                        target = lastElement;
+                    }
+
+                    // Append corner types
                     for (var i = 0; i < cornerTypes.length; ++i) {
-                        $this.append($('<option></option>')
+                        target.append($('<option></option>')
                             .attr('value', cornerTypes[i])
                             .text(gLocale.get(GXPathBase.CornerTypeName[cornerTypes[i]])));
                     }

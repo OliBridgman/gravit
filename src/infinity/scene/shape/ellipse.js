@@ -100,7 +100,7 @@
             }
 
             var anchorPoint = new GXPathBase.AnchorPoint();
-            anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), 'S', true]);
+            anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), GXPathBase.AnchorPoint.Type.Symmetric, true]);
             anchorPoints.appendChild(anchorPoint);
 
             var ea = gMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + gMath.PI2 : this.$ea;
@@ -110,13 +110,13 @@
 
             for (an; an < ea && !gMath.isEqualEps(an, ea); an += Math.PI / 2) {
                 anchorPoint = new GXPathBase.AnchorPoint();
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), 'S', true]);
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), GXPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
             }
 
             if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
                 anchorPoint = new GXPathBase.AnchorPoint();
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), 'S', true]);
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), GXPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
             }
 
@@ -128,7 +128,7 @@
                 if (gMath.isEqualEps(an, ea)) {
                     an += Math.PI / 2;
                 }
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), 'S', true]);
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), GXPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
                 extraPoint = anchorPoint;
             }
@@ -144,8 +144,8 @@
             }
 
             if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
-                anchorPoints.getFirstChild().setProperties(['tp', 'hlx', 'hly'], ['N', null, null]);
-                anchorPoints.getLastChild().setProperties(['tp', 'hrx', 'hry'], ['N', null, null]);
+                anchorPoints.getFirstChild().setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
+                anchorPoints.getLastChild().setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
 
                 if (this.$etp == GXEllipse.Type.Pie) {
                     anchorPoint = new GXPathBase.AnchorPoint();

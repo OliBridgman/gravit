@@ -156,17 +156,17 @@
             var tpaNext = aNext.getProperty('tp');
             var tpaNew;
             if (tpaPrev == GXPathBase.AnchorPoint.Type.Connector ||
-                tpaPrev == GXPathBase.AnchorPoint.Type.Smooth ||
+                tpaPrev == GXPathBase.AnchorPoint.Type.Symmetric ||
                 tpaNext == GXPathBase.AnchorPoint.Type.Connector ||
-                tpaNext == GXPathBase.AnchorPoint.Type.Smooth ||
-                (tpaPrev == GXPathBase.AnchorPoint.Type.Regular &&
-                    tpaNext == GXPathBase.AnchorPoint.Type.Regular)) {
+                tpaNext == GXPathBase.AnchorPoint.Type.Symmetric ||
+                (tpaPrev == GXPathBase.AnchorPoint.Type.Asymmetric &&
+                    tpaNext == GXPathBase.AnchorPoint.Type.Asymmetric)) {
 
                 // One of near points is smooth or both have no styled corners
-                tpaNew = GXPathBase.AnchorPoint.Type.Regular;
-            } else if (tpaPrev != GXPathBase.AnchorPoint.Type.Smooth &&
+                tpaNew = GXPathBase.AnchorPoint.Type.Asymmetric;
+            } else if (tpaPrev != GXPathBase.AnchorPoint.Type.Symmetric &&
                 tpaPrev != GXPathBase.AnchorPoint.Type.Connector &&
-                tpaPrev != GXPathBase.AnchorPoint.Type.Regular) {
+                tpaPrev != GXPathBase.AnchorPoint.Type.Asymmetric) {
 
                 // aPrev has styled corner
                 tpaNew = tpaPrev;

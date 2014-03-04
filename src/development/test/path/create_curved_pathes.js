@@ -1,9 +1,9 @@
 (function() {
     function test(scene, page, view) {
         var anchorCTypes = [
-            GXPathBase.AnchorPoint.Type.Regular,
+            GXPathBase.AnchorPoint.Type.Asymmetric,
             GXPathBase.AnchorPoint.Type.Connector,
-            GXPathBase.AnchorPoint.Type.Smooth,
+            GXPathBase.AnchorPoint.Type.Symmetric,
             GXPathBase.CornerType.Rounded,
             GXPathBase.CornerType.InverseRounded,
             GXPathBase.CornerType.Bevel,
