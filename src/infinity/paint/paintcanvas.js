@@ -19,14 +19,14 @@
 
     GXPaintCanvas.LineJoin = {
         Miter: 0,
-        Bevel: -1,
+        Bevel: 1,
         Round: 2
     };
 
     GXPaintCanvas.StrokeAlignment = {
         Center: 0,
         Inside: 1,
-        Outside: -1
+        Outside: 2
     };
 
     GXPaintCanvas.CompositeOperator = {
@@ -293,8 +293,8 @@
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [width] the width of the stroke in pixelMode. If not provided, defaults to 1.0 pixelMode
      * @param {Number} [cap] the line cap used for stroking, defaults to GXPaintCanvas.LineCap.Butt
-     * @param {Number} [join] the line join used for stroking, defaults to 10 (GXPaintCanvas.LineJoin.Miter + 10).
-     * Note that with GXPaintCanvas.LineJoin.Miter + X means X=the miter limit
+     * @param {Number} [join] the line join used for stroking
+     * @param {Number} [miterLimit] the miter limit used for stroking
      * @param {Number} [alignment] the alignment of the stroke, defaults to GXPaintCanvas.StrokeAlignment.Center
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
      * @param {Number} [composite] the composite operator to use for drawing, defaults to GXPaintCanvas.CompositeOperator.SourceOver
@@ -303,7 +303,7 @@
      * @see GXPaintCanvas.StrokeAlignment
      * @see GXPaintCanvas.CompositeOperator
      */
-    GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, alignment, opacity, composite) {
+    GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
         throw new Error("Not Supported");
     };
 

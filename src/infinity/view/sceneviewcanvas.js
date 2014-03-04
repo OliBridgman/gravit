@@ -172,7 +172,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, alignment, opacity, composite) {
+    GXSceneViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -207,7 +207,7 @@
                     break;
                 default:
                     this._canvasContext.lineJoin = "miter";
-                    this._canvasContext.miterLimit = join - GXSceneViewCanvas.LineJoin.Miter;
+                    this._canvasContext.miterLimit = typeof miterLimit == 'number' ? miterLimit : 10;
                     break;
             }
         } else {
@@ -222,7 +222,7 @@
         }
 
         if (typeof composite == "number") {
-            this._canvasContext = this._convertComposite(composite, "source-over");
+            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
         } else {
             this._canvasContext.globalCompositeOperation = "source-over";
         }
@@ -242,7 +242,7 @@
         }
 
         if (typeof composite == "number") {
-            this._canvasContext = this._convertComposite(composite, "source-over");
+            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
         } else {
             this._canvasContext.globalCompositeOperation = "source-over";
         }

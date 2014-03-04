@@ -16,7 +16,7 @@
     GXLayerEditor.prototype.paint = function (transform, context) {
         // Setup outline colors if we have a color
         var oldSelOutlineColor = context.selectionOutlineColor;
-        var layerColor = GXColor.parseColor(this._element.getProperty('color'));
+        var layerColor = this._element.getProperty('color');
         context.selectionOutlineColor = layerColor.asRGBInt();
 
         // Paint our children

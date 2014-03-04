@@ -57,7 +57,6 @@
                 }
                 return value;
             });
-
             return true;
         }
         return false;
@@ -72,7 +71,6 @@
                 }
                 return value;
             });
-
             return true;
         }
         return false;

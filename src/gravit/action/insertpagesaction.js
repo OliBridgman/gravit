@@ -145,7 +145,7 @@
             'y',
             'w',
             'h',
-            'color'
+            'cls'
         ], [
             'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),

@@ -18,14 +18,22 @@
      */
     GXPaintContourStyle.GeometryProperties = {
         // Contour width
-        cw: 1
+        cw: 1,
+        // Contour alignment
+        ca: GXPaintCanvas.StrokeAlignment.Center,
+        // Contour Line-Caption
+        clc: GXPaintCanvas.LineCap.Square,
+        // Contour Line-Join
+        clj: GXPaintCanvas.LineJoin.Miter,
+        // Contour Line-Miter-Limit
+        clm: 10
     };
 
     /** @override */
     GXPaintContourStyle.prototype.paint = function (context, source) {
-        if (this.hasPaintableFill()) {
+        if (this.hasPaintableFill() && this.$cw && this.$cw > 0) {
             context.canvas.putVertices(source);
-            context.canvas.strokeVertices(this.$fill, this.$cw);
+            context.canvas.strokeVertices(this.$cls, this.$cw, this.$clc, this.$clj, this.$clm, this.$ca, this.$opc, this.$cmp);
         }
     };
 

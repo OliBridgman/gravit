@@ -47,12 +47,13 @@
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-            if (left instanceof GRect || right instanceof GRect) {
-                return left instanceof GRect && right instanceof GRect ? GRect.equals(left, right) : false;
-            } else if (left instanceof GPoint || right instanceof GPoint) {
-                return left instanceof GPoint && right instanceof GPoint ? GPoint.equals(left, right) : false;
-            } else if (left instanceof GTransform || right instanceof GTransform) {
-                return left instanceof GTransform && right instanceof GTransform ? GTransform.equals(left, right) : false;
+            // Check for special 'equals' function
+            if (left.constructor.equals || right.constructor.equals) {
+                if (left.constructor === right.constructor) {
+                    return left.constructor.equals(left, right);
+                } else {
+                    return false;
+                }
             } else if (left instanceof Date || right instanceof Date) {
                 return left instanceof Date && right instanceof Date ? (+left == +right) : false;
             } else if (left instanceof Array || right instanceof Array) {

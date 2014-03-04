@@ -72,7 +72,7 @@
                 .attr('data-property', 'fill')
                 .gColorButton()
                 .on('change', function (evt, color) {
-                    self._properties._assignStyleProperty(self._style, 'fill', color);
+                    self._properties._assignStyleProperty(self._style, 'cl', color);
                 }));
     };
     GObject.inherit(GStylesProperties._PaintFillProperties, GStylesProperties._StyleProperties);
@@ -116,6 +116,14 @@
                 } else {
                     self.update(self._style);
                 }
+            }));
+
+        panel.append($('<input>')
+            .attr('data-property', 'ci')
+            .attr('type', 'checkbox')
+            .gAutoBlur()
+            .on('change', function () {
+                self._properties._assignStyleProperty(self._style, 'ci', $(this).is(':checked'));
             }));
     };
     GObject.inherit(GStylesProperties._PaintContourProperties, GStylesProperties._PaintFillProperties);

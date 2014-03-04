@@ -678,7 +678,7 @@
             var propName = (custom ? '@' : '$') + properties[i];
             var oldValue = this[propName];
 
-            if (!gUtil.equals(value, oldValue, true)) {
+            if (!gUtil.equals(value, oldValue, false)) {
                 propertiesToModify.push(properties[i]);
                 valuesToModify.push(values[i])
             }
@@ -725,8 +725,9 @@
         }
         for (var property in properties) {
             var defaultValue = properties[property];
-            var myValue = filter(property, this['$' + property]);
+            var value = this['$' + property];
             if (!gUtil.equals(myValue, defaultValue, true)) {
+                var myValue = filter(property, value);
                 blob[property] = myValue;
             }
         }

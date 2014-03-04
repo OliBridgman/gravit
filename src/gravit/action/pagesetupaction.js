@@ -86,7 +86,7 @@
         ]
     };
 
-    var propertiesToStore = ['title', 'bl', 'color', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'gb', 'gw', 'gc', 'gr'];
+    var propertiesToStore = ['title', 'bl', 'cls', 'w', 'h', 'ml', 'mt', 'mr', 'mb', 'gb', 'gw', 'gc', 'gr'];
 
     /**
      * @override
@@ -282,10 +282,10 @@
                                     // TODO : I18N
                                     label: 'Color',
                                     input: {
-                                        type: 'color',
-                                        value: activePage.getProperty('color'),
+                                        type: 'cls',
+                                        value: activePage.getProperty('cls'),
                                         onChange: function (evt, color) {
-                                            _assignPagesProperties(['color'], [color ? color.asString() : null]);
+                                            _assignPagesProperties(['cls'], [color ? color : null]);
                                         }
                                     }
                                 }

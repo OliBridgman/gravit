@@ -39,7 +39,7 @@
      * The visual properties of a page with their default values
      */
     GXPage.VisualProperties = {
-        color: new GXColor(GXColor.Type.RGB, [255, 255, 255, 100]).asString()
+        cls: new GXColor(GXColor.Type.RGB, [255, 255, 255, 100])
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -91,9 +91,9 @@
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
-        // Paint inner fill either with color if any or as checkboard patterns for transparency (none)
-        if (this.$color) {
-            context.canvas.fillRect(x, y, w, h, this.$color);
+        // Paint inner fill either with cls if any or as checkboard patterns for transparency (none)
+        if (this.$cls) {
+            context.canvas.fillRect(x, y, w, h, this.$cls);
         } else {
             // TODO : Cache pattern
             var cs = context.canvas.createCanvas();

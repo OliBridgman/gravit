@@ -85,20 +85,20 @@
         if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
             // TODO : Styles are supposed to gain their own editors so this should become obsolete
             // TODO : Also support dropping GXSwatch
-            if (type === GXElementEditor.DropType.Color || (type === GXElementEditor.DropType.Node && source instanceof GXSwatch)) {
+            if (type === GXElementEditor.DropType.Color) {
                 var editor = GXEditor.getEditor(this.getElement().getScene());
 
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
                 editor.beginTransaction();
                 try {
                     if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
-                        hitData.style.setProperty('fill', source);
+                        hitData.style.setColor(source);
                     } else {
-                        this.getElement().getStyle(true).applyStyleProperties(GXPaintAreaStyle, ['fill'], [source]);
+                        this.getElement().getStyle(true).setAreaColor(source);
                     }
                 } finally {
                     // TODO : I18N
-                    editor.commitTransaction('Drop Style Fill');
+                    editor.commitTransaction('Drop Color');
                 }
                 return true;
             }

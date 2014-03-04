@@ -158,7 +158,7 @@
         // Coming here means nothing has happend and if we have a color,
         // we'll be assigning it now
         if (color) {
-            this.applyStyleProperties(fillStyleClass, ['fill'], [color]);
+            this.applyStyleProperties(fillStyleClass, ['cls'], [color]);
         }
     };
 

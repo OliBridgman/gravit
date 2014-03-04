@@ -16,7 +16,7 @@
     GXPaintAreaStyle.prototype.paint = function (context, source) {
         if (this.hasPaintableFill()) {
             context.canvas.putVertices(source);
-            context.canvas.fillVertices(this.$fill);
+            context.canvas.fillVertices(this.$cls, this.$opc, this.$cmp);
         }
     };
 
