@@ -357,8 +357,6 @@
             return style;
         } else if (style instanceof GXColor) {
             return style.asCSSString();
-        } else if (typeof style === 'string') {
-            return GXColor.parseColor(style).asCSSString();
         } else if (typeof style === 'number') {
             return gColor.toCSS(style);
         } else {
