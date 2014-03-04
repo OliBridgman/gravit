@@ -70,6 +70,7 @@
                     });
             } else if (property === 'tl_ct' || property === 'tr_ct' || property === 'bl_ct' || property === 'br_ct') {
                 return $('<select></select>')
+                    .addClass('g-flat')
                     .attr('data-property', property)
                     .css('width', '2em')
                     .gCornerType()
@@ -78,6 +79,7 @@
                     });
             } else if (property === 'tl_uf' || property === 'tr_uf' || property === 'bl_uf' || property === 'br_uf') {
                 return $('<button></button>')
+                    .addClass('g-flat')
                     .attr('data-property', property)
                     .append($('<span></span>')
                         .addClass('fa fa-lock fa-fw'))
@@ -91,14 +93,16 @@
         }.bind(this);
 
         $('<table></table>')
+            .addClass('g-form')
             .css('margin', '0px auto')
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', '4')
+                    .attr('colspan', '2')
                     .append(_createInput('uf'))))
             .append($('<tr></tr>')
-                .attr('colspan', '4')
-                .append($('<td></td>')))
+                .append($('<td></td>')
+                    .attr('colspan', '2')
+                    .append($('<hr>'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .append(_createInput('tl_uf'))

@@ -1,16 +1,6 @@
 .g-form {
-  tr.section > td {
-    padding: 7px 0px 3px 0px;
-    font-weight: bold;
-    color: gray;
-  }
-
-  tr.section:first-child > td {
-    padding-top: 0px;
-  }
-
   td {
-    padding: 0px 0px 5px 0px;
+    padding-bottom: 5px;
   }
 
   tr:last-child td {
@@ -24,5 +14,13 @@
 
   td.label:not(:first-child) {
     padding-left: 10px;
+  }
+
+  td > hr {
+    height: 1px;
+    padding: 0px;
+    border: none;
+    margin: 1px 0px 2px 0px;
+    border-bottom: 1px dotted rgb(46, 49, 50);
   }
 }

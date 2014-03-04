@@ -6,7 +6,6 @@ button, .g-button, input, select, .g-input {
   margin: 0px;
   padding: 3px;
   line-height: 1em;
-  //height: 1em;
   vertical-align: middle;
   background: $frameColor;
   color: $textColor;
@@ -14,6 +13,7 @@ button, .g-button, input, select, .g-input {
 
 
 button, .g-button {
+  padding: 2px 3px;
   border: 1px solid $frame3DLightColor;
   border-right: 1px solid $frame3DShadowColor;
   border-bottom: 1px solid $frame3DShadowColor;
@@ -31,9 +31,6 @@ button, .g-button {
 
   &:active, &.g-active {
     background: $activeColor;
-  }
-
-  &:active, &.g-active {
     border: 1px solid $frame3DShadowColor;
     border-right: 1px solid $frame3DLightColor;
     border-bottom: 1px solid $frame3DLightColor;
@@ -60,6 +57,26 @@ button, .g-button {
       stroke: $disabledTextColor !important;
     }
   }
+
+  &.g-flat {
+    border: 1px solid transparent;
+    border-radius: 0px;
+    box-shadow: none;
+
+    &:active, &.g-active {
+      background: $frameColor;
+      border: 1px solid transparent;
+
+      &, * {
+        color: $selectedColor;
+      }
+
+      svg {
+        fill: $selectedColor;
+        stroke: $selectedColor;
+      }
+    }
+  }
 }
 
 select, input, textArea, .g-input {
@@ -75,6 +92,12 @@ select, input, textArea, .g-input {
   &:focus {
     outline: none;
     border: 1px solid $selectedColor;
+  }
+
+  &.g-flat {
+    border: 1px solid transparent;
+    border-radius: 0px;
+    box-shadow: none;
   }
 }
 
@@ -111,4 +134,21 @@ input[type="range"] {
     border-radius: 2em;
     padding: 3px;
   }
+}
+
+input[type=checkbox], input[type=radio] {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+
+  &:checked {
+    background: $selectedColor;
+  }
+}
+
+input[type=radio] {
+  border-radius: 2em;
+  bottom: 2px;
 }

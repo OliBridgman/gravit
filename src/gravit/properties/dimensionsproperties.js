@@ -71,8 +71,8 @@
                 .addClass('g-button g-flat ' + (apply === 'selection' ? 'g-active' : ''))
                 .attr('title', hint)
                 .attr('data-apply', apply)
-                .append($('<i></i>')
-                    .addClass('fa fa-' + (apply === 'selection' ? 'th-large' : 'square')))
+                .append($('<span></span>')
+                    .addClass('fa fa-fw fa-' + (apply === 'selection' ? 'th-large' : 'square')))
                 .on('click', function () {
                     if (!$(this).hasClass('g-active')) {
                         if (apply === 'selection') {
