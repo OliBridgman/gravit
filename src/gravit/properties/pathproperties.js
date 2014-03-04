@@ -350,7 +350,7 @@
                 .prop('disabled', !isCorner)
                 .val(this._document.getScene().pointToString(point.getProperty('cl')));
             this._panel.find('input[data-point-property="cr"]')
-                .prop('disabled', !isCorner)
+                .prop('disabled', !isCorner || point.getProperty('cu'))
                 .val(this._document.getScene().pointToString(point.getProperty('cr')));
             this._panel.find('button[data-point-property="cu"]')
                 .prop('disabled', !isCorner)

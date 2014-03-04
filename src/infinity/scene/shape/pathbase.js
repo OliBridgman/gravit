@@ -332,71 +332,78 @@
         var path = this._getPath();
         if (change == GXNode._Change.BeforePropertiesChange || change == GXNode._Change.AfterPropertiesChange) {
             if (gUtil.containsObjectKey(args.properties, GXPathBase.AnchorPoint.GeometryProperties)) {
-                switch (change) {
-                    case GXNode._Change.BeforePropertiesChange:
-                        if (path) {
-                            path._notifyChange(GXElement._Change.PrepareGeometryUpdate);
+                if (change === GXNode._Change.BeforePropertiesChange) {
+                    // Handle uniformity of corner lengths
+                    var cuIndex = args.properties.indexOf('cu');
+                    var cu = cuIndex >= 0 ? args.values[cuIndex] : this.$cu;
+                    if (cu) {
+                        var oldCr = this.$cr;
+                        var clIndex = args.properties.indexOf('cl');
+                        var newCr = clIndex >= 0 ? args.values[clIndex] : this.$cl;
+                        if (oldCr !== newCr) {
+                            this.$cr = newCr;
+                            args.properties.push('cl');
+                            args.values.push(this.$cr);
                         }
-                        break;
-                    case GXNode._Change.AfterPropertiesChange:
+                    }
 
-                        if (this.$tp == GXPathBase.AnchorPoint.Type.Smooth && !this.$ah &&
+                    // If we have a path, prepare it's geometrical change
+                    if (path) {
+                        path._notifyChange(GXElement._Change.PrepareGeometryUpdate);
+                    }
+                } else if (change === GXNode._Change.AfterPropertiesChange) {
+                    if (this.$tp == GXPathBase.AnchorPoint.Type.Smooth && !this.$ah &&
+                        this.$hlx != null && this.$hrx != null) {
+                        if ((args.properties.indexOf('hrx') >= 0 ||
+                            args.properties.indexOf('hry') >= 0) &&
+                            args.properties.indexOf('hlx') < 0 &&
+                            args.properties.indexOf('hly') < 0) {
+                            this._leadHr = true;
+                        } else {
+                            this._leadHr = false;
+                        }
+                    }
+
+                    if (path || // For Smooth point recalculate handles properly, even if point is not inserted yet
+                        this.$tp == GXPathBase.AnchorPoint.Type.Smooth && !this.$ah &&
                             this.$hlx != null && this.$hrx != null) {
-                            if ((args.properties.indexOf('hrx') >= 0 ||
-                                args.properties.indexOf('hry') >= 0) &&
-                                args.properties.indexOf('hlx') < 0 &&
-                                args.properties.indexOf('hly') < 0) {
+                        this._invalidateCalculations();
+                    }
 
-                                this._leadHr = true;
-                            } else {
-                                this._leadHr = false;
-                            }
-                        }
+                    if (path) {
+                        // Changes in properties should have the following effect for neighbour points:
+                        // handles change - no effect
+                        // auto handles flag change - no effect
+                        // type change - one point from each side should be updated,
+                        //      if it has auto-handles or connector type
+                        // coordinate change - one point from each side should be updated,
+                        //      if it has auto-handles or connector type, and
+                        //      in the case, when the nearest point is smooth, the second point from the side of smooth
+                        //      point also should be updated if it has auto-handles
 
-                        if (path || // For Smooth point recalculate handles properly, even if point is not inserted yet
-                            this.$tp == GXPathBase.AnchorPoint.Type.Smooth && !this.$ah &&
-                                this.$hlx != null && this.$hrx != null) {
+                        if (this._parent) {
+                            if (args.properties.indexOf('x') >= 0 ||
+                                args.properties.indexOf('y') >= 0) {
 
-                            this._invalidateCalculations();
-                        }
-
-                        if (path) {
-                            // Changes in properties should have the following effect for neighbour points:
-                            // handles change - no effect
-                            // auto handles flag change - no effect
-                            // type change - one point from each side should be updated,
-                            //      if it has auto-handles or connector type
-                            // coordinate change - one point from each side should be updated,
-                            //      if it has auto-handles or connector type, and
-                            //      in the case, when the nearest point is smooth, the second point from the side of smooth
-                            //      point also should be updated if it has auto-handles
-
-                            if (this._parent) {
-                                if (args.properties.indexOf('x') >= 0 ||
-                                    args.properties.indexOf('y') >= 0) {
-
-                                    this._parent._invalidateLeft(this._parent.getPreviousPoint(this));
-                                    this._parent._invalidateRight(this._parent.getNextPoint(this));
-                                } else if (args.properties.indexOf('tp') >= 0) {
-                                    var prevPt = this._parent.getPreviousPoint(this);
-                                    if (prevPt && (prevPt.$ah || prevPt.$tp == GXPathBase.AnchorPoint.Type.Connector )) {
-                                        prevPt._invalidateCalculations();
-                                    }
-                                    var nextPt = this._parent.getNextPoint(this);
-                                    if (nextPt && (nextPt.$ah || nextPt.$tp == GXPathBase.AnchorPoint.Type.Connector )) {
-                                        nextPt._invalidateCalculations();
-                                    }
+                                this._parent._invalidateLeft(this._parent.getPreviousPoint(this));
+                                this._parent._invalidateRight(this._parent.getNextPoint(this));
+                            } else if (args.properties.indexOf('tp') >= 0) {
+                                var prevPt = this._parent.getPreviousPoint(this);
+                                if (prevPt && (prevPt.$ah || prevPt.$tp == GXPathBase.AnchorPoint.Type.Connector )) {
+                                    prevPt._invalidateCalculations();
+                                }
+                                var nextPt = this._parent.getNextPoint(this);
+                                if (nextPt && (nextPt.$ah || nextPt.$tp == GXPathBase.AnchorPoint.Type.Connector )) {
+                                    nextPt._invalidateCalculations();
                                 }
                             }
-                            path._verticesDirty = true;
-                            path._notifyChange(GXElement._Change.FinishGeometryUpdate);
                         }
-
-                        break;
+                        path._verticesDirty = true;
+                        path._notifyChange(GXElement._Change.FinishGeometryUpdate);
+                    }
                 }
             }
         }
-
         GXNode.prototype._handleChange.call(this, change, args);
     };
 

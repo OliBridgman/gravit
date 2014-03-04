@@ -689,7 +689,14 @@
             return false;
         }
 
-        this._notifyChange(GXNode._Change.BeforePropertiesChange, {properties: propertiesToModify, values: valuesToModify});
+        // Construct an event args object as it may be modified
+        var changeArgs = {
+            properties: propertiesToModify,
+            values: valuesToModify
+        };
+
+        // Notify before change
+        this._notifyChange(GXNode._Change.BeforePropertiesChange, changeArgs);
 
         // Assign new property values now
         var previousValues = [];
@@ -699,7 +706,8 @@
             this[propName] = valuesToModify[i];
         }
 
-        this._notifyChange(GXNode._Change.AfterPropertiesChange, {properties: propertiesToModify, values: previousValues});
+        // Notify after change
+        this._notifyChange(GXNode._Change.AfterPropertiesChange, changeArgs);
 
         return true;
     };
