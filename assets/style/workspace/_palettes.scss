@@ -10,6 +10,10 @@
     overflow: hidden;
     border-bottom: 1px solid $frame3DShadowColor;
 
+    &:last-child, &.collapsed-palette {
+      border-bottom: none;
+    }
+
     > .palette-group-header {
       display: table;
       width: 100%;
@@ -77,5 +81,58 @@
         background: rgba(0, 0, 0, 0.5);
       }
     }
+
+
+
+
+
+    /* the container for the entire editor */
+    .gradient-editor-container {
+    }
+
+    /* the area that contains the gradient */
+    .gradient-editor-gradient {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    /* the color stop draggable area. Should not by styled */
+    .gradient-editor-color-stop {
+      margin-top: 6px;
+    }
+
+    /* the color inside a color stop */
+    .gradient-editor-color {
+      border: 1px solid #999;
+      border-top: 0;
+    }
+    .gradient-editor-color::before {
+      border-color: transparent transparent hsla(0,0%, 100%, 0.8) transparent;
+      border-style: solid;
+      border-width: 5px;
+      width: 0;
+      height: 0;
+      position: absolute;
+      top: -10px;
+      left: 1px;
+      content: '';
+    }
+
+    /* the area the contains the color stops */
+    .gradient-editor-colors {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    /* the instruction area */
+    .gradient-editor-instructions {
+      font-size: x-small;
+      color: #aaa;
+    }
+
+
+
   }
 }

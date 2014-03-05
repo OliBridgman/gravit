@@ -110,7 +110,7 @@ select {
 }
 
 input[type="range"] {
-  height: 1em;
+  height: 7px;
 
   &::-moz-range-track {
     border: none;
@@ -120,19 +120,22 @@ input[type="range"] {
   &::-moz-range-thumb {
     background: $textColor;
     border: 1px solid $frameBorderColor;
-    width: 1em;
-    height: 1em;
-    border-radius: 2em;
+    width: 8px;
+    height: 8px;
+    border-radius: 100px;
+    padding: 0px;
+    margin: 0px;
   }
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     background: $textColor;
     border: 1px solid $frameBorderColor;
-    width: 1em;
-    height: 1em;
-    border-radius: 2em;
-    padding: 3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 100px;
+    padding: 0px;
+    margin: 0px;
   }
 }
 

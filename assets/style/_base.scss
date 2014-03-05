@@ -50,4 +50,13 @@ body, html {
     @include user-select(none);
     cursor: default;
   }
+
+  // Give dividers some base styling
+  hr {
+    height: 1px;
+    padding: 0px;
+    border: none;
+    margin: 5px 0px;
+    border-bottom: 1px dotted $frameBorderColor;
+  }
 }

@@ -1,17 +1,48 @@
 .palette-properties {
-  padding: 0px 0px;
+  padding: 2px 5px 5px 5px;
 
   .properties-panels {
     > .properties-panel-category {
-      padding: 3px 5px;
+      margin: 3px 0px;
       background: $frameDarkColor;
       //background: rgb(206, 215, 224) linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
       //border-bottom: 1px solid rgb(205, 205, 205);
       //box-shadow: rgb(255, 255, 255) 0px 1px 0px 0px inset, rgb(236, 240, 243) 0px 1px 0px 0px;
+
+
+
+      // TMP
+      border: 1px solid $frameBorderColor;
+      border-bottom: none;
+      margin-bottom: 0px;
+      padding: 2px 5px 3px 5px;
+      background: $frameBorderColor;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+
+      > i.fa:first-child {
+        padding-right: 3px;
+      }
+      // END : TMP
     }
 
     > .properties-panel-content {
-      padding: 5px;
+      margin: 7px 0px;
+
+      // TMP
+      margin-bottom: 12px;
+      border: 1px solid $frameBorderColor;
+      border-top: none;
+      border-radius: 5px;
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+      margin-top: 0px;
+      padding: 10px 5px;
+      // END : TMP
+
+      &.last-visible {
+        margin-bottom: 0px;
+      }
     }
   }
 }

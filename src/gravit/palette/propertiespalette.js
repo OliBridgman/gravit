@@ -70,10 +70,12 @@
             nodes = [this.document.getScene()];
         }
 
+        var lastVisiblePropertyPanel = null;
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];
             var available = !nodes || nodes.length === 0 ? false : propertyPanel.properties.updateFromNodes(this.document, nodes);
 
+            propertyPanel.panel.removeClass('last-visible');
             if (available) {
                 propertyPanel.category.css('display', '');
 
@@ -82,11 +84,17 @@
                 }
 
                 propertyPanel.panel.attr('data-available', 'true');
+
+                lastVisiblePropertyPanel = propertyPanel;
             } else {
                 propertyPanel.category.css('display', 'none');
                 propertyPanel.panel.css('display', 'none');
                 propertyPanel.panel.attr('data-available', 'false');
             }
+        }
+
+        if (lastVisiblePropertyPanel) {
+            lastVisiblePropertyPanel.panel.addClass('last-visible');
         }
     };
 

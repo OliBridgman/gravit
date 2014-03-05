@@ -394,10 +394,12 @@
 
             if (groupInfo.expanded) {
                 groupInfo.container.css('height', '');
+                groupInfo.container.removeClass('collapsed-palette');
                 buttonSpan.attr('class', 'fa  fa-angle-double-down');
             } else {
                 var header = groupInfo.container.find('.palette-group-header');
                 groupInfo.container.height(header.outerHeight());
+                groupInfo.container.addClass('collapsed-palette');
                 buttonSpan.attr('class', 'fa  fa-angle-double-right');
             }
         }
