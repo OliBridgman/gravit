@@ -42,12 +42,29 @@
 
             $this.parents('.g-modal-background').appendTo($('body'));
 
+            var $window = $(window);
+            var windowWidth = $window.width();
+            var windowHeight = $window.height();
             var container = $this.parents('.g-overlay');
+            var containerWidth = container.outerWidth();
+            var containerHeight = container.outerHeight();
             var $target = $(target);
             var offset = $target.offset();
+            var top = (offset.top + $target.outerHeight());
+            var left = offset.left;
+
+            // Normalize position to not run out of screen
+            // TODO : Make this more solid + honor vertical / horizontal + merge with menus
+            if (left + containerWidth > windowWidth) {
+                left = windowWidth - containerWidth;
+            }
+            if (top + containerHeight > windowHeight) {
+                top = windowHeight - containerHeight;
+            }
+
             container
-                .css('top', (offset.top + $target.outerHeight()) + 'px')
-                .css('left', offset.left + 'px');
+                .css('top', top + 'px')
+                .css('left', left + 'px');
 
             return this;
         },
