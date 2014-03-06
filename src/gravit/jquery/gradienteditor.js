@@ -193,11 +193,12 @@
                     methods.selected.call(self, stopIndex);
 
                     // Implement dragging stuff
+                    var $stop = $(this);
+                    var stopindex = parseInt($stop.attr('stop-index'));
                     var stopsOffset = $stops.offset();
                     var moveMinX = stopsOffset.left;
                     var moveMaxX = moveMinX + $stops.width();
                     var moveMaxY = stopsOffset.top + $stops.outerHeight();
-                    var $stop = $(this);
                     var stopWidth = $stop.outerWidth();
                     var startPosX = $stop.offset().left + stopWidth - evt.pageX;
                     var startPosY = $stop.offset().top - evt.pageY;

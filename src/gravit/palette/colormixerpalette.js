@@ -223,21 +223,6 @@
             makeColor: function (components) {
                 return new GXColor(GXColor.Type.Tone, components);
             }
-        },
-        {
-            id: 'pick',
-            name: 'Pick',
-            components: [
-                {
-                    icon: 'star-half-o',
-                    min: 0,
-                    max: 100,
-                    unit: '%'
-                }
-            ],
-            makeColor: function (components) {
-                return new GXColor(GXColor.Type.RGB, [0, 0, 0, components[0]]);
-            }
         }
     ];
 
@@ -291,9 +276,9 @@
                         var componentPanel = this._htmlElement.find('.color-component-' + i.toString());
 
                         if (i >= this._modeInfo.components.length) {
-                            componentPanel.css('display', 'none');
+                            componentPanel.css('visibility', 'hidden');
                         } else {
-                            componentPanel.css('display', '');
+                            componentPanel.css('visibility', '');
 
                             var component = this._modeInfo.components[i];
                             var range = componentPanel.find('input[type="range"]');
@@ -308,13 +293,6 @@
                             range.attr('min', component.min);
                             range.attr('max', component.max);
                         }
-                    }
-
-                    // Special handling for picker
-                    if (mode === 'pick') {
-                        this._htmlElement.find('.color-picker').css('display', '');
-                    } else {
-                        this._htmlElement.find('.color-picker').css('display', 'none');
                     }
 
                     // Update values from global color to
@@ -393,17 +371,6 @@
                 .appendTo(this._htmlElement);
         }.bind(this);
 
-        // Append picker
-        $('<div></div>')
-            .css('display', 'none')
-            .addClass('color-picker')
-            .gColorPanel({
-                noneSelect: false,
-                preview: false
-            })
-            .on('change', this._updateToGlobalColor.bind(this))
-            .appendTo(this._htmlElement);
-
         // Append the components
         for (var i = 0; i < 4; ++i) {
             _addComponent(i);
@@ -430,6 +397,17 @@
                 }.bind(this))
                 .appendTo(modes);
         }
+
+        // Append color picker to modes
+        $('<button></button>')
+            .gColorButton({
+                swatch : false,
+                noneSelect : false
+            })
+            .on('change', function (evt, color) {
+                gApp.setGlobalColor(color);
+            })
+            .appendTo(modes);
 
         // Append component preview container
         $('<div></div>')
@@ -470,7 +448,7 @@
      * Update current global color from components
      * @private
      */
-    EXColorMixerPalette.prototype._updateToGlobalColor = function () {
+    EXColorMixerPalette.prototype._updateToGlobalColor = function (color) {
         // Collect component values / correct them for current mode
         var components = [];
         for (var i = 0; i < this._modeInfo.components.length; ++i) {
@@ -496,12 +474,6 @@
 
         var newColor = this._modeInfo.makeColor(components);
 
-        // Special hack for picker mode
-        if (this._modeInfo.id === 'pick') {
-            values = this._htmlElement.find('.color-picker').gColorPanel('value').asRGB();
-            newColor = new GXColor(GXColor.Type.RGB, [values[0], values[1], values[2], newColor.asRGB()[3]]);
-        }
-
         // Prevent previous color update as we're setting the global color ourself
         this._noPreviousColorUpdate = true;
         gApp.setGlobalColor(newColor);
@@ -526,9 +498,6 @@
             components = globalColor.asTone();
         } else if (this._modeInfo.id === 'cmyk') {
             components = globalColor.asCMYK();
-        } else if (this._modeInfo.id === 'pick') {
-            components = [globalColor.asRGB()[3]];
-            this._htmlElement.find('.color-picker').gColorPanel('value', globalColor);
         } else {
             throw new Error('Unknown mode.');
         }
@@ -573,6 +542,7 @@
         }
 
         colorPreview.find('[data-color-type="current"]').gColorSwatch('value', globalColor);
+        this._htmlElement.find('.color-modes > .g-color-button').gColorButton('value', globalColor);
     };
 
     /** @override */

@@ -11,11 +11,6 @@
             // TODO : I18N
             title: 'Rainbow'
         },
-        'picker': {
-            icon: 'circle-o',
-            // TODO : I18N
-            title: 'Picker'
-        },
         'swatches': {
             icon: 'square-o',
             // TODO : I18N
@@ -137,8 +132,6 @@
             createColorCubes(container, colorHover, colorActivate);
         } else if (data.view === 'rainbow') {
             createColorPalette(container, colorHover, colorActivate);
-        } else if (data.view === 'picker') {
-            createColorPicker(container, colorHover, colorActivate);
         } else if (data.view === 'swatches') {
             createColorSwatches(container, colorHover, colorActivate);
         }
@@ -161,7 +154,7 @@
         init: function (options) {
             options = $.extend({
                 defaultView: 'cubes',
-                availableViews: ['cubes', 'rainbow'], //'picker', 'swatches'],
+                availableViews: ['cubes', 'rainbow'], //, 'swatches'],
                 noneSelect: true,
                 preview: true
             }, options);
@@ -193,8 +186,6 @@
                     .append($('<input>')
                         .addClass('css-value')
                         .attr('type', 'text')
-                        // TODO : I18N
-                        .attr('placeholder', 'Paste CSS-Color')
                         .gAutoBlur()
                         .on('click', function () {
                             $(this).select();
@@ -221,7 +212,7 @@
                         // TODO : I18N
                         .attr('title', 'Transparent')
                         .append($('<span></span>')
-                            .addClass('fa fa-times'))
+                            .addClass('fa fa-ban'))
                         .on('click', function () {
                             $this.trigger('change', null);
                         })
