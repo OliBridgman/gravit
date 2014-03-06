@@ -63,6 +63,7 @@
 
             // TODO
             // Center page
+            gApp.executeAction(EXOriginalViewAction.ID);
             //var view = document.getActiveWindow();
             //view.zoomAtCenter(page.getPaintBBox().getSide(GRect.Side.CENTER));
         }]);

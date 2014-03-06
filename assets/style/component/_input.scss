@@ -62,9 +62,10 @@ button, .g-button {
     border: 1px solid transparent;
     border-radius: 0px;
     box-shadow: none;
+    background: transparent;
 
     &:active, &.g-active {
-      background: $frameColor;
+      background: transparent;
       border: 1px solid transparent;
 
       &, * {
@@ -75,6 +76,10 @@ button, .g-button {
         fill: $selectedColor;
         stroke: $selectedColor;
       }
+    }
+
+    &:disabled {
+      background: transparent !important;
     }
   }
 }
@@ -98,6 +103,7 @@ select, input, textArea, .g-input {
     border: 1px solid transparent;
     border-radius: 0px;
     box-shadow: none;
+    background: transparent;
   }
 }
 

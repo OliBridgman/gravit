@@ -73,7 +73,17 @@
                 .gColorButton()
                 .on('change', function (evt, color) {
                     self._properties._assignStyleProperty(self._style, 'cl', color);
-                }));
+                }))
+            .append($('<div></div>')
+                .css('margin', '7px 0px')
+                .gGradientEditor({
+                    input : true
+                })
+                .gGradientEditor('value', [
+                    {position: 0, color: GXColor.parseCSSColor('blue')},
+                    {position: 50, color: GXColor.parseCSSColor('yellow')},
+                    {position: 100, color: GXColor.parseCSSColor('red')}
+                ]));
     };
     GObject.inherit(GStylesProperties._PaintFillProperties, GStylesProperties._StyleProperties);
 
@@ -186,9 +196,12 @@
     GStylesProperties.prototype.init = function (panel, menu) {
         this._panel = panel;
 
+        // Create empty tree node mapping table
+        this._treeNodeMap = [];
+
         // Initiate our tree container widget
         this._htmlTreeContainer = $('<div></div>')
-            .addClass('style-tree')
+            .addClass('style-tree g-input')
             .tree({
                 data: [],
                 dragAndDrop: true,
@@ -205,8 +218,10 @@
             .on('tree.select', this._selectStyle.bind(this))
             .appendTo(this._panel);
 
-        // Create empty tree node mapping table
-        this._treeNodeMap = [];
+        $('<hr>')
+            .appendTo(this._panel);
+
+
 
         // Initialize and add our style panels
         var stylePanels = $('<div></div>')
