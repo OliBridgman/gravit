@@ -31,6 +31,20 @@
                             .css('background', 'transparent'))
                         .append($('<div></div>')
                             .addClass('stops')
+                            .gColorTarget({
+                                drag : false,
+                                globalColor : false
+                            })
+                            .on('colordrop', function (evt, color, mouseEvent) {
+                                var $stops = $(evt.target);
+                                if ($stops.hasClass('stops')) {
+                                    var stopsWidth = $stops.width();
+                                    var relativePos = mouseEvent.pageX - $stops.offset().left;
+                                    var percentPos = relativePos <= 0 ? 0 :
+                                        relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
+                                    methods._insertStop.call(self, percentPos, color, true);
+                                }
+                            })
                             .on('dblclick', function (evt) {
                                 var $stops = $(evt.target);
                                 if ($stops.hasClass('stops')) {
@@ -164,8 +178,16 @@
             $('<div></div>')
                 .addClass('stop')
                 .attr('stop-index', stopIndex.toString())
+                .gColorTarget({
+                    drag : false
+                })
                 .append($('<div></div>')
                     .addClass('stop-color'))
+                .on('change', function (evt, color) {
+                    if (color) {
+                        methods._updateStop.call(self, stopIndex, null, color);
+                    }
+                })
                 .on('mousedown', function (evt) {
                     // Select stop on mouse down
                     methods.selected.call(self, stopIndex);
@@ -227,8 +249,6 @@
                     $document
                         .on("mousemove", docMouseMove)
                         .on("mouseup", docMouseUp);
-
-                    evt.preventDefault();
                 })
                 .appendTo($this.find('.stops'));
 
@@ -259,6 +279,7 @@
 
             $stop.css('left', stop.position + '%');
             $stop.find('.stop-color').css('background', stop.color.asCSSString());
+            $stop.gColorTarget('value', stop.color);
 
             methods._updatePreview.call(self);
 

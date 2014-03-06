@@ -3,7 +3,7 @@
         init: function (options) {
             options = $.extend({
                 // Whether to show a swatch or not
-                swatch : true
+                swatch: true
             }, options);
 
             var self = this;
@@ -14,28 +14,38 @@
 
                 if (options.swatch) {
                     colorswatch = $('<div></div>')
-                        .gColorSwatch(options)
+                        .gColorSwatch({
+                            drag: false,
+                            drop: false,
+                            globalColor: false
+                        })
                         .on('change', function (evt, color) {
                             $this.trigger('change', color);
                         });
                 }
 
+                var colorpanel = $('<div></div>')
+                    .gColorPanel(options)
+                    .gOverlay({
+                        vertical: 'end',
+                        horizontal: 'start'
+                    })
+                    .on('change', function (evt, color) {
+                        methods.close.call(self);
+                        methods.value.call(self, color);
+                        $this.trigger('change', color);
+                    });
+
                 $this
                     .addClass('g-color-button')
+                    .gColorTarget(options)
                     .data('g-colorbutton', {
                         colorswatch: colorswatch,
-                        colorpanel: $('<div></div>')
-                            .gColorPanel(options)
-                            .gOverlay({
-                                vertical : 'end',
-                                horizontal : 'start'
-                            })
-                            .on('change', function (evt, color) {
-                                methods.close.call(this);
-                                methods.value.call(this, color ? color : "");
-                                $this.trigger('change', color);
-                            }.bind(this)),
+                        colorpanel: colorpanel,
                         container: null
+                    })
+                    .on('change', function (evt, color) {
+                        methods.value.call(self, color);
                     });
 
                 // Save and remove text
@@ -57,7 +67,6 @@
                     .addClass('fa fa-caret-down')
                     .appendTo($this);
 
-                // Register for click event
                 $this.on('click', function () {
                     methods.open.call(self);
                 });
@@ -90,8 +99,8 @@
                 if (colorswatch) {
                     colorswatch.gColorSwatch('value', value);
                 }
-
                 colorpanel.gColorPanel('value', value);
+                $this.gColorTarget('value', value);
                 return this;
             }
         }
