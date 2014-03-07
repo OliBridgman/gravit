@@ -37,6 +37,12 @@
     GStylesProperties._StyleProperties.prototype._panel = null;
 
     /**
+     * @type {Jquery}
+     * @private
+     */
+    GStylesProperties._StyleProperties.prototype._controls = null;
+
+    /**
      * @type {GXStyle}
      * @private
      */
@@ -307,6 +313,7 @@
     /** @override */
     GStylesProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
+        this._controls = controls;
 
         // Create empty tree style mapping table
         this._treeStyleMap = [];
@@ -314,33 +321,42 @@
         // Initiate our controls panel
         controls
             .append($('<button></button>')
-                .append('<span></span>')
-                .addClass('fa fa-circle-o')
+                .attr('data-control', 'contour')
                 // TODO : I18N
                 .attr('title', 'Add Contour')
+                .append($('<span></span>')
+                    .addClass('fa fa-circle-o'))
                 .on('click', function () {
                     this._addStyleClass(GXPaintContourStyle);
                 }.bind(this)))
             .append($('<button></button>')
-                .append('<span></span>')
-                .addClass('fa fa-circle')
+                .attr('data-control', 'area')
                 // TODO : I18N
                 .attr('title', 'Add Area')
+                .append($('<span></span>')
+                    .addClass('fa fa-circle'))
                 .on('click', function () {
                     this._addStyleClass(GXPaintAreaStyle);
+                }.bind(this)))
+            .append($('<span></span>')
+                .html('&nbsp;'))
+            .append($('<button></button>')
+                .attr('data-control', 'remove')
+                // TODO : I18N
+                .attr('title', 'Remove selected Style')
+                .append($('<span></span>')
+                    .addClass('fa fa-times'))
+                .on('click', function () {
+                    this._removeSelectedStyle();
                 }.bind(this)));
-        /*
-         .append($('<button></button>')
-         .append('<span></span>')
-         .addClass('fa fa-plus')
-         // TODO : I18N
-         .attr('title', 'Add Effect'));
-         */
 
         // Initiate our tree container widget
         this._htmlTreeContainer = $('<div></div>')
             .addClass('style-tree')
             .css('padding-right', '5px')
+            .css('max-height', '8em')
+            .css('overflow-x', 'hidden')
+            .css('overflow-y', 'auto')
             .tree({
                 data: [],
                 dragAndDrop: true,
@@ -348,13 +364,12 @@
                 slide: false,
                 onIsMoveHandle: function ($element) {
                     return ($element.is('.jqtree-title'));
-                }/*,
-                 onCreateLi: this._createListItem.bind(this),
-                 onCanMoveTo: this._canMoveTreeNode.bind(this)*/
+                },
+                onCreateLi: this._createListItem.bind(this),
+                onCanMoveTo: this._canMoveTreeNode.bind(this)
             })
-            //.on('tree.click', this._clickTreeNode.bind(this))
-            //.on('tree.move', this._moveTreeNode.bind(this));
-            .on('tree.select', this._selectStyle.bind(this))
+            .on('tree.click', this._clickTreeNode.bind(this))
+            .on('tree.move', this._moveTreeNode.bind(this))
             .appendTo(this._panel);
 
         $('<hr>')
@@ -407,7 +422,7 @@
             this._document.getScene().addEventListener(GXNode.AfterRemoveEvent, this._afterRemove, this);
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document.getScene().addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-            this._updateStyles();
+            this._updateStylesTree();
             return true;
         } else {
             return false;
@@ -420,7 +435,14 @@
      */
     GStylesProperties.prototype._afterInsert = function (event) {
         if (event.node instanceof GXStyle) {
-            this._insertStyle(event.node);
+            // Insert style into tree
+            this._insertStyleNode(event.node);
+
+            // Select first one if there's none yet
+            this._selectFirstStyle();
+
+            // Update adding controls
+            this._updateAddControls();
         }
     };
 
@@ -432,6 +454,8 @@
         if (event.node instanceof GXStyle) {
             var treeNode = this._getTreeNode(event.node);
             if (treeNode) {
+                var selectedNode = this._htmlTreeContainer.tree('getSelectedNode');
+
                 // Remove the tree node, first
                 this._htmlTreeContainer.tree('removeNode', treeNode);
 
@@ -446,6 +470,14 @@
                         }
                     }
                 }.bind(this));
+
+                // Reset selection if removed one was selected tree node
+                if (selectedNode && selectedNode.style === event.node) {
+                    this._selectFirstStyle(true);
+                }
+
+                // Update adding controls
+                this._updateAddControls();
             }
         }
     };
@@ -455,13 +487,22 @@
      * @private
      */
     GStylesProperties.prototype._afterPropertiesChange = function (event) {
-        // TODO : Update active style and style nodes
-        /*
-         // If properties of first polygon has changed then update ourself
-         if (this._polygons.length > 0 && this._polygons[0] === event.node) {
-         this._updateProperties();
-         }
-         */
+        if (event.node instanceof GXStyle) {
+            // If modified node is the selected style then update
+            var selectedNode = this._htmlTreeContainer.tree('getSelectedNode');
+            if (selectedNode && selectedNode.style === event.node) {
+                this._updateStyleProperties();
+            }
+
+            // Update the style tree node if any for the style in any case
+            var treeNode = this._getTreeNode(event.node);
+            if (treeNode) {
+                this._htmlTreeContainer.tree('updateNode', treeNode, {
+                    label: event.node.getNodeNameTranslated(),
+                    style: event.node
+                });
+            }
+        }
     };
 
     /**
@@ -470,30 +511,48 @@
      */
     GStylesProperties.prototype._afterFlagChange = function (event) {
         if (event.node instanceof GXStyle) {
-            //this._updateItemProperties(event.node);
-            //TODO
+            if (event.flag === GXNode.Flag.Selected && event.set) {
+                var treeNode = this._getTreeNode(event.node);
+                if (treeNode) {
+                    this._htmlTreeContainer.tree('selectNode', treeNode);
+                    this._updateStyleProperties();
+                }
+            }
         }
     };
 
     /**
+     * Clears and udpates the styles tree
      * @private
      */
-    GStylesProperties.prototype._updateStyles = function () {
+    GStylesProperties.prototype._updateStylesTree = function () {
         // Clear styles tree
+        this._htmlTreeContainer.tree('selectNode', null);
         this._htmlTreeContainer.tree('loadData', []);
         this._treeStyleMap = [];
-        this._updateStyleProperties(null);
+        this._updateStyleProperties();
 
         // Iterate styles
         for (var i = 0; i < this._elements.length; ++i) {
             var style = this._elements[i].getStyle();
             if (style) {
-                this._insertStyle(style);
+                this._insertStyleNode(style);
             }
         }
+
+        // Select first one if there's none yet
+        this._selectFirstStyle();
+
+        // Update adding controls
+        this._updateAddControls();
     };
 
-    GStylesProperties.prototype._insertStyle = function (style) {
+    /**
+     * Insert a style into the tree
+     * @param {GXStyle} style
+     * @private
+     */
+    GStylesProperties.prototype._insertStyleNode = function (style) {
         var canAdd = true;
         var forceAddChildren = false;
 
@@ -541,9 +600,11 @@
             // Insert the mapping
             this._treeStyleMap.push({style: style, treeId: treeId});
 
-            // If style is selected then mark it selected in tree
+            // If style is selected then mark it selected in tree and update
             if (style.hasFlag(GXNode.Flag.Selected)) {
                 this._htmlTreeContainer.tree('selectNode', treeNode);
+                this._htmlTreeContainer.tree('scrollToNode', treeNode);
+                this._updateStyleProperties();
             }
         }
 
@@ -551,20 +612,21 @@
         if ((canAdd || forceAddChildren) && style.hasMixin(GXNode.Container)) {
             for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof GXStyle) {
-                    this._insertStyle(child);
+                    this._insertStyleNode(child);
                 }
             }
         }
     };
 
-    GStylesProperties.prototype._selectStyle = function (evt) {
-        if (evt.node) {
-            var style = evt.node.style;
-            this._updateStyleProperties(style);
-        }
-    };
+    /**
+     * Update properties of currently selected style if any
+     * @param {GXStyle} style
+     * @private
+     */
+    GStylesProperties.prototype._updateStyleProperties = function () {
+        var selectedNode = this._htmlTreeContainer.tree('getSelectedNode');
+        var style = selectedNode ? selectedNode.style : null;
 
-    GStylesProperties.prototype._updateStyleProperties = function (style) {
         for (var i = 0; i < this._styleProperties.length; ++i) {
             var styleProperties = this._styleProperties[i];
             if (style && styleProperties.styleClass === style.constructor) {
@@ -574,12 +636,30 @@
                 styleProperties.panel.css('display', 'none');
             }
         }
+
+        // Enable / disable removal based on selection
+        this._controls.find('button[data-control="remove"]')
+            .prop('disabled', !this._htmlTreeContainer.tree('getSelectedNode'));
     };
 
+    /**
+     * Assign a property to a given style
+     * @param {GXStyle} style
+     * @param {String} property
+     * @param {*} value
+     * @private
+     */
     GStylesProperties.prototype._assignStyleProperty = function (style, property, value) {
         this._assignStyleProperties(style, [property], [value]);
     };
 
+    /**
+     * Assign properties to a given style
+     * @param {GXStyle} style
+     * @param {Array<String>} properties
+     * @param {Array<*>} values
+     * @private
+     */
     GStylesProperties.prototype._assignStyleProperties = function (style, properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
@@ -599,6 +679,11 @@
         }
     };
 
+    /**
+     * Add a new style of a given class
+     * @param {GXStyle} styleClass
+     * @private
+     */
     GStylesProperties.prototype._addStyleClass = function (styleClass) {
         var styleName = null;
 
@@ -607,6 +692,7 @@
         try {
             for (var i = 0; i < this._elements.length; ++i) {
                 var instance = new styleClass();
+                instance.setFlag(GXNode.Flag.Selected);
                 styleName = instance.getNodeNameTranslated();
                 this._elements[i].getStyle(true).appendChild(instance);
             }
@@ -614,6 +700,81 @@
             // TODO : I18N
             editor.commitTransaction('Add ' + styleName + ' Style');
         }
+    };
+
+    /**
+     * Remove the currently selected style if any
+     * @private
+     */
+    GStylesProperties.prototype._removeSelectedStyle = function () {
+        var selectedNode = this._htmlTreeContainer.tree('getSelectedNode');
+        if (selectedNode) {
+            var styleClass = selectedNode.style.constructor;
+
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                for (var i = 0; i < this._elements.length; ++i) {
+                    var styleSet = this._elements[i].getStyle(false);
+                    if (styleSet) {
+                        for (var style = styleSet.getFirstChild(); style !== null; style = style.getNext()) {
+                            if (style.constructor === styleClass) {
+                                styleSet.removeChild(style);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Remove ' + selectedNode.style.getNodeNameTranslated() + ' Style');
+            }
+        }
+    };
+
+    /**
+     * Selects the first style node if any if no other one
+     * is already selected or this call is enforced
+     * @param {Boolean} [force] force selection no matter of the
+     * current selection, defaults to false
+     * @private
+     */
+    GStylesProperties.prototype._selectFirstStyle = function (force) {
+        var selectedNode = this._htmlTreeContainer.tree('getSelectedNode');
+        if (!selectedNode || force) {
+            var treeRoot = this._htmlTreeContainer.tree('getTree');
+            if (treeRoot && treeRoot.children) {
+                this._htmlTreeContainer.tree('selectNode', treeRoot.children[0]);
+            } else {
+                this._htmlTreeContainer.tree('selectNode', null);
+            }
+            this._updateStyleProperties();
+        }
+    };
+
+    /**
+     * Update the controls for adding styles
+     */
+    GStylesProperties.prototype._updateAddControls = function () {
+        // For multiple elements, we'll be collecting all style classes on the root
+        var styleClasses = [];
+        if (this._elements.length > 1) {
+            var treeRoot = this._htmlTreeContainer.tree('getTree');
+            if (treeRoot && treeRoot.children) {
+                for (var i = 0; i < treeRoot.children.length; i++) {
+                    var node = treeRoot.children[i];
+                    if (styleClasses.indexOf(node.style.constructor) < 0) {
+                        styleClasses.push(node.style.constructor);
+                    }
+                }
+            }
+        }
+
+        // Enable / disable add controls
+        this._controls.find('button[data-control="contour"]')
+            .prop('disabled', styleClasses.indexOf(GXPaintContourStyle) >= 0);
+        this._controls.find('button[data-control="area"]')
+            .prop('disabled', styleClasses.indexOf(GXPaintAreaStyle) >= 0);
     };
 
     /**
@@ -636,6 +797,110 @@
      */
     GStylesProperties.prototype._getTreeNode = function (style) {
         return this._htmlTreeContainer.tree('getNodeById', this._getTreeNodeId(style));
+    };
+
+    /**
+     * @private
+     */
+    GStylesProperties.prototype._createListItem = function (node, li) {
+        if (node.style) {
+            var style = node.style;
+
+            // TODO : Icons
+        }
+    };
+
+    /**
+     * @param event
+     * @return {{parent: GXNode, before: GXNode, source: GXNode}} the result of the move
+     * or null if the actual move is not allowed
+     * @private
+     */
+    GStylesProperties.prototype._getMoveTreeNodeInfo = function (position, source, target) {
+        if (source && target && position !== 'none') {
+            var parent = null;
+            var before = null;
+
+            if (position === 'inside') {
+                if (!target.hasMixin(GXNode.Container)) {
+                    return null;
+                }
+
+                parent = target;
+                before = target.getFirstChild();
+            } else if (position === 'before') {
+                parent = target.getParent();
+                before = target;
+            } else if (position == 'after') {
+                parent = target.getParent();
+                before = target.getNext();
+            }
+
+            if (source.validateInsertion(parent, before)) {
+                return {
+                    parent: parent,
+                    before: before,
+                    source: source
+                };
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    GStylesProperties.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+        return this._getMoveTreeNodeInfo(position, moved_node.style, target_node.style) !== null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    GStylesProperties.prototype._moveTreeNode = function (event) {
+        event.preventDefault();
+
+        var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
+            event.move_info.moved_node.style, event.move_info.target_node.style);
+
+        if (moveInfo) {
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                moveInfo.source.getParent().removeChild(moveInfo.source);
+                moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Drag Style(s)');
+            }
+        }
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    GStylesProperties.prototype._clickTreeNode = function (event) {
+        event.preventDefault();
+
+        if (event.node && event.node.style) {
+            // TODO : Support multiple selection one day??
+            // Select the style and de-select all others
+            var ownerElement = event.node.style.getOwnerElement();
+            ownerElement.getStyle().accept(function (node) {
+                if (node instanceof GXStyle) {
+                    if (node === event.node.style) {
+                        node.setFlag(GXNode.Flag.Selected);
+                    } else {
+                        node.removeFlag(GXNode.Flag.Selected);
+                    }
+                }
+            });
+
+        }
     };
 
     /** @override */

@@ -204,6 +204,10 @@
             var before = null;
 
             if (position === 'inside') {
+                if (!target.hasMixin(GXNode.Container)) {
+                    return null;
+                }
+
                 parent = target;
                 before = target.getFirstChild();
             } else if (position === 'before') {
