@@ -2,7 +2,7 @@
     function test(scene, page, view) {
         var path = new GXPath();
         path.setProperty('closed', true);
-        /*
+
         // path orientation 1
         var ap = new GXPathBase.AnchorPoint();
         ap.setProperties(['x', 'y', 'hrx', 'hry'], [71.2795452,261.141279, 251.140545,393.280279]);
@@ -28,9 +28,9 @@
 
         ap = path.getAnchorPoints().getFirstChild();
         ap.setProperties(['hlx', 'hly'], [-108.581455,129.002279]);
-        */
 
         // path orientation 2
+        /*
         var ap = new GXPathBase.AnchorPoint();
         ap.setProperties(['x', 'y', 'hrx', 'hry'], [71.2795452,261.141279, -108.581455,129.002279]);
         path.getAnchorPoints().appendChild(ap);
@@ -55,7 +55,7 @@
 
         ap = path.getAnchorPoints().getFirstChild();
         ap.setProperties(['hlx', 'hly'], [251.140545,393.280279]);
-
+        */
         var editor = GXEditor.getEditor(scene);
         editor.insertElements([path]);
 

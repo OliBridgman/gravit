@@ -1218,7 +1218,7 @@
     /**
      * Make a hit-test against a vertex source and a point.
      * The vertex source will be automatically rewinded to the beginning.
-     * Inside is considered to the right.
+     * If orientation is not provided, inside will be defined automatically for even/odd fill of the shape
      * @param {Number} x the x-position of the point to hit-test against
      * @param {Number} y the y-position of the point to hit-test against
      * @param {GXVertexSource} source the vertex source used for hit-testing
@@ -1229,11 +1229,13 @@
      * @param {GXVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
+     * @param {Boolean} orientationCW - true means that clock-wise orientation should be used,
+     * false - counter-clockwise, null - define orientation automatically
 
      * @return {Boolean} true if a hit was made, false if not
      * @version 1.0
      */
-    GXVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result) {
+    GXVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result, orientationCW) {
         var px1, py1, px2, py2, cx1, cy1, pStartX, pStartY;
         var chainIdx = 0;
         var res = false;
@@ -1344,7 +1346,9 @@
             } // while
 
             if (area) {
-                if (tot == 2) {
+                if (orientationCW == null && (tot == 2 || tot == -2) ||
+                        tot == 2 && !orientationCW || tot == -2 && orientationCW) {
+
                     if (result) {
                         result.outline = false;
                     }
