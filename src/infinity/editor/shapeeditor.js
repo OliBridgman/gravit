@@ -271,7 +271,7 @@
             transformToApply = transform.multiplied(sourceTransform);
         }
 
-        this._elementPreview.setProperty('transform', transformToApply);
+        this._elementPreview.setProperty('trf', transformToApply);
     };
 
     /** @override */

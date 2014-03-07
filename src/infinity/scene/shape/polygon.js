@@ -56,7 +56,7 @@
         var stepArc = gMath.PI2 / this.$pts;
         var deltaArc = this.$ia - this.$oa;
 
-        var transform = includeTransform ? this.$transform : null;
+        var transform = includeTransform ? this.$trf : null;
 
         // iterate backwards, as we have reflected Y axis; also for compatibility with MX
         for (var arc = this.$oa; arc < endArc - ACC; arc += stepArc) {

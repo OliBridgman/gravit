@@ -25,7 +25,7 @@
             var height = getRandomInt(size / 3, size);
 
             var ellipse = new GXEllipse();
-            ellipse.setProperties(['sa', 'ea', 'etp', 'transform'],
+            ellipse.setProperties(['sa', 'ea', 'etp', 'trf'],
                 [gMath.toRadians(getRandomInt(0, 360)), gMath.toRadians(getRandomInt(0, 360)), ellipseType[getRandomInt(0, ellipseType.length-1)],
                     new GTransform(width/2, 0.0, 0.0, height/2, 0, 0)]);
 

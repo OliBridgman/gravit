@@ -77,7 +77,7 @@
      * if any in the returned coordinates. Defaults to false.
      */
     GXRectangle.prototype.iterateSegments = function (iterator, includeTransform) {
-        var transform = includeTransform ? this.$transform : null;
+        var transform = includeTransform ? this.$trf : null;
 
         for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
             var side = GXRectangle.SIDES[i];

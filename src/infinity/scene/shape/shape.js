@@ -20,7 +20,7 @@
      * The geometry properties of a shape with their default values
      */
     GXShape.GeometryProperties = {
-        transform: null
+        trf: null
     };
     // -----------------------------------------------------------------------------------------------------------------
     // GXShape Class
@@ -28,18 +28,18 @@
 
     /** @override */
     GXShape.prototype.getTransform = function () {
-        return this.$transform;
+        return this.$trf;
     };
 
     /** @override */
     GXShape.prototype.setTransform = function (transform) {
-        this.setProperty('transform', transform);
+        this.setProperty('trf', transform);
     };
 
     /** @override */
     GXShape.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
-            this.setProperty('transform', this.$transform ? this.$transform.multiplied(transform) : transform);
+            this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
         }
     };
 
@@ -52,7 +52,7 @@
     GXShape.prototype.store = function (blob) {
         if (GXItemCompound.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXShape.GeometryProperties, function (property, value) {
-                if (property === 'transform' && value) {
+                if (property === 'trf' && value) {
                     return GTransform.serialize(value);
                 }
                 return value;
@@ -66,7 +66,7 @@
     GXShape.prototype.restore = function (blob) {
         if (GXItemCompound.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXShape.GeometryProperties, function (property, value) {
-                if (property === 'transform' && value) {
+                if (property === 'trf' && value) {
                     return GTransform.deserialize(value);
                 }
                 return value;

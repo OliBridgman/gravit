@@ -94,9 +94,9 @@
         }
 
         var origTransform = null;
-        if (this.$transform) {
-            origTransform = this.$transform;
-            this.$transform = null;
+        if (this.$trf) {
+            origTransform = this.$trf;
+            this.$trf = null;
             var invTransform = origTransform.inverted();
             locationInvTransformed = invTransform.mapPoint(locationInvTransformed);
             scaleFactor = scaleFactor * invTransform.getScaleFactor();
@@ -105,7 +105,7 @@
         // Generate unstyled vertices
         // TODO : Cache this???
         var vertices = new GXVertexContainer();
-        this._getAnchorPoints()._generateVertices(vertices, this.$transform, false);
+        this._getAnchorPoints()._generateVertices(vertices, this.$trf, false);
 
         var hitResult = new GXVertexInfo.HitResult();
         var elemHitRes = null;
@@ -117,7 +117,7 @@
         }
 
         if (origTransform) {
-            this.$transform = origTransform;
+            this.$trf = origTransform;
         }
 
         return elemHitRes;

@@ -1386,7 +1386,7 @@
     GXPathBase.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
             this._vertices.clearVertices();
-            this._getAnchorPoints()._generateVertices(this._vertices, this.$transform, true);
+            this._getAnchorPoints()._generateVertices(this._vertices, this.$trf, true);
             this._verticesDirty = false;
         }
         return this._vertices.rewindVertices(index);
@@ -1428,7 +1428,7 @@
                     points._invalidateLeft(points.getLastChild());
                 }
                 this._verticesDirty = true;
-            } else if (args.properties.indexOf('transform') >= 0) {
+            } else if (args.properties.indexOf('trf') >= 0) {
                 this._verticesDirty = true;
             }
         }

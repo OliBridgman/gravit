@@ -157,8 +157,8 @@
                 return false;
         }
 
-        if (vertex.command !== GXVertex.Command.Close && this.$transform) {
-            this.$transform.map(vertex);
+        if (vertex.command !== GXVertex.Command.Close && this.$trf) {
+            this.$trf.map(vertex);
         }
 
         this._vertexIterator += 1;
@@ -174,8 +174,8 @@
         if (!context.configuration.isOutline(context)) {
             // Apply our transformation (if any) before the canvas transformation
             var canvasTransform = context.canvas.getTransform();
-            if (this.$transform) {
-                var tmpTransform = canvasTransform.preMultiplied(this.$transform);
+            if (this.$trf) {
+                var tmpTransform = canvasTransform.preMultiplied(this.$trf);
                 context.canvas.setTransform(tmpTransform);
             }
 

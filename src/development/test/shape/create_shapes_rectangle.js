@@ -29,7 +29,7 @@
             var cornerRadius = getRandomInt(0, rectSize / 3);
 
             var rect = new GXRectangle();
-            rect.setProperties(['tl_ct', 'tl_sx', 'transform'],
+            rect.setProperties(['tl_ct', 'tl_sx', 'trf'],
                 [anchorCTypes[getRandomInt(0, anchorCTypes.length-1)], cornerRadius, new GTransform(rectSize, 0.0, 0.0, rectSize, x, y)]);
 
             rect.transform(new GTransform(1.0, 0.0, 0.0, 1.0, -(x + rectSize/2), -(y + rectSize/2))
