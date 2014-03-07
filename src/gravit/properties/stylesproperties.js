@@ -853,6 +853,11 @@
      * @private
      */
     GStylesProperties.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+        // TODO : Enable drag'n'drop for multiple elements one day...
+        if (this._elements.length > 1) {
+            return false;
+        }
+
         return this._getMoveTreeNodeInfo(position, moved_node.style, target_node.style) !== null;
     };
 
