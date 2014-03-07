@@ -238,9 +238,9 @@
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-            if (left.getType() === right.getType()) {
-                var v1 = left.getValue();
-                var v2 = right.getValue();
+            if (left._type === right._type) {
+                var v1 = left._value;
+                var v2 = right._value;
 
                 if (!v1 && v1 === v2) {
                     return true;
@@ -424,6 +424,7 @@
     };
 
     /**
+     * DO NOT MODIFY RETURN VALUE!!!
      * @returns {Array<Number>|String|null}
      */
     GXColor.prototype.getValue = function () {

@@ -87,14 +87,6 @@
     };
 
     /**
-     * Clone this instance
-     * @returns {GPoint}
-     */
-    GPoint.prototype.clone = function () {
-        return new GPoint(this._x, this._y);
-    };
-
-    /**
      * Return a new subtract point
      * @param {GPoint} other the other point to subtract from this to get a subtract
      * @return {GPoint} a new subtract point which is this - other

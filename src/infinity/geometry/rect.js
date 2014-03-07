@@ -171,14 +171,6 @@
     };
 
     /**
-     * Clone this instance
-     * @returns {GRect}
-     */
-    GRect.prototype.clone = function () {
-        return new GRect(this._x, this._y, this._width, this._height);
-    };
-
-    /**
      * @return {Boolean) whether this rectangle is empty or not
      * @version 1.0
      */

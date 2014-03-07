@@ -62,21 +62,23 @@
         // Opacity of the fill
         opc: 1.0,
         // Color of the fill
-        cls: null,
-        // Stop Offsets of the gradient
-        gd_off: null,
-        // Stop Colors of the fill
-        gd_cls: null
+        cls: new GXColor(GXColor.Type.Black),
+        // Gradient of the fill
+        grd: null,
+        // Transform of the fill in unit space
+        trf: null
     };
 
     /** @override */
     GXPaintFillStyle.prototype.store = function (blob) {
         if (GXPaintStyle.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXPaintFillStyle.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return value.asString();
-                } else if (property === 'gd_cls') {
-                    // TODO
+                if (value) {
+                    if (property === 'cls' || property === 'grd') {
+                        return value.asString();
+                    } else if (property === 'trf') {
+                        return GTransform.serialize(value);
+                    }
                 }
                 return value;
             });
@@ -89,10 +91,14 @@
     GXPaintFillStyle.prototype.restore = function (blob) {
         if (GXPaintStyle.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXPaintFillStyle.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return GXColor.parseColor(value);
-                } else if (property === 'gd_cls') {
-                    // TODO
+                if (value) {
+                    if (property === 'cls') {
+                        return GXColor.parseColor(value);
+                    } else if (property === 'grd') {
+                        return GXGradient.parseGradient(value);
+                    } else if (property === 'trf') {
+                        return GTransform.deserialize(value);
+                    }
                 }
                 return value;
             });
