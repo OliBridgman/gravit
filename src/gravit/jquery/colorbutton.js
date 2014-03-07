@@ -4,6 +4,8 @@
             options = $.extend({
                 // Whether to show a swatch or not
                 swatch: true
+                // see options of gColorTarget
+                // see options of gColorPanel
             }, options);
 
             var self = this;
@@ -17,7 +19,8 @@
                         .gColorSwatch({
                             drag: false,
                             drop: false,
-                            globalColor: false
+                            globalColor: false,
+                            clearColor: options.clearColor ? true : false
                         })
                         .on('change', function (evt, color) {
                             $this.trigger('change', color);

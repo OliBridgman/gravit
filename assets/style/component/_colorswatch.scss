@@ -6,6 +6,8 @@
   .swatch {
     @include g-cursor(pipette);
     border: 1px solid $frameDarkColor;
+    width: 8px;
+    height: 8px;
 
     &:hover {
       border: 1px solid aquamarine;
@@ -13,7 +15,7 @@
   }
 }
 
-.g-color-swatch, .g-color-swatches .swatch {
+.g-color-swatch {
   width: 1em;
   height: 1em;
 }

@@ -401,8 +401,7 @@
         // Append color picker to modes
         $('<button></button>')
             .gColorButton({
-                swatch : false,
-                noneSelect : false
+                swatch : false
             })
             .on('change', function (evt, color) {
                 gApp.setGlobalColor(color);

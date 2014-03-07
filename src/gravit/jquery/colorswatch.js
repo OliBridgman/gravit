@@ -3,7 +3,9 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // see options of gColorBox
+                // Wether to show null color value or not
+                clearColor: true
+                // see options of gColorTarget
             }, options);
 
             var self = this;
@@ -11,6 +13,9 @@
                 var $this = $(this)
                     .addClass('g-color-swatch g-cursor-hand-open')
                     .html('&nbsp;')
+                    .data('gcolorswatch', {
+                        clearColor: options.clearColor
+                    })
                     .gColorTarget(options)
                     .on('change', function (evt, color) {
                         methods.value.call(self, color);
@@ -20,12 +25,23 @@
 
         value: function (value) {
             var $this = $(this);
+            var data = $this.data('gcolorswatch');
+
             if (!arguments.length) {
                 return $this.gColorTarget('value');
             } else {
                 $this.gColorTarget('value', value);
                 var color = $this.gColorTarget('value');
-                $this.css('background', color ? color.asCSSString() : 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
+
+                if (color) {
+                    $this.css('background', color.asCSSString());
+                } else {
+                    if (data.clearColor) {
+                        $this.css('background', 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
+                    } else {
+                        $this.css('background', 'transparent');
+                    }
+                }
                 return this;
             }
         }

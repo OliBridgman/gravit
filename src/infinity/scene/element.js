@@ -279,6 +279,12 @@
      * @returns {GXStyleSet}
      */
     GXElement.Style.prototype.getStyle = function (create) {
+        // If we have a styleSet reference and it not
+        // has ourself as a parent, then clear it, first
+        if (this._styleSet && this._styleSet.getParent() !== this) {
+            this._styleSet = null;
+        }
+
         if (!this._styleSet) {
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
                 if (child instanceof GXStyleSet) {
@@ -292,7 +298,6 @@
                 this.insertChild(this._styleSet, this.getFirstChild());
             }
         }
-
         return this._styleSet;
     };
 

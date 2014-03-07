@@ -36,7 +36,7 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.init = function (panel, menu) {
+    EXPolygonProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -202,7 +202,7 @@
     /** @override */
     EXPolygonProperties.prototype.updateFromNodes = function (document, nodes) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -216,7 +216,7 @@
 
         if (this._polygons.length === nodes.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -225,7 +225,7 @@
     };
 
     /**
-     * @param {GXElement.AfterPropertiesChangeEvent} event
+     * @param {GXNode.AfterPropertiesChangeEvent} event
      * @private
      */
     EXPolygonProperties.prototype._afterPropertiesChange = function (event) {

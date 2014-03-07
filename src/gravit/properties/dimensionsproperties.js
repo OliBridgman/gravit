@@ -15,6 +15,12 @@
      * @type {JQuery}
      * @private
      */
+    EXDimensionsProperties.prototype._controls = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
     EXDimensionsProperties.prototype._panel = null;
 
     /**
@@ -48,7 +54,8 @@
     };
 
     /** @override */
-    EXDimensionsProperties.prototype.init = function (panel, menu) {
+    EXDimensionsProperties.prototype.init = function (panel, controls) {
+        this._controls = controls;
         this._panel = panel;
 
         var _createDimensionInput = function (dimension) {
@@ -68,25 +75,31 @@
             // TODO : I18N
             var hint = apply === 'selection' ? 'Apply to selection' : 'Apply to individual objects';
             return $('<button></button>')
-                .addClass('g-button g-flat ' + (apply === 'selection' ? 'g-active' : ''))
+                .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
                 .attr('title', hint)
                 .attr('data-apply', apply)
                 .append($('<span></span>')
-                    .addClass('fa fa-fw fa-' + (apply === 'selection' ? 'th-large' : 'square')))
+                    .addClass('fa fa-' + (apply === 'selection' ? 'th-large' : 'square')))
                 .on('click', function () {
                     if (!$(this).hasClass('g-active')) {
                         if (apply === 'selection') {
-                            self._panel.find('button[data-apply="objects"]').removeClass('g-active');
-                            self._panel.find('button[data-apply="selection"]').addClass('g-active');
+                            self._controls.find('button[data-apply="objects"]').removeClass('g-active');
+                            self._controls.find('button[data-apply="selection"]').addClass('g-active');
                         } else {
-                            self._panel.find('button[data-apply="selection"]').removeClass('g-active');
-                            self._panel.find('button[data-apply="objects"]').addClass('g-active');
+                            self._controls.find('button[data-apply="selection"]').removeClass('g-active');
+                            self._controls.find('button[data-apply="objects"]').addClass('g-active');
                         }
                         self._updateDimensions(true);
                     }
                 });
         }.bind(this);
 
+        // Init controls
+        controls
+            .append(_createApplyButton('selection'))
+            .append(_createApplyButton('objects'));
+
+        // Init panel
         $('<table></table>')
             .addClass('g-form')
             .css('margin', '0px auto')
@@ -100,11 +113,7 @@
                     .addClass('label')
                     .text('Y:'))
                 .append($('<td></td>')
-                    .append(_createDimensionInput('y')))
-                .append($('<td></td>')
-                    // TODO : I18N
-                    .append(_createApplyButton('selection'))
-                    .append(_createApplyButton('objects'))))
+                    .append(_createDimensionInput('y'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -139,8 +148,8 @@
         if (this._elements.length > 0) {
             this._document = document;
             this._document.getScene().addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
-            this._panel.find('button[data-apply="selection"]').css('display', this._elements.length > 1 ? '' : 'none');
-            this._panel.find('button[data-apply="objects"]').css('display', this._elements.length > 1 ? '' : 'none');
+            this._controls.find('button[data-apply="selection"]').css('display', this._elements.length > 1 ? '' : 'none');
+            this._controls.find('button[data-apply="objects"]').css('display', this._elements.length > 1 ? '' : 'none');
             this._updateDimensions();
             return true;
         } else {
@@ -190,7 +199,7 @@
             }
         }
 
-        var applyToSelection = this._panel.find('button[data-apply="selection"]').hasClass('g-active');
+        var applyToSelection = this._controls.find('button[data-apply="selection"]').hasClass('g-active');
 
         if (applyToSelection) {
             _updateDimension('x', this._elementsBBox.getX());
@@ -240,7 +249,7 @@
             }
         };
 
-        var applyToSelection = this._panel.find('button[data-apply="selection"]').hasClass('g-active');
+        var applyToSelection = this._controls.find('button[data-apply="selection"]').hasClass('g-active');
 
         var editor = this._document.getEditor();
         editor.beginTransaction();

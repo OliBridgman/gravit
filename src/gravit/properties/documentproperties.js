@@ -29,7 +29,7 @@
     };
 
     /** @override */
-    GDocumentProperties.prototype.init = function (panel, menu) {
+    GDocumentProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
         $('<button></button>')

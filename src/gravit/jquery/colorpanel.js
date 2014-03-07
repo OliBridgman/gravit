@@ -155,7 +155,9 @@
             options = $.extend({
                 defaultView: 'cubes',
                 availableViews: ['cubes', 'rainbow'], //, 'swatches'],
-                noneSelect: true,
+                // Whether to allow setting color to 'null'
+                clearColor: false,
+                // Whether to show a preview of hover color
                 preview: true
             }, options);
 
@@ -206,7 +208,7 @@
                     .css('text-align', 'right')
                     .appendTo(toolbar);
 
-                if (options.noneSelect) {
+                if (options.clearColor) {
                     $('<button></button>')
                         .css('margin-right', '7px')
                         // TODO : I18N

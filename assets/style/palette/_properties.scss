@@ -3,15 +3,11 @@
 
   .properties-panels {
     > .properties-panel-category {
+      @include box-sizing(border-box);
+      display: table;
+      width: 100%;
       margin: 3px 0px;
       background: $frameDarkColor;
-      //background: rgb(206, 215, 224) linear-gradient(to top, rgb(229, 229, 229), rgb(237, 237, 237));
-      //border-bottom: 1px solid rgb(205, 205, 205);
-      //box-shadow: rgb(255, 255, 255) 0px 1px 0px 0px inset, rgb(236, 240, 243) 0px 1px 0px 0px;
-
-
-
-      // TMP
       border: 1px solid $frameBorderColor;
       border-bottom: none;
       margin-bottom: 0px;
@@ -20,17 +16,43 @@
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
 
-      > i.fa:first-child {
-        padding-right: 3px;
+      > div {
+        display: table-cell;
+        vertical-align: middle;
       }
-      // END : TMP
+
+      > .title {
+        width: 100%;
+
+        > i.fa:first-child {
+          padding-right: 3px;
+        }
+      }
+
+      > .controls {
+        text-align: right;
+        white-space: nowrap;
+
+        input, button, .g-button, select {
+          border: none;
+          padding-top: 0px;
+          padding-bottom: 0px;
+          background: transparent;
+          box-shadow: none;
+        }
+
+        button, .g-button {
+          &.g-active {
+            &, * {
+              color: $selectedColor;
+            }
+          }
+        }
+      }
     }
 
     > .properties-panel-content {
-      margin: 7px 0px;
-
-      // TMP
-      margin-bottom: 12px;
+      margin: 7px 0px 12px 0px;
       border: 1px solid $frameBorderColor;
       border-top: none;
       border-radius: 5px;
@@ -38,7 +60,6 @@
       border-top-right-radius: 0px;
       margin-top: 0px;
       padding: 10px 5px;
-      // END : TMP
 
       &.last-visible {
         margin-bottom: 0px;

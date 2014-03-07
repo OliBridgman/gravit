@@ -42,7 +42,7 @@
     };
 
     /** @override */
-    GPathProperties.prototype.init = function (panel, menu) {
+    GPathProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
         var _createPathInput = function (property) {
@@ -233,7 +233,7 @@
     /** @override */
     GPathProperties.prototype.updateFromNodes = function (document, nodes) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document.getScene().removeEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange);
             this._document = null;
         }
@@ -257,7 +257,7 @@
 
         if (this._pathes.length === nodes.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXElement.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document.getScene().addEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange, this);
             this._updatePathProperties();
             this._updatePointProperties();
@@ -268,7 +268,7 @@
     };
 
     /**
-     * @param {GXElement.AfterPropertiesChangeEvent} event
+     * @param {GXNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPathProperties.prototype._afterPropertiesChange = function (event) {

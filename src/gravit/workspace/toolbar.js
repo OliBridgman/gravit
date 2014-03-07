@@ -44,7 +44,8 @@
                         .attr('title', 'Area Color')
                         .append($('<span></span>'))
                         .gColorButton({
-                            swatch: false
+                            swatch: false,
+                            clearColor: true
                         })
                         .on('change', function (evt, color) {
                             this._assignCurrentColor(GXEditor.CurrentColorType.Area, color);
@@ -55,7 +56,8 @@
                         .attr('title', 'Contour Color')
                         .append($('<span></span>'))
                         .gColorButton({
-                            swatch: false
+                            swatch: false,
+                            clearColor: true
                         })
                         .on('change', function (evt, color) {
                             this._assignCurrentColor(GXEditor.CurrentColorType.Contour, color);

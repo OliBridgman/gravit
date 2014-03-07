@@ -3,8 +3,6 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // Whether to show inputs or not
-                input: true
             }, options);
 
             var self = this;
@@ -32,8 +30,8 @@
                         .append($('<div></div>')
                             .addClass('stops')
                             .gColorTarget({
-                                drag : false,
-                                globalColor : false
+                                drag: false,
+                                globalColor: false
                             })
                             .on('colordrop', function (evt, color, mouseEvent) {
                                 var $stops = $(evt.target);
@@ -42,7 +40,7 @@
                                     var relativePos = mouseEvent.pageX - $stops.offset().left;
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
-                                    methods._insertStop.call(self, percentPos, color, true);
+                                    methods.insertStop.call(self, percentPos, color, true);
                                 }
                             })
                             .on('dblclick', function (evt) {
@@ -55,34 +53,9 @@
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
 
-                                    methods._insertStop.call(self, percentPos, GXColor.parseCSSColor('black'), true);
+                                    methods.insertStop.call(self, percentPos, GXColor.parseCSSColor('black'), true);
                                 }
                             })));
-
-                if (options.input) {
-                    container
-                        .append($('<div></div>')
-                            .addClass('panel')
-                            .append($('<input>')
-                                .attr('type', 'text')
-                                .addClass('position')
-                                .gAutoBlur()
-                                .on('change', function (evt) {
-                                    var value = parseInt($(evt.target).val());
-                                    if (!isNaN(value) && value >= 0 && value <= 100) {
-                                        methods._updateStop.call(self, data.selected, value);
-                                    }
-                                }))
-                            .append($('<button></button>')
-                                .addClass('color g-flat')
-                                .gColorButton({
-                                    noneSelect: false,
-                                    swatch: false
-                                })
-                                .on('change', function (evt, color) {
-                                    methods._updateStop.call(self, data.selected, null, color);
-                                })));
-                }
             });
         },
 
@@ -102,35 +75,34 @@
                     })
                 }
 
-                result.sort(function (a, b) {
-                    return a.position > b.position;
-                });
-
                 return result;
             } else {
+                // Reset any selection
+                methods.selected.call(self, -1, true);
+
                 // Clear stops and add all again
                 data.stops = [];
-                data.selected = -1;
                 $this.find('.stops').empty();
 
                 // Insert all stops now
                 for (var i = 0; i < value.length; ++i) {
-                    methods._insertStop.call(self, value[i].position, value[i].color);
+                    methods.insertStop.call(self, value[i].position, value[i].color);
                 }
-
-                methods._updatePanel.call(self);
 
                 return this;
             }
         },
 
-        selected: function (selected) {
-            var self = this;
+        selected: function (selected, triggerEvent) {
             var $this = $(this);
             var data = $this.data('ggradienteditor');
 
             if (!arguments.length) {
-                return data.selected;
+                var selected = data.selected;
+                if (selected >= 0 && !data.stops[selected].markDelete) {
+                    return selected;
+                }
+                return -1;
             } else {
                 if (selected !== data.selected) {
                     data.selected = selected;
@@ -140,12 +112,14 @@
                         $stop.toggleClass('g-active', $stop.attr('stop-index') == selected);
                     });
 
-                    methods._updatePanel.call(self);
+                    if (triggerEvent) {
+                        this.trigger('selected');
+                    }
                 }
             }
         },
 
-        _insertStop: function (position, color, select) {
+        insertStop: function (position, color, select) {
             var self = this;
             var $this = $(this);
             var data = $this.data('ggradienteditor');
@@ -179,22 +153,23 @@
                 .addClass('stop')
                 .attr('stop-index', stopIndex.toString())
                 .gColorTarget({
-                    drag : false
+                    drag: false
                 })
                 .append($('<div></div>')
                     .addClass('stop-color'))
                 .on('change', function (evt, color) {
                     if (color) {
-                        methods._updateStop.call(self, stopIndex, null, color);
+                        methods.updateStop.call(self, stopIndex, null, color);
                     }
                 })
                 .on('mousedown', function (evt) {
-                    // Select stop on mouse down
-                    methods.selected.call(self, stopIndex);
-
-                    // Implement dragging stuff
                     var $stop = $(this);
                     var stopindex = parseInt($stop.attr('stop-index'));
+
+                    // Select stop on mouse down
+                    methods.selected.call(self, stopIndex, true);
+
+                    // Implement dragging stuff
                     var stopsOffset = $stops.offset();
                     var moveMinX = stopsOffset.left;
                     var moveMaxX = moveMinX + $stops.width();
@@ -216,13 +191,15 @@
                             left = moveMaxX;
                         }
 
+                        var stop = data.stops[stopIndex];
+
                         if (top > moveMaxY) {
                             // Moved outside area so get rid of our stop
                             $stop.css('display', 'none');
-                            data.stops[stopIndex].markDelete = true;
+                            stop.markDelete = true;
                         } else {
                             $stop.css('display', '');
-                            data.stops[stopIndex].markDelete = false;
+                            stop.markDelete = false;
                         }
 
                         // Calculate percentage for stop
@@ -231,7 +208,7 @@
                         var percentPos = relativePos <= 0 ? 0 :
                             relativePos >= relativeMoveArea ? 100 : (relativePos / relativeMoveArea * 100);
 
-                        methods._updateStop.call(self, stopIndex, percentPos);
+                        methods.updateStop.call(self, stopIndex, percentPos);
                     };
 
                     var docMouseUp = function (evt) {
@@ -254,15 +231,15 @@
                 .appendTo($this.find('.stops'));
 
             // Update stop widget
-            methods._updateStop.call(self, stopIndex);
+            methods.updateStop.call(self, stopIndex);
 
             // Select stop if desired
             if (select) {
-                methods.selected.call(self, stopIndex);
+                methods.selected.call(self, stopIndex, true);
             }
         },
 
-        _updateStop: function (stopIndex, position, color) {
+        updateStop: function (stopIndex, position, color) {
             var self = this;
             var $this = $(this);
             var data = $this.data('ggradienteditor');
@@ -274,6 +251,7 @@
                 position = Math.round(position);
                 stop.position = position < 0 ? 0 : position > 100 ? 100 : position;
             }
+
             if (color) {
                 stop.color = color;
             }
@@ -284,8 +262,8 @@
 
             methods._updatePreview.call(self);
 
-            if (stopIndex == data.selected) {
-                methods._updatePanel.call(self);
+            if (stopIndex === data.selected) {
+                $this.trigger('selected');
             }
         },
 
@@ -309,27 +287,6 @@
             }
 
             $this.find('.gradient').css('background', 'linear-gradient(90deg, ' + cssStops.join(", ") + ')');
-        },
-
-        _updatePanel: function () {
-            var $this = $(this);
-            var data = $this.data('ggradienteditor');
-            var panel = $this.find('.panel');
-
-            if (panel.length > 0) {
-                var $position = panel.find('.position');
-                var $color = panel.find('.color');
-                var stop = data.selected < 0 ? null : data.stops[data.selected];
-
-                if (stop && stop.markDelete) {
-                    stop = null;
-                }
-
-                $position.prop('disabled', !stop);
-                $position.val(stop ? stop.position : '');
-                $color.prop('disabled', !stop);
-                $color.gColorButton('value', stop ? stop.color : null);
-            }
         }
     };
 

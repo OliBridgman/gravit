@@ -35,6 +35,8 @@ gLocale.setValues(GXPathBase, GLocale.Language.English, ["corner.rounded", "corn
     ["Round", "Inverse Round", "Bevel", "Inset", "Fancy"]);
 gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);
 gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
+gLocale.setValues(GXPaintAreaStyle, GLocale.Language.English, ["name"], ["Area"]);
+gLocale.setValues(GXPaintContourStyle, GLocale.Language.English, ["name"], ["Contour"]);
 
 // Tools
 gLocale.setValues(GXTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);

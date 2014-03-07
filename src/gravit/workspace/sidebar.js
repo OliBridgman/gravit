@@ -69,10 +69,10 @@
         var editor = this.document.getEditor();
 
         // Subscribe to the document scene's events
-        scene.addEventListener(GXNode.AfterInsertEvent, this._insertEvent, this);
-        scene.addEventListener(GXNode.AfterRemoveEvent, this._removeEvent, this);
-        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent, this);
-        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent, this);
+        scene.addEventListener(GXNode.AfterInsertEvent, this._afterInsert, this);
+        scene.addEventListener(GXNode.AfterRemoveEvent, this._afterRemove, this);
+        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
         // Add our root
         this._insertItem(scene);
@@ -83,17 +83,17 @@
         var editor = this.document.getEditor();
 
         // Unsubscribe from the document scene's events
-        scene.removeEventListener(GXNode.AfterInsertEvent, this._insertEvent);
-        scene.removeEventListener(GXNode.AfterRemoveEvent, this._removeEvent);
-        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._propertiesChangeEvent);
-        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._flagChangeEvent);
+        scene.removeEventListener(GXNode.AfterInsertEvent, this._afterInsert);
+        scene.removeEventListener(GXNode.AfterRemoveEvent, this._afterRemove);
+        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
     };
 
     /**
      * @param {GXNode.AfterInsertEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._insertEvent = function (event) {
+    EXSidebar.DocumentState.prototype._afterInsert = function (event) {
         if (event.node instanceof GXItem) {
             this._insertItem(event.node);
         }
@@ -103,7 +103,7 @@
      * @param {GXNode.AfterRemoveEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._removeEvent = function (event) {
+    EXSidebar.DocumentState.prototype._afterRemove = function (event) {
         if (event.node instanceof GXItem) {
             var treeNode = this._getTreeNode(event.node);
 
@@ -130,7 +130,7 @@
      * @param {GXNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._propertiesChangeEvent = function (event) {
+    EXSidebar.DocumentState.prototype._afterPropertiesChange = function (event) {
         if (event.node instanceof GXItem) {
             this._updateItemProperties(event.node);
         }
@@ -140,7 +140,7 @@
      * @param {GXNode.AfterFlagChangeEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._flagChangeEvent = function (event) {
+    EXSidebar.DocumentState.prototype._afterFlagChange = function (event) {
         if (event.node instanceof GXItem) {
             this._updateItemProperties(event.node);
         }

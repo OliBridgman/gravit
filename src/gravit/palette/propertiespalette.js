@@ -10,6 +10,7 @@
         EXPalette.call(this);
         this._propertyPanels = [];
     }
+
     GObject.inherit(EXPropertiesPalette, EXPalette);
 
     EXPropertiesPalette.ID = "properties";
@@ -155,39 +156,44 @@
             .appendTo(this._htmlElement);
 
         var _addPropertiesPanel = function (properties) {
-            // Init panel
+            // Create panel
             var panel = $('<div></div>')
                 .css('display', 'none')
                 .attr('data-available', 'false')
                 .addClass('properties-panel-content');
-
-            properties.init(panel, null/*TODO:MENU*/);
 
             // Append category
             var category = $('<div></div>')
                 .addClass('properties-panel-category')
                 .css('display', 'none')
                 .attr('data-expanded', 'true')
-                .append($('<i></i>')
-                    .addClass('fa fa-caret-down'))
-                .append($('<span></span>')
-                    .text(gLocale.get(properties.getCategory())))
-                .on('click', function () {
-                    if (panel.attr('data-available') === 'true') {
-                        var me = $(this);
-                        var icon = me.find('i.fa');
-                        if (panel.css('display') !== 'none') {
-                            panel.css('display', 'none');
-                            icon.attr('class', 'fa fa-caret-right');
-                            me.attr('data-expanded', 'false');
-                        } else {
-                            panel.css('display', '');
-                            icon.attr('class', 'fa fa-caret-down');
-                            me.attr('data-expanded', 'true');
+                .append($('<div></div>')
+                    .addClass('title')
+                    .append($('<i></i>')
+                        .addClass('fa fa-caret-down'))
+                    .append($('<span></span>')
+                        .text(gLocale.get(properties.getCategory())))
+                    .on('click', function () {
+                        if (panel.attr('data-available') === 'true') {
+                            var me = $(this);
+                            var icon = me.find('i.fa');
+                            if (panel.css('display') !== 'none') {
+                                panel.css('display', 'none');
+                                icon.attr('class', 'fa fa-caret-right');
+                                me.attr('data-expanded', 'false');
+                            } else {
+                                panel.css('display', '');
+                                icon.attr('class', 'fa fa-caret-down');
+                                me.attr('data-expanded', 'true');
+                            }
                         }
-                    }
-                })
+                    }))
+                .append($('<div></div>')
+                    .addClass('controls'))
                 .appendTo(propertiesPanels);
+
+            // Init properties
+            properties.init(panel, category.find('.controls'));
 
             // Append panel
             panel.appendTo(propertiesPanels);
