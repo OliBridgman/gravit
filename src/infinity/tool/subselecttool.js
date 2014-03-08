@@ -63,7 +63,13 @@
 
     /** @override */
     GXSubSelectTool.prototype._mouseDragStart = function (event) {
-        // When Path point is drag with SubSelect Tool:
+        // When Path point is drag with SubSelect Tool the options are:
+        // 1. If a point has styled corner type:
+        // a) User drags and cu is true -> both handles moved to the _same_ value
+        // b) User drags and cu is false -> move only the selected corner/shoulder length
+        // c) User drags and cu is false but user holds shift -> move both corner / shoulder lengths but NOT to
+        // the same value but instead, add delta value to both from original movement so their unit length stays the same.
+        // 2. Otherwise::
         // - if a point was not selected - it gets selected and moved (together with other selected if Shift is pressed)
         // - if a point was selected and didn't have right handle - create right handle (correct projection for connector)
         // - if a point was selected and had the right handle,

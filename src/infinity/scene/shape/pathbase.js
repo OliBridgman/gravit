@@ -272,10 +272,12 @@
 
     /**
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
+     * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
+     * if there is no real corner due to absence of right shoulder
      * @returns {GPoint} a left shoulder point
      */
-    GXPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function () {
-        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+    GXPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function (fictiveCorner) {
+        if (this._getPath() && this._parent && this.$cl && (fictiveCorner || this.$cr)) {
             var prevPt = this._parent.getPreviousPoint(this);
             return this._parent._getLeftShoulderPoint(this, prevPt);
         } else {
@@ -286,12 +288,15 @@
     /**
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
+     * @param {GTransform} transform - transform to apply
+     * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
+     * if there is no real corner due to absence of right shoulder
      * @returns {GPoint} a left shoulder point
      */
-    GXPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform) {
+    GXPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
-        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+        if (this._getPath() && this._parent && this.$cl && (fictiveCorner || this.$cr)) {
             var prevPt = this._parent.getPreviousPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var prevPtTr = prevPt._getTransformedCopy(transform);
@@ -303,10 +308,12 @@
 
     /**
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
+     * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
+     * if there is no real corner due to absence of left shoulder
      * @returns {GPoint} a right shoulder point
      */
-    GXPathBase.AnchorPoint.prototype.getRightShoulderPoint = function () {
-        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+    GXPathBase.AnchorPoint.prototype.getRightShoulderPoint = function (fictiveCorner) {
+        if (this._getPath() && this._parent && this.$cr && (fictiveCorner || this.$cl)) {
             var nextPt = this._parent.getNextPoint(this);
             return this._parent._getRightShoulderPoint(this, nextPt);
         } else {
@@ -317,12 +324,15 @@
     /**
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
+     * @param {GTransform} transform - transform to apply
+     * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
+     * if there is no real corner due to absence of left shoulder
      * @returns {GPoint} a right shoulder point
      */
-    GXPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform) {
+    GXPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
-        if (this._getPath() && this._parent && this.$cl && this.$cr) {
+        if (this._getPath() && this._parent && this.$cr && (fictiveCorner || this.$cl)) {
             var nextPt = this._parent.getNextPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var nextPtTr = nextPt._getTransformedCopy(transform);
@@ -330,6 +340,36 @@
         }
 
         return shoulderPt;
+    };
+
+    /**
+     * Returns a point until which left shoulder may be extended.
+     * @returns {GPoint}
+     */
+    GXPathBase.AnchorPoint.prototype.getLeftShoulderLimitPoint = function () {
+        var limitPt = null;
+        if (this._getPath() && this._parent) {
+            var prevPt = this._parent.getPreviousPoint(this);
+            if (prevPt) {
+                limitPt = this._parent._getLeftShoulderPoint(this, prevPt, true);
+            }
+        }
+        return limitPt;
+    };
+
+    /**
+     * Returns a point until which right shoulder may be extended.
+     * @returns {GPoint}
+     */
+    GXPathBase.AnchorPoint.prototype.getRightShoulderLimitPoint = function () {
+        var limitPt = null;
+        if (this._getPath() && this._parent) {
+            var nextPt = this._parent.getNextPoint(this);
+            if (nextPt) {
+                limitPt = this._parent._getRightShoulderPoint(this, nextPt, true);
+            }
+        }
+        return limitPt;
     };
 
     /** @override */
@@ -342,13 +382,24 @@
                     var cuIndex = args.properties.indexOf('cu');
                     var cu = cuIndex >= 0 ? args.values[cuIndex] : this.$cu;
                     if (cu) {
-                        var oldCr = this.$cr;
                         var clIndex = args.properties.indexOf('cl');
-                        var newCr = clIndex >= 0 ? args.values[clIndex] : this.$cl;
-                        if (oldCr !== newCr) {
-                            this.$cr = newCr;
-                            args.properties.push('cl');
-                            args.values.push(this.$cr);
+                        var crIndex = args.properties.indexOf('cr');
+                        if (clIndex >= 0) {
+                            var newVal = args.values[clIndex];
+                            if (this.$cr != newVal) {
+                                if (crIndex >= 0) {
+                                    args.values[crIndex] = newVal;
+                                } else {
+                                    args.properties.push('cr');
+                                    args.values.push(newVal);
+                                }
+                            }
+                        } else if (crIndex >= 0) {
+                            var newVal = args.values[crIndex];
+                            if (this.$cl != newVal) {
+                                args.properties.push('cl');
+                                args.values.push(newVal);
+                            }
                         }
                     }
 
@@ -962,9 +1013,10 @@
      * Returns a right shoulder point for the passed point, using the second passed point as a near point at right
      * @param {GXPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
      * @param {GXPathBase.AnchorPoint} [nextPt] an anchor point to be use as a near point at right
+     * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
      * @returns {GPoint} a left shoulder point
      */
-    GXPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt) {
+    GXPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt, maxLen) {
         // define corner end
         var hx = null;
         var hy = null;
@@ -977,9 +1029,17 @@
         }
         var pt;
         if (hx != null) {
-            pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
+            if (maxLen) {
+                pt = new GPoint(hx, hy);
+            } else {
+                pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
+            }
         } else {
-            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
+            if (maxLen) {
+                pt = new GPoint(nextPt.$x, nextPt.$y);
+            } else {
+                pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
+            }
         }
         return pt;
     };
@@ -988,9 +1048,10 @@
      * Returns a left shoulder point for the passed point, using the second passed point as a near point at left
      * @param {GXPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
      * @param {GXPathBase.AnchorPoint} [prevPt] an anchor point to be use as a near point at left
+     * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
      * @returns {GPoint} a left shoulder point
      */
-    GXPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt) {
+    GXPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt, maxLen) {
         // define corner end
         var hx = null;
         var hy = null;
@@ -1003,9 +1064,17 @@
         }
         var pt;
         if (hx != null) {
-            pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+            if (maxLen) {
+                pt = new GPoint(hx, hy);
+            } else {
+                pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+            }
         } else {
-            pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
+            if (maxLen) {
+                pt = new GPoint(prevPt.$x, prevPt.$y);
+            } else {
+                pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
+            }
         }
         return pt;
     };

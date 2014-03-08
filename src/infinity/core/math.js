@@ -430,13 +430,19 @@
         // projection vector a onto b
         //c = ((a * b)/(|b|^2))*b
 
-        var tmp = this.vDotProduct(ax, ay, bx, by) / this.vDotProduct(bx, by, bx, by);
+        var norm = this.vDotProduct(bx, by, bx, by);
         var res;
-        if (tmp <= 0.0 && positiveOnly) {
-            res  = new GPoint(x1, y1);
-        }
-        else {
-            res  = new GPoint(bx * tmp + x1, by * tmp + y1);
+        if (this.isEqualEps(norm, 0)) {
+            res = new GPoint(x3, y3);
+        } else {
+            var tmp = this.vDotProduct(ax, ay, bx, by) / norm;
+
+            if (tmp <= 0.0 && positiveOnly) {
+                res  = new GPoint(x1, y1);
+            }
+            else {
+                res  = new GPoint(bx * tmp + x1, by * tmp + y1);
+            }
         }
 
         return res;

@@ -357,6 +357,12 @@
         }
 
         // When Path point is started to be moved with subselect, the options are:
+        // 1. If a point has styled corner type:
+        // a) User drags and cu is true -> both handles moved to the _same_ value
+        // b) User drags and cu is false -> move only the selected corner/shoulder length
+        // c) User drags and cu is false but user holds shift -> move both corner / shoulder lengths but NOT to
+        // the same value but instead, add delta value to both from original movement so their unit length stays the same.
+        // 2. Otherwise:
         // a) if a point was not selected - it gets selected and drag it
         // b) if a point was selected and didn't have right handle - create right handle
         // c) if a point was selected and had the right handle, but not the left handle - create the left handle
@@ -365,48 +371,84 @@
         var newPartInfo = partInfo;
         if (!partInfo.isolated && partInfo.id.type == GXPathEditor.PartType.Point) {
             var aPt = partInfo.id.point;
-            var hlx = aPt.getProperty('hlx');
-            var hly = aPt.getProperty('hly');
-            var hrx = aPt.getProperty('hrx');
-            var hry = aPt.getProperty('hry');
-            // check option a)
-            if (!partInfo.data.apSelected || !aPt.hasFlag(GXNode.Flag.Selected)) {
-                // anchor point should be already selected, but it was not so at the moment of getting the part info
+            var idType = GXPathEditor.PartType.Point;
+            var aPtType = aPt.getProperty('tp');
 
-                if (!aPt.hasFlag(GXNode.Flag.Selected)) { // might be some error, select a point
-                    this.selectOnePoint(aPt);
+            if (aPtType in GXPathBase.CornerTypeName &&
+                    this._element.getAnchorPoints().getPreviousPoint(aPt) != null &&
+                    this._element.getAnchorPoints().getNextPoint(aPt) != null) {
+
+                var cl = aPt.getProperty('cl');
+                var cr = aPt.getProperty('cr');
+
+                var pickDist = this._element.getScene().getProperty('pickDist');
+                if (cl == null || cl < pickDist * 2) {
+                    idType = GXPathEditor.PartType.LeftShoulder;
+                } else if (cr == null || cr < pickDist * 2) {
+                    idType = GXPathEditor.PartType.RightShoulder;
                 }
-                newPartInfo = new GXElementEditor.PartInfo(
-                    this, {type: GXPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
-            } else if (hlx === null || hly === null || hrx === null || hry === null) { // option b) or c)
+            }
+
+            if (idType != GXPathEditor.PartType.Point) {
+                cl = cl != null ? cl : pickDist;
+                cr = cr != null ? cr : pickDist;
                 this.requestInvalidation();
                 this._createPathPreviewIfNecessary(aPt);
                 var previewPoint = this.getPathPointPreview(aPt);
                 if (!previewPoint) {   // might be some error
                     newPartInfo = null;
                 } else {
-                    var partType = null;
+                    previewPoint.setProperties(['cl', 'cr'], [cl, cr]);
+
                     var isolated = true; // all is isolated except points
                     var selectable = false; // only point is selectable
-
-                    if (hrx === null || hry === null) {
-                        // option b)
-                        partType = GXPathEditor.PartType.RightHandle;
-                        previewPoint.setProperties(
-                            ['ah', 'hrx', 'hry'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
-                    } else { // hlx === null || hly === null
-                        // option c)
-                        partType = GXPathEditor.PartType.LeftHandle;
-                        previewPoint.setProperties(
-                            ['ah', 'hlx', 'hly'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
-                    }
-
                     newPartInfo = new GXElementEditor.PartInfo(
-                        this, {type: partType, point: aPt}, {apSelected: true}, isolated, selectable);
-
-                    this.updatePartSelection(true, [newPartInfo.id]);
+                        this, {type: idType, point: aPt}, null, isolated, selectable);
                 }
-            } // else option d) - NOOP
+            } else {
+                var hlx = aPt.getProperty('hlx');
+                var hly = aPt.getProperty('hly');
+                var hrx = aPt.getProperty('hrx');
+                var hry = aPt.getProperty('hry');
+                // check option a)
+                if (!partInfo.data.apSelected || !aPt.hasFlag(GXNode.Flag.Selected)) {
+                    // anchor point should be already selected, but it was not so at the moment of getting the part info
+
+                    if (!aPt.hasFlag(GXNode.Flag.Selected)) { // might be some error, select a point
+                        this.selectOnePoint(aPt);
+                    }
+                    newPartInfo = new GXElementEditor.PartInfo(
+                        this, {type: GXPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
+                } else if (hlx === null || hly === null || hrx === null || hry === null) { // option b) or c)
+                    this.requestInvalidation();
+                    this._createPathPreviewIfNecessary(aPt);
+                    var previewPoint = this.getPathPointPreview(aPt);
+                    if (!previewPoint) {   // might be some error
+                        newPartInfo = null;
+                    } else {
+                        var partType = null;
+                        var isolated = true; // all is isolated except points
+                        var selectable = false; // only point is selectable
+
+                        if (hrx === null || hry === null) {
+                            // option b)
+                            partType = GXPathEditor.PartType.RightHandle;
+                            previewPoint.setProperties(
+                                ['ah', 'hrx', 'hry'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
+                        } else { // hlx === null || hly === null
+                            // option c)
+                            partType = GXPathEditor.PartType.LeftHandle;
+                            previewPoint.setProperties(
+                                ['ah', 'hlx', 'hly'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
+                        }
+
+                        newPartInfo = new GXElementEditor.PartInfo(
+                            this, {type: partType, point: aPt}, {apSelected: true}, isolated, selectable);
+
+                        this.updatePartSelection(true, [newPartInfo.id]);
+                    }
+                } // else option d) - NOOP
+            }
         } else if (partInfo.id.type == GXPathEditor.PartType.Segment) {
             var pathHitResult = partInfo.data.hitRes;
             var apLeft = partInfo.id.apLeft;
@@ -819,7 +861,7 @@
 
                 var cl = anchorPoint.getProperty('cl');
                 if (cl) {
-                    var pt = anchorPoint.getLeftShoulderPoint();
+                    var pt = anchorPoint.getLeftShoulderPoint(true);
                     if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.leftShoulderPosition = pt;
                     }
@@ -827,7 +869,7 @@
 
                 var cr = anchorPoint.getProperty('cr');
                 if (cr) {
-                    var pt = anchorPoint.getRightShoulderPoint();
+                    var pt = anchorPoint.getRightShoulderPoint(true);
                     if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.rightShoulderPosition = pt;
                     }
@@ -855,14 +897,14 @@
                     itArgs.leftShoulderPosition =
                         //transform.mapPoint(itArgs.leftShoulderPosition); // incorrect!
                         //itArgs.leftShoulderPosition.subtract(itArgs.position).add(newPosition); // also incorrect!
-                        anchorPoint.getLeftShoulderPointTransformed(transform);
+                        anchorPoint.getLeftShoulderPointTransformed(transform, true);
                 }
 
                 if (itArgs.rightShoulderPosition) {
                     itArgs.rightShoulderPosition =
                         //transform.mapPoint(itArgs.rightShoulderPosition);
                         //itArgs.rightShoulderPosition.subtract(itArgs.position).add(newPosition);
-                        anchorPoint.getRightShoulderPointTransformed(transform);
+                        anchorPoint.getRightShoulderPointTransformed(transform, true);
                 }
 
                 itArgs.position = newPosition;
@@ -1370,35 +1412,48 @@
         var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
 
-        var shoulderPt;
+        var shoulderLimitPt;
+        if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+            shoulderLimitPt = partId.point.getLeftShoulderLimitPoint();
+        } else { // right shoulder
+            shoulderLimitPt = partId.point.getRightShoulderLimitPoint();
+        }
 
         if (pathTransform) {
-            if (partId.type == GXPathEditor.PartType.LeftShoulder) {
-                shoulderPt = partId.point.getLeftShoulderPointTransformed(pathTransform);
-            } else { // right shoulder
-                shoulderPt = partId.point.getRightShoulderPointTransformed(pathTransform);
-            }
             sourcePosition = pathTransform.mapPoint(sourcePosition);
-        } else {
-            if (partId.type == GXPathEditor.PartType.LeftShoulder) {
-                shoulderPt = partId.point.getLeftShoulderPoint();
-            } else { // right shoulder
-                shoulderPt = partId.point.getRightShoulderPoint();
-            }
+            shoulderLimitPt = pathTransform.mapPoint(shoulderLimitPt);
         }
 
         var newShoulderPt = gMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
-            shoulderPt.getX(), shoulderPt.getY(), position.getX(), position.getY(), true);
+            shoulderLimitPt.getX(), shoulderLimitPt.getY(), position.getX(), position.getY(), true);
 
         var newVal = gMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
             sourcePosition.getX(), sourcePosition.getY());
 
         var previewPoint = this.getPathPointPreview(partId.point);
-        // TODO: discuss:
+
         // We do not apply pathTransform to shoulders when generating vertices,
         // assign new value directly to previewPoint without any further transforms
         if (ratio) {
-            previewPoint.setProperties(['cl', 'cr'], [newVal, newVal]);
+            if (this.hasFlag(GXElementEditor.Flag.Detail) && previewPoint.getProperty('cu') != true) {
+                var oldLVal = partId.point.getProperty('cl');
+                oldLVal = oldLVal != null ? oldLVal : 0;
+                var oldRVal = partId.point.getProperty('cr');
+                oldRVal = oldRVal != null ? oldLVal : 0;
+                if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+                    var delta = newVal - oldLVal;
+                    var newRVal = oldRVal - delta;
+                    newRVal = newRVal > 0 ? newRVal : 0;
+                    previewPoint.setProperties(['cl', 'cr'], [newVal, newRVal]);
+                } else { // right shoulder
+                    var delta = newVal - oldRVal;
+                    var newLVal = oldLVal - delta;
+                    newLVal = newLVal > 0 ? newLVal : 0;
+                    previewPoint.setProperties(['cl', 'cr'], [newLVal, newVal]);
+                }
+            } else {
+                previewPoint.setProperties(['cl', 'cr'], [newVal, newVal]);
+            }
         } else if (partId.type == GXPathEditor.PartType.LeftShoulder) {
             previewPoint.setProperty('cl', newVal);
         } else { // right shoulder
