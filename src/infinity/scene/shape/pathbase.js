@@ -408,12 +408,19 @@
                         path._notifyChange(GXElement._Change.PrepareGeometryUpdate);
                     }
                 } else if (change === GXNode._Change.AfterPropertiesChange) {
-                    if (this.$tp == GXPathBase.AnchorPoint.Type.Symmetric && !this.$ah &&
-                        this.$hlx != null && this.$hrx != null) {
+                    if (this.$tp == GXPathBase.AnchorPoint.Type.Symmetric &&
+                            !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == GXPathBase.AnchorPoint.Type.Mirror &&
+                            !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+
                         if ((args.properties.indexOf('hrx') >= 0 ||
                             args.properties.indexOf('hry') >= 0) &&
                             args.properties.indexOf('hlx') < 0 &&
-                            args.properties.indexOf('hly') < 0) {
+                            args.properties.indexOf('hly') < 0 ||
+                            args.properties.indexOf('tp') >= 0 &&
+                            args.properties.indexOf('hlx') < 0 &&
+                            args.properties.indexOf('hly') < 0 &&
+                            this.$hrx != null) {
                             this._leadHr = true;
                         } else {
                             this._leadHr = false;
@@ -421,8 +428,11 @@
                     }
 
                     if (path || // For Smooth point recalculate handles properly, even if point is not inserted yet
-                        this.$tp == GXPathBase.AnchorPoint.Type.Symmetric && !this.$ah &&
-                            this.$hlx != null && this.$hrx != null) {
+                        this.$tp == GXPathBase.AnchorPoint.Type.Symmetric &&
+                            !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == GXPathBase.AnchorPoint.Type.Mirror &&
+                            !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+
                         this._invalidateCalculations();
                     }
 
@@ -485,6 +495,9 @@
         } else if (this.$tp == GXPathBase.AnchorPoint.Type.Symmetric && !this.$ah) {
             // recalculate Smooth even if !points
             this._calculateSmoothPoint();
+        } else if (this.$tp == GXPathBase.AnchorPoint.Type.Mirror && !this.$ah) {
+            // recalculate Mirror even if !points
+            this._calculateMirrorPoint();
         } else if (points && this.$ah) {
             this._calculateAutoHandles();
         }
@@ -510,7 +523,9 @@
             var hLen;
             var hx, hy;
             if (this.$ah) {
-                if (nextPt && prevPt && nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric && !gMath.isEqualEps(dirLenNext, 0) && !gMath.isEqualEps(dirLenPrev, 0)) {
+                if (nextPt && prevPt && (nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+                    nextPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) &&
+                    !gMath.isEqualEps(dirLenNext, 0) && !gMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenNext * GXPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
@@ -519,7 +534,9 @@
                 } else {
                     this.setProperties(['hrx', 'hry'], [null, null]);
                 }
-                if (prevPt && nextPt && prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric && !gMath.isEqualEps(dirLenNext, 0) && !gMath.isEqualEps(dirLenPrev, 0)) {
+                if (prevPt && nextPt && (prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+                    prevPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) &&
+                    !gMath.isEqualEps(dirLenNext, 0) && !gMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenPrev * GXPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
@@ -580,6 +597,24 @@
         }
     };
 
+    /** Calculate handles for point of type Mirror */
+    GXPathBase.AnchorPoint.prototype._calculateMirrorPoint = function () {
+        // we need to set one of handles to be in line with the other and have the same length
+        if (this._leadHr && this.$hrx != null) { // the left handle shall be rotated to be in line with the right one
+            var hx = this.$x + (this.$x - this.$hrx);
+            var hy = this.$y + (this.$y - this.$hry);
+            if (this.$hlx != hx || this.$hly != hy) {
+                this.setProperties(['hlx', 'hly'], [hx, hy]);
+            }
+        } else if (!this._leadHr && this.$hlx != null) { // the right handle shall be rotated to be in line with the left one
+            var hx = this.$x + (this.$x - this.$hlx);
+            var hy = this.$y + (this.$y - this.$hly);
+            if (this.$hrx != hx || this.$hry != hy) {
+                this.setProperties(['hrx', 'hry'], [hx, hy]);
+            }
+        }
+    };
+
     GXPathBase.AnchorPoint.prototype._calculateAutoHandles = function () {
         var points = this._parent;
         if (points) {
@@ -594,7 +629,7 @@
             var dx, dy;
             var px, py;
 
-            if (this.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+            if (this.$tp == GXPathBase.AnchorPoint.Type.Symmetric || this.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
                 if (!nextPt && !prevPt) {
                     return;
                 } else if (nextPt && !prevPt ||
@@ -646,7 +681,9 @@
                 }
             } else { // type != Smooth && type != Connector as this method should not be called for connector
                 if (prevPt && (prevPt.$x != this.$x || prevPt.$y != this.$y)) {
-                    if (prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+                    if (prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+                            prevPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
+
                         var prevprevPt = points.getPreviousPoint(prevPt);
                         if (!prevprevPt || (prevPt.$x == prevprevPt.$x && prevPt.$y == prevprevPt.$y)) {
                             hx = this.$x + (prevPt.$x - this.$x) * offs;
@@ -681,13 +718,15 @@
                                 this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
                             }
                         }
-                    } else { // prevPt.$tp != GXPathBase.AnchorPoint.Type.Symmetric
+                    } else { // prevPt.$tp != GXPathBase.AnchorPoint.Type.Symmetric || Mirror
                         this.setProperties(['hlx', 'hly'], [null, null]);
                     }
                 }
 
                 if (nextPt && (nextPt.$x != this.$x || nextPt.$y != this.$y)) {
-                    if (nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+                    if (nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+                            nextPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
+
                         var nextnextPt = points.getNextPoint(nextPt);
                         if (!nextnextPt || (nextPt.$x == nextnextPt.$x && nextPt.$y == nextnextPt.$y)) {
                             hx = this.$x + (nextPt.$x - this.$x) * offs;
@@ -818,7 +857,7 @@
             anchorPt._invalidateCalculations();
         }
 
-        if (anchorPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+        if (anchorPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
             var leftPt = this.getPreviousPoint(anchorPt);
             if (leftPt && leftPt.$ah) {
                 leftPt._invalidateCalculations();
@@ -842,7 +881,7 @@
             anchorPt._invalidateCalculations();
         }
 
-        if (anchorPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+        if (anchorPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
             var rightPt = this.getNextPoint(anchorPt);
             if (rightPt && rightPt.$ah) {
                 rightPt._invalidateCalculations();
@@ -876,7 +915,9 @@
         if (!styled ||
             ap.$tp == GXPathBase.AnchorPoint.Type.Asymmetric ||
             ap.$tp == GXPathBase.AnchorPoint.Type.Connector ||
-            ap.$tp == GXPathBase.AnchorPoint.Type.Symmetric || !path || !path.$closed ||
+            ap.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+            ap.$tp == GXPathBase.AnchorPoint.Type.Mirror ||
+            !path || !path.$closed ||
             ap == this.getLastChild()) {
 
             if (transform) {
@@ -962,7 +1003,8 @@
             ap.$tp == GXPathBase.AnchorPoint.Type.Asymmetric ||
             // the point is connector or smooth, no corner here
             ap.$tp == GXPathBase.AnchorPoint.Type.Connector ||
-            ap.$tp == GXPathBase.AnchorPoint.Type.Symmetric || !prevPt ||
+            ap.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+            ap.$tp == GXPathBase.AnchorPoint.Type.Mirror || !prevPt ||
             prevPt.$tp == GXPathBase.AnchorPoint.Type.Connector && prevPt.$x == ap.$x && prevPt.$y == ap.$y) {
 
             return new GPoint(ap.$x, ap.$y);
@@ -1116,6 +1158,7 @@
             curPt.$tp == GXPathBase.AnchorPoint.Type.Asymmetric ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Connector ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
+            curPt.$tp == GXPathBase.AnchorPoint.Type.Mirror ||
             // shoulders are not defined or zero
             !curPt.$cl || !curPt.$cr) {
             // No any specific corner with shoulders
@@ -1392,7 +1435,7 @@
         var nextPt = this.getNextPoint(source);
         if (nextPt) {
             lastRelPt = nextPt;
-            if (nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+            if (nextPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric || nextPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
                 var nextnextPt = this.getNextPoint(nextPt);
                 if (nextnextPt && nextnextPt.$ah && nextnextPt != source) {
                     lastRelPt = nextnextPt;
@@ -1413,7 +1456,7 @@
         var prevPt = this.getPreviousPoint(source);
         if (prevPt) {
             firstRelPt = prevPt;
-            if (prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric) {
+            if (prevPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric || prevPt.$tp == GXPathBase.AnchorPoint.Type.Mirror) {
                 var prevprevPt = this.getPreviousPoint(prevPt);
                 if (prevprevPt && prevprevPt.$ah && prevprevPt != source) {
                     firstRelPt = prevprevPt;

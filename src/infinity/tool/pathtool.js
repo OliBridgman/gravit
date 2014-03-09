@@ -178,7 +178,7 @@
 
     /** @override */
     GXPathTool.prototype.deactivate = function (view, layer) {
-        if (this._newPoint) {
+        if (this._newPoint || this._dpathRef) {
             this._pathEditor.requestInvalidation();
             this._pathEditor.releasePathPreview();
             this._pathEditor.requestInvalidation();

@@ -4,6 +4,7 @@
             GXPathBase.AnchorPoint.Type.Asymmetric,
             GXPathBase.AnchorPoint.Type.Connector,
             GXPathBase.AnchorPoint.Type.Symmetric,
+            GXPathBase.AnchorPoint.Type.Mirror,
             GXPathBase.CornerType.Rounded,
             GXPathBase.CornerType.InverseRounded,
             GXPathBase.CornerType.Bevel,

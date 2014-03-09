@@ -157,14 +157,17 @@
             var tpaNew;
             if (tpaPrev == GXPathBase.AnchorPoint.Type.Connector ||
                 tpaPrev == GXPathBase.AnchorPoint.Type.Symmetric ||
+                tpaPrev == GXPathBase.AnchorPoint.Type.Mirror ||
                 tpaNext == GXPathBase.AnchorPoint.Type.Connector ||
                 tpaNext == GXPathBase.AnchorPoint.Type.Symmetric ||
+                tpaNext == GXPathBase.AnchorPoint.Type.Mirror ||
                 (tpaPrev == GXPathBase.AnchorPoint.Type.Asymmetric &&
                     tpaNext == GXPathBase.AnchorPoint.Type.Asymmetric)) {
 
                 // One of near points is smooth or both have no styled corners
                 tpaNew = GXPathBase.AnchorPoint.Type.Asymmetric;
             } else if (tpaPrev != GXPathBase.AnchorPoint.Type.Symmetric &&
+                tpaPrev != GXPathBase.AnchorPoint.Type.Mirror &&
                 tpaPrev != GXPathBase.AnchorPoint.Type.Connector &&
                 tpaPrev != GXPathBase.AnchorPoint.Type.Asymmetric) {
 

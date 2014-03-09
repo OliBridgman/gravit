@@ -835,7 +835,7 @@
             if (anchorPoint.hasFlag(GXNode.Flag.Selected)) {
                 if (type === GXPathBase.AnchorPoint.Type.Connector) {
                     itArgs.annotation = GXElementEditor.Annotation.Diamond;
-                } else if (type === GXPathBase.AnchorPoint.Type.Symmetric) {
+                } else if (type === GXPathBase.AnchorPoint.Type.Symmetric || type === GXPathBase.AnchorPoint.Type.Mirror) {
                     itArgs.annotation = GXElementEditor.Annotation.Circle;
                 }
             }
@@ -857,6 +857,7 @@
             if (anchorPoint.hasFlag(GXNode.Flag.Selected) &&
                 type !== GXPathBase.AnchorPoint.Type.Asymmetric &&
                 type !== GXPathBase.AnchorPoint.Type.Symmetric &&
+                type !== GXPathBase.AnchorPoint.Type.Mirror &&
                 type !== GXPathBase.AnchorPoint.Type.Connector) {
 
                 var cl = anchorPoint.getProperty('cl');
