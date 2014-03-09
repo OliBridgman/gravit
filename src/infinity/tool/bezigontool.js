@@ -63,7 +63,6 @@
         }
 
         this._mDownTime = tm;
-        this._released = false;
         this._lastMouseEvent = event;
         var anchorPt = null;
         var clickPt;
@@ -75,6 +74,7 @@
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
             event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+            this._released = false;
 
             this._blockDeactivation();
             this._checkMode();

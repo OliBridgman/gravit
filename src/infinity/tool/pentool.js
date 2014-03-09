@@ -67,67 +67,75 @@
         this._lastMouseEvent = event;
         this._dragStarted = false;
         this._dragStartPt = null;
+        this._mouseMove(event);
 
-        if (event.button == GUIMouseEvent.BUTTON_LEFT ||
-            event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-            this._mouseMove(event);
+        this._mDownTime = tm;
+        this._released = false;
+        this._blockDeactivation();
+        this._checkMode();
+        this._renewPreviewLink();
 
-            this._mDownTime = tm;
-            this._released = false;
-            this._blockDeactivation();
-            this._checkMode();
-            this._renewPreviewLink();
+        if (this._mode == GXPathTool.Mode.Edit) {
+            this._mouseDownOnEdit(event.client);
+        }
 
-            if (this._mode == GXPathTool.Mode.Edit) {
-                this._mouseDownOnEdit(event.client);
-            }
-
-            if (this._mode != GXPathTool.Mode.Edit) {
-                if (this._newPoint && this._pathEditor) {
-                    this._updatePoint(event.client);
-                    if (this._mode == GXPathTool.Mode.Append) {
-                        var prevPt = this._editPt.getPrevious();
-                        if (prevPt) {
-                            prevPt.removeFlag(GXNode.Flag.Selected);
-                            this._editPt.setFlag(GXNode.Flag.Selected);
-                        }
-                    } else { // mode == Prepend
-                        var nextPt = this._editPt.getNext();
-                        if (nextPt) {
-                            nextPt.removeFlag(GXNode.Flag.Selected);
-                            this._editPt.setFlag(GXNode.Flag.Selected);
-                        }
+        if (this._mode != GXPathTool.Mode.Edit) {
+            if (this._newPoint && this._pathEditor) {
+                this._updatePoint(event.client);
+                if (this._mode == GXPathTool.Mode.Append) {
+                    var prevPt = this._editPt.getPrevious();
+                    if (prevPt) {
+                        prevPt.removeFlag(GXNode.Flag.Selected);
+                        this._editPt.setFlag(GXNode.Flag.Selected);
                     }
-                    this._pathEditor.requestInvalidation();
-                    if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
-                        this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
-                    } else if (!gPlatform.modifiers.optionKey){
-                        this._closePreviewIfNeeded();
+                } else { // mode == Prepend
+                    var nextPt = this._editPt.getNext();
+                    if (nextPt) {
+                        nextPt.removeFlag(GXNode.Flag.Selected);
+                        this._editPt.setFlag(GXNode.Flag.Selected);
                     }
-                    if (!this._dpathRef.getProperty('closed')) {
-                        //TODO: remove handles if clicked to previous point
-                    } else {
-                        if (this._mode == GXPathTool.Mode.Append) {
-                            this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
-                        } else { // this._mode == GXPathTool.Mode.Prepend
-                            this._refPt = this._pathRef.getAnchorPoints().getLastChild();
-                        }
-                    }
-                    this._pathEditor.requestInvalidation();
-                } else if (this._pathEditor) { // We just switched from Edit mode, end point was clicked
-                    if (this._mode == GXPathTool.Mode.Append) {
-                        this._refPt = this._pathRef.getAnchorPoints().getLastChild();
-                    } else { // this._mode == GXPathTool.Mode.Prepend
-                        this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
-                    }
-                } else {
-                    // add new point
-                    var pt = this._view.getViewTransform().mapPoint(event.client);
-                    anchorPt = this._constructNewPoint(event, pt);
-                    this._addPoint(anchorPt, true, false);
                 }
+                this._pathEditor.requestInvalidation();
+                if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
+                    if (gPlatform.modifiers.optionKey) {
+                        this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
+                    } else {
+                        this._editPt.setProperties(['tp', 'cu'], [GXPathBase.CornerType.Rounded, true]);
+                    }
+                } else if (!gPlatform.modifiers.optionKey){
+                    this._closePreviewIfNeeded();
+                }
+                if (!this._dpathRef.getProperty('closed')) {
+                    //TODO: remove handles if clicked to previous point
+                } else {
+                    if (this._mode == GXPathTool.Mode.Append) {
+                        this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                    } else { // this._mode == GXPathTool.Mode.Prepend
+                        this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                    }
+                }
+                this._pathEditor.requestInvalidation();
+            } else if (this._pathEditor) { // We just switched from Edit mode, end point was clicked
+                if (this._mode == GXPathTool.Mode.Append) {
+                    this._refPt = this._pathRef.getAnchorPoints().getLastChild();
+                } else { // this._mode == GXPathTool.Mode.Prepend
+                    this._refPt = this._pathRef.getAnchorPoints().getFirstChild();
+                }
+            } else {
+                // add new point
+                var pt = this._view.getViewTransform().mapPoint(event.client);
+                anchorPt = this._constructNewPoint(event, pt);
+                if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
+                    if (gPlatform.modifiers.optionKey) {
+                        anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
+                    } else {
+                        anchorPt.setProperties(['tp', 'cu'], [GXPathBase.CornerType.Rounded, true]);
+                    }
+                }
+                this._addPoint(anchorPt, true, false);
             }
         }
+
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
 
@@ -181,7 +189,11 @@
                 } else { // this._mode == GXPathTool.Mode.Prepend
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 }
-                this._editPt.setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
+                var tp = this._editPt.getProperty('tp');
+                if (!tp in GXPathBase.CornerTypeName) {
+                    this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Asymmetric);
+                }
+                this._editPt.setProperties(['hlx', 'hly'], [null, null]);
                 // It is significant to remove auto-handles in separate command here if set
                 this._editPt.setProperty('ah', false);
                 this._dpathRef.getAnchorPoints().removeChild(anchorPt);
@@ -210,7 +222,7 @@
         var anchorPt;
 
         if (!this._released) {
-            if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+            if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
                 this._mouseDrag(event);
             }
             return;
@@ -427,8 +439,11 @@
                 event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
 
             this._pathEditor.requestInvalidation();
-            this._updateHandles(clickPt);
-            this._pathEditor.requestInvalidation();
+            if (this._editPt.getProperty('tp') == GXPathBase.CornerType.Rounded) {
+                this._updateShoulders(clickPt);
+            } else {
+                this._updateHandles(clickPt);
+            }
         }
     };
 
@@ -463,7 +478,6 @@
 
                         this._pathEditor.requestInvalidation();
                         this._updateHandles(clickPt);
-                        this._pathEditor.requestInvalidation();
                         if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
                             this._startTransaction(GXPathTool.Transaction.ModifyPointProperties);
                         }
@@ -481,8 +495,11 @@
                             event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
 
                         this._pathEditor.requestInvalidation();
-                        this._updateHandles(clickPt);
-                        this._pathEditor.requestInvalidation();
+                        if (this._editPt.getProperty('tp') == GXPathBase.CornerType.Rounded) {
+                            this._updateShoulders(clickPt);
+                        } else {
+                            this._updateHandles(clickPt);
+                        }
                     }
                     if (!this._dpathRef.getProperty('closed')) {
                         if (this._newPoint) {
@@ -537,6 +554,35 @@
         this._lastMouseEvent = null;
 
         this._allowDeactivation();
+    };
+
+    /**
+     * Sets shoulder length for styled corners equal to the distance between anchor point's position and passed position
+     * @param {GPoint} newPos - position, which should be used for shoulder length calculation in view coordinates
+     * @private
+     */
+    GXPenTool.prototype._updateShoulders = function(newPos) {
+        if (this._mode != GXPathTool.Mode.Append && this._mode != GXPathTool.Mode.Prepend || !this._editPt) {
+            return;
+        }
+        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), 0)) {
+            if (this._mode == GXPathTool.Mode.Append) {
+                this._editPt.setProperty('cr', null);
+            } else if (this._mode == GXPathTool.Mode.Prepend) {
+                this._editPt.setProperty('cl', null);
+            }
+        } else {
+            var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
+            var sourcePos = new GPoint(this._editPt.getProperty('x'), this._editPt.getProperty('y'));
+            sourcePos = transformToNewPos.mapPoint(sourcePos);
+            var newVal = gMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
+
+            if (this._mode == GXPathTool.Mode.Append) {
+                this._editPt.setProperty('cr', newVal);
+            } else if (this._mode == GXPathTool.Mode.Prepend) {
+                this._editPt.setProperty('cl', newVal);
+            }
+        }
     };
 
     /** override */

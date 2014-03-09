@@ -861,7 +861,7 @@
                 type !== GXPathBase.AnchorPoint.Type.Connector) {
 
                 var cl = anchorPoint.getProperty('cl');
-                if (cl) {
+                if (cl && previousPt) {
                     var pt = anchorPoint.getLeftShoulderPoint(true);
                     if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.leftShoulderPosition = pt;
@@ -869,7 +869,7 @@
                 }
 
                 var cr = anchorPoint.getProperty('cr');
-                if (cr) {
+                if (cr && nextPt) {
                     var pt = anchorPoint.getRightShoulderPoint(true);
                     if (pt && pt.getX() !== null && pt.getY() !== null) {
                         itArgs.rightShoulderPosition = pt;
