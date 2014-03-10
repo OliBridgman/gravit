@@ -274,10 +274,25 @@
     GUIMenu.prototype._hovered = false;
 
     /**
+     * Function to check if the menu should not be opened under current conditions
+     * @type {Function} - if exists and returns true, then the menu opening should be prevented
+     * @private
+     */
+    GUIMenu.prototype._menuBlocker = null;
+
+    /**
      * @returns {GUIMenuItem|GUIMenuBar}
      */
     GUIMenu.prototype.getParent = function () {
         return this._parent;
+    };
+
+    /**
+     * Sets function for checking if the menu should not be opened under current conditions
+     * @param {Function} menuBlocker, should return Boolean
+     */
+    GUIMenu.prototype.setMenuBlocker = function (menuBlocker) {
+        this._menuBlocker = menuBlocker;
     };
 
     /**
@@ -451,6 +466,10 @@
      * @param {GUIMenu.Position|Number} vertPosition the vertical position to open at
      */
     GUIMenu.prototype.open = function (reference, horzPosition, vertPosition) {
+        if (this._menuBlocker && this._menuBlocker.call(this)) {
+            return;
+        }
+
         horzPosition = typeof horzPosition === 'number' ? horzPosition : GUIMenu.Position.Center;
         vertPosition = typeof vertPosition === 'number' ? vertPosition : GUIMenu.Position.Center;
 

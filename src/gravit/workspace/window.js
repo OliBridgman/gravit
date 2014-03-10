@@ -148,6 +148,14 @@
             }
         }.bind(this));
         menu.addItem(selectItem);
+        menu.setMenuBlocker(function () {
+            var toolManager = gApp.getToolManager();
+            var tool = toolManager.getActiveTool();
+            if (tool instanceof GXBezigonTool || tool instanceof GXPenTool) {
+                return true;
+            }
+            return false;
+        });
 
         // TODO : Add more actions
 
