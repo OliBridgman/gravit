@@ -7,7 +7,7 @@
      * @constructor
      */
     function GXEllipseEditor(ellipse) {
-        GXPathBaseEditor.call(this, ellipse);
+        GXPathBaseEditor.call(this, ellipse, true);
     };
     GObject.inherit(GXEllipseEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXEllipseEditor, GXEllipse);
@@ -22,22 +22,12 @@
         if (this._transform) {
             targetTransform = this._transform.multiplied(transform);
         }
+        var bbox = this._getBaseBBox(true, true);
 
-        var bbox = this._getBaseBBox();
+        var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
+            : GXElementEditor.OPTIONS.annotationSizeSmall;
 
-        if (this._showSegmentDetails()) {
-            return targetTransform.mapRect(bbox).expanded(
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular);
-        } else {
-            return targetTransform.mapRect(bbox).expanded(
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall);
-        }
+        return targetTransform.mapRect(bbox).expanded(annotSize, annotSize, annotSize, annotSize);
     };
 
     /** @override */
@@ -49,7 +39,7 @@
             this.requestInvalidation();
         }
 
-        this._createEllipsePreviewIfNecessary();
+        this._createPreviewIfNecessary();
         var sourceTransform = this._element.getTransform();
         if (sourceTransform) {
             var sPosition = sourceTransform.inverted().mapPoint(newPos);
@@ -85,18 +75,6 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype.transform = function (transform, partId, partData) {
-        if (partId) {
-            this.requestInvalidation();
-            this._createEllipsePreviewIfNecessary();
-            this._transformBaseBBox(transform, partId);
-            this.requestInvalidation();
-        } else {
-            GXPathBaseEditor.prototype.transform.call(this, transform, partId, partData);
-        }
-    };
-
-    /** @override */
     GXEllipseEditor.prototype.applyTransform = function (element) {
         if (element && this._elementPreview) {
             element.transferProperties(this._elementPreview, [GXShape.GeometryProperties, GXEllipse.GeometryProperties]);
@@ -113,12 +91,6 @@
 
     /** @override */
     GXEllipseEditor.prototype._paintCustom = function (transform, context) {
-        // paint base annotations anyway
-        this._iterateBaseCorners(true, function (args) {
-            this._paintAnnotation(context, transform, args.position,
-                GXElementEditor.Annotation.Rectangle, false, true);
-            return false;
-        }.bind(this));
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             this._iterateArcEnds(true, function (args) {
@@ -167,7 +139,8 @@
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
     };
 
-    GXEllipseEditor.prototype._createEllipsePreviewIfNecessary = function () {
+    /** @override */
+    GXEllipseEditor.prototype._createPreviewIfNecessary = function () {
         if (!this._elementPreview) {
             this._elementPreview = new GXEllipse();
             this._elementPreview.transferProperties(this._element,

@@ -7,7 +7,7 @@
      * @constructor
      */
     function GXPolygonEditor(polygon) {
-        GXPathBaseEditor.call(this, polygon);
+        GXPathBaseEditor.call(this, polygon, true);
     };
     GObject.inherit(GXPolygonEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXPolygonEditor, GXPolygon);
@@ -17,26 +17,20 @@
 
     /** @override */
     GXPolygonEditor.prototype.getBBox = function (transform) {
-        if (this._showSegmentDetails()) {
-            // Pre-multiply internal transformation if any
-            if (this._transform) {
-                transform = this._transform.multiplied(transform);
-            }
+        // Return our bbox and expand it by the annotation's approx size
+        var targetTransform = transform;
+        if (this._transform) {
+            targetTransform = this._transform.multiplied(transform);
+        }
+        var bbox = this._getBaseBBox(true, true);
 
-            var bbox = null;
+        if (bbox) {
+            var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
+                : GXElementEditor.OPTIONS.annotationSizeSmall;
 
-            this._element.iterateSegments(function (point, inside, angle) {
-                var annotationBBox = this._getAnnotationBBox(transform, point);
-                if (bbox) {
-                    bbox = bbox.united(annotationBBox);
-                } else {
-                    bbox = annotationBBox;
-                }
-            }.bind(this), true);
-
-            return bbox;
+            return targetTransform.mapRect(bbox).expanded(annotSize, annotSize, annotSize, annotSize);
         } else {
-            return GXPathBaseEditor.prototype.getBBox.call(this, transform);
+            return null;
         }
     };
 
@@ -50,11 +44,7 @@
 
         var newPos = viewToWorldTransform.mapPoint(position);
 
-        if (!this._elementPreview) {
-            this._elementPreview = new GXPolygon();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
-        }
+        this._createPreviewIfNecessary();
 
         var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
 
@@ -128,6 +118,17 @@
         this._element.setProperties(['oa', 'or', 'ia', 'ir'], propertyValues);
     };
 
+
+    /** @override */
+    GXPolygonEditor.prototype.applyTransform = function (element) {
+        if (element && this._elementPreview) {
+            element.transferProperties(this._elementPreview, [GXShape.GeometryProperties, GXPolygon.GeometryProperties]);
+            this.resetTransform();
+        } else {
+            GXPathBaseEditor.prototype.applyTransform.call(this, element);
+        }
+    };
+
     /** @override */
     GXPolygonEditor.prototype._hasCenterCross = function () {
         return true;
@@ -137,7 +138,8 @@
     GXPolygonEditor.prototype._paintCustom = function (transform, context) {
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
-            this._element.iterateSegments(function (point, inside, angle) {
+            var element = this.getPaintElement();
+            element.iterateSegments(function (point, inside, angle) {
                 var annotation = inside ? GXElementEditor.Annotation.Circle : GXElementEditor.Annotation.Diamond;
                 var partId = inside ? GXPolygonEditor.prototype.INSIDE_PART_ID : GXPolygonEditor.prototype.OUTSIDE_PART_ID;
                 this._paintAnnotation(context, transform, point, annotation, this._partSelection && this._partSelection.indexOf(partId) >= 0, false);
@@ -147,6 +149,11 @@
 
     /** @override */
     GXPolygonEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
+        if (result) {
+            return result;
+        }
+
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             var result = null;
@@ -173,6 +180,137 @@
     GXPolygonEditor.prototype._showSegmentDetails = function () {
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
     };
+
+    /** @override */
+    GXPolygonEditor.prototype._createPreviewIfNecessary = function () {
+        if (!this._elementPreview) {
+            this._elementPreview = new GXPolygon();
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
+        }
+    };
+
+    /** @override */
+    GXPolygonEditor.prototype._getBaseBBox = function (transformed, paintElement) {
+        var element = paintElement ? this.getPaintElement() : this._element;
+        var minX = null;
+        var minY = null;
+        var maxX = null;
+        var maxY = null;
+
+        element.iterateSegments(function (point, inside, angle) {
+            var x = point.getX();
+            var y = point.getY();
+            if (minX == null || x < minX) {
+                minX = x;
+            }
+            if (maxX == null || x > maxX) {
+                maxX = x;
+            }
+
+            if (minY == null || y < minY) {
+                minY = y;
+            }
+            if (maxY == null || y > maxY) {
+                maxY = y;
+            }
+            return false;
+        }.bind(this), transformed ? true : false);
+
+        if (minX != null && minY != null) {
+            return new GRect(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        return null;
+    };
+
+    /** @override */
+    GXPolygonEditor.prototype._iterateBaseCorners = function (paintElement, iterator) {
+        var element = paintElement ? this.getPaintElement() : this._element;
+        var transform = element.getTransform();
+        var bbox = this._getBaseBBox(false, paintElement);
+        var itArgs = [];
+        if (bbox) {
+            if (transform) {
+                bbox = transform.mapRect(bbox);
+            }
+
+            itArgs = [
+                {id: GXShapeEditor.PartIds.OrigBaseTopLeft,
+                    position: bbox.getSide(GRect.Side.TOP_LEFT)},
+                {id: GXShapeEditor.PartIds.OrigBaseTopRight,
+                    position: bbox.getSide(GRect.Side.TOP_RIGHT)},
+                {id: GXShapeEditor.PartIds.OrigBaseBottomRight,
+                    position: bbox.getSide(GRect.Side.BOTTOM_RIGHT)},
+                {id: GXShapeEditor.PartIds.OrigBaseBottomLeft,
+                    position: bbox.getSide(GRect.Side.BOTTOM_LEFT)}
+            ];
+        }
+
+        for (var i = 0; i < itArgs.length; ++i) {
+            if (iterator(itArgs[i]) === true) {
+                break;
+            }
+        }
+    };
+
+    /** @override */
+    GXPolygonEditor.prototype._transformBaseBBox = function (transform, partId) {
+        var sourceTransform = this._element.getTransform();
+        var bbox = this._getBaseBBox(true, false);
+        var tl = bbox.getSide(GRect.Side.TOP_LEFT);
+        var tr = bbox.getSide(GRect.Side.TOP_RIGHT);
+        var br = bbox.getSide(GRect.Side.BOTTOM_RIGHT);
+        var bl = bbox.getSide(GRect.Side.BOTTOM_LEFT);
+        var width = bbox.getWidth();
+        var height = bbox.getHeight();
+        var transformToApply = transform;
+
+        if (partId == GXShapeEditor.PartIds.OrigBaseTopLeft) {
+            var otl = transform.mapPoint(tl);
+
+            var sTransform = new GTransform(
+                1 - otl.subtract(tl).getX() / width, 0,
+                0, 1 - otl.subtract(tl).getY() / height,
+                0, 0);
+
+            transformToApply = new GTransform(1, 0, 0, 1, -br.getX(), -br.getY()).multiplied(sTransform).translated(br.getX(), br.getY());
+        } else if (partId == GXShapeEditor.PartIds.OrigBaseTopRight) {
+            var otr = transform.mapPoint(tr);
+
+            var sTransform = new GTransform(
+                1 + otr.subtract(tr).getX() / width, 0,
+                0, 1 - otr.subtract(tr).getY() / height,
+                0, 0);
+
+            transformToApply = new GTransform(1, 0, 0, 1, -bl.getX(), -bl.getY()).multiplied(sTransform).translated(bl.getX(), bl.getY());
+        } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomRight) {
+            var obr = transform.mapPoint(br);
+
+            var sTransform = new GTransform(
+                1 + obr.subtract(br).getX() / width, 0,
+                0, 1 + obr.subtract(br).getY() / height,
+                0, 0);
+
+            transformToApply = new GTransform(1, 0, 0, 1, -tl.getX(), -tl.getY()).multiplied(sTransform).translated(tl.getX(), tl.getY());
+        } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomLeft) {
+            var obl = transform.mapPoint(bl);
+
+            var sTransform = new GTransform(
+                1 - obl.subtract(bl).getX() / width, 0,
+                0, 1 + obl.subtract(bl).getY() / height,
+                0, 0);
+
+            transformToApply = new GTransform(1, 0, 0, 1, -tr.getX(), -tr.getY()).multiplied(sTransform).translated(tr.getX(), tr.getY());
+        }
+
+        if (sourceTransform) {
+            transformToApply = sourceTransform.multiplied(transformToApply);
+        }
+
+        this._elementPreview.setProperty('trf', transformToApply);
+    };
+
 
     /** @override */
     GXPolygonEditor.prototype.toString = function () {

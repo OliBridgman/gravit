@@ -2,11 +2,13 @@
     /**
      * A base editor for shapes
      * @param {GXShape} shape the shape this editor works on
+     * @param {Boolean} supportBBoxResize - if true, enable resizing by BBox corner points movement
      * @class GXShapeEditor
      * @extends GXElementEditor
      * @constructor
      */
-    function GXShapeEditor(shape) {
+    function GXShapeEditor(shape, supportBBoxResize) {
+        this._supportBBoxResize = supportBBoxResize;
         GXElementEditor.call(this, shape);
     };
     GObject.inherit(GXShapeEditor, GXElementEditor);
@@ -17,6 +19,13 @@
         OrigBaseBottomRight: gUtil.uuid(),
         OrigBaseBottomLeft: gUtil.uuid()
     };
+
+    /**
+     * Indicates if true, enable shape resizing by BBox corner points movement
+     * @type {Boolean}
+     * @private
+     */
+    GXShapeEditor.prototype._supportBBoxResize = null;
 
     /** @override */
     GXShapeEditor.prototype.paint = function (transform, context) {
@@ -40,6 +49,15 @@
                 context.canvas.strokeVertices(context.highlightOutlineColor, 2);
             } else {
                 context.canvas.strokeVertices(context.selectionOutlineColor, 1);
+            }
+
+            if (this._supportBBoxResize) {
+                // paint base annotations
+                this._iterateBaseCorners(true, function (args) {
+                    this._paintAnnotation(context, transform, args.position,
+                        GXElementEditor.Annotation.Rectangle, false, true);
+                    return false;
+                }.bind(this));
             }
 
             // Let sub classes paint custom stuff here
@@ -72,6 +90,23 @@
     /** @override */
     GXShapeEditor.prototype.canApplyTransform = function () {
         return this._elementPreview || this._transform && !this._transform.isIdentity();
+    };
+
+    /** @override */
+    GXShapeEditor.prototype.transform = function (transform, partId, partData) {
+        if (partId && this._supportBBoxResize &&
+                (partId === GXShapeEditor.PartIds.OrigBaseTopLeft ||
+                partId === GXShapeEditor.PartIds.OrigBaseTopRight ||
+                partId === GXShapeEditor.PartIds.OrigBaseBottomRight ||
+                partId === GXShapeEditor.PartIds.OrigBaseBottomLeft)) {
+
+            this.requestInvalidation();
+            this._createPreviewIfNecessary();
+            this._transformBaseBBox(transform, partId);
+            this.requestInvalidation();
+        } else {
+            GXElementEditor.prototype.transform.call(this, transform, partId, partData);
+        }
     };
 
     /** @override */
@@ -178,6 +213,21 @@
         return result;
     };
 
+    /**
+     * Called for subclasses to create specific shape preview
+     * @private
+     */
+    GXShapeEditor.prototype._createPreviewIfNecessary = function () {
+        // NO-OP
+    };
+
+    /**
+     * Iterates over shape's base corners, and call iterator for them until it returns true
+     * @param {Boolean} [paintElement] if true, use element's preview, if it exists, for iteration over corners
+     * @param {Function([id: GXShapeEditor.PartIds, position: GPoint])} [iterator] - function to call for each corner.
+     * If this returns true then the iteration will be stopped.
+     * @private
+     */
     GXShapeEditor.prototype._iterateBaseCorners = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
         var transform = element.getTransform();
@@ -200,13 +250,24 @@
         }
     };
 
-    GXShapeEditor.prototype._getBaseBBox = function () {
+    /**
+     * Returns bounding box without added annotations
+     * @param {Boolean} transformed - if true, calculate element's bbox with internal transformation applied
+     * @param {Boolean} paintElement - use element's preview if it exists
+     * @returns {GRect} bounding box
+     * @private
+     */
+    GXShapeEditor.prototype._getBaseBBox = function (transformed, paintElement) {
+        if (!transformed) {
+            return GRect(-1, -1, 2, 2);
+        }
+
         var minX = null;
         var minY = null;
         var maxX = null;
         var maxY = null;
 
-        this._iterateBaseCorners(true, function (args) {
+        this._iterateBaseCorners(paintElement, function (args) {
             var x = args.position.getX();
             var y = args.position.getY();
             if (minX == null || x < minX) {
@@ -232,6 +293,12 @@
         return null;
     };
 
+    /**
+     * Apply a transformation to shape based on the transformation of base corner points
+     * @param {GTransform} [transform] - a transformation to apply to corner point
+     * @param {GXShapeEditor.PartIds} [partId] id of the base corner that initiated the transform
+     * @private
+     */
     GXShapeEditor.prototype._transformBaseBBox = function (transform, partId) {
         var sourceTransform = this._element.getTransform();
         var translation = transform.getTranslation();

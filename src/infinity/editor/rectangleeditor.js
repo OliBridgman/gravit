@@ -7,7 +7,7 @@
      * @constructor
      */
     function GXRectangleEditor(rectangle) {
-        GXPathBaseEditor.call(this, rectangle);
+        GXPathBaseEditor.call(this, rectangle, true);
     };
     GObject.inherit(GXRectangleEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXRectangleEditor, GXRectangle);
@@ -24,19 +24,10 @@
         }
         var bbox = this.getPaintElement().getGeometryBBox();
         // Return our bbox and expand it by the annotation's approx size
-        if (this._showSegmentDetails()) {
-            return targetTransform.mapRect(bbox).expanded(
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular,
-                GXElementEditor.OPTIONS.annotationSizeRegular);
-        } else {
-            return targetTransform.mapRect(bbox).expanded(
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall,
-                GXElementEditor.OPTIONS.annotationSizeSmall);
-        }
+        var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
+            : GXElementEditor.OPTIONS.annotationSizeSmall;
+
+        return targetTransform.mapRect(bbox).expanded(annotSize, annotSize, annotSize, annotSize);
     };
 
     /** @override */
@@ -99,24 +90,6 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype.transform = function (transform, partId, partData) {
-        if (partId) {
-            this.requestInvalidation();
-            this._createPreviewIfNecessary();
-            if (partId === GXShapeEditor.PartIds.OrigBaseTopLeft ||
-                partId === GXShapeEditor.PartIds.OrigBaseTopRight ||
-                partId === GXShapeEditor.PartIds.OrigBaseBottomRight ||
-                partId === GXShapeEditor.PartIds.OrigBaseBottomLeft) {
-
-                this._transformBaseBBox(transform, partId);
-            }
-            this.requestInvalidation();
-        } else {
-            GXPathBaseEditor.prototype.transform.call(this, transform, partId, partData);
-        }
-    };
-
-    /** @override */
     GXRectangleEditor.prototype.applyTransform = function (element) {
         if (element && this._elementPreview) {
             element.transferProperties(this._elementPreview, [GXShape.GeometryProperties, GXRectangle.GeometryProperties]);
@@ -133,13 +106,6 @@
 
     /** @override */
     GXRectangleEditor.prototype._paintCustom = function (transform, context) {
-        // paint base annotations anyway
-        this._iterateBaseCorners(true, function (args) {
-            this._paintAnnotation(context, transform, args.position,
-                GXElementEditor.Annotation.Rectangle, false, true);
-            return false;
-        }.bind(this));
-
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             this.getPaintElement().iterateSegments(function(point, side, ct, sl, sr, idx) {
