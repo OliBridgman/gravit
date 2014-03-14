@@ -382,10 +382,10 @@
                 var cr = aPt.getProperty('cr');
 
                 var pickDist = this._element.getScene().getProperty('pickDist');
-                if (cl == null || cl < pickDist * 2) {
-                    idType = GXPathEditor.PartType.LeftShoulder;
-                } else if (cr == null || cr < pickDist * 2) {
+                if (cr == null || cr < pickDist * 2) {
                     idType = GXPathEditor.PartType.RightShoulder;
+                } else if (cl == null || cl < pickDist * 2) {
+                    idType = GXPathEditor.PartType.LeftShoulder;
                 }
             }
 
