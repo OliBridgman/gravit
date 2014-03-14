@@ -28,7 +28,8 @@
             var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
                 : GXElementEditor.OPTIONS.annotationSizeSmall;
 
-            return targetTransform.mapRect(bbox).expanded(annotSize, annotSize, annotSize, annotSize);
+            var expandSize = annotSize / GXShapeEditor.ANNOTATION_COEFF + GXElementEditor.OPTIONS.annotationSizeSmall;
+            return targetTransform.mapRect(bbox).expanded(expandSize, expandSize, expandSize, expandSize);
         } else {
             return null;
         }

@@ -21,6 +21,12 @@
     };
 
     /**
+     * Coefficient to be used for calculation of annotation paint size
+     * @type {Number}
+     */
+    GXShapeEditor.ANNOTATION_COEFF = Math.cos(Math.PI / 4);
+
+    /**
      * Indicates if true, enable shape resizing by BBox corner points movement
      * @type {Boolean}
      * @private
@@ -51,7 +57,7 @@
                 context.canvas.strokeVertices(context.selectionOutlineColor, 1);
             }
 
-            if (this._supportBBoxResize) {
+            if (this._supportBBoxResize && this._showAnnotations()) {
                 // paint base annotations
                 this._iterateBaseCorners(true, function (args) {
                     this._paintAnnotation(context, transform, args.position,
