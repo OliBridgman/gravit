@@ -1,70 +1,56 @@
 #toolbar {
   position: absolute;
-  padding: 2px 0px;
-  line-height: 25px;
-  width: 100%;
-  border-top: 1px solid $frame3DLightColor;
-  border-bottom: 1px solid $frame3DShadowColor;
+  width: 35px;
+  border-right: 1px solid $frame3DShadowColor;
 
   > div.section {
-    display: table-cell;
-    padding: 0px 3px;
-    vertical-align: middle;
+    border-top: 1px solid $frame3DLightColor;
+    border-bottom: 1px solid $frame3DShadowColor;
+    padding: 2px 0px;
 
-    div {
-      display: inline-block;
-    }
-
-    button, select, input {
-      height: 25px;
+    button {
       border: none;
       border-radius: 0px;
       background-color: transparent;
       box-shadow: none;
-      padding: 3px 5px;
+      padding: 0px;
+      margin: 1px 3px;
+      width: 28px;
+      height: 28px;
+      font-size: 18px;
 
       &:hover, &:active, &.g-active {
         background-color: $activeColor;
       }
+
+      > span.fa:first-child {
+         font-size: 16px;
+       }
     }
 
     .divider {
       background: $frameBorderColor;
-      width: 1px;
-      margin: 0px 3px;
-      height: 25px;
-      vertical-align: top;
+      width: 100%;
+      height: 1px;
+      margin: 3px 0px;
     }
 
-    &:not(:first-child) {
-      border-left: 1px solid $frameBorderColor;
-    }
+    &.sidebars {
+      padding: 0px;
 
-    &[data-section="left"] {
-      > div:last-child {
-        display: block;
-        overflow: hidden;
-
-        select {
-          width: 100%;
-        }
-      }
-      > div.actions {
-        display: block;
-        float: right;
+      button {
+        margin: 0px;
+        width: 100%;
       }
     }
 
-    &[data-section="center"] {
-      > .colors {
-        float: right;
+    &.toolpanel {
+      button {
+        margin: 1px 3px;
+        width: 28px;
 
-        > button > span.fa:first-child {
-          font-size: 16px;
-        }
-
-        > button[data-color-button="contour"] {
-          margin-left: 3px;
+        &:active, &.g-active {
+          background-color: $selectedColor;
         }
       }
     }

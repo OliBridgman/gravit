@@ -32,7 +32,12 @@
     /** @override */
     GXPaintContourStyle.prototype.paint = function (context, source) {
         if (this.hasPaintableFill() && this.$cw && this.$cw > 0) {
-            context.canvas.putVertices(source);
+            var vertexSource = source;
+            if (this.$cw % 2 !== 0) {
+                vertexSource = new GXVertexPixelAligner(source);
+            }
+
+            context.canvas.putVertices(vertexSource);
             context.canvas.strokeVertices(this.$cls, this.$cw, this.$clc, this.$clj, this.$clm, this.$ca, this.$opc, this.$cmp);
         }
     };

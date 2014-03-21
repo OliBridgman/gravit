@@ -150,8 +150,8 @@
             'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),
             insertPos.getY(),
-            480,
-            640,
+            980,
+            1000,
             null//GXColor.parseCSSColor('white')
         ]);
 

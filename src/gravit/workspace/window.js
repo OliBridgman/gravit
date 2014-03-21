@@ -10,7 +10,6 @@
         this._container = $('<div></div>');
         this._document = document;
         this._view = new GXEditorView(this._document.getEditor());
-        this._view.setViewMargin([EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING, EXWindow.VIEW_PADDING]);
         this._container.append(this._view._htmlElement);
 
         // Add "hack" to focus the view on clicking

@@ -2,16 +2,15 @@
   position: absolute;
   top: 0px;
   left: 0px;
-  width: 200px;
+  width: 170px;
   height: 100%;
+  border-left: 1px solid $frame3DLightColor;
   border-right: 1px solid $frameBorderColor;
+  background: $frameColor;
+  // TODO : REMOVE THIS WHEN WORKING
+  display: none;
 
-  > .structure-tree-container {
-    > .structure-tree {
-      //padding: 5px 0px;
-      &, * {
-        font: $smallFont;
-      }
-    }
+  &, *:not(.fa) {
+    font: $smallFont;
   }
 }

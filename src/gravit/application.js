@@ -594,13 +594,6 @@
             .attr('id', EXApplication.Part.Content.id)
             .appendTo(this._view);
 
-        // Sidebar-Part
-        var sidebarPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Sidebar.id)
-            .appendTo(contentPart);
-
-        this._sidebar = new EXSidebar(sidebarPart);
-
         // Windows-Part
         var windowsPart = $("<div></div>")
             .attr('id', EXApplication.Part.Windows.id)
@@ -614,6 +607,13 @@
             .appendTo(contentPart);
 
         this._palettes = new GPalettes(palettesPart);
+
+        // Sidebar-Part
+        var sidebarPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Sidebar.id)
+            .appendTo(this._view);
+
+        this._sidebar = new EXSidebar(sidebarPart);
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -691,29 +691,31 @@
             var topOffset = 0;
 
             var headerPart = this.getPart(EXApplication.Part.Header);
-            var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
-
             topOffset += this.isPartVisible(EXApplication.Part.Header) ? headerPart.outerHeight() : 0;
 
+            var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
             toolbarPart.css('top', topOffset.toString() + 'px');
+            toolbarPart.height(this._view.height() - topOffset);
 
-            topOffset += this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerHeight() : 0;
+            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
+            sidebarPart.css('top', topOffset.toString() + 'px');
+            sidebarPart.css('left', (this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
+            sidebarPart.height(this._view.height() - topOffset);
 
             var contentPart = this.getPart(EXApplication.Part.Content);
             contentPart.css('top', topOffset.toString() + 'px');
+            contentPart.css('left', (this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0) + 'px');
             contentPart.height(this._view.height() - topOffset);
 
-            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
             var palettesPart = this.getPart(EXApplication.Part.Palettes);
 
             var windowsPart = this.getPart(EXApplication.Part.Windows);
-            windowsPart.css('left', this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0);
-            windowsPart.css('right', this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0);
+            windowsPart.css('right', (this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0) + 'px');
 
             this._header.relayout();
             this._toolbar.relayout();
             this._sidebar.relayout();
-            this._windows.relayout();
+            this._windows.relayout([this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0 , 0, 0, 0]);
             this._palettes.relayout();
         }.bind(this), 0);
     };

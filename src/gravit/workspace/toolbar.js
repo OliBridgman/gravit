@@ -8,63 +8,56 @@
         this._htmlElement = htmlElement;
         htmlElement
             .append($('<div></div>')
-                .addClass('section')
-                .attr('data-section', 'left')
-                .append($('<div></div>')
-                    .addClass('actions')
-                    .append($('<button></button>')
+                .addClass('section sidebars')
+                .append($('<button></button>')
+                    //.prop('disabled', true)
+                    .addClass('g-active')
+                    .append($('<span></span>')
+                        .addClass('fa fa-files-o')
                         // TODO : I18N
-                        .attr('title', gLocale.get(GInsertPagesAction.TITLE))
-                        .append($('<span></span>')
-                            .addClass('fa fa-file-o'))
-                        .on('click', function () {
-                            gApp.executeAction(GInsertPagesAction.ID);
-                        }))
-                    .append($('<button></button>')
+                        .attr('title', 'Pages')))
+                .append($('<button></button>')
+                    .prop('disabled', true)
+                    .append($('<span></span>')
+                        .addClass('fa fa-leaf')
                         // TODO : I18N
-                        .attr('title', 'Add Layer')
-                        .append($('<span></span>')
-                            .addClass('fa fa-folder-o'))
-                        .on('click', function () {
-                            gApp.executeAction(GInsertLayerAction.ID);
-                        })))
-                .append($('<div></div>')
-                    .append($('<select></select>')
-                        .addClass('hierarchy'))))
+                        .attr('title', 'Components')))
+                .append($('<button></button>')
+                    .prop('disabled', true)
+                    .append($('<span></span>')
+                        .addClass('fa fa-sitemap')
+                        // TODO : I18N
+                        .attr('title', 'Structure'))))
+            .append($('<div></div>')
+                .addClass('section toolpanel'))
             .append($('<div></div>')
                 .addClass('section')
-                .attr('data-section', 'center')
-                .append($('<div></div>')
-                    .addClass('toolpanel'))
-                .append($('<div></div>')
-                    .addClass('colors')
-                    .append($('<button></button>')
-                        .attr('data-color-button', 'area')
-                        // TODO : I18N
-                        .attr('title', 'Area Color')
-                        .append($('<span></span>'))
-                        .gColorButton({
-                            swatch: false,
-                            clearColor: true
-                        })
-                        .on('change', function (evt, color) {
-                            this._assignCurrentColor(GXEditor.CurrentColorType.Area, color);
-                        }.bind(this)))
-                    .append($('<button></button>')
-                        .attr('data-color-button', 'contour')
-                        // TODO : I18N
-                        .attr('title', 'Contour Color')
-                        .append($('<span></span>'))
-                        .gColorButton({
-                            swatch: false,
-                            clearColor: true
-                        })
-                        .on('change', function (evt, color) {
-                            this._assignCurrentColor(GXEditor.CurrentColorType.Contour, color);
-                        }.bind(this)))))
-            .append($('<div></div>')
-                .addClass('section')
-                .attr('data-section', 'right'));
+                .append($('<button></button>')
+                    .attr('data-color-button', 'area')
+                    // TODO : I18N
+                    .attr('title', 'Area Color')
+                    .append($('<span></span>'))
+                    .gColorButton({
+                        swatch: false,
+                        dropdown: false,
+                        clearColor: true
+                    })
+                    .on('change', function (evt, color) {
+                        this._assignCurrentColor(GXEditor.CurrentColorType.Area, color);
+                    }.bind(this)))
+                .append($('<button></button>')
+                    .attr('data-color-button', 'contour')
+                    // TODO : I18N
+                    .attr('title', 'Contour Color')
+                    .append($('<span></span>'))
+                    .gColorButton({
+                        swatch: false,
+                        dropdown: false,
+                        clearColor: true
+                    })
+                    .on('change', function (evt, color) {
+                        this._assignCurrentColor(GXEditor.CurrentColorType.Contour, color);
+                    }.bind(this))));
 
         this._toolTypeToButtonMap = {};
 
@@ -152,18 +145,7 @@
      * Called from the workspace to relayout
      */
     GToolbar.prototype.relayout = function () {
-        var left = this._htmlElement.find('[data-section="left"]');
-        var center = this._htmlElement.find('[data-section="center"]');
-        var right = this._htmlElement.find('[data-section="right"]');
-
-        var sidebarWidth = gApp.getPart(EXApplication.Part.Sidebar).width();
-        var windowsWidth = gApp.getPart(EXApplication.Part.Windows).width();
-        var palettesWidth = gApp.getPart(EXApplication.Part.Palettes).width();
-
-        //left.width(sidebarWidth);
-        left.css('width', sidebarWidth.toString() + 'px');
-        center.css('width', windowsWidth.toString() + 'px');
-        right.css('width', palettesWidth.toString() + 'px');
+        // NO-OP
     };
 
     /**

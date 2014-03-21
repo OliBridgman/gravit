@@ -3,7 +3,9 @@
         init: function (options) {
             options = $.extend({
                 // Whether to show a swatch or not
-                swatch: true
+                swatch: true,
+                // Whether to show dropdown indicator or not
+                dropdown: true,
                 // see options of gColorTarget
                 // see options of gColorPanel
             }, options);
@@ -65,10 +67,12 @@
                     .text(text)
                     .appendTo($this);
 
-                // Append dropdown indicator with space
-                $('<span></span>')
-                    .addClass('fa fa-caret-down')
-                    .appendTo($this);
+                // Append dropdown indicator if any
+                if (options.dropdown) {
+                    $('<span></span>')
+                        .addClass('fa fa-caret-down')
+                        .appendTo($this);
+                }
 
                 $this.on('click', function () {
                     methods.open.call(self);
