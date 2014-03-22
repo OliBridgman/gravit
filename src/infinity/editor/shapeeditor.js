@@ -205,6 +205,9 @@
                     result = new GXElementEditor.PartInfo(
                         this, args.id,
                         null, isolated, selectable);
+
+                    // Fast hack to finish individual transforms 'as is'
+                    result.shapeOnly = true;
                     return true;
                 }
 

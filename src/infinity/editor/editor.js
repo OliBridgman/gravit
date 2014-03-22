@@ -695,7 +695,7 @@
                 }
             }
 
-            transBBox = selBBox.translated(delta.getX(), delta.getY());
+            var transBBox = selBBox.translated(delta.getX(), delta.getY());
             var tl = this._guides.mapPoint(transBBox.getSide(GRect.Side.TOP_LEFT));
             delta = tl.subtract(selBBox.getSide(GRect.Side.TOP_LEFT));
         }

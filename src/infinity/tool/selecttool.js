@@ -365,6 +365,21 @@
                     }
                     this._editor.commitTransaction('Modify ' + nodeNameTranslated);
                 }
+            } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly){
+                // TODO: add clone logic, or Alt support + Shift support
+                this._editor.beginTransaction();
+                try {
+                    this._editorMovePartInfo.editor.applyTransform(this._editorMovePartInfo.editor.getElement(),
+                        this._editorMovePartInfo.id);
+                } finally {
+                    var nodeNameTranslated = this._editorMovePartInfo.editor.getElement().getNodeNameTranslated();
+
+                    // TODO : I18N
+                    if (!nodeNameTranslated) {
+                        nodeNameTranslated = 'Element';
+                    }
+                    this._editor.commitTransaction('Transform ' + nodeNameTranslated);
+                }
             } else {
                 // Holding option key when we've transformed the whole selection
                 // will actually clone the current selection and apply the transformation
@@ -475,6 +490,11 @@
         if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
             this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                 position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey);
+        } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly){
+            position = this._view.getViewTransform().mapPoint(position);
+            var moveDelta = position.subtract(this._moveStartTransformed);
+            this._editorMovePartInfo.editor.transform(new GTransform(1, 0, 0, 1, moveDelta.getX(), moveDelta.getY()),
+                this._editorMovePartInfo.id, this._editorMovePartInfo.data);
         } else {
             if (gPlatform.modifiers.shiftKey) {
                 // Calculate move delta by locking our vector to 45° steps starting with constraint
