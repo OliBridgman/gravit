@@ -109,6 +109,7 @@
         layer.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
         layer.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+        layer.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
         layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         layer.addEventListener(GUIKeyEvent.Release, this._keyRelease, this);
 
@@ -125,6 +126,7 @@
         layer.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
         layer.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
+        layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
         layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
         layer.removeEventListener(GUIKeyEvent.Release, this._keyRelease);
 
@@ -169,6 +171,8 @@
             var w = Math.ceil(this._selectArea.getWidth()) - 1.0;
             var h = Math.ceil(this._selectArea.getHeight()) - 1.0;
             context.canvas.strokeRect(x, y, w, h, 1, context.selectionOutlineColor);
+        } else if (this._transformBox) {
+            this._transformBox.paint(context, this._view.getWorldTransform());
         }
     };
 
@@ -556,6 +560,18 @@
     /** @private **/
     GXSelectTool.prototype._hasSelectArea = function () {
         return (this._selectArea && (this._selectArea.getHeight() > 0 || this._selectArea.getWidth() > 0));
+    };
+
+    GXSelectTool.prototype._mouseDblClick = function () {
+        if (this._editor) {
+            if (this._transformBox) {
+                this._transformBox = null;
+                this._editor.cleanTransformBox();
+            } else {
+                this._transformBox = this._editor.getSelectionTransformBox();
+            }
+            this.invalidateArea();
+        }
     };
 
     /** override */
