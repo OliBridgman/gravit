@@ -34,7 +34,6 @@
     //GObject.inheritAndMix(GXTransformBox, GXElementEditor);
     //GObject.inheritAndMix(GXTransformBox, GXItemCompound, [GXElement.Transform, GXElement.Pivot, GXVertexSource]);
 
-
     /**
      * The geometry properties of a shape with their default values
      */
@@ -62,8 +61,13 @@
         BOTTOM_RIGHT: 4,
         BOTTOM_CENTER: 5,
         BOTTOM_LEFT: 6,
-        LEFT_CENTER: 7
+        LEFT_CENTER: 7,
+        ROTATION_CENTER: 8
     };
+
+    GXTransformBox.OUTLINE = gUtil.uuid();
+    GXTransformBox.INSIDE = gUtil.uuid();
+    GXTransformBox.OUTSIDE = gUtil.uuid();
 
     // -----------------------------------------------------------------------------------------------------------------
     // GXTransformBox Class
@@ -93,10 +97,6 @@
     };
 
     GXTransformBox.prototype.paint = function (context, transform) {
-        if (!this.rewindVertices(0)) {
-            return;
-        }
-
         if (!this._preparePaint(context)) {
             return;
         }
@@ -106,33 +106,121 @@
         // ourself and then re-apply the transformation
         var canvasTransform = context.canvas.resetTransform();
         var targetTransform = canvasTransform.multiplied(transform);
-        var transformer = new GXVertexTransformer(this, targetTransform);
-        //context.canvas.setLineDash([5]);
-        // TODO: draw dashed line
-        context.canvas.putVertices(new GXVertexPixelAligner(transformer));
-        context.canvas.strokeVertices(context.selectionOutlineColor, 1);
-        for (var side = 0; side < 8 ; ++side) {
-            var pt = this._getPoint(side);
-            gAnnotation.paintAnnotation(context, targetTransform, pt, gAnnotation.AnnotType.Rectangle,
-                true, GXTransformBox.ANNOT_SIZE);
+
+        if (!this._centerOnly) {
+            if (!this.rewindVertices(0)) {
+                return;
+            }
+
+            var transformer = new GXVertexTransformer(this, targetTransform);
+            //context.canvas.setLineDash([5]);
+            // TODO: draw dashed line
+            context.canvas.putVertices(new GXVertexPixelAligner(transformer));
+            context.canvas.strokeVertices(context.selectionOutlineColor, 1);
+            for (var side = 0; side < 8 ; ++side) {
+                var pt = this._getPoint(side);
+                gAnnotation.paintAnnotation(context, targetTransform, pt, gAnnotation.AnnotType.Rectangle,
+                    true, GXTransformBox.ANNOT_SIZE);
+            }
         }
-        gAnnotation.paintAnnotation(context, targetTransform, new GPoint(this.$cx, this.$cy), gAnnotation.AnnotType.Circle,
-            true, GXTransformBox.ANNOT_SIZE);
+        gAnnotation.paintAnnotation(context, targetTransform, this._getPoint(GXTransformBox.Handles.ROTATION_CENTER),
+            gAnnotation.AnnotType.Circle, true, GXTransformBox.ANNOT_SIZE);
         context.canvas.setTransform(canvasTransform);
 
         this._finishPaint(context);
     };
 
+    GXTransformBox.prototype.hide = function () {
+        this._centerOnly = true;
+    };
+
+    GXTransformBox.prototype.show = function () {
+        this._centerOnly = false;
+    };
+
     GXTransformBox.prototype.rewindVertices = function (index) {
-        if (this._vertices == null || this._vertices.getCount() == 0) {
+        if (this._vertices == null || this._verticesDirty || this._vertices.getCount() == 0) {
             this._vertices.clearVertices();
             this._generateVertices();
+            this._verticesDirty = false;
         }
         return this._vertices.rewindVertices(index);
     };
 
     GXTransformBox.prototype.readVertex = function (vertex) {
         return this._vertices.readVertex(vertex);
+    };
+
+    /**
+     * Called whenever information about a part at a given location shall be returned
+     * @param {GPoint} location the location to get a part for in view coordinates
+     * @param {GTransform} transform the current transformation of the view
+     * @param {Number} [tolerance] optional tolerance for testing the location.
+     * If not provided defaults to zero.
+     * @returns {GXElementEditor.PartInfo} null if no part is available or a valid part info
+     */
+    GXTransformBox.prototype.getPartInfoAt = function (location, transform, tolerance) {
+        var result = null;
+
+        // test handles and center
+        for (var side = 0; side < 9; ++side) {
+            var handle = this._getPoint(side);
+            if (gAnnotation.getAnnotationBBox(transform, handle, GXTransformBox.ANNOT_SIZE)
+                    .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
+                result = new GXElementEditor.PartInfo(null, side, handle);
+                break;
+            }
+        }
+
+        // test outline and inside
+        if (!result) {
+            var hitRes = new GXVertexInfo.HitResult();
+            if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform),
+                    tolerance, true, hitRes)) {
+
+                if (hitRes.outline) {
+                    result = new GXElementEditor.PartInfo(null, GXTransformBox.OUTLINE, null);
+                } else {
+                    result = new GXElementEditor.PartInfo(null, GXTransformBox.INSIDE, null);
+                }
+            } else {
+                // TODO: return sector for proper cursor
+                result = new GXElementEditor.PartInfo(null, GXTransformBox.OUTSIDE, null);
+            }
+        }
+
+        return result;
+    };
+
+    GXTransformBox.prototype.calculateTransform = function (partInfo, startPt, endPt, guides,
+            viewToWorldTransform, worldToViewTransform, option, ratio) {
+        if (partInfo.id < 8) {
+
+        } else {
+            var stPtTr = viewToWorldTransform.mapPoint(startPt);
+            var endPtTr = viewToWorldTransform.mapPoint(endPt);
+            var deltaTr = endPtTr.subtract(stPtTr);
+            var transform = new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
+            var tlOrig = this._getPoint(GXTransformBox.Handles.TOP_LEFT, true);
+            var tl = transform.mapPoint(tlOrig);
+            tl = guides.mapPoint(tl);
+            deltaTr = tl.subtract(tlOrig);
+            return new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
+            // TODO: support rotation when OUTSIDE, move center when center, skew when outline
+        }
+    };
+
+    GXTransformBox.prototype.applyTransform = function () {
+        if (this.$trf) {
+            var tl = this.$trf.mapPoint(new GPoint(this.$tlx, this.$tly));
+            var tr = this.$trf.mapPoint(new GPoint(this.$trx, this.$try));
+            var br = this.$trf.mapPoint(new GPoint(this.$brx, this.$bry));
+            var bl = this.$trf.mapPoint(new GPoint(this.$blx, this.$bly));
+            var cntr = this.$trf.mapPoint(new GPoint(this.$cx, this.$cy));
+            this.setProperties(['trf', 'tlx', 'tly', 'trx', 'try', 'brx', 'bry', 'blx', 'bly', 'cx', 'cy'],
+                [null, tl.getX(), tl.getY(), tr.getX(), tr.getY(), br.getX(), br.getY(), bl.getX(), bl.getY(),
+                cntr.getX(), cntr.getY()]);
+        }
     };
 
     GXTransformBox.prototype._generateVertices = function () {
@@ -142,10 +230,15 @@
             this._vertices.rewindVertices(0);
         }
 
-        this._vertices.writeVertex(GXVertex.Command.Move, this.$tlx, this.$tly);
-        this._vertices.writeVertex(GXVertex.Command.Line, this.$trx, this.$try);
-        this._vertices.writeVertex(GXVertex.Command.Line, this.$brx, this.$bry);
-        this._vertices.writeVertex(GXVertex.Command.Line, this.$blx, this.$bly);
+        var tl = this._getPoint(GXTransformBox.Handles.TOP_LEFT);
+        var tr = this._getPoint(GXTransformBox.Handles.TOP_RIGHT);
+        var br = this._getPoint(GXTransformBox.Handles.BOTTOM_RIGHT);
+        var bl = this._getPoint(GXTransformBox.Handles.BOTTOM_LEFT);
+
+        this._vertices.writeVertex(GXVertex.Command.Move, tl.getX(), tl.getY());
+        this._vertices.writeVertex(GXVertex.Command.Line, tr.getX(), tr.getY());
+        this._vertices.writeVertex(GXVertex.Command.Line, br.getX(), br.getY());
+        this._vertices.writeVertex(GXVertex.Command.Line, bl.getX(), bl.getY());
         this._vertices.writeVertex(GXVertex.Command.Close);
     };
 
@@ -168,52 +261,49 @@
     /** @override */
     GXTransformBox.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, GXTransformBox.GeometryProperties);
+        if (change == GXNode._Change.AfterPropertiesChange) {
+            this._verticesDirty = true;
+        }
         GXItemCompound.prototype._handleChange.call(this, change, args);
     };
 
-    /** @override */
-    GXTransformBox.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return null;
-    };
-
-    GXTransformBox.prototype._paintAnnotation = function (context, transform, center, type) {
-        if (transform) {
-            center = transform.mapPoint(center);
-        }
-        var vertices = new GXVertexContainer(5);
-        vertices.writeVertex(GXVertex.Command.Move, -1, -1);
-        vertices.writeVertex(GXVertex.Command.Line, 1, -1);
-        vertices.writeVertex(GXVertex.Command.Line, 1, 1);
-        vertices.writeVertex(GXVertex.Command.Line, -1, 1);
-        vertices.writeVertex(GXVertex.Command.Close);
-
-        var transformer = new GXVertexTransformer(vertices, new GTransform(
-            GXTransformBox.ANNOT_SIZE / 2, 0, 0, GXTransformBox.ANNOT_SIZE / 2, center.getX(), center.getY()));
-        context.canvas.putVertices(new GXVertexPixelAligner(transformer));
-        var fillColor = gColor.build(255, 255, 255);
-        context.canvas.fillVertices(fillColor);
-        context.canvas.strokeVertices(context.selectionOutlineColor, 1);
-    };
-
-    GXTransformBox.prototype._getPoint = function (side) {
+    GXTransformBox.prototype._getPoint = function (side, noTransform) {
+        var pt = null;
         switch (side) {
             case GXTransformBox.Handles.TOP_LEFT:
-                return new GPoint(this.$tlx, this.$tly);
+                pt = new GPoint(this.$tlx, this.$tly);
+                break;
             case GXTransformBox.Handles.TOP_CENTER:
-                return new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2);
+                pt = new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2);
+                break;
             case GXTransformBox.Handles.TOP_RIGHT:
-                return new GPoint(this.$trx, this.$try);
+                pt = new GPoint(this.$trx, this.$try);
+                break;
             case GXTransformBox.Handles.RIGHT_CENTER:
-                return new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                pt = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                break;
             case GXTransformBox.Handles.BOTTOM_RIGHT:
-                return new GPoint(this.$brx, this.$bry);
+                pt = new GPoint(this.$brx, this.$bry);
+                break;
             case GXTransformBox.Handles.BOTTOM_CENTER:
-                return new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                pt = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                break;
             case GXTransformBox.Handles.BOTTOM_LEFT:
-                return new GPoint(this.$blx, this.$bly);
+                pt = new GPoint(this.$blx, this.$bly);
+                break;
             case GXTransformBox.Handles.LEFT_CENTER:
-                return new GPoint((this.$tlx + this.$blx) / 2, (this.$tly + this.$bly) / 2);
+                pt = new GPoint((this.$tlx + this.$blx) / 2, (this.$tly + this.$bly) / 2);
+                break;
+            case GXTransformBox.Handles.ROTATION_CENTER:
+                pt = new GPoint(this.$cx, this.$cy);
+                break;
         }
+
+        if (this.$trf && pt && !noTransform) {
+            pt = this.$trf.mapPoint(pt);
+        }
+
+        return pt;
     };
 
     /** @override */

@@ -893,15 +893,8 @@
      * @param {Boolean} [small] whether to paint small annotation or not
      */
     GXElementEditor.prototype._getAnnotationBBox = function (transform, center, small) {
-        if (transform) {
-            center = transform.mapPoint(center);
-        }
-
         var size = small ? GXElementEditor.OPTIONS.annotationSizeSmall : GXElementEditor.OPTIONS.annotationSizeRegular;
-        var cx = Math.floor(center.getX()) + 0.5;
-        var cy = Math.floor(center.getY()) + 0.5;
-
-        return new GRect(cx - size / 2 - 1, cy - size / 2 - 1, size + 2, size + 2);
+        return gAnnotation.getAnnotationBBox(transform, center, size);
     };
 
     /**

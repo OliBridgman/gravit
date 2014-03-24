@@ -789,6 +789,9 @@
                 }
 
                 try {
+                    if (this._transformBox) {
+                        this._transformBox.applyTransform();
+                    }
                     var clonedSelection = [];
                     for (var i = 0; i < newSelection.length; ++i) {
                         var item = newSelection[i];
@@ -834,7 +837,7 @@
     };
 
     GXEditor.prototype.getSelectionTransformBox = function () {
-        if (!this._transformBox) {
+       //if (!this._transformBox) {
             var selBBox = null;
 
             for (var i = 0; i < this.getSelection().length; ++i) {
@@ -849,9 +852,10 @@
 
                 this._transformBox = new GXTransformBox(selBBox, this.getSelection());
             }
-        }
+        //}
 
         return this._transformBox;
+        //return null;
     };
 
     GXEditor.prototype.cleanTransformBox = function () {

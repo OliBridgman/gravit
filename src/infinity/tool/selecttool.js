@@ -24,7 +24,9 @@
         /** Prepared for moving */
         Move: 2,
         /** Actually moving something */
-        Moving: 3
+        Moving: 3,
+        /** Transforming via transform box */
+        Transforming: 4
     };
 
     /**
@@ -197,43 +199,50 @@
         // Let editor do some work for mouse position
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
-        // Reset to select mode here
-        this._updateMode(GXSelectTool._Mode.Select);
+        if (this._mode == GXSelectTool._Mode.Transforming) {
+            // Transform box always returns non-null partInfo
+            this._editorMovePartInfo = this._transformBox.getPartInfoAt(event.client, this._view.getWorldTransform(),
+                this._scene.getProperty('pickDist'));
+        } else {
 
-        // We're doing a stacked hit-test when the meta is key is hold down and
-        // when our manager has no temporary tool as in such case, we've been
-        // activated temporarily with the meta key and should ignore the meta key.
-        // When this is the case, we'll ignore hit-testing the editor(s) at all
-        // and instead, go straight to hit-testing elements instead
-        var stacked = gPlatform.modifiers.metaKey && this._manager.getTemporaryActiveTool() == null;
+            // Reset to select mode here
+            this._updateMode(GXSelectTool._Mode.Select);
 
-        if (!stacked) {
-            // Try to get a part of an editor, first
-            var docEditor = GXElementEditor.getEditor(this._scene);
-            if (docEditor) {
-                var partInfo = docEditor.getPartInfoAt(event.client, this._view.getWorldTransform(), function (editor) {
-                    // Ensure to allow selected editors for part, only
-                    return editor.hasFlag(GXElementEditor.Flag.Selected);
-                }.bind(this), this._scene.getProperty('pickDist'));
+            // We're doing a stacked hit-test when the meta is key is hold down and
+            // when our manager has no temporary tool as in such case, we've been
+            // activated temporarily with the meta key and should ignore the meta key.
+            // When this is the case, we'll ignore hit-testing the editor(s) at all
+            // and instead, go straight to hit-testing elements instead
+            var stacked = gPlatform.modifiers.metaKey && this._manager.getTemporaryActiveTool() == null;
 
-                if (partInfo) {
-                    var editor = partInfo.editor;
-                    var partId = partInfo.id;
-                    var selectable = partInfo.selectable;
+            if (!stacked) {
+                // Try to get a part of an editor, first
+                var docEditor = GXElementEditor.getEditor(this._scene);
+                if (docEditor) {
+                    var partInfo = docEditor.getPartInfoAt(event.client, this._view.getWorldTransform(), function (editor) {
+                        // Ensure to allow selected editors for part, only
+                        return editor.hasFlag(GXElementEditor.Flag.Selected);
+                    }.bind(this), this._scene.getProperty('pickDist'));
 
-                    // Only update part selection if we're either holding shift
-                    // or when we didn't actually retreieve an already selected part
-                    if (gPlatform.modifiers.shiftKey || (!editor.isPartSelected(partId) && selectable)) {
-                        editor.updatePartSelection(gPlatform.modifiers.shiftKey, [partId]);
+                    if (partInfo) {
+                        var editor = partInfo.editor;
+                        var partId = partInfo.id;
+                        var selectable = partInfo.selectable;
+
+                        // Only update part selection if we're either holding shift
+                        // or when we didn't actually retreieve an already selected part
+                        if (gPlatform.modifiers.shiftKey || (!editor.isPartSelected(partId) && selectable)) {
+                            editor.updatePartSelection(gPlatform.modifiers.shiftKey, [partId]);
+                        }
+
+                        // Save the editor part that initiated the movement
+                        if (!selectable || editor.isPartSelected(partId)) {
+                            this._editorMovePartInfo = partInfo;
+                        }
+
+                        // Set mode to move
+                        this._updateMode(GXSelectTool._Mode.Move);
                     }
-
-                    // Save the editor part that initiated the movement
-                    if (!selectable || editor.isPartSelected(partId)) {
-                        this._editorMovePartInfo = partInfo;
-                    }
-
-                    // Set mode to move
-                    this._updateMode(GXSelectTool._Mode.Move);
                 }
             }
         }
@@ -307,7 +316,9 @@
         this._moveStart = null;
         this._moveStartTransformed = null;
         this._moveCurrent = null;
-        this._updateMode(null);
+        if (this._mode != GXSelectTool._Mode.Transforming) {
+            this._updateMode(null);
+        }
         this._updateEditorUnderMouse(event.client);
     };
 
@@ -323,6 +334,11 @@
 
             // Switch to moving mode
             this._updateMode(GXSelectTool._Mode.Moving);
+        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+            this._moveStart = event.client;
+            this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
+            this._transformBox.hide();
+            this.invalidateArea();
         }
     };
 
@@ -347,6 +363,22 @@
             if (this._hasSelectArea()) {
                 this.invalidateArea(this._selectArea);
             }
+        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+            // Save current
+            this._moveCurrent = event.client;
+
+            var transform = this._transformBox.calculateTransform(this._editorMovePartInfo,
+                this._moveStart, this._moveCurrent, this._editor.getGuides(),
+                this._view.getViewTransform(), this._view.getWorldTransform(),
+                gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
+
+            //var position = this._editor.getGuides().mapPoint(this._moveCurrent);
+            //position = this._view.getViewTransform().mapPoint(position);
+            //var moveDelta = position.subtract(this._moveStartTransformed);
+
+            this._transformBox.setTransform(transform);
+            this._editor.transformSelection(transform, null, null);
+            this.invalidateArea();
         }
     };
 
@@ -414,6 +446,11 @@
             } else {
                 this._selectArea = null;
             }
+        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+            //this._transformBox.applyTransform();
+            this._editor.applySelectionTransform();
+            this._transformBox.show();
+            this.invalidateArea();
         }
     };
 
@@ -566,11 +603,17 @@
         if (this._editor) {
             if (this._transformBox) {
                 this._transformBox = null;
-                this._editor.cleanTransformBox();
+                //this._editor.cleanTransformBox();
+                this._updateMode(null);
+                this.invalidateArea();
             } else {
                 this._transformBox = this._editor.getSelectionTransformBox();
+                if (this._transformBox) {
+                    // Switch to transformation mode
+                    this._updateMode(GXSelectTool._Mode.Transforming);
+                    this.invalidateArea();
+                }
             }
-            this.invalidateArea();
         }
     };
 
