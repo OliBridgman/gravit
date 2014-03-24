@@ -533,14 +533,20 @@
      * @param {GXVertexSource} area the area to get colissions within
      * @param {Number} flags one or more flags to use for collision testing
      * @return {Array<GXElement>} an array including all coliding elements
+     * @param {Function} [acceptor] optional callback function getting called
+     * for a hit and receiving the currently hit element as it's only parameter.
      * @see GXElement.CollisionFlag
-     * @version 1.0
      */
-    GXElement.prototype.getCollisions = function (area, flags) {
+    GXElement.prototype.getCollisions = function (area, flags, acceptor) {
         var result = [];
 
+        var _addToResult = function (element) {
+            if ((acceptor && acceptor.call(null, element) == true) || !acceptor) {
+                result.push(element);
+            }
+        };
+
         // Handle the basic collision modes here
-        //if (this.hasFlag(GXElement.Flag.COLLISION)) {
         if ((flags & GXElement.CollisionFlag.GeometryBBox) != 0 || (flags & GXElement.CollisionFlag.PaintBBox) != 0) {
 
             // Test ourself, first
@@ -553,16 +559,15 @@
 
                 if ((flags & GXElement.CollisionFlag.Partial) != 0) {
                     if (areaBounds.intersectsRect(bbox)) {
-                        result.push(this);
+                        _addToResult(this);
                     }
                 } else {
                     if (areaBounds.containsRect(bbox)) {
-                        result.push(this);
+                        _addToResult(this);
                     }
                 }
             }
         }
-        //}
 
         // Test children now
         if (this.hasMixin(GXNode.Container)) {
@@ -571,7 +576,7 @@
                     var subResult = child.getCollisions(area, flags);
                     if (subResult && subResult.length) {
                         for (var i = 0; i < subResult.length; ++i) {
-                            result.push(subResult[i]);
+                            _addToResult(subResult[i]);
                         }
                     }
                 }
