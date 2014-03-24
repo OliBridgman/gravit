@@ -195,7 +195,124 @@
     GXTransformBox.prototype.calculateTransform = function (partInfo, startPt, endPt, guides,
             viewToWorldTransform, worldToViewTransform, option, ratio) {
         if (partInfo.id < 8) {
+            var pt = null;
+            var stPtTr = viewToWorldTransform.mapPoint(startPt);
+            var endPtTr = viewToWorldTransform.mapPoint(endPt);
+            var deltaTr = endPtTr.subtract(stPtTr);
+            var dx = deltaTr.getX();
+            var dy = deltaTr.getY();
 
+            var _correctNegative = function () {
+                if (width < 0) {
+                    tlxNew = tlxNew + width;
+                    width = -width;
+                }
+
+                if (height < 0) {
+                    tlyNew = tlyNew + height;
+                    height = -height;
+                }
+            };
+
+            var transform1 = null;
+            var transform3 = null;
+            var width = this.$brx - this.$tlx;
+            var height = this.$bry - this.$tly;
+
+            switch (partInfo.id) {
+                case GXTransformBox.Handles.TOP_LEFT:
+                    width = this.$brx - this.$tlx - dx;
+                    height = this.$bry - this.$tly - dy;
+                    var dxNew = dx;
+                    var dyNew = dy;
+                    //correctIfRatio();
+                    var tlxNew = this.$tlx + dxNew;
+                    var tlyNew = this.$tly + dyNew;
+                    _correctNegative();
+                    // TODO: snap if needed
+                    transform1 = new GTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
+                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
+                    break;
+                case GXTransformBox.Handles.TOP_CENTER:
+                    height = this.$bry - this.$tly - dy;
+                    var dyNew = dy;
+                    var tlyNew = this.$tly + dyNew;
+                    _correctNegative();
+                    var botCenter = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                    transform1 = new GTransform(1, 0, 0, 1, -botCenter.getX(), -botCenter.getY());
+                    transform3 = new GTransform(1, 0, 0, 1, botCenter.getX(), tlyNew + height);
+                    break;
+                case GXTransformBox.Handles.TOP_RIGHT:
+                    width = width + dx;
+                    height = height - dy;
+                    var dxNew = 0;
+                    var dyNew = dy;
+                    //correctIfRatio();
+                    var tlxNew = this.$tlx + dxNew;
+                    var tlyNew = this.$tly + dyNew;
+                    _correctNegative();
+                    // TODO: snap if needed
+                    transform1 = new GTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
+                    transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
+                    break;
+                case GXTransformBox.Handles.RIGHT_CENTER:
+                    width = width + dx;
+                    var tlxNew = this.$tlx;
+                    _correctNegative();
+                    var leftCenter = new GPoint((this.$blx + this.$tlx) / 2, (this.$bly + this.$tly) / 2);
+                    transform1 = new GTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
+                    transform3 = new GTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
+                    break;
+                case GXTransformBox.Handles.BOTTOM_RIGHT:
+                    width = width + dx;
+                    height = height + dy;
+                    var dxNew = 0;
+                    var dyNew = 0;
+                    //correctIfRatio();
+                    var tlxNew = this.$tlx + dxNew;
+                    var tlyNew = this.$tly + dyNew;
+                    _correctNegative();
+                    // TODO: snap if needed
+                    transform1 = new GTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
+                    transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew);
+                    break;
+                case GXTransformBox.Handles.BOTTOM_CENTER:
+                    height = height + dy;
+                    var tlyNew = this.$tly;
+                    _correctNegative();
+                    var topCenter = new GPoint((this.$trx + this.$tlx) / 2, (this.$try + this.$tly) / 2);
+                    transform1 = new GTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
+                    transform3 = new GTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
+                    break;
+                case GXTransformBox.Handles.BOTTOM_LEFT:
+                    width = width - dx;
+                    height = height + dy;
+                    var dxNew = dx;
+                    var dyNew = 0;
+                    //correctIfRatio();
+                    var tlxNew = this.$tlx + dxNew;
+                    var tlyNew = this.$tly + dyNew;
+                    _correctNegative();
+                    // TODO: snap if needed
+                    transform1 = new GTransform(1, 0, 0, 1, -this.$trx, -this.$try);
+                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
+                    break;
+                case GXTransformBox.Handles.LEFT_CENTER:
+                    width = width - dx;
+                    var dxNew = dx;
+                    var tlxNew = this.$tlx + dxNew;
+                    _correctNegative();
+                    var rightCenter = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                    transform1 = new GTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
+                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());
+                    break;
+            }
+
+            var scaleX = width / (this.$brx - this.$tlx);
+            var scaleY = height / (this.$bry - this.$tly);
+            var transform2 = new GTransform(scaleX, 0, 0, scaleY, 0, 0);
+
+            return transform1.multiplied(transform2).multiplied(transform3);
         } else {
             var stPtTr = viewToWorldTransform.mapPoint(startPt);
             var endPtTr = viewToWorldTransform.mapPoint(endPt);
