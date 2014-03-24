@@ -1,9 +1,8 @@
 #palettes {
   position: absolute;
-  top: 0px;
   right: 0px;
   width: 250px;
-  height: 100%;
+  background: $frameColor;
   border-left: 1px solid $frameBorderColor;
 
   .palette-group {

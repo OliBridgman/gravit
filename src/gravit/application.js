@@ -55,9 +55,6 @@
         Toolbar: {
             id: "toolbar"
         },
-        Content: {
-            id: "content"
-        },
         Sidebar: {
             id: "sidebar"
         },
@@ -336,7 +333,6 @@
     EXApplication.prototype.setPartVisible = function (part, visible) {
         if (visible != this.isPartVisible(part)) {
             this.getPart(part).css('display', (visible ? 'block' : 'none'));
-            this._updatedPartVisibilities();
         }
     };
 
@@ -575,6 +571,13 @@
             .attr('id', 'workspace')
             .prependTo(body);
 
+        // Windows-Part
+        var windowsPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Windows.id)
+            .appendTo(this._view);
+
+        this._windows = new EXWindows(windowsPart);
+
         // Header-Part
         var headerPart = $("<div></div>")
             .attr('id', EXApplication.Part.Header.id)
@@ -589,31 +592,19 @@
 
         this._toolbar = new GToolbar(toolbarPart);
 
-        // Content-Part
-        var contentPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Content.id)
-            .appendTo(this._view);
-
-        // Windows-Part
-        var windowsPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Windows.id)
-            .appendTo(contentPart);
-
-        this._windows = new EXWindows(windowsPart);
-
-        // Palettes-Part
-        var palettesPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Palettes.id)
-            .appendTo(contentPart);
-
-        this._palettes = new GPalettes(palettesPart);
-
         // Sidebar-Part
         var sidebarPart = $("<div></div>")
             .attr('id', EXApplication.Part.Sidebar.id)
             .appendTo(this._view);
 
         this._sidebar = new EXSidebar(sidebarPart);
+
+        // Palettes-Part
+        var palettesPart = $("<div></div>")
+            .attr('id', EXApplication.Part.Palettes.id)
+            .appendTo(this._view);
+
+        this._palettes = new GPalettes(palettesPart);
 
         // Append the corresponding hardware class to our body
         switch (gSystem.hardware) {
@@ -666,8 +657,8 @@
         // Mark initialized
         this._initialized = true;
 
-        // Manual call to update part visibilities
-        this._updatedPartVisibilities();
+        // Manual call to relayout
+        this.relayout();
 
         // Subscribe to window events
         this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
@@ -689,6 +680,9 @@
 
         setTimeout(function () {
             var topOffset = 0;
+            var leftOffset = 0;
+            var rightOffset = 0;
+            var bottomOffset = 0;
 
             var headerPart = this.getPart(EXApplication.Part.Header);
             topOffset += this.isPartVisible(EXApplication.Part.Header) ? headerPart.outerHeight() : 0;
@@ -696,26 +690,23 @@
             var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
             toolbarPart.css('top', topOffset.toString() + 'px');
             toolbarPart.height(this._view.height() - topOffset);
+            leftOffset += this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0;
 
             var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
             sidebarPart.css('top', topOffset.toString() + 'px');
             sidebarPart.css('left', (this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
             sidebarPart.height(this._view.height() - topOffset);
-
-            var contentPart = this.getPart(EXApplication.Part.Content);
-            contentPart.css('top', topOffset.toString() + 'px');
-            contentPart.css('left', (this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0) + 'px');
-            contentPart.height(this._view.height() - topOffset);
+            leftOffset += this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0;
 
             var palettesPart = this.getPart(EXApplication.Part.Palettes);
-
-            var windowsPart = this.getPart(EXApplication.Part.Windows);
-            windowsPart.css('right', (this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0) + 'px');
+            palettesPart.css('top', topOffset.toString() + 'px');
+            palettesPart.height(this._view.height() - topOffset);
+            rightOffset += this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0;
 
             this._header.relayout();
             this._toolbar.relayout();
             this._sidebar.relayout();
-            this._windows.relayout([this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0 , 0, 0, 0]);
+            this._windows.relayout([leftOffset, topOffset, rightOffset, bottomOffset]);
             this._palettes.relayout();
         }.bind(this), 0);
     };
@@ -724,8 +715,7 @@
      * Part visibilities have been changed
      */
     EXApplication.prototype._updatedPartVisibilities = function () {
-        // Update layout as part visibilities have changed
-        this.relayout();
+        // NO-OP
     };
 
     /**

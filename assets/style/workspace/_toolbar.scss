@@ -1,6 +1,7 @@
 #toolbar {
   position: absolute;
   width: 35px;
+  background: $frameColor;
   border-right: 1px solid $frame3DShadowColor;
 
   > div.section {

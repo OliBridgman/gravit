@@ -199,6 +199,7 @@
         if (margin && margin.length > 0) {
             for (var i = 0; i < Math.min(4, margin.length); ++i) {
                 this._viewMargin[i] = margin[i];
+                this.invalidate();
             }
         }
     };
