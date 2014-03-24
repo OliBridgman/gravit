@@ -450,7 +450,7 @@
             }
         }
     };
-    
+
     /**
      * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
@@ -532,12 +532,12 @@
         // If we don't have any in- or ex-clusion queries then
         // by default we'll allow only shape descendants to be selected
         /*
-        if (!inclusionQuery && !exclusionQuery) {
-            if (!(node instanceof GXItemCompound)) {
-                return false;
-            }
-        }
-        */
+         if (!inclusionQuery && !exclusionQuery) {
+         if (!(node instanceof GXItemCompound)) {
+         return false;
+         }
+         }
+         */
 
         return true;
     };
@@ -837,21 +837,21 @@
     };
 
     GXEditor.prototype.getSelectionTransformBox = function () {
-       //if (!this._transformBox) {
-            var selBBox = null;
+        //if (!this._transformBox) {
+        var selBBox = null;
 
-            for (var i = 0; i < this.getSelection().length; ++i) {
-                var bbox = this.getSelection()[i].getGeometryBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
-                }
+        for (var i = 0; i < this.getSelection().length; ++i) {
+            var bbox = this.getSelection()[i].getGeometryBBox();
+            if (bbox && !bbox.isEmpty()) {
+                selBBox = selBBox ? selBBox.united(bbox) : bbox;
             }
-            if (selBBox) {
-                selBBox = selBBox.expanded(GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN,
-                    GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN);
+        }
+        if (selBBox) {
+            selBBox = selBBox.expanded(GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN,
+                GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN);
 
-                this._transformBox = new GXTransformBox(selBBox, this.getSelection());
-            }
+            this._transformBox = new GXTransformBox(selBBox, this.getSelection());
+        }
         //}
 
         return this._transformBox;
@@ -1137,14 +1137,15 @@
                 }
             });
         }
-        ;
-
-        // Try to remove node from internal selection, first
-        this._tryRemoveFromSelection(evt.node);
 
         if (evt.node instanceof GXElement) {
-            // Try to close any editors the node may have
-            GXElementEditor.closeEditor(evt.node);
+            // If element is in selection, unselect it, first
+            if (this._selection && this._selection.indexOf(evt.node) >= 0) {
+                evt.node.removeFlag(GXNode.Flag.Selected);
+            } else {
+                // Otherwise ry to close any editors the node may have
+                GXElementEditor.closeEditor(evt.node);
+            }
         }
 
         // Handle removing the current page or layer
