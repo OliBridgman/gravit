@@ -249,36 +249,46 @@
 
         // If we didn't receive an editor part then do our regular stuff here
         if (this._mode === GXSelectTool._Mode.Select) {
-            var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), function (hit) {
-                // Ensure to to allow only nodes that are selectable in editor
-                return this._editor.isSelectable(hit);
-            }.bind(this), stacked, -1, this._scene.getProperty('pickDist'));
+            var selectableElements = [];
 
+            var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
+                stacked, -1, this._scene.getProperty('pickDist'));
+
+            // Convert element hits if any into an array of pure elements
+            // and gather the selectable elements from it
             if (elementHits) {
+                var elements = [];
+                for (var i = 0; i < elementHits.length; ++i) {
+                    elements.push(elementHits[i].element);
+                }
+                selectableElements = this._getSelectableElements(elements);
+            }
+
+            if (selectableElements.length > 0) {
                 // The element hit array can only contain more than one hit
                 // if we're in stacked mode, otherwise it will always contain
                 // approximately one (the topmost) hit element so it is safe
                 // to check for the length here and act differently
-                if (elementHits.length > 1) {
+                if (selectableElements.length > 1) {
                     // Iterate all of our hits and select either one deeper than
                     // than the current selection or start from the beginning
                     var lastSelIndex = null;
-                    for (var i = 0; i < elementHits.length; ++i) {
-                        if (elementHits[i].element.hasFlag(GXNode.Flag.Selected)) {
+                    for (var i = 0; i < selectableElements.length; ++i) {
+                        if (selectableElements[i].element.hasFlag(GXNode.Flag.Selected)) {
                             lastSelIndex = i;
                         }
                     }
 
-                    if (lastSelIndex == null || lastSelIndex + 1 >= elementHits.length) {
+                    if (lastSelIndex == null || lastSelIndex + 1 >= selectableElements.length) {
                         // Start from the beginning
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [elementHits[0].element]);
+                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [selectableElements[0]]);
                     } else {
                         // Select next in order
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [elementHits[lastSelIndex + 1].element]);
+                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [selectableElements[lastSelIndex + 1]]);
                     }
 
                 } else {
-                    var hitElement = elementHits[0].element;
+                    var hitElement = selectableElements[0];
 
                     if (gPlatform.modifiers.shiftKey || !hitElement.hasFlag(GXNode.Flag.Selected)) {
                         // Only update selection if we're either holding shift
@@ -401,7 +411,7 @@
                     }
                     this._editor.commitTransaction('Modify ' + nodeNameTranslated);
                 }
-            } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly){
+            } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly) {
                 // TODO: add clone logic, or Alt support + Shift support
                 this._editor.beginTransaction();
                 try {
@@ -436,8 +446,9 @@
                 collisionArea.modifyVertex(GXVertex.Command.Line, x0, y2, 3);
                 collisionArea.modifyVertex(GXVertex.Command.Close, 0, 0, 4);
                 var collisions = this._scene.getCollisions(collisionArea, GXElement.CollisionFlag.GeometryBBox);
+                var selectableElements = this._getSelectableElements(collisions);
 
-                this._editor.updateSelection(gPlatform.modifiers.shiftKey, collisions);
+                this._editor.updateSelection(gPlatform.modifiers.shiftKey, selectableElements);
 
                 // Invalidate to remove area selector's paint region
                 var selectArea = this._selectArea;
@@ -451,6 +462,27 @@
             this._editor.applySelectionTransform();
             this._transformBox.show();
             this.invalidateArea();
+        }
+    };
+
+    /**
+     * @private
+     */
+    GXSelectTool.prototype._mouseDblClick = function () {
+        if (this._editor) {
+            if (this._transformBox) {
+                this._transformBox = null;
+                //this._editor.cleanTransformBox();
+                this._updateMode(null);
+                this.invalidateArea();
+            } else {
+                this._transformBox = this._editor.getSelectionTransformBox();
+                if (this._transformBox) {
+                    // Switch to transformation mode
+                    this._updateMode(GXSelectTool._Mode.Transforming);
+                    this.invalidateArea();
+                }
+            }
         }
     };
 
@@ -531,7 +563,7 @@
         if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
             this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                 position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey);
-        } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly){
+        } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly) {
             position = this._view.getViewTransform().mapPoint(position);
             var moveDelta = position.subtract(this._moveStartTransformed);
             this._editorMovePartInfo.editor.transform(new GTransform(1, 0, 0, 1, moveDelta.getX(), moveDelta.getY()),
@@ -594,27 +626,49 @@
         }
     };
 
+    /**
+     * Iterate and returns an array of selectable elements from
+     * an source array of elements in their original order
+     * @param {Array<GXElement>} elements source array of elements
+     * @returns {Array<GXElement>} array of selectable elements or
+     * an empty array for none
+     * @private
+     */
+    GXSelectTool.prototype._getSelectableElements = function (elements) {
+        var selectableElements = [];
+        for (var i = 0; i < elements.length; ++i) {
+            var selectableElement = this._getSelectableElement(elements[i]);
+            if (selectableElement && selectableElements.indexOf(selectableElement) < 0) {
+                selectableElements.push(selectableElement);
+            }
+        }
+        return selectableElements;
+    };
+
+    /**
+     * Returns the selectable element out of an given one or null
+     * if the given one is not selectable at all.
+     * @param {GXElement} element
+     * @return {GXElement}
+     * @private
+     */
+    GXSelectTool.prototype._getSelectableElement = function (element) {
+        // By default, we allow only item compounds to be selected.
+        // Furthermore, we'll iterate up until we'll find the root
+        // item compound residing within anything else than another
+        // item compound
+        for (var p = element; p !== null; p = p.getParent()) {
+            if (p instanceof GXItemCompound && (!p.getParent() || !(p.getParent() instanceof GXItemCompound))) {
+                return p;
+            }
+        }
+
+        return null;
+    };
+
     /** @private **/
     GXSelectTool.prototype._hasSelectArea = function () {
         return (this._selectArea && (this._selectArea.getHeight() > 0 || this._selectArea.getWidth() > 0));
-    };
-
-    GXSelectTool.prototype._mouseDblClick = function () {
-        if (this._editor) {
-            if (this._transformBox) {
-                this._transformBox = null;
-                //this._editor.cleanTransformBox();
-                this._updateMode(null);
-                this.invalidateArea();
-            } else {
-                this._transformBox = this._editor.getSelectionTransformBox();
-                if (this._transformBox) {
-                    // Switch to transformation mode
-                    this._updateMode(GXSelectTool._Mode.Transforming);
-                    this.invalidateArea();
-                }
-            }
-        }
     };
 
     /** override */

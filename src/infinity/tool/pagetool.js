@@ -58,8 +58,14 @@
     };
 
     /** @override */
-    GXPageTool.prototype._isSelectable = function (node) {
-        return node instanceof GXPage;
+    GXPageTool.prototype._getSelectableElement = function (element) {
+        for (var p = element; p !== null; p = p.getParent()) {
+            if (p instanceof GXPage) {
+                return p;
+            }
+        }
+
+        return null;
     };
 
     /** override */

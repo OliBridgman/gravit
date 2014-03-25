@@ -532,9 +532,10 @@
      * all potential children if it if any
      * @param {GXVertexSource} area the area to get colissions within
      * @param {Number} flags one or more flags to use for collision testing
-     * @return {Array<GXElement>} an array including all coliding elements
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
+     * @return {Array<GXElement>} an array including all coliding elements or
+     * an empty array for no collisions
      * @see GXElement.CollisionFlag
      */
     GXElement.prototype.getCollisions = function (area, flags, acceptor) {

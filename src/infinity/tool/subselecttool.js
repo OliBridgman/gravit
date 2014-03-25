@@ -94,6 +94,11 @@
         }
     };
 
+    /** @override */
+    GXSubSelectTool.prototype._getSelectableElement = function (element) {
+        return element instanceof GXShape ? element : null;
+    };
+
     /** override */
     GXSubSelectTool.prototype.toString = function () {
         return "[Object GXSubSelectTool]";
