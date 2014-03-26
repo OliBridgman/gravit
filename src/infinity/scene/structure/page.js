@@ -172,7 +172,28 @@
 
     /** @override */
     GXPage.prototype._handleChange = function (change, args) {
-        this._handleGeometryChangeForProperties(change, args, GXPage.GeometryProperties);
+        if (this._handleGeometryChangeForProperties(change, args, GXPage.GeometryProperties)) {
+            if (change === GXNode._Change.BeforePropertiesChange) {
+                // Check for position change in page
+                var xIndex = args.properties.indexOf('x');
+                var yIndex = args.properties.indexOf('y');
+                if (xIndex >= 0 || yIndex >= 0) {
+                    // Changing x and/or y requires translating all direct children
+                    var dx = xIndex >= 0 ? args.values[xIndex] - this.$x : 0;
+                    var dy = yIndex >= 0 ? args.values[yIndex] - this.$y : 0;
+
+                    if (dx !== 0 || dy !== 0) {
+                        var transform = new GTransform(1, 0, 0, 1, dx, dy);
+                        for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
+                            if (child instanceof GXElement && child.hasMixin(GXElement.Transform)) {
+                                child.transform(transform);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         this._handleVisualChangeForProperties(change, args, GXPage.VisualProperties);
         GXBlock.prototype._handleChange.call(this, change, args);
     };
