@@ -12,12 +12,6 @@
 
     GObject.inherit(GXPageTool, GXSelectTool);
 
-    /**
-     * @type {String}
-     * @private
-     */
-    GXPageTool.prototype._oldSelectQuery = null;
-
     /** @override */
     GXPageTool.prototype.getGroup = function () {
         return 'select';
@@ -37,24 +31,6 @@
     /** @override */
     GXPageTool.prototype.getActivationCharacters = function () {
         return ['D'];
-    };
-
-    /** @override */
-    GXPageTool.prototype.activate = function (view, layer) {
-        GXSelectTool.prototype.activate.call(this, view, layer);
-
-        // Set editor selection query exclusively to pages
-        this._oldSelectQuery = this._editor.getSelectQuery();
-        this._editor.setSelectQuery('page');
-    };
-
-    /** @override */
-    GXPageTool.prototype.deactivate = function (view, layer) {
-        // Reset editor selection query to saved value
-        this._editor.setSelectQuery(this._oldSelectQuery);
-        this._oldSelectQuery = null;
-
-        GXSelectTool.prototype.deactivate.call(this, view, layer);
     };
 
     /** @override */

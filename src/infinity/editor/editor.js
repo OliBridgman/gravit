@@ -209,12 +209,6 @@
     GXEditor.prototype._selectionDetail = false;
 
     /**
-     * @type {String}
-     * @private
-     */
-    GXEditor.prototype._selectQuery = null;
-
-    /**
      * @type {{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: GXElement, parts: Array<*>}>}}
      * @private
      */
@@ -314,26 +308,6 @@
     };
 
     /**
-     * Returns the current select query
-     * @returns {boolean}
-     */
-    GXEditor.prototype.getSelectQuery = function () {
-        return this._selectQuery;
-    };
-
-    /**
-     * Assigns the current select query
-     * @param {String} query the query what is selectable,
-     * may also be null to switch to default selection mode
-     */
-    GXEditor.prototype.setSelectQuery = function (query) {
-        if (query !== this._selectQuery) {
-            this._selectQuery = query;
-            this._updateSelectionForSelectable();
-        }
-    };
-
-    /**
      * Return the editor's guides
      * @returns {GXGuides}
      */
@@ -365,8 +339,6 @@
             if (this._currentPage) {
                 this._currentPage.setFlag(GXNode.Flag.Active);
             }
-
-            this._updateSelectionForSelectable();
 
             if (this.hasEventListeners(GXEditor.CurrentPageChangedEvent)) {
                 this.trigger(new GXEditor.CurrentPageChangedEvent(previousPage));
@@ -415,8 +387,6 @@
                 // Finally re-select again
                 this.updateSelection(false, modelSelection);
             }
-
-            this._updateSelectionForSelectable();
 
             if (this.hasEventListeners(GXEditor.CurrentLayerChangedEvent)) {
                 this.trigger(new GXEditor.CurrentLayerChangedEvent(previousLayer));
@@ -507,42 +477,6 @@
     };
 
     /**
-     * Evaluates whether a given node is selectable or not under
-     * the current conditions of the editor
-     * @param {GXNode} node the node to test for selectable
-     * @return {Boolean} true if node is selectable, false if not
-     */
-    GXEditor.prototype.isSelectable = function (node) {
-        var inclusionQuery = null;
-        var exclusionQuery = null;
-
-        if (this._selectQuery && this._selectQuery.trim() !== "") {
-            inclusionQuery = this._selectQuery;
-        }
-
-        if (inclusionQuery && !node.filtered(inclusionQuery)) {
-            return false;
-        }
-
-        if (exclusionQuery && node.filtered(exclusionQuery)) {
-            return false;
-        }
-
-        // TODO : FIX THIS!!!!
-        // If we don't have any in- or ex-clusion queries then
-        // by default we'll allow only shape descendants to be selected
-        /*
-         if (!inclusionQuery && !exclusionQuery) {
-         if (!(node instanceof GXItemCompound)) {
-         return false;
-         }
-         }
-         */
-
-        return true;
-    };
-
-    /**
      * Clone current selection (if any) and make it the new selection
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
@@ -619,22 +553,8 @@
      * current selection with the new one, otherwise the current selection
      * will be replaced with the new one
      * @param {Array<GXElement>} selection the new array of nodes to be selected
-     * @param {Boolean} [noFilter] if true, the selection will not be filtered
-     * by the current conditions. Defaults to false
      */
-    GXEditor.prototype.updateSelection = function (toggle, selection, noFilter) {
-        if (!noFilter && selection && selection.length > 0) {
-            var tmpSelection = [];
-
-            for (var i = 0; i < selection.length; ++i) {
-                if (this.isSelectable(selection[i])) {
-                    tmpSelection.push(selection[i]);
-                }
-            }
-
-            selection = tmpSelection;
-        }
-
+    GXEditor.prototype.updateSelection = function (toggle, selection) {
         if (!toggle) {
             // Select new selection if any
             if (selection && selection.length > 0) {
@@ -1379,30 +1299,6 @@
             // If we have a parent editor, try to close it recursively as well
             if (parentEditor) {
                 this._tryCloseEditor(parentEditor.getElement());
-            }
-        }
-    };
-
-    /**
-     * Updates the current selection if any and clears it depending
-     * on the current selection settings like query, locking etc.
-     * @private
-     */
-    GXEditor.prototype._updateSelectionForSelectable = function () {
-        if (this._selection) {
-            var markedForExclusion = [];
-            var clearCount = 0;
-
-            for (var i = 0; i < this._selection.length; ++i) {
-                if (this.isSelectable(this._selection[i])) {
-                    markedForExclusion.push(this._selection[i]);
-                } else {
-                    clearCount += 1;
-                }
-            }
-
-            if (clearCount > 0) {
-                this.clearSelection(markedForExclusion)
             }
         }
     };
