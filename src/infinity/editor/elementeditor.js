@@ -714,8 +714,12 @@
      * false if not
      */
     GXElementEditor.prototype.canApplyTransform = function () {
-        // Only a valid transform can be applied by default
-        return this._transform && !this._transform.isIdentity();
+        var element = this.getElement();
+
+        // By default, transformation can only be applied if it is valid,
+        // the element supports transforming and the element is not locked
+        return this._transform && !this._transform.isIdentity() &&
+            element.hasMixin(GXElement.Transform) && !element.hasFlag(GXElement.Flag.Locked);
     };
 
     /**
