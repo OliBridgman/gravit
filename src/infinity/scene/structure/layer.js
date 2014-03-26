@@ -2,15 +2,16 @@
     /**
      * An element representing a layer
      * @class GXLayer
-     * @extends GXItemContainer
+     * @extends GXBlock
+     * @mixes GXNode.Container
      * @constructor
      */
     function GXLayer() {
-        GXItemContainer.call(this);
+        GXBlock.call(this);
         this._setDefaultProperties(GXLayer.VisualProperties, GXLayer.MetaProperties);
     }
 
-    GXNode.inherit("layer", GXLayer, GXItemContainer);
+    GXNode.inheritAndMix("layer", GXLayer, GXBlock, [GXNode.Container]);
 
     GXLayer.GUIDE_COLOR_DEFAULT = new GXColor(GXColor.Type.RGB, [0, 255, 255, 100]);
 
@@ -78,7 +79,7 @@
 
     /** @override */
     GXLayer.prototype.store = function (blob) {
-        if (GXItemContainer.prototype.store.call(this, blob)) {
+        if (GXBlock.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
                     return value.asString();
@@ -94,7 +95,7 @@
 
     /** @override */
     GXLayer.prototype.restore = function (blob) {
-        if (GXItemContainer.prototype.restore.call(this, blob)) {
+        if (GXBlock.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
                     return GXColor.parseColor(value);
@@ -110,7 +111,7 @@
 
     /** @override */
     GXLayer.prototype._preparePaint = function (context) {
-        if (GXItemContainer.prototype._preparePaint.call(this, context)) {
+        if (GXBlock.prototype._preparePaint.call(this, context)) {
             if (this.$tp === GXLayer.Type.Guide) {
                 if (!context.configuration.isGuidesVisible(context)) {
                     return false;
@@ -140,7 +141,7 @@
             // TODO : Reset marked draft layers like changed opacity etc.
         }
 
-        GXItemContainer.prototype._finishPaint.call(this, context);
+        GXBlock.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
@@ -167,7 +168,7 @@
             }
         }
 
-        GXItemContainer.prototype._handleChange.call(this, change, args);
+        GXBlock.prototype._handleChange.call(this, change, args);
     };
 
     _.GXLayer = GXLayer;

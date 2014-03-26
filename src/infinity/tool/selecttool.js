@@ -653,12 +653,11 @@
      * @private
      */
     GXSelectTool.prototype._getSelectableElement = function (element) {
-        // By default, we allow only item compounds to be selected.
+        // By default, we allow only items to be selected.
         // Furthermore, we'll iterate up until we'll find the root
-        // item compound residing within anything else than another
-        // item compound
+        // item residing within anything else than another item
         for (var p = element; p !== null; p = p.getParent()) {
-            if (p instanceof GXItemCompound && (!p.getParent() || !(p.getParent() instanceof GXItemCompound))) {
+            if (p instanceof GXItem && (!p.getParent() || !(p.getParent() instanceof GXItem))) {
                 return p;
             }
         }

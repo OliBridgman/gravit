@@ -2,14 +2,15 @@
     /**
      * An element representing a page
      * @class GXPage
-     * @extends GXItemContainer
+     * @extends GXBlock
+     * @mixes GXNode.Container
      * @constructor
      */
     function GXPage() {
-        GXItemContainer.call(this);
+        GXBlock.call(this);
         this._setDefaultProperties(GXPage.GeometryProperties, GXPage.VisualProperties);
     };
-    GXNode.inherit("page", GXPage, GXItemContainer);
+    GXNode.inheritAndMix("page", GXPage, GXBlock, [GXNode.Container]);
 
     /**
      * The geometry properties of a page with their default values
@@ -47,7 +48,7 @@
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
     GXPage.prototype.store = function (blob) {
-        if (GXItemContainer.prototype.store.call(this, blob)) {
+        if (GXBlock.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXPage.GeometryProperties);
             this.storeProperties(blob, GXPage.VisualProperties);
             return true;
@@ -57,7 +58,7 @@
 
     /** @override */
     GXPage.prototype.restore = function (blob) {
-        if (GXItemContainer.prototype.restore.call(this, blob)) {
+        if (GXBlock.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXPage.GeometryProperties);
             this.restoreProperties(blob, GXPage.VisualProperties);
             return true;
@@ -149,7 +150,7 @@
             bbox = bbox.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
         }
 
-        var superBBox = GXItemContainer.prototype._calculatePaintBBox.call(this);
+        var superBBox = GXBlock.prototype._calculatePaintBBox.call(this);
 
         return superBBox ? superBBox.united(bbox) : bbox;
     };
@@ -163,17 +164,17 @@
         }
 
         if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return new GXItemContainer.HitResult(this);
+            return new GXBlock.HitResult(this);
         }
 
-        return GXItemContainer.prototype._detailHitTest.call(this, location, transform, tolerance, force);;
+        return GXBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);;
     };
 
     /** @override */
     GXPage.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, GXPage.GeometryProperties);
         this._handleVisualChangeForProperties(change, args, GXPage.VisualProperties);
-        GXItemContainer.prototype._handleChange.call(this, change, args);
+        GXBlock.prototype._handleChange.call(this, change, args);
     };
 
     _.GXPage = GXPage;

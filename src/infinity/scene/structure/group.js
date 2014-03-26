@@ -2,17 +2,18 @@
     /**
      * The base for a groups
      * @class GXGroup
-     * @extends GXItemCompound
+     * @extends GXItem
+     * @mixes GXNode.Container
      * @constructor
      */
     function GXGroup() {
-        GXItemCompound.call(this);
+        GXItem.call(this);
     }
-    GXNode.inherit('group', GXGroup, GXItemCompound);
+    GXNode.inheritAndMix('group', GXGroup, GXItem, [GXNode.Container]);
 
     /** @override */
     GXGroup.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXItemContainer;
+        return parent instanceof GXBlock;
     };
 
     _.GXGroup = GXGroup;

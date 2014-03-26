@@ -4,17 +4,18 @@
      * A base geometry based on vertices which is transformable and styleable
      * and may contain other elements as sub-contents
      * @class GXShape
-     * @extends GXElement
+     * @extends GXItem
+     * @mixes GXNode.Container
      * @mixes GXElement.Transform
      * @mixes GXElement.Pivot
      * @mixes GXVertexSource
      * @constructor
      */
     function GXShape() {
-        GXItemCompound.call(this);
+        GXItem.call(this);
         this._setDefaultProperties(GXShape.GeometryProperties);
     }
-    GObject.inheritAndMix(GXShape, GXItemCompound, [GXElement.Transform, GXElement.Pivot, GXVertexSource]);
+    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -45,12 +46,12 @@
 
     /** @override */
     GXShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXItemContainer;
+        return parent instanceof GXBlock;
     };
 
     /** @override */
     GXShape.prototype.store = function (blob) {
-        if (GXItemCompound.prototype.store.call(this, blob)) {
+        if (GXItem.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
                     return GTransform.serialize(value);
@@ -64,7 +65,7 @@
 
     /** @override */
     GXShape.prototype.restore = function (blob) {
-        if (GXItemCompound.prototype.restore.call(this, blob)) {
+        if (GXItem.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
                     return GTransform.deserialize(value);
@@ -175,7 +176,7 @@
     /** @override */
     GXShape.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, GXShape.GeometryProperties);
-        GXItemCompound.prototype._handleChange.call(this, change, args);
+        GXItem.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

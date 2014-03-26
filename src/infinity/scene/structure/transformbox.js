@@ -11,7 +11,7 @@
      * @constructor
      */
     function GXTransformBox(bbox, elements) {
-        GXItemCompound.call(this);
+        GXItem.call(this);
         this._setDefaultProperties(GXTransformBox.GeometryProperties);
         this._elements = elements;
         var tl = bbox.getSide(GRect.Side.TOP_LEFT);
@@ -30,9 +30,7 @@
         this.$cx = (this.$tlx + this.$brx) / 2;
         this.$cy = (this.$tly + this.$bry) / 2;
     }
-    GXNode.inherit("transformbox", GXTransformBox, GXItemCompound);
-    //GObject.inheritAndMix(GXTransformBox, GXElementEditor);
-    //GObject.inheritAndMix(GXTransformBox, GXItemCompound, [GXElement.Transform, GXElement.Pivot, GXVertexSource]);
+    GXNode.inherit("transformbox", GXTransformBox, GXItem);
 
     /**
      * The geometry properties of a shape with their default values
@@ -381,7 +379,7 @@
         if (change == GXNode._Change.AfterPropertiesChange) {
             this._verticesDirty = true;
         }
-        GXItemCompound.prototype._handleChange.call(this, change, args);
+        GXItem.prototype._handleChange.call(this, change, args);
     };
 
     GXTransformBox.prototype._getPoint = function (side, noTransform) {

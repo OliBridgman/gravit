@@ -42,7 +42,7 @@
             .on('tree.move', this._moveTreeNode.bind(this));
 
         // Create empty tree node mapping table
-        this._treeItemMap = [];
+        this._treeNodeMap = [];
     };
 
     /**
@@ -58,15 +58,14 @@
     EXSidebar.DocumentState.prototype._htmlTreeContainer = null;
 
     /**
-     * A mapping of GXItem to Tree nodes
-     * @type {Array<{{item: GXNode, treeId: String}}>}
+     * A mapping of GXBlock to Tree nodes
+     * @type {Array<{{block: GXBlock, treeId: String}}>}
      * @private
      */
-    EXSidebar.DocumentState.prototype._treeItemMap = null;
+    EXSidebar.DocumentState.prototype._treeNodeMap = null;
 
     EXSidebar.DocumentState.prototype.init = function () {
         var scene = this.document.getScene();
-        var editor = this.document.getEditor();
 
         // Subscribe to the document scene's events
         scene.addEventListener(GXNode.AfterInsertEvent, this._afterInsert, this);
@@ -75,12 +74,11 @@
         scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
         // Add our root
-        this._insertItem(scene);
+        this._insertBlock(scene);
     };
 
     EXSidebar.DocumentState.prototype.release = function () {
         var scene = this.document.getScene();
-        var editor = this.document.getEditor();
 
         // Unsubscribe from the document scene's events
         scene.removeEventListener(GXNode.AfterInsertEvent, this._afterInsert);
@@ -94,8 +92,8 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._afterInsert = function (event) {
-        if (event.node instanceof GXItem) {
-            this._insertItem(event.node);
+        if (event.node instanceof GXBlock) {
+            this._insertBlock(event.node);
         }
     };
 
@@ -104,7 +102,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._afterRemove = function (event) {
-        if (event.node instanceof GXItem) {
+        if (event.node instanceof GXBlock) {
             var treeNode = this._getTreeNode(event.node);
 
             if (treeNode) {
@@ -113,10 +111,10 @@
 
                 // Iterate node and remove all tree mappings
                 event.node.accept(function (node) {
-                    if (node instanceof GXItem) {
-                        for (var i = 0; i < this._treeItemMap.length; ++i) {
-                            if (this._treeItemMap[i].item === node) {
-                                this._treeItemMap.splice(i, 1);
+                    if (node instanceof GXBlock) {
+                        for (var i = 0; i < this._treeNodeMap.length; ++i) {
+                            if (this._treeNodeMap[i].block === node) {
+                                this._treeNodeMap.splice(i, 1);
                                 break;
                             }
                         }
@@ -131,8 +129,8 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._afterPropertiesChange = function (event) {
-        if (event.node instanceof GXItem) {
-            this._updateItemProperties(event.node);
+        if (event.node instanceof GXBlock) {
+            this._updateBlockProperties(event.node);
         }
     };
 
@@ -141,39 +139,39 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof GXItem) {
-            this._updateItemProperties(event.node);
+        if (event.node instanceof GXBlock) {
+            this._updateBlockProperties(event.node);
         }
     };
 
     /**
-     * @param {GXItem} item
+     * @param {GXBlock} block
      * @return {*}
      * @private
      */
-    EXSidebar.DocumentState.prototype._getTreeNodeId = function (item) {
-        for (var i = 0; i < this._treeItemMap.length; ++i) {
-            if (this._treeItemMap[i].item === item) {
-                return this._treeItemMap[i].treeId;
+    EXSidebar.DocumentState.prototype._getTreeNodeId = function (block) {
+        for (var i = 0; i < this._treeNodeMap.length; ++i) {
+            if (this._treeNodeMap[i].block === block) {
+                return this._treeNodeMap[i].treeId;
             }
         }
     };
 
     /**
-     * @param {GXItem} item
+     * @param {GXBlock} block
      * @return {*}
      * @private
      */
-    EXSidebar.DocumentState.prototype._getTreeNode = function (item) {
-        return this._htmlTreeContainer.tree('getNodeById', this._getTreeNodeId(item));
+    EXSidebar.DocumentState.prototype._getTreeNode = function (block) {
+        return this._htmlTreeContainer.tree('getNodeById', this._getTreeNodeId(block));
     };
 
     /**
      * @private
      */
     EXSidebar.DocumentState.prototype._createListItem = function (node, li) {
-        if (node.item) {
-            var item = node.item;
+        if (node.block) {
+            var block = node.block;
             var scene = this.document.getScene();
             var editor = this.document.getEditor();
 
@@ -182,10 +180,10 @@
             li.removeClass('jqtree-selected');
             li.removeClass('jqtree-active');
 
-            if (item.hasFlag(GXNode.Flag.Selected)) {
+            if (block.hasFlag(GXNode.Flag.Selected)) {
                 li.addClass('jqtree-selected');
             } else {
-                if (item.hasFlag(GXNode.Flag.Active)) {
+                if (block.hasFlag(GXNode.Flag.Active)) {
                     li.addClass('jqtree-active');
                 }
             }
@@ -235,7 +233,7 @@
      * @private
      */
     EXSidebar.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
-        return this._getMoveTreeNodeInfo(position, moved_node.item, target_node.item) !== null;
+        return this._getMoveTreeNodeInfo(position, moved_node.block, target_node.block) !== null;
     };
 
     /**
@@ -246,7 +244,7 @@
         event.preventDefault();
 
         var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
-            event.move_info.moved_node.item, event.move_info.target_node.item);
+            event.move_info.moved_node.block, event.move_info.target_node.block);
 
         if (moveInfo) {
             var editor = this.document.getEditor();
@@ -268,57 +266,55 @@
     EXSidebar.DocumentState.prototype._clickTreeNode = function (event) {
         event.preventDefault();
 
-        if (event.node && event.node.item) {
-            var item = event.node.item;
-            //item.setFlag(GXNode.Flag.Selected);
-
-            this.document.getEditor().updateSelection(gPlatform.modifiers.metaKey, [item]);
+        if (event.node && event.node.block) {
+            var block = event.node.block;
+            this.document.getEditor().updateSelection(gPlatform.modifiers.metaKey, [block]);
 
         }
     };
 
     /**
-     * @param {GXItem} item
+     * @param {GXBlock} block
      * @private
      */
-    EXSidebar.DocumentState.prototype._updateItemProperties = function (item) {
-        var treeNode = this._getTreeNode(item);
+    EXSidebar.DocumentState.prototype._updateBlockProperties = function (block) {
+        var treeNode = this._getTreeNode(block);
         if (treeNode) {
             this._htmlTreeContainer.tree('updateNode', treeNode, {
-                label: item.getItemName(),
-                item: item
+                label: block.getLabel(),
+                block: block
             });
         }
     };
 
     /**
-     * @param {GXItem} item
+     * @param {GXBlock} block
      * @private
      */
-    EXSidebar.DocumentState.prototype._insertItem = function (item) {
-        // Recursively add items
-        item.accept(function (node) {
-            if (node instanceof GXItem) {
-                // Create an unique treeId for the new item
+    EXSidebar.DocumentState.prototype._insertBlock = function (block) {
+        // Recursively add blocks
+        block.accept(function (node) {
+            if (node instanceof GXBlock) {
+                // Create an unique treeId for the new block
                 var treeId = gUtil.uuid();
 
                 // Insert into tree
                 var nextTreeNode = node.getNext() ? this._getTreeNode(node.getNext()) : null;
                 if (nextTreeNode) {
-                    this._htmlTreeContainer.tree('addNodeBefore', { id: treeId, item: node }, nextTreeNode);
+                    this._htmlTreeContainer.tree('addNodeBefore', { id: treeId, block: node }, nextTreeNode);
                 } else {
                     var parentTreeNode = node.getParent() ? this._getTreeNode(node.getParent()) : null;
-                    this._htmlTreeContainer.tree('appendNode', { id: treeId, item: node }, parentTreeNode);
+                    this._htmlTreeContainer.tree('appendNode', { id: treeId, block: node }, parentTreeNode);
                 }
 
                 // Insert the mapping
-                this._treeItemMap.push({
-                    item: node,
+                this._treeNodeMap.push({
+                    block: node,
                     treeId: treeId
                 });
 
                 // Make an initial update
-                this._updateItemProperties(node);
+                this._updateBlockProperties(node);
             }
         }.bind(this));
     };
