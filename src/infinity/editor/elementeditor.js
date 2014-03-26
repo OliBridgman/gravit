@@ -552,7 +552,7 @@
      * @returns {GXElementEditor.PartInfo} null if no part is available or a valid part info
      */
     GXElementEditor.prototype.getPartInfoAt = function (location, transform, acceptor, tolerance) {
-        tolerance = tolerance || 0;
+        tolerance = tolerance || 0;
 
         // Iterate sub editors, first
         if (this._editors && this._editors.length) {
@@ -597,20 +597,37 @@
      * Note that this should never return a compound bbox like
      * unioning all children but only the bbox of this one
      * specific editor. If the editor doesn't have a real bbox
-     * like a group, null should be returned.
+     * like a group, null should be returned. The return bbox includes
+     * the bbox margin already if any.
      * @param {GTransform} transform the transformation of the scene
      * @return {GRect} the bbox in view coordinates
      */
     GXElementEditor.prototype.getBBox = function (transform) {
         if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
             var targetTransform = transform;
+
             if (this._transform) {
                 targetTransform = this._transform.multiplied(transform);
             }
-            return targetTransform.mapRect(this.getPaintElement().getGeometryBBox()).expanded(1, 1, 1, 1);
+
+            var expand = this.getBBoxMargin();
+
+            return targetTransform
+                .mapRect(this.getPaintElement().getGeometryBBox())
+                .expanded(expand, expand, expand, expand);
         } else {
             return null;
         }
+    };
+
+    /**
+     * Returns the bbox' margin added to each side to cover
+     * the entire editor area. Returns by default 1 for 1-pixel
+     * accuracy covering
+     * @return {Number}
+     */
+    GXElementEditor.prototype.getBBoxMargin = function () {
+        return 1;
     };
 
     /**
@@ -653,7 +670,12 @@
      * @param {Boolean} ratio whether to keep any ratios or not
      */
     GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
-        // NO-OP by default
+        // Set outline flag and/or invalidate by default for each move
+        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
+            this.setFlag(GXElementEditor.Flag.Outline);
+        } else {
+            this.requestInvalidation();
+        }
     };
     /**
      * Called whenever a move of a part shell be reset
@@ -661,7 +683,9 @@
      * @param {*} partData the data of the editor part that was moved
      */
     GXElementEditor.prototype.resetPartMove = function (partId, partData) {
-        // NO-OP by default
+        // Some rests by default
+        this._elementPreview = null;
+        this.removeFlag(GXElementEditor.Flag.Outline);
     };
 
     /**
@@ -680,26 +704,17 @@
      * @param {*} [partData] optional data of part that initialized the transform
      */
     GXElementEditor.prototype.transform = function (transform, partId, partData) {
-        // By default we'll simply assign the transformation
-        if (!GTransform.equals(this._transform, transform)) {
-            if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-                this.setFlag(GXElementEditor.Flag.Outline);
-            } else {
-                this.requestInvalidation();
-            }
-
-            this._transform = transform;
-            this.requestInvalidation();
-        }
+        this._setTransform(transform);
     };
 
     /**
      * Called whenever the transformation of the editor shell be reset
      */
     GXElementEditor.prototype.resetTransform = function () {
-        if (this._transform && !this._transform.isIdentity()) {
-            this.requestInvalidation();
-        }
+        this._elementPreview = null;
+
+        // Invalidate on reset no matter what
+        this.requestInvalidation();
 
         this._transform = null;
 
@@ -907,6 +922,25 @@
      */
     GXElementEditor.prototype._showAnnotations = function () {
         return this.hasFlag(GXElementEditor.Flag.Selected) && !this.hasFlag(GXElementEditor.Flag.Outline);
+    };
+
+    /**
+     * Assign editor transformation and invalidate
+     * @param {GTransform} transform
+     * @private
+     */
+    GXElementEditor.prototype._setTransform = function (transform) {
+        // By default we'll simply assign the transformation
+        if (!GTransform.equals(this._transform, transform)) {
+            if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
+                this.setFlag(GXElementEditor.Flag.Outline);
+            } else {
+                this.requestInvalidation();
+            }
+
+            this._transform = transform;
+            this.requestInvalidation();
+        }
     };
 
     /** @override */

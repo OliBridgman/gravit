@@ -300,14 +300,6 @@
     /** @override */
     GXPathEditor.prototype.resetTransform = function () {
         this.releasePathPreview();
-
-        // Need to invalidate if not having the outline flag
-        // which will be removed in the super call and make
-        // the invalidation, instead
-        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-            this.requestInvalidation();
-        }
-
         GXPathBaseEditor.prototype.resetTransform.call(this);
     };
 
@@ -694,7 +686,8 @@
     };
 
     /** @override */
-    GXPathEditor.prototype._paintCustom = function (transform, context) {
+    GXPathEditor.prototype._postPaint = function (transform, context) {
+        GXPathBaseEditor.prototype._postPaint.call(this, transform, context);
         if (this._showAnnotations()) {
             this._iteratePoints(true, function (args) {
                 // Paint handle(s)

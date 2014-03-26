@@ -7,40 +7,36 @@
      * @constructor
      */
     function GXEllipseEditor(ellipse) {
-        GXPathBaseEditor.call(this, ellipse, true);
+        GXPathBaseEditor.call(this, ellipse);
+        this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
     GObject.inherit(GXEllipseEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXEllipseEditor, GXEllipse);
 
-    GXEllipseEditor.prototype.START_ANGLE_PART_ID = gUtil.uuid();
-    GXEllipseEditor.prototype.END_ANGLE_PART_ID = gUtil.uuid();
+    GXEllipseEditor.START_ANGLE_PART_ID = gUtil.uuid();
+    GXEllipseEditor.END_ANGLE_PART_ID = gUtil.uuid();
 
     /** @override */
-    GXEllipseEditor.prototype.getBBox = function (transform) {
-        // Return our bbox and expand it by the annotation's approx size
-        var targetTransform = transform;
-        if (this._transform) {
-            targetTransform = this._transform.multiplied(transform);
+    GXEllipseEditor.prototype.getBBoxMargin = function () {
+        var source = GXPathBaseEditor.prototype.getBBoxMargin.call(this);
+        if (this._showSegmentDetails()) {
+            return Math.max(GXElementEditor.OPTIONS.annotationSizeRegular + 1, source);
         }
-        var bbox = this._getBaseBBox(true, true);
-
-        var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
-            : GXElementEditor.OPTIONS.annotationSizeSmall;
-
-        var expandSize = annotSize / GXShapeEditor.ANNOTATION_COEFF + GXElementEditor.OPTIONS.annotationSizeSmall;
-        return targetTransform.mapRect(bbox).expanded(expandSize, expandSize, expandSize, expandSize);
+        return source;
     };
 
     /** @override */
     GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, ratio);
+
         var newPos = viewToWorldTransform.mapPoint(position);
-        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-            this.setFlag(GXElementEditor.Flag.Outline);
-        } else {
-            this.requestInvalidation();
+
+        if (!this._elementPreview) {
+            this._elementPreview = new GXEllipse();
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXEllipse.GeometryProperties], true);
         }
 
-        this._createPreviewIfNecessary();
         var sourceTransform = this._element.getTransform();
         if (sourceTransform) {
             var sPosition = sourceTransform.inverted().mapPoint(newPos);
@@ -50,14 +46,14 @@
         var angle = Math.atan2(sPosition.getY(), sPosition.getX());
         var sa = this._element.getProperty('sa');
         var ea = this._element.getProperty('ea');
-        if (partId == GXEllipseEditor.prototype.START_ANGLE_PART_ID) {
+        if (partId == GXEllipseEditor.START_ANGLE_PART_ID) {
             var aDelta = angle - sa;
         } else { // end angle
             var aDelta = angle - ea;
         }
 
-        var moveStart = this._partSelection.indexOf(GXEllipseEditor.prototype.START_ANGLE_PART_ID) >= 0;
-        var moveEnd = this._partSelection.indexOf(GXEllipseEditor.prototype.END_ANGLE_PART_ID) >= 0;
+        var moveStart = this._partSelection.indexOf(GXEllipseEditor.START_ANGLE_PART_ID) >= 0;
+        var moveEnd = this._partSelection.indexOf(GXEllipseEditor.END_ANGLE_PART_ID) >= 0;
 
         if (moveStart || moveEnd) {
             this._elementPreview.setProperties(['sa', 'ea'],
@@ -91,11 +87,12 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype._paintCustom = function (transform, context) {
+    GXEllipseEditor.prototype._postPaint = function (transform, context) {
+        GXPathBaseEditor.prototype._postPaint.call(this, transform, context);
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             this._iterateArcEnds(true, function (args) {
-                var annotation = (args.id == GXEllipseEditor.prototype.START_ANGLE_PART_ID)
+                var annotation = (args.id == GXEllipseEditor.START_ANGLE_PART_ID)
                     ? GXElementEditor.Annotation.Diamond
                     : GXElementEditor.Annotation.Circle;
 
@@ -140,15 +137,6 @@
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
     };
 
-    /** @override */
-    GXEllipseEditor.prototype._createPreviewIfNecessary = function () {
-        if (!this._elementPreview) {
-            this._elementPreview = new GXEllipse();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXEllipse.GeometryProperties], true);
-        }
-    };
-
     GXEllipseEditor.prototype._iterateArcEnds = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
         var transform = element.getTransform();
@@ -156,9 +144,9 @@
         var endA = element.getProperty('ea');
         transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
         var itArgs = [
-            {id: GXEllipseEditor.prototype.START_ANGLE_PART_ID,
+            {id: GXEllipseEditor.START_ANGLE_PART_ID,
                 position: transform.mapPoint(new GPoint(Math.cos(startA), Math.sin(startA)))},
-            {id: GXEllipseEditor.prototype.END_ANGLE_PART_ID,
+            {id: GXEllipseEditor.END_ANGLE_PART_ID,
                 position: transform.mapPoint(new GPoint(Math.cos(endA), Math.sin(endA)))}
         ];
 

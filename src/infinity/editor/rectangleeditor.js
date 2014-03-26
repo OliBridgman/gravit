@@ -7,43 +7,37 @@
      * @constructor
      */
     function GXRectangleEditor(rectangle) {
-        GXPathBaseEditor.call(this, rectangle, true);
+        GXPathBaseEditor.call(this, rectangle);
     };
     GObject.inherit(GXRectangleEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXRectangleEditor, GXRectangle);
 
-    GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID = gUtil.uuid();
-    GXRectangleEditor.prototype.RIGHT_SHOULDER_PART_ID = gUtil.uuid();
+    GXRectangleEditor.LEFT_SHOULDER_PART_ID = gUtil.uuid();
+    GXRectangleEditor.RIGHT_SHOULDER_PART_ID = gUtil.uuid();
 
     /** @override */
-    GXRectangleEditor.prototype.getBBox = function (transform) {
-        // Return our bbox and expand it by the annotation's approx size
-        var targetTransform = transform;
-        if (this._transform) {
-            targetTransform = this._transform.multiplied(transform);
+    GXRectangleEditor.prototype.getBBoxMargin = function () {
+        if (this._showSegmentDetails()) {
+            return GXElementEditor.OPTIONS.annotationSizeRegular + 1;
         }
-        var bbox = this.getPaintElement().getGeometryBBox();
-        // Return our bbox and expand it by the annotation's approx size
-        var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
-            : GXElementEditor.OPTIONS.annotationSizeSmall;
-
-        var expandSize = annotSize / GXShapeEditor.ANNOTATION_COEFF + GXElementEditor.OPTIONS.annotationSizeSmall;
-        return targetTransform.mapRect(bbox).expanded(expandSize, expandSize, expandSize, expandSize);
+        return GXPathBaseEditor.prototype.getBBoxMargin.call(this);
     };
 
     /** @override */
     GXRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, ratio);
+
         var newPos = viewToWorldTransform.mapPoint(position);
 
-        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-            this.setFlag(GXElementEditor.Flag.Outline);
-        } else {
-            this.requestInvalidation();
+        if (!this._elementPreview) {
+            this._elementPreview = new GXRectangle();
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXRectangle.GeometryProperties], true);
         }
-        this._createPreviewIfNecessary();
+
         var sourceTransform = this._element.getTransform();
         var sourcePosition = new GPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
-        if (partId.id == GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID) {
+        if (partId.id == GXRectangleEditor.LEFT_SHOULDER_PART_ID) {
             var nearPt = this._element.getAnchorPoints().getPreviousPoint(partId.ap);
         } else {
             var nearPt = this._element.getAnchorPoints().getNextPoint(partId.ap);
@@ -77,12 +71,6 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype.resetPartMove = function (partId, partData) {
-        this._elementPreview = null;
-        this.removeFlag(GXElementEditor.Flag.Outline);
-    };
-
-    /** @override */
     GXRectangleEditor.prototype.applyPartMove = function (partId, partData) {
         if (this._elementPreview) {
             this._element.transferProperties(this._elementPreview, [GXRectangle.GeometryProperties]);
@@ -106,14 +94,15 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype._paintCustom = function (transform, context) {
+    GXRectangleEditor.prototype._postPaint = function (transform, context) {
+        GXPathBaseEditor.prototype._postPaint.call(this, transform, context);
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             this.getPaintElement().iterateSegments(function(point, side, ct, sl, sr, idx) {
                 if (ct != GXPathBase.CornerType.Regular) {
                     var element = this.getPaintElement();
-                    var leftPartId = {id: GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID, side: side};
-                    var rightPartId = {id: GXRectangleEditor.prototype.RIGHT_SHOULDER_PART_ID, side: side};
+                    var leftPartId = {id: GXRectangleEditor.LEFT_SHOULDER_PART_ID, side: side};
+                    var rightPartId = {id: GXRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side};
 
                     if (sl != 0 && sr != 0) {
                         var anchorPt = element.getAnchorPoints().getChildByIndex(idx);
@@ -168,7 +157,7 @@
                         if (this._getAnnotationBBox(transform, leftShoulder)
                             .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                             result = new GXElementEditor.PartInfo(this,
-                                {id: GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID, side: side,
+                                {id: GXRectangleEditor.LEFT_SHOULDER_PART_ID, side: side,
                                     ap: anchorPt, point: leftShoulder},
                                 null, true, true);
                             return true;
@@ -181,7 +170,7 @@
                         if (this._getAnnotationBBox(transform, rightShoulder)
                             .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                             result = new GXElementEditor.PartInfo(this,
-                                {id: GXRectangleEditor.prototype.RIGHT_SHOULDER_PART_ID, side: side,
+                                {id: GXRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side,
                                     ap: anchorPt, point: rightShoulder},
                                 null, true, true);
                             return true;
@@ -191,7 +180,7 @@
                                 .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
 
                             result = new GXElementEditor.PartInfo(this,
-                                {id: GXRectangleEditor.prototype.LEFT_SHOULDER_PART_ID, side: side, ap: anchorPt, point: point},
+                                {id: GXRectangleEditor.LEFT_SHOULDER_PART_ID, side: side, ap: anchorPt, point: point},
                                 null, true, true);
                             return true;
                         }
@@ -218,14 +207,6 @@
      */
     GXRectangleEditor.prototype._showSegmentDetails = function () {
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
-    };
-
-    GXRectangleEditor.prototype._createPreviewIfNecessary = function () {
-        if (!this._elementPreview) {
-            this._elementPreview = new GXRectangle();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXRectangle.GeometryProperties], true);
-        }
     };
 
     /** @override */

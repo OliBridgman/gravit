@@ -7,45 +7,33 @@
      * @constructor
      */
     function GXPolygonEditor(polygon) {
-        GXPathBaseEditor.call(this, polygon, true);
+        GXPathBaseEditor.call(this, polygon);
     };
     GObject.inherit(GXPolygonEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXPolygonEditor, GXPolygon);
 
-    GXPolygonEditor.prototype.INSIDE_PART_ID = gUtil.uuid();
-    GXPolygonEditor.prototype.OUTSIDE_PART_ID = gUtil.uuid();
+    GXPolygonEditor.INSIDE_PART_ID = gUtil.uuid();
+    GXPolygonEditor.OUTSIDE_PART_ID = gUtil.uuid();
 
     /** @override */
-    GXPolygonEditor.prototype.getBBox = function (transform) {
-        // Return our bbox and expand it by the annotation's approx size
-        var targetTransform = transform;
-        if (this._transform) {
-            targetTransform = this._transform.multiplied(transform);
+    GXPolygonEditor.prototype.getBBoxMargin = function () {
+        if (this._showSegmentDetails()) {
+            return GXElementEditor.OPTIONS.annotationSizeRegular + 1;
         }
-        var bbox = this._getBaseBBox(true, true);
-
-        if (bbox) {
-            var annotSize = this._showSegmentDetails() ? GXElementEditor.OPTIONS.annotationSizeRegular
-                : GXElementEditor.OPTIONS.annotationSizeSmall;
-
-            var expandSize = annotSize / GXShapeEditor.ANNOTATION_COEFF + GXElementEditor.OPTIONS.annotationSizeSmall;
-            return targetTransform.mapRect(bbox).expanded(expandSize, expandSize, expandSize, expandSize);
-        } else {
-            return null;
-        }
+        return GXPathBaseEditor.prototype.getBBoxMargin.call(this);
     };
 
     /** @override */
     GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
-        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-            this.setFlag(GXElementEditor.Flag.Outline);
-        } else {
-            this.requestInvalidation();
-        }
+        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, ratio);
 
         var newPos = viewToWorldTransform.mapPoint(position);
 
-        this._createPreviewIfNecessary();
+        if (!this._elementPreview) {
+            this._elementPreview = new GXPolygon();
+            this._elementPreview.transferProperties(this._element,
+                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
+        }
 
         var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
 
@@ -61,8 +49,8 @@
         var oa_new = oa;
         var or_new = or;
 
-        var moveInner = this._partSelection.indexOf(GXPolygonEditor.prototype.INSIDE_PART_ID) >= 0;
-        var moveOuter = this._partSelection.indexOf(GXPolygonEditor.prototype.OUTSIDE_PART_ID) >= 0;
+        var moveInner = this._partSelection.indexOf(GXPolygonEditor.INSIDE_PART_ID) >= 0;
+        var moveOuter = this._partSelection.indexOf(GXPolygonEditor.OUTSIDE_PART_ID) >= 0;
 
         if (this._partSelection.length == 1) {
             if (moveInner) {
@@ -79,7 +67,7 @@
                 or_new = distance;
             }
         } else if (moveInner && moveOuter) {
-            if (partId == GXPolygonEditor.prototype.INSIDE_PART_ID) {
+            if (partId == GXPolygonEditor.INSIDE_PART_ID) {
                 if (!ratio) {
                     ia_new = gMath.normalizeAngleRadians(angle + ia);
                 }
@@ -89,7 +77,7 @@
                 var oPt_new = new GPoint(or * Math.cos(oa) + moveX, or * Math.sin(oa) + moveY);
                 oa_new = Math.atan2(oPt_new.getY(), oPt_new.getX());
                 or_new = gMath.ptDist(oPt_new.getX(), oPt_new.getY(), 0, 0);
-            } else if (partId == GXPolygonEditor.prototype.OUTSIDE_PART_ID) {
+            } else if (partId == GXPolygonEditor.OUTSIDE_PART_ID) {
                 if (!ratio) {
                     oa_new = gMath.normalizeAngleRadians(angle + oa);
                 }
@@ -104,12 +92,6 @@
 
         this._elementPreview.setProperties(['oa', 'or', 'ia', 'ir'], [oa_new, or_new, ia_new, ir_new]);
         this.requestInvalidation();
-    };
-
-    /** @override */
-    GXPolygonEditor.prototype.resetPartMove = function (partId, partData) {
-        this._elementPreview = null;
-        this.removeFlag(GXElementEditor.Flag.Outline);
     };
 
     /** @override */
@@ -136,13 +118,14 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype._paintCustom = function (transform, context) {
+    GXPolygonEditor.prototype._postPaint = function (transform, context) {
+        GXPathBaseEditor.prototype._postPaint.call(this, transform, context);
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             var element = this.getPaintElement();
             element.iterateSegments(function (point, inside, angle) {
                 var annotation = inside ? GXElementEditor.Annotation.Circle : GXElementEditor.Annotation.Diamond;
-                var partId = inside ? GXPolygonEditor.prototype.INSIDE_PART_ID : GXPolygonEditor.prototype.OUTSIDE_PART_ID;
+                var partId = inside ? GXPolygonEditor.INSIDE_PART_ID : GXPolygonEditor.OUTSIDE_PART_ID;
                 this._paintAnnotation(context, transform, point, annotation, this._partSelection && this._partSelection.indexOf(partId) >= 0, false);
             }.bind(this), true);
         }
@@ -160,7 +143,7 @@
             var result = null;
             this._element.iterateSegments(function (point, inside, angle) {
                 if (this._getAnnotationBBox(transform, point).expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-                    var partId = inside ? GXPolygonEditor.prototype.INSIDE_PART_ID : GXPolygonEditor.prototype.OUTSIDE_PART_ID;
+                    var partId = inside ? GXPolygonEditor.INSIDE_PART_ID : GXPolygonEditor.OUTSIDE_PART_ID;
                     result = new GXElementEditor.PartInfo(this, partId, angle, true, true);
                     return true;
                 }
@@ -180,49 +163,6 @@
      */
     GXPolygonEditor.prototype._showSegmentDetails = function () {
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
-    };
-
-    /** @override */
-    GXPolygonEditor.prototype._createPreviewIfNecessary = function () {
-        if (!this._elementPreview) {
-            this._elementPreview = new GXPolygon();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
-        }
-    };
-
-    /** @override */
-    GXPolygonEditor.prototype._getBaseBBox = function (transformed, paintElement) {
-        var element = paintElement ? this.getPaintElement() : this._element;
-        var minX = null;
-        var minY = null;
-        var maxX = null;
-        var maxY = null;
-
-        element.iterateSegments(function (point, inside, angle) {
-            var x = point.getX();
-            var y = point.getY();
-            if (minX == null || x < minX) {
-                minX = x;
-            }
-            if (maxX == null || x > maxX) {
-                maxX = x;
-            }
-
-            if (minY == null || y < minY) {
-                minY = y;
-            }
-            if (maxY == null || y > maxY) {
-                maxY = y;
-            }
-            return false;
-        }.bind(this), transformed ? true : false);
-
-        if (minX != null && minY != null) {
-            return new GRect(minX, minY, maxX - minX, maxY - minY);
-        }
-
-        return null;
     };
 
     /** @override */
@@ -256,7 +196,7 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype._transformBaseBBox = function (transform, partId) {
+    GXPolygonEditor.prototype._transformBaseBBox3 = function (transform, partId) {
         var sourceTransform = this._element.getTransform();
         var bbox = this._getBaseBBox(true, false);
         var tl = bbox.getSide(GRect.Side.TOP_LEFT);

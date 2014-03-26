@@ -411,7 +411,7 @@
                     }
                     this._editor.commitTransaction('Modify ' + nodeNameTranslated);
                 }
-            } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly) {
+            } else if (this._editorMovePartInfo && this._editorMovePartInfo.elementOnly) {
                 // TODO: add clone logic, or Alt support + Shift support
                 this._editor.beginTransaction();
                 try {
@@ -563,7 +563,7 @@
         if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
             this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                 position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey);
-        } else if (this._editorMovePartInfo && this._editorMovePartInfo.shapeOnly) {
+        } else if (this._editorMovePartInfo && this._editorMovePartInfo.elementOnly) {
             position = this._view.getViewTransform().mapPoint(position);
             var moveDelta = position.subtract(this._moveStartTransformed);
             this._editorMovePartInfo.editor.transform(new GTransform(1, 0, 0, 1, moveDelta.getX(), moveDelta.getY()),

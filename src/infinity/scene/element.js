@@ -227,7 +227,7 @@
      * @return {GTransform}
      */
     GXElement.Transform.prototype.getTransform = function () {
-        throw new Error("Not Supported.");
+        return null;
     };
 
     /**

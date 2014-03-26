@@ -3,13 +3,13 @@
      * An editor for a layer
      * @param {GXLayer} layer the layer this editor works on
      * @class GXLayerEditor
-     * @extends GXElementEditor
+     * @extends GXBlockEditor
      * @constructor
      */
     function GXLayerEditor(layer) {
-        GXElementEditor.call(this, layer);
+        GXBlockEditor.call(this, layer);
     };
-    GObject.inherit(GXLayerEditor, GXElementEditor);
+    GObject.inherit(GXLayerEditor, GXBlockEditor);
     GXElementEditor.exports(GXLayerEditor, GXLayer);
 
     /** @override */
@@ -19,8 +19,8 @@
         var layerColor = this._element.getProperty('color');
         context.selectionOutlineColor = layerColor.asRGBInt();
 
-        // Paint our children
-        this._paintChildren(transform, context);
+        // Call super
+        GXBlockEditor.prototype.paint.call(this, transform, context);
 
         // Reset outline colors if set
         context.selectionOutlineColor = oldSelOutlineColor;
