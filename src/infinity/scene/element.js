@@ -8,6 +8,7 @@
      */
     function GXElement() {
     }
+
     GObject.inherit(GXElement, GXNode);
 
     /**
@@ -240,11 +241,26 @@
     /**
      * Transforms this element with another given transformation
      * including multiplication with the existing transformation
-     * the element may already have
+     * the element may already have. This will by default simply
+     * apply the transformation to all direct children of the element if any
      * @param {GTransform} transform the transformation to be applied
      */
     GXElement.Transform.prototype.transform = function (transform) {
-        throw new Error("Not Supported.");
+        this._transformChildren(transform);
+    };
+
+    /**
+     * @param {GTransform} transform the transformation to be applied
+     * @private
+     */
+    GXElement.Transform.prototype._transformChildren = function (transform) {
+        if (this.hasMixin(GXNode.Container)) {
+            for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
+                if (child instanceof GXElement && child.hasMixin(GXElement.Transform)) {
+                    child.transform(transform);
+                }
+            }
+        }
     };
 
     /** @override */

@@ -4,12 +4,13 @@
      * @class GXGroup
      * @extends GXItem
      * @mixes GXNode.Container
+     * @mixes GXElement.Transform
      * @constructor
      */
     function GXGroup() {
         GXItem.call(this);
     }
-    GXNode.inheritAndMix('group', GXGroup, GXItem, [GXNode.Container]);
+    GXNode.inheritAndMix('group', GXGroup, GXItem, [GXNode.Container, GXElement.Transform]);
 
     /** @override */
     GXGroup.prototype.validateInsertion = function (parent, reference) {

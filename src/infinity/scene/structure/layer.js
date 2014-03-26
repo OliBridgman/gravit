@@ -4,6 +4,7 @@
      * @class GXLayer
      * @extends GXBlock
      * @mixes GXNode.Container
+     * @mixes GXElement.Transform
      * @constructor
      */
     function GXLayer() {
@@ -11,7 +12,7 @@
         this._setDefaultProperties(GXLayer.VisualProperties, GXLayer.MetaProperties);
     }
 
-    GXNode.inheritAndMix("layer", GXLayer, GXBlock, [GXNode.Container]);
+    GXNode.inheritAndMix("layer", GXLayer, GXBlock, [GXNode.Container, GXElement.Transform]);
 
     GXLayer.GUIDE_COLOR_DEFAULT = new GXColor(GXColor.Type.RGB, [0, 255, 255, 100]);
 

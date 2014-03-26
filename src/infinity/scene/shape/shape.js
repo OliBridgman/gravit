@@ -42,6 +42,7 @@
         if (transform && !transform.isIdentity()) {
             this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
         }
+        GXElement.Transform.prototype._transformChildren.call(this, transform);
     };
 
     /** @override */
