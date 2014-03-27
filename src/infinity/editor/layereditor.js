@@ -8,6 +8,7 @@
      */
     function GXLayerEditor(layer) {
         GXBlockEditor.call(this, layer);
+        this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
     GObject.inherit(GXLayerEditor, GXBlockEditor);
     GXElementEditor.exports(GXLayerEditor, GXLayer);

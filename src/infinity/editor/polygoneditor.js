@@ -8,6 +8,7 @@
      */
     function GXPolygonEditor(polygon) {
         GXPathBaseEditor.call(this, polygon);
+        this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
     GObject.inherit(GXPolygonEditor, GXPathBaseEditor);
     GXElementEditor.exports(GXPolygonEditor, GXPolygon);

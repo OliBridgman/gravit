@@ -8,6 +8,7 @@
      */
     function GXGroupEditor(group) {
         GXBlockEditor.call(this, group);
+        this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
     GObject.inherit(GXGroupEditor, GXBlockEditor);
     GXElementEditor.exports(GXGroupEditor, GXGroup);

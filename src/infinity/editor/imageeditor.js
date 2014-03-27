@@ -8,6 +8,7 @@
      */
     function GXImageEditor(image) {
         GXShapeEditor.call(this, image);
+        this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
     GObject.inherit(GXImageEditor, GXShapeEditor);
     GXElementEditor.exports(GXImageEditor, GXImage);
