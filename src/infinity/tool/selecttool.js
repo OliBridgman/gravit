@@ -17,8 +17,6 @@
      * @private
      */
     GXSelectTool._Mode = {
-        /** Any action was canceled */
-        Canceled: 0,
         /** Selecting something */
         Select: 1,
         /** Prepared for moving */
@@ -139,30 +137,6 @@
     GXSelectTool.prototype.isDeactivatable = function () {
         // cannot deactivate while having any mode set
         return !this._mode;
-    };
-
-    /** @override */
-    GXSelectTool.prototype.cancel = function () {
-        if (this._mode != GXSelectTool._Mode.Canceled) {
-            var oldMode = this._mode;
-            this._updateMode(GXSelectTool._Mode.Canceled);
-
-            if (oldMode == GXSelectTool._Mode.Select) {
-                if (this._hasSelectArea()) {
-                    var selectArea = this._selectArea;
-                    this._selectArea = null;
-                    this.invalidateArea(selectArea);
-                } else {
-                    this._selectArea = null;
-                }
-            } else if (oldMode == GXSelectTool._Mode.Moving) {
-                if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-                    this._editorMovePartInfo.editor.resetPartMove(this._editorMovePartInfo.id, this._editorMovePartInfo.data);
-                } else {
-                    this._editor.resetSelectionTransform();
-                }
-            }
-        }
     };
 
     /** @override */

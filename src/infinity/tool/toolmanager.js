@@ -209,8 +209,6 @@
                 this._removeActiveToolFromView();
                 // Remove ourself from the view tool layer's paint
                 this._viewLayer.paint = null;
-                // Unregister ourself from the view for some events
-                this._viewLayer.removeEventListener(GUIKeyEvent.Down, this._viewKeyDown);
                 // Unregister ourself from global modifiers change event
                 gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
             }
@@ -224,8 +222,6 @@
                 this._addActiveToolToView();
                 // Assign ourself to the view tool layer's paint
                 this._viewLayer.paint = this._paintLink;
-                // Register some event listeners on the view
-                this._viewLayer.addEventListener(GUIKeyEvent.Down, this._viewKeyDown, this);
                 // Register ourself to global modifiers change event
                 gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
             }
@@ -321,39 +317,9 @@
     };
 
     /**
-     * @param {GUIKeyEvent.Down} event
-     * @private
-     */
-    GXToolManager.prototype._viewKeyDown = function (event) {
-        if (GUIKey.Constant.ESCAPE == event.key) {
-            if (this._activeTool) {
-                this._activeTool.cancel();
-            }
-        } else {
-            // Iterate registered tools to check for a tool activator key
-            for (var i = 0; i < this._tools.length; ++i) {
-                var chars = this._tools[i].getActivationCharacters();
-                if (chars && chars.length > 0 && chars.indexOf(event.key) >= 0) {
-                    this.activateTool(this._tools[i]);
-                    break;
-                }
-            }
-        }
-    };
-
-    /**
      * @private
      */
     GXToolManager.prototype._updateTemporaryTool = function () {
-        /*
-         console.log('_UPDATE_TEMPORARY_TOOL:');
-         console.log('  ++metaKey: ' + gPlatform.modifiers.metaKey);
-         console.log('  ++optionKey: ' + gPlatform.modifiers.optionKey);
-         console.log('  ++spaceKey: ' + gPlatform.modifiers.spaceKey);
-         console.log('  ++activeTool: ' + this._activeTool);
-         console.log('  ++temporaryActiveTool: ' + this._temporaryActiveTool);
-         */
-
         var pointerToolInstance = this.getTool(this.indexOf(GXPointerTool));
         var subselectToolInstance = this.getTool(this.indexOf(GXSubSelectTool));
         var handToolInstance = this.getTool(this.indexOf(GXHandTool));

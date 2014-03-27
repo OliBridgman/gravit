@@ -79,15 +79,6 @@
         return this._panning ? false : true;
     };
 
-    /** @override */
-    GXHandTool.prototype.cancel = function () {
-        if (this._panning) {
-            this._view.scrollBy(this._deltaX, this._deltaY);
-            this._panning = false;
-            this.updateCursor();
-        }
-    }
-
     /**
      * @param {GUIMouseEvent.DragStart} event
      * @private

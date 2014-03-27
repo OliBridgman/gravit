@@ -159,16 +159,6 @@
     };
 
     /**
-     * Called whenever this tool should immediately cancel
-     * any action it currently is doing. If there's nothing to
-     * cancel, the tool should ignore this call.
-     * @version 1.0
-     */
-    GXTool.prototype.cancel = function () {
-        // NO-OP
-    };
-
-    /**
      * Called when this tool should paint itself.
      * @param {GXPaintContext} context
      * @version 1.0

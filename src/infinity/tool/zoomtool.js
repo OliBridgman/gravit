@@ -118,16 +118,6 @@
     };
 
     /** @override */
-    GXZoomTool.prototype.cancel = function () {
-        if (this._dragArea && !this._dragCanceled) {
-            this._dragCanceled = true;
-            if (!this._hasDragArea()) {
-                this.invalidateArea(this._dragArea);
-            }
-        }
-    };
-
-    /** @override */
     GXZoomTool.prototype.paint = function (context) {
         if (!this._dragCanceled && this._hasDragArea()) {
             var x = Math.floor(this._dragArea.getX()) + 0.5;

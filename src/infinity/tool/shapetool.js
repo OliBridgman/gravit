@@ -130,18 +130,6 @@
     };
 
     /** @override */
-    GXShapeTool.prototype.cancel = function () {
-        if (!this._dragCanceled) {
-            this._dragCanceled = true;
-            if (this._shape) {
-                var shape = this._shape;
-                this._shape = null; // reset to prevent repainting
-                this._invalidateShapeArea(shape);
-            }
-        }
-    };
-
-    /** @override */
     GXShapeTool.prototype.paint = function (context) {
         if (this._shape) {
             // Paint outline of shape

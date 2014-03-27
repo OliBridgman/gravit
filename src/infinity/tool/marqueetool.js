@@ -142,16 +142,6 @@
     };
 
     /** @override */
-    GXMarqueeTool.prototype.cancel = function () {
-        if (this._areaBounds) {
-            var areaBounds = this._areaBounds;
-            this._areaBounds = null;
-            this.invalidateArea(areaBounds);
-            this._areaSelector.finish();
-        }
-    };
-
-    /** @override */
     GXMarqueeTool.prototype.paint = function (context) {
         if (this._areaBounds) {
             this._areaSelector.paint(context);
