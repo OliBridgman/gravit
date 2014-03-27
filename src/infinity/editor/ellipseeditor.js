@@ -26,49 +26,54 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
-        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, ratio);
+    GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
+        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
 
-        var newPos = viewToWorldTransform.mapPoint(position);
+        if (partId === GXEllipseEditor.START_ANGLE_PART_ID || partId === GXEllipseEditor.END_ANGLE_PART_ID) {
+            var newPos = viewToWorldTransform.mapPoint(position);
 
-        if (!this._elementPreview) {
-            this._elementPreview = new GXEllipse();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXEllipse.GeometryProperties], true);
-        }
+            if (!this._elementPreview) {
+                this._elementPreview = new GXEllipse();
+                this._elementPreview.transferProperties(this._element,
+                    [GXShape.GeometryProperties, GXEllipse.GeometryProperties], true);
+            }
 
-        var sourceTransform = this._element.getTransform();
-        if (sourceTransform) {
-            var sPosition = sourceTransform.inverted().mapPoint(newPos);
-        } else {
-            var sPosition = newPos;
-        }
-        var angle = Math.atan2(sPosition.getY(), sPosition.getX());
-        var sa = this._element.getProperty('sa');
-        var ea = this._element.getProperty('ea');
-        if (partId == GXEllipseEditor.START_ANGLE_PART_ID) {
-            var aDelta = angle - sa;
-        } else { // end angle
-            var aDelta = angle - ea;
-        }
+            var sourceTransform = this._element.getTransform();
+            if (sourceTransform) {
+                var sPosition = sourceTransform.inverted().mapPoint(newPos);
+            } else {
+                var sPosition = newPos;
+            }
+            var angle = Math.atan2(sPosition.getY(), sPosition.getX());
+            var sa = this._element.getProperty('sa');
+            var ea = this._element.getProperty('ea');
+            if (partId == GXEllipseEditor.START_ANGLE_PART_ID) {
+                var aDelta = angle - sa;
+            } else { // end angle
+                var aDelta = angle - ea;
+            }
 
-        var moveStart = this._partSelection.indexOf(GXEllipseEditor.START_ANGLE_PART_ID) >= 0;
-        var moveEnd = this._partSelection.indexOf(GXEllipseEditor.END_ANGLE_PART_ID) >= 0;
+            var moveStart = this._partSelection.indexOf(GXEllipseEditor.START_ANGLE_PART_ID) >= 0;
+            var moveEnd = this._partSelection.indexOf(GXEllipseEditor.END_ANGLE_PART_ID) >= 0;
 
-        if (moveStart || moveEnd) {
-            this._elementPreview.setProperties(['sa', 'ea'],
-                [moveStart ? gMath.normalizeAngleRadians(sa + aDelta) : sa,
-                    moveEnd ? gMath.normalizeAngleRadians(ea + aDelta) : ea]);
+            if (moveStart || moveEnd) {
+                this._elementPreview.setProperties(['sa', 'ea'],
+                    [moveStart ? gMath.normalizeAngleRadians(sa + aDelta) : sa,
+                        moveEnd ? gMath.normalizeAngleRadians(ea + aDelta) : ea]);
 
-            this.requestInvalidation();
+                this.requestInvalidation();
+            }
         }
     };
 
     /** @override */
     GXEllipseEditor.prototype.applyPartMove = function (partId, partData) {
-        var propertyValues = this._elementPreview.getProperties(['sa', 'ea']);
-        this.resetPartMove(partId, partData);
-        this._element.setProperties(['sa', 'ea'], propertyValues);
+        if (partId === GXEllipseEditor.START_ANGLE_PART_ID || partId === GXEllipseEditor.END_ANGLE_PART_ID) {
+            var propertyValues = this._elementPreview.getProperties(['sa', 'ea']);
+            this.resetPartMove(partId, partData);
+            this._element.setProperties(['sa', 'ea'], propertyValues);
+        }
+        GXPathBaseEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */
@@ -114,7 +119,7 @@
             result = null;
             this._iterateArcEnds(false, function (args) {
                 if (this._getAnnotationBBox(transform, args.position)
-                        .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
+                    .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                     result = new GXElementEditor.PartInfo(this, args.id, null, true, true);
                     return true;
                 }

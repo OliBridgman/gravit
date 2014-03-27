@@ -667,9 +667,10 @@
      * @param {GPoint} position the new position in view coordinates
      * the part should be moved to
      * @param {GTransform} viewToWorldTransform - the transformation to apply to position
-     * @param {Boolean} ratio whether to keep any ratios or not
+     * @param {Boolean} shift whether shift key is hold or not
+     * @param {Boolean} option whether option key is hold or not
      */
-    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
         // Set outline flag and/or invalidate by default for each move
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);
@@ -683,7 +684,7 @@
      * @param {*} partData the data of the editor part that was moved
      */
     GXElementEditor.prototype.resetPartMove = function (partId, partData) {
-        // Some rests by default
+        // Some resets by default
         this._elementPreview = null;
         this.removeFlag(GXElementEditor.Flag.Outline);
     };
@@ -694,7 +695,9 @@
      * @param {*} partData the data of the editor part that was moved
      */
     GXElementEditor.prototype.applyPartMove = function (partId, partData) {
-        // NO-OP by default
+        // Some resets by default
+        this._elementPreview = null;
+        this.removeFlag(GXElementEditor.Flag.Outline);
     };
 
     /**

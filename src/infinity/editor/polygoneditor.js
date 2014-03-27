@@ -24,81 +24,86 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
-        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, ratio);
+    GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
+        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
 
-        var newPos = viewToWorldTransform.mapPoint(position);
+        if (partId === GXPolygonEditor.INSIDE_PART_ID || partId === GXPolygonEditor.OUTSIDE_PART_ID) {
+            var newPos = viewToWorldTransform.mapPoint(position);
 
-        if (!this._elementPreview) {
-            this._elementPreview = new GXPolygon();
-            this._elementPreview.transferProperties(this._element,
-                [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
+            if (!this._elementPreview) {
+                this._elementPreview = new GXPolygon();
+                this._elementPreview.transferProperties(this._element,
+                    [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
+            }
+
+            var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
+
+            var angle = Math.atan2(newPos.getY() - center.getY(), newPos.getX() - center.getX()) - partData;
+            var distance = gMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
+
+            var oa = this._element.getProperty('oa');
+            var or = this._element.getProperty('or');
+            var ia = this._element.getProperty('ia');
+            var ir = this._element.getProperty('ir');
+            var ia_new = ia;
+            var ir_new = ir;
+            var oa_new = oa;
+            var or_new = or;
+
+            var moveInner = this._partSelection.indexOf(GXPolygonEditor.INSIDE_PART_ID) >= 0;
+            var moveOuter = this._partSelection.indexOf(GXPolygonEditor.OUTSIDE_PART_ID) >= 0;
+
+            if (this._partSelection.length == 1) {
+                if (moveInner) {
+                    if (!shift) {
+                        ia_new = gMath.normalizeAngleRadians(angle + ia);
+                    }
+                    ir_new = distance;
+                }
+
+                if (moveOuter) {
+                    if (!shift) {
+                        oa_new = gMath.normalizeAngleRadians(angle + oa);
+                    }
+                    or_new = distance;
+                }
+            } else if (moveInner && moveOuter) {
+                if (partId == GXPolygonEditor.INSIDE_PART_ID) {
+                    if (!shift) {
+                        ia_new = gMath.normalizeAngleRadians(angle + ia);
+                    }
+                    ir_new = distance;
+                    var moveX = ir_new * Math.cos(ia_new) - ir * Math.cos(ia);
+                    var moveY = ir_new * Math.sin(ia_new) - ir * Math.sin(ia);
+                    var oPt_new = new GPoint(or * Math.cos(oa) + moveX, or * Math.sin(oa) + moveY);
+                    oa_new = Math.atan2(oPt_new.getY(), oPt_new.getX());
+                    or_new = gMath.ptDist(oPt_new.getX(), oPt_new.getY(), 0, 0);
+                } else if (partId == GXPolygonEditor.OUTSIDE_PART_ID) {
+                    if (!shift) {
+                        oa_new = gMath.normalizeAngleRadians(angle + oa);
+                    }
+                    or_new = distance;
+                    var moveX = or_new * Math.cos(oa_new) - or * Math.cos(oa);
+                    var moveY = or_new * Math.sin(oa_new) - or * Math.sin(oa);
+                    var iPt_new = new GPoint(ir * Math.cos(ia) + moveX, ir * Math.sin(ia) + moveY);
+                    ia_new = Math.atan2(iPt_new.getY(), iPt_new.getX());
+                    ir_new = gMath.ptDist(iPt_new.getX(), iPt_new.getY(), 0, 0);
+                }
+            }
+
+            this._elementPreview.setProperties(['oa', 'or', 'ia', 'ir'], [oa_new, or_new, ia_new, ir_new]);
+            this.requestInvalidation();
         }
-
-        var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
-
-        var angle = Math.atan2(newPos.getY() - center.getY(), newPos.getX() - center.getX()) - partData;
-        var distance = gMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
-
-        var oa = this._element.getProperty('oa');
-        var or = this._element.getProperty('or');
-        var ia = this._element.getProperty('ia');
-        var ir = this._element.getProperty('ir');
-        var ia_new = ia;
-        var ir_new = ir;
-        var oa_new = oa;
-        var or_new = or;
-
-        var moveInner = this._partSelection.indexOf(GXPolygonEditor.INSIDE_PART_ID) >= 0;
-        var moveOuter = this._partSelection.indexOf(GXPolygonEditor.OUTSIDE_PART_ID) >= 0;
-
-        if (this._partSelection.length == 1) {
-            if (moveInner) {
-                if (!ratio) {
-                    ia_new = gMath.normalizeAngleRadians(angle + ia);
-                }
-                ir_new = distance;
-            }
-
-            if (moveOuter) {
-                if (!ratio) {
-                    oa_new = gMath.normalizeAngleRadians(angle + oa);
-                }
-                or_new = distance;
-            }
-        } else if (moveInner && moveOuter) {
-            if (partId == GXPolygonEditor.INSIDE_PART_ID) {
-                if (!ratio) {
-                    ia_new = gMath.normalizeAngleRadians(angle + ia);
-                }
-                ir_new = distance;
-                var moveX = ir_new * Math.cos(ia_new) - ir * Math.cos(ia);
-                var moveY = ir_new * Math.sin(ia_new) - ir * Math.sin(ia);
-                var oPt_new = new GPoint(or * Math.cos(oa) + moveX, or * Math.sin(oa) + moveY);
-                oa_new = Math.atan2(oPt_new.getY(), oPt_new.getX());
-                or_new = gMath.ptDist(oPt_new.getX(), oPt_new.getY(), 0, 0);
-            } else if (partId == GXPolygonEditor.OUTSIDE_PART_ID) {
-                if (!ratio) {
-                    oa_new = gMath.normalizeAngleRadians(angle + oa);
-                }
-                or_new = distance;
-                var moveX = or_new * Math.cos(oa_new) - or * Math.cos(oa);
-                var moveY = or_new * Math.sin(oa_new) - or * Math.sin(oa);
-                var iPt_new = new GPoint(ir * Math.cos(ia) + moveX, ir * Math.sin(ia) + moveY);
-                ia_new = Math.atan2(iPt_new.getY(), iPt_new.getX());
-                ir_new = gMath.ptDist(iPt_new.getX(), iPt_new.getY(), 0, 0);
-            }
-        }
-
-        this._elementPreview.setProperties(['oa', 'or', 'ia', 'ir'], [oa_new, or_new, ia_new, ir_new]);
-        this.requestInvalidation();
     };
 
     /** @override */
     GXPolygonEditor.prototype.applyPartMove = function (partId, partData) {
-        var propertyValues = this._elementPreview.getProperties(['oa', 'or', 'ia', 'ir']);
-        this.resetPartMove(partId, partData);
-        this._element.setProperties(['oa', 'or', 'ia', 'ir'], propertyValues);
+        if (partId === GXPolygonEditor.INSIDE_PART_ID || partId === GXPolygonEditor.OUTSIDE_PART_ID) {
+            var propertyValues = this._elementPreview.getProperties(['oa', 'or', 'ia', 'ir']);
+            this.resetPartMove(partId, partData);
+            this._element.setProperties(['oa', 'or', 'ia', 'ir'], propertyValues);
+        }
+        GXPathBaseEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
 
@@ -164,94 +169,6 @@
     GXPolygonEditor.prototype._showSegmentDetails = function () {
         return this._showAnnotations() && this.hasFlag(GXElementEditor.Flag.Detail) && !this._elementPreview;
     };
-
-    /** @override */
-    GXPolygonEditor.prototype._iterateBaseCorners = function (paintElement, iterator) {
-        var element = paintElement ? this.getPaintElement() : this._element;
-        var transform = element.getTransform();
-        var bbox = this._getBaseBBox(false, paintElement);
-        var itArgs = [];
-        if (bbox) {
-            if (transform) {
-                bbox = transform.mapRect(bbox);
-            }
-
-            itArgs = [
-                {id: GXShapeEditor.PartIds.OrigBaseTopLeft,
-                    position: bbox.getSide(GRect.Side.TOP_LEFT)},
-                {id: GXShapeEditor.PartIds.OrigBaseTopRight,
-                    position: bbox.getSide(GRect.Side.TOP_RIGHT)},
-                {id: GXShapeEditor.PartIds.OrigBaseBottomRight,
-                    position: bbox.getSide(GRect.Side.BOTTOM_RIGHT)},
-                {id: GXShapeEditor.PartIds.OrigBaseBottomLeft,
-                    position: bbox.getSide(GRect.Side.BOTTOM_LEFT)}
-            ];
-        }
-
-        for (var i = 0; i < itArgs.length; ++i) {
-            if (iterator(itArgs[i]) === true) {
-                break;
-            }
-        }
-    };
-
-    /** @override */
-    GXPolygonEditor.prototype._transformBaseBBox3 = function (transform, partId) {
-        var sourceTransform = this._element.getTransform();
-        var bbox = this._getBaseBBox(true, false);
-        var tl = bbox.getSide(GRect.Side.TOP_LEFT);
-        var tr = bbox.getSide(GRect.Side.TOP_RIGHT);
-        var br = bbox.getSide(GRect.Side.BOTTOM_RIGHT);
-        var bl = bbox.getSide(GRect.Side.BOTTOM_LEFT);
-        var width = bbox.getWidth();
-        var height = bbox.getHeight();
-        var transformToApply = transform;
-
-        if (partId == GXShapeEditor.PartIds.OrigBaseTopLeft) {
-            var otl = transform.mapPoint(tl);
-
-            var sTransform = new GTransform(
-                1 - otl.subtract(tl).getX() / width, 0,
-                0, 1 - otl.subtract(tl).getY() / height,
-                0, 0);
-
-            transformToApply = new GTransform(1, 0, 0, 1, -br.getX(), -br.getY()).multiplied(sTransform).translated(br.getX(), br.getY());
-        } else if (partId == GXShapeEditor.PartIds.OrigBaseTopRight) {
-            var otr = transform.mapPoint(tr);
-
-            var sTransform = new GTransform(
-                1 + otr.subtract(tr).getX() / width, 0,
-                0, 1 - otr.subtract(tr).getY() / height,
-                0, 0);
-
-            transformToApply = new GTransform(1, 0, 0, 1, -bl.getX(), -bl.getY()).multiplied(sTransform).translated(bl.getX(), bl.getY());
-        } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomRight) {
-            var obr = transform.mapPoint(br);
-
-            var sTransform = new GTransform(
-                1 + obr.subtract(br).getX() / width, 0,
-                0, 1 + obr.subtract(br).getY() / height,
-                0, 0);
-
-            transformToApply = new GTransform(1, 0, 0, 1, -tl.getX(), -tl.getY()).multiplied(sTransform).translated(tl.getX(), tl.getY());
-        } else if (partId == GXShapeEditor.PartIds.OrigBaseBottomLeft) {
-            var obl = transform.mapPoint(bl);
-
-            var sTransform = new GTransform(
-                1 - obl.subtract(bl).getX() / width, 0,
-                0, 1 + obl.subtract(bl).getY() / height,
-                0, 0);
-
-            transformToApply = new GTransform(1, 0, 0, 1, -tr.getX(), -tr.getY()).multiplied(sTransform).translated(tr.getX(), tr.getY());
-        }
-
-        if (sourceTransform) {
-            transformToApply = sourceTransform.multiplied(transformToApply);
-        }
-
-        this._elementPreview.setProperty('trf', transformToApply);
-    };
-
 
     /** @override */
     GXPolygonEditor.prototype.toString = function () {
