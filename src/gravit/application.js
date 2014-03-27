@@ -641,10 +641,27 @@
         this._actions = gravit.actions.slice();
         this._createMainMenu();
 
-        // Add all available tools to toolmanager
+        // Add all available tools to toolmanager and register
+        // their activation character(s) if any as shortcuts
         if (gravit.tools) {
+            var _createToolActivateAction = function (tool) {
+                return function () {
+                    this._toolManager.activateTool(tool);
+                }.bind(this);
+            }.bind(this);
+
             for (var i = 0; i < gravit.tools.length; ++i) {
-                this._toolManager.addTool(gravit.tools[i]);
+                var tool = gravit.tools[i];
+
+                this._toolManager.addTool(tool);
+
+                var chars = tool.getActivationCharacters();
+                if (chars && chars.length > 0) {
+                    var action = _createToolActivateAction(tool);
+                    for (var c = 0; c < chars.length; ++c) {
+                        gShell.registerShortcut([chars[c]], action);
+                    }
+                }
             }
         }
 

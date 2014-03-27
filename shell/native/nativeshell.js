@@ -21,6 +21,12 @@
     };
 
     /** @override */
+    GNativeShell.prototype.registerShortcut = function (shortcut, action) {
+        // TODO : Implement this right
+        gHost.registerShortcut(_shortcutToHostShortcut(shortcut), action);
+    };
+
+    /** @override */
     GNativeShell.prototype.addMenu = function (parentMenu, title, callback) {
         var menu = gHost.addMenu(parentMenu, title);
         if (callback) {

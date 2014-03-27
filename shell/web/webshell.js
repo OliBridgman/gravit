@@ -62,6 +62,14 @@
     };
 
     /** @override */
+    GWebShell.prototype.registerShortcut = function (shortcut, action) {
+        Mousetrap.bind(_shortcutToMouseTrapShortcut(shortcut), function () {
+            action();
+            return false;
+        }.bind(this));
+    };
+
+    /** @override */
     GWebShell.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar.getMenu();
         var item = new GUIMenuItem(GUIMenuItem.Type.Menu);
