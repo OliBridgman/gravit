@@ -120,21 +120,21 @@
 
 
     /** @override */
-    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, ratio) {
+    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
         this.requestInvalidation();
         this._createPathPreviewIfNecessary(partId.point);
 
         switch (partId.type) {
             case GXPathEditor.PartType.LeftHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, ratio);
+                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, shift);
                 break;
             case GXPathEditor.PartType.RightHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, ratio);
+                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, shift);
                 break;
             case GXPathEditor.PartType.LeftShoulder:
             case GXPathEditor.PartType.RightShoulder:
                 var newPos = viewToWorldTransform.mapPoint(position);
-                this._movePreviewPointShoulders(partId, newPos, ratio);
+                this._movePreviewPointShoulders(partId, newPos, shift);
                 break;
         }
 
