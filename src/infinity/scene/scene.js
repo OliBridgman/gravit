@@ -46,9 +46,11 @@
         /** The cursor constraint in radians */
         crConstraint: 0,
         /** The grid size */
-        gridSize: 5,
+        gridSize: 20,
+        /** Whether the grid is relative or not */
+        gridRel: false,
         /** Whether to snap to the grid or not */
-        gridSnap: false,
+        gridSnap: true,
         /** Whether to snap to pages or not */
         pageSnap: true,
         /** Whether to snap to page margins or not */

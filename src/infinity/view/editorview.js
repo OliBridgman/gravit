@@ -22,6 +22,10 @@
         this.addLayer(GXEditorView.Layer.Editor, this._editorConfiguration)
             .paint = this._paintEditorLayer.bind(this);
 
+        // Add our grid layer
+        this.addLayer(GXEditorView.Layer.Grid, null)
+            .paint = this._paintGridLayer.bind(this);
+
         // Add our tool layer
         this.addLayer(GXEditorView.Layer.Tool, null);
 
@@ -59,16 +63,20 @@
         /**
          * The editor layer for painting editors
          * @type {Number}
-         * @version 1.0
          */
         Editor: 100,
 
         /**
+         * The grid layer for painting grid(s)
+         * @type {Number}
+         */
+        Grid: 101,
+
+        /**
          * The tool layer for painting tools
          * @type {Number}
-         * @version 1.0
          */
-        Tool: 101
+        Tool: 103
     };
 
     /**
@@ -131,12 +139,26 @@
      * @private
      */
     GXEditorView.prototype._paintEditorLayer = function (context) {
-        // TODO : Paint transform box, markers, etc.
-
-        // Paint our editors
         var sceneEditor = GXElementEditor.getEditor(this.getScene());
         if (sceneEditor) {
             sceneEditor.paint(this.getWorldTransform(), context);
+        }
+    };
+
+    /**
+     * Paint the grid layer
+     * @param {GXPaintContext} context
+     * @private
+     */
+    GXEditorView.prototype._paintGridLayer = function (context) {
+        var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
+        var xStart = this._viewMargin[0];// + this._scrollX;
+        var yStart = this._viewMargin[1];// + this._scrollY;
+        for (var x  = xStart; x < this.getViewWidth(); x += 20) {
+            context.canvas.fillRect(x, yStart, 1, this.getViewHeight(), cl);
+        }
+        for (var y  = yStart; y < this.getViewHeight(); y += 20) {
+            context.canvas.fillRect(xStart, y, this.getViewWidth(), 1, cl);
         }
     };
 
