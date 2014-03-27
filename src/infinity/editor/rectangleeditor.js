@@ -191,12 +191,8 @@
                 return result;
             }
         }
-        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
-        if (result) {
-            return result;
-        }
 
-        return null;
+        return GXPathBaseEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
     };
 
     /**

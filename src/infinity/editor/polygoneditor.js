@@ -139,11 +139,6 @@
 
     /** @override */
     GXPolygonEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
-        var result = GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
-        if (result) {
-            return result;
-        }
-
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             var result = null;
@@ -160,7 +155,7 @@
             }
         }
 
-        return null;
+        return GXShapeEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
     };
 
     /**
