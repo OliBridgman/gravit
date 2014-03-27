@@ -192,7 +192,7 @@
         if (this._showResizeHandles()) {
             var result = null;
             this._iterateResizeHandles(function (point, side) {
-                if (this._getAnnotationBBox(transform, point).expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
+                if (this._getAnnotationBBox(transform, point).containsPoint(location)) {
                     result = new GXElementEditor.PartInfo(this, GXBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
                     return true;
                 }
