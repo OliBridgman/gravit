@@ -77,7 +77,6 @@
                     sx = (width + dx) / width;
                     if (option) {
                         sx += sx - 1;
-                        tx = -dx;
                     }
                     break;
                 default:
@@ -103,15 +102,25 @@
                     sy = (height + dy) / height;
                     if (option) {
                         sy += sy - 1;
-                        ty = -dy;
                     }
                     break;
                 default:
                     break;
             }
 
+            var t1x = sourceBBox.getX();
+            var t1y = sourceBBox.getY();
+            var t2x = t1x + tx;
+            var t2y = t1y + ty;
+            if (option) {
+                var cnt = sourceBBox.getSide(GRect.Side.CENTER);
+                t1x = cnt.getX();
+                t1y = cnt.getY();
+                t2x = t1x;
+                t2y = t1y;
+            }
+
             // Honor shift
-            // TODO : This code needs fixing for translations + sign of scaling
             if (shift) {
                 switch (partData.side) {
                     case GRect.Side.TOP_LEFT:
@@ -122,29 +131,72 @@
                         var newWidth = Math.abs(sourceBBox.getWidth() * sx);
                         var newHeight = Math.abs(sourceBBox.getHeight() * sy);
                         if (newWidth > newHeight) {
-                            sy = (newWidth / sourceBBox.getHeight());
+                            sy = sy * newWidth / newHeight;
                         } else {
-                            sx = (newHeight / sourceBBox.getWidth());
+                            sx = sx * newHeight / newWidth;
                         }
                         break;
                     case GRect.Side.TOP_CENTER:
                     case GRect.Side.BOTTOM_CENTER:
+                        // Make equal delta for center resize
+                        sx = Math.abs(sy);
+                        break;
                     case GRect.Side.LEFT_CENTER:
                     case GRect.Side.RIGHT_CENTER:
                         // Make equal delta for center resize
-                        if (sx > sy) {
-                            sy = sx;
-                        } else {
-                            sx = sy;
-                        }
+                        sy = Math.abs(sx);
+                        break;
                     default:
                         break;
                 }
+                if (!option) {
+                    var tl = sourceBBox.getSide(GRect.Side.TOP_LEFT);
+                    // Calculate horizontal shift
+                    switch (partData.side) {
+                        case GRect.Side.TOP_LEFT:
+                        case GRect.Side.LEFT_CENTER:
+                        case GRect.Side.BOTTOM_LEFT:
+                            t1x = tl.getX() + width;
+                            break;
+                        case GRect.Side.TOP_RIGHT:
+                        case GRect.Side.RIGHT_CENTER:
+                        case GRect.Side.BOTTOM_RIGHT:
+                            t1x = tl.getX();
+                            break;
+                        case GRect.Side.TOP_CENTER:
+                        case GRect.Side.BOTTOM_CENTER:
+                            t1x = tl.getX() + width / 2;
+                            break;
+                        default:
+                            break;
+                    }
+                    t2x = t1x;
+
+                    // Calculate vertical shift
+                    switch (partData.side) {
+                        case GRect.Side.TOP_LEFT:
+                        case GRect.Side.TOP_CENTER:
+                        case GRect.Side.TOP_RIGHT:
+                            t1y = tl.getY() + height;
+                            break;
+                        case GRect.Side.BOTTOM_LEFT:
+                        case GRect.Side.BOTTOM_CENTER:
+                        case GRect.Side.BOTTOM_RIGHT:
+                            t1y = tl.getY();
+                            break;
+                        case GRect.Side.LEFT_CENTER:
+                        case GRect.Side.RIGHT_CENTER:
+                            t1y = tl.getY() + height / 2;
+                        default:
+                            break;
+                    }
+                    t2y = t1y;
+                }
             }
 
-            var transform = new GTransform(1, 0, 0, 1, -sourceBBox.getX(), -sourceBBox.getY())
+            var transform = new GTransform(1, 0, 0, 1, -t1x, -t1y)
                 .multiplied(new GTransform(sx, 0, 0, sy, 0, 0))
-                .multiplied(new GTransform(1, 0, 0, 1, +sourceBBox.getX() + tx, +sourceBBox.getY() + ty));
+                .multiplied(new GTransform(1, 0, 0, 1, t2x, t2y));
 
             this.transform(transform);
         }
