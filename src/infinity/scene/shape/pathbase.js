@@ -891,7 +891,7 @@
 
     /**
      * Called to generate vertices from this anchor points
-     * @param {GXVertexTarget} target the target vertex container to put vertices into
+     * @param {GXVertexContainer} target the target vertex container to put vertices into
      * @param {GTransform} transform the transformation used for vertice generation, might be null
      * @param {Boolean} styled - indicates if vertices should be calculated for path with styled corners
      * @private
@@ -997,8 +997,8 @@
             prevPt = prevPt._getTransformedCopy(transform);
         }
 
-        // no second corner shoulder
-        if (!ap.$cl || !ap.$cr ||
+        // no second corner shoulder or it is too small (less that 1pt)
+        if (!ap.$cl || ap.$cl < 1 || !ap.$cr || ap.$cr < 1 ||
             // specific corner type is not set
             ap.$tp == GXPathBase.AnchorPoint.Type.Asymmetric ||
             // the point is connector or smooth, no corner here
@@ -1124,7 +1124,7 @@
     /**
      * Calculate and adds vertices for anchor point
      * Anchor point type is taken into account only if styled corner is needed
-     * @param {GXVertexTarget} target the target vertex container to put vertices into
+     * @param {GXVertexContainer} target the target vertex container to put vertices into
      * @param {GXPathBase.AnchorPoint} [curPt] the current anchor point, used as a main source for segment and corner vertices
      * @param {GXPathBase.AnchorPoint} [prevPt] the previous anchor point, used to correct vertices according to corner type
      * @param {GXPathBase.AnchorPoint} [nextPt] the next anchor point, used to correct vertices according to corner type
@@ -1139,16 +1139,26 @@
         var hx = null;
         var hy = null;
 
+        var chlDst = null;
+        var phrDst = null;
+        if (curPt.$hlx != null && curPt.$hly != null) {
+            chlDst = gMath.sqrSegmentDist(curPt.$x, curPt.$y, prevPt.$x, prevPt.$y, curPt.$hlx, curPt.$hly);
+        }
+        if (prevPt.$hrx != null && prevPt.$hry != null) {
+            phrDst = gMath.sqrSegmentDist(curPt.$x, curPt.$y, prevPt.$x, prevPt.$y, prevPt.$hrx, prevPt.$hry);
+        }
+
         // define first and second handle coordinates if exist
-        if (curPt.$hlx != null && prevPt.$hrx != null) {
+        // For vertices generation we use tolerance value of 1pt for using handles
+        if (chlDst && chlDst >= 1 && phrDst && phrDst >= 1) {
             hx = prevPt.$hrx;
             hy = prevPt.$hry;
             h2x = curPt.$hlx;
             h2y = curPt.$hly;
-        } else if (curPt.$hlx != null) {
+        } else if (chlDst && chlDst >= 1) {
             hx = curPt.$hlx;
             hy = curPt.$hly;
-        } else if (prevPt.$hrx != null) {
+        } else if (phrDst && phrDst >= 1) {
             hx = prevPt.$hrx;
             hy = prevPt.$hry;
         }
@@ -1159,19 +1169,21 @@
             curPt.$tp == GXPathBase.AnchorPoint.Type.Connector ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Mirror ||
-            // shoulders are not defined or zero
-            !curPt.$cl || !curPt.$cr) {
+            // shoulders are not defined or zero or too small (less that 1pt)
+            !curPt.$cl || !curPt.$cr || curPt.$cl < 1 || curPt.$cr < 1) {
             // No any specific corner with shoulders
 
             if (hx == null) {
                 target.addVertex(GXVertex.Command.Line, curPt.$x, curPt.$y);
             } else if (h2x == null) {
-                target.addVertex(GXVertex.Command.Curve, curPt.$x, curPt.$y);
-                target.addVertex(GXVertex.Command.Curve, hx, hy);
+                target.extend(2);
+                target.writeVertex(GXVertex.Command.Curve, curPt.$x, curPt.$y);
+                target.writeVertex(GXVertex.Command.Curve, hx, hy);
             } else {
-                target.addVertex(GXVertex.Command.Curve2, curPt.$x, curPt.$y);
-                target.addVertex(GXVertex.Command.Curve2, hx, hy);
-                target.addVertex(GXVertex.Command.Curve2, h2x, h2y);
+                target.extend(3);
+                target.writeVertex(GXVertex.Command.Curve2, curPt.$x, curPt.$y);
+                target.writeVertex(GXVertex.Command.Curve2, hx, hy);
+                target.writeVertex(GXVertex.Command.Curve2, h2x, h2y);
             }
         } else { // corner with shoulders
             if (hx == null) {
@@ -1179,13 +1191,15 @@
                 target.addVertex(GXVertex.Command.Line, pt.getX(), pt.getY());
             } else if (h2x == null) {
                 pt = gMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
-                target.addVertex(GXVertex.Command.Curve, pt.getX(), pt.getY());
-                target.addVertex(GXVertex.Command.Curve, hx, hy);
+                target.extend(2);
+                target.writeVertex(GXVertex.Command.Curve, pt.getX(), pt.getY());
+                target.writeVertex(GXVertex.Command.Curve, hx, hy);
             } else {
                 pt = gMath.getPointAtLength(curPt.$x, curPt.$y, h2x, h2y, curPt.$cl);
-                target.addVertex(GXVertex.Command.Curve2, pt.getX(), pt.getY());
-                target.addVertex(GXVertex.Command.Curve2, hx, hy);
-                target.addVertex(GXVertex.Command.Curve2, h2x, h2y);
+                target.extend(3);
+                target.writeVertex(GXVertex.Command.Curve2, pt.getX(), pt.getY());
+                target.writeVertex(GXVertex.Command.Curve2, hx, hy);
+                target.writeVertex(GXVertex.Command.Curve2, h2x, h2y);
             }
 
             pt2 = this._getRightShoulderPoint(curPt, nextPt);
@@ -1197,7 +1211,7 @@
 
     /**
      * Adds extra (corner) vertices to _vertices
-     * @param {GXVertexTarget} target the target vertex container to put vertices into
+     * @param {GXVertexContainer} target the target vertex container to put vertices into
      * @param {Number} [pt1x] x coordinate of a corner start point
      * @param {Number} [pt1y] y coordinate of a corner start point
      * @param {Number} [pt2x] x coordinate of a corner end point
@@ -1215,8 +1229,9 @@
 
         if (pt1x == pt2x && pt1y == pt2y) {
             if (edgePtx != pt1x || edgePty != pt1y) {
-                target.addVertex(GXVertex.Command.Line, edgePtx, edgePty);
-                target.addVertex(GXVertex.Command.Line, pt2x, pt2y);
+                target.extend(2);
+                target.writeVertex(GXVertex.Command.Line, edgePtx, edgePty);
+                target.writeVertex(GXVertex.Command.Line, pt2x, pt2y);
             }
             return;
         }
@@ -1228,9 +1243,10 @@
 
         if (edgePtType == GXPathBase.CornerType.Rounded ||
             edgePtType == GXPathBase.CornerType.InverseRounded) {
+            target.extend(2);
             if ((pt1x == pt2x && pt1x == edgePtx) || (pt1y == pt2y && pt1y == edgePty)) {
-                target.addVertex(GXVertex.Command.Curve, pt2x, pt2y);
-                target.addVertex(GXVertex.Command.Curve, edgePtx, edgePty);
+                target.writeVertex(GXVertex.Command.Curve, pt2x, pt2y);
+                target.writeVertex(GXVertex.Command.Curve, edgePtx, edgePty);
             } else {
                 // TODO: may be check angle, and if == 90, create properly rounded arc instead of quadratic curve,
                 // see code example at coconut:QCDrawPathWorkerImpl.cpp: QCDrawPathWorkerImpl::addStyledEdge
@@ -1241,8 +1257,8 @@
                     edgeForArcX = pt1x + pt2x - edgePtx;
                     edgeForArcY = pt1y + pt2y - edgePty;
                 }
-                target.addVertex(GXVertex.Command.Curve, pt2x, pt2y);
-                target.addVertex(GXVertex.Command.Curve, edgeForArcX, edgeForArcY);
+                target.writeVertex(GXVertex.Command.Curve, pt2x, pt2y);
+                target.writeVertex(GXVertex.Command.Curve, edgeForArcX, edgeForArcY);
             }
         } else if (edgePtType == GXPathBase.CornerType.Fancy) {
             chunk1X = (pt2x - edgePtx) / 3;
@@ -1250,29 +1266,31 @@
             chunk2X = (edgePtx - pt1x) / 3;
             chunk2Y = (edgePty - pt1y) / 3;
 
+            target.extend(6);
+
             endPtX = pt1x + 2 * chunk1X;
             endPtY = pt1y + 2 * chunk1Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk2X;
             endPtY += 2 * chunk2Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
             endPtX -= chunk1X;
             endPtY -= chunk1Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
             endPtX -= chunk2X;
             endPtY -= chunk2Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk1X;
             endPtY += 2 * chunk1Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk2X;
             endPtY += 2 * chunk2Y;
-            target.addVertex(GXVertex.Command.Line, endPtX, endPtY);
+            target.writeVertex(GXVertex.Command.Line, endPtX, endPtY);
 
         } else if (edgePtType == GXPathBase.CornerType.Bevel) {
             target.addVertex(GXVertex.Command.Line, pt2x, pt2y);
@@ -1281,19 +1299,21 @@
             edgeForInsetX = pt1x + pt2x - edgePtx;
             edgeForInsetY = pt1y + pt2y - edgePty;
 
-            target.addVertex(GXVertex.Command.Line, edgeForInsetX, edgeForInsetY);
-            target.addVertex(GXVertex.Command.Line, pt2x, pt2y);
+            target.extend(2);
+            target.writeVertex(GXVertex.Command.Line, edgeForInsetX, edgeForInsetY);
+            target.writeVertex(GXVertex.Command.Line, pt2x, pt2y);
 
         } else {   // use GXPathBase.AnchorPoint.Type.Asymmetric for all the unsupported types
-            target.addVertex(GXVertex.Command.Line, edgePtx, edgePty);
-            target.addVertex(GXVertex.Command.Line, pt2x, pt2y);
+            target.extend(2);
+            target.writeVertex(GXVertex.Command.Line, edgePtx, edgePty);
+            target.writeVertex(GXVertex.Command.Line, pt2x, pt2y);
         }
     };
 
     /**
      * Adds path end vertices to the _vertices container, used to finish path
      * This function is supposed to be called only when the path is NOT closed
-     * @param {GXVertexTarget} target the target vertex container to put vertices into
+     * @param {GXVertexContainer} target the target vertex container to put vertices into
      * @param {GTransform} transform - a transformation to apply to anchor points before generating vertices
      * @private
      */
@@ -1307,22 +1327,34 @@
             prevPt = prevPt._getTransformedCopy(transform);
         }
 
-        if (endPt.$hlx != null && prevPt.$hrx != null) {
-            target.addVertex(GXVertex.Command.Curve2, endPt.$x, endPt.$y);
-            target.addVertex(GXVertex.Command.Curve2, prevPt.$hrx, prevPt.$hry);
-            target.addVertex(GXVertex.Command.Curve2, endPt.$hlx, endPt.$hly);
-        } else if (endPt.$hlx == null && prevPt.$hrx == null) {
+        var ehlDst = null;
+        var phrDst = null;
+        if (endPt.$hlx != null && endPt.$hly != nulll) {
+            ehlDst = gMath.sqrSegmentDist(endPt.$x, endPt.$y, prevPt.$x, prevPt.$y, endPt.$hlx, endPt.$hly);
+        }
+        if (prevPt.$hrx != null && prevPt.$hry != null) {
+            phrDst = gMath.sqrSegmentDist(endPt.$x, endPt.$y, prevPt.$x, prevPt.$y, prevPt.$hrx, prevPt.$hry);
+        }
+
+        // For vertices generation we use tolerance value of 1pt for using handles
+        if (ehlDst && ehlDst >= 1 && phrDst && phrDst >= 1) {
+            target.extend(3);
+            target.writeVertex(GXVertex.Command.Curve2, endPt.$x, endPt.$y);
+            target.writeVertex(GXVertex.Command.Curve2, prevPt.$hrx, prevPt.$hry);
+            target.writeVertex(GXVertex.Command.Curve2, endPt.$hlx, endPt.$hly);
+        } else if ((!ehlDst || ehlDst < 1) && (!phrDst || phrDst < 1)) {
             target.addVertex(GXVertex.Command.Line, endPt.$x, endPt.$y);
         } else {
-            if (endPt.$hlx != null) {
+            if (ehlDst && ehlDst >= 1) {
                 hx = endPt.$hlx;
                 hy = endPt.$hly;
             } else {
                 hx = prevPt.$hrx;
                 hy = prevPt.$hry;
             }
-            target.addVertex(GXVertex.Command.Curve, endPt.$x, endPt.$y);
-            target.addVertex(GXVertex.Command.Curve, hx, hy);
+            target.extend(2);
+            target.writeVertex(GXVertex.Command.Curve, endPt.$x, endPt.$y);
+            target.writeVertex(GXVertex.Command.Curve, hx, hy);
         }
     };
 

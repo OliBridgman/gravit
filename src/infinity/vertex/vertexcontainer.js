@@ -39,7 +39,8 @@
     GXVertexContainer.prototype.addVertex = function (command, x, y) {
         var index = this.getCount();
         this.resize(index + 1);
-        this.modifyVertex(command, x ? x : 0, y ? y : 0, index);
+        index = this.modifyVertex(command, x ? x : 0, y ? y : 0, index);
+        this._index = index + 1;
         return index;
     };
 
@@ -53,6 +54,7 @@
      * or null then defaults to the y-coordinate at the given index
      * @param {Number} index the index to modify at, if not provided or null
      * then defaults to the current index
+     * @return {Number} ind - index of the modified vertex
      * @version 1.0
      */
     GXVertexContainer.prototype.modifyVertex = function (command, x, y, index) {
@@ -62,6 +64,7 @@
         if (index < 0 || index >= this.getCount()) {
             throw new Error("Index out of range.");
         }
+        var idx = index;
         if (typeof command == "number") {
             this._commands[index] = command;
         }
@@ -72,6 +75,7 @@
         if (typeof y == "number") {
             this._vertices[index + 1] = y;
         }
+        return idx;
     };
 
     /**
@@ -128,6 +132,17 @@
                     this._vertices.set(vertices.subarray(0, Math.min(vertices.length, this._vertices.length)));
                 }
             }
+        }
+    };
+
+    /**
+     * Extend (resize) this container
+     * @param {Number} count the number of vertices, which should be added to this container.
+     */
+    GXVertexContainer.prototype.extend = function (count) {
+        if (count > 0) {
+            var index = this.getCount();
+            this.resize(index + count);
         }
     };
 
