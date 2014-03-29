@@ -163,24 +163,86 @@
             var propertiesToSet = [];
             var valuesToSet = [];
 
-            // TODO: fix here to support uniform changes based not only on top left corner shoulders
-            // Handle uniformity of properties
-            for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-                var side = GXRectangle.SIDES[i];
-                var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+            var props = args.properties;
+            var vals = args.values;
 
-                if (this.$uf) {
-                    propertiesToSet.push(prefix + '_uf');
-                    valuesToSet.push(this.$tl_uf);
-                    propertiesToSet.push(prefix + '_ct');
-                    valuesToSet.push(this.$tl_ct);
-                    propertiesToSet.push(prefix + '_sx');
-                    valuesToSet.push(this.$tl_sx);
-                    propertiesToSet.push(prefix + '_sy');
-                    valuesToSet.push(this.$tl_sx);
-                } else if (this['$' + prefix + '_uf']) {
-                    propertiesToSet.push(prefix + '_sy');
-                    valuesToSet.push(this['$' + prefix + '_sx']);
+            if (this.$uf) {
+                var newSVal = null;
+                var newTVal = null;
+                var sValAssigned = false;
+                var tValAssigned = false;
+                for (var i = 0; i < GXRectangle.SIDES.length && (!sValAssigned || !tValAssigned); ++i) {
+                    var side = GXRectangle.SIDES[i];
+                    var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+                    if (!sValAssigned) {
+                        var prop = prefix + '_sx';
+                        var idx = props.indexOf(prop);
+                        if (idx >= 0) {
+                            newSVal = vals[idx];
+                            sValAssigned = true;
+                        } else {
+                            var prop = prefix + '_sy';
+                            var idx = props.indexOf(prop);
+                            if (idx >= 0) {
+                                newSVal = vals[idx];
+                                sValAssigned = true;
+                            }
+                        }
+                    }
+                    if (!tValAssigned) {
+                        var prop = prefix + '_ct';
+                        var idx = props.indexOf(prop);
+                        if (idx >= 0) {
+                            newTVal = vals[idx];
+                            tValAssigned = true;
+                        }
+                    }
+                }
+                if (!sValAssigned) {
+                    newSVal = this.getProperty('tl_sx');
+                }
+                if (!tValAssigned) {
+                    newTVal = this.getProperty('tl_ct');
+                }
+
+                propertiesToSet.push('tl_uf', 'tr_uf', 'br_uf', 'bl_uf');
+                valuesToSet.push(true, true, true, true);
+
+                propertiesToSet.push('tl_sx', 'tl_sy', 'tr_sx', 'tr_sy', 'br_sx', 'br_sy', 'bl_sx', 'bl_sy');
+                valuesToSet.push(newSVal, newSVal, newSVal, newSVal, newSVal, newSVal, newSVal, newSVal);
+
+                propertiesToSet.push('tl_ct', 'tr_ct', 'br_ct', 'bl_ct');
+                valuesToSet.push(newTVal, newTVal, newTVal, newTVal);
+            } else {
+                for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
+                    var side = GXRectangle.SIDES[i];
+                    var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+                    var newSVal = null;
+                    var sValAssigned = false;
+
+                    if (this['$' + prefix + '_uf']) {
+                        var prop = prefix + '_sx';
+                        var idx = props.indexOf(prop);
+                        if (idx >= 0) {
+                            newSVal = vals[idx];
+                            sValAssigned = true;
+                        } else {
+                            var prop = prefix + '_sy';
+                            var idx = props.indexOf(prop);
+                            if (idx >= 0) {
+                                newSVal = vals[idx];
+                                sValAssigned = true;
+                            }
+                        }
+                        if (!sValAssigned) {
+                            newSVal = this.getProperty(prefix + '_sx');
+                        }
+
+                        propertiesToSet.push(prefix + '_sx');
+                        valuesToSet.push(newSVal);
+                        propertiesToSet.push(prefix + '_sy');
+                        valuesToSet.push(newSVal);
+                    }
                 }
             }
 
@@ -205,7 +267,9 @@
 
             this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
                 var anchorPoint = new GXPathBase.AnchorPoint();
-                anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'], [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength]);
+                anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr', 'cu'],
+                    [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength, false]);
+
                 anchorPoints.appendChild(anchorPoint);
             }.bind(this));
 
