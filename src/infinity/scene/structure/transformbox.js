@@ -50,6 +50,7 @@
     };
 
     GXTransformBox.ANNOT_SIZE = 8;
+    GXTransformBox.TRANSFORM_MARGIN = 10;
 
     GXTransformBox.Handles = {
         TOP_LEFT: 0,
@@ -316,7 +317,7 @@
             var endPtTr = viewToWorldTransform.mapPoint(endPt);
             var deltaTr = endPtTr.subtract(stPtTr);
             var transform = new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
-            var tlOrig = this._getPoint(GXTransformBox.Handles.TOP_LEFT, true);
+            var tlOrig = new GPoint(this.$tlx, this.$tly);
             var tl = transform.mapPoint(tlOrig);
             tl = guides.mapPoint(tl);
             deltaTr = tl.subtract(tlOrig);
@@ -386,28 +387,28 @@
         var pt = null;
         switch (side) {
             case GXTransformBox.Handles.TOP_LEFT:
-                pt = new GPoint(this.$tlx, this.$tly);
+                pt = new GPoint(this.$tlx - GXTransformBox.TRANSFORM_MARGIN, this.$tly - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.TOP_CENTER:
-                pt = new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2);
+                pt = new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2 - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.TOP_RIGHT:
-                pt = new GPoint(this.$trx, this.$try);
+                pt = new GPoint(this.$trx + GXTransformBox.TRANSFORM_MARGIN, this.$try - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.RIGHT_CENTER:
-                pt = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                pt = new GPoint((this.$trx + this.$brx) / 2 + GXTransformBox.TRANSFORM_MARGIN, (this.$try + this.$bry) / 2);
                 break;
             case GXTransformBox.Handles.BOTTOM_RIGHT:
-                pt = new GPoint(this.$brx, this.$bry);
+                pt = new GPoint(this.$brx + GXTransformBox.TRANSFORM_MARGIN, this.$bry + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.BOTTOM_CENTER:
-                pt = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                pt = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2 + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.BOTTOM_LEFT:
-                pt = new GPoint(this.$blx, this.$bly);
+                pt = new GPoint(this.$blx - GXTransformBox.TRANSFORM_MARGIN, this.$bly + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.LEFT_CENTER:
-                pt = new GPoint((this.$tlx + this.$blx) / 2, (this.$tly + this.$bly) / 2);
+                pt = new GPoint((this.$tlx + this.$blx) / 2 - GXTransformBox.TRANSFORM_MARGIN, (this.$tly + this.$bly) / 2);
                 break;
             case GXTransformBox.Handles.ROTATION_CENTER:
                 pt = new GPoint(this.$cx, this.$cy);

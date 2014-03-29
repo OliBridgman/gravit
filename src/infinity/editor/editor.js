@@ -54,8 +54,6 @@
         Area: 1
     };
 
-    GXEditor.TRANSFORM_MARGIN = 10;
-
     /**
      * Get the underlying graphic editor for a given scene
      * @param {GXScene} scene
@@ -757,25 +755,26 @@
     };
 
     GXEditor.prototype.getSelectionTransformBox = function () {
-        //if (!this._transformBox) {
-        var selBBox = null;
+        this._transformBox = null;
 
-        for (var i = 0; i < this.getSelection().length; ++i) {
-            var bbox = this.getSelection()[i].getGeometryBBox();
-            if (bbox && !bbox.isEmpty()) {
-                selBBox = selBBox ? selBBox.united(bbox) : bbox;
+        if (this.getSelection()) {
+            var selBBox = null;
+
+            for (var i = 0; i < this.getSelection().length; ++i) {
+                var bbox = this.getSelection()[i].getGeometryBBox();
+                if (bbox && !bbox.isEmpty()) {
+                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
+                }
+            }
+            if (selBBox) {
+                //selBBox = selBBox.expanded(GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN,
+                //    GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN);
+
+                this._transformBox = new GXTransformBox(selBBox, this.getSelection());
             }
         }
-        if (selBBox) {
-            selBBox = selBBox.expanded(GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN,
-                GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN);
-
-            this._transformBox = new GXTransformBox(selBBox, this.getSelection());
-        }
-        //}
 
         return this._transformBox;
-        //return null;
     };
 
     GXEditor.prototype.cleanTransformBox = function () {
