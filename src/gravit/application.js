@@ -680,7 +680,8 @@
         // Subscribe to window events
         this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
 
-        // Execute welcome dialog if there're no documents available
+        // Execute welcome dialog if there're no documents available but
+        // provide a slight timeout to ensure our window is properly resized
         if (this._documents.length === 0) {
             this.executeAction(GWelcomeAction.ID);
         }

@@ -1,4 +1,7 @@
-.g-window {
+.g-dialog {
+  position: relative;
+  display: table;
+  margin: 0 auto;
   background: $frameColor;
   color: $textColor;
   border: 1px solid $frameBorderColor;

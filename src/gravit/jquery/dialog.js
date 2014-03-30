@@ -42,9 +42,7 @@
                 }
 
                 content.wrap($('<div></div>')
-                    .addClass('g-window g-regular container')
-                    .css('position', 'absolute')
-                    .css('top', '0px')
+                    .addClass('g-dialog g-regular container')
                     .css('width', options.width ? options.width.toString() + 'px' : 'auto')
                     .css('height', options.height ? options.height + 'px' : 'auto'));
 
@@ -84,9 +82,6 @@
 
             var $this = $(this);
             $this.parents('.g-modal-background').appendTo($('body'));
-
-            var container = $this.parents('.container');
-            container.css('left', (($(window).width() - container.outerWidth()) / 2).toString() + 'px');
 
             return this;
         },
