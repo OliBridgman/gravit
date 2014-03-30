@@ -159,12 +159,14 @@
         if (scene != this._scene) {
             if (this._scene) {
                 this._scene.removeEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest);
+                this._scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged);
             }
 
             this._scene = scene;
 
             if (this._scene) {
                 this._scene.addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+                this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
             }
 
             if (!this._updateViewTransforms()) {
@@ -479,6 +481,15 @@
 
         // Invalidate our content layer
         this._layerMap[GXSceneView.Layer.Content].invalidate(area);
+    };
+
+    /**
+     * Event listener for scene's property changes
+     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    GXSceneView.prototype._sceneAfterPropertiesChanged = function (event) {
+        // NO-OP
     };
 
     /**

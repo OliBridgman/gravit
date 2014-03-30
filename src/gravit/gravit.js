@@ -52,7 +52,8 @@
             new EXPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),
-            new GEllipseProperties()
+            new GEllipseProperties(),
+            new GPageProperties()
         );
 
         // Register default actions
@@ -118,9 +119,6 @@
 
             new EXCloseAction(),
             new EXCloseAllAction(),
-
-            new GDocumentSettingsAction(),
-            new GPageSetupAction(),
 
             // Edit
             new EXUndoAction(),

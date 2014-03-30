@@ -27,9 +27,10 @@
         var result = point;
 
         // Snap to grid
-        if (this._scene.getProperty('gridSnap')) {
-            var gs = this._scene.getProperty('gridSize');
-            result = new GPoint(Math.round(result.getX() / gs) * gs, Math.round(result.getY() / gs) * gs);
+        if (this._scene.getProperty('gridActive')) {
+            var gsx = this._scene.getProperty('gridSizeX');
+            var gsy = this._scene.getProperty('gridSizeY');
+            result = new GPoint(Math.round(result.getX() / gsx) * gsx, Math.round(result.getY() / gsy) * gsy);
         }
 
         return result;

@@ -51,15 +51,13 @@
         Fancy: 'F'
     };
 
-    /**
-     * Localized names for GXPathBase.CornerType
-     */
-    GXPathBase.CornerTypeName = {
-        'R': new GLocale.Key(GXPathBase, 'corner.rounded'),
-        'U': new GLocale.Key(GXPathBase, 'corner.inverse-rounded'),
-        'B': new GLocale.Key(GXPathBase, 'corner.bevel'),
-        'I': new GLocale.Key(GXPathBase, 'corner.inset'),
-        'F': new GLocale.Key(GXPathBase, 'corner.fancy')
+    GXPathBase.isCornerType = function (tp) {
+        for (var key in GXPathBase.CornerType) {
+            if (GXPathBase[key] === tp) {
+                return true;
+            }
+        }
+        return false;
     };
 
     /**

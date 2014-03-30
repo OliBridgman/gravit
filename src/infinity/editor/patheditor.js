@@ -366,7 +366,7 @@
             var idType = GXPathEditor.PartType.Point;
             var aPtType = aPt.getProperty('tp');
 
-            if (aPtType in GXPathBase.CornerTypeName &&
+            if (GXPathBase.isCornerType(aPtType) &&
                     this._element.getAnchorPoints().getPreviousPoint(aPt) != null &&
                     this._element.getAnchorPoints().getNextPoint(aPt) != null) {
 

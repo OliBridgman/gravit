@@ -33,7 +33,7 @@
     GXPaintContourStyle.prototype.paint = function (context, source) {
         if (this.hasPaintableFill() && this.$cw && this.$cw > 0) {
             var vertexSource = source;
-            if (this.$cw % 2 !== 0) {
+            if (this.getScene().getProperty('unit') === GXLength.Unit.PX && this.$cw % 2 !== 0) {
                 vertexSource = new GXVertexPixelAligner(source);
             }
 

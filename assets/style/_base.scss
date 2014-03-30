@@ -59,4 +59,25 @@ body, html {
     margin: 5px 0px;
     border-bottom: 1px dotted $frameBorderColor;
   }
+
+  // Add special header divider
+  h1.g-divider {
+    text-align: center;
+    line-height: 0 !important;
+    border-bottom: 1px dotted $frameBorderColor;
+    margin: 10px 0px 5px 0px;
+    color: $frameBorderColor;
+    text-transform: uppercase;
+    text-shadow: 0px 1px 0px $frame3DLightColor;
+
+    &:first-line {
+      background-color: $frameColor;
+    }
+    &:before {
+      content: "\a0\a0";
+    }
+    &:after {
+      content: "\a0\a0";
+    }
+  }
 }

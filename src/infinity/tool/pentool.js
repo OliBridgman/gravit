@@ -190,7 +190,7 @@
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                 }
                 var tp = this._editPt.getProperty('tp');
-                if (!tp in GXPathBase.CornerTypeName) {
+                if (!GXPathBase.isCornerType(tp)) {
                     this._editPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Asymmetric);
                 }
                 this._editPt.setProperties(['hlx', 'hly'], [null, null]);

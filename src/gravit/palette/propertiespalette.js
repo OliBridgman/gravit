@@ -66,7 +66,7 @@
     EXPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
         var nodes = this.document.getEditor().getSelection();
 
-        // If there's no selection, select the scene instead
+        // If there's no selection, select the scene
         if (!nodes || nodes.length === 0) {
             nodes = [this.document.getScene()];
         }

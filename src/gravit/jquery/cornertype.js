@@ -1,11 +1,31 @@
 (function ($) {
 
     var cornerTypes = [
-        GXPathBase.CornerType.Rounded,
-        GXPathBase.CornerType.InverseRounded,
-        GXPathBase.CornerType.Bevel,
-        GXPathBase.CornerType.Inset,
-        GXPathBase.CornerType.Fancy
+        {
+            type: GXPathBase.CornerType.Rounded,
+            // TODO : I18N
+            name: 'Rounded'
+        },
+        {
+            type: GXPathBase.CornerType.InverseRounded,
+            // TODO : I18N
+            name: 'Inverse Rounded'
+        },
+        {
+            type: GXPathBase.CornerType.Bevel,
+            // TODO : I18N
+            name: 'Beveled'
+        },
+        {
+            type: GXPathBase.CornerType.Inset,
+            // TODO : I18N
+            name: 'Inset'
+        },
+        {
+            type: GXPathBase.CornerType.Fancy,
+            // TODO : I18N
+            name: 'Fancy'
+        }
     ];
 
     var methods = {
@@ -26,8 +46,8 @@
                     // Append corner types
                     for (var i = 0; i < cornerTypes.length; ++i) {
                         target.append($('<option></option>')
-                            .attr('value', cornerTypes[i])
-                            .text(gLocale.get(GXPathBase.CornerTypeName[cornerTypes[i]])));
+                            .attr('value', cornerTypes[i].type)
+                            .text(cornerTypes[i].name));
                     }
                 }
             });

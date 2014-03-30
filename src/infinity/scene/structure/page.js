@@ -28,12 +28,7 @@
         ml: 0,
         mt: 0,
         mr: 0,
-        mb: 0,
-        /** Grid (baseline, gutter width, columns, rows)  */
-        gb: 0,
-        gw: 0,
-        gc: 0,
-        gr: 0
+        mb: 0
     };
 
     /**

@@ -79,7 +79,7 @@
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
-                            self._assignProperty(property, value < 0 ? 0 : value);
+                            self._assignProperty(property, value);
                         } else {
                             self._updateProperties();
                         }
@@ -143,59 +143,78 @@
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .attr('colspan', 4)
-                    .append($('<hr>'))))
+                    .append($('<h1></h1>')
+                        .addClass('g-divider')
+                        .text('Form'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .html('<i class="fa fa-square" style="-webkit-transform: rotate(45deg); transform: rotate(45deg)"></i>'))
+                    .text('Radius:'))
                 .append($('<td></td>')
-                    .append(_createInput('or')))
+                    .append(_createInput('or')
+                        // TODO : I18N
+                        .attr('title', 'Outside Radius')))
                 .append($('<td></td>')
                     .addClass('label')
                     .html('<i class="fa fa-circle"></i>'))
                 .append($('<td></td>')
-                    .append(_createInput('ir'))))
+                    .append(_createInput('ir')
+                        // TODO : I18N
+                        .attr('title', 'Inside Radius'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
                     .text('Angle:'))
                 .append($('<td></td>')
-                    .append(_createInput('oa')))
+                    .append(_createInput('oa')
+                        // TODO : I18N
+                        .attr('title', 'Outside Angle')))
                 .append($('<td></td>')
                     .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
+                    .html('&nbsp;'))
                 .append($('<td></td>')
-                    .append(_createInput('ia'))))
+                    .append(_createInput('ia')
+                        // TODO : I18N
+                        .attr('title', 'Inside Angle'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .attr('colspan', 4)
-                    .append($('<hr>'))))
+                    .append($('<h1></h1>')
+                        .addClass('g-divider')
+                        .text('Corners'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
-                    // TODO : I18N
                     .text('Corner:'))
                 .append($('<td></td>')
-                    .append(_createInput('oct')))
+                    .append(_createInput('oct')
+                        // TODO : I18N
+                        .attr('title', 'Outside Corner-Type')))
                 .append($('<td></td>')
                     .addClass('label')
                     .html('<i class="fa fa-circle"></i>'))
                 .append($('<td></td>')
-                    .append(_createInput('ict'))))
+                    .append(_createInput('ict')
+                        // TODO : I18N
+                        .attr('title', 'Inside Corner-Type'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
                     .text('Smooth:'))
                 .append($('<td></td>')
-                    .append(_createInput('ocr')))
+                    .append(_createInput('ocr')
+                        // TODO : I18N
+                        .attr('title', 'Outside Corner-Smoothness')))
                 .append($('<td></td>')
                     .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
+                    .html('&nbsp;'))
                 .append($('<td></td>')
-                    .append(_createInput('icr'))))
+                    .append(_createInput('icr')
+                        // TODO : I18N
+                        .attr('title', 'Inside Corner-Smoothness'))))
             .appendTo(panel);
     };
 

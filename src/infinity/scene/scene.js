@@ -10,6 +10,7 @@
      * @constructor
      */
     function GXScene() {
+        GXElement.call(this);
         this._scene = this;
         this._setDefaultProperties(GXScene.MetaProperties);
     }
@@ -45,22 +46,12 @@
         crDistBig: 10,
         /** The cursor constraint in radians */
         crConstraint: 0,
-        /** The grid size */
-        gridSize: 20,
-        /** Whether the grid is relative or not */
-        gridRel: false,
-        /** Whether to snap to the grid or not */
-        gridSnap: true,
-        /** Whether to snap to pages or not */
-        pageSnap: true,
-        /** Whether to snap to page margins or not */
-        pageMarginSnap: true,
-        /** Whether to snap to page grid or not */
-        pageGridSnap: true,
-        /** Whether to snap to other bboxes or not */
-        bboxSnap: true,
-        /** Whether to snap to guides or not */
-        guideSnap: true
+        /** The horizontal grid size */
+        gridSizeX: 10,
+        /** The vertical grid size */
+        gridSizeY: 10,
+        /** Whether the grid is active or not */
+        gridActive: true
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -228,6 +219,18 @@
         if (this.hasEventListeners(GXScene.InvalidationRequestEvent)) {
             this.trigger(new GXScene.InvalidationRequestEvent(area));
         }
+    };
+
+    /** @override */
+    GXScene.prototype._handleChange = function (change, args) {
+        // Handle some properties that require an invalidation of the scene
+        if (change == GXNode._Change.AfterPropertiesChange) {
+            if (args.properties.indexOf('unit') >= 0) {
+                this._invalidateArea();
+            }
+        }
+
+        GXElement.prototype._handleChange.call(this, change, args);
     };
 
     _.GXScene = GXScene;

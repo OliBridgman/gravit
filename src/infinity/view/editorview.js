@@ -120,7 +120,7 @@
     };
 
     /**
-     * Event listener for scene's repaintRequest
+     * Event listener for editor's repaintRequest
      * @param {GXEditor.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
@@ -151,14 +151,18 @@
      * @private
      */
     GXEditorView.prototype._paintGridLayer = function (context) {
-        var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
-        var xStart = this._viewMargin[0];// + this._scrollX;
-        var yStart = this._viewMargin[1];// + this._scrollY;
-        for (var x  = xStart; x < this.getViewWidth(); x += 20) {
-            context.canvas.fillRect(x, yStart, 1, this.getViewHeight(), cl);
-        }
-        for (var y  = yStart; y < this.getViewHeight(); y += 20) {
-            context.canvas.fillRect(xStart, y, this.getViewWidth(), 1, cl);
+        if (this._scene.getProperty('gridActive')) {
+            var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
+            var xStart = this._viewMargin[0];// + this._scrollX;
+            var yStart = this._viewMargin[1];// + this._scrollY;
+            var szx = this._scene.getProperty('gridSizeX');
+            var szy = this._scene.getProperty('gridSizeY');
+            for (var x = xStart; x < this.getViewWidth(); x += szx) {
+                context.canvas.fillRect(x, yStart, 1, this.getViewHeight(), cl);
+            }
+            for (var y = yStart; y < this.getViewHeight(); y += szy) {
+                context.canvas.fillRect(xStart, y, this.getViewWidth(), 1, cl);
+            }
         }
     };
 
@@ -248,6 +252,17 @@
                     }
                 }
             }
+        }
+    };
+
+    /** @override */
+    GXEditorView.prototype._sceneAfterPropertiesChanged = function (event) {
+        GXSceneView.prototype._sceneAfterPropertiesChanged.call(this, event);
+
+        if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
+            event.properties.indexOf('gridActive') >= 0) {
+            // Invalidate our grid layer
+            this._layerMap[GXEditorView.Layer.Grid].invalidate();
         }
     };
 

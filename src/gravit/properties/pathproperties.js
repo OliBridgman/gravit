@@ -157,19 +157,25 @@
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
                     .attr('colspan', 4)
-                    .append($('<hr>'))))
+                    .append($('<h1></h1>')
+                        .addClass('g-divider')
+                        .text('Anchor Point'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
                     .addClass('label')
                     .text('X:'))
                 .append($('<td></td>')
-                    .append(_createPointInput('x')))
+                    .append(_createPointInput('x')
+                        // TODO : I18N
+                        .attr('title', 'Horizontal Position of Point')))
                 .append($('<td></td>')
                     .addClass('label')
                     .text('Y:'))
                 .append($('<td></td>')
-                    .append(_createPointInput('y'))))
+                    .append(_createPointInput('y')
+                        // TODO : I18N
+                        .attr('title', 'Vertical Position of Point'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -203,7 +209,9 @@
                 .append($('<td></td>')
                     .attr('colspan', '2')
                     .css('text-align', 'right')
-                    .append(_createPointInput('ah'))))
+                    .append(_createPointInput('ah')
+                        // TODO : I18N
+                        .attr('title', 'Toggle automatic calculation of handles'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')
                 .append($('<td></td>')
@@ -224,9 +232,15 @@
                     .text('Smooth:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createPointInput('cl'))
-                    .append(_createPointInput('cu'))
-                    .append(_createPointInput('cr'))))
+                    .append(_createPointInput('cl')
+                        // TODO : I18N
+                        .attr('title', 'Left Smoothness'))
+                    .append(_createPointInput('cu')
+                        // TODO : I18N
+                        .attr('title', 'Toggle Lock of Left & Right Smoothness'))
+                    .append(_createPointInput('cr')
+                        // TODO : I18N
+                        .attr('title', 'Right Smoothness'))))
             .appendTo(panel);
     };
 

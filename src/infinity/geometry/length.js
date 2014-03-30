@@ -14,7 +14,7 @@
 
     /**
      * The unit of a length
-     * @version 1.0
+     * @enum
      */
     GXLength.Unit = {
         /**
@@ -22,42 +22,55 @@
          * @unit Number
          * @version 1.0
          */
-        PT: 0,
+        PT: 't',
 
         /**
          * Pixel Unit ('px')
          * @unit Number
          * @version 1.0
          */
-        PX: 1,
+        PX: 'x',
 
         /**
          * Pica Unit ('pc')
          * @unit Number
          * @version 1.0
          */
-        PC: 2,
+        PC: 'p',
 
         /**
          * Inch Unit ('in')
          * @unit Number
          * @version 1.0
          */
-        IN: 3,
+        IN: 'i',
 
         /**
          * Milimeter Unit ('mm')
          * @unit Number
          * @version 1.0
          */
-        MM: 4,
+        MM: 'm',
 
         /**
          * Centimeter Unit ('cm')
          * @unit Number
          * @version 1.0
          */
-        CM: 5
+        CM: 'c'
+    };
+
+    // Use strict 72ppi for screen
+    var dpi = 72.0;
+
+    // Calculate our dpi-map
+    var DPI_MAP = {
+        't': 1.0, /* PT */
+        'x': 1, /* PX */
+        'p': dpi / 6.0, /* PC */
+        'i': dpi,
+        'm': dpi / 25.4, /* MM */
+        'c': dpi / 2.54 /* CM */
     };
 
     /**
@@ -126,19 +139,6 @@
             return null;
         }
     };
-
-    // Use strict 72ppi for screen
-    var dpi = 72.0;
-
-    // Calculate our dpi-map
-    var DPI_MAP = [
-        1.0, /* PT */
-        1.0, /* PX */
-        dpi / 6.0, /* PC */
-        dpi, /* IN */
-        dpi / 25.4, /* MM */
-        dpi / 2.54 /* CM */
-    ];
 
     // -----------------------------------------------------------------------------------------------------------------
     // GXLength Class

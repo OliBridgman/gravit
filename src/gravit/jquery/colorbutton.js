@@ -5,7 +5,7 @@
                 // Whether to show a swatch or not
                 swatch: true,
                 // Whether to show dropdown indicator or not
-                dropdown: true,
+                dropdown: true
                 // see options of gColorTarget
                 // see options of gColorPanel
             }, options);

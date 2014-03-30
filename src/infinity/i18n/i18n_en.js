@@ -29,10 +29,8 @@ gLocale.setValues(GXEllipse, GLocale.Language.English, ["name"], ["Ellipse"]);
 gLocale.setValues(GXRectangle, GLocale.Language.English, ["name"], ["Rectangle"]);
 gLocale.setValues(GXLayer, GLocale.Language.English, ["name", "type.output", "type.draft", "type.guide"], ["Layer", "Output", "Draft", "Guide"]);
 gLocale.setValues(GXScene, GLocale.Language.English, ["name"], ["Scene"]);
-gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polystar"]);
+gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
 gLocale.setValues(GXPage, GLocale.Language.English, ["name"], ["Page"]);
-gLocale.setValues(GXPathBase, GLocale.Language.English, ["corner.rounded", "corner.inverse-rounded", "corner.bevel", "corner.inset", "corner.fancy"],
-    ["Round", "Inverse Round", "Bevel", "Inset", "Fancy"]);
 gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);
 gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
 gLocale.setValues(GXPaintAreaStyle, GLocale.Language.English, ["name"], ["Area"]);
