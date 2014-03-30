@@ -707,9 +707,6 @@
                 }
 
                 try {
-                    if (this._transformBox) {
-                        this._transformBox.applyTransform();
-                    }
                     var clonedSelection = [];
                     for (var i = 0; i < newSelection.length; ++i) {
                         var item = newSelection[i];
@@ -744,6 +741,9 @@
                     if (clonedSelection.length > 0) {
                         this.updateSelection(false, clonedSelection);
                     }
+                    if (this._transformBox) {
+                        this.updateSelectionTransformBox();
+                    }
                 } finally {
                     if (!noTransaction) {
                         // TODO : I18N
@@ -754,9 +754,8 @@
         }
     };
 
-    GXEditor.prototype.getSelectionTransformBox = function () {
+    GXEditor.prototype.updateSelectionTransformBox = function () {
         this._transformBox = null;
-
         if (this.getSelection()) {
             var selBBox = null;
 
@@ -767,13 +766,12 @@
                 }
             }
             if (selBBox) {
-                //selBBox = selBBox.expanded(GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN,
-                //    GXEditor.TRANSFORM_MARGIN, GXEditor.TRANSFORM_MARGIN);
-
-                this._transformBox = new GXTransformBox(selBBox, this.getSelection());
+                this._transformBox = new GXTransformBox(selBBox);
             }
         }
+    };
 
+    GXEditor.prototype.getTransformBox = function () {
         return this._transformBox;
     };
 
@@ -864,7 +862,8 @@
         if (!this._transaction) {
             this._transaction = {
                 actions: [],
-                selection: this._saveSelection()
+                selection: this._saveSelection(),
+                tBox: this._transformBox
             }
         }
     };
@@ -883,7 +882,9 @@
             var transaction = this._transaction;
             var actions = transaction.actions.slice();
             var selection = transaction.selection ? transaction.selection.slice() : null;
+            var tBox = transaction.tBox;
             var newSelection = this._saveSelection();
+            var newtBox = this._transformBox;
 
             // push a new state
             var action = function () {
@@ -891,6 +892,13 @@
                     actions[i].action();
                 }
                 this._loadSelection(newSelection);
+                if (newtBox || this._transformBox != newtBox) {
+                    this._transformBox = newtBox;
+                    if (newtBox) {
+                        this.updateSelectionTransformBox();
+                    }
+                    gApp.getToolManager().getActiveTool().invalidateArea();
+                }
             }.bind(this);
 
             var revert = function () {
@@ -899,6 +907,13 @@
                     actions[i].revert();
                 }
                 this._loadSelection(selection);
+                if (tBox || this._transformBox != tBox) {
+                    this._transformBox = tBox;
+                    if (tBox) {
+                        this.updateSelectionTransformBox();
+                    }
+                    gApp.getToolManager().getActiveTool().invalidateArea();
+                }
             }.bind(this);
 
             this.pushState(action, revert, name);

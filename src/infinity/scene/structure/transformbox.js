@@ -10,10 +10,9 @@
      * @mixes GXVertexSource
      * @constructor
      */
-    function GXTransformBox(bbox, elements) {
+    function GXTransformBox(bbox) {
         GXItem.call(this);
         this._setDefaultProperties(GXTransformBox.GeometryProperties);
-        this._elements = elements;
         var tl = bbox.getSide(GRect.Side.TOP_LEFT);
         this.$tlx = tl.getX();
         this.$tly = tl.getY();
@@ -201,18 +200,6 @@
             var dx = deltaTr.getX();
             var dy = deltaTr.getY();
 
-            var _correctNegative = function () {
-                if (width < 0) {
-                    tlxNew = tlxNew + width;
-                    width = -width;
-                }
-
-                if (height < 0) {
-                    tlyNew = tlyNew + height;
-                    height = -height;
-                }
-            };
-
             var transform1 = null;
             var transform3 = null;
             var width = this.$brx - this.$tlx;
@@ -227,7 +214,6 @@
                     //correctIfRatio();
                     var tlxNew = this.$tlx + dxNew;
                     var tlyNew = this.$tly + dyNew;
-                    _correctNegative();
                     // TODO: snap if needed
                     transform1 = new GTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
                     transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
@@ -249,7 +235,6 @@
                     //correctIfRatio();
                     var tlxNew = this.$tlx + dxNew;
                     var tlyNew = this.$tly + dyNew;
-                    _correctNegative();
                     // TODO: snap if needed
                     transform1 = new GTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
                     transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
@@ -257,7 +242,6 @@
                 case GXTransformBox.Handles.RIGHT_CENTER:
                     width = width + dx;
                     var tlxNew = this.$tlx;
-                    _correctNegative();
                     var leftCenter = new GPoint((this.$blx + this.$tlx) / 2, (this.$bly + this.$tly) / 2);
                     transform1 = new GTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
                     transform3 = new GTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
@@ -270,7 +254,6 @@
                     //correctIfRatio();
                     var tlxNew = this.$tlx + dxNew;
                     var tlyNew = this.$tly + dyNew;
-                    _correctNegative();
                     // TODO: snap if needed
                     transform1 = new GTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
                     transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew);
@@ -278,7 +261,6 @@
                 case GXTransformBox.Handles.BOTTOM_CENTER:
                     height = height + dy;
                     var tlyNew = this.$tly;
-                    _correctNegative();
                     var topCenter = new GPoint((this.$trx + this.$tlx) / 2, (this.$try + this.$tly) / 2);
                     transform1 = new GTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
                     transform3 = new GTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
@@ -291,7 +273,6 @@
                     //correctIfRatio();
                     var tlxNew = this.$tlx + dxNew;
                     var tlyNew = this.$tly + dyNew;
-                    _correctNegative();
                     // TODO: snap if needed
                     transform1 = new GTransform(1, 0, 0, 1, -this.$trx, -this.$try);
                     transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
@@ -300,7 +281,6 @@
                     width = width - dx;
                     var dxNew = dx;
                     var tlxNew = this.$tlx + dxNew;
-                    _correctNegative();
                     var rightCenter = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
                     transform1 = new GTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
                     transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());

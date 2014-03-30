@@ -147,8 +147,8 @@
             var w = Math.ceil(this._selectArea.getWidth()) - 1.0;
             var h = Math.ceil(this._selectArea.getHeight()) - 1.0;
             context.canvas.strokeRect(x, y, w, h, 1, context.selectionOutlineColor);
-        } else if (this._transformBox) {
-            this._transformBox.paint(context, this._view.getWorldTransform());
+        } else if (this._editor.getTransformBox()) {
+            this._editor.getTransformBox().paint(context, this._view.getWorldTransform());
         }
     };
 
@@ -174,9 +174,14 @@
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
         if (this._mode == GXSelectTool._Mode.Transforming) {
-            // Transform box always returns non-null partInfo
-            this._editorMovePartInfo = this._transformBox.getPartInfoAt(event.client, this._view.getWorldTransform(),
-                this._scene.getProperty('pickDist'));
+            if (!this._editor.getTransformBox()) {
+                this._editor.updateSelectionTransformBox();
+            }
+            if (this._editor.getTransformBox()) {
+                // Transform box always returns non-null partInfo
+                this._editorMovePartInfo = this._editor.getTransformBox().getPartInfoAt(event.client,
+                    this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+            }
         } else {
 
             // Reset to select mode here
@@ -321,7 +326,7 @@
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
-            this._transformBox.hide();
+            this._editor.getTransformBox().hide();
             this.invalidateArea();
         }
     };
@@ -351,16 +356,12 @@
             // Save current
             this._moveCurrent = event.client;
 
-            var transform = this._transformBox.calculateTransform(this._editorMovePartInfo,
+            var transform = this._editor.getTransformBox().calculateTransform(this._editorMovePartInfo,
                 this._moveStart, this._moveCurrent, this._editor.getGuides(),
                 this._view.getViewTransform(), this._view.getWorldTransform(),
                 gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
 
-            //var position = this._editor.getGuides().mapPoint(this._moveCurrent);
-            //position = this._view.getViewTransform().mapPoint(position);
-            //var moveDelta = position.subtract(this._moveStartTransformed);
-
-            this._transformBox.setTransform(transform);
+            this._editor.getTransformBox().setTransform(transform);
             this._editor.transformSelection(transform, null, null);
             this.invalidateArea();
         }
@@ -417,9 +418,7 @@
                 this._selectArea = null;
             }
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
-            //this._transformBox.applyTransform();
             this._editor.applySelectionTransform();
-            this._transformBox.show();
             this.invalidateArea();
         }
     };
@@ -429,14 +428,13 @@
      */
     GXSelectTool.prototype._mouseDblClick = function () {
         if (this._editor) {
-            if (this._transformBox) {
-                this._transformBox = null;
-                //this._editor.cleanTransformBox();
+            if (this._editor.getTransformBox()) {
+                this._editor.cleanTransformBox();
                 this._updateMode(null);
                 this.invalidateArea();
             } else {
-                this._transformBox = this._editor.getSelectionTransformBox();
-                if (this._transformBox) {
+                this._editor.updateSelectionTransformBox();
+                if (this._editor.getTransformBox()) {
                     // Switch to transformation mode
                     this._updateMode(GXSelectTool._Mode.Transforming);
                     this.invalidateArea();
