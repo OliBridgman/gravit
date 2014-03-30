@@ -154,6 +154,10 @@ bool HostWindow::writeFile(const QString& fileLocation, const QString& data, boo
     return true;
 }
 
+void HostWindow::registerShortcut(const QString& shortcut, QVariant action) {
+    // TODO : Implement this
+}
+
 void HostWindow::resizeEvent(QResizeEvent* event) {
     this->m_view->move(0, 0);
     this->m_view->resize(this->size());

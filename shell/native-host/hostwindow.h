@@ -29,6 +29,8 @@ public:
     Q_INVOKABLE QString readFile(const QString& fileLocation, bool binary, const QString& encoding);
     Q_INVOKABLE bool writeFile(const QString& fileLocation, const QString& data, bool binary, const QString& encoding);
 
+    Q_INVOKABLE void registerShortcut(const QString& shortcut, QVariant action);
+
 private slots:
     void addToJavaScript();
 
