@@ -38,7 +38,6 @@ gLocale.setValues(EXSaveAllAction, GLocale.Language.English, ["title"], ["Save A
 gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title"], ["To %name%..."]);
 gLocale.setValues(EXShortcutMapAction, GLocale.Language.English, ["title"], ["Shortcut Map..."]);
 gLocale.setValues(EXShowRulersAction, GLocale.Language.English, ["title"], ["Rulers"]);
-gLocale.setValues(EXShowSidebarAction, GLocale.Language.English, ["title"], ["Sidebar"]);
 gLocale.setValues(EXUndoAction, GLocale.Language.English, ["title"], ["Undo"]);
 gLocale.setValues(GUngroupAction, GLocale.Language.English, ["title"], ["Ungroup Selection"]);
 gLocale.setValues(GWelcomeAction, GLocale.Language.English, ["title"], ["Welcome Panel..."]);
