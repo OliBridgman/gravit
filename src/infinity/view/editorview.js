@@ -153,15 +153,14 @@
     GXEditorView.prototype._paintGridLayer = function (context) {
         if (this._scene.getProperty('gridActive')) {
             var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
-            var xStart = this._viewMargin[0];// + this._scrollX;
-            var yStart = this._viewMargin[1];// + this._scrollY;
             var szx = this._scene.getProperty('gridSizeX');
             var szy = this._scene.getProperty('gridSizeY');
-            for (var x = xStart; x < this.getViewWidth(); x += szx) {
-                context.canvas.fillRect(x, yStart, 1, this.getViewHeight(), cl);
+            var vbox = this.getViewBox(true);
+            for (var x = vbox.getX(); x - vbox.getX() < vbox.getWidth(); x += szx) {
+                context.canvas.fillRect(x, vbox.getY(), 1, vbox.getHeight(), cl);
             }
-            for (var y = yStart; y < this.getViewHeight(); y += szy) {
-                context.canvas.fillRect(xStart, y, this.getViewWidth(), 1, cl);
+            for (var y = vbox.getY(); y - vbox.getY() < vbox.getHeight(); y += szy) {
+                context.canvas.fillRect(vbox.getX(), y, vbox.getWidth(), 1, cl);
             }
         }
     };

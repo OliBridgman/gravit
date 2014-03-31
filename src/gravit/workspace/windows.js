@@ -80,7 +80,7 @@
      * @type {Array<Number>}
      * @private
      */
-    EXWindows.prototype._viewMargin = null;
+    EXWindows.prototype._viewOffset = null;
 
     /**
      * Returns a list of all opened windows
@@ -221,8 +221,8 @@
     /**
      * Called from the workspace to relayout
      */
-    EXWindows.prototype.relayout = function (viewMargin) {
-        this._viewMargin = viewMargin;
+    EXWindows.prototype.relayout = function (viewOffset) {
+        this._viewOffset = viewOffset;
         if (this._activeWindow) {
             this._relayoutWindow(this._activeWindow);
         }
@@ -239,9 +239,7 @@
         var myHeight = this._htmlElement.height();
         window._container.width(myWidth);
         window._container.height(myHeight);
-        window.getView().setViewMargin([this._viewMargin[0] + EXWindow.VIEW_PADDING,
-            this._viewMargin[1] + EXWindow.VIEW_PADDING, this._viewMargin[2] + EXWindow.VIEW_PADDING,
-            this._viewMargin[3] + EXWindow.VIEW_PADDING]);
+        window.getView().setViewOffset(this._viewOffset);
         window.getView().resize(myWidth, myHeight);
     };
 

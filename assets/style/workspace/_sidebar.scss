@@ -8,7 +8,7 @@
   border-right: 1px solid $frameBorderColor;
   background: $frameColor;
   // TODO : REMOVE THIS WHEN WORKING
-  //display: none;
+  opacity: 0;
 
   &, *:not(.fa) {
     font: $smallFont;

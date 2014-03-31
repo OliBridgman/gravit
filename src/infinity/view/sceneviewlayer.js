@@ -104,10 +104,9 @@
 
     /**
      * Called to update the view area
-     * @version 1.0
      */
     GXSceneViewLayer.prototype._updateViewArea = function () {
-        var viewArea = new GRect(0, 0, this.getWidth(), this.getHeight());
+        var viewArea = new GRect(200, 0, this.getWidth() - 200, this.getHeight());
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
             this.invalidate();

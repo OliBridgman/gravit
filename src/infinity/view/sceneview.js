@@ -9,8 +9,10 @@
      */
     function GXSceneView(scene) {
         this._updateViewTransforms();
-        this.setViewMargin(null);
         GUIPanel.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
+
+        this._viewOffset = [0, 0, 0, 0];
+        this._viewMargin = [0, 0, 0, 0];
 
         this._layerMap = {};
 
@@ -86,6 +88,13 @@
      * @private
      */
     GXSceneView.prototype._layers = null;
+
+    /**
+     * Left, top, right, bottom offsets
+     * @type {Array<Number>}
+     * @private
+     */
+    GXSceneView.prototype._viewOffset = null;
 
     /**
      * Left, top, right, bottom margins
@@ -183,6 +192,28 @@
     };
 
     /**
+     * Get the current view offset
+     * @return {Array<Number>} Left, top, right, bottom
+     */
+    GXSceneView.prototype.getViewOffset = function () {
+        return this._viewOffset;
+    };
+
+    /**
+     * Set the current view offset
+     * @param {Array<Number>} Offset Left, top, right, bottom
+     */
+    GXSceneView.prototype.setViewOffset = function (offset) {
+        this._viewOffset = [0, 0, 0, 0];
+        if (offset && offset.length > 0) {
+            for (var i = 0; i < Math.min(4, offset.length); ++i) {
+                this._viewOffset[i] = offset[i];
+                this.invalidate();
+            }
+        }
+    };
+
+    /**
      * Get the current view margins
      * @return {Array<Number>} Left, top, right, bottom
      * @version 1.0
@@ -249,30 +280,37 @@
     };
 
     /**
-     * Returns the view's center point taking the margin into account
-     * @return {GPoint}
+     * Returns the actual viewBox honoring offset and optional margin
+     * @param {Boolean} [noMargin] whether to ignore margin or not,
+     * defaults to false (= include margin)
+     * @returns {GRect}
      */
+    GXSceneView.prototype.getViewBox = function (noMargin) {
+        var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
+        var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
+        return new GRect(
+            xOffset,
+            yOffset,
+            this.getWidth() - (this._viewOffset[2] + (!noMargin ? this._viewMargin[2] : 0) + xOffset),
+            this.getHeight() - (this._viewOffset[3] + (!noMargin ? this._viewMargin[3] : 0) + yOffset)
+        );
+    };
+
+    /*
     GXSceneView.prototype.getViewCenter = function () {
-        var cx = this.getWidth() + this._viewMargin[0] - this._viewMargin[2];
-        var cy = this.getHeight() + this._viewMargin[1] - this._viewMargin[3];
+        var cx = this.getWidth() + (this._viewOffset[0] + this._viewMargin[0]) - (this._viewOffset[2] + this._viewMargin[2]);
+        var cy = this.getHeight() + (this._viewOffset[1] + this._viewMargin[1]) - (this._viewOffset[3] + this._viewMargin[3]);
         return new GPoint(cx / 2.0, cy / 2.0);
     };
 
-    /**
-     * Returns the view's height taking the margin into account
-     * @return {Number}
-     */
     GXSceneView.prototype.getViewHeight = function () {
         return this.getHeight() - this._viewMargin[1] - this._viewMargin[3];
     };
 
-    /**
-     * Returns the view's width taking the margin into account
-     * @return {Number}
-     */
     GXSceneView.prototype.getViewWidth = function () {
         return this.getWidth() - this._viewMargin[0] - this._viewMargin[2];
     };
+    */
 
     /**
      * Transform the current view
@@ -296,7 +334,7 @@
      */
     GXSceneView.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
-        var viewCenter = this.getViewCenter();
+        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
         var normalizedZoom = Math.min(GXSceneView.options.maxZoomFactor, Math.max(zoom, GXSceneView.options.minZoomFactor));
         if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
@@ -321,10 +359,9 @@
      * Zoom at a specific point
      * @param {GPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
-     * @version 1.0
      */
     GXSceneView.prototype.zoomAt = function (pos, zoom) {
-        var viewCenter = this.getViewCenter();
+        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
         var zoomDelta = zoom / this._zoom;
@@ -342,16 +379,14 @@
         var center = rect.getSide(GRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
-
-        var sx = width / this.getViewWidth();
-        var sy = height / this.getViewHeight();
+        var vbox = this.getViewBox();
 
         if (reverse) {
             var viewRect = this._worldToViewTransform.mapRect(new GRect(center.getX() - width / 2, center.getY() - height / 2, width, height));
-            var invZoom = this._zoom * Math.min(1.0, Math.max(viewRect.getWidth() / this.getViewWidth(), viewRect.getHeight() / this.getViewHeight()));
+            var invZoom = this._zoom * Math.min(1.0, Math.max(viewRect.getWidth() / vbox.getWidth(), viewRect.getHeight() / vbox.getHeight()));
             this.zoomAtCenter(center, invZoom);
         } else {
-            this.zoomAtCenter(center, 1.0 / Math.max(sx, sy));
+            this.zoomAtCenter(center, 1.0 / Math.max(width / vbox.getWidth(), height / vbox.getHeight()));
         }
     };
 
