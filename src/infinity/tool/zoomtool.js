@@ -45,12 +45,6 @@
      */
     GXZoomTool.prototype._dragArea = null;
 
-    /**
-     * @type {Boolean}
-     * @private
-     */
-    GXZoomTool.prototype._dragCanceled = false;
-
     /** @override */
     GXZoomTool.prototype.getGroup = function () {
         return 'view';
@@ -114,12 +108,12 @@
     /** @override */
     GXZoomTool.prototype.isDeactivatable = function () {
         // cannot deactivate while dragging
-        return this._dragArea && !this._dragCanceled ? false : true;
+        return this._dragArea ? false : true;
     };
 
     /** @override */
     GXZoomTool.prototype.paint = function (context) {
-        if (!this._dragCanceled && this._hasDragArea()) {
+        if (this._hasDragArea()) {
             var x = Math.floor(this._dragArea.getX()) + 0.5;
             var y = Math.floor(this._dragArea.getY()) + 0.5;
             var w = Math.ceil(this._dragArea.getWidth()) - 1.0;
@@ -133,9 +127,7 @@
      * @private
      */
     GXZoomTool.prototype._mouseDragStart = function (event) {
-        if (this._zoomMode != 0) {
-            this._dragCanceled = false;
-        }
+        // NO-OP
     };
 
     /**
@@ -143,7 +135,7 @@
      * @private
      */
     GXZoomTool.prototype._mouseDrag = function (event) {
-        if (this._zoomMode != 0 && !this._dragCanceled) {
+        if (this._zoomMode != 0) {
             if (this._hasDragArea()) {
                 this.invalidateArea(this._dragArea);
             }
@@ -161,7 +153,7 @@
      * @private
      */
     GXZoomTool.prototype._mouseDragEnd = function (event) {
-        if (this._zoomMode != 0 && !this._dragCanceled) {
+        if (this._zoomMode != 0) {
             if (this._dragArea && !this._dragArea.isEmpty()) {
                 // No need for additional invalidation as we're about to zoom which invalidates everything anyway
                 var zoomRect = this._view.getViewTransform().mapRect(this._dragArea);
