@@ -2,23 +2,18 @@
     /**
      * A layer within a scene view
      * @param {GXPaintConfiguration} configuration
-     * @param {GXSceneView} view
      * @class GXSceneViewLayer
      * @extends GUIWidget
      * @constructor
      */
-    function GXSceneViewLayer(configuration, view) {
-        this._view = view;
+    function GXSceneViewLayer(configuration) {
         this._canvas = new GXSceneViewCanvas();
         this._paintContext = new GXPaintContext();
         this._paintContext.configuration = configuration ? configuration : new GXPaintConfiguration();
         this._paintContext.canvas = this._canvas;
         this._dirtyList = new GXDirtyList();
         // call widget constructor now
-        GUIWidget.apply(this, Array.prototype.splice.call(arguments, 2));
-
-        // setup a default size
-        this.resize(300, 300);
+        GUIWidget.apply(this, Array.prototype.splice.call(arguments, 1));
     }
 
     GObject.inherit(GXSceneViewLayer, GUIWidget);
@@ -68,7 +63,7 @@
             area = this._dirtyList.getArea();
         }
 
-        if (this._dirtyList.dirty(area.getX(), area.getY(), area.getWidth(), area.getHeight())) {
+        if (area && this._dirtyList.dirty(area.getX(), area.getY(), area.getWidth(), area.getHeight())) {
             // Request a repaint for the next frame
             if (this._repaintRequestFrameId == null) {
                 this._repaintRequestFrameId = gPlatform.scheduleFrame(this._repaint.bind(this));
@@ -113,16 +108,10 @@
      * Called to update the view area
      */
     GXSceneViewLayer.prototype.updateViewArea = function () {
-        var viewArea = this._view.getViewBox(false);
+        var viewArea = this._parent.getViewBox(true);
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
-
-            // Let each layer update it's view area
-            if (this._layers) {
-                for (var i = 0; i < this._layers.length; ++i) {
-                    this._layers[i].updateViewArea();
-                }
-            }
+            this.invalidate();
         }
     };
 

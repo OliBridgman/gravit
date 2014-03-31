@@ -63,10 +63,11 @@
     EXFitSelectionAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var editor = document ? document.getEditor() : null;
+        var selection = editor.getSelection();
         var selBBox = null;
 
-        for (var i = 0; i < editor.getSelection().length; ++i) {
-            var bbox = editor.getSelection[i].getPaintBBox();
+        for (var i = 0; i < selection.length; ++i) {
+            var bbox = selection[i].getPaintBBox();
             if (bbox && !bbox.isEmpty()) {
                 selBBox = selBBox ? selBBox.united(bbox) : bbox;
             }

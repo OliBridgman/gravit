@@ -3,13 +3,12 @@
      * GXSceneView is a widget to render a scene
      * @param {GXScene} [scene] the scene this view is bound too, defaults to null
      * @class GXSceneView
-     * @extends GUIPanel
+     * @extends GUIWidget
      * @constructor
-     * @version 1.0
      */
     function GXSceneView(scene) {
         this._updateViewTransforms();
-        GUIPanel.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
+        GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
         this._viewOffset = [0, 0, 0, 0];
         this._viewMargin = [0, 0, 0, 0];
@@ -28,7 +27,7 @@
         }
     }
 
-    GObject.inherit(GXSceneView, GUIPanel);
+    GObject.inherit(GXSceneView, GUIWidget);
 
     /**
      * Global view options
@@ -146,7 +145,16 @@
 
     /** @override */
     GXSceneView.prototype.resize = function (width, height) {
-        GUIPanel.prototype.resize.call(this, width, height);
+        GUIWidget.prototype.resize.call(this, width, height);
+
+        // Resize layers if any
+        if (this._layers) {
+            for (var i = 0; i < this._layers.length; ++i) {
+                this._layers[i].resize(this.getWidth(), this.getHeight());
+            }
+        }
+
+        // Resize pixel content canvas if any
         if (this._pixelContentCanvas) {
             this._pixelContentCanvas.resize(width, height);
         }
@@ -208,7 +216,13 @@
         if (offset && offset.length > 0) {
             for (var i = 0; i < Math.min(4, offset.length); ++i) {
                 this._viewOffset[i] = offset[i];
-                this.invalidate();
+            }
+
+            // Let each layer update it's view area
+            if (this._layers) {
+                for (var i = 0; i < this._layers.length; ++i) {
+                    this._layers[i].updateViewArea();
+                }
             }
         }
     };
@@ -470,15 +484,18 @@
             }
         }
 
-        var layer = new GXSceneViewLayer(configuration, this);
+        var layer = new GXSceneViewLayer(configuration);
+        layer._setParent(this);
+        layer.move(0, 0);
+        layer.resize(this.getWidth(), this.getHeight());
 
         if (index >= this._layers.length) {
             this._layers.push(layer);
+            this._htmlElement.appendChild(layer._htmlElement);
         } else {
+            this._htmlElement.insertBefore(layer._htmlElement, this._layers[index]._htmlElement);
             this._layers.splice(index, 0, layer);
         }
-
-        this.addWidget(layer, GUIPanel.Align.CLIENT, true);
 
         this._layerMap[layerType] = layer
 

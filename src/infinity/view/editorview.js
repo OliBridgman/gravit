@@ -67,10 +67,10 @@
         Editor: 100,
 
         /**
-         * The grid layer for painting grid(s)
+         * The guides layer for painting guide(s)
          * @type {Number}
          */
-        Grid: 101,
+        Guides: 101,
 
         /**
          * The tool layer for painting tools
