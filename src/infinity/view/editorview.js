@@ -10,23 +10,10 @@
     function GXEditorView(editor) {
         var args = Array.prototype.slice.call(arguments);
         args[0] = editor.getScene();
-        GXView.apply(this, args);
-
         this._editor = editor;
-        this._editor.addEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
+        this._viewConfiguration = new GXEditorPaintConfiguration(); // !!overwrite
 
-        this._editorConfiguration = new GXEditorPaintConfiguration();
-
-        // Add our editor layer
-        this.addLayer(GXEditorView.Layer.Editor, this._editorConfiguration)
-            .paint = this._paintEditorLayer.bind(this);
-
-        // Add our guides layer
-        this.addLayer(GXEditorView.Layer.Guides, null)
-            .paint = this._paintGuidesLayer.bind(this);
-
-        // Add our tool layer
-        this.addLayer(GXEditorView.Layer.Tool, null);
+        GXView.apply(this, args);
 
         // Register drop events on our view
         $(this._htmlElement)
@@ -54,41 +41,16 @@
     GObject.inherit(GXEditorView, GXView);
 
     /**
-     * Enumeration of known layers within an editor view.
-     * @enum
-     * @version 1.0
-     */
-    GXEditorView.Layer = {
-        /**
-         * The editor layer for painting editors
-         * @type {Number}
-         */
-        Editor: 100,
-
-        /**
-         * The guides layer for painting guide(s)
-         * @type {Number}
-         */
-        Guides: 101,
-
-        /**
-         * The tool layer for painting tools
-         * @type {Number}
-         */
-        Tool: 103
-    };
-
-    /**
-     * @type {GXEditorPaintConfiguration}
-     * @private
-     */
-    GXEditorView.prototype._editorConfiguration = null;
-
-    /**
      * @type {GXEditor}
      * @private
      */
     GXEditorView.prototype._editor = null;
+
+    /**
+     * @type {GXToolLayer}
+     * @private
+     */
+    GXEditorView.prototype._toolLayer = null;
 
     /**
      * Return the editor this view is rendering
@@ -99,50 +61,19 @@
     };
 
     /**
-     * Event listener for editor's repaintRequest
-     * @param {GXEditor.InvalidationRequestEvent} event the invalidation request event
-     * @private
+     * Return the editor's tool layer
+     * @returns {GXToolLayer}
      */
-    GXEditorView.prototype._editorInvalidationRequest = function (event) {
-        if (event.editor) {
-            var area = event.editor.invalidate(this._worldToViewTransform, event.args);
-            if (area) {
-                this._layerMap[GXEditorView.Layer.Editor].invalidate(area);
-            }
-        }
+    GXEditorView.prototype.getToolLayer = function () {
+        return this._toolLayer;
     };
 
-    /**
-     * Paint the editor layer
-     * @param {GXPaintContext} context
-     * @private
-     */
-    GXEditorView.prototype._paintEditorLayer = function (context) {
-        var sceneEditor = GXElementEditor.getEditor(this.getScene());
-        if (sceneEditor) {
-            sceneEditor.paint(this.getWorldTransform(), context);
-        }
-    };
-
-    /**
-     * Paint the grid layer
-     * @param {GXPaintContext} context
-     * @private
-     */
-    GXEditorView.prototype._paintGuidesLayer = function (context) {
-        // Paint grid
-        if (this._scene.getProperty('gridActive')) {
-            var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
-            var szx = this._scene.getProperty('gridSizeX');
-            var szy = this._scene.getProperty('gridSizeY');
-            var vbox = this.getViewBox(true);
-            for (var x = vbox.getX(); x - vbox.getX() < vbox.getWidth(); x += szx) {
-                context.canvas.fillRect(x, vbox.getY(), 1, vbox.getHeight(), cl);
-            }
-            for (var y = vbox.getY(); y - vbox.getY() < vbox.getHeight(); y += szy) {
-                context.canvas.fillRect(vbox.getX(), y, vbox.getWidth(), 1, cl);
-            }
-        }
+    /** @override */
+    GXEditorView.prototype._initLayers = function () {
+        this._addLayer(new GXSceneLayer(this));
+        this._addLayer(new GXGridLayer(this));
+        this._addLayer(new GXEditorLayer(this));
+        this._toolLayer = this._addLayer(new GXToolLayer(this));
     };
 
     /**
@@ -231,17 +162,6 @@
                     }
                 }
             }
-        }
-    };
-
-    /** @override */
-    GXEditorView.prototype._sceneAfterPropertiesChanged = function (event) {
-        GXView.prototype._sceneAfterPropertiesChanged.call(this, event);
-
-        if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
-            event.properties.indexOf('gridActive') >= 0) {
-            // Invalidate our guids layer
-            this._layerMap[GXEditorView.Layer.Guides].invalidate();
         }
     };
 

@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * A layer within a scene view
-     * @param {GXPaintConfiguration} configuration
      * @param {GXView} view
      * @class GXViewLayer
      * @constructor
      */
-    function GXViewLayer(configuration, view) {
+    function GXViewLayer(view) {
         this._view = view;
         this._canvas = new GXViewCanvas();
         this._paintContext = new GXPaintContext();
-        this._paintContext.configuration = configuration ? configuration : new GXPaintConfiguration();
+        this._paintContext.configuration = view.getViewConfiguration() ?
+            view.getViewConfiguration() : new GXPaintConfiguration();
         this._paintContext.canvas = this._canvas;
         this._dirtyList = new GXDirtyList();
     }
@@ -83,7 +83,11 @@
         // NO-OP by default
     };
 
-    /** override */
+    /**
+     * Called to resize this layer
+     * @param {Number} width
+     * @param {Number} height
+     */
     GXViewLayer.prototype.resize = function (width, height) {
         this._canvas.resize(width, height);
         this.updateViewArea();

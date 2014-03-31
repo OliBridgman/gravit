@@ -3,12 +3,12 @@
      * A paint configuration for editor painting
      * @class GXEditorPaintConfiguration
      * @constructor
-     * @extends GXPaintConfiguration
+     * @extends GXScenePaintConfiguration
      */
     function GXEditorPaintConfiguration() {
     }
 
-    GObject.inherit(GXEditorPaintConfiguration, GXPaintConfiguration);
+    GObject.inherit(GXEditorPaintConfiguration, GXScenePaintConfiguration);
 
     /** @override */
     GXEditorPaintConfiguration.prototype.toString = function () {

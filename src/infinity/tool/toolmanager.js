@@ -215,7 +215,7 @@
 
             this._view = view;
 
-            this._viewLayer = view && view.getLayer(GXEditorView.Layer.Tool);
+            this._viewLayer = view ? view.getToolLayer() : null;
 
             if (this._view) {
                 // Add active tool

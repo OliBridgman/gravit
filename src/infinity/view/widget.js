@@ -780,6 +780,7 @@
      */
     GUIWidget.prototype._createHTMLElement = function () {
         var result = document.createElement("div");
+        result.setAttribute('tabindex', '0');
         return result;
     };
 

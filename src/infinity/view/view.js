@@ -10,22 +10,18 @@
         this._updateViewTransforms();
         GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
+        this._scene = scene;
+
         this._viewOffset = [0, 0, 0, 0];
         this._viewMargin = [0, 0, 0, 0];
 
-        this._layerMap = {};
-
         // TODO : Move all transformation / view stuff into viewConfiguration!!
-        this._viewConfiguration = new GXScenePaintConfiguration();
+        if (!this._viewConfiguration) {
+            this._viewConfiguration = new GXScenePaintConfiguration();
+        }
 
-        // Add our content layer
-        this.addLayer(GXView.Layer.Content, this._viewConfiguration)
-            .paint = this._paintContentLayer.bind(this);
-
-        this._scene = scene;
-
-        this._scene.addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
-        this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+        // Initialize our layers
+        this._initLayers();
     }
 
     GObject.inherit(GXView, GUIWidget);
@@ -52,35 +48,10 @@
     };
 
     /**
-     * Enumeration of known layers within a a view.
-     * @enum
-     */
-    GXView.Layer = {
-        /**
-         * The content layer
-         * @type {Number}
-         * @version 1.0
-         */
-        Content: 0
-    };
-
-    /**
      * @type {GXScene}
      * @private
      */
     GXView.prototype._scene = null;
-
-    /**
-     * @type {{}}
-     * @private
-     */
-    GXView.prototype._layerMap = null;
-
-    /**
-     * @type {GXViewCanvas}
-     * @private
-     */
-    GXView.prototype._pixelContentCanvas = null;
 
     /**
      * An array of layers
@@ -153,11 +124,6 @@
             for (var i = 0; i < this._layers.length; ++i) {
                 this._layers[i].resize(this.getWidth(), this.getHeight());
             }
-        }
-
-        // Resize pixel content canvas if any
-        if (this._pixelContentCanvas) {
-            this._pixelContentCanvas.resize(width, height);
         }
     };
 
@@ -308,7 +274,7 @@
      * @version 1.0
      */
     GXView.prototype.zoomAtCenter = function (center, zoom) {
-        zoom = zoom || this._zoom;
+        zoom = zoom || this._zoom;
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
         var normalizedZoom = Math.min(GXView.options.maxZoomFactor, Math.max(zoom, GXView.options.minZoomFactor));
@@ -397,78 +363,26 @@
         return result;
     };
 
-    /** @override */
-    /*
-    GXView.prototype.focus = function () {
-        // Try to focus the first available layer of the view
-        for (var i = this._layers.length - 1; i >= 0; --i) {
-            if (this._layers[i].focus()) {
-                return true;
-            }
-        }
-        return false;
-    };
-    */
-
     /**
-     * Get the layer for a specific type
-     * @param {Number} layerType The type of the layer
-     * @return {GXViewLayer}
+     * Add an internal layer
+     * @param {GXViewLayer} layer
+     * @returns {GXViewLayer} the provided layer
+     * @private
      */
-    GXView.prototype.getLayer = function (layerType) {
-        return this._layerMap.hasOwnProperty(layerType) ? this._layerMap[layerType] : null;
-    };
-
-    /**
-     * Add a new layer to this scene view
-     * @param {Number} layerType The type of the layer. This will also
-     * define the insertion position of the layer.
-     * @param {GXPaintConfiguration} [configuration] optional paint
-     * configuration for the layer
-     * @return {GXViewLayer}
-     */
-    GXView.prototype.addLayer = function (layerType, configuration) {
-        if (this._layerMap.hasOwnProperty(layerType)) {
-            throw new Error('Layer already added.');
-        }
-
+    GXView.prototype._addLayer = function (layer) {
         if (this._layers == null) {
             this._layers = [];
         }
 
-        // find the closest insertion index
-        var index = layerType;
-        for (var lt in this._layerMap) {
-            if (lt > layerType) {
-                index = this._layers.indexOf(this._layerMap[lt]);
-                break;
-            }
-        }
+        this._layers.push(layer);
 
-        var layer = new GXViewLayer(configuration, this);
         var layerElement = layer._canvas._canvasContext.canvas;
         layerElement.style.position = 'absolute';
         layerElement.style.cursor = 'inherit';
         layer.resize(this.getWidth(), this.getHeight());
-
-        if (index >= this._layers.length) {
-            this._layers.push(layer);
-            this._htmlElement.appendChild(layerElement);
-        } else {
-            this._htmlElement.insertBefore(layerElement, this._layers[index]._canvas._canvasContext.canvas);
-            this._layers.splice(index, 0, layer);
-        }
-
-        this._layerMap[layerType] = layer
+        this._htmlElement.appendChild(layerElement);
 
         return layer;
-    };
-
-    /** @override */
-    GXView.prototype._createHTMLElement = function () {
-        var result = GUIWidget.prototype._createHTMLElement.call(this);
-        result.setAttribute('tabindex', '0');
-        return result;
     };
 
     /**
@@ -489,94 +403,11 @@
     };
 
     /**
-     * Event listener for scene's repaintRequest
-     * @param {GXScene.InvalidationRequestEvent} event the invalidation request event
+     * Called to init/add all layers
      * @private
      */
-    GXView.prototype._sceneInvalidationRequest = function (event) {
-        var area = event.area;
-        if (area) {
-            // Ensure to map the scene area into view coordinates, first
-            // TODO : How to handle view margins!?
-            area = this._worldToViewTransform.mapRect(area);
-        }
-
-        // Invalidate our content layer
-        this._layerMap[GXView.Layer.Content].invalidate(area);
-    };
-
-    /**
-     * Event listener for scene's property changes
-     * @param {GXNode.AfterPropertiesChangeEvent} event
-     * @private
-     */
-    GXView.prototype._sceneAfterPropertiesChanged = function (event) {
-        // NO-OP
-    };
-
-    /**
-     * Called when a known layer-type should be painted
-     * @param {GXPaintContext} context
-     * @private
-     */
-    GXView.prototype._paintContentLayer = function (context) {
-        if (this._scene) {
-            // Before any painting we need to convert our dirty matcher's
-            // dirty regions back into scene coordinates in any case
-            if (context.dirtyMatcher) {
-                context.dirtyMatcher.transform(this._viewToWorldTransform);
-            }
-
-            // Fill Canvas with pasteboard color in either single page mode or output paint mode
-            //if (this._viewConfiguration.paintMode === GXScenePaintConfiguration.PaintMode.Output || targetPage) {
-            //    context.canvas.fillRect(0, 0, context.canvas.getWidth(), context.canvas.getHeight(), this._viewConfiguration.pasteboardColor);
-            //}
-
-            // Paint either target page and/or pageSet before anything else
-            //var oldCanvasTransform = context.canvas.setTransform(this._worldToViewTransform);
-            //this._scene.getPageSet().paint(context);
-            //context.canvas.setTransform(oldCanvasTransform);
-
-            // Handle rendering in pixel mode but only if we're not at 100%
-            if (this._isPixelMode()) {
-                // Create and size our pixel content canvas
-                if (!this._pixelContentCanvas) {
-                    this._pixelContentCanvas = new GXViewCanvas();
-                    this._pixelContentCanvas.resize(context.canvas.getWidth(), context.canvas.getHeight());
-                }
-
-                // Pixel content canvas always renders at scale = 100%
-                this._pixelContentCanvas.prepare(context.dirtyMatcher ? context.dirtyMatcher.getDirtyRectangles() : null);
-                this._pixelContentCanvas.setTransform(new GTransform());
-
-                // Save source canvas, exchange it with pixel content canvas and paint the scene
-                var sourceCanvas = context.canvas;
-                context.canvas = this._pixelContentCanvas;
-                this._scene.paint(context);//, targetPage);
-                this._pixelContentCanvas.finish();
-
-                // Now render our pixel content canvas at the given scale on our source canvas
-                sourceCanvas.setTransform(this._worldToViewTransform);
-                sourceCanvas.drawImage(this._pixelContentCanvas, 0, 0, true);
-
-                // Finally reset our source canvas
-                context.canvas = sourceCanvas;
-            } else {
-                // Render regular vectors
-                this._pixelContentCanvas = null;
-                context.canvas.setTransform(this._worldToViewTransform);
-                this._scene.paint(context);//, targetPage);
-            }
-        }
-    };
-
-    /**
-     * Returns whether we're rendering in pixel mode or not
-     * @returns {Boolean}
-     * @private
-     */
-    GXView.prototype._isPixelMode = function () {
-        return this._viewConfiguration.pixelMode && !gMath.isEqualEps(this._zoom, 1.0);
+    GXView.prototype._initLayers = function () {
+        this._addLayer(new GXSceneLayer(this));
     };
 
     /** @override */
