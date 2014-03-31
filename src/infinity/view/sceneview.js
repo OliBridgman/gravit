@@ -296,22 +296,6 @@
         );
     };
 
-    /*
-    GXSceneView.prototype.getViewCenter = function () {
-        var cx = this.getWidth() + (this._viewOffset[0] + this._viewMargin[0]) - (this._viewOffset[2] + this._viewMargin[2]);
-        var cy = this.getHeight() + (this._viewOffset[1] + this._viewMargin[1]) - (this._viewOffset[3] + this._viewMargin[3]);
-        return new GPoint(cx / 2.0, cy / 2.0);
-    };
-
-    GXSceneView.prototype.getViewHeight = function () {
-        return this.getHeight() - this._viewMargin[1] - this._viewMargin[3];
-    };
-
-    GXSceneView.prototype.getViewWidth = function () {
-        return this.getWidth() - this._viewMargin[0] - this._viewMargin[2];
-    };
-    */
-
     /**
      * Transform the current view
      * @param {Number} scrollX the horizontal scrolling
@@ -486,7 +470,7 @@
             }
         }
 
-        var layer = new GXSceneViewLayer(configuration);
+        var layer = new GXSceneViewLayer(configuration, this);
 
         if (index >= this._layers.length) {
             this._layers.push(layer);

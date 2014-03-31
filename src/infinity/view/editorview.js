@@ -22,9 +22,9 @@
         this.addLayer(GXEditorView.Layer.Editor, this._editorConfiguration)
             .paint = this._paintEditorLayer.bind(this);
 
-        // Add our grid layer
-        this.addLayer(GXEditorView.Layer.Grid, null)
-            .paint = this._paintGridLayer.bind(this);
+        // Add our guides layer
+        this.addLayer(GXEditorView.Layer.Guides, null)
+            .paint = this._paintGuidesLayer.bind(this);
 
         // Add our tool layer
         this.addLayer(GXEditorView.Layer.Tool, null);
@@ -150,7 +150,8 @@
      * @param {GXPaintContext} context
      * @private
      */
-    GXEditorView.prototype._paintGridLayer = function (context) {
+    GXEditorView.prototype._paintGuidesLayer = function (context) {
+        // Paint grid
         if (this._scene.getProperty('gridActive')) {
             var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
             var szx = this._scene.getProperty('gridSizeX');

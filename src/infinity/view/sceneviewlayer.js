@@ -2,25 +2,32 @@
     /**
      * A layer within a scene view
      * @param {GXPaintConfiguration} configuration
+     * @param {GXSceneView} view
      * @class GXSceneViewLayer
      * @extends GUIWidget
      * @constructor
      */
-    function GXSceneViewLayer(configuration) {
-        // create our internal stuff before anything else
+    function GXSceneViewLayer(configuration, view) {
+        this._view = view;
         this._canvas = new GXSceneViewCanvas();
         this._paintContext = new GXPaintContext();
         this._paintContext.configuration = configuration ? configuration : new GXPaintConfiguration();
         this._paintContext.canvas = this._canvas;
         this._dirtyList = new GXDirtyList();
         // call widget constructor now
-        GUIWidget.apply(this, Array.prototype.splice.call(arguments, 1));
+        GUIWidget.apply(this, Array.prototype.splice.call(arguments, 2));
 
         // setup a default size
         this.resize(300, 300);
     }
 
     GObject.inherit(GXSceneViewLayer, GUIWidget);
+
+    /**
+     * @type {GXSceneView}
+     * @private
+     */
+    GXSceneViewLayer.prototype._view = null;
 
     /**
      * @type {GXPaintCanvas}
@@ -89,7 +96,7 @@
         if (width != this.getWidth() || height != this.getHeight()) {
             GUIWidget.prototype.resize.call(this, width, height);
             this._canvas.resize(width, height);
-            this._updateViewArea();
+            this.updateViewArea();
         }
     };
 
@@ -105,11 +112,17 @@
     /**
      * Called to update the view area
      */
-    GXSceneViewLayer.prototype._updateViewArea = function () {
-        var viewArea = new GRect(200, 0, this.getWidth() - 200, this.getHeight());
+    GXSceneViewLayer.prototype.updateViewArea = function () {
+        var viewArea = this._view.getViewBox(false);
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
-            this.invalidate();
+
+            // Let each layer update it's view area
+            if (this._layers) {
+                for (var i = 0; i < this._layers.length; ++i) {
+                    this._layers[i].updateViewArea();
+                }
+            }
         }
     };
 
