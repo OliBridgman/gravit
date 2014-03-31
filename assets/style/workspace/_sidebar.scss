@@ -7,8 +7,6 @@
   border-left: 1px solid $frame3DLightColor;
   border-right: 1px solid $frameBorderColor;
   background: $frameColor;
-  // TODO : REMOVE THIS WHEN WORKING
-  opacity: 0;
 
   &, *:not(.fa) {
     font: $smallFont;
