@@ -391,53 +391,6 @@
     GXToolManager.prototype._modifiersChanged = function (event) {
         // Update temporary tool
         this._updateTemporaryTool();
-        /*
-
-         if (event.changed.spaceKey && this.hasTool(GXPointerTool)) {
-         this.activateTool(GXHandTool);
-         }
-
-         // React on certain modifiers key changes for temporary tool switching
-         if (event.changed.metaKey && this.hasTool(GXPointerTool)) {
-         // Meta-Key switches to Pointer Tool and back
-         if (!gPlatform.modifiers.metaKey) {
-         // Releasing meta key must check to re-activate a previous tool if any
-         if (this._temporaryActiveTool) {
-         this.activateTool(this._temporaryActiveTool);
-         this._temporaryActiveTool = null;
-         }
-         } else if (!this._activeTool || !(this._activeTool instanceof GXPointerTool)) {
-         var oldTool = this._activeTool;
-
-         // Ensure to either activate pointer or subselect tool
-         if (gPlatform.modifiers.optionKey && this.hasTool(GXSubSelectTool)) {
-         if (this.activateTool(GXSubSelectTool)) {
-         this._temporaryActiveTool = oldTool;
-         this._temporarySubselect = true;
-         }
-         } else {
-         if (this.activateTool(GXPointerTool)) {
-         this._temporaryActiveTool = oldTool;
-         }
-         }
-         }
-         }
-
-         if (event.changed.optionKey && this.hasTool(GXPointerTool) && this.hasTool(GXSubSelectTool)) {
-         // Option key switches between Pointer-Tool and Subselect-Tool
-         if (!gPlatform.modifiers.optionKey) {
-         // Releasing option key must check to re-activate pointer tool
-         if (this._temporarySubselect && this._activeTool instanceof GXSubSelectTool) {
-         this.activateTool(GXPointerTool);
-         }
-         this._temporarySubselect = false;
-         } else if (this._activeTool && this._activeTool instanceof GXPointerTool) {
-         if (this.activateTool(GXSubSelectTool)) {
-         this._temporarySubselect = true;
-         }
-         }
-         }
-         */
     };
 
     /** override */
