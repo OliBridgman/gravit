@@ -1327,7 +1327,7 @@
 
         var ehlDst = null;
         var phrDst = null;
-        if (endPt.$hlx != null && endPt.$hly != nulll) {
+        if (endPt.$hlx != null && endPt.$hly != null) {
             ehlDst = gMath.sqrSegmentDist(endPt.$x, endPt.$y, prevPt.$x, prevPt.$y, endPt.$hlx, endPt.$hly);
         }
         if (prevPt.$hrx != null && prevPt.$hry != null) {

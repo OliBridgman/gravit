@@ -91,6 +91,8 @@
                     }
                 }
             }
+        } else {
+            GXSelectTool.prototype._mouseDragStart.call(this, event);
         }
     };
 

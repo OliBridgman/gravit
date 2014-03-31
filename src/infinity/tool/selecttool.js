@@ -326,7 +326,9 @@
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
-            this._editor.getTransformBox().hide();
+            if (this._editor.getTransformBox()) {
+                this._editor.getTransformBox().hide();
+            }
             this.invalidateArea();
         }
     };
@@ -336,7 +338,7 @@
      * @private
      */
     GXSelectTool.prototype._mouseDrag = function (event) {
-        if (this._mode == GXSelectTool._Mode.Moving) {
+        if (this._mode == GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming) {
             // Save current
             this._moveCurrent = event.client;
 
@@ -352,18 +354,6 @@
             if (this._hasSelectArea()) {
                 this.invalidateArea(this._selectArea);
             }
-        } else if (this._mode == GXSelectTool._Mode.Transforming) {
-            // Save current
-            this._moveCurrent = event.client;
-
-            var transform = this._editor.getTransformBox().calculateTransform(this._editorMovePartInfo,
-                this._moveStart, this._moveCurrent, this._editor.getGuides(),
-                this._view.getViewTransform(), this._view.getWorldTransform(),
-                gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
-
-            this._editor.getTransformBox().setTransform(transform);
-            this._editor.transformSelection(transform, null, null);
-            this.invalidateArea();
         }
     };
 
@@ -418,7 +408,13 @@
                 this._selectArea = null;
             }
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
-            this._editor.applySelectionTransform();
+            if (gPlatform.modifiers.optionKey &&
+                    !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
+
+                this._editor.applySelectionTransform(true);
+            } else {
+                this._editor.applySelectionTransform();
+            }
             this.invalidateArea();
         }
     };
@@ -507,7 +503,9 @@
      * @private
      */
     GXSelectTool.prototype._modifiersChanged = function (event) {
-        if ((event.changed.shiftKey || event.changed.optionKey) && this._mode === GXSelectTool._Mode.Moving) {
+        if ((event.changed.shiftKey || event.changed.optionKey) &&
+                (this._mode === GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming)) {
+
             this._updateSelectionTransform();
         }
     };
@@ -516,23 +514,36 @@
      * @private
      */
     GXSelectTool.prototype._updateSelectionTransform = function () {
-        var position = this._editor.getGuides().mapPoint(this._moveCurrent);
-        if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-            this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
-                position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey, gPlatform.modifiers.optionKey);
-        } else {
-            if (gPlatform.modifiers.shiftKey) {
-                // Calculate move delta by locking our vector to 45° steps starting with constraint
-                var crConstraint = this._scene.getProperty('crConstraint');
-                position = gMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
-                    position.getX(), position.getY(), crConstraint);
+        if (this._mode == GXSelectTool._Mode.Moving) {
+            var position = this._editor.getGuides().mapPoint(this._moveCurrent);
+            if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
+                this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
+                    position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey, gPlatform.modifiers.optionKey);
+            } else {
+                if (gPlatform.modifiers.shiftKey) {
+                    // Calculate move delta by locking our vector to 45° steps starting with constraint
+                    var crConstraint = this._scene.getProperty('crConstraint');
+                    position = gMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
+                        position.getX(), position.getY(), crConstraint);
+                }
+
+                position = this._view.getViewTransform().mapPoint(position);
+                var moveDelta = position.subtract(this._moveStartTransformed);
+
+                this._editor.moveSelection(moveDelta, true,
+                    this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
             }
+        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+            if (this._editor.getTransformBox() && this._moveStart) {
+                var transform = this._editor.getTransformBox().calculateTransform(this._editorMovePartInfo,
+                    this._moveStart, this._moveCurrent, this._editor.getGuides(),
+                    this._view.getViewTransform(), this._view.getWorldTransform(),
+                    gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
 
-            position = this._view.getViewTransform().mapPoint(position);
-            var moveDelta = position.subtract(this._moveStartTransformed);
-
-            this._editor.moveSelection(moveDelta, true,
-                this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
+                this._editor.getTransformBox().setTransform(transform);
+                this._editor.transformSelection(transform, null, null);
+            }
+            this.invalidateArea();
         }
     };
 

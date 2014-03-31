@@ -209,86 +209,124 @@
                 case GXTransformBox.Handles.TOP_LEFT:
                     width = this.$brx - this.$tlx - dx;
                     height = this.$bry - this.$tly - dy;
-                    var dxNew = dx;
-                    var dyNew = dy;
-                    //correctIfRatio();
-                    var tlxNew = this.$tlx + dxNew;
-                    var tlyNew = this.$tly + dyNew;
-                    // TODO: snap if needed
-                    transform1 = new GTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
-                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
+                    if (!option) {
+                        var tlxNew = this.$tlx + dx;
+                        var tlyNew = this.$tly + dy;
+                        // TODO: snap if needed
+                        transform1 = new GTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
+                        transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
+                    }
                     break;
                 case GXTransformBox.Handles.TOP_CENTER:
                     height = this.$bry - this.$tly - dy;
-                    var dyNew = dy;
-                    var tlyNew = this.$tly + dyNew;
-                    _correctNegative();
-                    var botCenter = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
-                    transform1 = new GTransform(1, 0, 0, 1, -botCenter.getX(), -botCenter.getY());
-                    transform3 = new GTransform(1, 0, 0, 1, botCenter.getX(), tlyNew + height);
+                    if (!option) {
+                        var tlyNew = this.$tly + dy;
+                        var botCenter = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                        transform1 = new GTransform(1, 0, 0, 1, -botCenter.getX(), -botCenter.getY());
+                        transform3 = new GTransform(1, 0, 0, 1, botCenter.getX(), tlyNew + height);
+                    }
                     break;
                 case GXTransformBox.Handles.TOP_RIGHT:
                     width = width + dx;
                     height = height - dy;
-                    var dxNew = 0;
-                    var dyNew = dy;
-                    //correctIfRatio();
-                    var tlxNew = this.$tlx + dxNew;
-                    var tlyNew = this.$tly + dyNew;
-                    // TODO: snap if needed
-                    transform1 = new GTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
-                    transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
+                    if (!option) {
+                        var tlxNew = this.$tlx;
+                        var tlyNew = this.$tly + dy;
+                        // TODO: snap if needed
+                        transform1 = new GTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
+                        transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
+                    }
                     break;
                 case GXTransformBox.Handles.RIGHT_CENTER:
                     width = width + dx;
-                    var tlxNew = this.$tlx;
-                    var leftCenter = new GPoint((this.$blx + this.$tlx) / 2, (this.$bly + this.$tly) / 2);
-                    transform1 = new GTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
-                    transform3 = new GTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
+                    if (!option) {
+                        var tlxNew = this.$tlx;
+                        var leftCenter = new GPoint((this.$blx + this.$tlx) / 2, (this.$bly + this.$tly) / 2);
+                        transform1 = new GTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
+                        transform3 = new GTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
+                    }
                     break;
                 case GXTransformBox.Handles.BOTTOM_RIGHT:
                     width = width + dx;
                     height = height + dy;
-                    var dxNew = 0;
-                    var dyNew = 0;
-                    //correctIfRatio();
-                    var tlxNew = this.$tlx + dxNew;
-                    var tlyNew = this.$tly + dyNew;
-                    // TODO: snap if needed
-                    transform1 = new GTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
-                    transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew);
+                    if (!option) {
+                        var tlxNew = this.$tlx;
+                        var tlyNew = this.$tly;
+                        // TODO: snap if needed
+                        transform1 = new GTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
+                        transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew);
+                    }
                     break;
                 case GXTransformBox.Handles.BOTTOM_CENTER:
                     height = height + dy;
-                    var tlyNew = this.$tly;
-                    var topCenter = new GPoint((this.$trx + this.$tlx) / 2, (this.$try + this.$tly) / 2);
-                    transform1 = new GTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
-                    transform3 = new GTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
+                    if (!option) {
+                        var tlyNew = this.$tly;
+                        var topCenter = new GPoint((this.$trx + this.$tlx) / 2, (this.$try + this.$tly) / 2);
+                        transform1 = new GTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
+                        transform3 = new GTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
+                    }
                     break;
                 case GXTransformBox.Handles.BOTTOM_LEFT:
                     width = width - dx;
                     height = height + dy;
-                    var dxNew = dx;
-                    var dyNew = 0;
-                    //correctIfRatio();
-                    var tlxNew = this.$tlx + dxNew;
-                    var tlyNew = this.$tly + dyNew;
-                    // TODO: snap if needed
-                    transform1 = new GTransform(1, 0, 0, 1, -this.$trx, -this.$try);
-                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
+                    if (!option) {
+                        var tlxNew = this.$tlx + dx;
+                        var tlyNew = this.$tly;
+                        // TODO: snap if needed
+                        transform1 = new GTransform(1, 0, 0, 1, -this.$trx, -this.$try);
+                        transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
+                    }
                     break;
                 case GXTransformBox.Handles.LEFT_CENTER:
                     width = width - dx;
-                    var dxNew = dx;
-                    var tlxNew = this.$tlx + dxNew;
-                    var rightCenter = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
-                    transform1 = new GTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
-                    transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());
+                    if (!option) {
+                        var dxNew = dx;
+                        var tlxNew = this.$tlx + dxNew;
+                        var rightCenter = new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                        transform1 = new GTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
+                        transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());
+                    }
                     break;
             }
 
             var scaleX = width / (this.$brx - this.$tlx);
             var scaleY = height / (this.$bry - this.$tly);
+            if (option) {
+                scaleX += scaleX - 1;
+                scaleY += scaleY - 1;
+                var cnt = new GPoint((this.$tlx + this.$brx) / 2, (this.$tly + this.$bry) / 2);
+                transform1 = new GTransform(1, 0, 0, 1, -cnt.getX(), -cnt.getY());
+                transform3 = new GTransform(1, 0, 0, 1, cnt.getX(), cnt.getY());
+            }
+            if (ratio){
+                switch (partInfo.id) {
+                    case GXTransformBox.Handles.TOP_CENTER:
+                    case GXTransformBox.Handles.BOTTOM_CENTER:
+                        // Make equal delta for center resize
+                        scaleX = Math.abs(scaleY);
+                        break;
+                    case GXTransformBox.Handles.LEFT_CENTER:
+                    case GXTransformBox.Handles.RIGHT_CENTER:
+                        // Make equal delta for center resize
+                        scaleY = Math.abs(scaleX);
+                        break;
+                    default:
+                        if (Math.abs(scaleX) > Math.abs(scaleY)) {
+                            if (gMath.isEqualEps(scaleY, 0)) {
+                                scaleY = scaleX;
+                            } else {
+                                scaleY = scaleY * Math.abs(scaleX) / Math.abs(scaleY);
+                            }
+                        } else {
+                            if (gMath.isEqualEps(scaleX, 0)) {
+                                scaleX = scaleY;
+                            } else {
+                                scaleX = scaleX * Math.abs(scaleY) / Math.abs(scaleX);
+                            }
+                        }
+                        break;
+                }
+            }
             var transform2 = new GTransform(scaleX, 0, 0, scaleY, 0, 0);
 
             return transform1.multiplied(transform2).multiplied(transform3);

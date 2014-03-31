@@ -191,7 +191,7 @@
                             this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
                         }
                     }
-                } else if (selectedPartId.type === GXPathEditor.PartType.Segment &&
+                } else if (selectedPartId.type === GXPathEditor.PartType.Segment && partId &&
                     this._partIdAreEqual(selectedPartId, partId) &&
                     partData.type == GXPathEditor.SegmentData.Handles) {
 
