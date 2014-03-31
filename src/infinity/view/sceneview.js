@@ -22,9 +22,10 @@
         this.addLayer(GXSceneView.Layer.Content, this._viewConfiguration)
             .paint = this._paintContentLayer.bind(this);
 
-        if (scene) {
-            this.setScene(scene);
-        }
+        this._scene = scene;
+
+        this._scene.addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+        this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
     }
 
     GObject.inherit(GXSceneView, GUIWidget);
@@ -166,30 +167,6 @@
      */
     GXSceneView.prototype.getScene = function () {
         return this._scene;
-    };
-
-    /**
-     * Assign the scene this view is rendering
-     * @param {GXScene} scene
-     */
-    GXSceneView.prototype.setScene = function (scene) {
-        if (scene != this._scene) {
-            if (this._scene) {
-                this._scene.removeEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest);
-                this._scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged);
-            }
-
-            this._scene = scene;
-
-            if (this._scene) {
-                this._scene.addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
-                this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
-            }
-
-            if (!this._updateViewTransforms()) {
-                this.invalidate();
-            }
-        }
     };
 
     /**
@@ -447,7 +424,6 @@
         }
         return false;
     };
-
 
     /**
      * Get the layer for a specific type

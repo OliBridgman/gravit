@@ -9,12 +9,11 @@
      */
     function GXEditorView(editor) {
         var args = Array.prototype.slice.call(arguments);
-        args[0] = null;
+        args[0] = editor.getScene();
         GXSceneView.apply(this, args);
 
-        if (editor) {
-            this.setEditor(editor);
-        }
+        this._editor = editor;
+        this._editor.addEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
 
         this._editorConfiguration = new GXEditorPaintConfiguration();
 
@@ -97,26 +96,6 @@
      */
     GXEditorView.prototype.getEditor = function () {
         return this._scene;
-    };
-
-    /**
-     * Assign the editor this view is rendering
-     * @param {GXEditor} editor
-     */
-    GXEditorView.prototype.setEditor = function (editor) {
-        if (editor != this._editor) {
-            if (this._editor) {
-                this._editor.removeEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest);
-            }
-
-            this._editor = editor;
-
-            if (this._editor) {
-                this._editor.addEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
-            }
-
-            this.setScene(this._editor.getScene());
-        }
     };
 
     /**
@@ -261,8 +240,8 @@
 
         if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
             event.properties.indexOf('gridActive') >= 0) {
-            // Invalidate our grid layer
-            this._layerMap[GXEditorView.Layer.Grid].invalidate();
+            // Invalidate our guids layer
+            this._layerMap[GXEditorView.Layer.Guides].invalidate();
         }
     };
 
