@@ -3,14 +3,14 @@
      * GXEditorView is a widget to render and edit a scene
      * @param {GXEditor} [editor] the editor this view is bound too, defaults to null
      * @class GXEditorView
-     * @extends GXSceneView
+     * @extends GXView
      * @constructor
      * @version 1.0
      */
     function GXEditorView(editor) {
         var args = Array.prototype.slice.call(arguments);
         args[0] = editor.getScene();
-        GXSceneView.apply(this, args);
+        GXView.apply(this, args);
 
         this._editor = editor;
         this._editor.addEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
@@ -51,7 +51,7 @@
             }.bind(this));
     }
 
-    GObject.inherit(GXEditorView, GXSceneView);
+    GObject.inherit(GXEditorView, GXView);
 
     /**
      * Enumeration of known layers within an editor view.
@@ -95,7 +95,7 @@
      * @returns {GXEditor}
      */
     GXEditorView.prototype.getEditor = function () {
-        return this._scene;
+        return this._editor;
     };
 
     /**
@@ -236,7 +236,7 @@
 
     /** @override */
     GXEditorView.prototype._sceneAfterPropertiesChanged = function (event) {
-        GXSceneView.prototype._sceneAfterPropertiesChanged.call(this, event);
+        GXView.prototype._sceneAfterPropertiesChanged.call(this, event);
 
         if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
             event.properties.indexOf('gridActive') >= 0) {

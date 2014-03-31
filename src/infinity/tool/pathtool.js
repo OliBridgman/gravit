@@ -163,12 +163,12 @@
     };
 
     /** @override */
-    GXPathTool.prototype.activate = function (view, layer) {
-        GXTool.prototype.activate.call(this, view, layer);
+    GXPathTool.prototype.activate = function (view) {
+        GXTool.prototype.activate.call(this, view);
 
-        layer.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
-        layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
-        layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
+        view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = GUICursor.PenStart;
@@ -177,7 +177,7 @@
     };
 
     /** @override */
-    GXPathTool.prototype.deactivate = function (view, layer) {
+    GXPathTool.prototype.deactivate = function (view) {
         if (this._newPoint || this._dpathRef) {
             this._pathEditor.requestInvalidation();
             this._pathEditor.releasePathPreview();
@@ -186,11 +186,11 @@
         this._finishTransaction();
         this._allowDeactivation();
         this._reset();
-        GXTool.prototype.deactivate.call(this, view, layer);
+        GXTool.prototype.deactivate.call(this, view);
 
-        layer.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
-        layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
-        layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
+        view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(GUIKeyEvent.Down, this._keyDown);
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 

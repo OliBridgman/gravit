@@ -36,17 +36,17 @@
     };
 
     /** @override */
-    GXPenTool.prototype.activate = function (view, layer) {
-        GXPathTool.prototype.activate.call(this, view, layer);
-        layer.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        layer.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+    GXPenTool.prototype.activate = function (view) {
+        GXPathTool.prototype.activate.call(this, view);
+        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
     };
 
     /** @override */
-    GXPenTool.prototype.deactivate = function (view, layer) {
-        GXPathTool.prototype.deactivate.call(this, view, layer);
-        layer.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        layer.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
+    GXPenTool.prototype.deactivate = function (view) {
+        GXPathTool.prototype.deactivate.call(this, view);
+        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
     };
 
     /**

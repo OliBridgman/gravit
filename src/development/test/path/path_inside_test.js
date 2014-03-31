@@ -14,11 +14,11 @@
         var height = 400;
 
         function VertexWidget(container, vertexSource) {
-            GXSceneViewLayer.call(this, null, container);
+            GXViewLayer.call(this, null, container);
             this._vertexSource = vertexSource;
         }
 
-        GObject.inherit(VertexWidget, GXSceneViewLayer);
+        GObject.inherit(VertexWidget, GXViewLayer);
 
         /** override */
         VertexWidget.prototype.paint = function (context) {
@@ -413,7 +413,7 @@
 
             var widget = new VertexWidget(container, vertexSource);
             widget.resize(width, height);
-            //container.canvas = new GXSceneViewCanvas();
+            //container.canvas = new GXViewCanvas();
             //widget.paint(container);
             //context.canvas.putVertices(vertexSource);
             //GXLayerBase.prototype._finishPaint.call(page.layer, vertexSource);

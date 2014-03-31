@@ -80,27 +80,27 @@
     };
 
     /** @override */
-    GXZoomTool.prototype.activate = function (view, layer) {
-        GXTool.prototype.activate.call(this, view, layer);
+    GXZoomTool.prototype.activate = function (view) {
+        GXTool.prototype.activate.call(this, view);
 
         this._updateMode();
 
-        layer.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        layer.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        layer.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
-        layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
 
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
-    GXZoomTool.prototype.deactivate = function (view, layer) {
-        GXTool.prototype.deactivate.call(this, view, layer);
+    GXZoomTool.prototype.deactivate = function (view) {
+        GXTool.prototype.deactivate.call(this, view);
 
-        layer.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        layer.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        layer.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
-        layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
 
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
@@ -174,7 +174,7 @@
             var newZoom = null;
             switch (this._zoomMode) {
                 case -2:
-                    newZoom = GXSceneView.options.minZoomFactor;
+                    newZoom = GXView.options.minZoomFactor;
                     break;
                 case -1:
                     newZoom = this._view.getZoom() / GXZoomTool.options.zoomStep;
@@ -183,7 +183,7 @@
                     newZoom = this._view.getZoom() * GXZoomTool.options.zoomStep;
                     break;
                 case +2:
-                    newZoom = GXSceneView.options.maxZoomFactor;
+                    newZoom = GXView.options.maxZoomFactor;
                     break;
                 default:
                     break;
@@ -220,9 +220,9 @@
         }
 
         // Normalize zoom mode
-        if (newMode < 0 && this._view.getZoom() <= GXSceneView.options.minZoomFactor) {
+        if (newMode < 0 && this._view.getZoom() <= GXView.options.minZoomFactor) {
             newMode = 0;
-        } else if (newMode > 0 && this._view.getZoom() >= GXSceneView.options.maxZoomFactor) {
+        } else if (newMode > 0 && this._view.getZoom() >= GXView.options.maxZoomFactor) {
             newMode = 0;
         }
 

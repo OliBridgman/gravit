@@ -56,21 +56,21 @@
     };
 
     /** @override */
-    GXHandTool.prototype.activate = function (view, layer) {
-        GXTool.prototype.activate.call(this, view, layer);
+    GXHandTool.prototype.activate = function (view) {
+        GXTool.prototype.activate.call(this, view);
 
-        layer.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        layer.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        layer.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
     };
 
     /** @override */
-    GXHandTool.prototype.deactivate = function (view, layer) {
-        GXTool.prototype.deactivate.call(this, view, layer);
+    GXHandTool.prototype.deactivate = function (view) {
+        GXTool.prototype.deactivate.call(this, view);
 
-        layer.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        layer.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        layer.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
     };
 
     /** @override */

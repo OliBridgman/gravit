@@ -46,19 +46,19 @@
     };
 
     /** @override */
-    GXSubSelectTool.prototype.activate = function (view, layer) {
-        GXSelectTool.prototype.activate.call(this, view, layer);
+    GXSubSelectTool.prototype.activate = function (view) {
+        GXSelectTool.prototype.activate.call(this, view);
 
         // Set detail mode for selection for sub-select tool
         this._editor.setSelectionDetail(true);
     };
 
     /** @override */
-    GXSubSelectTool.prototype.deactivate = function (view, layer) {
+    GXSubSelectTool.prototype.deactivate = function (view) {
         // Remove detail mode for selection for sub-select tool
         this._editor.setSelectionDetail(false);
 
-        GXSelectTool.prototype.deactivate.call(this, view, layer);
+        GXSelectTool.prototype.deactivate.call(this, view);
     };
 
     /** @override */

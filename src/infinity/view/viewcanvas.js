@@ -1,31 +1,31 @@
 (function (_) {
     /**
      * Canvas implementation based on HTML5-Canvas implementation
-     * @class GXSceneViewCanvas
+     * @class GXViewCanvas
      * @extends GXPaintCanvas
      * @constructor
      */
-    function GXSceneViewCanvas() {
+    function GXViewCanvas() {
         var canvasElement = document.createElement("canvas");
         this._canvasContext = canvasElement.getContext("2d");
     }
 
-    GObject.inherit(GXSceneViewCanvas, GXPaintCanvas);
+    GObject.inherit(GXViewCanvas, GXPaintCanvas);
 
     /**
      * @type CanvasRenderingContext2D
      * @private
      */
-    GXSceneViewCanvas.prototype._canvasContext = null;
+    GXViewCanvas.prototype._canvasContext = null;
 
     /**
      * @type GTransform
      * @private
      */
-    GXSceneViewCanvas.prototype._transform = null;
+    GXViewCanvas.prototype._transform = null;
 
     /** @override */
-    GXSceneViewCanvas.prototype.resize = function (width, height) {
+    GXViewCanvas.prototype.resize = function (width, height) {
         if (width != this._width || height != this._height) {
             this._canvasContext.canvas.width = width;
             this._canvasContext.canvas.height = height;
@@ -34,13 +34,13 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.getTransform = function () {
+    GXViewCanvas.prototype.getTransform = function () {
         // Too bad, HTMLCanvas doesn't return the current transform :(
         return this._transform;
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.setTransform = function (transform) {
+    GXViewCanvas.prototype.setTransform = function (transform) {
         if (!GTransform.equals(this._transform, transform)) {
             if (transform == null) {
                 // Use identity transform
@@ -56,7 +56,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.prepare = function (areas) {
+    GXViewCanvas.prototype.prepare = function (areas) {
         // save context before anything else
         this._canvasContext.save();
 
@@ -86,17 +86,17 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.finish = function () {
+    GXViewCanvas.prototype.finish = function () {
         this._canvasContext.restore();
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.createCanvas = function () {
-        return new GXSceneViewCanvas();
+    GXViewCanvas.prototype.createCanvas = function () {
+        return new GXViewCanvas();
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.createPattern = function (image, repeat) {
+    GXViewCanvas.prototype.createPattern = function (image, repeat) {
         return this._canvasContext.createPattern(this._convertImage(image), this._convertRepeat(repeat));
     };
 
@@ -114,7 +114,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.putVertices = function (vertexSource) {
+    GXViewCanvas.prototype.putVertices = function (vertexSource) {
         if (vertexSource.rewindVertices(0)) {
             this._canvasContext.beginPath();
 
@@ -160,19 +160,19 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.clipVertices = function () {
+    GXViewCanvas.prototype.clipVertices = function () {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
         this._canvasContext.save();
         this._canvasContext.clip();
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.resetClip = function () {
+    GXViewCanvas.prototype.resetClip = function () {
         this._canvasContext.restore();
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
+    GXViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -183,13 +183,13 @@
 
         if (typeof cap == "number") {
             switch (cap) {
-                case GXSceneViewCanvas.LineCap.Butt:
+                case GXViewCanvas.LineCap.Butt:
                     this._canvasContext.lineCap = "butt";
                     break;
-                case GXSceneViewCanvas.LineCap.Round:
+                case GXViewCanvas.LineCap.Round:
                     this._canvasContext.lineCap = "round";
                     break;
-                case GXSceneViewCanvas.LineCap.Square:
+                case GXViewCanvas.LineCap.Square:
                     this._canvasContext.lineCap = "square";
                     break;
             }
@@ -199,10 +199,10 @@
 
         if (typeof join == "number") {
             switch (join) {
-                case GXSceneViewCanvas.LineJoin.Bevel:
+                case GXViewCanvas.LineJoin.Bevel:
                     this._canvasContext.lineJoin = "bevel";
                     break;
-                case GXSceneViewCanvas.LineJoin.Round:
+                case GXViewCanvas.LineJoin.Round:
                     this._canvasContext.lineJoin = "round";
                     break;
                 default:
@@ -231,7 +231,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.fillVertices = function (fill, opacity, composite) {
+    GXViewCanvas.prototype.fillVertices = function (fill, opacity, composite) {
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
@@ -251,7 +251,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
+    GXViewCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
         x = x || 0;
         y = y || 0;
         image = this._convertImage(image);
@@ -277,14 +277,14 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.fillRect = function (x, y, width, height, fill) {
+    GXViewCanvas.prototype.fillRect = function (x, y, width, height, fill) {
         fill = this._convertStyle(fill ? fill : gColor.build(0, 0, 0));
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
+    GXViewCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
@@ -293,7 +293,7 @@
     };
 
     /** @override */
-    GXSceneViewCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
+    GXViewCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
@@ -310,32 +310,32 @@
      * @returns {String}
      * @private
      */
-    GXSceneViewCanvas.prototype._convertComposite = function (composite, defaultReturn) {
+    GXViewCanvas.prototype._convertComposite = function (composite, defaultReturn) {
         if (typeof composite == "number") {
             switch (composite) {
-                case GXSceneViewCanvas.CompositeOperator.SourceOver:
+                case GXViewCanvas.CompositeOperator.SourceOver:
                     return "source-over";
-                case GXSceneViewCanvas.CompositeOperator.SourceAtTop:
+                case GXViewCanvas.CompositeOperator.SourceAtTop:
                     return "source-atop";
-                case GXSceneViewCanvas.CompositeOperator.SourceIn:
+                case GXViewCanvas.CompositeOperator.SourceIn:
                     return "source-in";
-                case GXSceneViewCanvas.CompositeOperator.SourceOut:
+                case GXViewCanvas.CompositeOperator.SourceOut:
                     return "source-out";
-                case GXSceneViewCanvas.CompositeOperator.DestinationOver:
+                case GXViewCanvas.CompositeOperator.DestinationOver:
                     return "destination-over";
-                case GXSceneViewCanvas.CompositeOperator.DestinationAtTop:
+                case GXViewCanvas.CompositeOperator.DestinationAtTop:
                     return "destination-atop";
-                case GXSceneViewCanvas.CompositeOperator.DestinationIn:
+                case GXViewCanvas.CompositeOperator.DestinationIn:
                     return "destination-in";
-                case GXSceneViewCanvas.CompositeOperator.DestinationOut:
+                case GXViewCanvas.CompositeOperator.DestinationOut:
                     return "destination-out";
-                case GXSceneViewCanvas.CompositeOperator.Lighter:
+                case GXViewCanvas.CompositeOperator.Lighter:
                     return "lighter";
-                case GXSceneViewCanvas.CompositeOperator.Darker:
+                case GXViewCanvas.CompositeOperator.Darker:
                     return "darker";
-                case GXSceneViewCanvas.CompositeOperator.Copy:
+                case GXViewCanvas.CompositeOperator.Copy:
                     return "copy";
-                case GXSceneViewCanvas.CompositeOperator.Xor:
+                case GXViewCanvas.CompositeOperator.Xor:
                     return "xor";
                 default:
                     break;
@@ -350,7 +350,7 @@
      * @returns {*}
      * @private
      */
-    GXSceneViewCanvas.prototype._convertStyle = function (style) {
+    GXViewCanvas.prototype._convertStyle = function (style) {
         // TODO : Support color conversion using paint configuration color profiles
 
         if (style instanceof CanvasPattern) {
@@ -365,10 +365,10 @@
     };
 
     /** @private */
-    GXSceneViewCanvas.prototype._convertImage = function (image) {
+    GXViewCanvas.prototype._convertImage = function (image) {
         if (image instanceof Image) {
             return image;
-        } else if (image instanceof GXSceneViewCanvas) {
+        } else if (image instanceof GXViewCanvas) {
             return image._canvasContext.canvas;
         } else {
             throw new Error('Not Supported.');
@@ -376,7 +376,7 @@
     };
 
     /** @private */
-    GXSceneViewCanvas.prototype._convertRepeat = function (repeat) {
+    GXViewCanvas.prototype._convertRepeat = function (repeat) {
         switch (repeat) {
             case GXPaintCanvas.RepeatMode.Both:
                 return "repeat";
@@ -392,7 +392,7 @@
     var _imageSmoothingProperties = ['imageSmoothingEnabled', 'webkitImageSmoothingEnabled', 'mozImageSmoothingEnabled'];
 
     /** @private */
-    GXSceneViewCanvas.prototype._getImageSmoothingEnabled = function () {
+    GXViewCanvas.prototype._getImageSmoothingEnabled = function () {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 return this._canvasContext[_imageSmoothingProperties[i]];
@@ -402,7 +402,7 @@
     };
 
     /** @private */
-    GXSceneViewCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
+    GXViewCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 this._canvasContext[_imageSmoothingProperties[i]] = smoothingEnabled;
@@ -412,5 +412,5 @@
         throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
-    _.GXSceneViewCanvas = GXSceneViewCanvas;
+    _.GXViewCanvas = GXViewCanvas;
 })(this);

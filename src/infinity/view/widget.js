@@ -344,6 +344,14 @@
      * @return {Boolean} true if widget was focused, false if not
      */
     GUIWidget.prototype.focus = function () {
+        if (this.isDisplayed()) {
+            try {
+                this._htmlElement.focus();
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
         return false;
     };
 
@@ -564,15 +572,10 @@
     /**
      * @private
      */
-    GUIWidget.prototype._updateAndTriggerInputEvent = function (domEvent, eventClass, ignoreTarget) {
+    GUIWidget.prototype._updateAndTriggerInputEvent = function (domEvent, eventClass) {
         // Ignore this alltogether if we're actually disabled!
         if (!this.isEnabled()) {
             return;
-        }
-
-        // Stop propagation if ignoring target
-        if (ignoreTarget) {
-            domEvent.stopPropagation();
         }
 
         // Prevent default action for certain events that may trigger browser default behaviors
@@ -587,12 +590,10 @@
             domEvent.preventDefault();
         }
 
-        if (ignoreTarget || domEvent.target == this._htmlElement) {
-            if (GUIMouseEvent.prototype.isPrototypeOf(eventClass.prototype)) {
-                this._updateAndTriggerMouseEvent(domEvent, GObject.getTypeId(eventClass));
-            } else if (GUIKeyEvent.prototype.isPrototypeOf(eventClass.prototype)) {
-                this._updateAndTriggerKeyEvent(domEvent, GObject.getTypeId(eventClass));
-            }
+        if (GUIMouseEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+            this._updateAndTriggerMouseEvent(domEvent, GObject.getTypeId(eventClass));
+        } else if (GUIKeyEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+            this._updateAndTriggerKeyEvent(domEvent, GObject.getTypeId(eventClass));
         }
     };
 
@@ -609,7 +610,7 @@
         cachedEvent.button = domEvent.button;
         this._triggerWidgetEventFromDom(domEvent, cachedEvent);
     };
-    
+
     /**
      * Update the cached key event and trigger it
      * @param {KeyboardEvent} domEvent dom source key event
@@ -681,7 +682,7 @@
 
                 self._savedDocumentListeners[domEventName] = function (event) {
                     if (event.target != this._htmlElement) {
-                        self._updateAndTriggerInputEvent(event, eventClass, true);
+                        self._updateAndTriggerInputEvent(event, eventClass);
                     }
                 }.bind(self);
 

@@ -66,13 +66,13 @@
     GXToolManager.prototype._activeTool = null;
 
     /**
-     * @type {GXSceneView}
+     * @type {GXEditorView}
      * @private
      */
     GXToolManager.prototype._view = null;
 
     /**
-     * @type {GXSceneViewLayer}
+     * @type {GXViewLayer}
      * @private
      */
     GXToolManager.prototype._viewLayer = null;
@@ -198,7 +198,7 @@
 
     /**
      * Assign the view this tool manager is operating on
-     * @param {GXSceneView} view the view this tool manager
+     * @param {GXEditorView} view the editor view this tool manager
      * is operating on, may also be null to remove all views
      */
     GXToolManager.prototype.setView = function (view) {
@@ -262,7 +262,7 @@
     GXToolManager.prototype._addActiveToolToView = function () {
         if (this._activeTool && this._view) {
             // Let tool activate on the view
-            this._activeTool.activate(this._view, this._viewLayer);
+            this._activeTool.activate(this._view);
 
             // Update view's cursor
             this._updateActiveToolCursor();
@@ -275,10 +275,10 @@
     GXToolManager.prototype._removeActiveToolFromView = function () {
         if (this._activeTool && this._view) {
             // Let tool deactivate on the view
-            this._activeTool.deactivate(this._view, this._viewLayer);
+            this._activeTool.deactivate(this._view);
 
             // remove any cursor from the view
-            this._viewLayer.setCursor(null);
+            this._view.setCursor(null);
         }
     };
 
@@ -289,7 +289,7 @@
      */
     GXToolManager.prototype._updateActiveToolCursor = function () {
         if (this._activeTool && this._view) {
-            this._viewLayer.setCursor(this._activeTool.getCursor());
+            this._view.setCursor(this._activeTool.getCursor());
         }
     };
 

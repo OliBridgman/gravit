@@ -2,52 +2,49 @@
     /**
      * A layer within a scene view
      * @param {GXPaintConfiguration} configuration
-     * @class GXSceneViewLayer
-     * @extends GUIWidget
+     * @param {GXView} view
+     * @class GXViewLayer
      * @constructor
      */
-    function GXSceneViewLayer(configuration) {
-        this._canvas = new GXSceneViewCanvas();
+    function GXViewLayer(configuration, view) {
+        this._view = view;
+        this._canvas = new GXViewCanvas();
         this._paintContext = new GXPaintContext();
         this._paintContext.configuration = configuration ? configuration : new GXPaintConfiguration();
         this._paintContext.canvas = this._canvas;
         this._dirtyList = new GXDirtyList();
-        // call widget constructor now
-        GUIWidget.apply(this, Array.prototype.splice.call(arguments, 1));
     }
 
-    GObject.inherit(GXSceneViewLayer, GUIWidget);
-
     /**
-     * @type {GXSceneView}
+     * @type {GXView}
      * @private
      */
-    GXSceneViewLayer.prototype._view = null;
+    GXViewLayer.prototype._view = null;
 
     /**
      * @type {GXPaintCanvas}
      * @private
      */
-    GXSceneViewLayer.prototype._canvas = null;
+    GXViewLayer.prototype._canvas = null;
 
     /**
      * @type {GXPaintContext}
      * @private
      */
-    GXSceneViewLayer.prototype._paintContext = null;
+    GXViewLayer.prototype._paintContext = null;
 
     /**
      * @type GXDirtyList
      * @private
      */
-    GXSceneViewLayer.prototype._dirtyList = null;
+    GXViewLayer.prototype._dirtyList = null;
 
     /**
      * Id of next frame for repainting
      * @type {Number}
      * @private
      */
-    GXSceneViewLayer.prototype._repaintRequestFrameId = null;
+    GXViewLayer.prototype._repaintRequestFrameId = null;
 
     /**
      * Called to invalidate this paint widget or only a part of it
@@ -56,7 +53,7 @@
      * @return {Boolean} true if an invalidation ocurred, false if not
      * @version 1.0
      */
-    GXSceneViewLayer.prototype.invalidate = function (area) {
+    GXViewLayer.prototype.invalidate = function (area) {
         if (!area || area.isEmpty()) {
             // reset any previous dirty areas and add the whole view area
             this._dirtyList.reset();
@@ -82,33 +79,21 @@
      * @param {GXPaintContext} context the paint context to paint into
      * @private
      */
-    GXSceneViewLayer.prototype.paint = function (context) {
+    GXViewLayer.prototype.paint = function (context) {
         // NO-OP by default
     };
 
     /** override */
-    GXSceneViewLayer.prototype.resize = function (width, height) {
-        if (width != this.getWidth() || height != this.getHeight()) {
-            GUIWidget.prototype.resize.call(this, width, height);
-            this._canvas.resize(width, height);
-            this.updateViewArea();
-        }
-    };
-
-    /** @override */
-    GXSceneViewLayer.prototype.focus = function () {
-        if (this.isDisplayed()) {
-            this._htmlElement.focus();
-            return true;
-        }
-        return false;
+    GXViewLayer.prototype.resize = function (width, height) {
+        this._canvas.resize(width, height);
+        this.updateViewArea();
     };
 
     /**
      * Called to update the view area
      */
-    GXSceneViewLayer.prototype.updateViewArea = function () {
-        var viewArea = this._parent.getViewBox(true);
+    GXViewLayer.prototype.updateViewArea = function () {
+        var viewArea = this._view.getViewBox(true);
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
             this.invalidate();
@@ -119,7 +104,7 @@
      * Called to repaint all dirty regions
      * @private
      */
-    GXSceneViewLayer.prototype._repaint = function () {
+    GXViewLayer.prototype._repaint = function () {
         // Get and flush existing dirty areas
         var dirtyListMatcher = this._dirtyList.flush();
         if (dirtyListMatcher != null) {
@@ -143,20 +128,9 @@
     };
 
     /** @override */
-    GXSceneViewLayer.prototype._createHTMLElement = function () {
-        var result = this._canvas._canvasContext.canvas;
-        result.style.display = "block";
-
-        // Canvas needs manual tabindex attribute to be focusable
-        result.setAttribute('tabindex', '0');
-
-        return result;
+    GXViewLayer.prototype.toString = function () {
+        return "[Object GXViewLayer]";
     };
 
-    /** @override */
-    GXSceneViewLayer.prototype.toString = function () {
-        return "[Object GXSceneViewLayer]";
-    };
-
-    _.GXSceneViewLayer = GXSceneViewLayer;
+    _.GXViewLayer = GXViewLayer;
 })(this);

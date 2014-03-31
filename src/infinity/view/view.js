@@ -1,12 +1,12 @@
 (function (_) {
     /**
-     * GXSceneView is a widget to render a scene
+     * GXView is a widget to render a scene
      * @param {GXScene} [scene] the scene this view is bound too, defaults to null
-     * @class GXSceneView
+     * @class GXView
      * @extends GUIWidget
      * @constructor
      */
-    function GXSceneView(scene) {
+    function GXView(scene) {
         this._updateViewTransforms();
         GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
@@ -19,7 +19,7 @@
         this._viewConfiguration = new GXScenePaintConfiguration();
 
         // Add our content layer
-        this.addLayer(GXSceneView.Layer.Content, this._viewConfiguration)
+        this.addLayer(GXView.Layer.Content, this._viewConfiguration)
             .paint = this._paintContentLayer.bind(this);
 
         this._scene = scene;
@@ -28,14 +28,14 @@
         this._scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
     }
 
-    GObject.inherit(GXSceneView, GUIWidget);
+    GObject.inherit(GXView, GUIWidget);
 
     /**
      * Global view options
      * @type {Object}
      * @version 1.0
      */
-    GXSceneView.options = {
+    GXView.options = {
         /**
          * The smallest zoom factor allowed whereas 0 = 0% and 1.0 = 100%
          * @type {Number}
@@ -55,7 +55,7 @@
      * Enumeration of known layers within a a view.
      * @enum
      */
-    GXSceneView.Layer = {
+    GXView.Layer = {
         /**
          * The content layer
          * @type {Number}
@@ -68,84 +68,84 @@
      * @type {GXScene}
      * @private
      */
-    GXSceneView.prototype._scene = null;
+    GXView.prototype._scene = null;
 
     /**
      * @type {{}}
      * @private
      */
-    GXSceneView.prototype._layerMap = null;
+    GXView.prototype._layerMap = null;
 
     /**
-     * @type {GXSceneViewCanvas}
+     * @type {GXViewCanvas}
      * @private
      */
-    GXSceneView.prototype._pixelContentCanvas = null;
+    GXView.prototype._pixelContentCanvas = null;
 
     /**
      * An array of layers
-     * @type {Array<GXSceneViewLayer>}
+     * @type {Array<GXViewLayer>}
      * @private
      */
-    GXSceneView.prototype._layers = null;
+    GXView.prototype._layers = null;
 
     /**
      * Left, top, right, bottom offsets
      * @type {Array<Number>}
      * @private
      */
-    GXSceneView.prototype._viewOffset = null;
+    GXView.prototype._viewOffset = null;
 
     /**
      * Left, top, right, bottom margins
      * @type {Array<Number>}
      * @private
      */
-    GXSceneView.prototype._viewMargin = null;
+    GXView.prototype._viewMargin = null;
 
     /**
      * The current horizontal scroll of this view
      * @type Number
      * @private
      */
-    GXSceneView.prototype._scrollX = 0.0;
+    GXView.prototype._scrollX = 0.0;
 
     /**
      * The current vertical scroll of this view
      * @type Number
      * @private
      */
-    GXSceneView.prototype._scrollY = 0.0;
+    GXView.prototype._scrollY = 0.0;
 
     /**
      * The current zoom of this view
      * @type Number
      * @private
      */
-    GXSceneView.prototype._zoom = 1.0;
+    GXView.prototype._zoom = 1.0;
 
     /**
      * World to view transformation
      * @type {GTransform}
      * @private
      */
-    GXSceneView.prototype._worldToViewTransform = null;
+    GXView.prototype._worldToViewTransform = null;
 
     /**
      * View to world transform
      * @type {GTransform}
      * @private
      */
-    GXSceneView.prototype._viewToWorldTransform = null;
+    GXView.prototype._viewToWorldTransform = null;
 
     /**
      * @type {GXScenePaintConfiguration}
      * @private
      */
-    GXSceneView.prototype._viewConfiguration = null;
+    GXView.prototype._viewConfiguration = null;
 
     /** @override */
-    GXSceneView.prototype.resize = function (width, height) {
+    GXView.prototype.resize = function (width, height) {
         GUIWidget.prototype.resize.call(this, width, height);
 
         // Resize layers if any
@@ -165,14 +165,14 @@
      * Return the scene this view is rendering
      * @returns {GXScene}
      */
-    GXSceneView.prototype.getScene = function () {
+    GXView.prototype.getScene = function () {
         return this._scene;
     };
 
     /**
      * @return {GXScenePaintConfiguration}
      */
-    GXSceneView.prototype.getViewConfiguration = function () {
+    GXView.prototype.getViewConfiguration = function () {
         return this._viewConfiguration;
     };
 
@@ -180,7 +180,7 @@
      * Get the current view offset
      * @return {Array<Number>} Left, top, right, bottom
      */
-    GXSceneView.prototype.getViewOffset = function () {
+    GXView.prototype.getViewOffset = function () {
         return this._viewOffset;
     };
 
@@ -188,7 +188,7 @@
      * Set the current view offset
      * @param {Array<Number>} Offset Left, top, right, bottom
      */
-    GXSceneView.prototype.setViewOffset = function (offset) {
+    GXView.prototype.setViewOffset = function (offset) {
         this._viewOffset = [0, 0, 0, 0];
         if (offset && offset.length > 0) {
             for (var i = 0; i < Math.min(4, offset.length); ++i) {
@@ -209,7 +209,7 @@
      * @return {Array<Number>} Left, top, right, bottom
      * @version 1.0
      */
-    GXSceneView.prototype.getViewMargin = function () {
+    GXView.prototype.getViewMargin = function () {
         return this._viewMargin;
     };
 
@@ -218,7 +218,7 @@
      * @param {Array<Number>} margin Left, top, right, bottom
      * @version 1.0
      */
-    GXSceneView.prototype.setViewMargin = function (margin) {
+    GXView.prototype.setViewMargin = function (margin) {
         this._viewMargin = [0, 0, 0, 0];
         if (margin && margin.length > 0) {
             for (var i = 0; i < Math.min(4, margin.length); ++i) {
@@ -232,7 +232,7 @@
      * @return {Number} The current horizontal scroll position of this view
      * @version 1.0
      */
-    GXSceneView.prototype.getScrollX = function () {
+    GXView.prototype.getScrollX = function () {
         return this._scrollX;
     };
 
@@ -240,7 +240,7 @@
      * @return {Number} The current vertical scroll position of this view
      * @version 1.0
      */
-    GXSceneView.prototype.getScrollY = function () {
+    GXView.prototype.getScrollY = function () {
         return this._scrollY;
     };
 
@@ -248,7 +248,7 @@
      * @return {Number} The current zoom of this view
      * @version 1.0
      */
-    GXSceneView.prototype.getZoom = function () {
+    GXView.prototype.getZoom = function () {
         return this._zoom;
     };
 
@@ -257,7 +257,7 @@
      * world coordinates into view coordinates
      * @returns {GTransform}
      */
-    GXSceneView.prototype.getWorldTransform = function () {
+    GXView.prototype.getWorldTransform = function () {
         return this._worldToViewTransform;
     };
 
@@ -266,7 +266,7 @@
      * view coordinates into world coordinates
      * @returns {GTransform}
      */
-    GXSceneView.prototype.getViewTransform = function () {
+    GXView.prototype.getViewTransform = function () {
         return this._viewToWorldTransform;
     };
 
@@ -276,7 +276,7 @@
      * defaults to false (= include margin)
      * @returns {GRect}
      */
-    GXSceneView.prototype.getViewBox = function (noMargin) {
+    GXView.prototype.getViewBox = function (noMargin) {
         var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
         var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
         return new GRect(
@@ -293,7 +293,7 @@
      * @param {Number} scrollY the vertical scrolling
      * @param {Number} zoom the zoom
      */
-    GXSceneView.prototype.transform = function (scrollX, scrollY, zoom) {
+    GXView.prototype.transform = function (scrollX, scrollY, zoom) {
         this._scrollX = scrollX;
         this._scrollY = scrollY;
         this._zoom = zoom;
@@ -307,11 +307,11 @@
      * @param {Number} [zoom] the new zoom, defaults to current zoom
      * @version 1.0
      */
-    GXSceneView.prototype.zoomAtCenter = function (center, zoom) {
+    GXView.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
-        var normalizedZoom = Math.min(GXSceneView.options.maxZoomFactor, Math.max(zoom, GXSceneView.options.minZoomFactor));
+        var normalizedZoom = Math.min(GXView.options.maxZoomFactor, Math.max(zoom, GXView.options.minZoomFactor));
         if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
             return;
         }
@@ -335,7 +335,7 @@
      * @param {GPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
      */
-    GXSceneView.prototype.zoomAt = function (pos, zoom) {
+    GXView.prototype.zoomAt = function (pos, zoom) {
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
@@ -350,7 +350,7 @@
      * @param {Boolean} [reverse] if set, the reverse action will be taken so
      * that the view is zoomed out onto the given rect. Defaults to false
      */
-    GXSceneView.prototype.zoomAll = function (rect, reverse) {
+    GXView.prototype.zoomAll = function (rect, reverse) {
         var center = rect.getSide(GRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
@@ -371,7 +371,7 @@
      * @param {Number} dy vertical subtract
      * @version 1.0
      */
-    GXSceneView.prototype.scrollBy = function (dx, dy) {
+    GXView.prototype.scrollBy = function (dx, dy) {
         if (dx != 0 || dy != 0) {
             this._scrollX = this._scrollX + dx;
             this._scrollY = this._scrollY + dy;
@@ -387,7 +387,7 @@
      * @return {Boolean} true if any invalidation ocurred, false if not
      * @version 1.0
      */
-    GXSceneView.prototype.invalidate = function (area) {
+    GXView.prototype.invalidate = function (area) {
         var result = false;
         if (this._layers) {
             for (var i = 0; i < this._layers.length; ++i) {
@@ -397,25 +397,9 @@
         return result;
     };
 
-    /**
-     * Update view transforms and update all other necessary things like
-     * scrollbars and virtual space as well as do a repaint if anything has changed
-     * @private
-     */
-    GXSceneView.prototype._updateViewTransforms = function () {
-        // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
-        // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
-        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-Math.round(this._scrollX), -Math.round(this._scrollY));
-        if (!GTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
-            this._worldToViewTransform = worldToViewTransform;
-            this._viewToWorldTransform = worldToViewTransform.inverted();
-            // Invalidate everything
-            this.invalidate();
-        }
-    };
-
     /** @override */
-    GXSceneView.prototype.focus = function () {
+    /*
+    GXView.prototype.focus = function () {
         // Try to focus the first available layer of the view
         for (var i = this._layers.length - 1; i >= 0; --i) {
             if (this._layers[i].focus()) {
@@ -424,13 +408,14 @@
         }
         return false;
     };
+    */
 
     /**
      * Get the layer for a specific type
      * @param {Number} layerType The type of the layer
-     * @return {GXSceneViewLayer}
+     * @return {GXViewLayer}
      */
-    GXSceneView.prototype.getLayer = function (layerType) {
+    GXView.prototype.getLayer = function (layerType) {
         return this._layerMap.hasOwnProperty(layerType) ? this._layerMap[layerType] : null;
     };
 
@@ -440,9 +425,9 @@
      * define the insertion position of the layer.
      * @param {GXPaintConfiguration} [configuration] optional paint
      * configuration for the layer
-     * @return {GXSceneViewLayer}
+     * @return {GXViewLayer}
      */
-    GXSceneView.prototype.addLayer = function (layerType, configuration) {
+    GXView.prototype.addLayer = function (layerType, configuration) {
         if (this._layerMap.hasOwnProperty(layerType)) {
             throw new Error('Layer already added.');
         }
@@ -460,16 +445,17 @@
             }
         }
 
-        var layer = new GXSceneViewLayer(configuration);
-        layer._setParent(this);
-        layer.move(0, 0);
+        var layer = new GXViewLayer(configuration, this);
+        var layerElement = layer._canvas._canvasContext.canvas;
+        layerElement.style.position = 'absolute';
+        layerElement.style.cursor = 'inherit';
         layer.resize(this.getWidth(), this.getHeight());
 
         if (index >= this._layers.length) {
             this._layers.push(layer);
-            this._htmlElement.appendChild(layer._htmlElement);
+            this._htmlElement.appendChild(layerElement);
         } else {
-            this._htmlElement.insertBefore(layer._htmlElement, this._layers[index]._htmlElement);
+            this._htmlElement.insertBefore(layerElement, this._layers[index]._canvas._canvasContext.canvas);
             this._layers.splice(index, 0, layer);
         }
 
@@ -478,12 +464,36 @@
         return layer;
     };
 
+    /** @override */
+    GXView.prototype._createHTMLElement = function () {
+        var result = GUIWidget.prototype._createHTMLElement.call(this);
+        result.setAttribute('tabindex', '0');
+        return result;
+    };
+
+    /**
+     * Update view transforms and update all other necessary things like
+     * scrollbars and virtual space as well as do a repaint if anything has changed
+     * @private
+     */
+    GXView.prototype._updateViewTransforms = function () {
+        // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
+        // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
+        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-Math.round(this._scrollX), -Math.round(this._scrollY));
+        if (!GTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
+            this._worldToViewTransform = worldToViewTransform;
+            this._viewToWorldTransform = worldToViewTransform.inverted();
+            // Invalidate everything
+            this.invalidate();
+        }
+    };
+
     /**
      * Event listener for scene's repaintRequest
      * @param {GXScene.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    GXSceneView.prototype._sceneInvalidationRequest = function (event) {
+    GXView.prototype._sceneInvalidationRequest = function (event) {
         var area = event.area;
         if (area) {
             // Ensure to map the scene area into view coordinates, first
@@ -492,7 +502,7 @@
         }
 
         // Invalidate our content layer
-        this._layerMap[GXSceneView.Layer.Content].invalidate(area);
+        this._layerMap[GXView.Layer.Content].invalidate(area);
     };
 
     /**
@@ -500,7 +510,7 @@
      * @param {GXNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GXSceneView.prototype._sceneAfterPropertiesChanged = function (event) {
+    GXView.prototype._sceneAfterPropertiesChanged = function (event) {
         // NO-OP
     };
 
@@ -509,7 +519,7 @@
      * @param {GXPaintContext} context
      * @private
      */
-    GXSceneView.prototype._paintContentLayer = function (context) {
+    GXView.prototype._paintContentLayer = function (context) {
         if (this._scene) {
             // Before any painting we need to convert our dirty matcher's
             // dirty regions back into scene coordinates in any case
@@ -531,7 +541,7 @@
             if (this._isPixelMode()) {
                 // Create and size our pixel content canvas
                 if (!this._pixelContentCanvas) {
-                    this._pixelContentCanvas = new GXSceneViewCanvas();
+                    this._pixelContentCanvas = new GXViewCanvas();
                     this._pixelContentCanvas.resize(context.canvas.getWidth(), context.canvas.getHeight());
                 }
 
@@ -565,15 +575,15 @@
      * @returns {Boolean}
      * @private
      */
-    GXSceneView.prototype._isPixelMode = function () {
+    GXView.prototype._isPixelMode = function () {
         return this._viewConfiguration.pixelMode && !gMath.isEqualEps(this._zoom, 1.0);
     };
 
     /** @override */
-    GXSceneView.prototype.toString = function () {
-        return "[Object GXSceneView]";
+    GXView.prototype.toString = function () {
+        return "[Object GXView]";
     };
 
-    _.GXSceneView = GXSceneView;
+    _.GXView = GXView;
 
 })(this);

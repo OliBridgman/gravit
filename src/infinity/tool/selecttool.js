@@ -100,35 +100,35 @@
     };
 
     /** @override */
-    GXSelectTool.prototype.activate = function (view, layer) {
-        GXTool.prototype.activate.call(this, view, layer);
+    GXSelectTool.prototype.activate = function (view) {
+        GXTool.prototype.activate.call(this, view);
 
-        layer.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        layer.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        layer.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
-        layer.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
-        layer.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
-        layer.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
-        layer.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
-        layer.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
-        layer.addEventListener(GUIKeyEvent.Release, this._keyRelease, this);
+        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+        view.addEventListener(GUIMouseEvent.DblClick, this._mouseDblClick, this);
+        view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
+        view.addEventListener(GUIKeyEvent.Release, this._keyRelease, this);
 
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
-    GXSelectTool.prototype.deactivate = function (view, layer) {
-        GXTool.prototype.deactivate.call(this, view, layer);
+    GXSelectTool.prototype.deactivate = function (view) {
+        GXTool.prototype.deactivate.call(this, view);
 
-        layer.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        layer.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        layer.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
-        layer.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
-        layer.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
-        layer.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
-        layer.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
-        layer.removeEventListener(GUIKeyEvent.Down, this._keyDown);
-        layer.removeEventListener(GUIKeyEvent.Release, this._keyRelease);
+        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
+        view.removeEventListener(GUIMouseEvent.DblClick, this._mouseDblClick);
+        view.removeEventListener(GUIKeyEvent.Down, this._keyDown);
+        view.removeEventListener(GUIKeyEvent.Release, this._keyRelease);
 
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };

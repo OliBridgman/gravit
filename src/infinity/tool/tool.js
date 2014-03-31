@@ -30,18 +30,11 @@
     GXTool.prototype._scene = null;
 
     /**
-     * The current view the tool is activated on, may be null for none
-     * @type {GXSceneView}
+     * The current editor view the tool is activated on, may be null for none
+     * @type {GXEditorView}
      * @private
      */
     GXTool.prototype._view = null;
-
-    /**
-     * The current view layer the tool is activated on, may be null for none
-     * @type {GXSceneViewLayer}
-     * @private
-     */
-    GXTool.prototype._layer = null;
 
     /**
      * The current graphic editor the tool is activated on, may be null for none
@@ -49,13 +42,6 @@
      * @private
      */
     GXTool.prototype._editor = null;
-
-    /**
-     * The current editor view layer the tool is activated on, may be null for none
-     * @type {GXSceneViewLayer}
-     * @private
-     */
-    GXTool.prototype._editorLayer = null;
 
     /**
      * Should return a group for the tool (maybe null)
@@ -114,36 +100,25 @@
 
     /**
      * Called when this tool got activated for a given view
-     * @param {GXSceneView} view the view the tool got activated for
-     * @param {GXSceneViewLayer} layer the layer the tool got activated for
-     * @version 1.0
+     * @param {GXEditorView} view the editor view the tool got activated for
      */
-    GXTool.prototype.activate = function (view, layer) {
+    GXTool.prototype.activate = function (view) {
         this._scene = view ? view.getScene() : null;
         this._view = view;
-        this._layer = layer;
-        this._editor = GXEditor.getEditor(view.getScene());
-        if (this._editor == null) {
-            throw new Error("Scene does not link to a graphic editor.");
-        }
-        this._editorLayer = view.getLayer(GXEditorView.Layer.Editor);
+        this._editor = view.getEditor();
     };
 
     /**
      * Called when this tool got deactivated for it's current view
-     * @param {GXSceneView} view the view the tool got deactivated for
-     * @param {GXSceneViewLayer} layer the layer the tool got activated for
-     * @version 1.0
+     * @param {GXEditorView} view the editor view the tool got deactivated for
      */
-    GXTool.prototype.deactivate = function (view, layer) {
-        if (view.getScene() != this._scene || view != this._view || layer != this._layer) {
+    GXTool.prototype.deactivate = function (view) {
+        if (view.getScene() != this._scene || view != this._view) {
             throw new Error("Not supposed to happen");
         }
         this._scene = null;
         this._view = null;
-        this._layer = null;
         this._editor = null;
-        this._editorLayer = null;
     };
 
     /**
