@@ -48,9 +48,22 @@
         cy: null
     };
 
+    /**
+     * The size of the transform box annotation
+     * @type {Number}
+     */
     GXTransformBox.ANNOT_SIZE = 8;
+
+    /**
+     * The margin at which the painted box located from exact transform box around selection
+     * @type {Number}
+     */
     GXTransformBox.TRANSFORM_MARGIN = 10;
 
+    /**
+     * The identifiers of transform box handles
+     * @enum
+     */
     GXTransformBox.Handles = {
         TOP_LEFT: 0,
         TOP_CENTER: 1,
@@ -63,6 +76,9 @@
         ROTATION_CENTER: 8
     };
 
+    /**
+     * The identifiers of the locations relatively to transform box
+     */
     GXTransformBox.OUTLINE = gUtil.uuid();
     GXTransformBox.INSIDE = gUtil.uuid();
     GXTransformBox.OUTSIDE = gUtil.uuid();
@@ -102,6 +118,52 @@
         }
     };
 
+    /** override */
+    GXTransformBox.prototype.rewindVertices = function (index) {
+        if (this._vertices == null || this._verticesDirty || this._vertices.getCount() == 0) {
+            this._vertices.clearVertices();
+            this._generateVertices();
+            this._verticesDirty = false;
+        }
+        return this._vertices.rewindVertices(index);
+    };
+
+    /** override */
+    GXTransformBox.prototype.readVertex = function (vertex) {
+        return this._vertices.readVertex(vertex);
+    };
+
+
+    /** @override */
+    GXTransformBox.prototype._calculateGeometryBBox = function () {
+        return gVertexInfo.calculateBounds(this, true);
+    };
+
+    /** @override */
+    GXTransformBox.prototype._calculatePaintBBox = function () {
+        var bbox = this._calculateGeometryBBox();
+        if (bbox) {
+            return bbox.expanded(GXTransformBox.ANNOT_SIZE, GXTransformBox.ANNOT_SIZE,
+                GXTransformBox.ANNOT_SIZE, GXTransformBox.ANNOT_SIZE);
+        }
+
+        return null;
+    };
+
+    /** @override */
+    GXTransformBox.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, GXTransformBox.GeometryProperties);
+        if (change == GXNode._Change.AfterPropertiesChange) {
+            this._verticesDirty = true;
+        }
+        GXItem.prototype._handleChange.call(this, change, args);
+    };
+
+    /**
+     * Paints the transform box and it's handles
+     * @param context
+     * @param {GTransform} transform
+     */
     GXTransformBox.prototype.paint = function (context, transform) {
         // Outline is painted with non-transformed stroke
         // so we reset transform, transform the vertices
@@ -120,7 +182,6 @@
                 return;
             }
 
-            //var transformer = new GXVertexTransformer(this, targetTransform);
             //context.canvas.setLineDash([5]);
             // TODO: draw dashed line
             context.canvas.putVertices(new GXVertexPixelAligner(this));
@@ -138,25 +199,18 @@
         this._finishPaint(context);
     };
 
+    /**
+     * Sets options to not paint the full transform box, just it's center during painting
+     */
     GXTransformBox.prototype.hide = function () {
         this._centerOnly = true;
     };
 
+    /**
+     * Sets options to paint the full transform box if it was hided before
+     */
     GXTransformBox.prototype.show = function () {
         this._centerOnly = false;
-    };
-
-    GXTransformBox.prototype.rewindVertices = function (index) {
-        if (this._vertices == null || this._verticesDirty || this._vertices.getCount() == 0) {
-            this._vertices.clearVertices();
-            this._generateVertices();
-            this._verticesDirty = false;
-        }
-        return this._vertices.rewindVertices(index);
-    };
-
-    GXTransformBox.prototype.readVertex = function (vertex) {
-        return this._vertices.readVertex(vertex);
     };
 
     /**
@@ -205,13 +259,22 @@
         return result;
     };
 
-    GXTransformBox.prototype.calculateTransform = function (partInfo, startPt, endPt, guides,
-            viewToWorldTransform, worldToViewTransform, option, ratio) {
+    /**
+     * Calculate the transformation, which should be applied to the selection
+     * based on the movement of transform box or it's handles
+     * @param {GXElementEditor.PartInfo} partInfo - transform box part information, which is moved
+     * @param {GPoint} startPtTr - movement start point
+     * @param {GPoint} endPtTr - movement end point
+     * @param {GXGuides} guides to be used for snapping
+     * @param {Boolean} option - if true and one of resize handles is moved,
+     * update transform box symmetrically to center
+     * @param {Boolean} ratio - if true and one of resize handles is moved, make equal scaling for width and height
+     * @returns {GTransform}
+     */
+    GXTransformBox.prototype.calculateTransformation = function (partInfo, startPtTr, endPtTr, guides, option, ratio) {
         if (partInfo.id < 8) {
             var pt = null;
-            var stPtTr = viewToWorldTransform.mapPoint(startPt);
-            var endPtTr = viewToWorldTransform.mapPoint(endPt);
-            var deltaTr = endPtTr.subtract(stPtTr);
+            var deltaTr = endPtTr.subtract(startPtTr);
             var dx = deltaTr.getX();
             var dy = deltaTr.getY();
 
@@ -363,9 +426,7 @@
 
             return transform1.multiplied(transform2).multiplied(transform3);
         } else {
-            var stPtTr = viewToWorldTransform.mapPoint(startPt);
-            var endPtTr = viewToWorldTransform.mapPoint(endPt);
-            var deltaTr = endPtTr.subtract(stPtTr);
+            var deltaTr = endPtTr.subtract(startPtTr);
             var transform = new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
             var tlOrig = new GPoint(this.$tlx, this.$tly);
             var tl = transform.mapPoint(tlOrig);
@@ -378,6 +439,9 @@
         }
     };
 
+    /**
+     * Permanently applies transform from $trf property to the transform box
+     */
     GXTransformBox.prototype.applyTransform = function () {
         if (this.$trf) {
             var tl = this.$trf.mapPoint(new GPoint(this.$tlx, this.$tly));
@@ -391,6 +455,10 @@
         }
     };
 
+    /**
+     * Generates vertices of the transform box rectangle
+     * @private
+     */
     GXTransformBox.prototype._generateVertices = function () {
         if (!this._vertices || this._vertices.getCount() != 5) {
             this._vertices = new GXVertexContainer(5);
@@ -410,31 +478,14 @@
         this._vertices.writeVertex(GXVertex.Command.Close);
     };
 
-    /** @override */
-    GXTransformBox.prototype._calculateGeometryBBox = function () {
-        return gVertexInfo.calculateBounds(this, true);
-    };
-
-    /** @override */
-    GXTransformBox.prototype._calculatePaintBBox = function () {
-        var bbox = this._calculateGeometryBBox();
-        if (bbox) {
-            return bbox.expanded(GXTransformBox.ANNOT_SIZE, GXTransformBox.ANNOT_SIZE,
-                GXTransformBox.ANNOT_SIZE, GXTransformBox.ANNOT_SIZE);
-        }
-
-        return null;
-    };
-
-    /** @override */
-    GXTransformBox.prototype._handleChange = function (change, args) {
-        this._handleGeometryChangeForProperties(change, args, GXTransformBox.GeometryProperties);
-        if (change == GXNode._Change.AfterPropertiesChange) {
-            this._verticesDirty = true;
-        }
-        GXItem.prototype._handleChange.call(this, change, args);
-    };
-
+    /**
+     * Returns a center point of the needed transform box handle with all transformations applied (in view coordinates)
+     * @param {GXTransformBox.Handles} side - the needed transform box handle center
+     * @param {Boolean} noTransform - if true, do not apply internal transformation,
+     * and return the original transform box point
+     * @returns {GPoint} - a center point of the needed transform box handle
+     * @private
+     */
     GXTransformBox.prototype._getPoint = function (side, noTransform) {
         var pt = null;
 

@@ -535,9 +535,9 @@
             }
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
             if (this._editor.getTransformBox() && this._moveStart) {
-                var transform = this._editor.getTransformBox().calculateTransform(this._editorMovePartInfo,
-                    this._moveStart, this._moveCurrent, this._editor.getGuides(),
-                    this._view.getViewTransform(), this._view.getWorldTransform(),
+                var moveCurrentTransformed = this._view.getViewTransform().mapPoint(this._moveCurrent);
+                var transform = this._editor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
+                    this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
                     gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
 
                 this._editor.getTransformBox().setTransform(transform);
