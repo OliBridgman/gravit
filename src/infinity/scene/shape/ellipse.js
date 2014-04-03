@@ -151,7 +151,7 @@
                     anchorPoint = new GXPathBase.AnchorPoint();
                     anchorPoints.appendChild(anchorPoint);
                 } else if (this.$etp == GXEllipse.Type.Arc) {
-                    this.setProperty('closed', true);
+                    this.setProperty('closed', false);
                 }
             }
         } finally {
