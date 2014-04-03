@@ -200,6 +200,18 @@
             var dx = deltaTr.getX();
             var dy = deltaTr.getY();
 
+            var _snap = function (x, y, snapX, snapY) {
+                if (guides) {
+                    var pt = guides.mapPoint(new GPoint(x + dx, y + dy));
+                    if (snapX) {
+                        dx = pt.getX() - x;
+                    }
+                    if (snapY) {
+                        dy = pt.getY() - y;
+                    }
+                }
+            }.bind(this);
+
             var transform1 = null;
             var transform3 = null;
             var width = this.$brx - this.$tlx;
@@ -207,17 +219,19 @@
 
             switch (partInfo.id) {
                 case GXTransformBox.Handles.TOP_LEFT:
+                    _snap(this.$tlx, this.$tly, true, true);
                     width = this.$brx - this.$tlx - dx;
                     height = this.$bry - this.$tly - dy;
                     if (!option) {
                         var tlxNew = this.$tlx + dx;
                         var tlyNew = this.$tly + dy;
-                        // TODO: snap if needed
+
                         transform1 = new GTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
                         transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
                     }
                     break;
                 case GXTransformBox.Handles.TOP_CENTER:
+                    _snap(this.$tlx, this.$tly, false, true);
                     height = this.$bry - this.$tly - dy;
                     if (!option) {
                         var tlyNew = this.$tly + dy;
@@ -227,17 +241,18 @@
                     }
                     break;
                 case GXTransformBox.Handles.TOP_RIGHT:
+                    _snap(this.$trx, this.$try, true, true);
                     width = width + dx;
                     height = height - dy;
                     if (!option) {
                         var tlxNew = this.$tlx;
                         var tlyNew = this.$tly + dy;
-                        // TODO: snap if needed
                         transform1 = new GTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
                         transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
                     }
                     break;
                 case GXTransformBox.Handles.RIGHT_CENTER:
+                    _snap(this.$trx, this.$try, true, false);
                     width = width + dx;
                     if (!option) {
                         var tlxNew = this.$tlx;
@@ -247,17 +262,18 @@
                     }
                     break;
                 case GXTransformBox.Handles.BOTTOM_RIGHT:
+                    _snap(this.$brx, this.$bry, true, true);
                     width = width + dx;
                     height = height + dy;
                     if (!option) {
                         var tlxNew = this.$tlx;
                         var tlyNew = this.$tly;
-                        // TODO: snap if needed
                         transform1 = new GTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
                         transform3 = new GTransform(1, 0, 0, 1, tlxNew, tlyNew);
                     }
                     break;
                 case GXTransformBox.Handles.BOTTOM_CENTER:
+                    _snap(this.$brx, this.$bry, false, true);
                     height = height + dy;
                     if (!option) {
                         var tlyNew = this.$tly;
@@ -267,17 +283,18 @@
                     }
                     break;
                 case GXTransformBox.Handles.BOTTOM_LEFT:
+                    _snap(this.$blx, this.$bly, true, true);
                     width = width - dx;
                     height = height + dy;
                     if (!option) {
                         var tlxNew = this.$tlx + dx;
                         var tlyNew = this.$tly;
-                        // TODO: snap if needed
                         transform1 = new GTransform(1, 0, 0, 1, -this.$trx, -this.$try);
                         transform3 = new GTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
                     }
                     break;
                 case GXTransformBox.Handles.LEFT_CENTER:
+                    _snap(this.$blx, this.$bly, true, false);
                     width = width - dx;
                     if (!option) {
                         var dxNew = dx;
@@ -337,7 +354,9 @@
             var transform = new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
             var tlOrig = new GPoint(this.$tlx, this.$tly);
             var tl = transform.mapPoint(tlOrig);
-            tl = guides.mapPoint(tl);
+            if (guides) {
+                tl = guides.mapPoint(tl);
+            }
             deltaTr = tl.subtract(tlOrig);
             return new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
             // TODO: support rotation when OUTSIDE, move center when center, skew when outline
