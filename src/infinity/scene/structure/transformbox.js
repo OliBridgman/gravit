@@ -77,6 +77,14 @@
      */
     GXTransformBox.prototype._vertices = null;
 
+    /**
+     * Contains transform, which should be applied to transform box vertices before expanding it to TRANSFORM_MARGIN
+     * and vertices generation
+     * @type {GXTransform}
+     * @private
+     */
+    GXTransformBox.prototype._extTransform = null;
+
     /** @override */
     GXTransformBox.prototype.getTransform = function () {
         return this.$trf;
@@ -95,33 +103,35 @@
     };
 
     GXTransformBox.prototype.paint = function (context, transform) {
-        if (!this._preparePaint(context)) {
-            return;
-        }
-
         // Outline is painted with non-transformed stroke
         // so we reset transform, transform the vertices
         // ourself and then re-apply the transformation
         var canvasTransform = context.canvas.resetTransform();
-        var targetTransform = canvasTransform.multiplied(transform);
+        this._extTransform = canvasTransform.multiplied(transform);
+        this._verticesDirty = true;
+
+        if (!this._preparePaint(context)) {
+            return;
+        }
+
 
         if (!this._centerOnly) {
             if (!this.rewindVertices(0)) {
                 return;
             }
 
-            var transformer = new GXVertexTransformer(this, targetTransform);
+            //var transformer = new GXVertexTransformer(this, targetTransform);
             //context.canvas.setLineDash([5]);
             // TODO: draw dashed line
-            context.canvas.putVertices(new GXVertexPixelAligner(transformer));
+            context.canvas.putVertices(new GXVertexPixelAligner(this));
             context.canvas.strokeVertices(context.selectionOutlineColor, 1);
             for (var side = 0; side < 8 ; ++side) {
                 var pt = this._getPoint(side);
-                gAnnotation.paintAnnotation(context, targetTransform, pt, gAnnotation.AnnotType.Rectangle,
+                gAnnotation.paintAnnotation(context, null, pt, gAnnotation.AnnotType.Rectangle,
                     true, GXTransformBox.ANNOT_SIZE);
             }
         }
-        gAnnotation.paintAnnotation(context, targetTransform, this._getPoint(GXTransformBox.Handles.ROTATION_CENTER),
+        gAnnotation.paintAnnotation(context, null, this._getPoint(GXTransformBox.Handles.ROTATION_CENTER),
             gAnnotation.AnnotType.Circle, true, GXTransformBox.ANNOT_SIZE);
         context.canvas.setTransform(canvasTransform);
 
@@ -160,10 +170,15 @@
     GXTransformBox.prototype.getPartInfoAt = function (location, transform, tolerance) {
         var result = null;
 
+        if (transform) {
+            this._extTransform = transform;
+            this._verticesDirty = true;
+        }
+
         // test handles and center
         for (var side = 0; side < 9; ++side) {
             var handle = this._getPoint(side);
-            if (gAnnotation.getAnnotationBBox(transform, handle, GXTransformBox.ANNOT_SIZE)
+            if (gAnnotation.getAnnotationBBox(null, handle, GXTransformBox.ANNOT_SIZE)
                     .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                 result = new GXElementEditor.PartInfo(null, side, handle);
                 break;
@@ -173,7 +188,7 @@
         // test outline and inside
         if (!result) {
             var hitRes = new GXVertexInfo.HitResult();
-            if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform),
+            if (gVertexInfo.hitTest(location.getX(), location.getY(), this,
                     tolerance, true, hitRes)) {
 
                 if (hitRes.outline) {
@@ -422,38 +437,56 @@
 
     GXTransformBox.prototype._getPoint = function (side, noTransform) {
         var pt = null;
+
+        var _transform = function (pt) {
+            var targTrans = this._extTransform;
+            if (this.$trf && !noTransform) {
+                targTrans = targTrans ? this.$trf.multiplied(targTrans) : this.$trf;
+            }
+
+            if (targTrans && pt) {
+                pt = targTrans.mapPoint(pt);
+            }
+
+            return pt;
+        }.bind(this);
+
         switch (side) {
             case GXTransformBox.Handles.TOP_LEFT:
-                pt = new GPoint(this.$tlx - GXTransformBox.TRANSFORM_MARGIN, this.$tly - GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint(this.$tlx, this.$tly));
+                pt = new GPoint(pt.getX() - GXTransformBox.TRANSFORM_MARGIN, pt.getY() - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.TOP_CENTER:
-                pt = new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2 - GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2));
+                pt = new GPoint(pt.getX(), pt.getY() - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.TOP_RIGHT:
-                pt = new GPoint(this.$trx + GXTransformBox.TRANSFORM_MARGIN, this.$try - GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint(this.$trx, this.$try));
+                pt = new GPoint(pt.getX() + GXTransformBox.TRANSFORM_MARGIN, pt.getY() - GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.RIGHT_CENTER:
-                pt = new GPoint((this.$trx + this.$brx) / 2 + GXTransformBox.TRANSFORM_MARGIN, (this.$try + this.$bry) / 2);
+                pt = _transform(new GPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2));
+                pt = new GPoint(pt.getX() + GXTransformBox.TRANSFORM_MARGIN, pt.getY());
                 break;
             case GXTransformBox.Handles.BOTTOM_RIGHT:
-                pt = new GPoint(this.$brx + GXTransformBox.TRANSFORM_MARGIN, this.$bry + GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint(this.$brx, this.$bry));
+                pt = new GPoint(pt.getX() + GXTransformBox.TRANSFORM_MARGIN, pt.getY() + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.BOTTOM_CENTER:
-                pt = new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2 + GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2));
+                pt = new GPoint(pt.getX(), pt.getY() + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.BOTTOM_LEFT:
-                pt = new GPoint(this.$blx - GXTransformBox.TRANSFORM_MARGIN, this.$bly + GXTransformBox.TRANSFORM_MARGIN);
+                pt = _transform(new GPoint(this.$blx, this.$bly));
+                pt = new GPoint(pt.getX() - GXTransformBox.TRANSFORM_MARGIN, pt.getY() + GXTransformBox.TRANSFORM_MARGIN);
                 break;
             case GXTransformBox.Handles.LEFT_CENTER:
-                pt = new GPoint((this.$tlx + this.$blx) / 2 - GXTransformBox.TRANSFORM_MARGIN, (this.$tly + this.$bly) / 2);
+                pt = _transform(new GPoint((this.$tlx + this.$blx) / 2, (this.$tly + this.$bly) / 2));
+                pt = new GPoint(pt.getX() - GXTransformBox.TRANSFORM_MARGIN, pt.getY());
                 break;
             case GXTransformBox.Handles.ROTATION_CENTER:
-                pt = new GPoint(this.$cx, this.$cy);
+                pt = _transform(new GPoint(this.$cx, this.$cy));
                 break;
-        }
-
-        if (this.$trf && pt && !noTransform) {
-            pt = this.$trf.mapPoint(pt);
         }
 
         return pt;
