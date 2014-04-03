@@ -606,14 +606,7 @@
     GXEditor.prototype.moveSelection = function (delta, align, partId, partData) {
         // TODO : FIX THIS!!!
         if (align) {
-            var selBBox = null;
-
-            for (var i = 0; i < this.getSelection().length; ++i) {
-                var bbox = this.getSelection()[i].getPaintBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
-                }
-            }
+            var selBBox = this._getSelectionBBox(true);
 
             var transBBox = selBBox.translated(delta.getX(), delta.getY());
             var tl = this._guides.mapPoint(transBBox.getSide(GRect.Side.TOP_LEFT));
@@ -635,8 +628,34 @@
      * @param {*} [partData] optional data of part that has started the transformation
      */
     GXEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
-        // TODO : Align support
-        //this.transformSelection(new GTransform(1, 0, 0, 1, x, y), partId, partData);
+        var selBBox = this._getSelectionBBox(false);
+        if (selBBox) {
+            // TODO : Align support
+            var tl = selBBox.getSide(GRect.Side.TOP_LEFT);
+            var br = selBBox.getSide(GRect.Side.BOTTOM_RIGHT);
+            var cnt = selBBox.getSide(GRect.Side.CENTER);
+            var tx, ty;
+            if (dx < 0) {
+                tx = br.getX();
+            } else if (dx > 0) {
+                tx = tl.getX();
+            } else { // tx == 0
+                tx = cnt.getX();
+            }
+            if (dy < 0) {
+                ty = br.getY();
+            } else if (dy > 0) {
+                ty = tl.getY();
+            } else { // ty == 0
+                ty = cnt.getY();
+            }
+
+            var transform = new GTransform(1, 0, 0, 1, -tx, -ty)
+                .multiplied(new GTransform(sx, 0, 0, sy, 0, 0))
+                .multiplied(new GTransform(1, 0, 0, 1, tx, ty));
+
+            this.transformSelection(transform, partId, partData);
+        }
     };
 
     /**
@@ -757,14 +776,7 @@
     GXEditor.prototype.updateSelectionTransformBox = function () {
         this._transformBox = null;
         if (this.getSelection()) {
-            var selBBox = null;
-
-            for (var i = 0; i < this.getSelection().length; ++i) {
-                var bbox = this.getSelection()[i].getGeometryBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
-                }
-            }
+            var selBBox = this._getSelectionBBox(false);
             if (selBBox) {
                 this._transformBox = new GXTransformBox(selBBox);
             }
@@ -1368,6 +1380,20 @@
                 }
             }
         }
+    };
+
+    GXEditor.prototype._getSelectionBBox = function (paintBBox) {
+        var selBBox = null;
+        if (this.getSelection()) {
+            for (var i = 0; i < this.getSelection().length; ++i) {
+                var bbox = paintBBox ? this.getSelection()[i].getPaintBBox() : this.getSelection()[i].getGeometryBBox();
+                if (bbox && !bbox.isEmpty()) {
+                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
+                }
+            }
+        }
+
+        return selBBox;
     };
 
     /** @override */
