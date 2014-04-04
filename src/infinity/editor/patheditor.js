@@ -120,7 +120,7 @@
 
 
     /** @override */
-    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
+    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
         this.requestInvalidation();
         this._createPathPreviewIfNecessary(partId.point);
 

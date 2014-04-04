@@ -27,8 +27,8 @@
     };
 
     /** @override */
-    GXRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
-        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
+    GXRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
         if (partId.id === GXRectangleEditor.LEFT_SHOULDER_PART_ID ||
                 partId.id === GXRectangleEditor.RIGHT_SHOULDER_PART_ID ||

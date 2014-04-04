@@ -517,8 +517,10 @@
         if (this._mode == GXSelectTool._Mode.Moving) {
             var position = this._editor.getGuides().mapPoint(this._moveCurrent);
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
+                this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
-                    position, this._view.getViewTransform(), gPlatform.modifiers.shiftKey, gPlatform.modifiers.optionKey);
+                    position, this._view.getViewTransform(), this._editor.getGuides(), gPlatform.modifiers.shiftKey, gPlatform.modifiers.optionKey);
+                this._editor.getGuides().finishMap();
             } else {
                 if (gPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
@@ -536,12 +538,14 @@
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
             if (this._editor.getTransformBox() && this._moveStart) {
                 var moveCurrentTransformed = this._view.getViewTransform().mapPoint(this._moveCurrent);
+                this._editor.getGuides().beginMap();
                 var transform = this._editor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
                     this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
                     gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
 
                 this._editor.getTransformBox().setTransform(transform);
                 this._editor.transformSelection(transform, null, null);
+                this._editor.getGuides().finishMap();
             }
             this.invalidateArea();
         }

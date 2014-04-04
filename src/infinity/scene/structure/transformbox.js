@@ -279,14 +279,12 @@
             var dy = deltaTr.getY();
 
             var _snap = function (x, y, snapX, snapY) {
-                if (guides) {
-                    var pt = guides.mapPoint(new GPoint(x + dx, y + dy));
-                    if (snapX) {
-                        dx = pt.getX() - x;
-                    }
-                    if (snapY) {
-                        dy = pt.getY() - y;
-                    }
+                var pt = guides.mapPoint(new GPoint(x + dx, y + dy));
+                if (snapX) {
+                    dx = pt.getX() - x;
+                }
+                if (snapY) {
+                    dy = pt.getY() - y;
                 }
             }.bind(this);
 

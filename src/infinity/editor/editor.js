@@ -604,17 +604,19 @@
      * @param {*} [data] optional data of part that has started the transformation
      */
     GXEditor.prototype.moveSelection = function (delta, align, partId, partData) {
-        // TODO : FIX THIS!!!
         if (align) {
-            var selBBox = this._getSelectionBBox(true);
+            var selBBox = this._getSelectionBBox(false);
 
             var transBBox = selBBox.translated(delta.getX(), delta.getY());
+            this._guides.beginMap();
             var tl = this._guides.mapPoint(transBBox.getSide(GRect.Side.TOP_LEFT));
             delta = tl.subtract(selBBox.getSide(GRect.Side.TOP_LEFT));
         }
 
-        // TODO : Align support
         this.transformSelection(new GTransform(1, 0, 0, 1, delta.getX(), delta.getY()), partId, partData);
+        if (align) {
+            this._guides.finishMap();
+        }
     };
 
     /**

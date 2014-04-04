@@ -42,11 +42,14 @@
     };
 
     /** @override */
-    GXBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
-        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
+    GXBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
         if (partId === GXBlockEditor.RESIZE_HANDLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
+            if (guides) {
+                newPos = guides.mapPoint(newPos);
+            }
             var sourceBBox = this._element.getGeometryBBox();
             var width = sourceBBox.getWidth();
             var height = sourceBBox.getHeight();

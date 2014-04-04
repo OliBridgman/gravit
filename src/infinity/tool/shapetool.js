@@ -175,11 +175,16 @@
      */
     GXShapeTool.prototype._mouseDragStart = function (event) {
         this._dragStart = event.client;
+        this._editor.getGuides().beginMap();
+        this._dragStart = this._view.getWorldTransform().mapPoint(
+            this._editor.getGuides().mapPoint(
+                this._view.getViewTransform().mapPoint(this._dragStart)));
         this._dragCanceled = false;
 
         // Create our shape when user started dragging
         this._shape = this._createShape();
         this._invalidateShape();
+        this._editor.getGuides().finishMap();
     };
 
     /**
@@ -189,7 +194,12 @@
     GXShapeTool.prototype._mouseDrag = function (event) {
         if (!this._dragCanceled) {
             this._dragCurrent = event.client;
+            this._editor.getGuides().beginMap();
+            this._dragCurrent = this._view.getWorldTransform().mapPoint(
+                this._editor.getGuides().mapPoint(
+                    this._view.getViewTransform().mapPoint(this._dragCurrent)));
             this._invalidateShape();
+            this._editor.getGuides().finishMap();
         }
     };
 

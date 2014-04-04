@@ -25,8 +25,8 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
-        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
+    GXPolygonEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
         if (partId === GXPolygonEditor.INSIDE_PART_ID || partId === GXPolygonEditor.OUTSIDE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);

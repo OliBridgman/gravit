@@ -667,10 +667,11 @@
      * @param {GPoint} position the new position in view coordinates
      * the part should be moved to
      * @param {GTransform} viewToWorldTransform - the transformation to apply to position
+     * @param {GXGuides} guides to snap is needed
      * @param {Boolean} shift whether shift key is hold or not
      * @param {Boolean} option whether option key is hold or not
      */
-    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
+    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
         // Set outline flag and/or invalidate by default for each move
         if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
             this.setFlag(GXElementEditor.Flag.Outline);

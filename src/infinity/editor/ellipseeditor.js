@@ -26,8 +26,8 @@
     };
 
     /** @override */
-    GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, shift, option) {
-        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, shift, option);
+    GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
         if (partId === GXEllipseEditor.START_ANGLE_PART_ID || partId === GXEllipseEditor.END_ANGLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
