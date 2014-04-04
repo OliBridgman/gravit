@@ -305,7 +305,14 @@
                 newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(),
                     this._pathRef, this._dpathRef.getAnchorPoints().getPreviousPoint(this._editPt));
             }
+            this._editor.getGuides().beginMap();
+
+            newPos = this._view.getWorldTransform().mapPoint(
+                this._editor.getGuides().mapPoint(
+                    this._view.getViewTransform().mapPoint(newPos)));
+
             this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
+            this._editor.getGuides().finishMap();
         }
         return newPos;
     };

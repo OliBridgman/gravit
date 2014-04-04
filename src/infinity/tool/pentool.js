@@ -124,6 +124,8 @@
             } else {
                 // add new point
                 var pt = this._view.getViewTransform().mapPoint(event.client);
+                this._editor.getGuides().beginMap();
+                pt = this._editor.getGuides().mapPoint(pt);
                 anchorPt = this._constructNewPoint(event, pt);
                 if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
                     if (gPlatform.modifiers.optionKey) {
@@ -133,6 +135,7 @@
                     }
                 }
                 this._addPoint(anchorPt, true, false);
+                this._editor.getGuides().finishMap();
             }
         }
 
@@ -239,8 +242,12 @@
                 newPos = this._constrainIfNeeded(event.client, this._view.getWorldTransform(), this._pathRef);
                 // add new point
                 var clickPt = this._view.getViewTransform().mapPoint(newPos);
+                this._editor.getGuides().beginMap();
+                clickPt = this._editor.getGuides().mapPoint(clickPt);
+                newPos = this._view.getWorldTransform().mapPoint(clickPt);
                 anchorPt = this._constructNewPoint(event, clickPt);
                 this._addPoint(anchorPt, true, false, true);
+                this._editor.getGuides().finishMap();
             } else if (this._editPt) {
                 this._pathEditor.requestInvalidation();
                 newPos = this._updatePoint(event.client);
@@ -435,15 +442,7 @@
                 }
             }
             this._dragStarted = true;
-            var clickPt = this._constrainIfNeeded(
-                event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
-
-            this._pathEditor.requestInvalidation();
-            if (this._editPt.getProperty('tp') == GXPathBase.CornerType.Rounded) {
-                this._updateShoulders(clickPt);
-            } else {
-                this._updateHandles(clickPt);
-            }
+            this._updatePointProperties(event.client);
         }
     };
 
@@ -473,11 +472,7 @@
                     if (!this._dragStarted && this._refPt && !this._editPt) {
                         this._mouseNoDragReleaseOnEdit(event.client);
                     } else if (this._dragStarted) {
-                        var clickPt = this._constrainIfNeeded(
-                            event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
-
-                        this._pathEditor.requestInvalidation();
-                        this._updateHandles(clickPt);
+                        this._updatePointProperties(event.client);
                         if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
                             this._startTransaction(GXPathTool.Transaction.ModifyPointProperties);
                         }
@@ -490,16 +485,9 @@
                         this._setCursorForPosition(null, event.client);
                     }
                 } else if (this._dpathRef) {
+                    var newPos = event.client;
                     if (this._dragStarted) {
-                        var clickPt = this._constrainIfNeeded(
-                            event.client, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
-
-                        this._pathEditor.requestInvalidation();
-                        if (this._editPt.getProperty('tp') == GXPathBase.CornerType.Rounded) {
-                            this._updateShoulders(clickPt);
-                        } else {
-                            this._updateHandles(clickPt);
-                        }
+                        newPos = this._updatePointProperties(event.client);
                     }
                     if (!this._dpathRef.getProperty('closed')) {
                         if (this._newPoint) {
@@ -523,7 +511,7 @@
                         }
                         //this._makePointMajor(this._refPt);
                         if (otherPt && otherPt != this._refPt &&
-                            this._pathEditor.hitAnchorPoint(otherPt, event.client, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                            this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
 
                             this._setCursorForPosition(GUICursor.PenEnd);
                         } else {
@@ -583,6 +571,39 @@
                 this._editPt.setProperty('cl', newVal);
             }
         }
+    };
+
+    /**
+     * This function should be called only if mouse dragging of a point is started.
+     * It updates edited point's handles or shoulders to correspond to new position.
+     * Position is constrained and snapped to guides if needed.
+     * @param {GPoint} clickPt - new position
+     * @returns {GPoint} - modified new position, if it was constrained or snapped to guides
+     * @private
+     */
+    GXPenTool.prototype._updatePointProperties = function(clickPt) {
+        var newPos = clickPt;
+
+        // No need to check _pathEditor and _editPt for null here,
+        // as this function is called only when dragging is started, and they are already checked
+        this._pathEditor.requestInvalidation();
+        if (this._editPt.getProperty('tp') == GXPathBase.CornerType.Rounded) {
+            this._updateShoulders(clickPt);
+        } else {
+            var newPos = this._constrainIfNeeded(
+                clickPt, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
+
+            this._editor.getGuides().beginMap();
+
+            newPos = this._view.getWorldTransform().mapPoint(
+                this._editor.getGuides().mapPoint(
+                    this._view.getViewTransform().mapPoint(newPos)));
+
+            this._updateHandles(newPos);
+            this._editor.getGuides().finishMap();
+        }
+
+        return newPos;
     };
 
     /** override */

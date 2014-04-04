@@ -122,8 +122,11 @@
                     } else {
                         // add new point
                         var pt = this._view.getViewTransform().mapPoint(clickPt);
+                        this._editor.getGuides().beginMap();
+                        pt = this._editor.getGuides().mapPoint(pt);
                         anchorPt = this._constructNewPoint(event, pt);
                         this._addPoint(anchorPt, true, false);
+                        this._editor.getGuides().finishMap();
                     }
                 }
             }
