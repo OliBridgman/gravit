@@ -12,13 +12,13 @@
     }
     GObject.inherit(GXGridLayer, GXViewLayer);
 
-    GXGridLayer.MIN_CELL_SPACE = 5;
+    GXGridLayer.MIN_CELL_SPACE = 10;
 
     /** @override */
     GXGridLayer.prototype.paint = function (context) {
         var scene = this._view.getScene();
         if (scene.getProperty('gridActive')) {
-            var cl = GXColor.parseCSSColor('rgba(255, 0, 0, 0.25)');
+            var cl = GXColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
 
             // Calculate optical cell-size
             var scale  = this._view.getZoom();

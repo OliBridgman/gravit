@@ -18,6 +18,14 @@
      */
     GXGuides.prototype._scene = null;
 
+    GXGuides.prototype.beginMap = function () {
+        // TODO
+    };
+
+    GXGuides.prototype.finishMap = function () {
+        // TODO
+    };
+
     /**
      * Map a point to the current snapping options
      * @param {GPoint} point the point to map
@@ -34,6 +42,10 @@
         }
 
         return result;
+    };
+
+    GXGuides.prototype.mapRect = function (rect) {
+        // TODO
     };
 
     /** @override */

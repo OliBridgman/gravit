@@ -152,7 +152,7 @@
             insertPos.getY(),
             980,
             1000,
-            null//GXColor.parseCSSColor('white')
+            GXColor.parseCSSColor('white')
         ]);
 
         // Append child and be done with it
