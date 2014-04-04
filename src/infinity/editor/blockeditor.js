@@ -47,9 +47,7 @@
 
         if (partId === GXBlockEditor.RESIZE_HANDLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
-            if (guides) {
-                newPos = guides.mapPoint(newPos);
-            }
+            newPos = guides.mapPoint(newPos);
             var sourceBBox = this._element.getGeometryBBox();
             var width = sourceBBox.getWidth();
             var height = sourceBBox.getHeight();

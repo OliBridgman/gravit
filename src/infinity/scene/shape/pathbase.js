@@ -275,7 +275,7 @@
      * @returns {GPoint} a left shoulder point
      */
     GXPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function (fictiveCorner) {
-        if (this._getPath() && this._parent && this.$cl && (fictiveCorner || this.$cr)) {
+        if (this.getPath() && this.$cl && (fictiveCorner || this.$cr)) {
             var prevPt = this._parent.getPreviousPoint(this);
             return this._parent._getLeftShoulderPoint(this, prevPt);
         } else {
@@ -294,7 +294,7 @@
     GXPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
-        if (this._getPath() && this._parent && this.$cl && (fictiveCorner || this.$cr)) {
+        if (this.getPath() && this.$cl && (fictiveCorner || this.$cr)) {
             var prevPt = this._parent.getPreviousPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var prevPtTr = prevPt._getTransformedCopy(transform);
@@ -311,7 +311,7 @@
      * @returns {GPoint} a right shoulder point
      */
     GXPathBase.AnchorPoint.prototype.getRightShoulderPoint = function (fictiveCorner) {
-        if (this._getPath() && this._parent && this.$cr && (fictiveCorner || this.$cl)) {
+        if (this.getPath() && this.$cr && (fictiveCorner || this.$cl)) {
             var nextPt = this._parent.getNextPoint(this);
             return this._parent._getRightShoulderPoint(this, nextPt);
         } else {
@@ -330,7 +330,7 @@
     GXPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
-        if (this._getPath() && this._parent && this.$cr && (fictiveCorner || this.$cl)) {
+        if (this.getPath() && this.$cr && (fictiveCorner || this.$cl)) {
             var nextPt = this._parent.getNextPoint(this);
             var curPtTr = this._getTransformedCopy(transform);
             var nextPtTr = nextPt._getTransformedCopy(transform);
@@ -346,7 +346,7 @@
      */
     GXPathBase.AnchorPoint.prototype.getLeftShoulderLimitPoint = function () {
         var limitPt = null;
-        if (this._getPath() && this._parent) {
+        if (this.getPath()) {
             var prevPt = this._parent.getPreviousPoint(this);
             if (prevPt) {
                 limitPt = this._parent._getLeftShoulderPoint(this, prevPt, true);
@@ -361,7 +361,7 @@
      */
     GXPathBase.AnchorPoint.prototype.getRightShoulderLimitPoint = function () {
         var limitPt = null;
-        if (this._getPath() && this._parent) {
+        if (this.getPath()) {
             var nextPt = this._parent.getNextPoint(this);
             if (nextPt) {
                 limitPt = this._parent._getRightShoulderPoint(this, nextPt, true);
@@ -372,7 +372,7 @@
 
     /** @override */
     GXPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
-        var path = this._getPath();
+        var path = this.getPath();
         if (change == GXNode._Change.BeforePropertiesChange || change == GXNode._Change.AfterPropertiesChange) {
             if (gUtil.containsObjectKey(args.properties, GXPathBase.AnchorPoint.GeometryProperties)) {
                 if (change === GXNode._Change.BeforePropertiesChange) {
@@ -475,7 +475,7 @@
      * @returns {GXPathBase}
      * @private
      */
-    GXPathBase.AnchorPoint.prototype._getPath = function () {
+    GXPathBase.AnchorPoint.prototype.getPath = function () {
         return this._parent ? this._parent._parent : null;
     };
 

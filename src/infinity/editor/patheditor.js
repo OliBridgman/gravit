@@ -126,10 +126,10 @@
 
         switch (partId.type) {
             case GXPathEditor.PartType.LeftHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, shift);
+                this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, shift, guides);
                 break;
             case GXPathEditor.PartType.RightHandle:
-                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, shift);
+                this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, shift, guides);
                 break;
             case GXPathEditor.PartType.LeftShoulder:
             case GXPathEditor.PartType.RightShoulder:
@@ -622,6 +622,31 @@
                 .containsPoint(location);
         }
         return false;
+    };
+
+    /**
+     * Calculates and returns GPoint in scene coordinates, corresponding to the given anchor point
+     * @param {GXPathBase.AnchorPoint} anchorPt - the given anchor point
+     * @returns {GPoint}
+     */
+    GXPathEditor.prototype.getPointCoord = function (anchorPt) {
+        var pt = null;
+
+        if (anchorPt.getPath() == this._element || this._elementPreview && anchorPt.getPath() == this._elementPreview) {
+            var element = this._element;
+            if (this._elementPreview && anchorPt.getPath() == this._elementPreview) {
+                element = this._elementPreview;
+            }
+            var xPos = anchorPt.getProperty('x');
+            var yPos = anchorPt.getProperty('y');
+            pt = new GPoint(xPos, yPos);
+            var transform = element.getTransform();
+            if (transform) {
+                pt = transform.mapPoint(pt);
+            }
+        }
+
+        return pt;
     };
 
     /** @override */
@@ -1335,13 +1360,15 @@
      * @private
      */
     GXPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty,
-                                                                    position, viewToWorldTransform, ratio) {
+                                                                    position, viewToWorldTransform, ratio, guides) {
         var newPos = position;
         if (ratio) {
             var worldToViewTransform = viewToWorldTransform.inverted();
             newPos = this.constrainPosition(position, worldToViewTransform, sourcePoint);
         }
         newPos = viewToWorldTransform.mapPoint(newPos);
+        guides.beginMap();
+        newPos = guides.mapPoint(newPos);
         var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
 
@@ -1351,6 +1378,8 @@
 
         this._transformPreviewPointCoordinates(sourcePoint, xProperty, yProperty,
             new GTransform(1, 0, 0, 1, newPos.getX() - sourcePosition.getX(), newPos.getY() - sourcePosition.getY()));
+
+        guides.finishMap();
     };
 
     /**

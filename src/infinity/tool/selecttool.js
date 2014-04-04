@@ -515,7 +515,7 @@
      */
     GXSelectTool.prototype._updateSelectionTransform = function () {
         if (this._mode == GXSelectTool._Mode.Moving) {
-            var position = this._editor.getGuides().mapPoint(this._moveCurrent);
+            var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
@@ -530,10 +530,27 @@
                 }
 
                 position = this._view.getViewTransform().mapPoint(position);
-                var moveDelta = position.subtract(this._moveStartTransformed);
+                if (this._editorMovePartInfo && this._editorMovePartInfo.id &&
+                        (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point ||
+                        this._editorMovePartInfo.id.type == GXPathEditor.PartType.Segment)) {
 
-                this._editor.moveSelection(moveDelta, true,
-                    this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
+                    this._editor.getGuides().beginMap();
+                    position = this._editor.getGuides().mapPoint(position);
+
+                    var moveDelta = position.subtract(this._moveStartTransformed);
+                    if (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point) {
+                        var moveStart = this._editorMovePartInfo.editor.getPointCoord(this._editorMovePartInfo.id.point);
+                        moveDelta = position.subtract(moveStart);
+                    }
+                    this._editor.moveSelection(moveDelta, false,
+                        this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
+
+                    this._editor.getGuides().finishMap();
+                } else {
+                    var moveDelta = position.subtract(this._moveStartTransformed);
+                    this._editor.moveSelection(moveDelta, true,
+                        this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
+                }
             }
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
             if (this._editor.getTransformBox() && this._moveStart) {
