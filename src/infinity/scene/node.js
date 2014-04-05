@@ -726,7 +726,7 @@
         for (var property in properties) {
             var defaultValue = properties[property];
             var value = this['$' + property];
-            if (!gUtil.equals(myValue, defaultValue, true)) {
+            if (!gUtil.equals(value, defaultValue, true)) {
                 var myValue = filter(property, value);
                 blob[property] = myValue;
             }
