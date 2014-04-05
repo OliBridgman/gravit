@@ -18,10 +18,27 @@
 
     /** @override */
     GXPolygonEditor.prototype.getBBoxMargin = function () {
-        if (this._showSegmentDetails()) {
-            return GXElementEditor.OPTIONS.annotationSizeRegular + 1;
-        }
+        // Don't include annotations when in showSegmentDetails mode here, as they are added in getAnnotBBox
         return GXPathBaseEditor.prototype.getBBoxMargin.call(this);
+    };
+
+    /** @override */
+    GXPolygonEditor.prototype.getAnnotBBox = function (transform) {
+        var bbox = null;
+        if (this._showSegmentDetails()) {
+            // Pre-multiply internal transformation if any
+            var trans = this._transform ? transform.multiplied(this._transform) : transform;
+
+            var _addToBBox = function (other) {
+                if (other && !other.isEmpty()) {
+                    bbox = bbox ? bbox.united(other) : other;
+                }
+            };
+            this.getPaintElement().iterateSegments(function (point, inside, angle) {
+                _addToBBox(this._getAnnotationBBox(transform, point));
+            }.bind(this), true);
+        }
+        return bbox;
     };
 
     /** @override */

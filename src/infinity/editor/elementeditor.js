@@ -610,10 +610,15 @@
                 targetTransform = this._transform.multiplied(transform);
             }
 
+            var bbox = this.getPaintElement().getGeometryBBox();
+            var annotBBox = this.getAnnotBBox(transform);
+            if (annotBBox) {
+                bbox = bbox.united(annotBBox);
+            }
             var expand = this.getBBoxMargin();
 
             return targetTransform
-                .mapRect(this.getPaintElement().getGeometryBBox())
+                .mapRect(bbox)
                 .expanded(expand, expand, expand, expand);
         } else {
             return null;
@@ -628,6 +633,15 @@
      */
     GXElementEditor.prototype.getBBoxMargin = function () {
         return 1;
+    };
+
+    /**
+     * Returns bbox based on visible annotations
+     * @param {GTransform} transform the transformation of the scene
+     * @return {GRect} the bbox in view coordinates
+     */
+    GXElementEditor.prototype.getAnnotBBox = function (transform) {
+        return null;
     };
 
     /**
