@@ -1369,8 +1369,11 @@
             newPos = this.constrainPosition(position, worldToViewTransform, sourcePoint);
         }
         newPos = viewToWorldTransform.mapPoint(newPos);
+        // Don't perform handles mapping for now
+        /*
         guides.beginMap();
         newPos = guides.mapPoint(newPos);
+        */
         var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
 
@@ -1381,7 +1384,7 @@
         this._transformPreviewPointCoordinates(sourcePoint, xProperty, yProperty,
             new GTransform(1, 0, 0, 1, newPos.getX() - sourcePosition.getX(), newPos.getY() - sourcePosition.getY()));
 
-        guides.finishMap();
+        //guides.finishMap();
     };
 
     /**

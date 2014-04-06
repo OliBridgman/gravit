@@ -593,14 +593,16 @@
             var newPos = this._constrainIfNeeded(
                 clickPt, this._view.getWorldTransform(), this._pathRef, this._dragStartPt);
 
+            // Don't perform handles mapping for now
+            /*
             this._editor.getGuides().beginMap();
 
             newPos = this._view.getWorldTransform().mapPoint(
                 this._editor.getGuides().mapPoint(
                     this._view.getViewTransform().mapPoint(newPos)));
-
+            */
             this._updateHandles(newPos);
-            this._editor.getGuides().finishMap();
+            //this._editor.getGuides().finishMap();
         }
 
         return newPos;
