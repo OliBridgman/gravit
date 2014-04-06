@@ -137,6 +137,25 @@
     };
 
     /** @override */
+    GXPolygon.prototype.getCenter = function (includeTransform) {
+        var center = new GPoint(this.$cx, this.$cy);
+        if (includeTransform && this.$trf) {
+            center = this.$trf.mapPoint(center);
+        }
+        return center;
+    };
+
+    /** @override */
+    GXPolygon.prototype.getOrigHalfWidth = function () {
+        return this.$or >= this.$ir ? this.$or : this.$ir;
+    };
+
+    /** @override */
+    GXPolygon.prototype.getOrigHalfHeight = function () {
+        return this.$or >= this.$ir ? this.$or : this.$ir;
+    };
+
+    /** @override */
     GXPolygon.prototype.toString = function () {
         return "[GXPolygon]";
     };

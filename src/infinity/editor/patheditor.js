@@ -80,9 +80,11 @@
     GXPathEditor.prototype.getBBox = function (transform) {
         var bbox = GXPathBaseEditor.prototype.getBBox.call(this, transform);
         if (this._showAnnotations()) {
+
             // Pre-multiply internal transformation if any
+            // (though it should not be set for path)
             if (this._transform) {
-                transform = transform.multiplied(this._transform);
+                transform = this._transform.multiplied(transform);
             }
 
             var _addToBBox = function (other) {

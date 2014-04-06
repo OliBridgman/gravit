@@ -23,11 +23,14 @@
     };
 
     /** @override */
-    GXPolygonEditor.prototype.getAnnotBBox = function (transform) {
+    GXPolygonEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
         var bbox = null;
         if (this._showSegmentDetails()) {
-            // Pre-multiply internal transformation if any
-            var trans = this._transform ? transform.multiplied(this._transform) : transform;
+            var trf = transform;
+            // Use internal transformation if required
+            if (includeEditorTransform && this._transform) {
+                trf = this._transform.multiplied(transform);
+            }
 
             var _addToBBox = function (other) {
                 if (other && !other.isEmpty()) {
@@ -35,7 +38,7 @@
                 }
             };
             this.getPaintElement().iterateSegments(function (point, inside, angle) {
-                _addToBBox(this._getAnnotationBBox(transform, point));
+                _addToBBox(this._getAnnotationBBox(trf, point));
             }.bind(this), true);
         }
         return bbox;
@@ -47,6 +50,11 @@
 
         if (partId === GXPolygonEditor.INSIDE_PART_ID || partId === GXPolygonEditor.OUTSIDE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
+            newPos = guides.mapPoint(newPos);
+            var trf = this._element.getProperty('trf');
+            if (trf) {
+                newPos = trf.inverted().mapPoint(newPos);
+            }
 
             if (!this._elementPreview) {
                 this._elementPreview = new GXPolygon();
@@ -54,8 +62,7 @@
                     [GXShape.GeometryProperties, GXPolygon.GeometryProperties], true);
             }
 
-            var center = this._element.getGeometryBBox().getSide(GRect.Side.CENTER);
-
+            var center = this._element.getCenter(false);
             var angle = Math.atan2(newPos.getY() - center.getY(), newPos.getX() - center.getX()) - partData;
             var distance = gMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
 

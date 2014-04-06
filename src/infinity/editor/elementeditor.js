@@ -303,6 +303,7 @@
     GXElementEditor.prototype._elementPreview = null;
 
     /**
+     * Current transformation to be applied to the element in world coordinates
      * @type {GTransform}
      * @private
      */
@@ -606,20 +607,24 @@
         if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
             var targetTransform = transform;
 
+            // Pre-multiply internal transformation if any
             if (this._transform) {
                 targetTransform = this._transform.multiplied(transform);
             }
 
             var bbox = this.getPaintElement().getGeometryBBox();
-            var annotBBox = this.getAnnotBBox(transform);
-            if (annotBBox) {
-                bbox = bbox.united(annotBBox);
-            }
             var expand = this.getBBoxMargin();
-
-            return targetTransform
-                .mapRect(bbox)
+            bbox = targetTransform.mapRect(bbox)
                 .expanded(expand, expand, expand, expand);
+
+            if (this.hasFlag(GXElementEditor.Flag.Detail)) {
+                var customBBox = this.getCustomBBox(targetTransform, false);
+                if (customBBox) {
+                    bbox = bbox.united(customBBox);
+                }
+            }
+
+            return bbox;
         } else {
             return null;
         }
@@ -636,11 +641,13 @@
     };
 
     /**
-     * Returns bbox based on visible annotations
-     * @param {GTransform} transform the transformation of the scene
+     * Returns bbox based on visible additional elements like annotations or center cross
+     * @param {GTransform} transform - the transformation to apply to points
+     * before calculating additional visible elements {usually world to view transformation}
+     * @param {Boolean} includeEditorTransform - shows if editor internal transformation should be applied
      * @return {GRect} the bbox in view coordinates
      */
-    GXElementEditor.prototype.getAnnotBBox = function (transform) {
+    GXElementEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
         return null;
     };
 

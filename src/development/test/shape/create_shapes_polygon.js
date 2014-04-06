@@ -28,7 +28,7 @@
 
             var polygon = new GXPolygon();
             polygon.setProperties(['pts', 'cx', 'cy', 'ir', 'or', 'ia', 'oa', 'icr', 'ocr'],
-                [segments, x + polySize / 2, y + polySize / 2, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness])
+                [segments, x + polySize / 2, y + polySize / 2, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
             var editor = GXEditor.getEditor(scene);
             editor.insertElements([polygon]);

@@ -26,9 +26,27 @@
     };
 
     /** @override */
+    GXEllipseEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
+        var bbox = null;
+        if (this.hasFlag(GXElementEditor.Flag.Selected) && this.hasFlag(GXElementEditor.Flag.Detail)) {
+            // Don't include individual annotations here,
+            // as they are added all together in getBBoxMargin(),
+            // but add center cross, as it may be outside of ellipse arc or chord
+            var trf = transform;
+            // Use internal transformation if required
+            if (includeEditorTransform && this._transform) {
+                trf = this._transform.multiplied(transform);
+            }
+
+            var center = this.getPaintElement().getCenter(true);
+            bbox = gAnnotation.getAnnotationBBox(trf, center, GXElementEditor.OPTIONS.centerCrossSize * 2);
+        }
+        return bbox;
+    };
+
+    /** @override */
     GXEllipseEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
         GXPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
-
         if (partId === GXEllipseEditor.START_ANGLE_PART_ID || partId === GXEllipseEditor.END_ANGLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
 

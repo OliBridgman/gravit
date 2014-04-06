@@ -214,6 +214,35 @@
         return null;
     };
 
+    /**
+     * Returns a center of the shape in world coordinates. Shape's internal transformation is applied if needed
+     * @param {Boolean} includeTransform - whether to apply shape's internal transformation
+     * @returns {GPoint}
+     */
+    GXShape.prototype.getCenter = function (includeTransform) {
+        var center = new GPoint(0, 0);
+        if (includeTransform && this.$trf) {
+            center = this.$trf.mapPoint(center);
+        }
+        return center;
+    };
+
+    /**
+     * Returns shape's internal half width before applying any transformations
+     * @returns {Number}
+     */
+    GXShape.prototype.getOrigHalfWidth = function () {
+        return 1.0;
+    };
+
+    /**
+     * Returns shape's internal half width before applying any transformations
+     * @returns {Number}
+     */
+    GXShape.prototype.getOrigHalfHeight = function () {
+        return 1.0;
+    };
+
     /** @override */
     GXShape.prototype.toString = function () {
         return "[GXShape]";

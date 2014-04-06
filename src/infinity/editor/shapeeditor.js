@@ -74,8 +74,10 @@
             var crossHalfSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 2;
             var tMatrix = targetTransform.getMatrix();
 
-            if (Math.abs(tMatrix[0]) > crossHalfSizeMax && Math.abs(tMatrix[3]) > crossHalfSizeMax) {
-                var center = targetTransform.mapPoint(new GPoint(0, 0));
+            if (Math.abs(tMatrix[0]) * element.getOrigHalfWidth() > crossHalfSizeMax &&
+                    Math.abs(tMatrix[3]) * element.getOrigHalfHeight() > crossHalfSizeMax) {
+
+                var center = targetTransform.mapPoint(element.getCenter(false));
                 var cx = Math.floor(center.getX()) + 0.5;
                 var cy = Math.floor(center.getY()) + 0.5;
                 var cs = GXElementEditor.OPTIONS.centerCrossSize / 2;
