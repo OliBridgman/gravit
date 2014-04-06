@@ -1,0 +1,3673 @@
+/*
+ *  Font Awesome 4.0.3 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("font/fontawesome-webfont.eot?v=4.0.3");
+  src: url("font/fontawesome-webfont.eot?#iefix&v=4.0.3") format("embedded-opentype"), url("font/fontawesome-webfont.woff?v=4.0.3") format("woff"), url("font/fontawesome-webfont.ttf?v=4.0.3") format("truetype"), url("font/fontawesome-webfont.svg?v=4.0.3#fontawesomeregular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_core\.scss}line{font-family:\000034}}
+.fa {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* makes the font 33% larger relative to the icon container */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_larger\.scss}line{font-family:\000035}}
+.fa-lg {
+  font-size: 1.33333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_larger\.scss}line{font-family:\0000310}}
+.fa-2x {
+  font-size: 2em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_larger\.scss}line{font-family:\0000311}}
+.fa-3x {
+  font-size: 3em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_larger\.scss}line{font-family:\0000312}}
+.fa-4x {
+  font-size: 4em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_larger\.scss}line{font-family:\0000313}}
+.fa-5x {
+  font-size: 5em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_fixed-width\.scss}line{font-family:\000033}}
+.fa-fw {
+  width: 1.28571em;
+  text-align: center;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_list\.scss}line{font-family:\000034}}
+.fa-ul {
+  padding-left: 0;
+  margin-left: 2.14286em;
+  list-style-type: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_list\.scss}line{font-family:\000038}}
+.fa-ul > li {
+  position: relative;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_list\.scss}line{font-family:\0000310}}
+.fa-li {
+  position: absolute;
+  left: -2.14286em;
+  width: 2.14286em;
+  top: 0.14286em;
+  text-align: center;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_list\.scss}line{font-family:\0000316}}
+.fa-li.fa-lg {
+  left: -1.85714em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_bordered-pulled\.scss}line{font-family:\000034}}
+.fa-border {
+  padding: .2em .25em .15em;
+  border: solid 0.08em #eeeeee;
+  border-radius: .1em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_bordered-pulled\.scss}line{font-family:\0000310}}
+.pull-right {
+  float: right;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_bordered-pulled\.scss}line{font-family:\0000311}}
+.pull-left {
+  float: left;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_bordered-pulled\.scss}line{font-family:\0000314}}
+.fa.pull-left {
+  margin-right: .3em;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_bordered-pulled\.scss}line{font-family:\0000315}}
+.fa.pull-right {
+  margin-left: .3em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_spinning\.scss}line{font-family:\000034}}
+.fa-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+@-moz-keyframes spin {
+  /* line 12, ../bower_components/font-awesome/scss/_spinning.scss */
+  0% {
+    -moz-transform: rotate(0deg);
+  }
+
+  /* line 13, ../bower_components/font-awesome/scss/_spinning.scss */
+  100% {
+    -moz-transform: rotate(359deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  /* line 16, ../bower_components/font-awesome/scss/_spinning.scss */
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+
+  /* line 17, ../bower_components/font-awesome/scss/_spinning.scss */
+  100% {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@-o-keyframes spin {
+  /* line 20, ../bower_components/font-awesome/scss/_spinning.scss */
+  0% {
+    -o-transform: rotate(0deg);
+  }
+
+  /* line 21, ../bower_components/font-awesome/scss/_spinning.scss */
+  100% {
+    -o-transform: rotate(359deg);
+  }
+}
+
+@-ms-keyframes spin {
+  /* line 24, ../bower_components/font-awesome/scss/_spinning.scss */
+  0% {
+    -ms-transform: rotate(0deg);
+  }
+
+  /* line 25, ../bower_components/font-awesome/scss/_spinning.scss */
+  100% {
+    -ms-transform: rotate(359deg);
+  }
+}
+
+@keyframes spin {
+  /* line 28, ../bower_components/font-awesome/scss/_spinning.scss */
+  0% {
+    transform: rotate(0deg);
+  }
+
+  /* line 29, ../bower_components/font-awesome/scss/_spinning.scss */
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_rotated-flipped\.scss}line{font-family:\000034}}
+.fa-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=$rotation);
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_rotated-flipped\.scss}line{font-family:\000035}}
+.fa-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=$rotation);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_rotated-flipped\.scss}line{font-family:\000036}}
+.fa-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=$rotation);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_rotated-flipped\.scss}line{font-family:\000038}}
+.fa-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=$rotation);
+  -webkit-transform: scale(-1, 1);
+  -moz-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_rotated-flipped\.scss}line{font-family:\000039}}
+.fa-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=$rotation);
+  -webkit-transform: scale(1, -1);
+  -moz-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  -o-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_stacked\.scss}line{font-family:\000034}}
+.fa-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_stacked\.scss}line{font-family:\0000312}}
+.fa-stack-1x, .fa-stack-2x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_stacked\.scss}line{font-family:\0000318}}
+.fa-stack-1x {
+  line-height: inherit;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_stacked\.scss}line{font-family:\0000319}}
+.fa-stack-2x {
+  font-size: 2em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_stacked\.scss}line{font-family:\0000320}}
+.fa-inverse {
+  color: white;
+}
+
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000034}}
+.fa-glass:before {
+  content: "\f000";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000035}}
+.fa-music:before {
+  content: "\f001";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000036}}
+.fa-search:before {
+  content: "\f002";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000037}}
+.fa-envelope-o:before {
+  content: "\f003";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000038}}
+.fa-heart:before {
+  content: "\f004";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\000039}}
+.fa-star:before {
+  content: "\f005";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000310}}
+.fa-star-o:before {
+  content: "\f006";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000311}}
+.fa-user:before {
+  content: "\f007";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000312}}
+.fa-film:before {
+  content: "\f008";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000313}}
+.fa-th-large:before {
+  content: "\f009";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000314}}
+.fa-th:before {
+  content: "\f00a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000315}}
+.fa-th-list:before {
+  content: "\f00b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000316}}
+.fa-check:before {
+  content: "\f00c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000317}}
+.fa-times:before {
+  content: "\f00d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000318}}
+.fa-search-plus:before {
+  content: "\f00e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000319}}
+.fa-search-minus:before {
+  content: "\f010";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000320}}
+.fa-power-off:before {
+  content: "\f011";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000321}}
+.fa-signal:before {
+  content: "\f012";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000323}}
+.fa-gear:before,
+.fa-cog:before {
+  content: "\f013";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000324}}
+.fa-trash-o:before {
+  content: "\f014";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000325}}
+.fa-home:before {
+  content: "\f015";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000326}}
+.fa-file-o:before {
+  content: "\f016";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000327}}
+.fa-clock-o:before {
+  content: "\f017";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000328}}
+.fa-road:before {
+  content: "\f018";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000329}}
+.fa-download:before {
+  content: "\f019";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000330}}
+.fa-arrow-circle-o-down:before {
+  content: "\f01a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000331}}
+.fa-arrow-circle-o-up:before {
+  content: "\f01b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000332}}
+.fa-inbox:before {
+  content: "\f01c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000333}}
+.fa-play-circle-o:before {
+  content: "\f01d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000335}}
+.fa-rotate-right:before,
+.fa-repeat:before {
+  content: "\f01e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000336}}
+.fa-refresh:before {
+  content: "\f021";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000337}}
+.fa-list-alt:before {
+  content: "\f022";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000338}}
+.fa-lock:before {
+  content: "\f023";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000339}}
+.fa-flag:before {
+  content: "\f024";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000340}}
+.fa-headphones:before {
+  content: "\f025";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000341}}
+.fa-volume-off:before {
+  content: "\f026";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000342}}
+.fa-volume-down:before {
+  content: "\f027";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000343}}
+.fa-volume-up:before {
+  content: "\f028";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000344}}
+.fa-qrcode:before {
+  content: "\f029";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000345}}
+.fa-barcode:before {
+  content: "\f02a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000346}}
+.fa-tag:before {
+  content: "\f02b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000347}}
+.fa-tags:before {
+  content: "\f02c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000348}}
+.fa-book:before {
+  content: "\f02d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000349}}
+.fa-bookmark:before {
+  content: "\f02e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000350}}
+.fa-print:before {
+  content: "\f02f";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000351}}
+.fa-camera:before {
+  content: "\f030";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000352}}
+.fa-font:before {
+  content: "\f031";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000353}}
+.fa-bold:before {
+  content: "\f032";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000354}}
+.fa-italic:before {
+  content: "\f033";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000355}}
+.fa-text-height:before {
+  content: "\f034";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000356}}
+.fa-text-width:before {
+  content: "\f035";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000357}}
+.fa-align-left:before {
+  content: "\f036";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000358}}
+.fa-align-center:before {
+  content: "\f037";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000359}}
+.fa-align-right:before {
+  content: "\f038";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000360}}
+.fa-align-justify:before {
+  content: "\f039";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000361}}
+.fa-list:before {
+  content: "\f03a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000363}}
+.fa-dedent:before,
+.fa-outdent:before {
+  content: "\f03b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000364}}
+.fa-indent:before {
+  content: "\f03c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000365}}
+.fa-video-camera:before {
+  content: "\f03d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000366}}
+.fa-picture-o:before {
+  content: "\f03e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000367}}
+.fa-pencil:before {
+  content: "\f040";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000368}}
+.fa-map-marker:before {
+  content: "\f041";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000369}}
+.fa-adjust:before {
+  content: "\f042";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000370}}
+.fa-tint:before {
+  content: "\f043";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000372}}
+.fa-edit:before,
+.fa-pencil-square-o:before {
+  content: "\f044";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000373}}
+.fa-share-square-o:before {
+  content: "\f045";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000374}}
+.fa-check-square-o:before {
+  content: "\f046";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000375}}
+.fa-arrows:before {
+  content: "\f047";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000376}}
+.fa-step-backward:before {
+  content: "\f048";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000377}}
+.fa-fast-backward:before {
+  content: "\f049";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000378}}
+.fa-backward:before {
+  content: "\f04a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000379}}
+.fa-play:before {
+  content: "\f04b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000380}}
+.fa-pause:before {
+  content: "\f04c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000381}}
+.fa-stop:before {
+  content: "\f04d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000382}}
+.fa-forward:before {
+  content: "\f04e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000383}}
+.fa-fast-forward:before {
+  content: "\f050";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000384}}
+.fa-step-forward:before {
+  content: "\f051";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000385}}
+.fa-eject:before {
+  content: "\f052";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000386}}
+.fa-chevron-left:before {
+  content: "\f053";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000387}}
+.fa-chevron-right:before {
+  content: "\f054";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000388}}
+.fa-plus-circle:before {
+  content: "\f055";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000389}}
+.fa-minus-circle:before {
+  content: "\f056";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000390}}
+.fa-times-circle:before {
+  content: "\f057";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000391}}
+.fa-check-circle:before {
+  content: "\f058";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000392}}
+.fa-question-circle:before {
+  content: "\f059";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000393}}
+.fa-info-circle:before {
+  content: "\f05a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000394}}
+.fa-crosshairs:before {
+  content: "\f05b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000395}}
+.fa-times-circle-o:before {
+  content: "\f05c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000396}}
+.fa-check-circle-o:before {
+  content: "\f05d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000397}}
+.fa-ban:before {
+  content: "\f05e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000398}}
+.fa-arrow-left:before {
+  content: "\f060";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\0000399}}
+.fa-arrow-right:before {
+  content: "\f061";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003100}}
+.fa-arrow-up:before {
+  content: "\f062";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003101}}
+.fa-arrow-down:before {
+  content: "\f063";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003103}}
+.fa-mail-forward:before,
+.fa-share:before {
+  content: "\f064";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003104}}
+.fa-expand:before {
+  content: "\f065";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003105}}
+.fa-compress:before {
+  content: "\f066";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003106}}
+.fa-plus:before {
+  content: "\f067";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003107}}
+.fa-minus:before {
+  content: "\f068";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003108}}
+.fa-asterisk:before {
+  content: "\f069";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003109}}
+.fa-exclamation-circle:before {
+  content: "\f06a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003110}}
+.fa-gift:before {
+  content: "\f06b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003111}}
+.fa-leaf:before {
+  content: "\f06c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003112}}
+.fa-fire:before {
+  content: "\f06d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003113}}
+.fa-eye:before {
+  content: "\f06e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003114}}
+.fa-eye-slash:before {
+  content: "\f070";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003116}}
+.fa-warning:before,
+.fa-exclamation-triangle:before {
+  content: "\f071";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003117}}
+.fa-plane:before {
+  content: "\f072";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003118}}
+.fa-calendar:before {
+  content: "\f073";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003119}}
+.fa-random:before {
+  content: "\f074";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003120}}
+.fa-comment:before {
+  content: "\f075";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003121}}
+.fa-magnet:before {
+  content: "\f076";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003122}}
+.fa-chevron-up:before {
+  content: "\f077";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003123}}
+.fa-chevron-down:before {
+  content: "\f078";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003124}}
+.fa-retweet:before {
+  content: "\f079";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003125}}
+.fa-shopping-cart:before {
+  content: "\f07a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003126}}
+.fa-folder:before {
+  content: "\f07b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003127}}
+.fa-folder-open:before {
+  content: "\f07c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003128}}
+.fa-arrows-v:before {
+  content: "\f07d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003129}}
+.fa-arrows-h:before {
+  content: "\f07e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003130}}
+.fa-bar-chart-o:before {
+  content: "\f080";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003131}}
+.fa-twitter-square:before {
+  content: "\f081";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003132}}
+.fa-facebook-square:before {
+  content: "\f082";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003133}}
+.fa-camera-retro:before {
+  content: "\f083";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003134}}
+.fa-key:before {
+  content: "\f084";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003136}}
+.fa-gears:before,
+.fa-cogs:before {
+  content: "\f085";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003137}}
+.fa-comments:before {
+  content: "\f086";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003138}}
+.fa-thumbs-o-up:before {
+  content: "\f087";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003139}}
+.fa-thumbs-o-down:before {
+  content: "\f088";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003140}}
+.fa-star-half:before {
+  content: "\f089";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003141}}
+.fa-heart-o:before {
+  content: "\f08a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003142}}
+.fa-sign-out:before {
+  content: "\f08b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003143}}
+.fa-linkedin-square:before {
+  content: "\f08c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003144}}
+.fa-thumb-tack:before {
+  content: "\f08d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003145}}
+.fa-external-link:before {
+  content: "\f08e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003146}}
+.fa-sign-in:before {
+  content: "\f090";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003147}}
+.fa-trophy:before {
+  content: "\f091";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003148}}
+.fa-github-square:before {
+  content: "\f092";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003149}}
+.fa-upload:before {
+  content: "\f093";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003150}}
+.fa-lemon-o:before {
+  content: "\f094";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003151}}
+.fa-phone:before {
+  content: "\f095";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003152}}
+.fa-square-o:before {
+  content: "\f096";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003153}}
+.fa-bookmark-o:before {
+  content: "\f097";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003154}}
+.fa-phone-square:before {
+  content: "\f098";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003155}}
+.fa-twitter:before {
+  content: "\f099";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003156}}
+.fa-facebook:before {
+  content: "\f09a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003157}}
+.fa-github:before {
+  content: "\f09b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003158}}
+.fa-unlock:before {
+  content: "\f09c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003159}}
+.fa-credit-card:before {
+  content: "\f09d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003160}}
+.fa-rss:before {
+  content: "\f09e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003161}}
+.fa-hdd-o:before {
+  content: "\f0a0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003162}}
+.fa-bullhorn:before {
+  content: "\f0a1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003163}}
+.fa-bell:before {
+  content: "\f0f3";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003164}}
+.fa-certificate:before {
+  content: "\f0a3";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003165}}
+.fa-hand-o-right:before {
+  content: "\f0a4";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003166}}
+.fa-hand-o-left:before {
+  content: "\f0a5";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003167}}
+.fa-hand-o-up:before {
+  content: "\f0a6";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003168}}
+.fa-hand-o-down:before {
+  content: "\f0a7";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003169}}
+.fa-arrow-circle-left:before {
+  content: "\f0a8";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003170}}
+.fa-arrow-circle-right:before {
+  content: "\f0a9";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003171}}
+.fa-arrow-circle-up:before {
+  content: "\f0aa";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003172}}
+.fa-arrow-circle-down:before {
+  content: "\f0ab";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003173}}
+.fa-globe:before {
+  content: "\f0ac";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003174}}
+.fa-wrench:before {
+  content: "\f0ad";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003175}}
+.fa-tasks:before {
+  content: "\f0ae";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003176}}
+.fa-filter:before {
+  content: "\f0b0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003177}}
+.fa-briefcase:before {
+  content: "\f0b1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003178}}
+.fa-arrows-alt:before {
+  content: "\f0b2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003180}}
+.fa-group:before,
+.fa-users:before {
+  content: "\f0c0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003182}}
+.fa-chain:before,
+.fa-link:before {
+  content: "\f0c1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003183}}
+.fa-cloud:before {
+  content: "\f0c2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003184}}
+.fa-flask:before {
+  content: "\f0c3";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003186}}
+.fa-cut:before,
+.fa-scissors:before {
+  content: "\f0c4";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003188}}
+.fa-copy:before,
+.fa-files-o:before {
+  content: "\f0c5";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003189}}
+.fa-paperclip:before {
+  content: "\f0c6";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003191}}
+.fa-save:before,
+.fa-floppy-o:before {
+  content: "\f0c7";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003192}}
+.fa-square:before {
+  content: "\f0c8";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003193}}
+.fa-bars:before {
+  content: "\f0c9";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003194}}
+.fa-list-ul:before {
+  content: "\f0ca";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003195}}
+.fa-list-ol:before {
+  content: "\f0cb";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003196}}
+.fa-strikethrough:before {
+  content: "\f0cc";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003197}}
+.fa-underline:before {
+  content: "\f0cd";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003198}}
+.fa-table:before {
+  content: "\f0ce";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003199}}
+.fa-magic:before {
+  content: "\f0d0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003200}}
+.fa-truck:before {
+  content: "\f0d1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003201}}
+.fa-pinterest:before {
+  content: "\f0d2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003202}}
+.fa-pinterest-square:before {
+  content: "\f0d3";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003203}}
+.fa-google-plus-square:before {
+  content: "\f0d4";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003204}}
+.fa-google-plus:before {
+  content: "\f0d5";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003205}}
+.fa-money:before {
+  content: "\f0d6";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003206}}
+.fa-caret-down:before {
+  content: "\f0d7";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003207}}
+.fa-caret-up:before {
+  content: "\f0d8";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003208}}
+.fa-caret-left:before {
+  content: "\f0d9";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003209}}
+.fa-caret-right:before {
+  content: "\f0da";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003210}}
+.fa-columns:before {
+  content: "\f0db";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003212}}
+.fa-unsorted:before,
+.fa-sort:before {
+  content: "\f0dc";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003214}}
+.fa-sort-down:before,
+.fa-sort-asc:before {
+  content: "\f0dd";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003216}}
+.fa-sort-up:before,
+.fa-sort-desc:before {
+  content: "\f0de";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003217}}
+.fa-envelope:before {
+  content: "\f0e0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003218}}
+.fa-linkedin:before {
+  content: "\f0e1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003220}}
+.fa-rotate-left:before,
+.fa-undo:before {
+  content: "\f0e2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003222}}
+.fa-legal:before,
+.fa-gavel:before {
+  content: "\f0e3";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003224}}
+.fa-dashboard:before,
+.fa-tachometer:before {
+  content: "\f0e4";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003225}}
+.fa-comment-o:before {
+  content: "\f0e5";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003226}}
+.fa-comments-o:before {
+  content: "\f0e6";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003228}}
+.fa-flash:before,
+.fa-bolt:before {
+  content: "\f0e7";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003229}}
+.fa-sitemap:before {
+  content: "\f0e8";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003230}}
+.fa-umbrella:before {
+  content: "\f0e9";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003232}}
+.fa-paste:before,
+.fa-clipboard:before {
+  content: "\f0ea";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003233}}
+.fa-lightbulb-o:before {
+  content: "\f0eb";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003234}}
+.fa-exchange:before {
+  content: "\f0ec";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003235}}
+.fa-cloud-download:before {
+  content: "\f0ed";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003236}}
+.fa-cloud-upload:before {
+  content: "\f0ee";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003237}}
+.fa-user-md:before {
+  content: "\f0f0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003238}}
+.fa-stethoscope:before {
+  content: "\f0f1";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003239}}
+.fa-suitcase:before {
+  content: "\f0f2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003240}}
+.fa-bell-o:before {
+  content: "\f0a2";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003241}}
+.fa-coffee:before {
+  content: "\f0f4";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003242}}
+.fa-cutlery:before {
+  content: "\f0f5";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003243}}
+.fa-file-text-o:before {
+  content: "\f0f6";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003244}}
+.fa-building-o:before {
+  content: "\f0f7";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003245}}
+.fa-hospital-o:before {
+  content: "\f0f8";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003246}}
+.fa-ambulance:before {
+  content: "\f0f9";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003247}}
+.fa-medkit:before {
+  content: "\f0fa";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003248}}
+.fa-fighter-jet:before {
+  content: "\f0fb";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003249}}
+.fa-beer:before {
+  content: "\f0fc";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003250}}
+.fa-h-square:before {
+  content: "\f0fd";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003251}}
+.fa-plus-square:before {
+  content: "\f0fe";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003252}}
+.fa-angle-double-left:before {
+  content: "\f100";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003253}}
+.fa-angle-double-right:before {
+  content: "\f101";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003254}}
+.fa-angle-double-up:before {
+  content: "\f102";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003255}}
+.fa-angle-double-down:before {
+  content: "\f103";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003256}}
+.fa-angle-left:before {
+  content: "\f104";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003257}}
+.fa-angle-right:before {
+  content: "\f105";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003258}}
+.fa-angle-up:before {
+  content: "\f106";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003259}}
+.fa-angle-down:before {
+  content: "\f107";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003260}}
+.fa-desktop:before {
+  content: "\f108";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003261}}
+.fa-laptop:before {
+  content: "\f109";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003262}}
+.fa-tablet:before {
+  content: "\f10a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003264}}
+.fa-mobile-phone:before,
+.fa-mobile:before {
+  content: "\f10b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003265}}
+.fa-circle-o:before {
+  content: "\f10c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003266}}
+.fa-quote-left:before {
+  content: "\f10d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003267}}
+.fa-quote-right:before {
+  content: "\f10e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003268}}
+.fa-spinner:before {
+  content: "\f110";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003269}}
+.fa-circle:before {
+  content: "\f111";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003271}}
+.fa-mail-reply:before,
+.fa-reply:before {
+  content: "\f112";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003272}}
+.fa-github-alt:before {
+  content: "\f113";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003273}}
+.fa-folder-o:before {
+  content: "\f114";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003274}}
+.fa-folder-open-o:before {
+  content: "\f115";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003275}}
+.fa-smile-o:before {
+  content: "\f118";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003276}}
+.fa-frown-o:before {
+  content: "\f119";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003277}}
+.fa-meh-o:before {
+  content: "\f11a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003278}}
+.fa-gamepad:before {
+  content: "\f11b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003279}}
+.fa-keyboard-o:before {
+  content: "\f11c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003280}}
+.fa-flag-o:before {
+  content: "\f11d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003281}}
+.fa-flag-checkered:before {
+  content: "\f11e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003282}}
+.fa-terminal:before {
+  content: "\f120";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003283}}
+.fa-code:before {
+  content: "\f121";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003284}}
+.fa-reply-all:before {
+  content: "\f122";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003285}}
+.fa-mail-reply-all:before {
+  content: "\f122";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003288}}
+.fa-star-half-empty:before,
+.fa-star-half-full:before,
+.fa-star-half-o:before {
+  content: "\f123";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003289}}
+.fa-location-arrow:before {
+  content: "\f124";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003290}}
+.fa-crop:before {
+  content: "\f125";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003291}}
+.fa-code-fork:before {
+  content: "\f126";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003293}}
+.fa-unlink:before,
+.fa-chain-broken:before {
+  content: "\f127";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003294}}
+.fa-question:before {
+  content: "\f128";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003295}}
+.fa-info:before {
+  content: "\f129";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003296}}
+.fa-exclamation:before {
+  content: "\f12a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003297}}
+.fa-superscript:before {
+  content: "\f12b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003298}}
+.fa-subscript:before {
+  content: "\f12c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003299}}
+.fa-eraser:before {
+  content: "\f12d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003300}}
+.fa-puzzle-piece:before {
+  content: "\f12e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003301}}
+.fa-microphone:before {
+  content: "\f130";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003302}}
+.fa-microphone-slash:before {
+  content: "\f131";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003303}}
+.fa-shield:before {
+  content: "\f132";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003304}}
+.fa-calendar-o:before {
+  content: "\f133";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003305}}
+.fa-fire-extinguisher:before {
+  content: "\f134";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003306}}
+.fa-rocket:before {
+  content: "\f135";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003307}}
+.fa-maxcdn:before {
+  content: "\f136";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003308}}
+.fa-chevron-circle-left:before {
+  content: "\f137";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003309}}
+.fa-chevron-circle-right:before {
+  content: "\f138";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003310}}
+.fa-chevron-circle-up:before {
+  content: "\f139";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003311}}
+.fa-chevron-circle-down:before {
+  content: "\f13a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003312}}
+.fa-html5:before {
+  content: "\f13b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003313}}
+.fa-css3:before {
+  content: "\f13c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003314}}
+.fa-anchor:before {
+  content: "\f13d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003315}}
+.fa-unlock-alt:before {
+  content: "\f13e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003316}}
+.fa-bullseye:before {
+  content: "\f140";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003317}}
+.fa-ellipsis-h:before {
+  content: "\f141";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003318}}
+.fa-ellipsis-v:before {
+  content: "\f142";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003319}}
+.fa-rss-square:before {
+  content: "\f143";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003320}}
+.fa-play-circle:before {
+  content: "\f144";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003321}}
+.fa-ticket:before {
+  content: "\f145";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003322}}
+.fa-minus-square:before {
+  content: "\f146";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003323}}
+.fa-minus-square-o:before {
+  content: "\f147";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003324}}
+.fa-level-up:before {
+  content: "\f148";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003325}}
+.fa-level-down:before {
+  content: "\f149";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003326}}
+.fa-check-square:before {
+  content: "\f14a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003327}}
+.fa-pencil-square:before {
+  content: "\f14b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003328}}
+.fa-external-link-square:before {
+  content: "\f14c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003329}}
+.fa-share-square:before {
+  content: "\f14d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003330}}
+.fa-compass:before {
+  content: "\f14e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003332}}
+.fa-toggle-down:before,
+.fa-caret-square-o-down:before {
+  content: "\f150";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003334}}
+.fa-toggle-up:before,
+.fa-caret-square-o-up:before {
+  content: "\f151";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003336}}
+.fa-toggle-right:before,
+.fa-caret-square-o-right:before {
+  content: "\f152";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003338}}
+.fa-euro:before,
+.fa-eur:before {
+  content: "\f153";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003339}}
+.fa-gbp:before {
+  content: "\f154";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003341}}
+.fa-dollar:before,
+.fa-usd:before {
+  content: "\f155";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003343}}
+.fa-rupee:before,
+.fa-inr:before {
+  content: "\f156";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003347}}
+.fa-cny:before,
+.fa-rmb:before,
+.fa-yen:before,
+.fa-jpy:before {
+  content: "\f157";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003350}}
+.fa-ruble:before,
+.fa-rouble:before,
+.fa-rub:before {
+  content: "\f158";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003352}}
+.fa-won:before,
+.fa-krw:before {
+  content: "\f159";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003354}}
+.fa-bitcoin:before,
+.fa-btc:before {
+  content: "\f15a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003355}}
+.fa-file:before {
+  content: "\f15b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003356}}
+.fa-file-text:before {
+  content: "\f15c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003357}}
+.fa-sort-alpha-asc:before {
+  content: "\f15d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003358}}
+.fa-sort-alpha-desc:before {
+  content: "\f15e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003359}}
+.fa-sort-amount-asc:before {
+  content: "\f160";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003360}}
+.fa-sort-amount-desc:before {
+  content: "\f161";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003361}}
+.fa-sort-numeric-asc:before {
+  content: "\f162";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003362}}
+.fa-sort-numeric-desc:before {
+  content: "\f163";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003363}}
+.fa-thumbs-up:before {
+  content: "\f164";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003364}}
+.fa-thumbs-down:before {
+  content: "\f165";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003365}}
+.fa-youtube-square:before {
+  content: "\f166";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003366}}
+.fa-youtube:before {
+  content: "\f167";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003367}}
+.fa-xing:before {
+  content: "\f168";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003368}}
+.fa-xing-square:before {
+  content: "\f169";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003369}}
+.fa-youtube-play:before {
+  content: "\f16a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003370}}
+.fa-dropbox:before {
+  content: "\f16b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003371}}
+.fa-stack-overflow:before {
+  content: "\f16c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003372}}
+.fa-instagram:before {
+  content: "\f16d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003373}}
+.fa-flickr:before {
+  content: "\f16e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003374}}
+.fa-adn:before {
+  content: "\f170";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003375}}
+.fa-bitbucket:before {
+  content: "\f171";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003376}}
+.fa-bitbucket-square:before {
+  content: "\f172";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003377}}
+.fa-tumblr:before {
+  content: "\f173";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003378}}
+.fa-tumblr-square:before {
+  content: "\f174";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003379}}
+.fa-long-arrow-down:before {
+  content: "\f175";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003380}}
+.fa-long-arrow-up:before {
+  content: "\f176";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003381}}
+.fa-long-arrow-left:before {
+  content: "\f177";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003382}}
+.fa-long-arrow-right:before {
+  content: "\f178";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003383}}
+.fa-apple:before {
+  content: "\f179";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003384}}
+.fa-windows:before {
+  content: "\f17a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003385}}
+.fa-android:before {
+  content: "\f17b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003386}}
+.fa-linux:before {
+  content: "\f17c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003387}}
+.fa-dribbble:before {
+  content: "\f17d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003388}}
+.fa-skype:before {
+  content: "\f17e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003389}}
+.fa-foursquare:before {
+  content: "\f180";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003390}}
+.fa-trello:before {
+  content: "\f181";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003391}}
+.fa-female:before {
+  content: "\f182";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003392}}
+.fa-male:before {
+  content: "\f183";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003393}}
+.fa-gittip:before {
+  content: "\f184";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003394}}
+.fa-sun-o:before {
+  content: "\f185";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003395}}
+.fa-moon-o:before {
+  content: "\f186";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003396}}
+.fa-archive:before {
+  content: "\f187";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003397}}
+.fa-bug:before {
+  content: "\f188";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003398}}
+.fa-vk:before {
+  content: "\f189";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003399}}
+.fa-weibo:before {
+  content: "\f18a";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003400}}
+.fa-renren:before {
+  content: "\f18b";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003401}}
+.fa-pagelines:before {
+  content: "\f18c";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003402}}
+.fa-stack-exchange:before {
+  content: "\f18d";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003403}}
+.fa-arrow-circle-o-right:before {
+  content: "\f18e";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003404}}
+.fa-arrow-circle-o-left:before {
+  content: "\f190";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003406}}
+.fa-toggle-left:before,
+.fa-caret-square-o-left:before {
+  content: "\f191";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003407}}
+.fa-dot-circle-o:before {
+  content: "\f192";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003408}}
+.fa-wheelchair:before {
+  content: "\f193";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003409}}
+.fa-vimeo-square:before {
+  content: "\f194";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003411}}
+.fa-turkish-lira:before,
+.fa-try:before {
+  content: "\f195";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/bower_components\/font-awesome\/scss\/_icons\.scss}line{font-family:\00003412}}
+.fa-plus-square-o:before {
+  content: "\f196";
+}
+
+/*
+
+
+$light_0: rgb(240, 240, 240);
+$light_1: rgb(199, 199, 199);
+$light_2: rgb(158, 158, 158);
+$light_3: rgb(100, 102, 104);
+
+$shade_0: rgb(49, 51, 53);
+$shade_1: rgb(57, 57, 57);
+$shade_2: rgb(64, 67, 69);
+$shade_3: rgb(77, 80, 82);
+
+
+$bg_1: rgb(77, 80, 82);
+$bgRegular: rgb(57, 57, 57);
+$bgDark: rgb(57, 57, 57);
+
+$windowColor1: rgb(57, 57, 57);
+
+$darkGreen: rgb(159, 180, 0);
+$lightGreen: rgb(246, 245, 164);
+$yellow: rgb(255, 255, 0);
+$magentaColor: rgb(230, 0, 99);
+
+$windowHeaderColor: $darkGreen;
+$windowHeaderTextColor: $yellow;
+
+$highlightColor: rgb(31, 141, 214);
+$highlightTextColor: white;
+*/
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\000031}}
+body, html {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /** Prevent double-tap = zoom on windows mobile */
+  -ms-content-zooming: none;
+  /** No focus and selection outline except for input fields */
+  /**No selection except for input fields */
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000310}}
+body, body *, html, html * {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000315}}
+body *.fa, html *.fa {
+  font-size: 14px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000322}}
+body button::-moz-focus-inner, body input::-moz-focus-inner, html button::-moz-focus-inner, html input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000329}}
+body table, html table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000334}}
+body *, html * {
+  /* Disable long-press callouts. */
+  -webkit-touch-callout: none;
+  /* Disable highlighting of links. */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  /* Prevent auto-resizing. */
+  -webkit-text-size-adjust: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000344}}
+body :not(input):not(select):not(textArea):focus, html :not(input):not(select):not(textArea):focus {
+  outline: none !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000349}}
+body :not(input):not(select):not(textArea), html :not(input):not(select):not(textArea) {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000355}}
+body hr, html hr {
+  height: 1px;
+  padding: 0px;
+  border: none;
+  margin: 5px 0px;
+  border-bottom: 1px dotted #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000364}}
+body h1.g-divider, html h1.g-divider {
+  text-align: center;
+  line-height: 0 !important;
+  border-bottom: 1px dotted #2e3132;
+  margin: 10px 0px 5px 0px;
+  color: #2e3132;
+  text-transform: uppercase;
+  text-shadow: 0px 1px 0px #646668;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000373}}
+body h1.g-divider:first-line, html h1.g-divider:first-line {
+  background-color: #4d5052;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000376}}
+body h1.g-divider:before, html h1.g-divider:before {
+  content: "\a0\a0";
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_base\.scss}line{font-family:\0000379}}
+body h1.g-divider:after, html h1.g-divider:after {
+  content: "\a0\a0";
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\000035}}
+.g-cursor-select {
+  cursor: url("cursor/select.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\000039}}
+.g-cursor-select-inverse {
+  cursor: url("cursor/select-inverse.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000313}}
+.g-cursor-select-dot {
+  cursor: url("cursor/select-dot.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000317}}
+.g-cursor-select-dot-inverse {
+  cursor: url("cursor/select-dot-inverse.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000321}}
+.g-cursor-zoom-plus {
+  cursor: url("cursor/zoom-plus.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000325}}
+.g-cursor-zoom-minus {
+  cursor: url("cursor/zoom-minus.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000329}}
+.g-cursor-zoom-none {
+  cursor: url("cursor/zoom-none.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000333}}
+.g-cursor-hand-open {
+  cursor: url("cursor/hand-open.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000337}}
+.g-cursor-hand-closed {
+  cursor: url("cursor/hand-closed.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000341}}
+.g-cursor-cross {
+  cursor: url("cursor/cross.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000345}}
+.g-cursor-pen {
+  cursor: url("cursor/pen.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000349}}
+.g-cursor-pen-start {
+  cursor: url("cursor/pen-start.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000353}}
+.g-cursor-pen-end {
+  cursor: url("cursor/pen-end.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000357}}
+.g-cursor-pen-plus {
+  cursor: url("cursor/pen-plus.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000361}}
+.g-cursor-pen-minus {
+  cursor: url("cursor/pen-minus.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000365}}
+.g-cursor-pen-modify {
+  cursor: url("cursor/pen-modify.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000369}}
+.g-cursor-pen-drag {
+  cursor: url("cursor/pen-drag.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000373}}
+.g-cursor-lasso {
+  cursor: url("cursor/lasso.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/_cursors\.scss}line{font-family:\0000377}}
+.g-cursor-pipette {
+  cursor: url("cursor/pipette.cur"), auto !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\000031}}
+button, .g-button, input, select, .g-input {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  margin: 0px;
+  padding: 3px;
+  line-height: 1em;
+  vertical-align: middle;
+  background: #4d5052;
+  color: #c7c7c7;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000315}}
+button, .g-button {
+  padding: 2px 3px;
+  border: 1px solid #646668;
+  border-right: 1px solid #313435;
+  border-bottom: 1px solid #313435;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000321}}
+button, button *, .g-button, .g-button * {
+  vertical-align: middle;
+  text-align: center;
+  color: #c7c7c7;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000327}}
+button svg, .g-button svg {
+  fill: #c7c7c7;
+  stroke: #c7c7c7;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000332}}
+button:active, button.g-active, .g-button:active, .g-button.g-active {
+  background: #393939;
+  border: 1px solid #313435;
+  border-right: 1px solid #646668;
+  border-bottom: 1px solid #646668;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000338}}
+button:active, button:active *, button.g-active, button.g-active *, .g-button:active, .g-button:active *, .g-button.g-active, .g-button.g-active * {
+  color: white;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000342}}
+button:active svg, button.g-active svg, .g-button:active svg, .g-button.g-active svg {
+  fill: white;
+  stroke: white;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000348}}
+button:disabled, .g-button:disabled {
+  background: #4d5052 !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000351}}
+button:disabled, button:disabled *, .g-button:disabled, .g-button:disabled * {
+  color: gray !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000355}}
+button:disabled svg, .g-button:disabled svg {
+  fill: gray !important;
+  stroke: gray !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000361}}
+button.g-flat, .g-button.g-flat {
+  border: 1px solid transparent;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000367}}
+button.g-flat:active, button.g-flat.g-active, .g-button.g-flat:active, .g-button.g-flat.g-active {
+  background: transparent;
+  border: 1px solid transparent;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000371}}
+button.g-flat:active, button.g-flat:active *, button.g-flat.g-active, button.g-flat.g-active *, .g-button.g-flat:active, .g-button.g-flat:active *, .g-button.g-flat.g-active, .g-button.g-flat.g-active * {
+  color: #1f8dd6;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000375}}
+button.g-flat:active svg, button.g-flat.g-active svg, .g-button.g-flat:active svg, .g-button.g-flat.g-active svg {
+  fill: #1f8dd6;
+  stroke: #1f8dd6;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000381}}
+button.g-flat:disabled, .g-button.g-flat:disabled {
+  background: transparent !important;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000387}}
+select, input, textArea, .g-input {
+  border: 1px solid #393939;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25) inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000392}}
+select:disabled, input:disabled, textArea:disabled, .g-input:disabled {
+  background: transparent !important;
+  color: gray !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\0000397}}
+select:focus, input:focus, textArea:focus, .g-input:focus {
+  outline: none;
+  border: 1px solid #1f8dd6;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003102}}
+select.g-flat, input.g-flat, textArea.g-flat, .g-input.g-flat {
+  border: 1px solid transparent;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003110}}
+select {
+  text-indent: 0.01px;
+  text-overflow: '';
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PSc1Jz4NCjxwb2x5Z29uIHBvaW50cz0iMCwwIDEwLDAgNSw1IiBmaWxsPSJyZ2IoMTk5LCAxOTksIDE5OSkiLz4NCjwvc3ZnPg==");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003118}}
+input[type="range"] {
+  height: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003121}}
+input[type="range"]::-moz-range-track {
+  border: none;
+  background: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003126}}
+input[type="range"]::-moz-range-thumb {
+  background: #c7c7c7;
+  border: 1px solid #2e3132;
+  width: 8px;
+  height: 8px;
+  border-radius: 100px;
+  padding: 0px;
+  margin: 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003136}}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #c7c7c7;
+  border: 1px solid #2e3132;
+  width: 9px;
+  height: 9px;
+  border-radius: 100px;
+  padding: 0px;
+  margin: 0px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003148}}
+input[type=checkbox], input[type=radio] {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003155}}
+input[type=checkbox]:checked, input[type=radio]:checked {
+  background: #1f8dd6;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_input\.scss}line{font-family:\00003160}}
+input[type=radio] {
+  border-radius: 2em;
+  bottom: 2px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_form\.scss}line{font-family:\000032}}
+.g-form td {
+  padding-bottom: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_form\.scss}line{font-family:\000036}}
+.g-form tr:last-child td {
+  padding-bottom: 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_form\.scss}line{font-family:\0000310}}
+.g-form td.label {
+  padding-right: 5px;
+  text-align: right;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_form\.scss}line{font-family:\0000315}}
+.g-form td.label:not(:first-child) {
+  padding-left: 10px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_form\.scss}line{font-family:\0000319}}
+.g-form td > hr {
+  margin: 1px 0px 2px 0px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\000031}}
+.g-hint > .title {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dotted #dedede;
+  font-weight: bold;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\000039}}
+.g-hint > .introduction {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  color: #575757;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000315}}
+.g-hint > table.shortcuts {
+  width: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000319}}
+.g-hint > table.shortcuts tr td {
+  vertical-align: middle;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  line-height: 1.3em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000326}}
+.g-hint > table.shortcuts tr td:first-child {
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000331}}
+.g-hint > table.shortcuts tr td:last-child {
+  width: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000335}}
+.g-hint > table.shortcuts tr:not(:last-child) td {
+  border-bottom: 1px solid #dedede;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000339}}
+.g-hint span.shortcut {
+  display: inline-block;
+  color: #575757;
+  box-shadow: 1px 1px 0px #cccccc;
+  border: 1px solid #979797;
+  border-radius: 3px;
+  padding: 1px 3px 1px 3px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000348}}
+.g-hint span.shortcut.pressed {
+  background: #eaeaea;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_hint\.scss}line{font-family:\0000352}}
+.g-hint span.shortcut-divider {
+  display: inline-block;
+  padding: 1px 3px 1px 3px;
+}
+
+/** Base styling for ul menu */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\000032}}
+.g-menu {
+  margin: 0px;
+  padding: 0px;
+  font: caption;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\000037}}
+.g-menu, .g-menu * {
+  /** Make everything based on border-box model */
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\000039}}
+.g-menu *, .g-menu *:before, .g-menu *:after, .g-menu * *, .g-menu * *:before, .g-menu * *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/** Styling for a menu ul if it is not the root */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000316}}
+.g-menu:not(.g-menu-root) {
+  position: absolute;
+  z-index: 100;
+  border: 1px solid #2e3132;
+  background: #393939;
+  color: #c7c7c7;
+  padding: 4px 0px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/** Clear border-radius depending on direction */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000327}}
+.g-menu:not(.g-menu-root).g-menu-top {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000331}}
+.g-menu:not(.g-menu-root).g-menu-bottom {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000335}}
+.g-menu:not(.g-menu-root).g-menu-left {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000339}}
+.g-menu:not(.g-menu-root).g-menu-right {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+/** Styling for a menu item li */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000345}}
+.g-menu-item {
+  list-style-type: none;
+  display: table;
+  margin: 0px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/** Set to full width and reduce font-size if not on root */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000354}}
+.g-menu:not(.g-menu-root) > .g-menu-item {
+  width: 100%;
+  padding: 1px 10px 1px 20px;
+}
+
+/* Styling for each span within a menu item */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000360}}
+.g-menu-item > span {
+  display: table-cell;
+  cursor: default;
+}
+
+/** Fix line-height for sub menu items */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000366}}
+.g-menu:not(.g-menu-root) > .g-menu-item > span {
+  line-height: 20px;
+}
+
+/** Change tail styling as we might be adding an arrow */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000371}}
+.g-menu-item-menu > span.g-menu-item-tail {
+  text-align: right;
+  font-family: FontAwesome !important;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/** Tail padding for root and submenu are different */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000382}}
+.g-menu:not(.g-menu-root) > .g-menu-item-menu > span.g-menu-item-tail {
+  padding-left: 20px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000385}}
+.g-menu.g-menu-root > .g-menu-item-menu > span.g-menu-item-tail {
+  padding-left: 5px;
+}
+
+/** For root menu items */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000390}}
+.g-menu:not(.g-menu-root) > .g-menu-item > span {
+  line-height: 20px;
+}
+
+/** Add tail arrow indicator to right and spacing if sub-menu and not root */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\0000395}}
+.g-menu:not(.g-menu-root) > .g-menu-item-menu > span.g-menu-item-tail:before {
+  content: "\f0da";
+}
+
+/** Add tail arrow indicator to bottom and spacing if sub-menu and root and part of a menu button */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003100}}
+.g-menu-button > .g-menu-item-menu > span.g-menu-item-tail:before {
+  content: "\f0d7";
+}
+
+/** Icon needs fixed width */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003105}}
+.g-menu-item > span.g-menu-item-icon {
+  width: 16px;
+  font-size: 14px;
+}
+
+/** Right align shortcut and give some spacing as well on the left side */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003111}}
+.g-menu-item > span.g-menu-item-shortcut {
+  text-align: right;
+  padding-left: 20px;
+  color: gray;
+}
+
+/** Define styling of a special "divider" li menu item */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003118}}
+.g-menu-item-divider {
+  background: #2e3132;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 1px;
+  padding: 0px !important;
+}
+
+/** Hide Divider if it is the first- or last-child */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003128}}
+.g-menu-item-divider:first-child,
+.g-menu-item-divider:last-child {
+  display: none;
+}
+
+/** Make opacity for disabled items */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003133}}
+.g-menu-item.g-disabled > span {
+  color: gray;
+}
+
+/** Set active/hover color if not disabled */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003143}}
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled),
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span,
+.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled),
+.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled) > span,
+.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled),
+.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled) > span {
+  background: #1f8dd6;
+  color: white;
+}
+
+/** Release left-padding for checked items to have our checkmark fit */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003149}}
+.g-menu:not(.g-menu-root) > .g-menu-item.g-menu-item-checked {
+  padding-left: 4px;
+}
+
+/** Replace icon with checkmark for checked icons */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003154}}
+.g-menu-item.g-menu-item-checked > span.g-menu-item-icon {
+  display: table-cell !important;
+  text-align: left;
+  font-size: 12px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003160}}
+.g-menu-item.g-menu-item-checked > span.g-menu-item-icon:before {
+  font-family: FontAwesome !important;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f00c";
+}
+
+/** Adjustments for menu bar */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003171}}
+.g-menu-bar > .g-menu {
+  height: 100%;
+  display: inline-block;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003176}}
+.g-menu-bar > .g-menu > .g-menu-item {
+  float: left;
+  height: 100%;
+  vertical-align: middle;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003182}}
+.g-menu-bar > .g-menu > .g-menu-item > span {
+  vertical-align: middle;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003186}}
+.g-menu-bar > .g-menu > .g-menu-item {
+  padding: 0px 5px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003190}}
+.g-menu-bar > .g-menu > .g-menu-item > span.g-menu-item-tail {
+  padding-left: 0px;
+}
+
+/** Adjustments for menu button */
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003196}}
+.g-menu-button,
+.g-menu-button > .g-menu-item {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003201}}
+.g-menu-button > .g-menu-item {
+  width: 100%;
+  text-align: center;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003206}}
+.g-menu-button > .g-menu-item > span {
+  display: inline;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_menu\.scss}line{font-family:\00003210}}
+.g-menu-button > .g-menu-item.g-disabled > span {
+  color: inherit;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\000032}}
+ul.jqtree-tree,
+ul.jqtree-tree ul.jqtree_common {
+  list-style: none outside;
+  margin-bottom: 0;
+  margin-top: 0px;
+  padding: 0;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\000039}}
+ul.jqtree-tree ul.jqtree_common {
+  display: block;
+  margin-left: 15px;
+  margin-right: 0;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000315}}
+ul.jqtree-tree li.jqtree-closed > ul.jqtree_common {
+  display: none;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000319}}
+ul.jqtree-tree li.jqtree_common {
+  clear: both;
+  list-style-type: none;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000324}}
+ul.jqtree-tree .jqtree-toggler {
+  vertical-align: middle;
+  padding-right: 3px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000329}}
+ul.jqtree-tree .jqtree-element {
+  margin: 0px;
+  padding: 0px 3px 3px 3px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000334}}
+ul.jqtree-tree .jqtree-title {
+  vertical-align: middle;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000338}}
+ul.jqtree-tree li.jqtree-folder .jqtree-title {
+  margin-left: 0;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000342}}
+ul.jqtree-tree .jqtree-toggler.jqtree-closed {
+  background-position: 0 0;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000346}}
+span.jqtree-dragging {
+  color: #fff;
+  background: #000;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 5px 8px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000354}}
+ul.jqtree-tree li.jqtree-ghost {
+  position: relative;
+  z-index: 10;
+  margin-right: 10px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000360}}
+ul.jqtree-tree li.jqtree-ghost span {
+  display: block;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000364}}
+ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
+  border-radius: 9999px;
+  background: white;
+  border: 2px solid maroon;
+  height: 8px;
+  width: 8px;
+  position: absolute;
+  top: -4px;
+  left: 2px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000375}}
+ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
+  background-color: maroon;
+  height: 2px;
+  padding: 0;
+  position: absolute;
+  top: -1px;
+  left: 10px;
+  width: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000385}}
+ul.jqtree-tree li.jqtree-ghost.jqtree-inside {
+  margin-left: 48px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\0000389}}
+ul.jqtree-tree span.jqtree-border {
+  position: absolute;
+  display: block;
+  left: 0px;
+  top: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: solid 2px maroon;
+  border-radius: 4px;
+  margin: 0;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\00003101}}
+ul.jqtree-tree .jqtree-element {
+  width: 100%;
+  *width: auto;
+  position: relative;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\00003108}}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+  background: #1f8dd6;
+  color: white;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_tree\.scss}line{font-family:\00003114}}
+ul.jqtree-tree li.jqtree-active > .jqtree-element,
+ul.jqtree-tree li.jqtree-active > .jqtree-element:hover {
+  background: #393939;
+  color: white;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_dialog\.scss}line{font-family:\000031}}
+.g-dialog {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  background: #4d5052;
+  color: #c7c7c7;
+  border: 1px solid #2e3132;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_dialog\.scss}line{font-family:\0000310}}
+.g-dialog > .header {
+  background: #393939;
+  color: #c7c7c7;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_overlay\.scss}line{font-family:\000031}}
+.g-modal-background {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_overlay\.scss}line{font-family:\0000310}}
+.g-overlay {
+  background: #4d5052;
+  color: #c7c7c7;
+  border: 1px solid #2e3132;
+  padding: 3px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorbutton\.scss}line{font-family:\000032}}
+.g-color-button > .g-color-swatch {
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorbutton\.scss}line{font-family:\000036}}
+.g-color-button > span:last-child:not(:first-child) {
+  padding-left: 5px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorswatch\.scss}line{font-family:\000031}}
+.g-color-swatches {
+  cursor: url("cursor/pipette.cur"), auto !important;
+  border-collapse: separate;
+  border-spacing: 1px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorswatch\.scss}line{font-family:\000036}}
+.g-color-swatches .swatch {
+  cursor: url("cursor/pipette.cur"), auto !important;
+  border: 1px solid #393939;
+  width: 8px;
+  height: 8px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorswatch\.scss}line{font-family:\0000312}}
+.g-color-swatches .swatch:hover {
+  border: 1px solid aquamarine;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorswatch\.scss}line{font-family:\0000318}}
+.g-color-swatch {
+  width: 1em;
+  height: 1em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_colorswatch\.scss}line{font-family:\0000323}}
+div.g-color-swatch {
+  display: inline-block;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\000033}}
+.g-gradient-editor > .container {
+  display: table;
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\000037}}
+.g-gradient-editor > .container > div {
+  display: table-cell;
+  vertical-align: top;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000312}}
+.g-gradient-editor > .container > .editor {
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000315}}
+.g-gradient-editor > .container > .editor > .gradient {
+  height: 12px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000319}}
+.g-gradient-editor > .container > .editor > .stops {
+  position: relative;
+  height: 12px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000323}}
+.g-gradient-editor > .container > .editor > .stops > .stop {
+  position: absolute;
+  z-index: 1;
+  margin-left: -5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000328}}
+.g-gradient-editor > .container > .editor > .stops > .stop, .g-gradient-editor > .container > .editor > .stops > .stop * {
+  cursor: url("cursor/select-dot.cur"), auto !important;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000332}}
+.g-gradient-editor > .container > .editor > .stops > .stop > .stop-color {
+  background: #c7c7c7;
+  border: 1px solid #2e3132;
+  width: 8px;
+  height: 8px;
+  border-radius: 100px;
+  padding: 0px;
+  margin: 0px;
+  margin-top: 1px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000342}}
+.g-gradient-editor > .container > .editor > .stops > .stop > .stop-color::before {
+  border-color: transparent transparent #2e3132 transparent;
+  border-style: solid;
+  border-width: 5px;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: -10px;
+  left: 0px;
+  content: '';
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000356}}
+.g-gradient-editor > .container > .editor > .stops > .stop.g-active > .stop-color {
+  border: 2px solid black;
+  margin-left: -1px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/component\/_gradienteditor\.scss}line{font-family:\0000360}}
+.g-gradient-editor > .container > .editor > .stops > .stop.g-active > .stop-color::before {
+  border-color: transparent transparent black transparent;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_workspace\.scss}line{font-family:\000031}}
+#workspace {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  font: caption;
+  background: #4d5052;
+  color: #c7c7c7;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_header\.scss}line{font-family:\000031}}
+#header {
+  position: absolute;
+  width: 100%;
+  height: 2em;
+  padding: 2px 0px;
+  background: #4d5052;
+  border-bottom: 1px solid #313435;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\000031}}
+#toolbar {
+  position: absolute;
+  width: 35px;
+  background: #4d5052;
+  border-right: 1px solid #313435;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\000037}}
+#toolbar > div.section {
+  border-top: 1px solid #646668;
+  border-bottom: 1px solid #313435;
+  padding: 2px 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000312}}
+#toolbar > div.section button {
+  border: none;
+  border-radius: 0px;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0px;
+  margin: 1px 3px;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000323}}
+#toolbar > div.section button:hover, #toolbar > div.section button:active, #toolbar > div.section button.g-active {
+  background-color: #393939;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000327}}
+#toolbar > div.section button > span.fa:first-child {
+  font-size: 16px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000332}}
+#toolbar > div.section .divider {
+  background: #2e3132;
+  width: 100%;
+  height: 1px;
+  margin: 3px 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000339}}
+#toolbar > div.section.sidebars {
+  padding: 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000342}}
+#toolbar > div.section.sidebars button {
+  margin: 0px;
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000349}}
+#toolbar > div.section.toolpanel button {
+  margin: 1px 3px;
+  width: 28px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\0000353}}
+#toolbar > div.section.toolpanel button:active, #toolbar > div.section.toolpanel button.g-active {
+  background-color: #1f8dd6;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_sidebar\.scss}line{font-family:\000031}}
+#sidebar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 170px;
+  height: 100%;
+  border-left: 1px solid #646668;
+  border-right: 1px solid #2e3132;
+  background: #4d5052;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_sidebar\.scss}line{font-family:\0000311}}
+#sidebar, #sidebar *:not(.fa) {
+  font: small-caption;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_windows\.scss}line{font-family:\000031}}
+#windows {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #393939;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\000031}}
+#palettes {
+  position: absolute;
+  right: 0px;
+  width: 250px;
+  background: #4d5052;
+  border-left: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\000038}}
+#palettes .palette-group {
+  overflow: hidden;
+  border-bottom: 1px solid #313435;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000312}}
+#palettes .palette-group:last-child, #palettes .palette-group.collapsed-palette {
+  border-bottom: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000316}}
+#palettes .palette-group > .palette-group-header {
+  display: table;
+  width: 100%;
+  background: #ced7e0 linear-gradient(to top, #393939, #4d5052);
+  border-top: 1px solid #646668;
+  border-bottom: 1px solid #313435;
+  height: 22px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000324}}
+#palettes .palette-group > .palette-group-header > * {
+  display: table-cell;
+  height: 100%;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000330}}
+#palettes .palette-group > .palette-group-header button {
+  background: transparent;
+  border: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000335}}
+#palettes .palette-group > .palette-group-header > .palette-group-tabs {
+  padding-left: 1px;
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000339}}
+#palettes .palette-group > .palette-group-header > .palette-group-tabs > button {
+  margin-right: 5px;
+  border-left: 1px solid #2e3132;
+  padding-left: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #1f8dd6;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000348}}
+#palettes .palette-group > .palette-group-header > .palette-group-tabs button:not(:active):not(.g-active) {
+  color: #c7c7c7;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000352}}
+#palettes .palette-group > .palette-group-header > .palette-group-tabs > button:first-child {
+  padding-left: 0px;
+  border-left: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000358}}
+#palettes .palette-group > .palette-group-header > .g-menu-button > li > .g-menu-item-tail {
+  display: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000363}}
+#palettes .palette-group .palette-panel {
+  position: relative;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000366}}
+#palettes .palette-group .palette-panel, #palettes .palette-group .palette-panel *:not(.fa) {
+  font: small-caption;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000370}}
+#palettes .palette-group .palette-panel .fa {
+  font-size: 12px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_palettes\.scss}line{font-family:\0000374}}
+#palettes .palette-group .palette-panel > .panel-disabled-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\000031}}
+.palette-color-matcher {
+  padding: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\000034}}
+.palette-color-matcher .color-matcher-panel {
+  padding-bottom: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\000038}}
+.palette-color-matcher > .color-palette-panel {
+  width: 100%;
+  height: 27px;
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000313}}
+.palette-color-matcher > .color-palette-panel > div {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000319}}
+.palette-color-matcher > .color-palette-panel > div:not(:last-child) {
+  border-right: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000324}}
+.palette-color-matcher > .color-toolbar {
+  display: table;
+  width: 100%;
+  padding-top: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000329}}
+.palette-color-matcher > .color-toolbar > div, .palette-color-matcher > .color-toolbar ul {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000334}}
+.palette-color-matcher > .color-toolbar .g-menu-item.g-button {
+  padding: 0px 5px 0px 5px;
+  text-transform: uppercase;
+  text-align: left;
+  border: none;
+  background: transparent;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000342}}
+.palette-color-matcher > .color-toolbar > .color-preview {
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0px;
+  width: 60px;
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_matcher\.scss}line{font-family:\0000349}}
+.palette-color-matcher > .color-toolbar > .color-preview > .g-color-swatch {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: none;
+  width: 50%;
+  height: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\000031}}
+.palette-color-mixer {
+  padding: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\000034}}
+.palette-color-mixer > .color-component {
+  display: table;
+  width: 100%;
+  margin-bottom: 3px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\000039}}
+.palette-color-mixer > .color-component > div, .palette-color-mixer > .color-component > span {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000314}}
+.palette-color-mixer > .color-component > .color-icon {
+  font-size: 14px !important;
+  padding-right: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000319}}
+.palette-color-mixer > .color-component > .color-range {
+  width: 100%;
+  padding-right: 12px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000323}}
+.palette-color-mixer > .color-component > .color-range > input {
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000328}}
+.palette-color-mixer > .color-component > .color-value {
+  min-width: 3em;
+  max-width: 3em;
+  padding-right: 14px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000333}}
+.palette-color-mixer > .color-component > .color-value > input {
+  width: 100%;
+  text-align: center;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000339}}
+.palette-color-mixer > .color-component > .color-unit {
+  min-width: 1.5em;
+  max-width: 1.5em;
+  text-align: left;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000346}}
+.palette-color-mixer > .color-picker {
+  padding-bottom: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000350}}
+.palette-color-mixer > .color-toolbar {
+  display: table;
+  width: 100%;
+  padding-top: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000355}}
+.palette-color-mixer > .color-toolbar > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000360}}
+.palette-color-mixer > .color-toolbar > .color-modes {
+  white-space: nowrap;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000363}}
+.palette-color-mixer > .color-toolbar > .color-modes > button {
+  padding: 0px 5px 0px 5px;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  border-right: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000370}}
+.palette-color-mixer > .color-toolbar > .color-modes > button:first-child {
+  padding-left: 0px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000373}}
+.palette-color-mixer > .color-toolbar > .color-modes > button:last-child {
+  border-right: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000378}}
+.palette-color-mixer > .color-toolbar > .color-preview {
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0px;
+  width: 60px;
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_mixer\.scss}line{font-family:\0000385}}
+.palette-color-mixer > .color-toolbar > .color-preview > .g-color-swatch {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: none;
+  width: 50%;
+  height: 100%;
+}
+
+@-moz-document url-prefix() {
+  /* line 98, ../style/palette/_color_mixer.scss */
+  .palette-color-mixer > .color-component:not(:last-child) {
+    padding-bottom: 0px;
+  }
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\000031}}
+.palette-color-trends {
+  padding: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\000034}}
+.palette-color-trends > .color-trend {
+  display: table;
+  width: 100%;
+  padding-bottom: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\000039}}
+.palette-color-trends > .color-trend > div, .palette-color-trends > .color-trend > span {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000314}}
+.palette-color-trends > .color-trend > .color-trend-icon {
+  font-size: 14px !important;
+  text-align: left;
+  min-width: 17px;
+  max-width: 17px;
+  padding-right: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000322}}
+.palette-color-trends > .color-trend > .color-palette {
+  width: 100%;
+  padding-right: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000326}}
+.palette-color-trends > .color-trend > .color-palette > div {
+  width: 100%;
+  height: 16px;
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000332}}
+.palette-color-trends > .color-trend > .color-palette > div > div {
+  display: inline-block;
+  height: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000338}}
+.palette-color-trends > .color-trend > .color-palette > div > div:not(:last-child) {
+  border-right: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000342}}
+.palette-color-trends > .color-trend > .color-palette > div > div:last-child {
+  border-left: 3px solid #4d5052;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000348}}
+.palette-color-trends > .color-trend > .color-trend-value {
+  min-width: 3em;
+  max-width: 3em;
+  padding-right: 8px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000353}}
+.palette-color-trends > .color-trend > .color-trend-value > input {
+  width: 100%;
+  text-align: center;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000360}}
+.palette-color-trends > .color-trend-3 {
+  padding-bottom: 3px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000364}}
+.palette-color-trends > .color-toolbar {
+  display: table;
+  width: 100%;
+  padding-top: 7px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000369}}
+.palette-color-trends > .color-toolbar > div, .palette-color-trends > .color-toolbar ul {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000374}}
+.palette-color-trends > .color-toolbar .g-color-button {
+  padding: 0px 5px 0px 0px;
+  text-transform: uppercase;
+  text-align: left;
+  border: none;
+  background: transparent;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000382}}
+.palette-color-trends > .color-toolbar > .color-preview {
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0px;
+  width: 60px;
+  border: 1px solid #2e3132;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_color_trends\.scss}line{font-family:\0000389}}
+.palette-color-trends > .color-toolbar > .color-preview > .g-color-swatch {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: none;
+  width: 50%;
+  height: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\000031}}
+.palette-properties {
+  padding: 2px 5px 5px 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\000035}}
+.palette-properties .properties-panels > .properties-panel-category {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: table;
+  width: 100%;
+  margin: 3px 0px;
+  background: #393939;
+  border: 1px solid #2e3132;
+  border-bottom: none;
+  margin-bottom: 0px;
+  padding: 2px 5px 3px 5px;
+  background: #2e3132;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000319}}
+.palette-properties .properties-panels > .properties-panel-category > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000324}}
+.palette-properties .properties-panels > .properties-panel-category > .title {
+  width: 100%;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000327}}
+.palette-properties .properties-panels > .properties-panel-category > .title > i.fa:first-child {
+  padding-right: 3px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000332}}
+.palette-properties .properties-panels > .properties-panel-category > .controls {
+  text-align: right;
+  white-space: nowrap;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000336}}
+.palette-properties .properties-panels > .properties-panel-category > .controls input, .palette-properties .properties-panels > .properties-panel-category > .controls button, .palette-properties .properties-panels > .properties-panel-category > .controls .g-button, .palette-properties .properties-panels > .properties-panel-category > .controls select {
+  border: none;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background: transparent !important;
+  box-shadow: none;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000346}}
+.palette-properties .properties-panels > .properties-panel-category > .controls button.g-active, .palette-properties .properties-panels > .properties-panel-category > .controls button.g-active *, .palette-properties .properties-panels > .properties-panel-category > .controls .g-button.g-active, .palette-properties .properties-panels > .properties-panel-category > .controls .g-button.g-active * {
+  color: #1f8dd6;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000354}}
+.palette-properties .properties-panels > .properties-panel-content {
+  margin: 7px 0px 12px 0px;
+  border: 1px solid #2e3132;
+  border-top: none;
+  border-radius: 5px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  margin-top: 0px;
+  padding: 10px 5px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/palette\/_properties\.scss}line{font-family:\0000364}}
+.palette-properties .properties-panels > .properties-panel-content.last-visible {
+  margin-bottom: 0px;
+}

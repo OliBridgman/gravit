@@ -6,27 +6,27 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
-    <!-- build:css(.tmp) assets/style/gravit.css -->
-    <link rel="stylesheet" href="assets/style/gravit.css">
+    <!-- build:css(tmp) gravit.css -->
+    <link rel="stylesheet" href="gravit.css">
     <!-- endbuild -->
 </head>
 <body>
 <!-- ############################################################## -->
 <!-- # Lib ######################################################## -->
 <!-- ############################################################## -->
-<!-- build:js scripts/gravit-libraries.js -->
-<script src="bower_components/jquery/jquery.js"></script>
-<script src="bower_components/jqTree/tree.jquery.js"></script>
-<script src="bower_components/mousetrap/mousetrap.js"></script>
-<script src="bower_components/FileSaver.js/FileSaver.js"></script>
-<script src="bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
-<script src="bower_components/zlib.js/bin/zlib_and_gzip.min.js"></script>
+<!-- build:js gravit-libraries.js -->
+<script src="../bower_components/jquery/jquery.js"></script>
+<script src="../bower_components/jqTree/tree.jquery.js"></script>
+<script src="../bower_components/mousetrap/mousetrap.js"></script>
+<script src="../bower_components/FileSaver.js/FileSaver.js"></script>
+<script src="../bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
+<script src="../bower_components/zlib.js/bin/zlib_and_gzip.min.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
 <!-- # Infinity ################################################### -->
 <!-- ############################################################## -->
-<!-- build:js scripts/gravit-infinity.js -->
+<!-- build:js gravit-infinity.js -->
 <!-- Core -->
 <script src="infinity/core/object.js"></script>
 <script src="infinity/core/system.js"></script>
@@ -151,7 +151,7 @@
 <!-- endbuild -->
 
 
-<!-- build:js scripts/gravit.js -->
+<!-- build:js gravit.js -->
 <!-- JQuery -->
 <script src="gravit/jquery/autoblur.js"></script>
 <script src="gravit/jquery/autosize.js"></script>
@@ -273,14 +273,14 @@
 <script src="development/testaction.js"></script>
 <script src="development/development.js"></script>
 
-<!-- Include the proper shell for development -->
+<!-- Include the proper shell for development TODO : Figure shell here -->
 <script type="text/javascript">
-    if (window.hasOwnProperty('gHost')) {
-        document.writeln("<script src=\"shell/native/nativestorage.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"shell/native/nativeshell.js\" type=\"text\/javascript\"><\/script>");
-    } else {
-        document.writeln("<script src=\"shell/web/webshell.js\" type=\"text\/javascript\"><\/script>");
-    }
+    //if (window.hasOwnProperty('gHost')) {
+    //    document.writeln("<script src=\"shell/native/nativestorage.js\" type=\"text\/javascript\"><\/script>");
+    //    document.writeln("<script src=\"shell/native/nativeshell.js\" type=\"text\/javascript\"><\/script>");
+    //} else {
+        document.writeln("<script src=\"shell-web/webshell.js\" type=\"text\/javascript\"><\/script>");
+    //}
 </script>
 </body>
 </html>

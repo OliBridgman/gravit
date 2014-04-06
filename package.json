@@ -1,12 +1,9 @@
 {
-    "name": "gravit",
-    "description" : "Gravit",
-    "author" : "Gravit",
+    "name": "Gravit",
+    "description" : "Gravit, the versatile Design Tool",
+    "author" : "Quasado",
     "version": "0.0.1",
     "private": true,
-    "dependencies": {
-        "ecstatic": "0.4.8"
-    },
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-copy": "~0.4.1",
@@ -29,6 +26,7 @@
         "grunt-svgmin": "~0.2.0",
         "grunt-concurrent": "~0.3.0",
         "grunt-replace": "~0.4.4",
+        "grunt-node-webkit-builder": "~0.1.19",
         "load-grunt-tasks": "~0.1.0",
         "time-grunt": "~0.1.1"
     }

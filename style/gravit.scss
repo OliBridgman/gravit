@@ -2,8 +2,8 @@
 @import "compass/css3/box-sizing";
 
 // FontAwesome import
-$fa-font-path: '../font';
-@import '../../src/bower_components/font-awesome/scss/font-awesome.scss';
+$fa-font-path: 'font';
+@import '../bower_components/font-awesome/scss/font-awesome.scss';
 
 @import 'variables';
 @import 'base';

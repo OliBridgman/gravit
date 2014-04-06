@@ -2,8 +2,6 @@
 .tmp
 .sass-cache
 node_modules
+bower_components
 build
-deploy
-src/bower_components
-build*
-*.pro.user
+package
