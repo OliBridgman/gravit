@@ -96,6 +96,14 @@ module.exports = function (grunt) {
                 }
             }
         },
+        concat: {
+            make: {
+                files: {
+                    '<%= cfg.build %>/desktop/gravit-shell.js': ['shell/desktop/*.js'],
+                    '<%= cfg.build %>/web/gravit-shell.js': ['shell/web/*.js']
+                }
+            }
+        },
         copy: {
             dev: {
                 files: [
@@ -138,15 +146,40 @@ module.exports = function (grunt) {
                     },
                     {
                         expand: true,
-                        cwd: 'shell/desktop/',
+                        cwd: '<%= cfg.build %>/desktop/',
                         dest: '<%= cfg.build %>/desktop/',
                         src: ['**']
                     },
                     {
                         expand: true,
-                        cwd: 'shell/web/',
+                        cwd: 'shell/desktop/',
                         dest: '<%= cfg.build %>/desktop/',
+                        src: ['index.html', 'package.json']
+                    },
+                    // Web
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/source/',
+                        dest: '<%= cfg.pck %>/web/',
                         src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'assets/icon/',
+                        dest: '<%= cfg.pck %>/web/icon',
+                        src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/web/',
+                        dest: '<%= cfg.pck %>/web/',
+                        src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'shell/web/',
+                        dest: '<%= cfg.pck %>/web/',
+                        src: ['index.html']
                     }
                 ]
             }
@@ -171,7 +204,7 @@ module.exports = function (grunt) {
                 win: true,
                 linux32: true,
                 linux64: true,
-                mac_icns: 'assets/icon/icon_app.icns',
+                mac_icns: 'shell/desktop/appicon.icns',
                 zip: false,
                 app_name: '<%= pkg.name %>',
                 app_version: '<%= pkg.version %>'

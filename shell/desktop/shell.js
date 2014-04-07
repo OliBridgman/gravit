@@ -53,9 +53,9 @@
     GWebShell.prototype.finishLoad = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
-        menuElement
-            .css('height', '100%')
-            .prependTo($('#header'));
+        //menuElement
+        //    .css('height', '100%')
+        //    .prependTo($('#header'));
 
         // Remove loader
         $("#gravit-loader").remove();

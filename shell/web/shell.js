@@ -39,7 +39,7 @@
                 .css('width', '100%')
                 .css('height', '100%')
                 .append($('<img>')
-                    .attr('src', 'assets/icon/icon_114x114.png'))
+                    .attr('src', 'icon/icon_114x114.png'))
                 .append($('<p></p>')
                     .css('line-height', '1.5em')
                     .css('color', 'gray')
