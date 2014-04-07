@@ -24,16 +24,6 @@
     };
 
     /**
-     * Register a shortcut that'll execute a given function
-     * @param {Array<*>} shortcut the shortcut for the action
-     * @param {Function} action an action to be executed when the
-     * shortcut is called
-     */
-    GShell.prototype.registerShortcut = function (shortcut, action) {
-        throw new Error("Not Supported.");
-    };
-
-    /**
      * Called whenever a menu shall be added
      * @param {*} parentMenu parent menu, may be null to add to the root
      * @param {String} title the title of the menu item

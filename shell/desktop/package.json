@@ -8,7 +8,8 @@
         "show_in_taskbar": true,
         "frame": true,
         "width": 1024,
-        "height": 786
+        "height": 786,
+        "show": false
     },
     "no-edit-menu": true
 }

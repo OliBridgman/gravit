@@ -3157,10 +3157,13 @@ div.g-color-swatch {
 #header {
   position: absolute;
   width: 100%;
-  height: 2em;
-  padding: 2px 0px;
   background: #4d5052;
   border-bottom: 1px solid #313435;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_header\.scss}line{font-family:\000037}}
+#header > * {
+  height: 2em !important;
+  padding: 2px 0px;
 }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/aadam\/Documents\/Git\/gravit\/style\/workspace\/_toolbar\.scss}line{font-family:\000031}}

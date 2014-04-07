@@ -659,7 +659,7 @@
                 if (chars && chars.length > 0) {
                     var action = _createToolActivateAction(tool);
                     for (var c = 0; c < chars.length; ++c) {
-                        gShell.registerShortcut([chars[c]], action);
+                        this.registerShortcut([chars[c]], action);
                     }
                 }
             }
@@ -730,10 +730,16 @@
     };
 
     /**
-     * Part visibilities have been changed
+     * Register a shortcut that'll execute a given function
+     * @param {Array<*>} shortcut the shortcut for the action
+     * @param {Function} action an action to be executed when the
+     * shortcut is called
      */
-    EXApplication.prototype._updatedPartVisibilities = function () {
-        // NO-OP
+    EXApplication.prototype.registerShortcut = function (shortcut, action) {
+        Mousetrap.bind(this._shortcutToMouseTrapShortcut(shortcut), function () {
+            action();
+            return false;
+        }.bind(this));
     };
 
     /**
@@ -856,9 +862,17 @@
             } else if (item.type === 'divider') {
                 item.separator = gShell.addMenuSeparator(parentMenu);
             } else if (item.type === 'item') {
-                item.item = gShell.addMenuItem(parentMenu,function () {
+                item.item = gShell.addMenuItem(parentMenu, function () {
                     this.executeAction(item.action.getId());
                 }.bind(this));
+
+                // Register shortcut if any
+                var shortcut = item.action.getShortcut();
+                if (shortcut) {
+                    this.registerShortcut(shortcut, function () {
+                        this.executeAction(item.action.getId());
+                    }.bind(this));
+                }
             }
         }.bind(this);
 
@@ -1003,6 +1017,133 @@
         // Prevent any further processing
         event.preventDefault();
         event.stopPropagation();
+    };
+
+    /**
+     * Convert internal key into a mousetrap-compatible key
+     * @param {Array<*>} shortcut
+     * @returns {String}
+     */
+    EXApplication.prototype._shortcutToMouseTrapShortcut = function(shortcut) {
+        var result = "";
+        for (var i = 0; i < shortcut.length; ++i) {
+            if (i > 0) {
+                result += "+";
+            }
+
+            var key = shortcut[i];
+            if (typeof key == 'number') {
+                switch (key) {
+                    case GUIKey.Constant.META:
+                        result += "meta";
+                        break;
+                    case GUIKey.Constant.OPTION:
+                        result += "option";
+                        break;
+                    case GUIKey.Constant.REMOVE:
+                        result += "del";
+                        break;
+                    case GUIKey.Constant.SPACE:
+                        result += "space";
+                        break;
+                    case GUIKey.Constant.ENTER:
+                        result += "enter";
+                        break;
+                    case GUIKey.Constant.TAB:
+                        result += "tab";
+                        break;
+                    case GUIKey.Constant.BACKSPACE:
+                        result += "backspace";
+                        break;
+                    case GUIKey.Constant.CONTROL:
+                        result += "ctrl";
+                        break;
+                    case GUIKey.Constant.SHIFT:
+                        result += "shift";
+                        break;
+                    case GUIKey.Constant.ALT:
+                        result += "alt";
+                        break;
+                    case GUIKey.Constant.LEFT:
+                        result += "left";
+                        break;
+                    case GUIKey.Constant.UP:
+                        result += "up";
+                        break;
+                    case GUIKey.Constant.RIGHT:
+                        result += "right";
+                        break;
+                    case GUIKey.Constant.DOWN:
+                        result += "down";
+                        break;
+                    case GUIKey.Constant.PAGE_UP:
+                        result += "pageup";
+                        break;
+                    case GUIKey.Constant.PAGE_DOWN:
+                        result += "pagedown";
+                        break;
+                    case GUIKey.Constant.HOME:
+                        result += "home";
+                        break;
+                    case GUIKey.Constant.END:
+                        result += "end";
+                        break;
+                    case GUIKey.Constant.INSERT:
+                        result += "ins";
+                        break;
+                    case GUIKey.Constant.DELETE:
+                        result += "del";
+                        break;
+                    case GUIKey.Constant.ESCAPE:
+                        result += "esc";
+                        break;
+                    case GUIKey.Constant.COMMAND:
+                        result += "meta";
+                        break;
+                    case GUIKey.Constant.F1:
+                        result += "f1";
+                        break;
+                    case GUIKey.Constant.F2:
+                        result += "f2";
+                        break;
+                    case GUIKey.Constant.F3:
+                        result += "f3";
+                        break;
+                    case GUIKey.Constant.F4:
+                        result += "f4";
+                        break;
+                    case GUIKey.Constant.F5:
+                        result += "f5";
+                        break;
+                    case GUIKey.Constant.F6:
+                        result += "f6";
+                        break;
+                    case GUIKey.Constant.F7:
+                        result += "f7";
+                        break;
+                    case GUIKey.Constant.F8:
+                        result += "f8";
+                        break;
+                    case GUIKey.Constant.F9:
+                        result += "f9";
+                        break;
+                    case GUIKey.Constant.F10:
+                        result += "f10";
+                        break;
+                    case GUIKey.Constant.F11:
+                        result += "f11";
+                        break;
+                    case GUIKey.Constant.F12:
+                        result += "f12";
+                        break;
+                    default:
+                        throw new Error("Unknown key code");
+                }
+            } else {
+                result += key.toLowerCase();
+            }
+        }
+        return result;
     };
 
     _.EXApplication = EXApplication;
