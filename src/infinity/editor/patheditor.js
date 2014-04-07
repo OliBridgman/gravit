@@ -1559,7 +1559,7 @@
      * @private
      */
     GXPathEditor.prototype._geometryChange = function (evt) {
-        if (evt.type == GXElement.GeometryChangeEvent.Type.After) {
+        if (evt.type == GXElement.GeometryChangeEvent.Type.After && evt.element == this._element) {
             if (this._elementPreview) {
                 this.releasePathPreview();
                 this.requestInvalidation();
