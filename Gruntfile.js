@@ -104,6 +104,14 @@ module.exports = function (grunt) {
                 }
             }
         },
+        uglify: {
+            make: {
+                files: {
+                    '<%= cfg.build %>/desktop/gravit-shell.js': ['<%= cfg.build %>/desktop/gravit-shell.js'],
+                    '<%= cfg.build %>/web/gravit-shell.js': ['<%= cfg.build %>/web/gravit-shell.js']
+                }
+            }
+        },
         copy: {
             dev: {
                 files: [
