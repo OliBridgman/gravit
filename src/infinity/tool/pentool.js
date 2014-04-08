@@ -71,12 +71,15 @@
 
         this._mDownTime = tm;
         this._released = false;
+        if (gPlatform.modifiers.optionKey) {
+            this._firstAlt = true;
+        }
         this._blockDeactivation();
         this._checkMode();
         this._renewPreviewLink();
 
         if (this._mode == GXPathTool.Mode.Edit) {
-            this._mouseDownOnEdit(event.client);
+            this._mouseDownOnEdit(event);
         }
 
         if (this._mode != GXPathTool.Mode.Edit) {
@@ -277,7 +280,7 @@
         var ptx = this._editPt.getProperty('x');
         var pty = this._editPt.getProperty('y');
         var hlx, hly, hrx, hry;
-        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), 0)) {
+        if (this._pathEditor.hitAnchorPoint(this._editPt, newPos, this._view.getWorldTransform(), 0) && !this._firstAlt) {
             if (this._mode != GXPathTool.Mode.Edit) {
                 if (this._mode == GXPathTool.Mode.Append) {
                     if (this._editPt.getProperty('hlx') !== null && this._editPt.getProperty('hly') !== null) {
@@ -304,39 +307,56 @@
             var transformToNative = transformToNewPos.inverted();
             var newNativePos = transformToNative.mapPoint(newPos);
 
-            if (this._mode == GXPathTool.Mode.Edit) {
-                if (!gPlatform.modifiers.optionKey) {
-                    hrx = newNativePos.getX();
-                    hry = newNativePos.getY();
-                    this._editPt.setProperty('ah', false);
-                    hlx = ptx + ptx - hrx;
-                    hly = pty + pty - hry;
-                    this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                        [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
-                } else {
-                    var dx = newNativePos.getX() - ptx;
-                    var dy = newNativePos.getY() - pty;
-                    this._editPt.setProperty('ah', false);
-                    var hrxOrig = this._dragStartPt.getProperty('hrx');
-                    hrx = hrxOrig != null ? hrxOrig + dx : newNativePos.getX();
-                    var hryOrig = this._dragStartPt.getProperty('hry');
-                    hry = hryOrig != null ? hryOrig + dy : newNativePos.getY();
-                    this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, hrx, hry]);
-                }
-            } else if (this._mode == GXPathTool.Mode.Append) {
-                if (tp != GXPathBase.AnchorPoint.Type.Connector) {
-                    hrx = newNativePos.getX();
-                    hry = newNativePos.getY();
-                    this._editPt.setProperty('ah', false);
-                    if (!gPlatform.modifiers.optionKey) {
-                        hlx = ptx + ptx - hrx;
-                        hly = pty + pty - hry;
-                        this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                            [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
-                    } else {
-                        this._editPt.setProperties(['hrx', 'hry'], [hrx, hry]);
+            if (!this._newPoint && gPlatform.modifiers.optionKey && this._firstAlt &&
+                    tp != GXPathBase.AnchorPoint.Type.Connector &&
+                    !(this._editPt.getPrevious() == null && this._editPt.getNext() == null)) {
+
+                var dx = newNativePos.getX() - ptx;
+                var dy = newNativePos.getY() - pty;
+                this._editPt.setProperty('ah', false);
+                var hrxOrig = this._dragStartPt.getProperty('hrx');
+                hrx = hrxOrig != null ? hrxOrig + dx : newNativePos.getX();
+                var hryOrig = this._dragStartPt.getProperty('hry');
+                hry = hryOrig != null ? hryOrig + dy : newNativePos.getY();
+                this._editPt.setProperty('ah', false);
+                this._editPt.setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, hrx, hry]);
+
+            } else if (tp != GXPathBase.AnchorPoint.Type.Connector) {
+                this._editPt.setProperty('ah', false);
+                var h1x = newNativePos.getX();
+                var h1y = newNativePos.getY();
+                if (gPlatform.modifiers.optionKey) {
+                    if (this._mode == GXPathTool.Mode.Prepend) {
+                        this._editPt.setProperties(['tp', 'hlx', 'hly'],
+                            [GXPathBase.AnchorPoint.Type.Asymmetric, h1x, h1y]);
+                    } else { // mode == Append || mode == Edit
+                        this._editPt.setProperties(['tp', 'hrx', 'hry'],
+                            [GXPathBase.AnchorPoint.Type.Asymmetric, h1x, h1y]);
                     }
                 } else {
+                    var newTp = GXPathBase.AnchorPoint.Type.Symmetric;
+                    if (this._mode != GXPathTool.Mode.Edit && !this._newPoint &&
+                            !(this._editPt.getPrevious() == null && this._editPt.getNext() == null)) {
+
+                        if (this._mode == GXPathTool.Mode.Prepend) {
+                            this._editPt.setProperties(['tp', 'hlx', 'hly'], [newTp, h1x, h1y]);
+                        } else { // mode == Append
+                            this._editPt.setProperties(['tp', 'hrx', 'hry'], [newTp, h1x, h1y]);
+                        }
+                    } else {
+                        var h2x = ptx + ptx - h1x;
+                        var h2y = pty + pty - h1y;
+                        if (this._mode == GXPathTool.Mode.Prepend) {
+                            this._editPt.setProperties(['tp', 'hrx', 'hry', 'hlx', 'hly'], [newTp, h2x, h2y, h1x, h1y]);
+                        } else {
+                            this._editPt.setProperties(['tp', 'hrx', 'hry', 'hlx', 'hly'], [newTp, h1x, h1y, h2x, h2y]);
+                        }
+                    }
+                }
+            } else { // tp == GXPathBase.AnchorPoint.Type.Connector
+                if (this._mode == GXPathTool.Mode.Append ||
+                        this._mode == GXPathTool.Mode.Edit && gPlatform.modifiers.optionKey) {
+
                     hlx = null;
                     hly = null;
 
@@ -367,21 +387,7 @@
                         hry = newNativePos.getY();
                     }
                     this._editPt.setProperties(['hlx', 'hly', 'hrx', 'hry'], [hlx, hly, hrx, hry]);
-                }
-            } else { // this._mode == GXPathTool.Mode.Prepend
-                if (tp != GXPathBase.AnchorPoint.Type.Connector) {
-                    hlx = newNativePos.getX();
-                    hly = newNativePos.getY();
-                    this._editPt.setProperty('ah', false);
-                    if (!gPlatform.modifiers.optionKey) {
-                        hrx = ptx + ptx - hlx;
-                        hry = pty + pty - hly;
-                        this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'],
-                            [GXPathBase.AnchorPoint.Type.Symmetric, hlx, hly, hrx, hry]);
-                    } else {
-                        this._editPt.setProperties(['hlx', 'hly'], [hlx, hly]);
-                    }
-                } else {
+                } else if (this._mode == GXPathTool.Mode.Prepend) {
                     hrx = null;
                     hry = null;
 
@@ -540,6 +546,7 @@
         this._dragStarted = false;
         this._dragStartPt = null;
         this._lastMouseEvent = null;
+        this._firstAlt = false;
 
         this._allowDeactivation();
     };

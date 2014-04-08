@@ -81,7 +81,14 @@
             this._renewPreviewLink();
 
             if (this._mode == GXPathTool.Mode.Edit) {
-                this._mouseDownOnEdit(event.client);
+                var customizer = function(anchorPt) {
+                    if (gPlatform.modifiers.optionKey &&
+                            anchorPt.getProperty('tp') != GXPathBase.AnchorPoint.Type.Connector) {
+
+                        anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Symmetric);
+                    }
+                }
+                this._mouseDownOnEdit(event, customizer);
             }
 
             if (this._mode != GXPathTool.Mode.Edit) {

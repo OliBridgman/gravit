@@ -76,6 +76,14 @@
     GXPathTool.prototype._dragStartPt = null;
 
     /**
+     * Indicates if option key is pressed the first time with current mouse down.
+     * This makes difference when updating point's existing handles with the pen tool
+     * @type {boolean}
+     * @private
+     */
+    GXPathTool.prototype._firstAlt = false;
+
+    /**
      * Possible transaction types
      * @enum
      */
@@ -126,7 +134,7 @@
      * Time in milliseconds, which is used to distinguish two single clicks from double-click
      * @type {number}
      */
-    GXPathTool.DBLCLICKTM = 200;
+    GXPathTool.DBLCLICKTM = 300;
 
     /**
      * Current active cursor
@@ -504,7 +512,11 @@
             }
         }
         if (event.changed.optionKey) {
+            this._firstAlt = false;
             if (!this._released) {
+                if (gPlatform.modifiers.optionKey) {
+                    this._firstAlt = !this._dragStarted;
+                }
                 this._mouseDrag(this._lastMouseEvent);
             }
         }
@@ -630,10 +642,13 @@
     /**
      * In Edit mode hit-tests the path, and then takes appropriate action for mouse down:
      * selects a point for editing or creates a new one, or just updates the working mode
-     * @param {GPoint} eventPt - unmodified point of mouse click
+     * @param {GUIMouseEvent.Down} event
+     * @param {Function} customizer - a function to make tool-specific actions after new point has been created,
+     * accepts (GXPathBase.AnchorPoint) a new point as a parameter
      * @private
      */
-    GXPathTool.prototype._mouseDownOnEdit = function (eventPt) {
+    GXPathTool.prototype._mouseDownOnEdit = function (event, customizer) {
+        var eventPt = event.client;
         this._pathEditor.requestInvalidation();
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
@@ -664,6 +679,15 @@
             this._startTransaction(GXPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
+                if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+                    var tp = anchorPt.getProperty('tp');
+                    if (tp == GXPathBase.AnchorPoint.Type.Asymmetric) {
+                        anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
+                    }
+                }
+                if (customizer) {
+                    customizer(anchorPt);
+                }
                 this._makePointMajor(anchorPt);
                 this._refPt = anchorPt;
                 this._editPt = this._pathEditor.getPathPointPreview(anchorPt);
