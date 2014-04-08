@@ -22,34 +22,33 @@
 
             // Calculate optical cell-size
             var scale  = this._view.getZoom();
-            var szOptW = Math.ceil(scene.getProperty('gridSizeX') * scale);
-            var szOptH = Math.ceil(scene.getProperty('gridSizeY') * scale);
+            var szWScene = scene.getProperty('gridSizeX');
+            var szHScene = scene.getProperty('gridSizeY');
+            var szW = szWScene * scale;
+            var szH = szHScene * scale;
 
             // Limit mininum. grid size to be optically comfortable.
-            if (szOptW < GXGridLayer.MIN_CELL_SPACE) {
-                szOptW *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szOptW);
+            if (szW < GXGridLayer.MIN_CELL_SPACE) {
+                szW *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szW);
             }
-            if (szOptH < GXGridLayer.MIN_CELL_SPACE){
-                szOptH *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szOptH);
+            if (szH < GXGridLayer.MIN_CELL_SPACE){
+                szH *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szH);
             }
 
-            var szOptWScene = szOptW / scale;
-            var szOptHScene = szOptH / scale;
+            szWScene = szW / scale;
+            szHScene = szH / scale;
             var vbox = this._view.getViewBox(true);
             var tl = new GPoint(vbox.getX(), vbox.getY());
             var tlScene = this._view.getViewTransform().mapPoint(tl);
-            var startXScene = Math.ceil(tlScene.getX() / szOptWScene) * szOptWScene;
-            var startYScene = Math.ceil(tlScene.getY() / szOptHScene) * szOptHScene;
+            var startXScene = Math.ceil(tlScene.getX() / szWScene) * szWScene;
+            var startYScene = Math.ceil(tlScene.getY() / szHScene) * szHScene;
             var tlGridScene = new GPoint(startXScene, startYScene);
             var tlGrid = this._view.getWorldTransform().mapPoint(tlGridScene);
-            var startX = Math.round(tlGrid.getX());
-            var startY = Math.round(tlGrid.getY());
-            // Now startX, startY, szOptW and szOptH are integer, and we can paint
-            for (var x = startX; x - vbox.getX() < vbox.getWidth(); x += szOptW) {
-                context.canvas.fillRect(x, vbox.getY(), 1, vbox.getHeight(), cl);
+            for (var x = tlGrid.getX(); x - vbox.getX() < vbox.getWidth(); x += szW) {
+                context.canvas.fillRect(Math.round(x), vbox.getY(), 1, vbox.getHeight(), cl);
             }
-            for (var y = startY; y - vbox.getY() < vbox.getHeight(); y += szOptH) {
-                context.canvas.fillRect(vbox.getX(), y, vbox.getWidth(), 1, cl);
+            for (var y = tlGrid.getY(); y - vbox.getY() < vbox.getHeight(); y += szH) {
+                context.canvas.fillRect(vbox.getX(), Math.round(y), vbox.getWidth(), 1, cl);
             }
         }
     };
