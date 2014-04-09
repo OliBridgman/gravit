@@ -1,9 +1,8 @@
 (function (_) {
     /**
-     * A block element that support styles, properties and storage
+     * A block element that supports properties and storage
      * @class GXBlock
      * @extends GXElement
-     * @mixes GXElement.Style
      * @mixes GXNode.Properties
      * @mixes GXNode.Store
      * @constructor
@@ -12,7 +11,7 @@
         GXElement.call(this);
         this._setDefaultProperties(GXBlock.VisualProperties, GXBlock.MetaProperties);
     }
-    GObject.inheritAndMix(GXBlock, GXElement, [GXElement.Style, GXNode.Properties, GXNode.Store]);
+    GObject.inheritAndMix(GXBlock, GXElement, [GXNode.Properties, GXNode.Store]);
 
     /**
      * The visual properties of a block with their default values

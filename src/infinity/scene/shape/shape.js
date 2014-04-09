@@ -8,6 +8,7 @@
      * @mixes GXNode.Container
      * @mixes GXElement.Transform
      * @mixes GXElement.Pivot
+     * @mixes GXElement.Style
      * @mixes GXVertexSource
      * @constructor
      */
@@ -15,7 +16,8 @@
         GXItem.call(this);
         this._setDefaultProperties(GXShape.GeometryProperties);
     }
-    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXVertexSource]);
+
+    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXElement.Style, GXVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -101,11 +103,9 @@
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
         } else {
-            var styles = this.getStyles();
-            if (styles && styles.length) {
-                for (var i = 0; i < styles.length; ++i) {
-                    styles[i].paint(context, this);
-                }
+            var style = this.getStyle(false);
+            if (style) {
+                style.paint(context, this);
             }
         }
 
@@ -156,13 +156,11 @@
 
 
         var result = source;
-        var styles = this.getStyles();
-        if (styles && styles.length) {
-            for (var i = 0; i < styles.length; ++i) {
-                var styleBBox = styles[i].getBBox(source);
-                if (styleBBox && !styleBBox.isEmpty()) {
-                    result = result.united(styleBBox);
-                }
+        var style = this.getStyle(false);
+        if (style) {
+            var styleBBox = style.getBBox(source);
+            if (styleBBox && !styleBBox.isEmpty()) {
+                result = result.united(styleBBox);
             }
         }
 
@@ -184,14 +182,9 @@
     GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
         var styleHit = null;
 
-        var styles = this.getStyles();
-        if (styles && styles.length) {
-            for (var i = styles.length - 1; i >= 0; --i) {
-                styleHit = styles[i].hitTest(this, location, transform, tolerance);
-                if (styleHit) {
-                    break;
-                }
-            }
+        var style = this.getStyle(false);
+        if (style) {
+            styleHit = style.hitTest(this, location, transform, tolerance);
         }
 
         if (styleHit) {

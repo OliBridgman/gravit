@@ -317,31 +317,6 @@
         return this._styleSet;
     };
 
-    /**
-     * Returns a collection of all styles of this element including the
-     * ones of any parents recursively in the appropriate order.
-     *
-     * @returns {Array<GXStyleSet>} the array of styles or null for none
-     */
-    GXElement.Style.prototype.getStyles = function () {
-        var result = null;
-
-        for (var el = this; el !== null; el = el.getParent()) {
-            if (el.hasMixin(GXElement.Style)) {
-                var style = el.getStyle();
-
-                if (style) {
-                    if (!result) {
-                        result = []
-                    }
-                    result.unshift(style);
-                }
-            }
-        }
-
-        return result;
-    };
-
     /** @override */
     GXElement.Style.prototype.toString = function () {
         return "[Mixin GXElement.Style]";
