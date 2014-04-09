@@ -1109,17 +1109,6 @@
             } else {
                 throw new Error('Unexpected: No page available.');
             }
-        } else if (this._currentLayer && evt.node === this._currentLayer) {
-            // Get a flat list of layers and select next/previous one
-            var allLayers = this._scene.queryAll('layer');
-            var layerIndex = allLayers.indexOf(evt.node);
-            if (layerIndex > 0) {
-                this.setCurrentLayer(allLayers[layerIndex - 1]);
-            } else if (layerIndex + 1 < allLayers.length) {
-                this.setCurrentLayer(allLayers[layerIndex + 1]);
-            } else {
-                throw new Error('Unexpected: No layer available.');
-            }
         }
     };
 

@@ -71,14 +71,6 @@
     };
 
     /** @override */
-    GXLayer.prototype.validateRemoval = function () {
-        // Layer can only be removed if it is not the last one
-        // within the overall scene
-        // TODO : Fix this, this is very costly!!
-        return this.getScene().queryAll('layer').length > 1;
-    };
-
-    /** @override */
     GXLayer.prototype.store = function (blob) {
         if (GXBlock.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXLayer.VisualProperties, function (property, value) {

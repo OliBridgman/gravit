@@ -613,14 +613,16 @@
             }
 
             var bbox = this.getPaintElement().getGeometryBBox();
-            var expand = this.getBBoxMargin();
-            bbox = targetTransform.mapRect(bbox)
-                .expanded(expand, expand, expand, expand);
+            if (bbox && !bbox.isEmpty()) {
+                var expand = this.getBBoxMargin();
+                bbox = targetTransform.mapRect(bbox)
+                    .expanded(expand, expand, expand, expand);
 
-            if (this.hasFlag(GXElementEditor.Flag.Detail)) {
-                var customBBox = this.getCustomBBox(targetTransform, false);
-                if (customBBox) {
-                    bbox = bbox.united(customBBox);
+                if (this.hasFlag(GXElementEditor.Flag.Detail)) {
+                    var customBBox = this.getCustomBBox(targetTransform, false);
+                    if (customBBox) {
+                        bbox = bbox.united(customBBox);
+                    }
                 }
             }
 
