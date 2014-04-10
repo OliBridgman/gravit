@@ -57,7 +57,13 @@
 
             // Pixel content canvas always renders at scale = 100%
             this._pixelContentCanvas.prepare(context.dirtyMatcher ? context.dirtyMatcher.getDirtyRectangles() : null);
-            this._pixelContentCanvas.setTransform(new GTransform());
+
+            var elemsBBox = this._view.getScene().getChildrenPaintBBox();
+            var tl = elemsBBox.getSide(GRect.Side.TOP_LEFT);
+            var width = elemsBBox.getWidth();
+            var height = elemsBBox.getHeight();
+            this._pixelContentCanvas.setTransform(new GTransform(1, 0, 0, 1, -tl.getX(), -tl.getY()));
+            this._pixelContentCanvas.resize(width, height);
 
             // Save source canvas, exchange it with pixel content canvas and paint the scene
             var sourceCanvas = context.canvas;
@@ -67,7 +73,7 @@
 
             // Now render our pixel content canvas at the given scale on our source canvas
             sourceCanvas.setTransform(this._view.getWorldTransform());
-            sourceCanvas.drawImage(this._pixelContentCanvas, 0, 0, true);
+            sourceCanvas.drawImage(this._pixelContentCanvas, tl.getX(), tl.getY(), true);
 
             // Finally reset our source canvas
             context.canvas = sourceCanvas;
