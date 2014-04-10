@@ -56,9 +56,8 @@
             }
 
             // Pixel content canvas always renders at scale = 100%
-            this._pixelContentCanvas.prepare(context.dirtyMatcher ? context.dirtyMatcher.getDirtyRectangles() : null);
-
             var elemsBBox = this._view.getScene().getChildrenPaintBBox();
+            this._pixelContentCanvas.prepare([elemsBBox]);
             var tl = elemsBBox.getSide(GRect.Side.TOP_LEFT);
             var width = elemsBBox.getWidth();
             var height = elemsBBox.getHeight();
