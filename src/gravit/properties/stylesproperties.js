@@ -78,12 +78,35 @@
                         // TODO : I18N
                         .text('Color'))
                     .append($('<option></option>')
-                        .attr('value', GXPaintFillStyle.Type.Gradient)
+                        .attr('value', GXPaintFillStyle.Type.LinearGradient)
                         // TODO : I18N
-                        .text('Gradient'))
+                        .text('Linear Gradient'))
+                    .append($('<option></option>')
+                        .attr('value', GXPaintFillStyle.Type.RadialGradient)
+                        // TODO : I18N
+                        .text('Radial Gradient'))
                     .on('change', function () {
-                        self._properties._assignStyleProperty(self._style, 'tp', $(this).val());
-                        self.update(self._style);
+                        var oldType = self._style.getProperty('tp');
+                        var newType = $(this).val();
+                        if (oldType !== newType) {
+                            var newValue = null;
+
+                            if (GXPaintFillStyle.isGradientType(newType)) {
+                                if (!GXPaintFillStyle.isGradientType(oldType)) {
+                                    newValue = new GXGradient([
+                                        {position: 0, color: self._style.getColor()},
+                                        {position: 100, color: new GXColor(GXColor.Type.Black)}
+                                    ]);
+                                } else {
+                                    newValue = self._style.getProperty('val');
+                                }
+                            } else if (newType === GXPaintFillStyle.Type.Color) {
+                                newValue = self._style.getColor();
+                            }
+
+                            self._properties._assignStyleProperties(self._style, ['tp', 'val'], [newType, newValue]);
+                            self.update(self._style);
+                        }
                     });
             } else if (property === 'color') {
                 return $('<div></div>')
@@ -92,8 +115,14 @@
                         .attr('type', 'text')
                         .attr('data-property', 'position')
                         .css('width', '5em')
+                        .gAutoBlur()
                         .on('change', function () {
-                            //self._updatePosition($(this).val());
+                            var type = self._style.getProperty('tp');
+                            if (GXPaintFillStyle.isGradientType(type)) {
+                                self._assignStopInput();
+                            } else {
+                                throw new Error("Unsupported Type for Position.");
+                            }
                         }))
                     .append($('<button></button>')
                         .addClass('g-flat')
@@ -102,21 +131,24 @@
                         .attr('data-property', 'color')
                         .gColorButton()
                         .on('change', function (evt, color) {
-                            //self._updateColor(color);
-                            self._properties._assignStyleProperty(self._style, 'cls', color);
-                        }));
+                            var type = this._style.getProperty('tp');
+                            if (GXPaintFillStyle.isGradientType(type)) {
+                                self._assignStopInput();
+                            } else if (type === GXPaintFillStyle.Type.Color) {
+                                self._properties._assignStyleProperty(self._style, 'val', color);
+                            } else {
+                                throw new Error("Unsupported Type for Color.");
+                            }
+                        }.bind(this)));
             } else if (property === 'gradient') {
                 return $('<div></div>')
                     .attr('data-property', 'gradient')
-                    .gGradientEditor({
-                    })
-                    .gGradientEditor('value', [
-                        {position: 0, color: GXColor.parseCSSColor('blue')},
-                        {position: 50, color: GXColor.parseCSSColor('yellow')},
-                        {position: 100, color: GXColor.parseCSSColor('red')}
-                    ])
+                    .gGradientEditor()
                     .on('selected', function () {
                         self._updateStopInput();
+                    })
+                    .on('change', function (evt) {
+                        self._assignGradient();
                     });
             } else {
                 throw new Error('Unknown input property: ' + property);
@@ -146,30 +178,78 @@
     };
     GObject.inherit(GStylesProperties._PaintFillProperties, GStylesProperties._StyleProperties);
 
+    /**
+     * @type {boolean}
+     * @private
+     */
+    GStylesProperties._PaintFillProperties._isGradientUpdate = false;
+
     GStylesProperties._PaintFillProperties.prototype.update = function (style) {
+        if (this._isGradientUpdate) {
+            return;
+        }
+
         GStylesProperties._StyleProperties.prototype.update.call(this, style);
 
         var type = style.getProperty('tp');
 
         this._panel.find('input[data-property="position"]')
-            .css('visibility', type === GXPaintFillStyle.Type.Gradient ? '' : 'hidden');
+            .css('visibility', GXPaintFillStyle.isGradientType(type) ? '' : 'hidden');
 
         this._panel.find('button[data-property="color"]')
-            .css('visibility', type === GXPaintFillStyle.Type.Gradient || type === GXPaintFillStyle.Type.Color ? '' : 'hidden')
+            .css('visibility', GXPaintFillStyle.isGradientType(type) || type === GXPaintFillStyle.Type.Color ? '' : 'hidden')
             .toggleClass('g-flat', type !== GXPaintFillStyle.Type.Color)
-            .gColorButton('value', type === GXPaintFillStyle.Type.Color ? style.getProperty('cls') : null)
+            .gColorButton('value', type === GXPaintFillStyle.Type.Color ? style.getProperty('val') : null)
             .prop('disabled', false);
 
         this._panel.find('[data-property="gradient"]')
-            .css('display', type === GXPaintFillStyle.Type.Gradient ? '' : 'none');
+            .css('display', GXPaintFillStyle.isGradientType(type) ? '' : 'none')
+            .gGradientEditor('value', GXPaintFillStyle.isGradientType(type) ? style.getProperty('val').getStops() : null)
+            .gGradientEditor('selected', GXPaintFillStyle.isGradientType(type) ? 0 : -1);
 
         this._updateStopInput();
     };
 
-    GStylesProperties._PaintFillProperties.prototype._updateStopInput = function () {
-        var type = this._style.getProperty('tp');
+    GStylesProperties._PaintFillProperties.prototype._assignStopInput = function () {
+        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
+            var $position = this._panel.find('input[data-property="position"]');
+            var $color = this._panel.find('button[data-property="color"]');
+            var $gradient = this._panel.find('div[data-property="gradient"]');
 
-        if (type === GXPaintFillStyle.Type.Gradient) {
+            var selected = $gradient.gGradientEditor('selected');
+            var stops = $gradient.gGradientEditor('value');
+
+            var position = parseInt($position.val());
+            if (isNaN(position) || position < 0 || position > 100) {
+                position = stops[selected].position;
+            }
+
+            var color = $color.gColorButton('value');
+            if (!color) {
+                color = stops[selected].color;
+            }
+
+            $gradient.gGradientEditor('updateStop', selected, position, color);
+
+            this._assignGradient();
+        }
+    };
+
+    GStylesProperties._PaintFillProperties.prototype._assignGradient = function () {
+        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
+            var $gradient = this._panel.find('div[data-property="gradient"]');
+
+            this._isGradientUpdate = true;
+            try {
+                this._properties._assignStyleProperty(this._style, 'val', new GXGradient($gradient.gGradientEditor('value')));
+            } finally {
+                this._isGradientUpdate = false;
+            }
+        }
+    };
+
+    GStylesProperties._PaintFillProperties.prototype._updateStopInput = function () {
+        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
             var $position = this._panel.find('input[data-property="position"]');
             var $color = this._panel.find('button[data-property="color"]');
             var $gradient = this._panel.find('div[data-property="gradient"]');

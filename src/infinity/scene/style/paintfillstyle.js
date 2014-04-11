@@ -25,9 +25,14 @@
         Color: 'C',
 
         /**
-         * Gradient color fill
+         * Linear Gradient color fill
          */
-        Gradient: 'G',
+        LinearGradient: 'L',
+
+        /**
+         * Radial Gradient color fill
+         */
+        RadialGradient: 'R',
 
         /**
          * Pattern fill
@@ -36,19 +41,13 @@
     };
 
     /**
-     * The type of a gradient
-     * @enum
+     * Checks if a given fill type is a gradient or not
+     * @param {GXPaintFillStyle.Type} type
+     * @returns {boolean}
      */
-    GXPaintFillStyle.GradientType = {
-        /**
-         * Linear Gradient
-         */
-        Linear: 'L',
-
-        /**
-         * Radial Gradient
-         */
-        Radial: 'R'
+    GXPaintFillStyle.isGradientType = function (type) {
+        return type === GXPaintFillStyle.Type.LinearGradient ||
+            type === GXPaintFillStyle.Type.RadialGradient;
     };
 
     /**
@@ -61,10 +60,8 @@
         cmp: GXPaintCanvas.CompositeOperator.SourceOver,
         // Opacity of the fill
         opc: 1.0,
-        // Color of the fill
-        cls: new GXColor(GXColor.Type.Black),
-        // Gradient of the fill
-        grd: null,
+        // Value of the fill, depending on type
+        val: new GXColor(GXColor.Type.Black),
         // Transform of the fill in unit space
         trf: null
     };
@@ -74,14 +71,21 @@
         if (GXPaintStyle.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXPaintFillStyle.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'cls' || property === 'grd') {
-                        return value.asString();
+                    if (property === 'val') {
+                        if (value instanceof GXColor) {
+                            return value.asString();
+                        } else if (value instanceof GXGradient) {
+                            return value.asString();
+                        } else {
+                            // TODO
+                            throw new Error('Unsupported.');
+                        }
                     } else if (property === 'trf') {
                         return GTransform.serialize(value);
                     }
                 }
                 return value;
-            });
+            }.bind(this));
             return true;
         }
         return false;
@@ -92,10 +96,16 @@
         if (GXPaintStyle.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXPaintFillStyle.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'cls') {
-                        return GXColor.parseColor(value);
-                    } else if (property === 'grd') {
-                        return GXGradient.parseGradient(value);
+                    if (property === 'val') {
+                        var tp = blob.hasOwnProperty('tp') ? blob.tp : GXPaintFillStyle.VisualProperties.tp;
+                        if (GXPaintFillStyle.isGradientType(tp)) {
+                            return GXGradient.parseGradient(value);
+                        } else if (tp === GXPaintFillStyle.Type.Color) {
+                            return GXColor.parseColor(value);
+                        } else{
+                        // TODO
+                                throw new Error('Unsupported.');/**/
+                        }
                     } else if (property === 'trf') {
                         return GTransform.deserialize(value);
                     }
@@ -113,9 +123,9 @@
      */
     GXPaintFillStyle.prototype.getColor = function () {
         if (this.$tp === GXPaintFillStyle.Type.Color) {
-            return this.$cls;
-        } else if (this.$tp === GXPaintFillStyle.Type.Gradient) {
-            return this.$gd_cls && this.$gd_cls.length > 0 ? this.$gd_cls[0] : null;
+            return this.$val;
+        } else if (GXPaintFillStyle.isGradientType(this.$tp)) {
+            return this.$val.getStops()[0].color;
         } else {
             return null;
         }
@@ -127,11 +137,11 @@
      */
     GXPaintFillStyle.prototype.setColor = function (color) {
         if (this.$tp === GXPaintFillStyle.Type.Color) {
-            this.setProperty('cls', color);
-        } else if (this.$tp === GXPaintFillStyle.Type.Gradient) {
-            var gd_cls = this.$gd_cls && this.$gd_cls.length > 0 ? this.$gd_cls.slice() : [null];
-            gd_cls[0] = color;
-            this.setProperty('gd_cls', gd_cls);
+            this.setProperty('val', color);
+        } else if (GXPaintFillStyle.isGradientType(this.$tp)) {
+            var newGradient = new GXGradient(this.$val.getStops());
+            newGradient.getStops()[0].color = color;
+            this.setProperty('val', newGradient);
         }
     };
 
@@ -140,14 +150,8 @@
      * completely transparent fills are considered to be not paintable.
      */
     GXPaintFillStyle.prototype.hasPaintableFill = function () {
-        // TODO : Check for transparencies
-        if (this.$tp === GXPaintFillStyle.Type.Color) {
-            return !!this.$cls;
-        } else if (this.$tp === GXPaintFillStyle.Type.Gradient) {
-            return this.$gd_cls && this.$gd_cls.length > 0;
-        } else {
-            return false;
-        }
+        // TODO : Check for transparencies and more
+        return !!this.$val;
     };
 
     /** @override */

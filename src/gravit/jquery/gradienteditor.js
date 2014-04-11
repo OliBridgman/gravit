@@ -41,6 +41,7 @@
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
                                     methods.insertStop.call(self, percentPos, color, true);
+                                    $this.trigger('change');
                                 }
                             })
                             .on('dblclick', function (evt) {
@@ -54,6 +55,7 @@
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
 
                                     methods.insertStop.call(self, percentPos, GXColor.parseCSSColor('black'), true);
+                                    $this.trigger('change');
                                 }
                             })));
             });
@@ -75,6 +77,11 @@
                     })
                 }
 
+                // Order stops before returning
+                result.sort(function (a, b) {
+                    return a.position > b.position;
+                });
+
                 return result;
             } else {
                 // Reset any selection
@@ -84,9 +91,11 @@
                 data.stops = [];
                 $this.find('.stops').empty();
 
-                // Insert all stops now
-                for (var i = 0; i < value.length; ++i) {
-                    methods.insertStop.call(self, value[i].position, value[i].color);
+                // Insert all stops now if any
+                if (value) {
+                    for (var i = 0; i < value.length; ++i) {
+                        methods.insertStop.call(self, value[i].position, value[i].color);
+                    }
                 }
 
                 return this;
@@ -160,11 +169,14 @@
                 .on('change', function (evt, color) {
                     if (color) {
                         methods.updateStop.call(self, stopIndex, null, color);
+                        $this.trigger('change');
                     }
                 })
                 .on('mousedown', function (evt) {
                     var $stop = $(this);
                     var stopindex = parseInt($stop.attr('stop-index'));
+
+                    var hasChanged = false;
 
                     // Select stop on mouse down
                     methods.selected.call(self, stopIndex, true);
@@ -209,6 +221,8 @@
                             relativePos >= relativeMoveArea ? 100 : (relativePos / relativeMoveArea * 100);
 
                         methods.updateStop.call(self, stopIndex, percentPos);
+                        $this.trigger('change-stop', stopIndex);
+                        hasChanged = true;
                     };
 
                     var docMouseUp = function (evt) {
@@ -221,6 +235,11 @@
                         if (data.stops[stopIndex].markDelete) {
                             data.stops.splice(stopIndex, 1);
                             $stop.remove();
+                            hasChanged = true;
+                        }
+
+                        if (hasChanged) {
+                            $this.trigger('change');
                         }
                     };
 
@@ -260,14 +279,14 @@
             $stop.find('.stop-color').css('background', stop.color.asCSSString());
             $stop.gColorTarget('value', stop.color);
 
-            methods._updatePreview.call(self);
+            methods._updateGradient.call(self, true);
 
             if (stopIndex === data.selected) {
                 $this.trigger('selected');
             }
         },
 
-        _updatePreview: function () {
+        _updateGradient: function () {
             var $this = $(this);
             var data = $this.data('ggradienteditor');
 

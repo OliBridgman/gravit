@@ -4,9 +4,7 @@
      * @class GXGradient
      * @constructor
      */
-    function GXGradient(type, stops) {
-        this._type = type ? type : GXGradient.Type.Linear;
-
+    function GXGradient(stops) {
         if (stops) {
             this._stops = [];
             for (var i = 0; i < stops.length; ++i) {
@@ -37,14 +35,13 @@
         }
 
         var blob = JSON.parse(string);
-        if (blob) {
+        if (blob && blob instanceof Array) {
             var result = new GXGradient();
 
-            result._type = blob.tp;
             result._stops = [];
 
-            for (var i = 0; i < blob.stops.length; ++i) {
-                var stop = blob.stops[i];
+            for (var i = 0; i < blob.length; ++i) {
+                var stop = blob[i];
                 result._stops.push({
                     position: stop[i].p,
                     color: GXColor.parseColor(stop[i].color)
@@ -67,7 +64,6 @@
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-            if (left._type === right._type) {
                 if (left._stops.length !== right._stops.length) {
                     return false;
                 }
@@ -83,31 +79,9 @@
                         return false;
                     }
                 }
-            }
         }
         return false;
     };
-
-    /**
-     * @enum
-     */
-    GXGradient.Type = {
-        /**
-         * Linear Gradient Type
-         */
-        Linear: 'L',
-
-        /**
-         * Radial Gradient Type
-         */
-        Radial: 'R'
-    };
-
-    /**
-     * @type {GXGradient.Type}
-     * @private
-     */
-    GXGradient.prototype._type = null;
 
     /**
      * @type {Array<{{position: Number, color: GXColor}}>}
@@ -116,14 +90,9 @@
     GXGradient.prototype._stops = null;
 
     /**
-     * @returns {GXGradient.Type}
-     */
-    GXGradient.prototype.getType = function () {
-        return this._type;
-    };
-
-    /**
-     * DO NOT MODIFY RETURN VALUE!!!
+     * You may modify the return value though this class
+     * is supposed to be immutable so ensure you know what
+     * you are actually doing!!
      * @returns {Array<{{position: Number, color: GXColor}}>}
      */
     GXGradient.prototype.getStops = function () {
@@ -135,19 +104,14 @@
      * @return {String}
      */
     GXGradient.prototype.asString = function () {
-        var stops = [];
+        var blob = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
-            stops.push({
+            blob.push({
                 p: this._stops[i].position,
                 c: this._stops[i].color
             })
         }
-
-        var blob = {
-            tp: this._type,
-            stops: stops
-        };
 
         return JSON.stringify(blob);
     };

@@ -101,7 +101,7 @@
             var colorpanel = data.colorpanel;
 
             if (!arguments.length) {
-                colorpanel.gColorPanel('value', value);
+                return $this.gColorTarget('value');
             } else {
                 if (colorswatch) {
                     colorswatch.gColorSwatch('value', value);

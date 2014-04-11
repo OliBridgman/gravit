@@ -357,6 +357,12 @@
             return style;
         } else if (style instanceof GXColor) {
             return style.asCSSString();
+        } else if (style instanceof GXGradient) {
+            var grd = this._canvasContext.createLinearGradient(0, 0, 100, 0);
+            for (var i = 0; i < style.getStops().length; ++i) {
+                grd.addColorStop(style.getStops()[i].position / 100.0, style.getStops()[i].color.asCSSString());
+            }
+            return grd;
         } else if (typeof style === 'number') {
             return gColor.toCSS(style);
         } else {

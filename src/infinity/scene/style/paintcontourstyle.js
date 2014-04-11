@@ -40,7 +40,7 @@
             }
 
             context.canvas.putVertices(vertexSource);
-            context.canvas.strokeVertices(this.$cls, this.$cw, this.$clc, this.$clj, this.$clm, this.$ca, this.$opc, this.$cmp);
+            context.canvas.strokeVertices(this.$val, this.$cw, this.$clc, this.$clj, this.$clm, this.$ca, this.$opc, this.$cmp);
         }
     };
 
