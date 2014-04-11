@@ -52,8 +52,10 @@
         // Work in transformed coordinates to avoid scaling outline
         var transformer = new GXVertexTransformer(element, transform);
 
-        // Add vertices with pixel alignment for (hopefully) sharper outlines
-        context.canvas.putVertices(new GXVertexPixelAligner(transformer));
+        // Don't use alignment here, because alignment here affects how shapes filling and outline is painted.
+        // With alignment, outline is always visible only partly, outside of a shape.
+        // Especially it is noticeable at zoom.
+        context.canvas.putVertices(transformer);
 
         // Paint either outlined or highlighted (highlighted has a higher precedence)
         if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {

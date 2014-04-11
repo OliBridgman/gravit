@@ -995,8 +995,8 @@
             prevPt = prevPt._getTransformedCopy(transform);
         }
 
-        // no second corner shoulder or it is too small (less that 1pt)
-        if (!ap.$cl || ap.$cl < 1 || !ap.$cr || ap.$cr < 1 ||
+        // no second corner shoulder
+        if (!ap.$cl || !ap.$cr ||
             // specific corner type is not set
             ap.$tp == GXPathBase.AnchorPoint.Type.Asymmetric ||
             // the point is connector or smooth, no corner here
@@ -1137,26 +1137,16 @@
         var hx = null;
         var hy = null;
 
-        var chlDst = null;
-        var phrDst = null;
-        if (curPt.$hlx != null && curPt.$hly != null) {
-            chlDst = gMath.sqrSegmentDist(curPt.$x, curPt.$y, prevPt.$x, prevPt.$y, curPt.$hlx, curPt.$hly);
-        }
-        if (prevPt.$hrx != null && prevPt.$hry != null) {
-            phrDst = gMath.sqrSegmentDist(curPt.$x, curPt.$y, prevPt.$x, prevPt.$y, prevPt.$hrx, prevPt.$hry);
-        }
-
         // define first and second handle coordinates if exist
-        // For vertices generation we use tolerance value of 1pt for using handles
-        if (chlDst && chlDst >= 1 && phrDst && phrDst >= 1) {
+        if (curPt.$hlx != null && curPt.$hly != null && prevPt.$hrx != null && prevPt.$hry != null) {
             hx = prevPt.$hrx;
             hy = prevPt.$hry;
             h2x = curPt.$hlx;
             h2y = curPt.$hly;
-        } else if (chlDst && chlDst >= 1) {
+        } else if (curPt.$hlx != null && curPt.$hly != null) {
             hx = curPt.$hlx;
             hy = curPt.$hly;
-        } else if (phrDst && phrDst >= 1) {
+        } else if (prevPt.$hrx != null && prevPt.$hry != null) {
             hx = prevPt.$hrx;
             hy = prevPt.$hry;
         }
@@ -1167,8 +1157,8 @@
             curPt.$tp == GXPathBase.AnchorPoint.Type.Connector ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Symmetric ||
             curPt.$tp == GXPathBase.AnchorPoint.Type.Mirror ||
-            // shoulders are not defined or zero or too small (less that 1pt)
-            !curPt.$cl || !curPt.$cr || curPt.$cl < 1 || curPt.$cr < 1) {
+            // shoulders are not defined or zero
+            !curPt.$cl || !curPt.$cr) {
             // No any specific corner with shoulders
 
             if (hx == null) {
@@ -1325,25 +1315,15 @@
             prevPt = prevPt._getTransformedCopy(transform);
         }
 
-        var ehlDst = null;
-        var phrDst = null;
-        if (endPt.$hlx != null && endPt.$hly != null) {
-            ehlDst = gMath.sqrSegmentDist(endPt.$x, endPt.$y, prevPt.$x, prevPt.$y, endPt.$hlx, endPt.$hly);
-        }
-        if (prevPt.$hrx != null && prevPt.$hry != null) {
-            phrDst = gMath.sqrSegmentDist(endPt.$x, endPt.$y, prevPt.$x, prevPt.$y, prevPt.$hrx, prevPt.$hry);
-        }
-
-        // For vertices generation we use tolerance value of 1pt for using handles
-        if (ehlDst && ehlDst >= 1 && phrDst && phrDst >= 1) {
+        if (endPt.$hlx != null && endPt.$hly != null && prevPt.$hrx != null && prevPt.$hry != null) {
             target.extend(3);
             target.writeVertex(GXVertex.Command.Curve2, endPt.$x, endPt.$y);
             target.writeVertex(GXVertex.Command.Curve2, prevPt.$hrx, prevPt.$hry);
             target.writeVertex(GXVertex.Command.Curve2, endPt.$hlx, endPt.$hly);
-        } else if ((!ehlDst || ehlDst < 1) && (!phrDst || phrDst < 1)) {
+        } else if ((endPt.$hlx == null || endPt.$hly == null) && (prevPt.$hrx == null || prevPt.$hry == null)) {
             target.addVertex(GXVertex.Command.Line, endPt.$x, endPt.$y);
         } else {
-            if (ehlDst && ehlDst >= 1) {
+            if (endPt.$hlx != null && endPt.$hly != null) {
                 hx = endPt.$hlx;
                 hy = endPt.$hly;
             } else {

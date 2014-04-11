@@ -132,7 +132,8 @@
     /** @override */
     GXShapeTool.prototype.paint = function (context) {
         if (this._shape) {
-            // Paint outline of shape
+            // Alignment here affects ellipses and handles of curves contained in ellipses,
+            // but this is not noticeable, as it is a shape creation and line is just 1 pt width at any zoom
             context.canvas.putVertices(new GXVertexPixelAligner(this._shape));
             context.canvas.strokeVertices(context.selectionOutlineColor);
 

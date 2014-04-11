@@ -34,7 +34,9 @@
         if (this.hasPaintableFill() && this.$cw && this.$cw > 0) {
             var vertexSource = source;
             if (this.getScene().getProperty('unit') === GXLength.Unit.PX && this.$cw % 2 !== 0) {
-                vertexSource = new GXVertexPixelAligner(source);
+                // This code is temporary disabled as it breaks ellipse arcs, pies and chords, especially
+                // it is noticeable at zoom
+                //vertexSource = new GXVertexPixelAligner(source);
             }
 
             context.canvas.putVertices(vertexSource);

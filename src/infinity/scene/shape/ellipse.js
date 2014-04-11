@@ -123,7 +123,7 @@
             var extraPoint = null;
             if (anchorPoints.getFirstChild().getNext() == anchorPoints.getLastChild()) {
                 // We have only two anchor points, so add one for proper auto-handles, making rounded shape,
-                // and then switch of auto-handles and remove that extra point
+                // and then switch off auto-handles and remove that extra point
                 anchorPoint = new GXPathBase.AnchorPoint();
                 if (gMath.isEqualEps(an, ea)) {
                     an += Math.PI / 2;
@@ -134,9 +134,11 @@
             }
 
             this.setProperty('closed', true);
-
             for (var ap = anchorPoints.getFirstChild(); ap != null; ap = ap.getNext()) {
-                ap.setProperty('ah', true);
+                // Don't change auto-handles to true here! They must be true at first to be calculated properly for
+                // good rounded arc, but then they must be set to false, as they should not be affected with the
+                // rest changes
+                ap.setProperty('ah', false);
             }
 
             if (extraPoint) {
