@@ -336,7 +336,9 @@
                 } else {
                     var newTp = GXPathBase.AnchorPoint.Type.Symmetric;
                     if (this._mode != GXPathTool.Mode.Edit && !this._newPoint &&
-                            !(this._editPt.getPrevious() == null && this._editPt.getNext() == null)) {
+                        !this._dpathRef.getProperty('closed') &&
+                        (this._editPt.getPrevious() == null && this._editPt.getNext() != null ||
+                            this._editPt.getPrevious() != null && this._editPt.getNext() == null)) {
 
                         if (this._mode == GXPathTool.Mode.Prepend) {
                             this._editPt.setProperties(['tp', 'hlx', 'hly'], [newTp, h1x, h1y]);
