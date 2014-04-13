@@ -43,8 +43,8 @@
             for (var i = 0; i < blob.length; ++i) {
                 var stop = blob[i];
                 result._stops.push({
-                    position: stop[i].p,
-                    color: GXColor.parseColor(stop[i].color)
+                    position: stop.p,
+                    color: GXColor.parseColor(stop.c)
                 })
             }
 
@@ -109,7 +109,7 @@
         for (var i = 0; i < this._stops.length; ++i) {
             blob.push({
                 p: this._stops[i].position,
-                c: this._stops[i].color
+                c: this._stops[i].color.asString()
             })
         }
 

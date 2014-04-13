@@ -73,7 +73,7 @@
 
     /** @override */
     GXPaintStyle.prototype.store = function (blob) {
-        if (GXPaintStyle.prototype.store.call(this, blob)) {
+        if (GXStyle.prototype.store.call(this, blob)) {
             this.storeProperties(blob, GXPaintStyle.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'val') {
@@ -98,7 +98,7 @@
 
     /** @override */
     GXPaintStyle.prototype.restore = function (blob) {
-        if (GXPaintStyle.prototype.restore.call(this, blob)) {
+        if (GXStyle.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, GXPaintStyle.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'val') {
