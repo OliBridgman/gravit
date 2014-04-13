@@ -23,12 +23,6 @@
         Round: 2
     };
 
-    GXPaintCanvas.StrokeAlignment = {
-        Center: 0,
-        Inside: 1,
-        Outside: 2
-    };
-
     GXPaintCanvas.CompositeOperator = {
         /**
          * Displays the source image over the destination image
@@ -251,6 +245,19 @@
     };
 
     /**
+     * Creates and returns a linear gradient pattern
+     * @param {Number} x1 horizontal start position
+     * @param {Number} y1 vertical start position
+     * @param {Number} x2 horizontal end position
+     * @param {Number} y2 vertical end position
+     * @param {GXGradient} gradient the gradient to be used
+     * @return {*} a pattern specific to this canvas-type
+     */
+    GXPaintCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
+        throw new Error("Not Supported");
+    };
+
+    /**
      * Pushes a vertex source into this canvas overwriting any
      * previously added vertices. This will act as source for different
      * functions like clipVertices, strokeVertices and fillVertices
@@ -295,7 +302,6 @@
      * @param {Number} [cap] the line cap used for stroking, defaults to GXPaintCanvas.LineCap.Butt
      * @param {Number} [join] the line join used for stroking
      * @param {Number} [miterLimit] the miter limit used for stroking
-     * @param {Number} [alignment] the alignment of the stroke, defaults to GXPaintCanvas.StrokeAlignment.Center
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
      * @param {Number} [composite] the composite operator to use for drawing, defaults to GXPaintCanvas.CompositeOperator.SourceOver
      * @see GXPaintCanvas.LineCap
@@ -303,7 +309,7 @@
      * @see GXPaintCanvas.StrokeAlignment
      * @see GXPaintCanvas.CompositeOperator
      */
-    GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
+    GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
         throw new Error("Not Supported");
     };
 

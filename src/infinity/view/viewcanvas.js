@@ -101,6 +101,18 @@
     };
 
     /** @override */
+    GXViewCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
+        var result = this._canvasContext.createLinearGradient(x1, y1, x2, y2);
+        var stops = gradient.getStops();
+
+        for (var i = 0; i < stops.length; ++i) {
+            result.addColorStop(stops[i].position / 100.0, stops[i].color.asCSSString());
+        }
+
+        return result;
+    };
+
+    /** @override */
     GXPaintCanvas.prototype.clipRect = function (x, y, width, height) {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
         this._canvasContext.save();
@@ -172,7 +184,7 @@
     };
 
     /** @override */
-    GXViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, alignment, opacity, composite) {
+    GXViewCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -353,16 +365,10 @@
     GXViewCanvas.prototype._convertStyle = function (style) {
         // TODO : Support color conversion using paint configuration color profiles
 
-        if (style instanceof CanvasPattern) {
+        if (style instanceof CanvasPattern || style instanceof CanvasGradient) {
             return style;
         } else if (style instanceof GXColor) {
             return style.asCSSString();
-        } else if (style instanceof GXGradient) {
-            var grd = this._canvasContext.createLinearGradient(0, 0, 100, 0);
-            for (var i = 0; i < style.getStops().length; ++i) {
-                grd.addColorStop(style.getStops()[i].position / 100.0, style.getStops()[i].color.asCSSString());
-            }
-            return grd;
         } else if (typeof style === 'number') {
             return gColor.toCSS(style);
         } else {

@@ -105,7 +105,7 @@
         } else {
             var style = this.getStyle(false);
             if (style) {
-                style.paint(context, this);
+                style.paint(context, this, this.getGeometryBBox());
             }
         }
 
@@ -153,7 +153,6 @@
         if (!source) {
             return null;
         }
-
 
         var result = source;
         var style = this.getStyle(false);

@@ -44,35 +44,35 @@
     };
 
     /**
-     * Get the color of the first area paint if any
+     * Get the color of the first fill paint if any
      * @returns {GXColor}
      */
-    GXStyleSet.prototype.getAreaColor = function () {
-        return this._getFillColor(GXPaintAreaStyle);
+    GXStyleSet.prototype.getFillColor = function () {
+        return this._getFillColor(GXFillStyle);
     };
 
     /**
-     * Set the color of the first area paint if any,
-     * automatically creating a new area paint if there's none
-     * and automatically removing an area if color is nul
+     * Set the color of the first fill paint if any,
+     * automatically creating a new fill paint if there's none
+     * and automatically removing an fill if color is nul
      * @param {GXColor} color
      */
-    GXStyleSet.prototype.setAreaColor = function (color) {
-        this._setFillColor(GXPaintAreaStyle, color);
+    GXStyleSet.prototype.setFillColor = function (color) {
+        this._setFillColor(GXFillStyle, color);
     };
 
-    GXStyleSet.prototype.getContourColor = function () {
-        return this._getFillColor(GXPaintContourStyle);
+    GXStyleSet.prototype.getStrokeColor = function () {
+        return this._getFillColor(GXStrokeStyle);
     };
 
-    GXStyleSet.prototype.setContourColor = function (color) {
-        return this._setFillColor(GXPaintContourStyle, color);
+    GXStyleSet.prototype.setStrokeColor = function (color) {
+        return this._setFillColor(GXStrokeStyle, color);
     };
 
     /** @override */
-    GXStyleSet.prototype.paint = function (context, source) {
+    GXStyleSet.prototype.paint = function (context, source, bbox) {
         // by default, simply paint our style children
-        this._paintChildren(context, source);
+        this._paintChildren(context, source, bbox);
     };
 
     /** @override */
@@ -86,10 +86,10 @@
     };
 
     /** @private */
-    GXStyleSet.prototype._paintChildren = function (context, source) {
+    GXStyleSet.prototype._paintChildren = function (context, source, bbox) {
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
             if (child instanceof GXStyle) {
-                child.paint(context, source);
+                child.paint(context, source, bbox);
             }
         }
     };

@@ -21,10 +21,10 @@
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
                 editor.beginTransaction();
                 try {
-                    if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintFillStyle) {
+                    if (hitData && hitData instanceof GXStyle.HitResult && hitData.style instanceof GXPaintStyle) {
                         hitData.style.setColor(source);
                     } else {
-                        this.getElement().getStyle(true).setAreaColor(source);
+                        this.getElement().getStyle(true).setFillColor(source);
                     }
                 } finally {
                     // TODO : I18N

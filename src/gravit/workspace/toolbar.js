@@ -33,9 +33,9 @@
             .append($('<div></div>')
                 .addClass('section')
                 .append($('<button></button>')
-                    .attr('data-color-button', 'area')
+                    .attr('data-color-button', 'fill')
                     // TODO : I18N
-                    .attr('title', 'Area Color')
+                    .attr('title', 'Fill Color')
                     .append($('<span></span>'))
                     .gColorButton({
                         swatch: false,
@@ -43,12 +43,12 @@
                         clearColor: true
                     })
                     .on('change', function (evt, color) {
-                        this._assignCurrentColor(GXEditor.CurrentColorType.Area, color);
+                        this._assignCurrentColor(GXEditor.CurrentColorType.Fill, color);
                     }.bind(this)))
                 .append($('<button></button>')
-                    .attr('data-color-button', 'contour')
+                    .attr('data-color-button', 'stroke')
                     // TODO : I18N
-                    .attr('title', 'Contour Color')
+                    .attr('title', 'Stroke Color')
                     .append($('<span></span>'))
                     .gColorButton({
                         swatch: false,
@@ -56,7 +56,7 @@
                         clearColor: true
                     })
                     .on('change', function (evt, color) {
-                        this._assignCurrentColor(GXEditor.CurrentColorType.Contour, color);
+                        this._assignCurrentColor(GXEditor.CurrentColorType.Stroke, color);
                     }.bind(this))));
 
         this._toolTypeToButtonMap = {};
@@ -219,45 +219,45 @@
      * @private
      */
     GToolbar.prototype._updateColorButtons = function () {
-        var areaButton = this._htmlElement.find('[data-color-button="area"]');
-        var contourButton = this._htmlElement.find('[data-color-button="contour"]');
+        var fillButton = this._htmlElement.find('[data-color-button="fill"]');
+        var strokeButton = this._htmlElement.find('[data-color-button="stroke"]');
 
         var editor = gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor() : null;
 
-        areaButton.prop('disabled', !editor);
-        contourButton.prop('disabled', !editor);
+        fillButton.prop('disabled', !editor);
+        strokeButton.prop('disabled', !editor);
 
         if (editor) {
             var selection = editor.getSelection();
 
-            var areaColor = editor.getCurrentColor(GXEditor.CurrentColorType.Area);
-            var contourColor = editor.getCurrentColor(GXEditor.CurrentColorType.Contour);
+            var fillColor = editor.getCurrentColor(GXEditor.CurrentColorType.Fill);
+            var strokeColor = editor.getCurrentColor(GXEditor.CurrentColorType.Stroke);
 
-            // If there's a selection, take area and contour color from it.
+            // If there's a selection, take fill and stroke color from it.
             // If selection is more than one, set both to null
             if (selection) {
-                areaColor = null;
-                contourColor = null;
+                fillColor = null;
+                strokeColor = null;
 
                 if (selection.length === 1 && selection[0].hasMixin(GXElement.Style)) {
                     var style = selection[0].getStyle(false);
                     if (style) {
-                        areaColor = style.getAreaColor();
-                        contourColor = style.getContourColor();
+                        fillColor = style.getFillColor();
+                        strokeColor = style.getStrokeColor();
                     }
                 }
             }
 
-            areaButton.gColorButton('value', areaColor);
-            contourButton.gColorButton('value', contourColor);
+            fillButton.gColorButton('value', fillColor);
+            strokeButton.gColorButton('value', strokeColor);
 
-            areaButton.find('> span:first-child')
-                .css('color', areaColor ? areaColor.asCSSString() : '')
-                .attr('class', 'fa fa-' + (areaColor ? 'circle' : 'ban'));
+            fillButton.find('> span:first-child')
+                .css('color', fillColor ? fillColor.asCSSString() : '')
+                .attr('class', 'fa fa-' + (fillColor ? 'circle' : 'ban'));
 
-            contourButton.find('> span:first-child')
-                .css('color', contourColor ? contourColor.asCSSString() : '')
-                .attr('class', 'fa fa-' + (contourColor ? 'circle-o' : 'ban'));
+            strokeButton.find('> span:first-child')
+                .css('color', strokeColor ? strokeColor.asCSSString() : '')
+                .attr('class', 'fa fa-' + (strokeColor ? 'circle-o' : 'ban'));
         }
     };
 
@@ -276,10 +276,10 @@
                     var element = selection[i];
                     var style = element.getStyle(!!color);
                     if (style) {
-                        if (type === GXEditor.CurrentColorType.Area) {
-                            style.setAreaColor(color);
-                        } else if (type === GXEditor.CurrentColorType.Contour) {
-                            style.setContourColor(color);
+                        if (type === GXEditor.CurrentColorType.Fill) {
+                            style.setFillColor(color);
+                        } else if (type === GXEditor.CurrentColorType.Stroke) {
+                            style.setStrokeColor(color);
                         }
                     }
                 }

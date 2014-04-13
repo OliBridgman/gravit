@@ -58,10 +58,11 @@
     /**
      * Called to paint this style providing the painting
      * context and the vertex source used for painting
-     * @param {GXPaintContext} context
-     * @parma {GXVertexSource} source
+     * @param {GXPaintContext} context the context used for painting
+     * @parma {GXVertexSource} source the source vertices
+     * @param {GRect} bbox the source geometry bbox
      */
-    GXStyle.prototype.paint = function (context, source) {
+    GXStyle.prototype.paint = function (context, source, bbox) {
         throw new Error("Not Supported.");
     };
 

@@ -50,8 +50,8 @@
      * @enum
      */
     GXEditor.CurrentColorType = {
-        Contour: 0,
-        Area: 1
+        Stroke: 0,
+        Fill: 1
     };
 
     /**
@@ -819,17 +819,17 @@
                 target.appendChild(element);
 
                 if (!noDefaults) {
-                    var areaColor = this._currentColor[GXEditor.CurrentColorType.Area];
-                    var contourColor = this._currentColor[GXEditor.CurrentColorType.Contour];
+                    var fillColor = this._currentColor[GXEditor.CurrentColorType.Fill];
+                    var strokeColor = this._currentColor[GXEditor.CurrentColorType.Stroke];
 
-                    // Assign default area and contour style for shapes
-                    if ((areaColor || contourColor) && element.hasMixin(GXElement.Style)) {
+                    // Assign default fill and stroke style for shapes
+                    if ((fillColor || strokeColor) && element.hasMixin(GXElement.Style)) {
                         var style = element.getStyle(true);
-                        if (areaColor) {
-                            style.setAreaColor(areaColor);
+                        if (fillColor) {
+                            style.setFillColor(fillColor);
                         }
-                        if (contourColor) {
-                            style.setContourColor(contourColor);
+                        if (strokeColor) {
+                            style.setStrokeColor(strokeColor);
                         }
                     }
                 }

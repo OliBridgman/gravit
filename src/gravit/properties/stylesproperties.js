@@ -56,15 +56,15 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GStylesProperties._PaintFillProperties Class
+    // GStylesProperties._PaintProperties Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GStylesProperties._PaintFillProperties
+     * @class GStylesProperties._PaintProperties
      * @extends GStylesProperties._StyleProperties
      * @constructor
      * @private
      */
-    GStylesProperties._PaintFillProperties = function (properties, panel) {
+    GStylesProperties._PaintProperties = function (properties, panel) {
         GStylesProperties._StyleProperties.call(this, properties, panel);
 
         var _createInput = function (property) {
@@ -74,25 +74,25 @@
                     .css('width', '100%')
                     .attr('data-property', property)
                     .append($('<option></option>')
-                        .attr('value', GXPaintFillStyle.Type.Color)
+                        .attr('value', GXPaintStyle.Type.Color)
                         // TODO : I18N
                         .text('Color'))
                     .append($('<option></option>')
-                        .attr('value', GXPaintFillStyle.Type.LinearGradient)
+                        .attr('value', GXPaintStyle.Type.LinearGradient)
                         // TODO : I18N
                         .text('Linear Gradient'))
-                    .append($('<option></option>')
-                        .attr('value', GXPaintFillStyle.Type.RadialGradient)
-                        // TODO : I18N
-                        .text('Radial Gradient'))
+                    //.append($('<option></option>')
+                    //    .attr('value', GXPaintStyle.Type.RadialGradient)
+                    //    // TODO : I18N
+                    //    .text('Radial Gradient'))
                     .on('change', function () {
                         var oldType = self._style.getProperty('tp');
                         var newType = $(this).val();
                         if (oldType !== newType) {
                             var newValue = null;
 
-                            if (GXPaintFillStyle.isGradientType(newType)) {
-                                if (!GXPaintFillStyle.isGradientType(oldType)) {
+                            if (GXPaintStyle.isGradientType(newType)) {
+                                if (!GXPaintStyle.isGradientType(oldType)) {
                                     newValue = new GXGradient([
                                         {position: 0, color: self._style.getColor()},
                                         {position: 100, color: new GXColor(GXColor.Type.Black)}
@@ -100,7 +100,7 @@
                                 } else {
                                     newValue = self._style.getProperty('val');
                                 }
-                            } else if (newType === GXPaintFillStyle.Type.Color) {
+                            } else if (newType === GXPaintStyle.Type.Color) {
                                 newValue = self._style.getColor();
                             }
 
@@ -118,7 +118,7 @@
                         .gAutoBlur()
                         .on('change', function () {
                             var type = self._style.getProperty('tp');
-                            if (GXPaintFillStyle.isGradientType(type)) {
+                            if (GXPaintStyle.isGradientType(type)) {
                                 self._assignStopInput();
                             } else {
                                 throw new Error("Unsupported Type for Position.");
@@ -132,9 +132,9 @@
                         .gColorButton()
                         .on('change', function (evt, color) {
                             var type = this._style.getProperty('tp');
-                            if (GXPaintFillStyle.isGradientType(type)) {
+                            if (GXPaintStyle.isGradientType(type)) {
                                 self._assignStopInput();
-                            } else if (type === GXPaintFillStyle.Type.Color) {
+                            } else if (type === GXPaintStyle.Type.Color) {
                                 self._properties._assignStyleProperty(self._style, 'val', color);
                             } else {
                                 throw new Error("Unsupported Type for Color.");
@@ -176,15 +176,15 @@
             .appendTo(panel);
 
     };
-    GObject.inherit(GStylesProperties._PaintFillProperties, GStylesProperties._StyleProperties);
+    GObject.inherit(GStylesProperties._PaintProperties, GStylesProperties._StyleProperties);
 
     /**
      * @type {boolean}
      * @private
      */
-    GStylesProperties._PaintFillProperties._isGradientUpdate = false;
+    GStylesProperties._PaintProperties._isGradientUpdate = false;
 
-    GStylesProperties._PaintFillProperties.prototype.update = function (style) {
+    GStylesProperties._PaintProperties.prototype.update = function (style) {
         if (this._isGradientUpdate) {
             return;
         }
@@ -194,24 +194,24 @@
         var type = style.getProperty('tp');
 
         this._panel.find('input[data-property="position"]')
-            .css('visibility', GXPaintFillStyle.isGradientType(type) ? '' : 'hidden');
+            .css('visibility', GXPaintStyle.isGradientType(type) ? '' : 'hidden');
 
         this._panel.find('button[data-property="color"]')
-            .css('visibility', GXPaintFillStyle.isGradientType(type) || type === GXPaintFillStyle.Type.Color ? '' : 'hidden')
-            .toggleClass('g-flat', type !== GXPaintFillStyle.Type.Color)
-            .gColorButton('value', type === GXPaintFillStyle.Type.Color ? style.getProperty('val') : null)
+            .css('visibility', GXPaintStyle.isGradientType(type) || type === GXPaintStyle.Type.Color ? '' : 'hidden')
+            .toggleClass('g-flat', type !== GXPaintStyle.Type.Color)
+            .gColorButton('value', type === GXPaintStyle.Type.Color ? style.getProperty('val') : null)
             .prop('disabled', false);
 
         this._panel.find('[data-property="gradient"]')
-            .css('display', GXPaintFillStyle.isGradientType(type) ? '' : 'none')
-            .gGradientEditor('value', GXPaintFillStyle.isGradientType(type) ? style.getProperty('val').getStops() : null)
-            .gGradientEditor('selected', GXPaintFillStyle.isGradientType(type) ? 0 : -1);
+            .css('display', GXPaintStyle.isGradientType(type) ? '' : 'none')
+            .gGradientEditor('value', GXPaintStyle.isGradientType(type) ? style.getProperty('val').getStops() : null)
+            .gGradientEditor('selected', GXPaintStyle.isGradientType(type) ? 0 : -1);
 
         this._updateStopInput();
     };
 
-    GStylesProperties._PaintFillProperties.prototype._assignStopInput = function () {
-        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
+    GStylesProperties._PaintProperties.prototype._assignStopInput = function () {
+        if (GXPaintStyle.isGradientType(this._style.getProperty('tp'))) {
             var $position = this._panel.find('input[data-property="position"]');
             var $color = this._panel.find('button[data-property="color"]');
             var $gradient = this._panel.find('div[data-property="gradient"]');
@@ -235,8 +235,8 @@
         }
     };
 
-    GStylesProperties._PaintFillProperties.prototype._assignGradient = function () {
-        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
+    GStylesProperties._PaintProperties.prototype._assignGradient = function () {
+        if (GXPaintStyle.isGradientType(this._style.getProperty('tp'))) {
             var $gradient = this._panel.find('div[data-property="gradient"]');
 
             this._isGradientUpdate = true;
@@ -248,8 +248,8 @@
         }
     };
 
-    GStylesProperties._PaintFillProperties.prototype._updateStopInput = function () {
-        if (GXPaintFillStyle.isGradientType(this._style.getProperty('tp'))) {
+    GStylesProperties._PaintProperties.prototype._updateStopInput = function () {
+        if (GXPaintStyle.isGradientType(this._style.getProperty('tp'))) {
             var $position = this._panel.find('input[data-property="position"]');
             var $color = this._panel.find('button[data-property="color"]');
             var $gradient = this._panel.find('div[data-property="gradient"]');
@@ -268,34 +268,34 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GStylesProperties._PaintAreaProperties Class
+    // GStylesProperties._FillProperties Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GStylesProperties._PaintAreaProperties
-     * @extends GStylesProperties._PaintFillProperties
+     * @class GStylesProperties._FillProperties
+     * @extends GStylesProperties._PaintProperties
      * @constructor
      * @private
      */
-    GStylesProperties._PaintAreaProperties = function (properties, panel) {
-        GStylesProperties._PaintFillProperties.call(this, properties, panel);
+    GStylesProperties._FillProperties = function (properties, panel) {
+        GStylesProperties._PaintProperties.call(this, properties, panel);
     };
-    GObject.inherit(GStylesProperties._PaintAreaProperties, GStylesProperties._PaintFillProperties);
+    GObject.inherit(GStylesProperties._FillProperties, GStylesProperties._PaintProperties);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GStylesProperties._PaintContourProperties Class
+    // GStylesProperties._StrokeProperties Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GStylesProperties._PaintContourProperties
-     * @extends GStylesProperties._PaintFillProperties
+     * @class GStylesProperties._StrokeProperties
+     * @extends GStylesProperties._PaintProperties
      * @constructor
      * @private
      */
-    GStylesProperties._PaintContourProperties = function (properties, panel) {
-        GStylesProperties._PaintFillProperties.call(this, properties, panel);
+    GStylesProperties._StrokeProperties = function (properties, panel) {
+        GStylesProperties._PaintProperties.call(this, properties, panel);
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'cw') {
+            if (property === 'sw') {
                 return $('<input>')
                     .attr('data-property', property)
                     .attr('type', 'text')
@@ -304,11 +304,22 @@
                     .on('change', function () {
                         var value = self._style.getScene().stringToPoint($(this).val());
                         if (!isNaN(value)) {
-                            self._properties._assignStyleProperty(self._style, 'cw', value);
+                            self._properties._assignStyleProperty(self._style, 'sw', value);
                         } else {
                             self.update(self._style);
                         }
                     })
+            } else if (property === 'si') {
+                return $('<label></label>')
+                    .append($('<input>')
+                        .attr('type', 'checkbox')
+                        .attr('data-property', property)
+                        .on('change', function () {
+                            self._properties._assignStyleProperty(self._style, 'si', $(this).is(':checked'));
+                        }))
+                    .append($('<span></span>')
+                        // TODO : I18N
+                        .html('&nbsp;Inside'))
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -322,24 +333,20 @@
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
-                    .text('Stroke:'))
+                    .text('Width:'))
                 .append($('<td></td>')
-                    .append(_createInput('cw')))
+                    .append(_createInput('sw')))
                 .append($('<td></td>')
-                    .addClass('label')
-                    .text('Align:'))
-                .append($('<td></td>')
-                    .append($('<select></select>')
-                        .css('width', '100%')
-                        .append($('<option></option>')
-                            .text('Inside')))));
+                    .attr('colspan', '2')
+                    .append(_createInput('si'))));
     };
-    GObject.inherit(GStylesProperties._PaintContourProperties, GStylesProperties._PaintFillProperties);
+    GObject.inherit(GStylesProperties._StrokeProperties, GStylesProperties._PaintProperties);
 
-    GStylesProperties._PaintContourProperties.prototype.update = function (style) {
-        GStylesProperties._PaintFillProperties.prototype.update.call(this, style);
+    GStylesProperties._StrokeProperties.prototype.update = function (style) {
+        GStylesProperties._PaintProperties.prototype.update.call(this, style);
 
-        this._panel.find('input[data-property="cw"]').val(style.getScene().pointToString(style.getProperty('cw')));
+        this._panel.find('input[data-property="sw"]').val(style.getScene().pointToString(style.getProperty('sw')));
+        this._panel.find('input[data-property="si"]').prop('checked', style.getProperty('si'));
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -401,22 +408,22 @@
         // Initiate our controls panel
         controls
             .append($('<button></button>')
-                .attr('data-control', 'contour')
+                .attr('data-control', 'stroke')
                 // TODO : I18N
-                .attr('title', 'Add Contour')
+                .attr('title', 'Add Stroke')
                 .append($('<span></span>')
                     .addClass('fa fa-circle-o'))
                 .on('click', function () {
-                    this._addStyleClass(GXPaintContourStyle);
+                    this._addStyleClass(GXStrokeStyle);
                 }.bind(this)))
             .append($('<button></button>')
-                .attr('data-control', 'area')
+                .attr('data-control', 'fill')
                 // TODO : I18N
-                .attr('title', 'Add Area')
+                .attr('title', 'Add Fill')
                 .append($('<span></span>')
                     .addClass('fa fa-circle'))
                 .on('click', function () {
-                    this._addStyleClass(GXPaintAreaStyle);
+                    this._addStyleClass(GXFillStyle);
                 }.bind(this)))
             .append($('<span></span>')
                 .html('&nbsp;'))
@@ -474,8 +481,8 @@
             });
         }.bind(this);
 
-        _addStyleProperties(GStylesProperties._PaintAreaProperties, GXPaintAreaStyle);
-        _addStyleProperties(GStylesProperties._PaintContourProperties, GXPaintContourStyle);
+        _addStyleProperties(GStylesProperties._FillProperties, GXFillStyle);
+        _addStyleProperties(GStylesProperties._StrokeProperties, GXStrokeStyle);
     };
 
     /** @override */
@@ -851,10 +858,10 @@
         }
 
         // Enable / disable add controls
-        this._controls.find('button[data-control="contour"]')
-            .prop('disabled', styleClasses.indexOf(GXPaintContourStyle) >= 0);
-        this._controls.find('button[data-control="area"]')
-            .prop('disabled', styleClasses.indexOf(GXPaintAreaStyle) >= 0);
+        this._controls.find('button[data-control="stroke"]')
+            .prop('disabled', styleClasses.indexOf(GXStrokeStyle) >= 0);
+        this._controls.find('button[data-control="fill"]')
+            .prop('disabled', styleClasses.indexOf(GXFillStyle) >= 0);
     };
 
     /**
