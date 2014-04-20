@@ -750,6 +750,33 @@
         this._setImageSmoothingEnabled(hadSmooth);
     };
 
+    /**
+     * Runs a filter on this canvas
+     * @param {String} filterName name of the registered filter
+     * @param {GRect} [extents] for the filter, if null, takes the whole canvas
+     * @param {Array<*>} [args] optional arguments passed to the filter
+     */
+    GXPaintCanvas.prototype.runFilter = function (filterName, extents, args) {
+        var filter = _.ifFilter[filterName];
+        if (filter) {
+            extents = extents || new GRect(0, 0, this.getWidth(), this.getHeight());
+
+            // get pixels
+            var imageData = this._canvasContext.getImageData(extents.getX(), extents.getY(), extents.getWidth(), extents.getHeight());
+            var arguments = [imageData.data, extents.getWidth(), extents.getHeight()];
+
+            if (args) {
+                arguments = arguments.concat(args);
+            }
+
+            // run filter
+            filter.apply(filter, arguments);
+
+            // push pixels back
+            this._canvasContext.putImageData(imageData, extents.getX(), extents.getY());
+        }
+    };
+
     /** @private */
     GXPaintCanvas.prototype._updateTransform = function () {
         // make sure to assign global transform matrix to canvas
