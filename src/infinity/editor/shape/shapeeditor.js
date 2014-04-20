@@ -21,8 +21,8 @@
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
                 editor.beginTransaction();
                 try {
-                    if (hitData && hitData instanceof GXRenderAttributes.HitResult && hitData.attributes instanceof GXPatternAttributes) {
-                        hitData.attributes.setColor(source);
+                    if (hitData && hitData instanceof IFRenderAttribute.HitResult && hitData.attribute instanceof IFPatternAttribute) {
+                        hitData.attribute.setColor(source);
                     } else {
                         this.getElement().getAttributes().setFillColor(source);
                     }

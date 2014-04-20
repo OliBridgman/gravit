@@ -76,7 +76,7 @@
                 var attributes = selection[i].getAttributes();
                 if (attributes && attributes.hasMixin(GXNode.Container) && attributes.getFirstChild()) {
                     var serializedAttributes = GXNode.serialize(attributes);
-                    gShell.setClipboardContent(GXAttributes.MIME_TYPE, serializedAttributes);
+                    gShell.setClipboardContent(IFAttribute.MIME_TYPE, serializedAttributes);
                     break;
                 }
             }

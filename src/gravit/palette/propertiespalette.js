@@ -129,7 +129,7 @@
          // type (first one found).
          // TODO : Take care on attributes references
 
-         if (!(attributes instanceof GXRenderAttributes)) {
+         if (!(attributes instanceof IFRenderAttribute)) {
          canAdd = false;
          } else {
          var treeRoot = this._htmlTreeContainer.tree('getTree');
@@ -175,7 +175,7 @@
         // Add children (if any)
         if ((canAdd || forceAddChildren) && attributes.hasMixin(GXNode.Container)) {
             for (var child = attributes.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof GXAttributes) {
+                if (child instanceof IFAttribute) {
                     this._insertAttributesNode(child);
                 }
             }

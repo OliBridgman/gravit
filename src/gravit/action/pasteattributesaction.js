@@ -53,7 +53,7 @@
      */
     GPasteAttributesAction.prototype.isEnabled = function () {
         var cpMimeTypes = gShell.getClipboardMimeTypes();
-        if (cpMimeTypes && cpMimeTypes.indexOf(GXAttributes.MIME_TYPE) >= 0) {
+        if (cpMimeTypes && cpMimeTypes.indexOf(IFAttribute.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
             if (document) {
                 var selection = document.getEditor().getSelection();
@@ -73,7 +73,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.execute = function () {
-        var attributes = GXNode.deserialize(gShell.getClipboarContent(GXAttributes.MIME_TYPE));
+        var attributes = GXNode.deserialize(gShell.getClipboarContent(IFAttribute.MIME_TYPE));
         if (attributes) {
             var editor = gApp.getActiveDocument().getEditor();
             var selection = editor.getSelection();

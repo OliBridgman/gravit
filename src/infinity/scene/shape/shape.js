@@ -36,16 +36,16 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @class GXShape._Attributes
-     * @extends GXRenderAttributes
+     * @extends IFRenderAttribute
      * @mixes GXNode.Container
-     * @mixes GXRenderAttributes.Pattern
+     * @mixes IFRenderAttribute.Pattern
      * @private
      */
     GXShape._Attributes = function () {
         this._flags |= GXNode.Flag.Shadow;
     }
 
-    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, GXRenderAttributes, [GXNode.Container, GXRenderAttributes.Pattern]);
+    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, IFRenderAttribute, [GXNode.Container, IFRenderAttribute.Pattern]);
 
     /** @override */
     GXShape._Attributes.prototype.validateInsertion = function (parent, reference) {
@@ -189,7 +189,7 @@
     /** @override */
     GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // Hit-Test attributes, first
-        var attrHit = attrHit = this.getAttributes().hitTest(this, location, transform, tolerance);
+        var attrHit = this.getAttributes().hitTest(this, location, transform, tolerance);
 
         if (attrHit) {
             return new GXElement.HitResult(this, attrHit);
