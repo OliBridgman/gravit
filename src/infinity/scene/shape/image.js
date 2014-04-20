@@ -173,7 +173,7 @@
 
         if (!context.configuration.isOutline(context)) {
             // Apply our transformation (if any) before the canvas transformation
-            var canvasTransform = context.canvas.getTransform();
+            var canvasTransform = context.canvas.getTransform(true);
             if (this.$trf) {
                 var tmpTransform = canvasTransform.preMultiplied(this.$trf);
                 context.canvas.setTransform(tmpTransform);

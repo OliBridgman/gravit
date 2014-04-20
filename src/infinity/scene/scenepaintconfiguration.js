@@ -76,42 +76,6 @@
     GXScenePaintConfiguration.prototype.annotations = true;
 
     /**
-     * Whether to show page-margin or not
-     * @type {Boolean}
-     */
-    GXScenePaintConfiguration.prototype.pageMargin = true;
-
-    /**
-     * Whether to show page-gutter or not
-     * @type {Boolean}
-     */
-    GXScenePaintConfiguration.prototype.pageGutter = true;
-
-    /**
-     * The transparent color
-     * @type {Number}
-     */
-    GXScenePaintConfiguration.prototype.transparentColor = gColor.build(223, 223, 223);
-
-    /**
-     * The pasteboard color
-     * @type {Number}
-     */
-    GXScenePaintConfiguration.prototype.pasteboardColor = gColor.build(176, 176, 176);
-
-    /**
-     * The page margin color
-     * @type {Number}
-     */
-    GXScenePaintConfiguration.prototype.pageMarginColor = gColor.build(255, 0, 255, 128);
-
-    /**
-     * The gutter color
-     * @type {Number}
-     */
-    GXScenePaintConfiguration.prototype.pageGutterColor = gColor.build(255, 0, 0);
-
-    /**
      * Checks and returns whether to paint outlined or not
      * @param {GXPaintContext} [context] optional context
      * to include when checking
@@ -148,32 +112,6 @@
      */
     GXScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
         if (!this.guides || !this.isAnnotationsVisible()) {
-            return false;
-        }
-        return true;
-    };
-
-    /**
-     * Checks and returns whether to paint page margins or not
-     * @param {GXPaintContext} [context] optional context
-     * to include when checking
-     * @returns {boolean}
-     */
-    GXScenePaintConfiguration.prototype.isPageMarginVisible = function (context) {
-        if (!this.pageMargin || !this.isAnnotationsVisible()) {
-            return false;
-        }
-        return true;
-    };
-
-    /**
-     * Checks and returns whether to paint page gutter or not
-     * @param {GXPaintContext} [context] optional context
-     * to include when checking
-     * @returns {boolean}
-     */
-    GXScenePaintConfiguration.prototype.isPageGutterVisible = function (context) {
-        if (!this.pageGutter || !this.isAnnotationsVisible()) {
             return false;
         }
         return true;

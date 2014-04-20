@@ -413,10 +413,6 @@
 
             var widget = new VertexWidget(container, vertexSource);
             widget.resize(width, height);
-            //container.canvas = new GXViewCanvas();
-            //widget.paint(container);
-            //context.canvas.putVertices(vertexSource);
-            //GXLayerBase.prototype._finishPaint.call(page.layer, vertexSource);
         }
     }
 

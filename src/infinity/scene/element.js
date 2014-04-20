@@ -269,57 +269,53 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.Style Mixin
+    // GXElement.Attributes Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * Marks an element to be styleable
-     * @class GXElement.Style
+     * Marks an element to contain attributes
+     * @class GXElement.Attributes
      * @constructor
      * @mixin
      */
-    GXElement.Style = function () {
+    GXElement.Attributes = function () {
     };
 
     /**
-     * @type {GXStyleSet}
+     * @type {GXAttributes}
      * @private
      */
-    GXElement.Style._styleSet = null;
+    GXElement.Attributes._attributes = null;
 
     /**
-     * Returns the style for the element. If the element doesn't yet
-     * have a style, one can be created when requested.
-     *
-     * @param {Boolean} [create] if set, creates a new styleset and appends
-     * it if not yet existing. Defaults to false.
-     * @returns {GXStyleSet}
+     * Returns the attributes set for this element
+     * @returns {GXAttributes}
      */
-    GXElement.Style.prototype.getStyle = function (create) {
-        // If we have a styleSet reference and it not
+    GXElement.Attributes.prototype.getAttributes = function () {
+        // If we have a _attributes reference and it not
         // has ourself as a parent, then clear it, first
-        if (this._styleSet && this._styleSet.getParent() !== this) {
-            this._styleSet = null;
+        if (this._attributes && this._attributes.getParent() !== this) {
+            this._attributes = null;
         }
 
-        if (!this._styleSet) {
+        if (!this._attributes) {
+            // Find our attributes and save reference for faster access
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof GXStyleSet) {
-                    this._styleSet = child;
+                if (child instanceof GXAttributes) {
+                    this._attributes = child;
                     break;
                 }
             }
 
-            if (!this._styleSet && create) {
-                this._styleSet = new GXStyleSet();
-                this.insertChild(this._styleSet, this.getFirstChild());
+            if (!this._attributes) {
+                throw new Error('No Attributes available.');
             }
         }
-        return this._styleSet;
+        return this._attributes;
     };
 
     /** @override */
-    GXElement.Style.prototype.toString = function () {
-        return "[Mixin GXElement.Style]";
+    GXElement.Attributes.prototype.toString = function () {
+        return "[Mixin GXElement.Attributes]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -774,7 +770,8 @@
         if (this.isAttached() && node.isPaintable()) {
             var repaintArea = node.getPaintBBox();
             if (repaintArea) {
-                this._scene._invalidateArea(repaintArea);
+                // Expand repaint area a bit to accreditate for any aa-pixels
+                this._scene._invalidateArea(repaintArea.expanded(1.5, 1.5, 1.5, 1.5));
             }
         }
     };

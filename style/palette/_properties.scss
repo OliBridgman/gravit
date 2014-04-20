@@ -1,13 +1,19 @@
 .palette-properties {
   padding: 2px 5px 5px 5px;
 
+  .object-tree {
+    height: 8em;
+    padding-right: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   .properties-panels {
     > .properties-panel-category {
       @include box-sizing(border-box);
       display: table;
       width: 100%;
       margin: 3px 0px;
-      background: $frameDarkColor;
       border: 1px solid $frameBorderColor;
       border-bottom: none;
       margin-bottom: 0px;

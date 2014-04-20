@@ -25,9 +25,10 @@
      * @extends EXPalette.DocumentState
      * @constructor
      */
-    EXPropertiesPalette.DocumentState = function (document, propertyPanels) {
+    EXPropertiesPalette.DocumentState = function (document, propertyPanels, objectTree) {
         EXPalette.DocumentState.call(this, document);
         this._propertyPanels = propertyPanels;
+        this._objectTree = objectTree;
     };
     GObject.inherit(EXPropertiesPalette.DocumentState, EXPalette.DocumentState);
 
@@ -71,6 +72,18 @@
             nodes = [this.document.getScene()];
         }
 
+
+        this._objectTree.tree('selectNode', null);
+        this._objectTree.tree('loadData', []);
+        this._objectTree.tree('appendNode', { id: 'ABC', label: nodes[0].getNodeNameTranslated() });
+
+        // Iterate attributes
+        for (var i = 0; i < nodes.length; ++i) {
+            if (nodes[i] instanceof GXElement && nodes[i].hasMixin(GXElement.Attributes)) {
+                this._insertAttributesNode(nodes[i].getAttributes());
+            }
+        }
+
         var lastVisiblePropertyPanel = null;
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];
@@ -99,6 +112,76 @@
         }
     };
 
+    EXPropertiesPalette.DocumentState.prototype._insertAttributesNode = function (attributes) {
+        var canAdd = true;
+        var forceAddChildren = false;
+
+        // Avoid to add root attributes but force children
+        if (attributes.getParent() instanceof GXElement) {
+            canAdd = false;
+            forceAddChildren = true;
+        }
+
+        /*
+         if (canAdd && this._elements.length > 1) {
+         // For multiple element selection we'll only pick up
+         // render attributes and only on root and only one of a
+         // type (first one found).
+         // TODO : Take care on attributes references
+
+         if (!(attributes instanceof GXRenderAttributes)) {
+         canAdd = false;
+         } else {
+         var treeRoot = this._htmlTreeContainer.tree('getTree');
+         // Iterate existing attributes nodes on root
+         if (treeRoot && treeRoot.children) {
+         for (var i = 0; i < treeRoot.children.length; i++) {
+         var node = treeRoot.children[i];
+         if (node.attributes.constructor === attributes.constructor) {
+         canAdd = false;
+         break;
+         }
+         }
+         }
+         }
+         }
+         */
+
+        if (canAdd) {
+            // Try to find the parent node and insertion position for the attributes
+            // TODO
+            var parentTreeNode = null;
+
+            // Create an unique treeId for the new attributes
+            var treeId = gUtil.uuid();
+
+            // Apend the node & gather it's reference
+            this._objectTree.tree('appendNode', { id: treeId, attributes: attributes, label: attributes.getNodeNameTranslated() }, parentTreeNode);
+            var treeNode = this._objectTree.tree('getNodeById', treeId);
+
+            // Insert the mapping
+            //this._treeStyleMap.push({attributes: attributes, treeId: treeId});
+
+            // If attributes is selected then mark it selected in tree and update
+            /*
+             if (attributes.hasFlag(GXNode.Flag.Selected)) {
+             this._htmlTreeContainer.tree('selectNode', treeNode);
+             this._htmlTreeContainer.tree('scrollToNode', treeNode);
+             this._updateAttributesProperties();
+             }
+             */
+        }
+
+        // Add children (if any)
+        if ((canAdd || forceAddChildren) && attributes.hasMixin(GXNode.Container)) {
+            for (var child = attributes.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof GXAttributes) {
+                    this._insertAttributesNode(child);
+                }
+            }
+        }
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // EXPropertiesPalette Class
     // -----------------------------------------------------------------------------------------------------------------    
@@ -108,6 +191,13 @@
      * @private
      */
     EXPropertiesPalette.prototype._htmlElement = null;
+
+    /**
+     * The container for the object tree
+     * @type {JQuery}
+     * @private
+     */
+    EXPropertiesPalette.prototype._objectTree = null;
 
     /**
      * The property panels
@@ -148,8 +238,24 @@
         EXPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
-        this._htmlElement.append($('<div></div>')
-            .addClass('object-tree-container'));
+
+        // Initiate our tree container widget
+        this._objectTree = $('<div></div>')
+            .addClass('object-tree')
+            .tree({
+                data: [],
+                dragAndDrop: true,
+                openFolderDelay: 0,
+                slide: false,
+                onIsMoveHandle: function ($element) {
+                    return ($element.is('.jqtree-title'));
+                }/*,
+                 onCreateLi: this._createListItem.bind(this),
+                 onCanMoveTo: this._canMoveTreeNode.bind(this)*/
+            })
+            //.on('tree.click', this._clickTreeNode.bind(this))
+            //.on('tree.move', this._moveTreeNode.bind(this))
+            .appendTo(this._htmlElement);
 
         var propertiesPanels = $('<div></div>')
             .addClass('properties-panels')
@@ -213,7 +319,7 @@
 
     /** @override */
     EXPropertiesPalette.prototype._createDocumentState = function (document) {
-        return new EXPropertiesPalette.DocumentState(document, this._propertyPanels);
+        return new EXPropertiesPalette.DocumentState(document, this._propertyPanels, this._objectTree);
     };
 
     /** @override */

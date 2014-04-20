@@ -1,12 +1,13 @@
 (function (_) {
     /**
-     * A canvas is an abstract class representing a canvas to paint on
+     * A canvas wrapper to paint onto
      * @class GXPaintCanvas
      * @extends GObject
      * @constructor
-     * @version 1.0
      */
     function GXPaintCanvas() {
+        var canvasElement = document.createElement("canvas");
+        this._canvasContext = canvasElement.getContext("2d");
     }
 
     GObject.inherit(GXPaintCanvas, GObject);
@@ -135,23 +136,47 @@
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type Number
+     * @type CanvasRenderingContext2D
      * @private
      */
-    GXPaintCanvas.prototype._width = 0;
+    GXPaintCanvas.prototype._canvasContext = null;
+
+    /**
+     * @type GTransform
+     * @private
+     */
+    GXPaintCanvas.prototype._transform = null;
+
+    /**
+     * @type GPoint
+     * @private
+     */
+    GXPaintCanvas.prototype._offset = null;
+
+    /**
+     * @type GPoint
+     * @private
+     */
+    GXPaintCanvas.prototype._origin = null;
 
     /**
      * @type Number
      * @private
      */
-    GXPaintCanvas.prototype._height = 0;
+    GXPaintCanvas.prototype._scale = null;
+
+    /**
+     * @type Array<GRect>
+     * @private
+     */
+    GXPaintCanvas.prototype._areas = null;
 
     /**
      * @return {Number} the width of the canvas
      * @version 1.0
      */
     GXPaintCanvas.prototype.getWidth = function () {
-        return this._width;
+        return this._canvasContext.canvas.width;
     };
 
     /**
@@ -159,7 +184,7 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.getHeight = function () {
-        return this._height;
+        return this._canvasContext.canvas.height;
     };
 
     /**
@@ -169,17 +194,84 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.resize = function (width, height) {
-        this._width = width;
-        this._height = height;
+        if (width != this._width || height != this._height) {
+            this._canvasContext.canvas.width = width;
+            this._canvasContext.canvas.height = height;
+        }
+    };
+
+    /**
+     * Returns the offset of this canvas
+     * @returns {GPoint}
+     */
+    GXPaintCanvas.prototype.getOffset = function () {
+        return this._offset;
+    };
+
+    /**
+     * Assigns the offset of this canvas
+     * @param {GPoint} origin
+     */
+    GXPaintCanvas.prototype.setOffset = function (offset) {
+        this._offset = offset;
+    };
+
+    /**
+     * Returns the origin of this canvas
+     * @returns {GPoint}
+     */
+    GXPaintCanvas.prototype.getOrigin = function () {
+        return this._origin;
+    };
+
+    /**
+     * Assigns the origin of this canvas. The origin
+     * will always be premultiplied with any transformation.
+     * @param {GPoint} origin
+     */
+    GXPaintCanvas.prototype.setOrigin = function (origin) {
+        if (!GPoint.equals(origin, this._origin)) {
+            this._origin = origin;
+            this._updateTransform();
+        }
+    };
+
+    /**
+     * Returns the scalation of this canvas
+     * @returns {Number}
+     */
+    GXPaintCanvas.prototype.getScale = function () {
+        return this._scale;
+    };
+
+    /**
+     * Assigns the scalation of this canvas. The scalation
+     * will always be premultiplied with any transformation.
+     * @param {GPoint} origin
+     */
+    GXPaintCanvas.prototype.setScale = function (scale) {
+        if (scale !== this._scale) {
+            this._scale = scale;
+            this._updateTransform();
+        }
     };
 
     /**
      * Return the current transform of the canvas, may never be null
+     * @param {Boolean} [local] if provided, returns only the local
+     * transformation which excludes the canvas' origin and scalation.
+     * This parameter defaults to false, thus returns the global transform.
      * @return {GTransform} current transform
-     * @version 1.0
      */
-    GXPaintCanvas.prototype.getTransform = function () {
-        throw new Error("Not Supported");
+    GXPaintCanvas.prototype.getTransform = function (local) {
+        var transform = this._transform;
+        if (!local && (this._origin || this._scale)) {
+            var tx = this._origin ? this._origin.getX() : 0;
+            var ty = this._origin ? this._origin.getY() : 0;
+            var s = this._scale ? this._scale : 1.0;
+            transform = transform.multiplied(new GTransform().scaled(s, s).translated(-tx, -ty));
+        }
+        return transform;
     };
 
     /**
@@ -190,7 +282,15 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.setTransform = function (transform) {
-        throw new Error("Not Supported");
+        if (transform == null) {
+            // Use identity transform
+            transform = new GTransform();
+        }
+        var oldTransform = this._transform;
+        this._transform = transform;
+        this._updateTransform();
+
+        return oldTransform;
     };
 
     /**
@@ -214,7 +314,38 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.prepare = function (areas) {
-        throw new Error("Not Supported");
+        // save context before anything else
+        this._canvasContext.save();
+
+        // Reset some stuff
+        this._transform = new GTransform();
+        this._origin = null;
+        this._scale = null;
+        this._areas = areas;
+        this._updateTransform();
+
+        // Clip and clear our areas if any
+        if (areas && areas.length > 0) {
+            this._canvasContext.beginPath();
+            for (var i = 0; i < areas.length; ++i) {
+                var rect = areas[i];
+
+                var xMin = rect.getX();
+                var xMax = xMin + rect.getWidth();
+                var yMin = rect.getY();
+                var yMax = yMin + rect.getHeight();
+
+                this._canvasContext.moveTo(xMin, yMin);
+                this._canvasContext.lineTo(xMax, yMin);
+                this._canvasContext.lineTo(xMax, yMax);
+                this._canvasContext.lineTo(xMin, yMax);
+                this._canvasContext.lineTo(xMin, yMin);
+                this._canvasContext.clearRect(xMin, yMin, xMax - xMin, yMax - yMin);
+            }
+            this._canvasContext.clip();
+        } else {
+            this._canvasContext.clearRect(0, 0, this.getWidth(), this.getHeight());
+        }
     };
 
     /**
@@ -223,25 +354,101 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.finish = function () {
-        throw new Error("Not Supported");
+        this._canvasContext.restore();
+        this._transform = null;
+        this._origin = null;
+        this._scale = null;
+        this._areas = null;
     };
 
     /**
-     * Create a new canvas of this type
-     * @return {GXPaintCanvas} a new canvas of this type
+     * Creates a temporary canvas with the given extents.
+     * The returned canvas will be compatible to this canvas
+     * and thus, will prepared in the same way as this one
+     * including the current zoom level. Note that the
+     * canvas will include a transformation so that the
+     * extent's x/y coordinates are equal to 0,0.
+     * Make sure to call releaseCanvas as soon as you're
+     * done with the canvas.
+     * @param {GRect} extents the extents for the requested
+     * canvas
      */
-    GXPaintCanvas.prototype.createCanvas = function () {
-        throw new Error("Not Supported");
+    GXPaintCanvas.prototype.createCanvas = function (extents) {
+        var result = new GXPaintCanvas();
+
+        // Resize canvas including our scalation plus a small tolerance factor
+        result.resize(
+            extents.getWidth() * (this._scale ? this._scale : 1),
+            extents.getHeight() * (this._scale ? this._scale : 1)
+        );
+
+        // Prepare canvas with our own clipping areas but ensure to
+        // transform them into the target canvas' origin, first.
+
+        // TODO : Make sure to clip resulting canvas size and
+        // correctly map and assign dirty areas below. Also make
+        // sure that if resulting canvas image is clipped to assign
+        // the correct offset which by then no longer is the origin
+
+        var areas = new Array();
+        if (this._areas) {
+            for (var i = 0; i < this._areas.length; ++i) {
+                areas.push(this._areas[i].translated(-extents.getX(), -extents.getY()));
+            }
+        }
+
+        // TODO : Uncommment areas param when working
+        result.prepare(null);//areas);
+
+        // Set result's origin and scalation
+        var scale = this._scale ? this._scale : 1;
+        result.setOrigin(new GPoint(extents.getX() * scale, extents.getY() * scale));
+        result.setOffset(new GPoint(extents.getX() * scale, extents.getY() * scale));
+        result.setScale(this._scale);
+
+        // Finally return our new canvas
+        return result;
     };
 
     /**
-     * Create a pattern out of an image or canvas
-     * @param {Image|GXPaintCanvas} image the image or canvas to be used as pattern
-     * @param {GXPaintCanvas.RepeatMode} repeat the repeat mode to be used
-     * @return {*} a pattern specific to this canvas-type
+     * Draw a canvas previously gathered via createCanvas.
+     * Note that the canvas will be painted at it's origin.
+     * @param {GXPaintCanvas} canvas
      */
-    GXPaintCanvas.prototype.createPattern = function (image, repeat) {
-        throw new Error("Not Supported");
+    GXPaintCanvas.prototype.drawCanvas = function (canvas, opacity, composite) {
+        if (typeof opacity == "number") {
+            this._canvasContext.globalAlpha = opacity;
+        } else {
+            this._canvasContext.globalAlpha = 1.0;
+        }
+
+        if (typeof composite == "number") {
+            this._canvasContext = this._convertComposite(composite, "source-over");
+        } else {
+            this._canvasContext.globalCompositeOperation = "source-over";
+        }
+
+        // Make sure to reset scale when drawing canvases + make non smooth
+        var hadSmooth = this._getImageSmoothingEnabled();
+        var oldScale = this._scale;
+        this._setImageSmoothingEnabled(false);
+        this.setScale(1);
+
+        var x = canvas._offset.getX() | 0;
+        var y = canvas._offset.getY() | 0;
+
+        this._canvasContext.drawImage(canvas._canvasContext.canvas, x, y);
+
+        this.setScale(oldScale);
+        this._setImageSmoothingEnabled(hadSmooth);
+    };
+
+    /**
+     * Releases a previously requested canvas
+     * @param {GXPaintCanvas} canvas
+     */
+    GXPaintCanvas.prototype.releaseCanvas = function (canvas) {
+        canvas.finish();
     };
 
     /**
@@ -254,24 +461,14 @@
      * @return {*} a pattern specific to this canvas-type
      */
     GXPaintCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
-        throw new Error("Not Supported");
-    };
+        var result = this._canvasContext.createLinearGradient(x1, y1, x2, y2);
+        var stops = gradient.getStops();
 
-    /**
-     * Pushes a vertex source into this canvas overwriting any
-     * previously added vertices. This will act as source for different
-     * functions like clipVertices, strokeVertices and fillVertices
-     * @param {GXVertexSource} vertexSource the vertex source to use for clipping
-     */
-    GXPaintCanvas.prototype.putVertices = function (vertexSource) {
-        throw new Error("Not Supported");
-    };
+        for (var i = 0; i < stops.length; ++i) {
+            result.addColorStop(stops[i].position / 100.0, stops[i].color.asCSSString());
+        }
 
-    /**
-     * Use current vertices as clipping region (adds to the current clipping region)
-     */
-    GXPaintCanvas.prototype.clipVertices = function () {
-        throw new Error("Not Supported");
+        return result;
     };
 
     /**
@@ -283,7 +480,14 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.clipRect = function (x, y, width, height) {
-        throw new Error("Not Supported");
+        // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
+        this._canvasContext.beginPath();
+        this._canvasContext.moveTo(x, y);
+        this._canvasContext.lineTo(x + width, y);
+        this._canvasContext.lineTo(x + width, y + height);
+        this._canvasContext.lineTo(x, y + height);
+        this._canvasContext.lineTo(x, y);
+        this._canvasContext.clip();
     };
 
     /**
@@ -291,7 +495,58 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.resetClip = function () {
-        throw new Error("Not Supported");
+        this._canvasContext.restore();
+    };
+
+    /**
+     * Pushes a vertex source into this canvas overwriting any
+     * previously added vertices. This will act as source for different
+     * functions like clipVertices, strokeVertices and fillVertices
+     * @param {GXVertexSource} vertexSource the vertex source to use for clipping
+     */
+    GXPaintCanvas.prototype.putVertices = function (vertexSource) {
+        if (vertexSource.rewindVertices(0)) {
+            this._canvasContext.beginPath();
+
+            var vertex = new GXVertex();
+            while (vertexSource.readVertex(vertex)) {
+                switch (vertex.command) {
+                    case GXVertex.Command.Move:
+                        this._canvasContext.moveTo(vertex.x, vertex.y);
+                        break;
+                    case GXVertex.Command.Line:
+                        this._canvasContext.lineTo(vertex.x, vertex.y);
+                        break;
+                    case GXVertex.Command.Curve:
+                    {
+                        var xTo = vertex.x;
+                        var yTo = vertex.y;
+                        if (vertexSource.readVertex(vertex)) {
+                            this._canvasContext.quadraticCurveTo(vertex.x, vertex.y, xTo, yTo);
+                        }
+                    }
+                        break;
+                    case GXVertex.Command.Curve2:
+                    {
+                        var xTo = vertex.x;
+                        var yTo = vertex.y;
+                        if (vertexSource.readVertex(vertex)) {
+                            var cx1 = vertex.x;
+                            var cy1 = vertex.y;
+                            if (vertexSource.readVertex(vertex)) {
+                                this._canvasContext.bezierCurveTo(cx1, cy1, vertex.x, vertex.y, xTo, yTo);
+                            }
+                        }
+                    }
+                        break;
+                    case GXVertex.Command.Close:
+                        this._canvasContext.closePath();
+                        break;
+                    default:
+                        throw new Error("Unknown Command Type - " + vertex.command);
+                }
+            }
+        }
     };
 
     /**
@@ -310,7 +565,61 @@
      * @see GXPaintCanvas.CompositeOperator
      */
     GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
-        throw new Error("Not Supported");
+        this._canvasContext.strokeStyle = this._convertStyle(stroke);
+
+        if (typeof width == "number") {
+            this._canvasContext.lineWidth = width;
+        } else {
+            this._canvasContext.lineWidth = 1.0;
+        }
+
+        if (typeof cap == "number") {
+            switch (cap) {
+                case GXPaintCanvas.LineCap.Butt:
+                    this._canvasContext.lineCap = "butt";
+                    break;
+                case GXPaintCanvas.LineCap.Round:
+                    this._canvasContext.lineCap = "round";
+                    break;
+                case GXPaintCanvas.LineCap.Square:
+                    this._canvasContext.lineCap = "square";
+                    break;
+            }
+        } else {
+            this._canvasContext.lineCap = "butt";
+        }
+
+        if (typeof join == "number") {
+            switch (join) {
+                case GXPaintCanvas.LineJoin.Bevel:
+                    this._canvasContext.lineJoin = "bevel";
+                    break;
+                case GXPaintCanvas.LineJoin.Round:
+                    this._canvasContext.lineJoin = "round";
+                    break;
+                default:
+                    this._canvasContext.lineJoin = "miter";
+                    this._canvasContext.miterLimit = typeof miterLimit == 'number' ? miterLimit : 10;
+                    break;
+            }
+        } else {
+            this._canvasContext.lineJoin = "miter";
+            this._canvasContext.miterLimit = 10;
+        }
+
+        if (typeof opacity == "number") {
+            this._canvasContext.globalAlpha = opacity;
+        } else {
+            this._canvasContext.globalAlpha = 1.0;
+        }
+
+        if (typeof composite == "number") {
+            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
+        } else {
+            this._canvasContext.globalCompositeOperation = "source-over";
+        }
+
+        this._canvasContext.stroke();
     };
 
     /**
@@ -322,7 +631,22 @@
      * @see GXPaintCanvas.CompositeOperator
      */
     GXPaintCanvas.prototype.fillVertices = function (fill, opacity, composite) {
-        throw new Error("Not Supported");
+        // save fill to avoid expensive recalculation
+        this._canvasContext.fillStyle = this._convertStyle(fill);
+
+        if (typeof opacity == "number") {
+            this._canvasContext.globalAlpha = opacity;
+        } else {
+            this._canvasContext.globalAlpha = 1.0;
+        }
+
+        if (typeof composite == "number") {
+            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
+        } else {
+            this._canvasContext.globalCompositeOperation = "source-over";
+        }
+
+        this._canvasContext.fill();
     };
 
     /**
@@ -338,7 +662,9 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
-        throw new Error("Not Supported");
+        fill = this._convertStyle(fill ? fill : gColor.build(0, 0, 0));
+        this._canvasContext.fillStyle = fill;
+        this._canvasContext.fillRect(x, y, width, height);
     };
 
     /**
@@ -355,7 +681,11 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
-        throw new Error("Not Supported");
+        stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
+        strokeWidth = strokeWidth || 1.0;
+        this._canvasContext.strokeStyle = stroke;
+        this._canvasContext.lineWidth = strokeWidth;
+        this._canvasContext.strokeRect(x, y, width, height);
     };
 
     /**
@@ -372,7 +702,14 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
-        throw new Error("Not Supported");
+        stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
+        strokeWidth = strokeWidth || 1.0;
+        this._canvasContext.strokeStyle = stroke;
+        this._canvasContext.lineWidth = strokeWidth;
+        this._canvasContext.beginPath();
+        this._canvasContext.moveTo(x1, y1);
+        this._canvasContext.lineTo(x2, y2);
+        this._canvasContext.stroke();
     };
 
     /**
@@ -387,7 +724,145 @@
      * @version 1.0
      */
     GXPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
-        throw new Error("Not Supported");
+        x = x || 0;
+        y = y || 0;
+
+        image = this._convertImage(image);
+
+
+        if (typeof opacity == "number") {
+            this._canvasContext.globalAlpha = opacity;
+        } else {
+            this._canvasContext.globalAlpha = 1.0;
+        }
+
+        if (typeof composite == "number") {
+            this._canvasContext = this._convertComposite(composite, "source-over");
+        } else {
+            this._canvasContext.globalCompositeOperation = "source-over";
+        }
+
+        var hadSmooth = this._getImageSmoothingEnabled();
+        this._setImageSmoothingEnabled(!noSmooth);
+
+        this._canvasContext.drawImage(image, x ? x : 0, y ? y : 0);
+
+        this._setImageSmoothingEnabled(hadSmooth);
+    };
+
+    /** @private */
+    GXPaintCanvas.prototype._updateTransform = function () {
+        // make sure to assign global transform matrix to canvas
+        var matrix = this.getTransform(false).getMatrix();
+        this._canvasContext.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+    };
+
+    /**
+     * @param {Number} composite
+     * @param {String} defaultReturn
+     * @returns {String}
+     * @private
+     */
+    GXPaintCanvas.prototype._convertComposite = function (composite, defaultReturn) {
+        if (typeof composite == "number") {
+            switch (composite) {
+                case GXPaintCanvas.CompositeOperator.SourceOver:
+                    return "source-over";
+                case GXPaintCanvas.CompositeOperator.SourceAtTop:
+                    return "source-atop";
+                case GXPaintCanvas.CompositeOperator.SourceIn:
+                    return "source-in";
+                case GXPaintCanvas.CompositeOperator.SourceOut:
+                    return "source-out";
+                case GXPaintCanvas.CompositeOperator.DestinationOver:
+                    return "destination-over";
+                case GXPaintCanvas.CompositeOperator.DestinationAtTop:
+                    return "destination-atop";
+                case GXPaintCanvas.CompositeOperator.DestinationIn:
+                    return "destination-in";
+                case GXPaintCanvas.CompositeOperator.DestinationOut:
+                    return "destination-out";
+                case GXPaintCanvas.CompositeOperator.Lighter:
+                    return "lighter";
+                case GXPaintCanvas.CompositeOperator.Darker:
+                    return "darker";
+                case GXPaintCanvas.CompositeOperator.Copy:
+                    return "copy";
+                case GXPaintCanvas.CompositeOperator.Xor:
+                    return "xor";
+                default:
+                    break;
+            }
+        }
+        return defaultReturn;
+    };
+
+    /**
+     * @param {*} style
+     * @param {*} defaultReturn
+     * @returns {*}
+     * @private
+     */
+    GXPaintCanvas.prototype._convertStyle = function (style) {
+        // TODO : Support color conversion using paint configuration color profiles
+
+        if (style instanceof CanvasPattern || style instanceof CanvasGradient) {
+            return style;
+        } else if (style instanceof GXColor) {
+            return style.asCSSString();
+        } else if (typeof style === 'number') {
+            return gColor.toCSS(style);
+        } else {
+            throw new Error('Not Supported.');
+        }
+    };
+
+    /** @private */
+    GXPaintCanvas.prototype._convertImage = function (image) {
+        if (image instanceof Image) {
+            return image;
+        } else if (image instanceof GXPaintCanvas) {
+            return image._canvasContext.canvas;
+        } else {
+            throw new Error('Not Supported.');
+        }
+    };
+
+    /** @private */
+    GXPaintCanvas.prototype._convertRepeat = function (repeat) {
+        switch (repeat) {
+            case GXPaintCanvas.RepeatMode.Both:
+                return "repeat";
+            case GXPaintCanvas.RepeatMode.Horizontal:
+                return "repeat-x";
+            case GXPaintCanvas.RepeatMode.Vertical:
+                return "repeat-y";
+            case GXPaintCanvas.RepeatMode.None:
+                return "no-repeat";
+        }
+    };
+
+    var _imageSmoothingProperties = ['imageSmoothingEnabled', 'webkitImageSmoothingEnabled', 'mozImageSmoothingEnabled'];
+
+    /** @private */
+    GXPaintCanvas.prototype._getImageSmoothingEnabled = function () {
+        for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
+            if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
+                return this._canvasContext[_imageSmoothingProperties[i]];
+            }
+        }
+        throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
+    };
+
+    /** @private */
+    GXPaintCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
+        for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
+            if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
+                this._canvasContext[_imageSmoothingProperties[i]] = smoothingEnabled;
+                return;
+            }
+        }
+        throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
     _.GXPaintCanvas = GXPaintCanvas;

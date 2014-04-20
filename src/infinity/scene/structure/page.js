@@ -87,20 +87,9 @@
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
-        // Paint inner fill either with cls if any or as checkboard patterns for transparency (none)
+        // Paint page if it has any color
         if (this.$cls) {
             context.canvas.fillRect(x, y, w, h, this.$cls);
-        } else {
-            // TODO : Cache pattern
-            var cs = context.canvas.createCanvas();
-            cs.resize(16, 16);
-            cs.fillRect(0, 0, 16, 16, context.configuration.transparentColor);
-            cs.fillRect(0, 0, 8, 8, gColor.build(255, 255, 255));
-            cs.fillRect(8, 8, 8, 8, gColor.build(255, 255, 255));
-
-            var pt = context.canvas.createPattern(cs, GXPaintCanvas.RepeatMode.Both);
-
-            context.canvas.fillRect(x, y, w, h, pt);
         }
 
         // If we have contents and are in output mode we'll clip to our page extents

@@ -8,16 +8,21 @@
      * @mixes GXNode.Container
      * @mixes GXElement.Transform
      * @mixes GXElement.Pivot
-     * @mixes GXElement.Style
+     * @mixes GXElement.Attributes
      * @mixes GXVertexSource
      * @constructor
      */
     function GXShape() {
         GXItem.call(this);
+
+        // Add hidden attributes
+        this.appendChild(new GXShape._Attributes());
+
+        // Assign default properties
         this._setDefaultProperties(GXShape.GeometryProperties);
     }
 
-    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXElement.Style, GXVertexSource]);
+    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXElement.Attributes, GXVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -25,6 +30,28 @@
     GXShape.GeometryProperties = {
         trf: null
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXShape._Attributes Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class GXShape._Attributes
+     * @extends GXRenderAttributes
+     * @mixes GXNode.Container
+     * @mixes GXRenderAttributes.Pattern
+     * @private
+     */
+    GXShape._Attributes = function () {
+        this._flags |= GXNode.Flag.Shadow;
+    }
+
+    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, GXRenderAttributes, [GXNode.Container, GXRenderAttributes.Pattern]);
+
+    /** @override */
+    GXShape._Attributes.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GXShape;
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // GXShape Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -81,7 +108,7 @@
     };
 
     /** @override */
-    GXShape.prototype.paint = function (context, style) {
+    GXShape.prototype.paint = function (context) {
         if (!this.rewindVertices(0)) {
             return;
         }
@@ -102,22 +129,13 @@
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
-        } else {
-            var style = this.getStyle(false);
-            if (style) {
-                style.paint(context, this, this.getGeometryBBox());
-            }
         }
 
-        // Paint contents if any
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GXElement) {
-                context.canvas.clipVertices();
-                this._paintForeground(context);
-                context.canvas.resetClip();
-                break;
-            }
-        }
+        // Paint our attributes
+        this.getAttributes().render(context, this, this.getGeometryBBox());
+
+        // Paint our foreground
+        this._paintForeground(context);
 
         this._finishPaint(context);
     };
@@ -134,12 +152,11 @@
 
     /**
      * Called to paint the foreground painted after
-     * any styling. By default this paints the contents
+     * any styling and everything else
      * @param {GXPaintContext} context
      * @private
      */
     GXShape.prototype._paintForeground = function (context) {
-        this._paintChildren(context);
     };
 
     /** @override */
@@ -155,20 +172,12 @@
         }
 
         var result = source;
-        var style = this.getStyle(false);
-        if (style) {
-            var styleBBox = style.getBBox(source);
-            if (styleBBox && !styleBBox.isEmpty()) {
-                result = result.united(styleBBox);
-            }
+        var attributesBBox = this.getAttributes().getBBox(source);
+        if (attributesBBox && !attributesBBox.isEmpty()) {
+            result = result.united(attributesBBox);
         }
 
-        // Extend our bbox a bit to honor aa-pixels
-        if (result) {
-            return result.expanded(2, 2, 2, 2);
-        }
-
-        return null;
+        return result;
     };
 
     /** @override */
@@ -179,15 +188,11 @@
 
     /** @override */
     GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        var styleHit = null;
+        // Hit-Test attributes, first
+        var attrHit = attrHit = this.getAttributes().hitTest(this, location, transform, tolerance);
 
-        var style = this.getStyle(false);
-        if (style) {
-            styleHit = style.hitTest(this, location, transform, tolerance);
-        }
-
-        if (styleHit) {
-            return new GXElement.HitResult(this, styleHit);
+        if (attrHit) {
+            return new GXElement.HitResult(this, attrHit);
         } else if (force) {
             // When forced we'll always hit-test our whole "invisible" outline / fill area
             var vertexHit = new GXVertexInfo.HitResult();
@@ -195,7 +200,7 @@
                 return new GXElement.HitResult(this, vertexHit);
             }
         } else {
-            // If we didn't hit a style, then hit-test our "invisible" tolerance outline area if any
+            // If we didn't hit an attributes, then hit-test our "invisible" tolerance outline area if any
             if (tolerance) {
                 var vertexHit = new GXVertexInfo.HitResult();
                 if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), tolerance, false, vertexHit)) {

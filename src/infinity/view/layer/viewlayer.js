@@ -7,7 +7,7 @@
      */
     function GXViewLayer(view) {
         this._view = view;
-        this._canvas = new GXViewCanvas();
+        this._canvas = new GXPaintCanvas();
         this._paintContext = new GXPaintContext();
         this._paintContext.configuration = view.getViewConfiguration() ?
             view.getViewConfiguration() : new GXPaintConfiguration();

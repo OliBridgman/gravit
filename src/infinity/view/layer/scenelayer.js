@@ -13,7 +13,7 @@
     GObject.inherit(GXSceneLayer, GXViewLayer);
 
     /**
-     * @type {GXViewCanvas}
+     * @type {GXPaintCanvas}
      * @private
      */
     GXSceneLayer.prototype._pixelContentCanvas = null;
@@ -51,7 +51,7 @@
         if (this._view.getViewConfiguration().pixelMode && !gMath.isEqualEps(this._view.getZoom(), 1.0)) {
             // Create and size our pixel content canvas
             if (!this._pixelContentCanvas) {
-                this._pixelContentCanvas = new GXViewCanvas();
+                this._pixelContentCanvas = new GXPaintCanvas();
                 this._pixelContentCanvas.resize(context.canvas.getWidth(), context.canvas.getHeight());
             }
 
@@ -79,7 +79,10 @@
         } else {
             // Render regular vectors
             this._pixelContentCanvas = null;
-            context.canvas.setTransform(this._view.getWorldTransform());
+            // Make sure to round scrolling to avoid floating point errors
+            context.canvas.setOrigin(new GPoint(Math.round(this._view._scrollX), Math.round(this._view._scrollY)));
+            context.canvas.setScale(this._view._zoom);
+            //context.canvas.setTransform(this._view.getWorldTransform());
             this._view.getScene().paint(context);
         }
     };

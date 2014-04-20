@@ -47,7 +47,6 @@
         // Register default properties
         gravit.properties.push(
             new EXDimensionsProperties(),
-            new GStylesProperties(),
             new GDocumentProperties(),
             new EXPolygonProperties(),
             new GPathProperties(),
@@ -130,8 +129,8 @@
             new GPasteInsideAction(),
             new EXDeleteAction(),
 
-            new GCopyStyleAction(),
-            new GPasteStyleAction(),
+            new GCopyAttributesAction(),
+            new GPasteAttributesAction(),
 
             new GDuplicateAction(),
             new GCloneAction(),

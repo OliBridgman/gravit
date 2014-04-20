@@ -33,8 +33,9 @@ gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
 gLocale.setValues(GXPage, GLocale.Language.English, ["name"], ["Page"]);
 gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);
 gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
-gLocale.setValues(GXFillStyle, GLocale.Language.English, ["name"], ["Fill"]);
-gLocale.setValues(GXStrokeStyle, GLocale.Language.English, ["name"], ["Stroke"]);
+gLocale.setValues(GXFillAttributes, GLocale.Language.English, ["name"], ["Fill"]);
+gLocale.setValues(GXStrokeAttributes, GLocale.Language.English, ["name"], ["Stroke"]);
+gLocale.setValues(GXContentsAttributes, GLocale.Language.English, ["name"], ["Contents"]);
 
 // Tools
 gLocale.setValues(GXTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);

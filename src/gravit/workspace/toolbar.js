@@ -239,11 +239,11 @@
                 fillColor = null;
                 strokeColor = null;
 
-                if (selection.length === 1 && selection[0].hasMixin(GXElement.Style)) {
-                    var style = selection[0].getStyle(false);
-                    if (style) {
-                        fillColor = style.getFillColor();
-                        strokeColor = style.getStrokeColor();
+                if (selection.length === 1 && selection[0].hasMixin(GXElement.Attributes)) {
+                    var attributes = selection[0].getAttributes();
+                    if (attributes.hasMixin(GXRenderAttributes.Pattern)) {
+                        fillColor = attributes.getFillColor();
+                        strokeColor = attributes.getStrokeColor();
                     }
                 }
             }
@@ -274,12 +274,14 @@
             try {
                 for (var i = 0; i < selection.length; ++i) {
                     var element = selection[i];
-                    var style = element.getStyle(!!color);
-                    if (style) {
-                        if (type === GXEditor.CurrentColorType.Fill) {
-                            style.setFillColor(color);
-                        } else if (type === GXEditor.CurrentColorType.Stroke) {
-                            style.setStrokeColor(color);
+                    if (element.hasMixin(GXElement.Attributes)) {
+                        var attributes = element.getAttributes();
+                        if (attributes.hasMixin(GXRenderAttributes.Pattern)) {
+                            if (type === GXEditor.CurrentColorType.Fill) {
+                                attributes.setFillColor(color);
+                            } else if (type === GXEditor.CurrentColorType.Stroke) {
+                                attributes.setStrokeColor(color);
+                            }
                         }
                     }
                 }

@@ -798,7 +798,7 @@
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
      * @param {Array<GXElement>} elements the elements to be inserted
-     * @param {Boolean} noDefaults if true, no defaults like default style
+     * @param {Boolean} noDefaults if true, no defaults like default colors
      * will be applied. This defaults to false.
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
@@ -822,14 +822,16 @@
                     var fillColor = this._currentColor[GXEditor.CurrentColorType.Fill];
                     var strokeColor = this._currentColor[GXEditor.CurrentColorType.Stroke];
 
-                    // Assign default fill and stroke style for shapes
-                    if ((fillColor || strokeColor) && element.hasMixin(GXElement.Style)) {
-                        var style = element.getStyle(true);
-                        if (fillColor) {
-                            style.setFillColor(fillColor);
-                        }
-                        if (strokeColor) {
-                            style.setStrokeColor(strokeColor);
+                    // Assign default fill and stroke attributes for shapes
+                    if ((fillColor || strokeColor) && element.hasMixin(GXElement.Attributes)) {
+                        var attributes = element.getAttributes();
+                        if (attributes.hasMixin(GXRenderAttributes.Pattern)) {
+                            if (fillColor) {
+                                attributes.setFillColor(fillColor);
+                            }
+                            if (strokeColor) {
+                                attributes.setStrokeColor(strokeColor);
+                            }
                         }
                     }
                 }
