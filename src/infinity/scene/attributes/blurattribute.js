@@ -3,17 +3,18 @@
     /**
      * Attributes that blur their contents
      * @class IFBlurAttribute
-     * @extends IFRenderAttribute
+     * @extends IFAttribute
      * @mixes GXNode.Properties
      * @mixes GXNode.Container
+     * @mixes IFAttribute.Render
      * @constructor
      */
     function IFBlurAttribute() {
-        IFRenderAttribute.call(this);
+        IFAttribute.call(this);
         this._setDefaultProperties(IFBlurAttribute.VisualProperties);
     }
 
-    GXNode.inheritAndMix("blurAttr", IFBlurAttribute, IFRenderAttribute, [GXNode.Properties, GXNode.Container]);
+    GXNode.inheritAndMix("blurAttr", IFBlurAttribute, IFAttribute, [GXNode.Properties, GXNode.Container, IFAttribute.Render]);
 
     /**
      * Visual properties
@@ -26,7 +27,7 @@
     /** @override */
     IFBlurAttribute.prototype.render = function (context, source, bbox) {
         if (context.configuration.paintMode === GXScenePaintConfiguration.PaintMode.Fast || context.configuration.isOutline(context)) {
-            IFRenderAttribute.prototype.render.call(this, context, source, bbox);
+            IFAttribute.Render.prototype.render.call(this, context, source, bbox);
         }
         else {
 
@@ -35,7 +36,7 @@
             context.canvas = oldCanvas.createCanvas(this.getBBox(bbox));
             try {
                 // Default rendering call
-                IFRenderAttribute.prototype.render.call(this, context, source, bbox);
+                IFAttribute.Render.prototype.render.call(this, context, source, bbox);
 
 
                 var w = context.canvas.getWidth();
@@ -85,7 +86,7 @@
 
     /** @override */
     IFBlurAttribute.prototype.store = function (blob) {
-        if (IFRenderAttribute.prototype.store.call(this, blob)) {
+        if (IFAttribute.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFBlurAttribute.VisualProperties);
             return true;
         }
@@ -94,7 +95,7 @@
 
     /** @override */
     IFBlurAttribute.prototype.restore = function (blob) {
-        if (IFRenderAttribute.prototype.restore.call(this, blob)) {
+        if (IFAttribute.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFBlurAttribute.VisualProperties);
             return true;
         }
@@ -104,7 +105,7 @@
     /** @override */
     IFBlurAttribute.prototype._handleChange = function (change, args) {
         this._handleVisualChangeForProperties(change, args, IFBlurAttribute.VisualProperties);
-        IFRenderAttribute.prototype._handleChange.call(this, change, args);
+        IFAttribute.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

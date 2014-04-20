@@ -825,7 +825,7 @@
                     // Assign default fill and stroke attributes for shapes
                     if ((fillColor || strokeColor) && element.hasMixin(GXElement.Attributes)) {
                         var attributes = element.getAttributes();
-                        if (attributes.hasMixin(IFRenderAttribute.Pattern)) {
+                        if (attributes.hasMixin(IFAttributes.Pattern)) {
                             if (fillColor) {
                                 attributes.setFillColor(fillColor);
                             }

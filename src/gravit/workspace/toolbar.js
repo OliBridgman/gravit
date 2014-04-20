@@ -241,7 +241,7 @@
 
                 if (selection.length === 1 && selection[0].hasMixin(GXElement.Attributes)) {
                     var attributes = selection[0].getAttributes();
-                    if (attributes.hasMixin(IFRenderAttribute.Pattern)) {
+                    if (attributes.hasMixin(IFAttributes.Pattern)) {
                         fillColor = attributes.getFillColor();
                         strokeColor = attributes.getStrokeColor();
                     }
@@ -276,7 +276,7 @@
                     var element = selection[i];
                     if (element.hasMixin(GXElement.Attributes)) {
                         var attributes = element.getAttributes();
-                        if (attributes.hasMixin(IFRenderAttribute.Pattern)) {
+                        if (attributes.hasMixin(IFAttributes.Pattern)) {
                             if (type === GXEditor.CurrentColorType.Fill) {
                                 attributes.setFillColor(color);
                             } else if (type === GXEditor.CurrentColorType.Stroke) {

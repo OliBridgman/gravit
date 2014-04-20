@@ -83,7 +83,7 @@
                 for (var i = 0; i < selection.length; ++i) {
                     var target = selection[i];
                     if (target.hasMixin(GXElement.Attributes)) {
-                        target.getAttributes().assignSubAttributesFrom(attributes);
+                        target.getAttributes().assignAttributesFrom(attributes);
                     }
                 }
             } finally {

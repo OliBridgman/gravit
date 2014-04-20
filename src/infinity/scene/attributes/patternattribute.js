@@ -3,16 +3,17 @@
     /**
      * Attributes that keep a pattern information for fill / stroke / text etc.
      * @class IFPatternAttribute
-     * @extends IFRenderAttribute
+     * @extends IFAttribute
      * @mixes GXNode.Properties
+     * @mixes IFAttribute.Render
      * @constructor
      */
     function IFPatternAttribute() {
-        IFRenderAttribute.call(this);
+        IFAttribute.call(this);
         this._setDefaultProperties(IFPatternAttribute.VisualProperties);
     }
 
-    GObject.inheritAndMix(IFPatternAttribute, IFRenderAttribute, [GXNode.Properties]);
+    GObject.inheritAndMix(IFPatternAttribute, IFAttribute, [GXNode.Properties, IFAttribute.Render]);
 
     /**
      * The type of the pattern
@@ -68,7 +69,7 @@
 
     /** @override */
     IFPatternAttribute.prototype.store = function (blob) {
-        if (IFRenderAttribute.prototype.store.call(this, blob)) {
+        if (IFAttribute.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFPatternAttribute.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'val') {
@@ -93,7 +94,7 @@
 
     /** @override */
     IFPatternAttribute.prototype.restore = function (blob) {
-        if (IFRenderAttribute.prototype.restore.call(this, blob)) {
+        if (IFAttribute.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFPatternAttribute.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'val') {
@@ -182,7 +183,7 @@
     /** @override */
     IFPatternAttribute.prototype._handleChange = function (change, args) {
         this._handleVisualChangeForProperties(change, args, IFPatternAttribute.VisualProperties);
-        IFRenderAttribute.prototype._handleChange.call(this, change, args);
+        IFAttribute.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

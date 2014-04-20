@@ -3,14 +3,15 @@
     /**
      * Attributes that render children of the element
      * @class IFContentAttribute
-     * @extends IFRenderAttribute
+     * @extends IFAttribute
+     * @mixes IFAttribute.Render
      * @constructor
      */
     function IFContentAttribute() {
-        IFRenderAttribute.call(this);
+        IFAttribute.call(this);
     }
 
-    GObject.inheritAndMix(IFContentAttribute, IFRenderAttribute);
+    GXNode.inheritAndMix("contentAttr", IFContentAttribute, IFAttribute, [IFAttribute.Render]);
 
     /** @override */
     IFContentAttribute.prototype.render = function (context, source, bbox) {

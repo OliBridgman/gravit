@@ -281,14 +281,14 @@
     };
 
     /**
-     * @type {IFAttribute}
+     * @type {IFAttributes}
      * @private
      */
     GXElement.Attributes._attributes = null;
 
     /**
      * Returns the attributes for this element
-     * @returns {IFAttribute}
+     * @returns {IFAttributes}
      */
     GXElement.Attributes.prototype.getAttributes = function () {
         // If we have a _attributes reference and it not
@@ -300,7 +300,7 @@
         if (!this._attributes) {
             // Find our attributes and save reference for faster access
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof IFAttribute) {
+                if (child instanceof IFAttributes) {
                     this._attributes = child;
                     break;
                 }

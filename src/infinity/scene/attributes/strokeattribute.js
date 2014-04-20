@@ -64,7 +64,7 @@
         var outlineWidth = this.$sw * transform.getScaleFactor() + tolerance * 2;
         var vertexHit = new GXVertexInfo.HitResult();
         if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
-            return new IFRenderAttribute.HitResult(this, vertexHit);
+            return new IFAttribute.HitResult(this, vertexHit);
         }
         return null;
     };

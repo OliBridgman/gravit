@@ -36,16 +36,17 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @class GXShape._Attributes
-     * @extends IFRenderAttribute
+     * @extends IFAttributes
      * @mixes GXNode.Container
-     * @mixes IFRenderAttribute.Pattern
+     * @mixes IFAttribute.Render
+     * @mixes IFAttributes.Pattern
      * @private
      */
     GXShape._Attributes = function () {
         this._flags |= GXNode.Flag.Shadow;
     }
 
-    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, IFRenderAttribute, [GXNode.Container, IFRenderAttribute.Pattern]);
+    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, IFAttributes, [IFAttribute.Render, IFAttributes.Pattern]);
 
     /** @override */
     GXShape._Attributes.prototype.validateInsertion = function (parent, reference) {
