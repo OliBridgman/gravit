@@ -36,6 +36,8 @@ gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.f
 gLocale.setValues(IFFillAttribute, GLocale.Language.English, ["name"], ["Fill"]);
 gLocale.setValues(IFStrokeAttribute, GLocale.Language.English, ["name"], ["Stroke"]);
 gLocale.setValues(IFContentAttribute, GLocale.Language.English, ["name"], ["Contents"]);
+gLocale.setValues(IFBlurAttribute, GLocale.Language.English, ["name"], ["Blur"]);
+gLocale.setValues(IFShadowAttribute, GLocale.Language.English, ["name"], ["Shadow"]);
 
 // Tools
 gLocale.setValues(GXTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);
