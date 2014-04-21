@@ -415,7 +415,7 @@
      * Note that the canvas will be painted at it's origin.
      * @param {GXPaintCanvas} canvas
      */
-    GXPaintCanvas.prototype.drawCanvas = function (canvas, opacity, composite) {
+    GXPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, composite) {
         if (typeof opacity == "number") {
             this._canvasContext.globalAlpha = opacity;
         } else {
@@ -434,8 +434,14 @@
         this._setImageSmoothingEnabled(false);
         this.setScale(1);
 
+        dx = dx | 0;
+        dy = dy | 0;
+
         var x = canvas._offset.getX() | 0;
         var y = canvas._offset.getY() | 0;
+
+        x+= dx;
+        y+= dy;
 
         this._canvasContext.drawImage(canvas._canvasContext.canvas, x, y);
 

@@ -5,9 +5,11 @@
         // Round rectangle with contents
         //
         rect = new GXRectangle();
+        var shadow = new IFShadowAttribute();
         fill = new IFFillAttribute();
         fill.setColor(GXColor.parseCSSColor('yellow'));
-        rect.getAttributes().appendChild(fill);
+        rect.getAttributes().appendChild(shadow);
+        shadow.appendChild(fill);
         rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(100, 0, 0, 50, 110, 180)]);
 
         var subRect = new GXRectangle();
@@ -50,7 +52,6 @@
         rect.setProperty('trf', new GTransform(100, 0, 0, 50, 110, 60));
         page.appendChild(rect);
 */
-
 
         //page.appendChild(subRect);
         //

@@ -51,7 +51,7 @@
         /** The vertical grid size */
         gridSizeY: 10,
         /** Whether the grid is active or not */
-        gridActive: true
+        gridActive: false
     };
 
     // -----------------------------------------------------------------------------------------------------------------

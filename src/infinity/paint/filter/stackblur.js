@@ -85,7 +85,17 @@
         this.next = null;
     }
 
-    _.ifFilter.stackBlur = function (pixels, width, height, radius) {
+    /**
+     * Stack blur filter
+     * @param pixels
+     * @param width
+     * @param height
+     * @param radius the radius in pixels
+     * @param {Array<Number>} tint additional tint colors (r, g, b, a). If provided,
+     * then this will completely replace the existing color but keep the alpha value.
+     * Note that rgb are in range 0..255 whereas alpha values is between 0.0 and 1.0
+     */
+    _.ifFilter.stackBlur = function (pixels, width, height, radius, tint) {
         if (isNaN(radius) || radius < 1) return;
         radius |= 0;
 
@@ -121,10 +131,8 @@
         {
             r_in_sum = g_in_sum = b_in_sum = a_in_sum = r_sum = g_sum = b_sum = a_sum = 0;
 
-            var pixel = pixels[yi];
-
-            r_out_sum = radiusPlus1 * ( pr = gColor.getRed(pixel) );
-            g_out_sum = radiusPlus1 * ( pg = gColor.getGreen(pixel) );
+            r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
+            g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
             b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
             a_out_sum = radiusPlus1 * ( pa = pixels[yi+3] );
 
@@ -169,6 +177,14 @@
                 pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
                 pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
                 pixels[yi+3] = (a_sum * mul_sum) >> shg_sum;
+
+                // Tint if desired
+                if (tint) {
+                    pixels[yi] = tint[0];
+                    pixels[yi+1] = tint[1];
+                    pixels[yi+2] = tint[2];
+                    pixels[yi+3] = pixels[yi+3] * tint[3];
+                }
 
                 r_sum -= r_out_sum;
                 g_sum -= g_out_sum;

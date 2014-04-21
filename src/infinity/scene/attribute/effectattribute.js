@@ -35,7 +35,7 @@
             }
         } else {
             // in any other mode, do simply render the filter contents
-            this._renderContents();
+            this._renderContents(context, source, bbox);
         }
     };
 
