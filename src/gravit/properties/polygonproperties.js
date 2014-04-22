@@ -219,21 +219,26 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.updateFromNodes = function (document, nodes) {
+    EXPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
         // Collect all polygon elements
         this._polygons = [];
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXPolygon) {
-                this._polygons.push(nodes[i]);
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXPolygon) {
+                this._polygons.push(elements[i]);
             }
         }
 
-        if (this._polygons.length === nodes.length) {
+        if (this._polygons.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();

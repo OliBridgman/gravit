@@ -47,12 +47,21 @@
         // Register default properties
         gravit.properties.push(
             new EXDimensionsProperties(),
+            new GAttributeProperties(),
             new GDocumentProperties(),
             new EXPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),
             new GEllipseProperties(),
             new GPageProperties()
+        );
+
+        // Register default attributes
+        gravit.attributes.push(
+            new GStrokeAttribute(),
+            new GFillAttribute(),
+            new GShadowAttribute(),
+            new GBlurAttribute()
         );
 
         // Register default actions

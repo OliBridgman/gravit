@@ -160,7 +160,7 @@
      * @private
      */
     EXPalette.prototype._activateDocumentState = function (state) {
-        return null;
+        // NO-OP
     };
 
     /**
@@ -169,7 +169,7 @@
      * @private
      */
     EXPalette.prototype._deactivateDocumentState = function (state) {
-        return null;
+        // NO-OP
     };
 
     /**

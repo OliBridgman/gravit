@@ -305,10 +305,6 @@
                     break;
                 }
             }
-
-            if (!this._attributes) {
-                throw new Error('No Attributes available.');
-            }
         }
         return this._attributes;
     };

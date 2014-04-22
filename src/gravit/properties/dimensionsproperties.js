@@ -131,17 +131,22 @@
     };
 
     /** @override */
-    EXDimensionsProperties.prototype.updateFromNodes = function (document, nodes) {
+    EXDimensionsProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
             this._document = null;
         }
 
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
         // Collect all transformable elements
         this._elements = [];
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXElement && nodes[i].hasMixin(GXElement.Transform)) {
-                this._elements.push(nodes[i]);
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXElement && elements[i].hasMixin(GXElement.Transform)) {
+                this._elements.push(elements[i]);
             }
         }
 

@@ -107,21 +107,26 @@
     };
 
     /** @override */
-    GEllipseProperties.prototype.updateFromNodes = function (document, nodes) {
+    GEllipseProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
         // Collect all ellipse elements
         this._ellipses = [];
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXEllipse) {
-                this._ellipses.push(nodes[i]);
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXEllipse) {
+                this._ellipses.push(elements[i]);
             }
         }
 
-        if (this._ellipses.length === nodes.length) {
+        if (this._ellipses.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();

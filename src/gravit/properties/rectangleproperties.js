@@ -159,21 +159,26 @@
     };
 
     /** @override */
-    GRectangleProperties.prototype.updateFromNodes = function (document, nodes) {
+    GRectangleProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
         // Collect all rectangle elements
         this._rectangles = [];
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXRectangle) {
-                this._rectangles.push(nodes[i]);
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXRectangle) {
+                this._rectangles.push(elements[i]);
             }
         }
 
-        if (this._rectangles.length === nodes.length) {
+        if (this._rectangles.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();

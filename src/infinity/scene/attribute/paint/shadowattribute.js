@@ -23,9 +23,9 @@
         // The radius of the shadow
         r: 5,
         // The horizontal shift of the shadow
-        dx: 10,
+        x: 10,
         // The vertical shift of the shadow
-        dy: 10
+        y: 10
     };
 
     /**
@@ -55,7 +55,7 @@
 
             // Paint shadow canvas back with offset
             var canvasTransform = oldCanvas.getTransform();
-            var delta = canvasTransform.mapPoint(new GPoint(this.$dx, this.$dy)).subtract(canvasTransform.mapPoint(new GPoint(0, 0)));
+            var delta = canvasTransform.mapPoint(new GPoint(this.$x, this.$y)).subtract(canvasTransform.mapPoint(new GPoint(0, 0)));
             oldCanvas.drawCanvas(context.canvas, delta.getX(), delta.getY());
         } finally {
             context.canvas = oldCanvas;
@@ -67,7 +67,7 @@
 
     /** @override */
     IFShadowAttribute.prototype.getBBox = function (source) {
-        return source.expanded(this.$r - this.$dx , this.$r - this.$dy, this.$r + this.$dx, this.$r + this.$dy);
+        return source.expanded(this.$r - this.$x , this.$r - this.$y, this.$r + this.$x, this.$r + this.$y);
     };
 
     /** @override */

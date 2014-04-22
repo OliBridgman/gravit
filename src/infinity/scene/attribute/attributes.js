@@ -125,7 +125,7 @@
      * Note that this function will do nothing if the attribute doesn't have the
      * container mixin.
      *
-     * @param {IFAttributes} attrClass the node class to assign properties to
+     * @param {Function} attrClass the node class to assign properties to
      * @param {Array<String>} properties the properties to assign
      * @param {Array<*>} values the values to assign
      */
@@ -140,7 +140,11 @@
 
         if (!targetNode) {
             targetNode = new attrClass();
-            this.appendChild(targetNode);
+            try {
+                this.appendChild(targetNode);
+            } catch (e) {
+                // ok, some may fail
+            }
         }
 
         targetNode.setProperties(properties, values);

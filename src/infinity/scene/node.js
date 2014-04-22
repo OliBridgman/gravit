@@ -1123,7 +1123,7 @@
     GXNode.Store.prototype.store = function (blob) {
         if (this.hasMixin(GXNode.Container)) {
             // Store children
-            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
                 var childBlob = GXNode.store(child);
                 if (childBlob) {
                     if (!blob.hasOwnProperty('$')) {

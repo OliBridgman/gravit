@@ -15,9 +15,6 @@
     function GXShape() {
         GXItem.call(this);
 
-        // Add hidden attributes
-        this.appendChild(new GXShape._Attributes());
-
         // Assign default properties
         this._setDefaultProperties(GXShape.GeometryProperties);
     }
@@ -56,6 +53,15 @@
     // -----------------------------------------------------------------------------------------------------------------
     // GXShape Class
     // -----------------------------------------------------------------------------------------------------------------
+    /** @override */
+    GXShape.prototype.getAttributes = function () {
+        var attributes = GXElement.Attributes.prototype.getAttributes.call(this);
+        if (!attributes) {
+            attributes = new GXShape._Attributes();
+            this.appendChild(attributes);
+        }
+        return attributes;
+    };
 
     /** @override */
     GXShape.prototype.getTransform = function () {

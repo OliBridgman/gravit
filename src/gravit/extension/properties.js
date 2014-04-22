@@ -28,16 +28,13 @@
     };
 
     /**
-     * Called to update from a given set of nodes. Note that
-     * this will only called if there is at least one node
-     * available in the given nodes array.
+     * Called to update from an active node.
      * @param {EXDocument} document the document to work on
-     * @param {Array<GXNode>} nodes the nodes to update from
-     * @return {Boolean} true if the panel is available for
-     * the given set of nodes, false if not
+     * @param {Array<GXElement>} elements array of elements, contains at least one
+     * @param {GXNode} node the active node. May be null to indicate to work on elements
      */
-    EXProperties.prototype.updateFromNodes = function (document, nodes) {
-        // NO-OP
+    EXProperties.prototype.updateFromNode = function (document, elements, node) {
+        throw new Error("Not Supported.");
     };
 
     /** @override */

@@ -245,21 +245,26 @@
     };
 
     /** @override */
-    GPathProperties.prototype.updateFromNodes = function (document, nodes) {
+    GPathProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document.getScene().removeEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange);
             this._document = null;
         }
 
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
         // Collect all path elements and their selected anchor points
         this._pathes = [];
         this._points = [];
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXPath) {
-                var path = nodes[i];
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXPath) {
+                var path = elements[i];
 
-                this._pathes.push(nodes[i]);
+                this._pathes.push(elements[i]);
 
                 for (var ap = path.getAnchorPoints().getFirstChild(); ap !== null; ap = ap.getNext()) {
                     if (ap.hasFlag(GXNode.Flag.Selected)) {
@@ -269,7 +274,7 @@
             }
         }
 
-        if (this._pathes.length === nodes.length) {
+        if (this._pathes.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document.getScene().addEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange, this);

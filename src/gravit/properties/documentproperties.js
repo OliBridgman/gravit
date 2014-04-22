@@ -196,13 +196,18 @@
     };
 
     /** @override */
-    GDocumentProperties.prototype.updateFromNodes = function (document, nodes) {
+    GDocumentProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
-        if (nodes.length === 1 && nodes[0] instanceof GXScene) {
+        // We'll work on elements, only
+        if (node) {
+            return false;
+        }
+
+        if (elements.length === 1 && elements[0] instanceof GXScene) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();

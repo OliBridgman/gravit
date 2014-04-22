@@ -272,30 +272,35 @@
     };
 
     /** @override */
-    GPageProperties.prototype.updateFromNodes = function (document, nodes) {
+    GPageProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
+        }
+
+        // We'll work on elements, only
+        if (node) {
+            return false;
         }
 
         this._pages = [];
 
         // Special case: if only scene is in node selection,
         // then select the currently active page by default
-        if (nodes.length === 1 && nodes[0] instanceof GXScene) {
-            var activePage = nodes[0].querySingle('page:active');
+        if (elements.length === 1 && elements[0] instanceof GXScene) {
+            var activePage = elements[0].querySingle('page:active');
             if (activePage) {
                 this._pages.push(activePage);
             }
         } else {
-            for (var i = 0; i < nodes.length; ++i) {
-                if (nodes[i] instanceof GXPage) {
-                    this._pages.push(nodes[i]);
+            for (var i = 0; i < elements.length; ++i) {
+                if (elements[i] instanceof GXPage) {
+                    this._pages.push(elements[i]);
                 }
             }
         }
 
-        if (this._pages.length === nodes.length) {
+        if (this._pages.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();

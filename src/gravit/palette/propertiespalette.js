@@ -25,10 +25,10 @@
      * @extends EXPalette.DocumentState
      * @constructor
      */
-    EXPropertiesPalette.DocumentState = function (document, propertyPanels, objectTree) {
+    EXPropertiesPalette.DocumentState = function (document, propertyPanels) {
         EXPalette.DocumentState.call(this, document);
         this._propertyPanels = propertyPanels;
-        this._objectTree = objectTree;
+        this._objectTree = null;
     };
     GObject.inherit(EXPropertiesPalette.DocumentState, EXPalette.DocumentState);
 
@@ -39,15 +39,78 @@
      */
     EXPropertiesPalette.DocumentState.prototype._propertyPanels = null;
 
+    /**
+     * The container for the object tree
+     * @type {JQuery}
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._objectTree = null;
+
+    /**
+     * A mapping of GXNode to Tree nodes
+     * @type {Array<{{node: GXNode, treeId: String}}>}
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._treeNodeMap = null;
+
+    /**
+     * @type {Array<GXElement>}
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._elements = null;
+
+    /** @override */
+    EXPropertiesPalette.DocumentState.prototype.init = function () {
+        var scene = this.document.getScene();
+
+        // Subscribe to the document scene's events
+        scene.addEventListener(GXNode.AfterInsertEvent, this._afterInsert, this);
+        scene.addEventListener(GXNode.AfterRemoveEvent, this._afterRemove, this);
+        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+    };
+
+    /** @override */
+    EXPropertiesPalette.DocumentState.prototype.release = function () {
+        var scene = this.document.getScene();
+
+        // Unsubscribe from the document scene's events
+        scene.removeEventListener(GXNode.AfterInsertEvent, this._afterInsert);
+        scene.removeEventListener(GXNode.AfterRemoveEvent, this._afterRemove);
+        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
+    };
+
     /** @override */
     EXPropertiesPalette.DocumentState.prototype.activate = function () {
+        if (!this._objectTree) {
+            // First time activation
+            this._objectTree = $('<div></div>')
+                .addClass('object-tree')
+                .tree({
+                    data: [],
+                    dragAndDrop: true,
+                    openFolderDelay: 0,
+                    slide: false,
+                    onIsMoveHandle: function ($element) {
+                        return ($element.is('.jqtree-title'));
+                    }/*,
+                     onCreateLi: this._createListItem.bind(this)*/,
+                    onCanMoveTo: this._canMoveTreeNode.bind(this)
+                })
+                .on('tree.click', this._clickTreeNode.bind(this))
+                .on('tree.move', this._moveTreeNode.bind(this))
+
+            this._updateFromSelection();
+        }
+
         var editor = this.document.getEditor();
 
         // Subscribe to the editor's events
         editor.addEventListener(GXEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
-        // Update from current selection
-        this._updateFromSelection();
+        // Update property panels
+        this._updatePropertyPanels();
     };
 
     /** @override */
@@ -57,37 +120,252 @@
         // Unsubscribe from the editor's events
         editor.addEventListener(GXEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
-        // Clear properties panels
-        this._updateFromSelection();
+        // Remove all property panels
+        for (var i = 0; i < this._propertyPanels.length; ++i) {
+            var propertyPanel = this._propertyPanels[i];
+            propertyPanel.category.css('display', 'none');
+            propertyPanel.panel.css('display', 'none');
+            propertyPanel.panel.attr('data-available', 'false');
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterInsertEvent} event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._afterInsert = function (event) {
+        if (event.node instanceof IFAttribute) {
+            // Check if attribute is owned by any of our elements
+            var ownerElement = event.node.getOwnerElement();
+            if (this._elements && ownerElement) {
+                for (var i = 0; i < this._elements.length; ++i) {
+                    if (this._elements[i] === ownerElement) {
+                        this._insertAttributeNode(event.node);
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterRemoveEvent} event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._afterRemove = function (event) {
+        if (event.node instanceof IFAttribute) {
+            var treeNode = this._getTreeNode(event.node);
+
+            if (treeNode) {
+                // If it is the selected node, then select root, first
+                var selectedNode = this._objectTree.tree('getSelectedNode');
+                if (selectedNode === treeNode) {
+                    this._objectTree.tree('selectNode', this._objectTree.tree('getNodeById', '#'));
+                    this._updatePropertyPanels();
+                }
+
+                // Remove the tree node, first
+                this._objectTree.tree('removeNode', treeNode);
+
+                // Iterate node and remove all tree mappings
+                event.node.accept(function (node) {
+                    for (var i = 0; i < this._treeNodeMap.length; ++i) {
+                        if (this._treeNodeMap[i].node === node) {
+                            this._treeNodeMap.splice(i, 1);
+                            break;
+                        }
+                    }
+                }.bind(this));
+            }
+        }
+    };
+
+    /**
+     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._afterPropertiesChange = function (event) {
+        // TODO
+    };
+
+    /**
+     * @param {GXNode.AfterFlagChangeEvent} event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._afterFlagChange = function (event) {
+        // TODO
+    };
+
+    /**
+     * @param event
+     * @return {{parent: GXNode, before: GXNode, source: GXNode}} the result of the move
+     * or null if the actual move is not allowed
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
+        // special case: no target means root element
+        if (!target) {
+            target = this._elements[0];
+        }
+
+        if (source && target && position !== 'none') {
+            var parent = null;
+            var before = null;
+
+            // Special case when source is attribute and target element
+            if (source instanceof IFAttribute && target instanceof GXElement) {
+                if (!target.hasMixin(GXElement.Attributes)) {
+                    return null;
+                }
+                target = target.getAttributes();
+            }
+
+            if (position === 'inside') {
+                if (!target.hasMixin(GXNode.Container)) {
+                    return null;
+                }
+                parent = target;
+                before = target.getFirstChild();
+            } else if (position === 'before') {
+                parent = target.getParent();
+                before = target;
+            } else if (position == 'after') {
+                parent = target.getParent();
+                before = target.getNext();
+            }
+
+            if (source.validateInsertion(parent, before)) {
+                return {
+                    parent: parent,
+                    before: before,
+                    source: source
+                };
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+        // TODO : Support multiple elements drag'drop one day..
+        if (this._elements.length > 1) {
+            return null;
+        }
+
+        return this._getMoveTreeNodeInfo(position, moved_node.node, target_node.node) !== null;
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._moveTreeNode = function (event) {
+        event.preventDefault();
+
+        var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
+            event.move_info.moved_node.node, event.move_info.target_node.node);
+
+        if (moveInfo) {
+            var editor = this.document.getEditor();
+            editor.beginTransaction();
+            try {
+                var selectedNode = this._objectTree.tree('getSelectedNode');
+                var restoreSourceSelection = false;
+                if (selectedNode && selectedNode.node == moveInfo.source) {
+                    restoreSourceSelection = true;
+                }
+
+                moveInfo.source.getParent().removeChild(moveInfo.source);
+                moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
+
+                if (restoreSourceSelection) {
+                    this._objectTree.tree('selectNode', this._getTreeNode(moveInfo.source));
+                    this._updatePropertyPanels();
+                }
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Drag Properties');
+            }
+        }
+    };
+
+    /**
+     * @param event
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._clickTreeNode = function (event) {
+        event.preventDefault();
+
+        if (event.node) {
+            //event.node.setFlag(GXNode.Flag.Selected);
+            this._objectTree.tree('selectNode', event.node);
+            this._updatePropertyPanels();
+        }
     };
 
     /**
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
-        var nodes = this.document.getEditor().getSelection();
+        var elements = this.document.getEditor().getSelection();
 
         // If there's no selection, select the scene
-        if (!nodes || nodes.length === 0) {
-            nodes = [this.document.getScene()];
+        if (!elements || elements.length === 0) {
+            elements = [this.document.getScene()];
         }
-
 
         this._objectTree.tree('selectNode', null);
         this._objectTree.tree('loadData', []);
-        this._objectTree.tree('appendNode', { id: 'ABC', label: nodes[0].getNodeNameTranslated() });
+        this._treeNodeMap = [];
+        this._elements = elements;
+
+        // Insert our selection as root node(s)
+        var rootLabel = elements[0].getNodeNameTranslated();
+        if (elements.length > 1) {
+            // TODO : I18N
+            rootLabel = elements.length.toString() + ' Objects';
+        } else if (elements[0] instanceof GXBlock) {
+            rootLabel = elements[0].getLabel();
+        }
+
+        this._objectTree.tree('appendNode', { id: '#', label: rootLabel });
 
         // Iterate attributes
-        for (var i = 0; i < nodes.length; ++i) {
-            if (nodes[i] instanceof GXElement && nodes[i].hasMixin(GXElement.Attributes)) {
-                this._insertAttributesNode(nodes[i].getAttributes());
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof GXElement && elements[i].hasMixin(GXElement.Attributes)) {
+                this._insertAttributeNode(elements[i].getAttributes());
             }
+        }
+
+        // Open root node
+        this._objectTree.tree('openNode', this._objectTree.tree('getNodeById', '#'), false);
+
+        // Select root node if there's no selection yet
+        var selectedNode = this._objectTree.tree('getSelectedNode');
+        if (!selectedNode) {
+            this._objectTree.tree('selectNode', this._objectTree.tree('getNodeById', '#'));
+        }
+
+        // Initial update of property panels
+        this._updatePropertyPanels();
+    };
+
+    /** @private */
+    EXPropertiesPalette.DocumentState.prototype._updatePropertyPanels = function () {
+        var activeNode = null;
+        var selectedTreeNode = this._objectTree.tree('getSelectedNode');
+        if (selectedTreeNode !== null && selectedTreeNode.id !== '#'/*root*/) {
+            activeNode = selectedTreeNode.node;
         }
 
         var lastVisiblePropertyPanel = null;
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];
-            var available = !nodes || nodes.length === 0 ? false : propertyPanel.properties.updateFromNodes(this.document, nodes);
+            var available = !this._elements || this._elements.length === 0 ?
+                false : propertyPanel.properties.updateFromNode(this.document, this._elements, activeNode);
 
             propertyPanel.panel.removeClass('last-visible');
             if (available) {
@@ -112,74 +390,127 @@
         }
     };
 
-    EXPropertiesPalette.DocumentState.prototype._insertAttributesNode = function (attributes) {
+    /** @private */
+    EXPropertiesPalette.DocumentState.prototype._insertAttributeNode = function (attribute) {
         var canAdd = true;
         var forceAddChildren = false;
 
-        // Avoid to add root attributes but force children
-        if (attributes.getParent() instanceof GXElement) {
+        // Avoid to add root attribute but force children
+        if (attribute.getParent() instanceof GXElement) {
             canAdd = false;
             forceAddChildren = true;
         }
 
-        /*
-         if (canAdd && this._elements.length > 1) {
-         // For multiple element selection we'll only pick up
-         // render attributes and only on root and only one of a
-         // type (first one found).
-         // TODO : Take care on attributes references
-
-         if (!(attributes instanceof IFRenderAttribute)) {
-         canAdd = false;
-         } else {
-         var treeRoot = this._htmlTreeContainer.tree('getTree');
-         // Iterate existing attributes nodes on root
-         if (treeRoot && treeRoot.children) {
-         for (var i = 0; i < treeRoot.children.length; i++) {
-         var node = treeRoot.children[i];
-         if (node.attributes.constructor === attributes.constructor) {
-         canAdd = false;
-         break;
-         }
-         }
-         }
-         }
-         }
-         */
-
-        if (canAdd) {
-            // Try to find the parent node and insertion position for the attributes
-            // TODO
-            var parentTreeNode = null;
-
-            // Create an unique treeId for the new attributes
-            var treeId = gUtil.uuid();
-
-            // Apend the node & gather it's reference
-            this._objectTree.tree('appendNode', { id: treeId, attributes: attributes, label: attributes.getNodeNameTranslated() }, parentTreeNode);
-            var treeNode = this._objectTree.tree('getNodeById', treeId);
-
-            // Insert the mapping
-            //this._treeStyleMap.push({attributes: attributes, treeId: treeId});
-
-            // If attributes is selected then mark it selected in tree and update
+        if (canAdd && this._elements.length > 1) {
+            // TODO :
             /*
-             if (attributes.hasFlag(GXNode.Flag.Selected)) {
-             this._htmlTreeContainer.tree('selectNode', treeNode);
-             this._htmlTreeContainer.tree('scrollToNode', treeNode);
-             this._updateAttributesProperties();
+             // For multiple element selection we'll only pick up
+             // attribute on the root that are contained
+             // TODO : Take care on attribute references
+
+             if (!(attribute instanceof IFRenderAttribute)) {
+             canAdd = false;
+             } else {
+             var treeRoot = this._objectTree.tree('getTree');
+             // Iterate existing attribute nodes on root
+             if (treeRoot && treeRoot.children) {
+             for (var i = 0; i < treeRoot.children.length; i++) {
+             var node = treeRoot.children[i];
+             if (node.attribute.constructor === attribute.constructor) {
+             canAdd = false;
+             break;
+             }
+             }
+             }
              }
              */
         }
 
+        if (canAdd) {
+            // Create an unique treeId for the new attribute
+            var treeId = gUtil.uuid();
+
+            // Insert into tree
+            var nextTreeNode = attribute.getNext() ? this._getTreeNode(attribute.getNext()) : null;
+            if (nextTreeNode) {
+                this._objectTree.tree('addNodeBefore', { id: treeId, node: attribute }, nextTreeNode);
+            } else {
+                var parentTreeNode = null;
+                var parent = attribute.getParent();
+                if (parent) {
+                    parentTreeNode = this._getTreeNode(attribute.getParent());
+                }
+                if (!parentTreeNode) {
+                    // No parent found then root to root node
+                    parentTreeNode = this._objectTree.tree('getNodeById', '#');
+                }
+                this._objectTree.tree('appendNode', { id: treeId, node: attribute }, parentTreeNode);
+            }
+
+            // Insert the mapping
+            this._treeNodeMap.push({
+                node: attribute,
+                treeId: treeId
+            });
+
+            // Make an initial update
+            this._updateNodeProperties(attribute);
+
+            // Select it if it is selected
+            if (attribute.hasFlag(GXNode.Flag.Selected)) {
+                this._objectTree.tree('selectNode', this._getTreeNode(attribute));
+            }
+        }
+
         // Add children (if any)
-        if ((canAdd || forceAddChildren) && attributes.hasMixin(GXNode.Container)) {
-            for (var child = attributes.getFirstChild(); child !== null; child = child.getNext()) {
+        if ((canAdd || forceAddChildren) && attribute.hasMixin(GXNode.Container)) {
+            for (var child = attribute.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof IFAttribute) {
-                    this._insertAttributesNode(child);
+                    this._insertAttributeNode(child);
                 }
             }
         }
+
+        if (canAdd) {
+            // Open the node by default
+            this._objectTree.tree('openNode', this._getTreeNode(attribute), false);
+        }
+    };
+
+    /**
+     * @param {GXNode} node
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._updateNodeProperties = function (node) {
+        var treeNode = this._getTreeNode(node);
+        if (treeNode) {
+            this._objectTree.tree('updateNode', treeNode, {
+                label: node.getNodeNameTranslated(),
+                node: node
+            });
+        }
+    };
+
+    /**
+     * @param {GXNode} node
+     * @return {*}
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._getTreeNodeId = function (node) {
+        for (var i = 0; i < this._treeNodeMap.length; ++i) {
+            if (this._treeNodeMap[i].node === node) {
+                return this._treeNodeMap[i].treeId;
+            }
+        }
+    };
+
+    /**
+     * @param {GXNode} node
+     * @return {*}
+     * @private
+     */
+    EXPropertiesPalette.DocumentState.prototype._getTreeNode = function (node) {
+        return this._objectTree.tree('getNodeById', this._getTreeNodeId(node));
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -191,13 +522,6 @@
      * @private
      */
     EXPropertiesPalette.prototype._htmlElement = null;
-
-    /**
-     * The container for the object tree
-     * @type {JQuery}
-     * @private
-     */
-    EXPropertiesPalette.prototype._objectTree = null;
 
     /**
      * The property panels
@@ -238,24 +562,6 @@
         EXPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
-
-        // Initiate our tree container widget
-        this._objectTree = $('<div></div>')
-            .addClass('object-tree')
-            .tree({
-                data: [],
-                dragAndDrop: true,
-                openFolderDelay: 0,
-                slide: false,
-                onIsMoveHandle: function ($element) {
-                    return ($element.is('.jqtree-title'));
-                }/*,
-                 onCreateLi: this._createListItem.bind(this),
-                 onCanMoveTo: this._canMoveTreeNode.bind(this)*/
-            })
-            //.on('tree.click', this._clickTreeNode.bind(this))
-            //.on('tree.move', this._moveTreeNode.bind(this))
-            .appendTo(this._htmlElement);
 
         var propertiesPanels = $('<div></div>')
             .addClass('properties-panels')
@@ -319,7 +625,19 @@
 
     /** @override */
     EXPropertiesPalette.prototype._createDocumentState = function (document) {
-        return new EXPropertiesPalette.DocumentState(document, this._propertyPanels, this._objectTree);
+        return new EXPropertiesPalette.DocumentState(document, this._propertyPanels);
+    };
+
+    /** @override */
+    EXPropertiesPalette.prototype._activateDocumentState = function (state) {
+        // Attach the state's tree to ourself
+        state._objectTree.prependTo(this._htmlElement);
+    };
+
+    /** @override */
+    EXPropertiesPalette.prototype._deactivateDocumentState = function (state) {
+        // Detach the state's tree from ourself
+        state._objectTree.detach();
     };
 
     /** @override */

@@ -14,13 +14,34 @@
     GXNode.inherit("strokeAttr", IFStrokeAttribute, IFPatternAttribute);
 
     /**
+     * Alignment of a stroke
+     * @enum
+     */
+    IFStrokeAttribute.Alignment = {
+        /**
+         * Center alignment
+         */
+        Center : 'C',
+
+        /**
+         * Outside alignment
+         */
+        Outside: 'O',
+
+        /**
+         * Inside alignment
+         */
+        Inside: 'I'
+    };
+
+    /**
      * Geometry properties
      */
     IFStrokeAttribute.GeometryProperties = {
         // Stroke width
         sw: 1,
-        // Stroke inside or not (center)
-        si: false,
+        // Stroke alignment
+        sa: IFStrokeAttribute.Alignment.Center,
         // Stroke Line-Caption
         slc: GXPaintCanvas.LineCap.Square,
         // Stroke Line-Join
@@ -32,28 +53,29 @@
     /** @override */
     IFStrokeAttribute.prototype.render = function (context, source, bbox) {
         if (!context.configuration.isOutline(context) && this.$sw && this.$sw > 0) {
-            var strokeBBox = this.$si ? bbox : bbox.expanded(this.$sw, this.$sw, this.$sw, this.$sw);
+            var strokeBBox = this.getBBox(bbox);
             var pattern = this._createPaintPattern(context, strokeBBox);
             if (pattern) {
-                if (this.getScene().getProperty('unit') === GXLength.Unit.PX && this.$sw % 2 !== 0) {
-                    // This code is temporary disabled as it breaks ellipse arcs, pies and chords, especially
-                    // it is noticeable at zoom
-                    //vertexSource = new GXVertexPixelAligner(source);
-                    // TODO : Translate 0,5 0,5 depending on bbox + take care on inside or not!!
-                }
+                // If not centered align, then we need to clip on temp canvas
+                if (this.$sa !== IFStrokeAttribute.Alignment.Center) {
+                    var oldCanvas = context.canvas;
+                    context.canvas = oldCanvas.createCanvas(strokeBBox);
+                    try {
+                        context.canvas.putVertices(source);
 
-                context.canvas.putVertices(source);
+                        // Render our stroke
+                        context.canvas.strokeVertices(pattern, this.$sw * 2, this.$slc, this.$slj, this.$slm, this.$opc, this.$cmp);
 
-                // If inside, we need to clip
-                if (this.$si) {
-                    //context.canvas.clipVertices();
-                }
-
-                context.canvas.strokeVertices(pattern, this.$sw * (this.$si ? 2 : 1), this.$slc, this.$slj, this.$slm, this.$opc, this.$smp);
-
-                // If inside, we need to reset our clipping
-                if (this.$si) {
-                    //context.canvas.resetClip();
+                        // Clip our contents and swap canvas back
+                        context.canvas.fillVertices(gColor.build(0, 0, 0), 1,
+                            this.$sa === IFStrokeAttribute.Alignment.Inside ? GXPaintCanvas.CompositeOperator.DestinationIn : GXPaintCanvas.CompositeOperator.DestinationOut);
+                        oldCanvas.drawCanvas(context.canvas);
+                    } finally {
+                        context.canvas = oldCanvas;
+                    }
+                } else {
+                    context.canvas.putVertices(source);
+                    context.canvas.strokeVertices(pattern, this.$sw, this.$slc, this.$slj, this.$slm, this.$opc, this.$cmp);
                 }
             }
         }
@@ -71,9 +93,11 @@
 
     /** @override */
     IFStrokeAttribute.prototype.getBBox = function (source) {
-        // Extend source by our stroke width if not inside
-        if (!this.$si) {
+        // Extend source by our stroke width depending on alignment
+        if (this.$sa === IFStrokeAttribute.Alignment.Center) {
             return source.expanded(this.$sw / 2, this.$sw / 2, this.$sw / 2, this.$sw / 2);
+        } else if (this.$sa === IFStrokeAttribute.Alignment.Outside) {
+            return source.expanded(this.$sw, this.$sw, this.$sw, this.$sw);
         } else {
             return source;
         }
