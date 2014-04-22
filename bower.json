@@ -6,6 +6,7 @@
         "mousetrap": "~1.4.5",
         "font-awesome": "latest",
         "jqTree": "git+https://github.com/quasado/jqTree#latest",
+        "opentype": "git+https://github.com/quasado/opentype.js#latest",
         "zlib.js": "git+https://github.com/gravitio/zlib.js#latest",
         "FileSaver.js": "git+https://github.com/gravitio/FileSaver.js#latest",
         "canvas-toBlob.js": "git+https://github.com/gravitio/canvas-toBlob.js#latest"

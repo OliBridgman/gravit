@@ -43,20 +43,14 @@
         rect.setProperty('trf', new GTransform(100, 0, 0, 50, 110, 60));
         page.appendChild(rect);
 
-/*
-        rect = new GXRectangle();
-        stroke = new IFStrokeAttribute();
-        stroke.setColor(GXColor.parseCSSColor('black'));
-        stroke.setProperty('sw', '1');
-        rect.getAttributes().appendChild(stroke);
-        rect.setProperty('trf', new GTransform(100, 0, 0, 50, 110, 60));
-        page.appendChild(rect);
-*/
-
-        //page.appendChild(subRect);
         //
         // Text
         //
+        var text = new GXText();
+        fill = new IFFillAttribute();
+        fill.setColor(GXColor.parseCSSColor('gray'));
+        text.getAttributes().appendChild(fill);
+        page.appendChild(text);
     }
 
     gDevelopment.tests.push({
