@@ -403,27 +403,21 @@
 
         if (canAdd && this._elements.length > 1) {
             // TODO :
-            /*
-             // For multiple element selection we'll only pick up
-             // attribute on the root that are contained
-             // TODO : Take care on attribute references
+            // For multiple element selection we'll only pick up
+            // attribute on the root that are contained
+            // TODO : Take care on attribute references
 
-             if (!(attribute instanceof IFRenderAttribute)) {
-             canAdd = false;
-             } else {
-             var treeRoot = this._objectTree.tree('getTree');
-             // Iterate existing attribute nodes on root
-             if (treeRoot && treeRoot.children) {
-             for (var i = 0; i < treeRoot.children.length; i++) {
-             var node = treeRoot.children[i];
-             if (node.attribute.constructor === attribute.constructor) {
-             canAdd = false;
-             break;
-             }
-             }
-             }
-             }
-             */
+            var treeRoot = this._objectTree.tree('getNodeById', '#');
+            // Iterate existing attribute nodes on root
+            if (treeRoot && treeRoot.children) {
+                for (var i = 0; i < treeRoot.children.length; i++) {
+                    var node = treeRoot.children[i];
+                    if (node.node.constructor === attribute.constructor) {
+                        canAdd = false;
+                        break;
+                    }
+                }
+            }
         }
 
         if (canAdd) {
