@@ -3,15 +3,14 @@
     /**
      * Attribute that does some raster effect
      * @class IFEffectAttribute
-     * @extends IFAttribute
-     * @mixes IFAttribute.Render
+     * @extends IFDrawAttribute
      * @constructor
      */
     function IFEffectAttribute() {
-        IFAttribute.call(this);
+        IFDrawAttribute.call(this);
     }
 
-    GObject.inheritAndMix(IFEffectAttribute, IFAttribute, [IFAttribute.Render]);
+    GObject.inherit(IFEffectAttribute, IFDrawAttribute);
 
     /** @override */
     IFEffectAttribute.prototype.render = function (context, source, bbox) {
@@ -20,19 +19,32 @@
         if (!context.configuration.isOutline(context) && (paintMode === GXScenePaintConfiguration.PaintMode.Full || paintMode === GXScenePaintConfiguration.PaintMode.Output)) {
             // Create a temporary canvas for our contents for our effects
             var oldCanvas = context.canvas;
-            context.canvas = oldCanvas.createCanvas(this.getBBox(bbox));
+            context.canvas = oldCanvas.createCanvas(this._getCanvasExtents(context, source, bbox));
             try {
                 // Call to render the effect contents
                 this._renderContents(context, source, bbox);
 
                 // Call the effect now
-                this._renderEffect(context, source, bbox);
+                var offset = this._renderEffect(context, source, bbox);
 
                 // Paint our canvas back
-                oldCanvas.drawCanvas(context.canvas);
+                var dx = 0;
+                var dy = 0;
+
+                if (offset) {
+                    var canvasTransform = oldCanvas.getTransform();
+                    var delta = canvasTransform.mapPoint(offset).subtract(canvasTransform.mapPoint(new GPoint(0, 0)));
+                    var dx = delta.getX();
+                    var dy = delta.getY();
+                }
+
+                oldCanvas.drawCanvas(context.canvas, dx, dy);
             } finally {
                 context.canvas = oldCanvas;
             }
+
+            // Call this to render any overlay on source canvas
+            this._renderOverlay(context, source, bbox);
         } else {
             // in any other mode, do simply render the filter contents
             this._renderContents(context, source, bbox);
@@ -43,12 +55,11 @@
      * @param {GXPaintContext} context
      * @param {GXVertexSource} source
      * @param {GXRect} bbox
+     * @return {GRect}
      * @private
      */
-    IFEffectAttribute.prototype._renderContents = function (context, source, bbox) {
-        if (this.hasMixin(GXNode.Container)) {
-            this._renderChildren(context, source, bbox);
-        }
+    IFEffectAttribute.prototype._getCanvasExtents = function (context, source, bbox) {
+        return this.getBBox(bbox);
     };
 
     /**
@@ -57,7 +68,29 @@
      * @param {GXRect} bbox
      * @private
      */
+    IFEffectAttribute.prototype._renderContents = function (context, source, bbox) {
+        this._renderChildren(context, source, bbox);
+    };
+
+    /**
+     * @param {GXPaintContext} context
+     * @param {GXVertexSource} source
+     * @param {GXRect} bbox
+     * @return {GPoint} optional offset in scene coordinates to paint the effect by
+     * @private
+     */
     IFEffectAttribute.prototype._renderEffect = function (context, source, bbox) {
+        // NO-OP
+        return null;
+    };
+
+    /**
+     * @param {GXPaintContext} context
+     * @param {GXVertexSource} source
+     * @param {GXRect} bbox
+     * @private
+     */
+    IFEffectAttribute.prototype._renderOverlay = function (context, source, bbox) {
         // NO-OP
     };
 

@@ -140,7 +140,7 @@
             if (this._elements && ownerElement) {
                 for (var i = 0; i < this._elements.length; ++i) {
                     if (this._elements[i] === ownerElement) {
-                        this._insertAttributeNode(event.node);
+                        this._insertAttributeNode(event.node, true);
                     }
                 }
             }
@@ -340,16 +340,8 @@
             }
         }
 
-        // Open root node
-        this._objectTree.tree('openNode', this._objectTree.tree('getNodeById', '#'), false);
-
-        // Select root node if there's no selection yet
-        var selectedNode = this._objectTree.tree('getSelectedNode');
-        if (!selectedNode) {
-            this._objectTree.tree('selectNode', this._objectTree.tree('getNodeById', '#'));
-        }
-
-        // Initial update of property panels
+        // Select root node by default
+        this._objectTree.tree('selectNode', this._objectTree.tree('getNodeById', '#'));
         this._updatePropertyPanels();
     };
 
@@ -391,7 +383,7 @@
     };
 
     /** @private */
-    EXPropertiesPalette.DocumentState.prototype._insertAttributeNode = function (attribute) {
+    EXPropertiesPalette.DocumentState.prototype._insertAttributeNode = function (attribute, select) {
         var canAdd = true;
         var forceAddChildren = false;
 
@@ -450,9 +442,17 @@
             // Make an initial update
             this._updateNodeProperties(attribute);
 
-            // Select it if it is selected
-            if (attribute.hasFlag(GXNode.Flag.Selected)) {
-                this._objectTree.tree('selectNode', this._getTreeNode(attribute));
+            var newNode = this._getTreeNode(attribute);
+
+            // Open the parent if any
+            if (newNode.parent) {
+                this._objectTree.tree('openNode', newNode.parent, false);
+            }
+
+            // Select it by default if desired
+            if (select) {
+            this._objectTree.tree('selectNode', newNode);
+            this._updatePropertyPanels();
             }
         }
 
@@ -599,7 +599,7 @@
                 .appendTo(propertiesPanels);
 
             // Init properties
-            properties.init(panel, category.find('.controls'));
+            properties.init(panel, category.find('.controls'), menu);
 
             // Append panel
             panel.appendTo(propertiesPanels);

@@ -44,7 +44,7 @@
     };
 
     /** @override */
-    GAttributeProperties.prototype.init = function (panel, controls) {
+    GAttributeProperties.prototype.init = function (panel, controls, menu) {
         this._panel = panel;
 
         // Initialize all of our available attributes
@@ -61,10 +61,29 @@
 
             attribute.init(panel);
 
+            var addItem = new GUIMenuItem();
+            menu.addItem(addItem);
+            // TODO : I18N
+            var addLabel = 'Add ' + gLocale.getValue(attribute.getAttributeClass(), 'name');
+            addItem.setCaption(addLabel);
+            addItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
+                addItem.setEnabled(attribute.isCreateable(this._elements, this._attribute));
+            }.bind(this));
+            addItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    attribute.createAttribute(this._elements, this._attribute);
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction(addLabel);
+                }
+            }.bind(this));
+
             this._attributesInfo.push({
                 panel: panel,
                 attribute: attribute
-            })
+            });
         }.bind(this);
 
         // Initialize our attributes
@@ -75,15 +94,10 @@
 
     /** @override */
     GAttributeProperties.prototype.updateFromNode = function (document, elements, node) {
-        if (this._document) {
+        if (this._attribute) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
             this._attribute = null;
-        }
-
-        // We'll work on attributes, only
-        if (!node || !(node instanceof IFAttribute)) {
-            return false;
         }
 
         // Collect all attribute elements
@@ -92,6 +106,13 @@
             if (elements[i].hasMixin(GXElement.Attributes)) {
                 this._elements.push(elements[i]);
             }
+        }
+
+        this._document = document;
+
+        // We'll work on attributes, only
+        if (!node || !(node instanceof IFAttribute)) {
+            return false;
         }
 
         if (this._elements.length > 0) {

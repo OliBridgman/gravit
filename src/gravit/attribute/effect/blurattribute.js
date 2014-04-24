@@ -3,45 +3,17 @@
     /**
      * Blur attribute
      * @class GBlurAttribute
-     * @extends GAttribute
+     * @extends GDrawAttribute
      * @constructor
      */
     function GBlurAttribute() {
+        GDrawAttribute.call(this);
     };
-    GObject.inherit(GBlurAttribute, GAttribute);
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GBlurAttribute.prototype._panel = null;
-
-    /**
-     * @type {EXDocument}
-     * @private
-     */
-    GBlurAttribute.prototype._document = null;
-
-    /**
-     * @type {GAttribute}
-     * @private
-     */
-    GBlurAttribute.prototype._attribute = null;
-
-    /**
-     * @type {Function}
-     * @private
-     */
-    GBlurAttribute.prototype._assign = null;
+    GObject.inherit(GBlurAttribute, GDrawAttribute);
 
     /** @override */
     GBlurAttribute.prototype.getAttributeClass = function () {
         return IFBlurAttribute;
-    };
-
-    /** @override */
-    GBlurAttribute.prototype.isCreateable = function () {
-        return true;
     };
 
     /** @override */

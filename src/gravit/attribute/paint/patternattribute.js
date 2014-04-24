@@ -3,36 +3,12 @@
     /**
      * Pattern attribute
      * @class GPatternAttribute
-     * @extends GAttribute
+     * @extends GPaintAttribute
      * @constructor
      */
     function GPatternAttribute() {
     };
-    GObject.inherit(GPatternAttribute, GAttribute);
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GPatternAttribute.prototype._panel = null;
-
-    /**
-     * @type {EXDocument}
-     * @private
-     */
-    GPatternAttribute.prototype._document = null;
-
-    /**
-     * @type {GAttribute}
-     * @private
-     */
-    GPatternAttribute.prototype._attribute = null;
-
-    /**
-     * @type {Function}
-     * @private
-     */
-    GPatternAttribute.prototype._assign = null;
+    GObject.inherit(GPatternAttribute, GPaintAttribute);
 
     /**
      * @type {boolean}

@@ -17,11 +17,6 @@
     };
 
     /** @override */
-    GStrokeAttribute.prototype.isCreateable = function () {
-        return true;
-    };
-
-    /** @override */
     GStrokeAttribute.prototype.init = function (panel) {
         GPatternAttribute.prototype.init.call(this, panel);
 

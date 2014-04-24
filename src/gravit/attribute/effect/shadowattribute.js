@@ -3,12 +3,12 @@
     /**
      * Shadow attribute
      * @class GShadowAttribute
-     * @extends GAttribute
+     * @extends GDrawAttribute
      * @constructor
      */
     function GShadowAttribute() {
     };
-    GObject.inherit(GShadowAttribute, GAttribute);
+    GObject.inherit(GShadowAttribute, GDrawAttribute);
 
     /**
      * @type {JQuery}
@@ -37,11 +37,6 @@
     /** @override */
     GShadowAttribute.prototype.getAttributeClass = function () {
         return IFShadowAttribute;
-    };
-
-    /** @override */
-    GShadowAttribute.prototype.isCreateable = function () {
-        return true;
     };
 
     /** @override */
@@ -74,6 +69,17 @@
                     .on('change', function (evt, color) {
                         self._assign([property], [color]);
                     }.bind(this));
+            } else if (property === 'ko') {
+                return $('<label></label>')
+                    .append($('<input>')
+                        .attr('type', 'checkbox')
+                        .attr('data-property', property)
+                        .on('change', function () {
+                            self._assign([property], [$(this).is(':checked')]);
+                        }))
+                    .append($('<span></span>')
+                        // TODO : I18N
+                        .html('&nbsp;Knock-out'))
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -104,6 +110,13 @@
                     .text('Color:'))
                 .append($('<td></td>')
                     .append(_createInput('cls'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    .html('&nbsp;'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('ko'))))
             .appendTo(panel);
     };
 
@@ -120,6 +133,7 @@
         this._panel.find('input[data-property="r"]').val(
             this._document.getScene().pointToString(attribute.getProperty('r')));
         this._panel.find('[data-property="cls"]').gColorButton('value', attribute.getProperty('cls'));
+        this._panel.find('input[data-property="ko"]').prop('checked', attribute.getProperty('ko'));
     };
 
     /** @override */

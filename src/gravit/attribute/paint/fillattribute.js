@@ -17,11 +17,6 @@
     };
 
     /** @override */
-    GFillAttribute.prototype.isCreateable = function () {
-        return true;
-    };
-
-    /** @override */
     GFillAttribute.prototype.init = function (panel) {
         GPatternAttribute.prototype.init.call(this, panel);
     };
