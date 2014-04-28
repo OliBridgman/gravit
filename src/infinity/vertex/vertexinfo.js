@@ -524,8 +524,8 @@
         // P'' = 3(2at + b)
 
         // P' = 0;
-        gMath.getQuadricRoots(ax, bx, cx, splitPoints);
-        gMath.getQuadricRoots(ay, by, cy, splitPoints);
+        gMath.getQuadraticRoots(ax, bx, cx, splitPoints);
+        gMath.getQuadraticRoots(ay, by, cy, splitPoints);
 
         // P'x * P''y - P'y * P''x = 0
         // (2bx*ay -2by*ax + ax*by - ay*bx)t^2 + (2cx*ay - 2cy*ax)t + cx*by - cy*bx = 0
@@ -534,7 +534,7 @@
         A = bx * ay - by * ax;
         B = 2 * (cx * ay - cy * ax);
         C = cx * by - cy * bx;
-        gMath.getQuadricRoots(A, B, C, splitPoints);
+        gMath.getQuadraticRoots(A, B, C, splitPoints);
 
         nPoints = gUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
 
@@ -1023,7 +1023,7 @@
         A = bx * ay - by * ax;
         B = 2 * (cx * ay - cy * ax);
         C = cx * by - cy * bx;
-        gMath.getQuadricRoots(A, B, C, splitPoints);
+        gMath.getQuadraticRoots(A, B, C, splitPoints);
 
         // a curve may have a self-intersection point only if it doesn't have inflate points
         if (splitPoints.length == 0) {

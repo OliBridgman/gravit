@@ -134,7 +134,7 @@
      * @return {GPoint} an intersection point if the segments intersect, null otherwise
      * @version 1.0
      */
-    GMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y) {
+    GMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
         // segments intersect when the system below has the only one solution (ta, tb):
         // a1x + ta (a2x - a1x) = a1x + tb (b2x - b1x)
         // a1y + ta (a2y - a1y) = a1y + tb (b2y - b1y)
@@ -149,7 +149,11 @@
         } else {
             var ta = da / d;
             var tb = db / d;
-            if ((0 <= ta) && (ta <= 1) && (0 <= tb) && (tb <= 1)) {
+            if (!result && (0 <= ta) && (ta <= 1) && (0 <= tb) && (tb <= 1) || result) {
+                if (result) {
+                    result.ta = ta;
+                    result.tb = tb;
+                }
                 // segments intersect, find an intersection point
                 return new GPoint(a1x + ta * (a2x - a1x), a1y + ta * (a2y - a1y));
             }
@@ -157,6 +161,10 @@
 
         // segments are on lines which intersect, but outside of segments
         return null;
+    };
+
+    GMath.prototype.getPolySegmIntersection = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
+
     };
 
     /**
@@ -228,6 +236,7 @@
      * @param {Number} p1 a corresponding coordinate of the start point
      * @param {Number} p2 a corresponding coordinate of the end point
      * @param {Number} c a corresponding coordinate of the control point
+     * @param {Number} t - a parameter value
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
@@ -243,6 +252,7 @@
      * @param {Number} p2 a corresponding coordinate of the end point
      * @param {Number} c1 a corresponding coordinate of the first control point
      * @param {Number} c2 a corresponding coordinate of the second control point
+     * @param {Number} t - a parameter value
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
@@ -483,6 +493,29 @@
         }
 
         return res;
+    };
+
+    /**
+     * Divide quadratic Bezier curve into two parts using De Casteljau algorithm,
+     * and returns control points of two parts
+     * @param {Number} p1 a corresponding coordinate of the curve start point
+     * @param {Number} c a corresponding coordinate of the control point
+     * @param {Number} p2 a corresponding coordinate of the curve end point
+     * @param {Number} t a slope parameter value, where to divide the curve
+     * @param {Float64Array(3)} ctrls1 - array of the control points of the first part to be passed out
+     * @param {Float64Array(3)} ctrls2 - array of the control points of the second part to be passed out
+     */
+    GMath.prototype.divideQuadraticCurve = function (p1, c, p2, t, ctrls1, ctrls2) {
+        var a = p1 + t * (c - p1);
+        var b = c + t * (p2 - c);
+        var m = a + t * (b - a);
+
+        ctrls1[0] = p1;
+        ctrls1[1] = a;
+        ctrls1[2] = m;
+        ctrls2[0] = m;
+        ctrls2[1] = b;
+        ctrls2[2] = p2;
     };
 
     /**
@@ -1451,7 +1484,7 @@
      * @param {Array} roots - array of roots to be passed out
      * @version 1.0
      */
-    GMath.prototype.getQuadricRoots = function (a, b, c, roots) {
+    GMath.prototype.getQuadraticRoots = function (a, b, c, roots) {
         // ax^2 + bx + c = 0
         var discr;
         var sd;
