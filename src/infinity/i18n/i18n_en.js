@@ -32,6 +32,7 @@ gLocale.setValues(GXScene, GLocale.Language.English, ["name"], ["Scene"]);
 gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
 gLocale.setValues(GXPage, GLocale.Language.English, ["name"], ["Page"]);
 gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);
+gLocale.setValues(GXText, GLocale.Language.English, ["name"], ["Text"]);
 gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
 gLocale.setValues(IFFillAttribute, GLocale.Language.English, ["name"], ["Fill"]);
 gLocale.setValues(IFStrokeAttribute, GLocale.Language.English, ["name"], ["Stroke"]);

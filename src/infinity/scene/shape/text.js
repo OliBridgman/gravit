@@ -29,6 +29,18 @@
     GXNode.inherit("text", GXText, GXShape);
 
     /**
+     * The geometry properties of text with their default values
+     */
+    GXText.GeometryProperties = {
+        /** The start angle */
+        sa: Math.PI,
+        /** The end angle */
+        ea: Math.PI,
+        /** The ellipse-type */
+        etp: GXEllipse.Type.Pie
+    };
+
+    /**
      * @type {GXVertexContainer}
      * @private
      */
