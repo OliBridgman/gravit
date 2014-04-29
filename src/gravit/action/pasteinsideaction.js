@@ -73,7 +73,7 @@
      * @override
      */
     GPasteInsideAction.prototype.execute = function () {
-        var nodes = GXNode.deserialize(gShell.getClipboarContent(GXNode.MIME_TYPE));
+        var nodes = GXNode.deserialize(gShell.getClipboardContent(GXNode.MIME_TYPE));
         if (nodes && nodes.length > 0) {
             var elements = [];
             for (var i = 0; i < nodes.length; ++i) {

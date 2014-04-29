@@ -862,17 +862,10 @@
             } else if (item.type === 'divider') {
                 item.separator = gShell.addMenuSeparator(parentMenu);
             } else if (item.type === 'item') {
-                item.item = gShell.addMenuItem(parentMenu, function () {
+                item.item = gShell.addMenuItem(parentMenu, gLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
+                function () {
                     this.executeAction(item.action.getId());
                 }.bind(this));
-
-                // Register shortcut if any
-                var shortcut = item.action.getShortcut();
-                if (shortcut) {
-                    this.registerShortcut(shortcut, function () {
-                        this.executeAction(item.action.getId());
-                    }.bind(this));
-                }
             }
         }.bind(this);
 
@@ -883,7 +876,7 @@
                     var item = tree.items[i];
                     if (item.type === 'item') {
                         gShell.updateMenuItem(item.item, gLocale.get(item.action.getTitle()),
-                            item.action.isEnabled(), item.action.isChecked(), item.action.getShortcut());
+                            item.action.isEnabled(), item.action.isCheckable() ? item.action.isChecked() : false);
                     }
                 }
             });
@@ -941,7 +934,7 @@
     EXApplication.prototype._addWindowMenuItem = function (window) {
         this._windowMenuMap.push({
             window : window,
-            item : gShell.addMenuItem(this._windowMenu, function () {
+            item : gShell.addMenuItem(this._windowMenu, window.getTitle(), true, null, function () {
                 this._windows.activateWindow(window);
             }.bind(this))
         });
@@ -971,7 +964,7 @@
         for (var i = 0; i < this._windowMenuMap.length; ++i) {
             var map = this._windowMenuMap[i];
             if (map.window === window) {
-                gShell.updateMenuItem(map.item, map.window.getTitle(), true, map.window === this._windows.getActiveWindow(), null);
+                gShell.updateMenuItem(map.item, map.window.getTitle(), true, map.window === this._windows.getActiveWindow());
                 break;
             }
         }

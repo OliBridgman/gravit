@@ -41,6 +41,11 @@
         return "view-render";
     };
 
+    /** @override */
+    EXPixelPreviewAction.prototype.isCheckable = function () {
+        return true;
+    };
+
     /**
      * @override
      */

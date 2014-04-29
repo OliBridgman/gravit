@@ -83,21 +83,28 @@
     };
 
     /** @override */
-    GWebShell.prototype.addMenuItem = function (parentMenu, callback) {
+    GWebShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var item = new GUIMenuItem(GUIMenuItem.Type.Item);
         if (callback) {
             item.addEventListener(GUIMenuItem.ActivateEvent, callback);
         }
+
+        if (shortcut) {
+            gApp.registerShortcut(shortcut, function () {
+                this.executeAction(item.action.getId());
+            }.bind(this));
+        }
+
+        this.updateMenuItem(item, title, true, false);
         parentMenu.addItem(item);
         return item;
     };
 
     /** @override */
-    GWebShell.prototype.updateMenuItem = function (item, title, enabled, checked, shortcut) {
+    GWebShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.setCaption(title);
         item.setEnabled(enabled);
         item.setChecked(checked);
-        item.setShortcutHint(shortcut);
     };
 
     /** @override */
@@ -111,7 +118,7 @@
     };
 
     /** @override */
-    GWebShell.prototype.getClipboarContent = function (mimeType) {
+    GWebShell.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }

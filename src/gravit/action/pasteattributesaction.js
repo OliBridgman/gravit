@@ -73,7 +73,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.execute = function () {
-        var attributes = GXNode.deserialize(gShell.getClipboarContent(IFAttribute.MIME_TYPE));
+        var attributes = GXNode.deserialize(gShell.getClipboardContent(IFAttribute.MIME_TYPE));
         if (attributes) {
             var editor = gApp.getActiveDocument().getEditor();
             var selection = editor.getSelection();

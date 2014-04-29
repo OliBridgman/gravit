@@ -67,6 +67,15 @@
     };
 
     /**
+     * Whether this action is checkable or not
+     * @return {Boolean} true if checkable, false if not
+     */
+    GUIAction.prototype.isCheckable = function () {
+        // Not checkable by default
+        return false;
+    };
+
+    /**
      * Get the checked status of the action
      * @return {Boolean} true if checked, false if not
      * @version 1.0

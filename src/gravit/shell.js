@@ -47,10 +47,13 @@
     /**
      * Called whenever a menu item shall be added
      * @param {*} parentMenu parent menu to add the item, may not be null
+     * @param {String} title the title of the item
+     * @param {Boolean} checkable whether the item is a checkable one or not
+     * @param {Array<*>} shortcut the shortcut for the item
      * @param {Function} [callback] called whenever the item is activated
      * @return {*} a shell-specific menu item instance
      */
-    GShell.prototype.addMenuItem = function (parentMenu, callback) {
+    GShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         throw new Error("Not Supported.");
     };
 
@@ -60,9 +63,8 @@
      * @param {String} title the title of the item
      * @param {Boolean} enabled whether the item is enabled or not
      * @param {Boolean} checked whether the item is checked or not
-     * @param {Array<*>} shortcut the shortcut for the item
      */
-    GShell.prototype.updateMenuItem = function (item, title, enabled, checked, shortcut) {
+    GShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
         throw new Error("Not Supported.");
     };
 
@@ -89,7 +91,7 @@
      * @return {*} the clipboard contents of the given mime-type
      * or null if there's none
      */
-    GShell.prototype.getClipboarContent = function (mimeType) {
+    GShell.prototype.getClipboardContent = function (mimeType) {
         throw new Error("Not Supported.");
     };
 

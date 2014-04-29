@@ -49,6 +49,11 @@
         return "paint-mode";
     };
 
+    /** @override */
+    EXPaintModeAction.prototype.isCheckable = function () {
+        return true;
+    };
+
     /**
      * @override
      */

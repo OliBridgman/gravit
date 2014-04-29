@@ -56,6 +56,11 @@
         return false;
     };
 
+    /** @override */
+    EXShowRulersAction.prototype.isCheckable = function () {
+        return true;
+    };
+
     /**
      * @override
      */
