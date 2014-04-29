@@ -29,8 +29,7 @@ var isMaximizationEvent = false;
 
 // extra height added in linux x64 gnome-shell env, use it as workaround
 var deltaHeight = (function () {
-    // use deltaHeight only in windows with frame enabled
-    if (gui.App.manifest.window.frame) return true; else return 'disabled';
+    return true;
 })();
 
 

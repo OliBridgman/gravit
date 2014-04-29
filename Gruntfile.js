@@ -207,11 +207,12 @@ module.exports = function (grunt) {
         },
         nodewebkit: {
             options: {
+                download_url: 'http://s3.amazonaws.com/quasado-node-webkit/',
                 build_dir: '<%= cfg.pck %>/desktop',
                 mac: true,
-                win: true,
-                linux32: true,
-                linux64: true,
+                win: false,
+                linux32: false,
+                linux64: false,
                 mac_icns: 'shell/desktop/appicon.icns',
                 zip: false,
                 app_name: '<%= pkg.name %>',

@@ -36,20 +36,16 @@
     GDesktopShell.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar;
         var item = new gui.MenuItem({
-            label: title,
-            click: function () {
-                alert('OPEN SUBMENU');
-            }
+            label: title
         });
 
-        var menu = new gui.Menu();
+        var menu = new gui.Menu({
+            type: 'contextmenu',
+            update: callback
+        });
         item.submenu = menu;
 
         parentMenu.append(item);
-
-        //if (callback) {
-        //    item.getMenu().addEventListener(GUIMenu.OpenEvent, callback);
-        //}
 
         return menu;
     };
@@ -77,7 +73,8 @@
     /** @override */
     GDesktopShell.prototype.updateMenuItem = function (item, title, enabled, checked, shortcut) {
         item.label = title;
-        console.log('SET LABEL ON ITEM: ' + title);
+        item.enabled = enabled;
+        item.shortcut = "cmd+shift+t";
         //item.enabled = enabled;
         //item.checked = checked;
         /*

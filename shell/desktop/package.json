@@ -11,5 +11,6 @@
         "height": 786,
         "show": false
     },
-    "no-edit-menu": true
+    "no-edit-menu": true,
+    "no-window-menu": true
 }
