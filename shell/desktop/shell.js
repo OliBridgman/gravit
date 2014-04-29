@@ -9,6 +9,7 @@
      */
     function GDesktopShell() {
         this._menuBar = new gui.Menu({ 'type': 'menubar' });
+        this._clipboardMimeTypes = {};
     }
 
     GObject.inherit(GDesktopShell, GShell);
@@ -18,6 +19,12 @@
      * @private
      */
     GDesktopShell.prototype._menuBar = null;
+
+    /**
+     * @type {*}
+     * @private
+     */
+    GWebShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
     GDesktopShell.prototype.prepareLoad = function () {
@@ -88,22 +95,20 @@
 
     /** @override */
     GDesktopShell.prototype.getClipboardMimeTypes = function () {
-        //return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
+        return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
     GDesktopShell.prototype.getClipboardContent = function (mimeType) {
-        /*
-         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
-         return this._clipboardMimeTypes[mimeType];
-         }
-         */
+        if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
+            return this._clipboardMimeTypes[mimeType];
+        }
         return null;
     };
 
     /** @override */
     GDesktopShell.prototype.setClipboardContent = function (mimeType, content) {
-        //this._clipboardMimeTypes[mimeType] = content;
+        this._clipboardMimeTypes[mimeType] = content;
     };
 
     /**
