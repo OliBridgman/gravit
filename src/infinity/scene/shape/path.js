@@ -185,28 +185,82 @@
             p1y = aPrev.getProperty('y');
             c1x = aPrev.getProperty('hrx');
             c1y = aPrev.getProperty('hry');
-            if (c1x == null || c1y == null) {
-                c1x = p1x;
-                c1y = p1y;
-            }
             p2x = aNext.getProperty('x');
             p2y = aNext.getProperty('y');
             c2x = aNext.getProperty('hlx');
             c2y = aNext.getProperty('hly');
-            if (c2x == null || c2y == null) {
-                c2x = p2x;
-                c2y = p2y;
-            }
+
+            var zeroC1 = c1x == null || c1y == null || gMath.isEqualEps(c1x, p1x) && gMath.isEqualEps(c1y, p1y);
+            var zeroC2 = c2x == null || c2y == null || gMath.isEqualEps(c2x, p2x) && gMath.isEqualEps(c2y, p2y);
 
             // If line
-            if (gMath.isEqualEps(c1x, p1x) && gMath.isEqualEps(c1y, p1y) &&
-                gMath.isEqualEps(c2x, p2x) && gMath.isEqualEps(c2y, p2y)) {
-
+            if (zeroC1 && zeroC2) {
                 newAPt = new GXPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'],
                     [p1x + slope * (p2x - p1x), p1y + slope * (p2y - p1y), tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
-            } else { // curve
+            } else if (zeroC1 || zeroC2) { // quadratic bezier curve
+                var cx = zeroC1 ? c2x : c1x;
+                var cy = zeroC1 ? c2y : c1y;
+                var ctrls1X = new Float64Array(3);
+                var ctrls1Y = new Float64Array(3);
+                var ctrls2X = new Float64Array(3);
+                var ctrls2Y = new Float64Array(3);
+                gMath.divideQuadraticCurve(p1x, cx, p2x, slope, ctrls1X, ctrls2X);
+                gMath.divideQuadraticCurve(p1y, cy, p2y, slope, ctrls1Y, ctrls2Y);
+
+                newAPt = new GXPath.AnchorPoint();
+                newAPt.setProperties(['x', 'y', 'tp'], [ctrls1X[2], ctrls1Y[2], tpaNew]);
+                this.getAnchorPoints().insertChild(newAPt, aNext);
+
+                if (zeroC1) {
+                    if (gMath.isEqualEps(ctrls1X[1], ctrls1X[2]) && gMath.isEqualEps(ctrls1Y[1], ctrls1Y[2])) {
+                        newAPt.setProperties(['hlx', 'hly'], [null, null]);
+                    } else {
+                        newAPt.setProperties(['hlx', 'hly'], [ctrls1X[1], ctrls1Y[1]]);
+                    }
+                    // Handle of the next point was not zero, so convert the second part into cubic curve
+                    // to assign handles to both points
+                    c1x = ctrls2X[0] + 2 / 3 * (ctrls2X[1] - ctrls2X[0]);
+                    c1y = ctrls2Y[0] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[0]);
+                    c2x = ctrls2X[2] + 2 / 3 * (ctrls2X[1] - ctrls2X[2]);
+                    c2y = ctrls2Y[2] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[2]);
+                    if (gMath.isEqualEps(c1x, ctrls2X[0]) && gMath.isEqualEps(c1y, ctrls2Y[0])) {
+                        newAPt.setProperties(['hrx', 'hry'], [null, null]);
+                    } else {
+                        newAPt.setProperties(['hrx', 'hry'], [c1x, c1y]);
+                    }
+
+                    if (gMath.isEqualEps(c2x, ctrls2X[2]) && gMath.isEqualEps(c2y, ctrls2Y[2])) {
+                        aNext.setProperties(['hlx', 'hly'], [null, null]);
+                    } else {
+                        aNext.setProperties(['hlx', 'hly'], [c2x, c2y]);
+                    }
+                } else { // zeroC2
+                    if (gMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && gMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
+                        newAPt.setProperties(['hrx', 'hry'], [null, null]);
+                    } else {
+                        newAPt.setProperties(['hrx', 'hry'], [ctrls2X[1], ctrls2Y[1]]);
+                    }
+                    // Handle of the previous point was not zero, so convert the first part into cubic curve
+                    // to assign handles to both points
+                    c1x = ctrls1X[0] + 2 / 3 * (ctrls1X[1] - ctrls1X[0]);
+                    c1y = ctrls1Y[0] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[0]);
+                    c2x = ctrls1X[2] + 2 / 3 * (ctrls1X[1] - ctrls1X[2]);
+                    c2y = ctrls1Y[2] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[2]);
+                    if (gMath.isEqualEps(c2x, ctrls1X[2]) && gMath.isEqualEps(c2y, ctrls1Y[2])) {
+                        newAPt.setProperties(['hlx', 'hly'], [null, null]);
+                    } else {
+                        newAPt.setProperties(['hlx', 'hly'], [c2x, c2y]);
+                    }
+
+                    if (gMath.isEqualEps(c1x, ctrls1X[0]) && gMath.isEqualEps(c1y, ctrls1Y[0])) {
+                        aPrev.setProperties(['hrx', 'hry'], [null, null]);
+                    } else {
+                        aPrev.setProperties(['hrx', 'hry'], [c1x, c1y]);
+                    }
+                }
+            } else { // cubic bezier curve
                 var ctrls1X = new Float64Array(4);
                 var ctrls1Y = new Float64Array(4);
                 var ctrls2X = new Float64Array(4);
