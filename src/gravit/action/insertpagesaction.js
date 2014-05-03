@@ -120,7 +120,7 @@
      * @override
      */
     GInsertPagesAction.prototype.isEnabled = function (scene) {
-        var scene = scene || gApp.getActiveDocument() ? gApp.getActiveDocument().getScene() : null;
+        var scene = scene ? scene : gApp.getActiveDocument() ? gApp.getActiveDocument().getScene() : null;
         return !!scene;
     };
 

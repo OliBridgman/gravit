@@ -506,37 +506,7 @@
         // 2. Find initial interval (curve) splitPoints at [0, 1],
         // which are curve inflate points, or such points,
         // that P'x = 0 or P'y = 0
-
-        splitPoints = [0, 1.0];
-
-        // P(t) = P1 + 3t(C1 - P1) + 3t^2*(C2 - 2C1 + P1) + t^3*(P2 - 3C2 + 3C1 - P1)
-        // P' =3(C1 - P1) + 6t(C2 - 2C1 + P1) + 3t^2*(P2 - 3C2 + 3C1 - P1)
-        // P'x == 0 when tangent to vertical border, and P'y == 0 when tangent to horizontal border,
-        // Also locate all inflate points, where P'x * P''y - P'y * P''x = 0
-
-        // cx = cx1 - px1;
-        // cy = cy1 - py1;
-        // bx = 2 * (cx2 - cx1 - cx);
-        // by = 2 * (cy2 - cy1 - cy);
-        // ax = px2 - cx2 -cx - bx;
-        // ay = py2 - cy2 -cy - by;
-        // P' = 3(at^2 + bt + c)
-        // P'' = 3(2at + b)
-
-        // P' = 0;
-        gMath.getQuadraticRoots(ax, bx, cx, splitPoints);
-        gMath.getQuadraticRoots(ay, by, cy, splitPoints);
-
-        // P'x * P''y - P'y * P''x = 0
-        // (2bx*ay -2by*ax + ax*by - ay*bx)t^2 + (2cx*ay - 2cy*ax)t + cx*by - cy*bx = 0
-        // (bx*ay - by*ax)t^2 + 2*(cx*ay - cy*ax)t + cx*by - cy*bx = 0
-        // At^2 + Bt + C = 0
-        A = bx * ay - by * ax;
-        B = 2 * (cx * ay - cy * ax);
-        C = cx * by - cy * bx;
-        gMath.getQuadraticRoots(A, B, C, splitPoints);
-
-        nPoints = gUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
+        nPoints = gMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPtsNew);
 
         // 3. Based on splitPoints iterate through intervals,
         // and for each interval perform the following steps:

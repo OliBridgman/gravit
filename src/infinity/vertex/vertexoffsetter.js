@@ -148,10 +148,14 @@
         //
         // 3. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
-        //
+
         // 0. Try segment approximation
-        // TODO: implement
-        //
+        if (this._isQudraticCurveFlat(B0, B1, B2, tolerance)) {
+            var segm = new GXVertexOffsetter.PolySegment(B0, 0);
+            this._polyline.insertSegment(segm);
+            return;
+        }
+
         // 1. approximate curve by bi-arc
         var curves = [];
         var arcs = {};
@@ -202,9 +206,6 @@
         } else {
             // TODO: go away
         }
-
-        // 0. Try segment approximation
-        // TODO: implement
 
         // TODO: check for zeros
         var lambda = s*d*TN1 / T0N1;
@@ -332,12 +333,247 @@
         // 1. Approximation of a planar cubic Bezier spiral by circular arcs
         // D.J. Walton, D.S. Meek, 1996
         //
-        // 2. An offset algorithm for polyline curves
+        // 2. APPROXIMATION OF A CUBIC BEZIER CURVE BY CIRCULAR ARCS AND VICE VERSA
+        // A. Riškus, 2006
+        //
+        // 3. An offset algorithm for polyline curves
         // Xu-Zheng Liu, Jun-Hai Yong, Guo-Qin Zheng, Jia-Guang Sun, 2006
         //
-        // 3. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
+        // 4. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
+        //
+        // For dividing a cubic Bezier curve the approach A1 && S1 from the document 2 will be used, while the
+        // whole algorithm will be taken from the document 4.
 
+        // 1. Find initial interval (curve) splitPoints at [0, 1],
+        // which are curve inflate points, or such points,
+        // that P'x = 0 or P'y = 0
+        var cx = B1.getX() - B0.getX();
+        var cy = B1.getY() - B0.getY();
+        var bx = 2 * (B2.getX() - B1.getX() - cx);
+        var by = 2 * (B2.getY() - B1.getY() - cy);
+        var ax = B3.getX() - B2.getX() - cx - bx;
+        var ay = B3.getY() - B2.getY() - cy - by;
+        var sPts = [];
+        var nPoints = gMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPts);
+
+        // 2. Based on splitPoints iterate through intervals,
+        // and for each interval perform the curve approximation with a biArc:
+        var t1, t2;
+        var ctrlsx = new Float64Array(4);
+        var ctrlsy = new Float64Array(4);
+        for (var i = 0; i < nPoints - 1; ++i) {
+            t1 = sPts[i];
+            t2 = sPts[i + 1];
+            gMath.getCtrlPts(B0.getX(), B3.getX(), B1.getX(), B2.getX(), t1, t2, ctrlsx);
+            gMath.getCtrlPts(B0.getY(), B3.getY(), B1.getY(), B2.getY(), t1, t2, ctrlsy);
+            this._addCubicSegmToPolyline(ctrlsx, ctrlsy, tolerance);
+        }
+    };
+
+    GXVertexOffsetter.prototype._isQudraticCurveFlat = function (B0, B1, B2, tolerance) {
+        var xB = gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), 0.5);
+        var yB = gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), 0.5);
+        var dst = gMath.ptSqrDist(xB, yB, (B0.getX() + B2.getX()) / 2, (B0.getY() + B2.getY()) / 2);
+        return (dst <= tolerance * tolerance);
+    };
+
+    GXVertexOffsetter.prototype._isCubicCurveFlat = function (ctrlsx, ctrlsy, tolerance) {
+        // Piecewise Linear Approximation of Bezier Curves
+        // Kaspar Fischer, 2000
+        // (approved for publication part of algorithm with copyright by Roger Willcocks)
+        var ux = 3.0 * ctrlsx[1] - 2.0 * ctrlsx[0] - ctrlsx[3];
+        ux *= ux;
+        var uy = 3.0 * ctrlsy[1] - 2.0 * ctrlsy[0] - ctrlsy[3];
+        uy *= uy;
+        var vx = 3.0 * ctrlsx[2] - 2.0 * ctrlsx[3] - ctrlsx[0];
+        vx *= vx;
+        var vy = 3.0 * ctrlsy[2] - 2.0 * ctrlsy[3] - ctrlsy[0];
+        vy *= vy;
+        if (ux < vx) {
+            ux = vx;
+        }
+        if (uy < vy) {
+            uy = vy;
+        }
+        return (ux + uy <= 16 * tolerance * tolerance);
+    };
+    
+    /**
+     *
+     * @param {Float64Array(4)} ctrlsx - array of X coordinates of the control points
+     * @param {Float64Array(4)} ctrlsy - array of Y coordinates of the control points
+     * @param {Number} tolerance
+     */
+    GXVertexOffsetter.prototype._addCubicSegmToPolyline = function (ctrlsx, ctrlsy, tolerance) {
+        // 1. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
+        // P. Kaewsaiha, N. Dejdumrong, 2012
+        var xA = ctrlsx[0];
+        var yA = ctrlsy[0];
+        var xB = ctrlsx[3];
+        var yB = ctrlsy[3];
+
+        // 0. try line approximation
+        if (this._isCubicCurveFlat(ctrlsx, ctrlsy, tolerance)) {
+            var segm = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
+            this._polyline.insertSegment(segm);
+            return;
+        }
+
+        // 1. Construct approximating arc
+        var result = [];
+        var C = gMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
+        var ab = gMath.ptDist(xA, yA, xB, yB);
+        var ac = gMath.ptDist(xA, yA, C.getX(), C.getY());
+        var bc = gMath.ptDist(xB, yB, C.getX(), C.getY());
+        var p = ab + ac + bc;
+        var xG = (xA * bc + xB * ac + C.getX() * ab) / p;
+        var yG = (yA * bc + yB * ac + C.getY() * ab) / p;
+        if (gMath.isEqualEps(xA, xG) || gMath.isEqualEps(yA, yG) ||
+            gMath.isEqualEps(xB, xG) || gMath.isEqualEps(yB, yG)) {
+            // Might be some error, as the original cubic curve has been split to not contain parts,
+            // where tangent line is parallel to X axis or Y axis.
+            var segm = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
+            this._polyline.insertSegment(segm);
+        } else {
+            var mA = (yA - yG) / (xA - xG);
+            var mB = (yB - yG) / (xB - xG);
+            var xO = (mA * mB * (yA - yB) + mB * (xA + xG) - mA * (xG + xB)) / 2 / (mB - mA);
+            var yO = -1 / mA * (xO - (xA + xG) / 2) + (yA + yG) / 2;
+            var R = gMath.ptDist(xA, yA, xO, yO);
+
+            // 2. Evaluate error by measuring minimal and maximal distance from curve to point O
+            // P(t) = P1 + 3t(C1 - P1) + 3t^2*(C2 - 2C1 + P1) + t^3*(P2 - 3C2 + 3C1 - P1)
+            // P(t) = a1t^3 + b1t^2 + c1t + d1
+            // d1 = A
+
+            var cx = ctrlsx[1] - xA;
+            var c1x = 3 * cx;
+            var cy = ctrlsy[1] - yA;
+            var c1y = 3 * cy;
+            var tmp = ctrlsx[2] - ctrlsx[1] - cx;
+            var b1x = 3 * tmp;
+            var bx = 2 * tmp;
+            tmp = ctrlsy[2] - ctrlsy[1] - cy;
+            var b1y = 3 * tmp;
+            var by = 2 * tmp;
+            var a1x = xB - ctrlsx[2] - cx - bx;
+            var a1y = yB - ctrlsy[2] - cy - by;
+
+            // P(t)^2 = a1^2*t^6 + b1^2*t^4 + c1^2*t^2 + d1^2 + 2*a1b1*t^5 + 2a1c1*t^4 +
+            //        + 2(a1d1 + b1c1)t^3 + 2b1d1*t^2 + 2c1d1*t
+            //
+            // d1 = d1 - x, d2 = d2 - y
+            //
+            // Pdist(t) = (a1^2 + a2^2)*t^6 + 2*(a1b1 + a2b2)*t^5 + (b1^2 + 2a1c1 + b2^2 + 2a2c2)*t^4 +
+            //         + 2(a1(d1 - x) + b1c1 + a2(d2 - y) + b2c2)*t^3 + (c1^2 + 2b1(d1 - x) + c2^2 + 2b2(d2 -y))*t^2 +
+            //         + 2(c1(d1 - x) + c2(d2 - y))*t + (d1 - x)^2 + (d2 - y)^2
+            var d1 = xA - xO;
+            var d2 = yA - yO;
+            // Coefficients of 6 degree polynomial - distance from cubic Bezier curve segment to arc center O
+            var coeffF = new Float64Array(7);
+            coeffF[0] = a1x * a1x + a1y * a1y;
+            coeffF[1] = 2 * (a1x * b1x + a1y * b1y);
+            coeffF[2] = b1x * b1x + b1y * b1y + 2 * (a1x * c1x + a1y * c1y);
+            coeffF[3] = (a1x * d1 + b1x * c1x + a1y * d2 + b1y * c1y) * 2;
+            coeffF[4] = c1x * c1x + c1y * c1y + (b1x * d1 + b1y * d2) * 2;
+            coeffF[5] = (c1x * d1 + c1y * d2) * 2;
+            coeffF[6] = d1 * d1 + d2 * d2;
+
+            // Coefficients of 5 degree derivative polynomial
+            var coeffFDeriv = new Float64Array(6);
+            gMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
+            // Coeffitients of the second and third derivative polynomials
+            var coeffFDeriv2 = new Float64Array(5);
+            gMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
+            var coeffFDeriv3 = new Float64Array(4);
+            gMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
+
+            // Coefficients of 5 degree polynomial, calculated from derivative polynomial and interval transformation
+            var coeffInversed = new Float64Array(6);
+            gMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
+            var nRoots = gMath.estimPositiveRootsDescartes(coeffInversed, 5);
+            var maxDst = 0;
+            var sqrR = R * R;
+            var v51, v52;
+            // generalized Sturm sequence (array of polynomial coefficients arrays)
+            var sturmSeq = [];
+            // Number of Sturm sequence sign variations at roots location interval ends
+            var nSignVars;
+            // Derivative polynomial values at roots location interval ends
+            var fVals;
+            if (nRoots > 0) {
+                var t1 = 0.0;
+                var t2 = 1.0;
+                v51 = gMath.evalPoly(coeffFDeriv, 5, t1);
+                if (gMath.isEqualEps(v51, 0)) {
+                    t1 += 0.005;
+                    v51 = gMath.evalPoly(coeffFDeriv, 5, t1);
+                }
+                v52 = gMath.evalPoly(coeffFDeriv, 5, t2);
+                if (gMath.isEqualEps(v52, 0)) {
+                    t2 -= 0.005;
+                    v52 = gMath.evalPoly(coeffFDeriv, 5, t2);
+                }
+
+                if (nRoots > 1) {
+                    gMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
+                    nSignVars = [];
+                    fVals = [v51, v52];
+                    nRoots = gMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2,
+                        sturmSeq, nSignVars, fVals);
+                }
+            }
+            if (nRoots == 0) {
+                // Might be some error, return the arc
+            } else if (nRoots == 1) {
+                var r1 = gMath.locateByNewton(t1, t2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
+                if (r1 == null) {
+                    r1 = (t1 + t2) / 2;
+                }
+                var r1x = gMath.evalCubic(a1x, b1x, c1x, xA, r1);
+                var r1y = gMath.evalCubic(a1y, b1y, c1y, yA, r1);
+                maxDst = math.abs(gMath.ptSqrDist(r1x, r1y, xO, yO) - sqrR);
+            } else {
+                var rIntervals = [];
+                gMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2, sturmSeq, nRootsNew,
+                    nSignVars, fVals, rIntervals);
+
+                for (var s = 0; s < rIntervals.length; ++s) {
+                    r1 = gMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
+                        rIntervals[s][2], rIntervals[s][3], coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
+                        sturmSeq);
+                    if (r1 == null) {
+                        r1 = (rIntervals[s][0] + rIntervals[s][1]) / 2;
+                    }
+                    r1x = gMath.evalCubic(ax, b1x, c1x, px1, r1);
+                    r1y = gMath.evalCubic(ay, b1y, c1y, py1, r1);
+                    var dst = math.abs(gMath.ptSqrDist(r1x, r1y, xO, yO) - sqrR);
+                    if (dst > maxDst) {
+                        maxDst = dst;
+                    }
+                }
+            }
+
+            // 3. if distance > tolerance => divide && repeat;
+            // else => add arc to polyline
+            if (maxDst > tolerance * tolerance) {
+                var ctrlsNew1X = Float64Array(4);
+                var ctrlsNew1Y = Float64Array(4);
+                var ctrlsNew2X = Float64Array(4);
+                var ctrlsNew2Y = Float64Array(4);
+                gMath.getCtrlPtsCasteljau(ctrlsx[0], ctrlsx[1], ctrlsx[2], ctrlsx[3], 0.5, null, ctrlsNew1X, ctrlsNew2X);
+                gMath.getCtrlPtsCasteljau(ctrlsy[0], ctrlsy[1], ctrlsy[2], ctrlsy[3], 0.5, null, ctrlsNew1Y, ctrlsNew2Y);
+                this._addCubicSegmToPolyline(ctrlsNew1X, ctrlsNew1Y, tolerance);
+                this._addCubicSegmToPolyline(ctrlsNew2X, ctrlsNew2Y, tolerance);
+            } else {
+                var sinGamma = ab / 2 / R;
+                // As gamma <= 45 degrees, we are save with the following formmula:
+                var tgGamma = sinGamma / Math.sqrt(1 - sinGamma * sinGamma);
+                var arc = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), tgGamma, new GPoint(xO, yO), R);
+                this._polyline.insertSegment(arc);
+            }
+        }
     };
 
     GXVertexOffsetter.prototype.generatePolyLine = function () {

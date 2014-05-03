@@ -151,8 +151,8 @@
             var tb = db / d;
             if (!result && (0 <= ta) && (ta <= 1) && (0 <= tb) && (tb <= 1) || result) {
                 if (result) {
-                    result.ta = ta;
-                    result.tb = tb;
+                    result[0] = ta;
+                    result[1] = tb;
                 }
                 // segments intersect, find an intersection point
                 return new GPoint(a1x + ta * (a2x - a1x), a1y + ta * (a2y - a1y));
@@ -541,6 +541,55 @@
     };
 
     /**
+     * Calculates all inflate points of Bezier cubic curve and also all the points where tangent line is parallel
+     * to X or Y axis. Splitting a curve in these points will guarantee, that curvature sign is the same in each
+     * sub-curve, and that angle is not more than 90 degrees
+     * @param {Number} ax
+     * @param {Number} bx
+     * @param {Number} cx
+     * @param {Number} ay
+     * @param {Number} by
+     * @param {Number} cy
+     * @param {Array} sPts - split points (parameter values) plus two end points, sorted in ascending order
+     * @returns {Number} nPoints - the number of split points (including two original end points)
+     */
+    GMath.prototype.getCubicCurveSplits = function(ax, bx, cx, ay, by, cy, sPts) {
+        // Find initial interval (curve) splitPoints at [0, 1],
+        // which are curve inflate points, or such points,
+        // that P'x = 0 or P'y = 0
+        var splitPoints = [0, 1.0];
+
+        // P(t) = P1 + 3t(C1 - P1) + 3t^2*(C2 - 2C1 + P1) + t^3*(P2 - 3C2 + 3C1 - P1)
+        // P' =3(C1 - P1) + 6t(C2 - 2C1 + P1) + 3t^2*(P2 - 3C2 + 3C1 - P1)
+        // P'x == 0 when tangent to vertical border, and P'y == 0 when tangent to horizontal border,
+        // Also locate all inflate points, where P'x * P''y - P'y * P''x = 0
+
+        // cx = cx1 - px1;
+        // cy = cy1 - py1;
+        // bx = 2 * (cx2 - cx1 - cx);
+        // by = 2 * (cy2 - cy1 - cy);
+        // ax = px2 - cx2 -cx - bx;
+        // ay = py2 - cy2 -cy - by;
+        // P' = 3(at^2 + bt + c)
+        // P'' = 3(2at + b)
+
+        // P' = 0;
+        gMath.getQuadraticRoots(ax, bx, cx, splitPoints);
+        gMath.getQuadraticRoots(ay, by, cy, splitPoints);
+
+        // P'x * P''y - P'y * P''x = 0
+        // (2bx*ay -2by*ax + ax*by - ay*bx)t^2 + (2cx*ay - 2cy*ax)t + cx*by - cy*bx = 0
+        // (bx*ay - by*ax)t^2 + 2*(cx*ay - cy*ax)t + cx*by - cy*bx = 0
+        // At^2 + Bt + C = 0
+        var A = bx * ay - by * ax;
+        var B = 2 * (cx * ay - cy * ax);
+        var C = cx * by - cy * bx;
+        gMath.getQuadraticRoots(A, B, C, splitPoints);
+
+        return gUtil.uSortSegment(0, 1, splitPoints, sPts);
+    };
+
+    /**
      * Divide cubic Bezier curve into two parts using De Casteljau algorithm,
      * and returns control points of the needed part
      * @param {Number} p1 a corresponding coordinate of the curve start point
@@ -550,9 +599,8 @@
      * @param {Number} t a slope parameter value, where to divide the curve
      * @param {Number} part indicates which curve part is further needed: 1 - for the first part, 2 - for the second
      * @param {Float64Array(4)} ctrls - array of the control points of needed part to be passed out
-     * @version 1.0
      */
-    GMath.prototype.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls) {
+    GMath.prototype.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls, ctrls2) {
         var a = p1 + t * (c1 - p1);
         var b = c1 + t * (c2 - c1);
         var c = c2 + t * (p2 - c2);
@@ -560,17 +608,20 @@
         var n = b + t * (c - b);
         var s = m + t * (n - m);
 
-        if (part == 1) {
+        if (part == null || part == 1) {
             ctrls[0] = p1;
             ctrls[1] = a;
             ctrls[2] = m;
             ctrls[3] = s;
         }
-        else { // part == 2
-            ctrls[0] = s;
-            ctrls[1] = n;
-            ctrls[2] = c;
-            ctrls[3] = p2;
+        if (part == null || part == 2) {
+            if (part == 2) {
+                var ctrls2 = ctrls;
+            }
+            ctrls2[0] = s;
+            ctrls2[1] = n;
+            ctrls2[2] = c;
+            ctrls2[3] = p2;
         }
     };
 
