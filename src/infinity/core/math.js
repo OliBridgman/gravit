@@ -132,7 +132,6 @@
      * @param {Number} a1x, a1y, a2x, a2y coordinates of the end points of the first segment
      * @param {Number} b1x, b1y, b2x, b2y coordinates of the end points of the second segment
      * @return {GPoint} an intersection point if the segments intersect, null otherwise
-     * @version 1.0
      */
     GMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
         // segments intersect when the system below has the only one solution (ta, tb):
@@ -159,12 +158,40 @@
             }
         }
 
-        // segments are on lines which intersect, but outside of segments
+        // segments are on lines which intersection, but the intersection point is outside of the segments,
+        // and we don't need this point as !result
         return null;
     };
 
-    GMath.prototype.getPolySegmIntersection = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
+    /**
+     * Calculates intersection points of circle and line
+     * @param {Number} xL - line start point X coordinate
+     * @param {Number} yL - line start point Y coordinate
+     * @param {Number} dxL - line X slope
+     * @param {Number} dyL - line Y slope
+     * @param {Number} xC - circle center X coordinate
+     * @param {Number} yC - circle center Y coordinate
+     * @param {Number} rC - circle radius
+     * @param {Array} result
+     */
+    GMath.prototype.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
+        // (x - xC)^2 + (y - yC)^2 - rC^2 = 0
+        // x = xL + dxL * t
+        // y = yL + dyL * t
+        // From the quadratic equation for t, we get discriminant:
+        var rSqr = rC * rC;
+        var dxLSqr = dxL * dxL;
+        var dyLSqr = dyL * dyL;
+        var tmp = dxL * (yC - yL) - dyL * (xC - xL);
+        var discr = rSqr * (dxLSqr + dyLSqr) - (tmp * tmp);
 
+        if (this.isEqualEps(discr, 0)) { // line is tangent to circle
+            result[0] = (dxL * (xC - xL) + dyL * (yC - yL)) / (dxLSqr + dyLSqr);
+        } else if (discr > 0) { // line intersects circle in two points
+            tmp = dxL * (xC - xL) + dyL * (yC - yL);
+            result[0] = (tmp - Math.sqrt(discr)) / (dxLSqr + dyLSqr);
+            result[0] = (tmp + Math.sqrt(discr)) / (dxLSqr + dyLSqr);
+        }
     };
 
     /**
