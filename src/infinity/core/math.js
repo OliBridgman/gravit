@@ -172,7 +172,7 @@
      * @param {Number} xC - circle center X coordinate
      * @param {Number} yC - circle center Y coordinate
      * @param {Number} rC - circle radius
-     * @param {Array} result
+     * @param {Array{Number}} result - array of 0 - 2 line parameter values
      */
     GMath.prototype.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
         // (x - xC)^2 + (y - yC)^2 - rC^2 = 0
@@ -190,7 +190,41 @@
         } else if (discr > 0) { // line intersects circle in two points
             tmp = dxL * (xC - xL) + dyL * (yC - yL);
             result[0] = (tmp - Math.sqrt(discr)) / (dxLSqr + dyLSqr);
-            result[0] = (tmp + Math.sqrt(discr)) / (dxLSqr + dyLSqr);
+            result[1] = (tmp + Math.sqrt(discr)) / (dxLSqr + dyLSqr);
+        }
+    };
+
+    /**
+     * Calculates intersection points of two circles
+     * @param {Number} xC1 - the first circle center X coordinate
+     * @param {Number} yC1 - the first circle center Y coordinate
+     * @param {Number} rC1 - the first circle radius
+     * @param {Number} xC2 - the second circle center X coordinate
+     * @param {Number} yC2 - the second circle center Y coordinate
+     * @param {Number} rC2 - the second circle radius
+     * @param {Array{GPoint}} result
+     */
+    GMath.prototype.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
+        // To find intersection points, the formulas from here are used:
+        // http://www.sonoma.edu/users/w/wilsonst/papers/Geometry/circles/default.html
+        var dSqr = this.ptSqrDist(xC1, yC1, xC2, yC2);
+        var resid = Math.abs(rC1 - rC2);
+        var rSqr = resid * resid;
+        var rSum = rC1 + rC2;
+        var rSumSqr = rSum * rSum;
+        if (!this.isEqualEps(dist, 0)) {
+            var tmp = (rC1 * rC1 - rC2 * rC2) / (2 * dSqr);
+            var x = (xC1 + xC2) / 2 + (xC2 - xC1) * tmp;
+            var y = (yC1 + yC2) / 2 + (yC2 - yC1) * tmp;
+            if (this.isEqualEps(dSqr, rSumSqr) || !this.isEqualEps(dSqr, 0) && this.isEqualEps(dSqr, rSqr)) {
+                result[0] = new GPoint(x, y);
+            } else if (rSqr < dSqr && dSqr < rSumSqr ) {
+                tmp = Math.sqrt((rSumSqr - dSqr) * (dSqr - rSqr)) / (2 * dSqr);
+                var xTmp = (yC2 - yC1) * tmp;
+                var yTmp = (xC1 - xC2) * tmp;
+                result[0] = new GPoint(x + xTmp, y + yTmp);
+                result[1] = new GPoint(x - xTmp, y - yTmp);
+            }
         }
     };
 
