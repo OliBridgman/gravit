@@ -48,12 +48,6 @@
      * @type {Boolean}
      * @private
      */
-    GXShapeTool.prototype._dragCanceled = false;
-
-    /**
-     * @type {Boolean}
-     * @private
-     */
     GXShapeTool.prototype._keepRatio = false;
 
     /**
@@ -180,7 +174,6 @@
         this._dragStart = this._view.getWorldTransform().mapPoint(
             this._editor.getGuides().mapPoint(
                 this._view.getViewTransform().mapPoint(this._dragStart)));
-        this._dragCanceled = false;
 
         // Create our shape when user started dragging
         this._shape = this._createShape();
@@ -193,15 +186,13 @@
      * @private
      */
     GXShapeTool.prototype._mouseDrag = function (event) {
-        if (!this._dragCanceled) {
-            this._dragCurrent = event.client;
-            this._editor.getGuides().beginMap();
-            this._dragCurrent = this._view.getWorldTransform().mapPoint(
-                this._editor.getGuides().mapPoint(
-                    this._view.getViewTransform().mapPoint(this._dragCurrent)));
-            this._invalidateShape();
-            this._editor.getGuides().finishMap();
-        }
+        this._dragCurrent = event.client;
+        this._editor.getGuides().beginMap();
+        this._dragCurrent = this._view.getWorldTransform().mapPoint(
+            this._editor.getGuides().mapPoint(
+                this._view.getViewTransform().mapPoint(this._dragCurrent)));
+        this._invalidateShape();
+        this._editor.getGuides().finishMap();
     };
 
     /**
@@ -209,15 +200,14 @@
      * @private
      */
     GXShapeTool.prototype._mouseDragEnd = function (event) {
-        if (!this._dragCanceled) {
-            // Reset shape and repaint
-            var shape = this._shape;
-            this._shape = null;
-            this._invalidateShapeArea(shape);
+        // Reset shape and repaint
+        var shape = this._shape;
+        this._shape = null;
+        this._invalidateShapeArea(shape);
 
-            // Append shape now
-            this._appendShape(shape);
-        }
+        // Append shape now
+        this._appendShape(shape);
+        
         this._dragStart = null;
         this._dragCurrent = null;
         this._shape = null;
