@@ -131,6 +131,8 @@
      * returns true if found
      * @param {Number} a1x, a1y, a2x, a2y coordinates of the end points of the first segment
      * @param {Number} b1x, b1y, b2x, b2y coordinates of the end points of the second segment
+     * @param {Array} [result] - if passed, intersection point between lines is calculated  even if segments don't
+     * intersect and parameter values for both segments are written into this array
      * @return {GPoint} an intersection point if the segments intersect, null otherwise
      */
     GMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
