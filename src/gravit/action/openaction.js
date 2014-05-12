@@ -16,6 +16,7 @@
 
     EXOpenAction.ID = 'file.open';
     EXOpenAction.TITLE = new GLocale.Key(EXOpenAction, "title");
+    EXOpenAction.TITLE_DEFAULT = new GLocale.Key(EXOpenAction, "title-default");
 
     /**
      * @override
@@ -28,21 +29,23 @@
      * @override
      */
     EXOpenAction.prototype.getTitle = function () {
-        return gLocale.get(EXOpenAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
+        return this._default ?
+            gLocale.get(EXOpenAction.TITLE_DEFAULT) :
+        gLocale.get(EXOpenAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
     };
 
     /**
      * @override
      */
     EXOpenAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE_OPEN;
+        return this._default ? EXApplication.CATEGORY_FILE : EXApplication.CATEGORY_FILE_OPEN;
     };
 
     /**
      * @override
      */
     EXOpenAction.prototype.getGroup = function () {
-        return "file/open_storage";
+        return this._default ? "file" : "file/open_storage";
     };
 
     /**

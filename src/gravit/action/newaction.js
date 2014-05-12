@@ -45,7 +45,7 @@
      * @override
      */
     EXNewAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'M'];
+        return [GUIKey.Constant.META, 'N'];
     };
 
     /**

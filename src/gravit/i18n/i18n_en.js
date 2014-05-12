@@ -25,7 +25,7 @@ gLocale.setValues(GInsertLayerAction, GLocale.Language.English, ["title"], ["Ins
 gLocale.setValues(GInsertPagesAction, GLocale.Language.English, ["title"], ["Insert Page(s)..."]);
 gLocale.setValues(EXNewAction, GLocale.Language.English, ["title"], ["New..."]);
 gLocale.setValues(EXNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
-gLocale.setValues(EXOpenAction, GLocale.Language.English, ["title"], ["From %name%..."]);
+gLocale.setValues(EXOpenAction, GLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
 gLocale.setValues(EXOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);
 gLocale.setValues(EXPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);
 gLocale.setValues(GPasteAction, GLocale.Language.English, ["title"], ["Paste"]);
@@ -35,7 +35,7 @@ gLocale.setValues(EXPixelPreviewAction, GLocale.Language.English, ["title"], ["P
 gLocale.setValues(EXRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
 gLocale.setValues(EXSaveAction, GLocale.Language.English, ["title"], ["Save"]);
 gLocale.setValues(EXSaveAllAction, GLocale.Language.English, ["title"], ["Save All"]);
-gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title"], ["To %name%..."]);
+gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
 gLocale.setValues(EXShortcutMapAction, GLocale.Language.English, ["title"], ["Shortcut Map..."]);
 gLocale.setValues(EXShowRulersAction, GLocale.Language.English, ["title"], ["Rulers"]);
 gLocale.setValues(EXUndoAction, GLocale.Language.English, ["title"], ["Undo"]);

@@ -24,11 +24,12 @@
      * @type {*}
      * @private
      */
-    GWebShell.prototype._clipboardMimeTypes = null;
+    GDesktopShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
     GDesktopShell.prototype.prepareLoad = function () {
-        // ...
+        // Init shell-specific stuff here
+        gravit.storages.push(new GNativeStorage());
     };
 
     /** @override */
