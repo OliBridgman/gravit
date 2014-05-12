@@ -1666,8 +1666,7 @@
                     part.addVertex(GXVertex.Command.LineTo, segm.next.point.getX(), segm.next.point.getY());
                 } else {
                     // Construct Bezier curves
-                    var curves = [];
-                    this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center, segm.radius, tolerance);
+                    this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center, segm.radius, tolerance, part);
                 }
                 segm = segm.next;
             }
@@ -1676,7 +1675,7 @@
     };
 
     GXVertexOffsetter.prototype._genBeziers = function (
-            p1, p2, bulge, cntr, radius, tolerance) {
+            p1, p2, bulge, cntr, radius, tolerance, target) {
 
         // Drawing an elliptical arc using polylines, quadratic or cubic Bezier curves
         // L. Maisonobe, 2003
@@ -1692,8 +1691,39 @@
         }
 
         // 2. Divide arc into n sub-arcs, and approximate each arc with the cubic Bezier curve
-        // TODO: implement
-
+        var cosAlpha = Math.cos(alpha);
+        var sinAlpha = Math.sin(alpha);
+        var tgHalfAlpha = sinAlpha / (cosAlpha + 1);
+        var k = radius * sinAlpha * (Math.sqrt(4 + 3 * tgHalfAlpha * tgHalfAlpha) - 1) / 3;
+        var sinPhi2 = (B0.getX() - cntr.getX()) / radius;
+        var cosPhi2 = (B0.getY() - cntr.getY()) / radius;
+        var cosPhi, sinPhi;
+        var x3 = p1.getX();
+        var y3 = p1.getY();
+        var x0, y0, x1, y1, x2, y2;
+        for (var i = 0; i < n; ++i) {
+            x0 = x3;
+            y0 = y3;
+            if (i == n - 1) {
+                x3 = p2.getX();
+                y3 = p2.getY();
+            } else {
+                cosPhi = cosPhi2;
+                sinPhi = sinPhi2;
+                cosPhi2 = cosPhi * cosAlpha - sinPhi * sinAlpha;
+                sinPhi2 = sinPhi * cosAlpha + cosPhi * sinAlpha;
+                x3 = cntr.getX() + radius * cosPhi2;
+                y3 = cntr.getY() + radius * sinPhi2;
+            }
+            x1 = x0 - k * sinPhi;
+            y1 = y0 + k * cosPhi;
+            x2 = x3 + k * sinPhi2;
+            y2 = y3 - k * cosPhi2;
+            target.extend(3);
+            target.writeVertex(GXVertex.Command.Curve2, x3, y3);
+            target.writeVertex(GXVertex.Command.Curve2, x1, y1);
+            target.writeVertex(GXVertex.Command.Curve2, x2, y2);
+        }
     };
 
     GXVertexOffsetter.prototype._getCubicBezierArcError = function (alpha, radius) {
