@@ -74,6 +74,12 @@
      */
     GXShapeTool.prototype._dragLine = null;
 
+    /**
+     * @type {boolean}
+     * @private
+     */
+    GXShapeTool.prototype._hasCreatedShape = false;
+
     /** @override */
     GXShapeTool.prototype.getHint = function () {
         var hint = GXTool.prototype.getHint.call(this);
@@ -101,6 +107,7 @@
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
         view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
         view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
 
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
@@ -113,6 +120,7 @@
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
         view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
         view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
 
         gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
@@ -128,8 +136,7 @@
         if (this._shape) {
             // Alignment here affects ellipses and handles of curves contained in ellipses,
             // but this is not noticeable, as it is a shape creation and line is just 1 pt width at any zoom
-            context.canvas.putVertices(new GXVertexPixelAligner(this._shape));
-            context.canvas.strokeVertices(context.selectionOutlineColor);
+            this._paintOutline(context);
 
             // Paint center cross if desired
             if (this._hasCenterCross()) {
@@ -150,6 +157,12 @@
         }
     };
 
+    /** @private */
+    GXShapeTool.prototype._paintOutline = function (context) {
+        context.canvas.putVertices(new GXVertexPixelAligner(this._shape));
+        context.canvas.strokeVertices(context.selectionOutlineColor);
+    };
+
     /**
      * @param {GUIMouseEvent.Down} event
      * @private
@@ -165,10 +178,22 @@
     };
 
     /**
+     * @param {GUIMouseEvent.Release} event
+     * @private
+     */
+    GXShapeTool.prototype._mouseRelease = function (event) {
+        if (!this._hasCreatedShape) {
+            this._createShapeManually(event);
+        }
+        this._hasCreatedShape = false;
+    };
+
+    /**
      * @param {GUIMouseEvent.DragStart} event
      * @private
      */
     GXShapeTool.prototype._mouseDragStart = function (event) {
+        this._hasCreatedShape = false;
         this._dragStart = event.client;
         this._editor.getGuides().beginMap();
         this._dragStart = this._view.getWorldTransform().mapPoint(
@@ -179,6 +204,8 @@
         this._shape = this._createShape();
         this._invalidateShape();
         this._editor.getGuides().finishMap();
+
+        this.updateCursor();
     };
 
     /**
@@ -207,12 +234,15 @@
 
         // Append shape now
         this._appendShape(shape);
-        
+        this._hasCreatedShape = true;
+
         this._dragStart = null;
         this._dragCurrent = null;
         this._shape = null;
         this._dragArea = null;
         this._dragLine = null;
+
+        this.updateCursor();
     };
 
     /**
@@ -298,6 +328,15 @@
         // Update shape with scene coordinates
         this._updateShape(shape, dragArea, dragLine);
 
+        this._insertShape(shape);
+    };
+
+    /**
+     * Called to insert a given shape
+     * @param {GXShape} shape
+     * @private
+     */
+    GXShapeTool.prototype._insertShape = function (shape) {
         // Call editor for new insertion
         this._editor.insertElements([shape]);
     };
@@ -315,6 +354,15 @@
                 this.invalidateArea(geometryBBox.expanded(1, 1, 1, 1));
             }
         }
+    };
+
+    /**
+     * Called to create a shape manually as it has not yet been created via drag
+     * @param {GUIMouseEvent.Release} event
+     * @private
+     */
+    GXShapeTool.prototype._createShapeManually = function (event) {
+        // NO-OP
     };
 
     /**

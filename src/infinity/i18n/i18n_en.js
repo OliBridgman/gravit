@@ -51,6 +51,7 @@ gLocale.setValues(GXPenTool, GLocale.Language.English, ["title", "shortcut.optio
 gLocale.setValues(GXBezigonTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
 gLocale.setValues(GXPolygonTool, GLocale.Language.English, ["title", "shortcut.shift", "shortcut.option"], ["Polygon", "Lock angle to 15° degree steps", "Switch between Polygon and Star"]);
 gLocale.setValues(GXRectangleTool, GLocale.Language.English, ["title"], ["Rectangle"]);
+gLocale.setValues(IFTextTool, GLocale.Language.English, ["title"], ["Text"]);
 gLocale.setValues(GXZoomTool, GLocale.Language.English, ["title"], ["Zoom"]);
 gLocale.setValues(GXSelectTool, GLocale.Language.English, ["shortcut.shift", "shortcut.meta", "shortcut.option", "shortcut.up", "shortcut.down", "shortcut.left", "shortcut.right"], ["Add/Remove to/from current selection. When duplicating will create a template instead of a copy, for arrow keys will increase the shift amount", "Select next object underneath", "Duplicate when dragging selection", "Move selection up", "Move selection down", "Move selection left", "Move selection right"]);
 gLocale.setValues(GXPointerTool, GLocale.Language.English, ["title"], ["Pointer"]);

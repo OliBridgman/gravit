@@ -33,6 +33,7 @@
             new GXRectangleTool(),
             new GXEllipseTool(),
             new GXPolygonTool(),
+            new IFTextTool(),
             new GXZoomTool(),
             new GXHandTool()
         );

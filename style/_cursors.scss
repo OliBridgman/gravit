@@ -77,3 +77,7 @@
 .g-cursor-pipette {
   @include g-cursor(pipette);
 }
+
+.g-cursor-text {
+  cursor: text !important;
+}

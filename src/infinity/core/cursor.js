@@ -121,7 +121,12 @@
         /**
          * A pipette / eyedropper
          */
-        Pipette: "pipette"
+        Pipette: "pipette",
+
+        /**
+         * A text marker (beam)
+         */
+        Text: "text"
     };
 
     _.GUICursor = GUICursor;

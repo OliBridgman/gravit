@@ -48,8 +48,9 @@
         //
         var text = new GXText();
         fill = new IFFillAttribute();
-        fill.setColor(GXColor.parseCSSColor('gray'));
+        fill.setColor(GXColor.parseCSSColor('black'));
         text.getAttributes().appendChild(fill);
+        text.setProperty('tx', 'Hello, World<p>This is a new<br/>paragraph with inline breaks :)</p>');
         page.appendChild(text);
     }
 

@@ -683,6 +683,9 @@
                 self._savedDocumentListeners[domEventName] = function (event) {
                     if (event.target != this._htmlElement) {
                         self._updateAndTriggerInputEvent(event, eventClass);
+
+                        // stop propagation to avoid double-trigger on element itself
+                        event.stopImmediatePropagation();
                     }
                 }.bind(self);
 
