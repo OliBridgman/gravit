@@ -54,6 +54,7 @@
             new GPathProperties(),
             new GRectangleProperties(),
             new GEllipseProperties(),
+            new GTextProperties(),
             new GPageProperties()
         );
 
