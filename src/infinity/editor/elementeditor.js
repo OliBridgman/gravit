@@ -807,6 +807,16 @@
     };
 
     /**
+     * Called whenever a newly inserted element should become
+     * some default handling of the editor after insertion
+     * @param {GXColor} fillColor the current default fill color
+     * @param {GXColor} strokeColor the current default stroke color
+     */
+    GXElementEditor.prototype.handleInsert = function (fillColor, strokeColor) {
+        // NO-OP
+    };
+
+    /**
      * Allow each editor to perform the needed actions when drag is started in SubSelect Tool
      * @param {GXElementEditor.PartInfo} partInfo - the part info under mouse
      * @returns {GXElementEditor.PartInfo} - updated part info under mouse

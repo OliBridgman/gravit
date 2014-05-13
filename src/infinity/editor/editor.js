@@ -798,18 +798,21 @@
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
      * @param {Array<GXElement>} elements the elements to be inserted
-     * @param {Boolean} noDefaults if true, no defaults like default colors
-     * will be applied. This defaults to false.
+     * @param {Boolean} noEditor if true, the editor will not be
+     * called to handle the newly inserted element. Defaults to false.
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.insertElements = function (elements, noDefaults, noTransaction) {
+    GXEditor.prototype.insertElements = function (elements, noEditor, noTransaction) {
         // Our target is always the currently active layer
         var target = this.getCurrentPage();// this.getCurrentLayer();
 
         if (!noTransaction) {
             this.beginTransaction();
         }
+
+        var fillColor = this._currentColor[GXEditor.CurrentColorType.Fill];
+        var strokeColor = this._currentColor[GXEditor.CurrentColorType.Stroke];
 
         try {
             for (var i = 0; i < elements.length; ++i) {
@@ -818,22 +821,16 @@
                 // Append new element
                 target.appendChild(element);
 
-                if (!noDefaults) {
-                    var fillColor = this._currentColor[GXEditor.CurrentColorType.Fill];
-                    var strokeColor = this._currentColor[GXEditor.CurrentColorType.Stroke];
-
-                    // Assign default fill and stroke attributes for shapes
-                    if ((fillColor || strokeColor) && element.hasMixin(GXElement.Attributes)) {
-                        var attributes = element.getAttributes();
-                        if (attributes.hasMixin(IFAttributes.Pattern)) {
-                            if (fillColor) {
-                                attributes.setFillColor(fillColor);
-                            }
-                            if (strokeColor) {
-                                attributes.setStrokeColor(strokeColor);
-                            }
-                        }
+                if (!noEditor) {
+                    // Create a temporary editor for the element to handle it's insertion
+                    var editor = GXElementEditor.createEditor(element);
+                    if (editor) {
+                        editor.handleInsert(fillColor, strokeColor);
                     }
+
+
+
+
                 }
             }
 

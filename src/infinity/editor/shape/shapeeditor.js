@@ -36,6 +36,21 @@
         return true;
     };
 
+    /** @override */
+    GXShapeEditor.prototype.handleInsert = function (fillColor, strokeColor) {
+        // Assign default fill and stroke attributes for shapes
+        if (fillColor || strokeColor) {
+            var attributes = this.getElement().getAttributes();
+
+            if (fillColor) {
+                attributes.setFillColor(fillColor);
+            }
+            if (strokeColor) {
+                attributes.setStrokeColor(strokeColor);
+            }
+        }
+    };
+
     /**
      * Called to check whether a center cross should be painted or not
      * @return {Boolean} true if a center cross should be painted, false if not (default)
@@ -73,7 +88,7 @@
             var tMatrix = targetTransform.getMatrix();
 
             if (Math.abs(tMatrix[0]) * element.getOrigHalfWidth() > crossHalfSizeMax &&
-                    Math.abs(tMatrix[3]) * element.getOrigHalfHeight() > crossHalfSizeMax) {
+                Math.abs(tMatrix[3]) * element.getOrigHalfHeight() > crossHalfSizeMax) {
 
                 var center = targetTransform.mapPoint(element.getCenter(false));
                 var cx = Math.floor(center.getX()) + 0.5;

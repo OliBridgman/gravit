@@ -432,7 +432,7 @@
         path.getAnchorPoints().appendChild(apt);
         apt.setFlag(GXNode.Flag.Selected);
         path.setFlag(GXNode.Flag.Selected);
-        this._editor.insertElements([path], null, true);
+        this._editor.insertElements([path], false, true);
         this._checkPathEditor();
     };
 

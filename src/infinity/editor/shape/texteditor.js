@@ -14,6 +14,12 @@
     GXElementEditor.exports(GXTextEditor, GXText);
 
     /** @override */
+    GXTextEditor.prototype.handleInsert = function (fillColor, strokeColor) {
+        // Text will always retrieve a black fill if there's no other fill
+        GXShapeEditor.prototype.handleInsert.call(this, fillColor ? fillColor : new GXColor(GXColor.Type.Black), null);
+    };
+
+    /** @override */
     GXTextEditor.prototype.toString = function () {
         return "[Object GXTextEditor]";
     };
