@@ -59,8 +59,7 @@
         var text = new GXText();
         text.setProperties(['fw', 'fh', 'trf'], [true, true, shape.getProperty('trf')]);
 
-        // Call super
-        GXShapeTool.prototype._insertShape.call(this, text);
+        this._insertText(text);
     };
 
     /** @override */
@@ -69,14 +68,29 @@
     };
 
     /** @override */
-    IFTextTool.prototype._createShapeManually = function (event) {
+    IFTextTool.prototype._createShapeManually = function (position) {
         var text = new GXText();
         var transform = this._view.getViewTransform();
-        var scenePoint = transform.mapPoint(event.client);
+        var scenePoint = transform.mapPoint(position);
 
-        text.setProperty('trf', new GTransform(1, 0, 0, 1, scenePoint.getX(), scenePoint.getY()));
+        text.setProperty('trf', new GTransform(1, 0, 0, 1, scenePoint.getX() + 1, scenePoint.getY() + 1));
 
+        this._insertText(text);
+    };
+
+    /** @private */
+    IFTextTool.prototype._insertText = function (text) {
+        // Insert text, first
         GXShapeTool.prototype._insertShape.call(this, text);
+
+        // Open the inline editor for it now
+        var editor = GXElementEditor.getEditor(text);
+
+        editor.beginInlineEdit(this._view, this._view._htmlElement);
+        editor.adjustInlineEditForView(this._view);
+
+        // Finally switch to select tool
+        this._manager.activateTool(GXPointerTool);
     };
 
     /** override */

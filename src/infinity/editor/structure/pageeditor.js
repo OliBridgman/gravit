@@ -60,7 +60,7 @@
 
     /** @override */
     GXPageEditor.prototype._prePaint = function (transform, context) {
-        if (this.hasFlag(GXElementEditor.Flag.Selected)) {
+        if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
             // Calculate transformed geometry bbox
             var pageRect = this._element.getGeometryBBox();
             var transformedRect = transform.mapRect(pageRect);
@@ -71,7 +71,11 @@
             var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
             var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
 
-            context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1.0, context.selectionOutlineColor);
+            if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
+            } else {
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
+            }
         }
         GXBlockEditor.prototype._prePaint.call(this, transform, context);
     };

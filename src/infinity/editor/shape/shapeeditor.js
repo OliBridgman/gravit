@@ -37,7 +37,7 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype.handleInsert = function (fillColor, strokeColor) {
+    GXShapeEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // Assign default fill and stroke attributes for shapes
         if (fillColor || strokeColor) {
             var attributes = this.getElement().getAttributes();
@@ -62,17 +62,19 @@
 
     /** @override */
     GXShapeEditor.prototype._prePaint = function (transform, context) {
-        var element = this.getPaintElement();
+        if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+            var element = this.getPaintElement();
 
-        // Work in transformed coordinates to avoid scaling outline
-        var transformer = new GXVertexTransformer(element, transform);
-        context.canvas.putVertices(new GXVertexPixelAligner(transformer));
+            // Work in transformed coordinates to avoid scaling outline
+            var transformer = new GXVertexTransformer(element, transform);
+            context.canvas.putVertices(new GXVertexPixelAligner(transformer));
 
-        // Paint either outlined or highlighted (highlighted has a higher precedence)
-        if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {
-            context.canvas.strokeVertices(context.highlightOutlineColor, 2);
-        } else {
-            context.canvas.strokeVertices(context.selectionOutlineColor, 1);
+            // Paint either outlined or highlighted (highlighted has a higher precedence)
+            if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+                context.canvas.strokeVertices(context.highlightOutlineColor, 2);
+            } else {
+                context.canvas.strokeVertices(context.selectionOutlineColor, 1);
+            }
         }
     };
 

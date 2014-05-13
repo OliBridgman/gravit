@@ -43,6 +43,15 @@
     GXSelectTool.prototype._mode = null;
 
     /**
+     * An element that was hit when the the mouse was down
+     * and no editor part has been hit. This will not be cleared
+     * before the next mouse down signal.
+     * @type {GXElement}
+     * @private
+     */
+    GXSelectTool.prototype._elementUnderMouse = null;
+
+    /**
      * An editor part that is under mouse if not moving / dragging
      * @type {*}
      * @private
@@ -170,6 +179,8 @@
             return;
         }
 
+        this._elementUnderMouse = null;
+
         // Let editor do some work for mouse position
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
@@ -183,7 +194,6 @@
                     this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
             }
         } else {
-
             // Reset to select mode here
             this._updateMode(GXSelectTool._Mode.Select);
 
@@ -267,16 +277,16 @@
                     }
 
                 } else {
-                    var hitElement = selectableElements[0];
+                    this._elementUnderMouse = selectableElements[0];
 
-                    if (gPlatform.modifiers.shiftKey || !hitElement.hasFlag(GXNode.Flag.Selected)) {
+                    if (gPlatform.modifiers.shiftKey || !this._elementUnderMouse.hasFlag(GXNode.Flag.Selected)) {
                         // Only update selection if we're either holding shift
                         // or when we didn't actually hit an already selected node
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [hitElement]);
-                    } else if (hitElement.hasFlag(GXNode.Flag.Selected)) {
+                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [this._elementUnderMouse]);
+                    } else if (this._elementUnderMouse.hasFlag(GXNode.Flag.Selected)) {
                         // As element is already selected we need to ensure to properly
                         // clear all selected parts as that is the default behavior
-                        var editor = GXElementEditor.getEditor(hitElement);
+                        var editor = GXElementEditor.getEditor(this._elementUnderMouse);
                         if (editor) {
                             editor.updatePartSelection(false, null);
                         }
@@ -408,8 +418,7 @@
                 this._selectArea = null;
             }
         } else if (this._mode == GXSelectTool._Mode.Transforming) {
-            if (gPlatform.modifiers.optionKey &&
-                    !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
+            if (gPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
 
                 this._editor.applySelectionTransform(true);
             } else {
@@ -423,18 +432,32 @@
      * @private
      */
     GXSelectTool.prototype._mouseDblClick = function () {
-        if (this._editor) {
+        var openTransformBox = true;
+
+        // Close an existing transform box, first
+        if (this._editor.getTransformBox()) {
+            this._editor.cleanTransformBox();
+            this._updateMode(null);
+            this.invalidateArea();
+            openTransformBox = false;
+        }
+
+        // Check whether to start inline editing
+        if (this._elementUnderMouse) {
+            var editor = GXElementEditor.getEditor(this._elementUnderMouse);
+            if (editor && editor.canInlineEdit()) {
+                editor.beginInlineEdit(this._view, this._view._htmlElement);
+                editor.adjustInlineEditForView(this._view);
+                openTransformBox = false;
+            }
+        }
+
+        if (openTransformBox) {
+            this._editor.updateSelectionTransformBox();
             if (this._editor.getTransformBox()) {
-                this._editor.cleanTransformBox();
-                this._updateMode(null);
+                // Switch to transformation mode
+                this._updateMode(GXSelectTool._Mode.Transforming);
                 this.invalidateArea();
-            } else {
-                this._editor.updateSelectionTransformBox();
-                if (this._editor.getTransformBox()) {
-                    // Switch to transformation mode
-                    this._updateMode(GXSelectTool._Mode.Transforming);
-                    this.invalidateArea();
-                }
             }
         }
     };
@@ -504,7 +527,7 @@
      */
     GXSelectTool.prototype._modifiersChanged = function (event) {
         if ((event.changed.shiftKey || event.changed.optionKey) &&
-                (this._mode === GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming)) {
+            (this._mode === GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming)) {
 
             this._updateSelectionTransform();
         }
@@ -531,7 +554,7 @@
 
                 position = this._view.getViewTransform().mapPoint(position);
                 if (this._editorMovePartInfo && this._editorMovePartInfo.id &&
-                        (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point ||
+                    (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point ||
                         this._editorMovePartInfo.id.type == GXPathEditor.PartType.Segment)) {
 
                     this._editor.getGuides().beginMap();

@@ -56,25 +56,18 @@
         Highlighted: 1 << 1,
 
         /**
-         * The editor is in focused status
-         * @type Number
-         * @version 1.0
-         */
-        Focused: 1 << 2,
-
-        /**
          * The editor is in detail status
          * @type Number
          * @version 1.0
          */
-        Detail: 1 << 3,
+        Detail: 1 << 2,
 
         /**
          * The editor is in outline status
          * @type Number
          * @version 1.0
          */
-        Outline: 1 << 4
+        Outline: 1 << 3
     };
 
     /**
@@ -808,12 +801,58 @@
 
     /**
      * Called whenever a newly inserted element should become
-     * some default handling of the editor after insertion
+     * some default setup
      * @param {GXColor} fillColor the current default fill color
      * @param {GXColor} strokeColor the current default stroke color
      */
-    GXElementEditor.prototype.handleInsert = function (fillColor, strokeColor) {
+    GXElementEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // NO-OP
+    };
+
+    /**
+     * Called to check whether this editor can do some inline editing
+     * @returns {boolean}
+     */
+    GXElementEditor.prototype.canInlineEdit = function () {
+        return false;
+    };
+
+    /**
+     * Called to check whether this editor currently is in inline edit mode
+     * @returns {boolean}
+     */
+    GXElementEditor.prototype.isInlineEdit = function () {
+        return false;
+    };
+
+    /**
+     * Called to let the editor do some inline editing
+     * @param {GXEditorView} view the view the inline editing should
+     * take place within
+     * @param {HTMLElement} container the container any editor element
+     * should be attached to relative to the view
+     */
+    GXElementEditor.prototype.beginInlineEdit = function (view, container) {
+        throw new Error('Not Supported.');
+    };
+
+    /**
+     * Called whenever something in the view has changed and the inline
+     * editor should adjust itself. This will also called immediately
+     * after the beginInlineEdit call.
+     * @param {GXEditorView} view the view the inline editing takes place
+     */
+    GXElementEditor.prototype.adjustInlineEditForView = function (view) {
+        throw new Error('Not Supported.');
+    };
+
+    /**
+     * Called to finish inline editing. This is called within a transaction
+     * and should not only close any inline editor but also apply any changes.
+     * @return {String} optional human readable text of the editing action description
+     */
+    GXElementEditor.prototype.finishInlineEdit = function () {
+        throw new Error('Not Supported.');
     };
 
     /**

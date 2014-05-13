@@ -14,6 +14,9 @@
     request.send();
 
 
+    var __SIZE = 48;
+
+
     /**
      * A text shape
      * @class GXText
@@ -22,6 +25,7 @@
      */
     function GXText() {
         GXShape.call(this);
+        this._setDefaultProperties(GXText.GeometryProperties);
         this._vertices = new GXVertexContainer();
         this._verticesDirty = false;
     }
@@ -64,6 +68,14 @@
      */
     GXText.prototype._verticesDirty = false;
 
+    /**
+     * Returns the underlying rich text as html code string
+     * @returns {string}
+     */
+    GXText.prototype.asHtml = function () {
+        return '<p style="font-family:Arial;font-size:' + __SIZE + 'px;line-height:' + (__SIZE+(__SIZE*0.2)) + 'px;color:black;margin:0px">' + this.$tx + '</p>'
+    };
+
     /** @override */
     GXText.prototype.store = function (blob) {
         if (GXShape.prototype.store.call(this, blob)) {
@@ -85,7 +97,7 @@
 
     /** @override */
     GXText.prototype.rewindVertices = function (index) {
-        if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
+        if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0 && this.$tx !== "") {
             this._vertices.clearVertices();
 
             var box = GRect.fromPoints(new GPoint(-1, -1), new GPoint(1, 1));
@@ -96,12 +108,13 @@
             //var __text = "Hello, World from Gravit :-)\nThis is just some test paragraphs to check whether everything works as expected!";
             //var __text = "In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the king's castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the king's child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything."
             //var __text = "1\n2";
+            var __text = this.$tx;
 
             var doc = new DOMParser().parseFromString(this.$tx, 'text/html');
 
-            var __text = this.$tx ? this.$tx : "<No Text>";
+            //var __text = this.$tx ? this.$tx : "<No Text>";
 
-            var __size = 14;
+            var __size = __SIZE;
 
 
             var cv = document.createElement('canvas');
@@ -120,7 +133,7 @@
 
             var lineLengths = [box.getWidth() > 1 ? box.getWidth() : -1];
 
-            var y = box.getY();
+            var y = box.getY() + __size;
             for (var p = 0; p < paragraphs.length; ++p) {
                 var nodes = format['left'](paragraphs[p]);
 
@@ -254,18 +267,50 @@
     };
 
     /** @override */
+    GXText.prototype._calculateGeometryBBox = function () {
+        if (this.$trf) {
+            var box = this.$trf.mapRect(GRect.fromPoints(new GPoint(-1, -1), new GPoint(1, 1)));
+
+            if (!this.$fw || !this.$fh) {
+                var vertexBounds = gVertexInfo.calculateBounds(this, true);
+
+                var deltaX = vertexBounds ? vertexBounds.getX() - box.getX() : 0;
+                var deltaY = vertexBounds ? vertexBounds.getY() - box.getY() : 0;
+
+                box = new GRect(
+                    box.getX(),
+                    box.getY(),
+                    !this.$fw && vertexBounds ? vertexBounds.getWidth() + deltaX : box.getWidth(),
+                    !this.$fh && vertexBounds ? vertexBounds.getHeight() + deltaY : box.getHeight()
+                );
+            }
+
+            return box;
+        } else {
+            return GXShape.prototype._calculateGeometryBBox.call(this);
+        }
+    };
+
+    /** @override */
+    GXText.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        // For now, text is always hit-test by its bbox only so return ourself
+        // TODO : Add support for detailed range hit test information here
+        return new GXElement.HitResult(this);
+    };
+
+    /** @override */
     GXText.prototype._handleChange = function (change, args) {
-        if (this._handleGeometryChangeForProperties(change, args, GXText.GeometryProperties) && change == GXNode._Change.AfterPropertiesChange) {
+        GXShape.prototype._handleChange.call(this, change, args);
+
+        if (this._handleGeometryChangeForProperties(change, args, GXText.GeometryProperties) && change == GXNode._Change.BeforePropertiesChange) {
             this._verticesDirty = true;
         }
 
-        if (change === GXNode._Change.AfterPropertiesChange) {
+        if (change === GXNode._Change.BeforePropertiesChange) {
             if (args.properties.indexOf('trf') >= 0) {
                 this._verticesDirty = true;
             }
         }
-
-        GXShape.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

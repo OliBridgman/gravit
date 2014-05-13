@@ -19,13 +19,25 @@
 
         // This is a hack to focus our active window
         // whenever a key is hit down (in capture phase) and
-        // if not an input element is active!
+        // if not an editable element is active!
         document.addEventListener('keydown', function (evt) {
             var activeWindow = this._windows.getActiveWindow();
-            if (activeWindow && (!document.activeElement || !$(document.activeElement).is("input,select,textArea"))) {
+            if (activeWindow && (!document.activeElement || !$(document.activeElement).is(":editable"))) {
                 activeWindow.getView().focus();
             }
         }.bind(this), false);
+
+        // Prevent context-menu globally except for editable elements
+        document.addEventListener('contextmenu', function (evt) {
+            if (!$(evt.target).is(':editable')) {
+                evt.preventDefault();
+                return false;
+            } else {
+                // Stop propagation to let browser handle the event
+                evt.stopPropagation();
+                return true;
+            }
+        }, true);
 
         // Set default global color to white
         this._globalColor = new GXColor(GXColor.Type.White);
@@ -550,15 +562,6 @@
      */
     EXApplication.prototype.init = function () {
         var body = $('body');
-
-        // Prevent context-menu globally except for input elements
-        body.on("contextmenu", function (evt) {
-            if (!$(evt.target).is(':input')) {
-                evt.preventDefault();
-                return false;
-            }
-            return true;
-        });
 
         // Iterate modules and let each one initialize
         for (var i = 0; i < gravit.modules.length; ++i) {

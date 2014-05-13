@@ -93,6 +93,8 @@
             gApp.registerShortcut(shortcut, function () {
                 this.executeAction(item.action.getId());
             }.bind(this));
+
+            item.setShortcutHint(shortcut);
         }
 
         this.updateMenuItem(item, title, true, false);

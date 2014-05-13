@@ -9,14 +9,12 @@
      */
     function GUIPlatform() {
         document.addEventListener("keydown", function (event) {
-            if (!$(document.activeElement).is(":input")) {
+            if (!document.activeElement || (!$(document.activeElement).is(":input") && !document.activeElement.isContentEditable)) {
                 this._updateModifiers(event);
             }
         }.bind(this), true);
         document.addEventListener("keyup", function (event) {
-            if (!$(document.activeElement).is(":input")) {
-                this._updateModifiers(event);
-            }
+            this._updateModifiers(event);
         }.bind(this), true);
     }
 

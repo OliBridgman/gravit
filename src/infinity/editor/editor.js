@@ -798,12 +798,13 @@
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
      * @param {Array<GXElement>} elements the elements to be inserted
-     * @param {Boolean} noEditor if true, the editor will not be
-     * called to handle the newly inserted element. Defaults to false.
+     * @param {Boolean} noInitial if true, the editor will not be
+     * called to handle the newly inserted element to assign some defaults.
+     * Defaults to false.
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.insertElements = function (elements, noEditor, noTransaction) {
+    GXEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
         var target = this.getCurrentPage();// this.getCurrentLayer();
 
@@ -821,16 +822,12 @@
                 // Append new element
                 target.appendChild(element);
 
-                if (!noEditor) {
+                if (!noInitial) {
                     // Create a temporary editor for the element to handle it's insertion
                     var editor = GXElementEditor.createEditor(element);
                     if (editor) {
-                        editor.handleInsert(fillColor, strokeColor);
+                        editor.initialSetup(fillColor, strokeColor);
                     }
-
-
-
-
                 }
             }
 
@@ -1090,8 +1087,8 @@
             if (this._selection && this._selection.indexOf(evt.node) >= 0) {
                 evt.node.removeFlag(GXNode.Flag.Selected);
             } else {
-                // Otherwise ry to close any editors the node may have
-                GXElementEditor.closeEditor(evt.node);
+                // Otherwise try to close any editors the node may have
+                this._closeEditor(evt.node);
             }
         }
 
@@ -1310,13 +1307,32 @@
             var parentEditor = editor.getParentEditor();
 
             // Close our editor now
-            GXElementEditor.closeEditor(node);
+            this._closeEditor(node);
 
             // If we have a parent editor, try to close it recursively as well
             if (parentEditor) {
                 this._tryCloseEditor(parentEditor.getElement());
             }
         }
+    };
+
+    GXEditor.prototype._finishEditorInlineEdit = function (node) {
+        var editor = GXElementEditor.getEditor(node);
+        if (editor && editor.isInlineEdit()) {
+            var editText = null;
+            this.beginTransaction();
+            try {
+                editText = editor.finishInlineEdit();
+            } finally {
+                // TODO : I18N
+                this.commitTransaction(editText ? editText : 'Inline Editing');
+            }
+        }
+    };
+
+    GXEditor.prototype._closeEditor = function (node) {
+        this._finishEditorInlineEdit(node);
+        GXElementEditor.closeEditor(node);
     };
 
     /**

@@ -25,8 +25,6 @@
             new GXSubSelectTool(),
             new GXPageTool(),
             new GXLassoTool(),
-            new GXRectSelectTool(),
-            new GXEllipseSelectTool(),
             new GXPenTool(),
             new GXBezigonTool(),
             new GXLineTool(),

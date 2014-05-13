@@ -183,7 +183,12 @@
      */
     GXShapeTool.prototype._mouseRelease = function (event) {
         if (!this._hasCreatedShape) {
-            this._createShapeManually(event);
+            this._editor.getGuides().beginMap();
+            var position = this._view.getWorldTransform().mapPoint(
+                this._editor.getGuides().mapPoint(
+                    this._view.getViewTransform().mapPoint(event.client)));
+            this._editor.getGuides().finishMap();
+            this._createShapeManually(position);
         }
         this._hasCreatedShape = false;
     };
@@ -232,10 +237,10 @@
         this._shape = null;
         this._invalidateShapeArea(shape);
 
-        // Append shape now
-        this._appendShape(shape);
-        this._hasCreatedShape = true;
+        // Prepare shape for appending
+        this._prepareShapeForAppend(shape);
 
+        // Clear our stuff
         this._dragStart = null;
         this._dragCurrent = null;
         this._shape = null;
@@ -243,6 +248,10 @@
         this._dragLine = null;
 
         this.updateCursor();
+
+        // Finally insert our shape
+        this._insertShape(shape);
+        this._hasCreatedShape = true;
     };
 
     /**
@@ -315,11 +324,11 @@
     };
 
     /**
-     * Called to append a given shape
+     * Called to prepare a shape for appending
      * @param {GXShape} shape
      * @private
      */
-    GXShapeTool.prototype._appendShape = function (shape) {
+    GXShapeTool.prototype._prepareShapeForAppend = function (shape) {
         // Let the tool calculate the parameters in scene coordinates
         var transform = this._view.getViewTransform();
         var dragArea = transform.mapRect(this._dragArea);
@@ -327,8 +336,6 @@
 
         // Update shape with scene coordinates
         this._updateShape(shape, dragArea, dragLine);
-
-        this._insertShape(shape);
     };
 
     /**
@@ -358,10 +365,10 @@
 
     /**
      * Called to create a shape manually as it has not yet been created via drag
-     * @param {GUIMouseEvent.Release} event
+     * @param {GPoint} position the position to create the shape at
      * @private
      */
-    GXShapeTool.prototype._createShapeManually = function (event) {
+    GXShapeTool.prototype._createShapeManually = function (position) {
         // NO-OP
     };
 

@@ -12,6 +12,14 @@ body, html {
     font-size: 12px;
   }
 
+  [contenteditable='true'] * {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
+    color: inherit;
+  }
+
   *.fa {
     font-size: 14px;
   }
@@ -41,14 +49,22 @@ body, html {
   }
 
   /** No focus and selection outline except for input fields */
-  :not(input):not(select):not(textArea):focus {
-    outline: none !important;
+  :focus {
+    outline: none;
   }
 
   /**No selection except for input fields */
   :not(input):not(select):not(textArea) {
     @include user-select(none);
     cursor: default;
+  }
+
+  [contenteditable='true']:focus {
+    outline: rgba(0, 0, 0, 0) solid 1px;
+    &, * {
+      @include user-select(all);
+      cursor: auto;
+    }
   }
 
   // Give dividers some base styling

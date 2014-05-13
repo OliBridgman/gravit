@@ -58,8 +58,6 @@ gLocale.setValues(GXPointerTool, GLocale.Language.English, ["title"], ["Pointer"
 gLocale.setValues(GXSubSelectTool, GLocale.Language.English, ["title"], ["Subselect"]);
 gLocale.setValues(GXPageTool, GLocale.Language.English, ["title"], ["Page"]);
 gLocale.setValues(GXLassoTool, GLocale.Language.English, ["title"], ["Lasso"]);
-gLocale.setValues(GXRectSelectTool, GLocale.Language.English, ["title"], ["Rectangular-Select"]);
-gLocale.setValues(GXEllipseSelectTool, GLocale.Language.English, ["title"], ["Elliptical-Select"]);
 
 // Editor
 gLocale.setValues(GXSceneEditor, GLocale.Language.English, ["action.insert", "action.remove", "action.properties"], ["Insert", "Remove", "Change Properties"]);
