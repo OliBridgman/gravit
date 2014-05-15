@@ -884,7 +884,7 @@
                 return this._canvasContext[_imageSmoothingProperties[i]];
             }
         }
-        throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
+        //throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
     /** @private */
@@ -895,7 +895,7 @@
                 return;
             }
         }
-        throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
+        //throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
     _.GXPaintCanvas = GXPaintCanvas;
