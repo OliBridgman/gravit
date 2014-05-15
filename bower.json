@@ -2,15 +2,14 @@
     "name": "gravit",
     "version": "0.0.1",
     "dependencies": {
+        "almond": "latest",
         "jquery": "~1.10.2",
-        "mousetrap": "~1.4.5",
+        "mousetrap": "latest",
         "font-awesome": "latest",
-        "jqTree": "git+https://github.com/quasado/jqTree#latest",
-        "opentype": "git+https://github.com/quasado/opentype.js#latest",
-        "typeset": "git+https://github.com/quasado/typeset#latest",
-        "zlib.js": "git+https://github.com/gravitio/zlib.js#latest",
-        "FileSaver.js": "git+https://github.com/gravitio/FileSaver.js#latest",
-        "canvas-toBlob.js": "git+https://github.com/gravitio/canvas-toBlob.js#latest"
+        "jqtree": "latest",
+        "scribe": "latest",
+        "opentype.js": "latest",
+        "typeset": "git+https://github.com/bramstein/typeset#latest"
     },
     "devDependencies": {},
     "private": true
