@@ -17,6 +17,7 @@
             var viewN = new GXView(scene, container);
             GXViewLayer.call(this, viewN); //, container.lastChild.firstChild);
             this._paintContext.canvas._canvasContext = container.lastChild.firstChild.getContext("2d");
+
             this._vertexSource = vertexSource;
         }
 
@@ -168,7 +169,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve2, 10, -40);
 
                     vertexSource.writeVertex(GXVertex.Command.Close);
-
+                    /*
                     vertexCurve = new GXVertexContainer(nPt);
                     vertexSource.rewindVertices(0);
                     vertex = new GXVertex();
@@ -197,7 +198,7 @@
                             }
                         }
                     }
-
+                        */
                     break;
                 case 1:
                     text.innerHTML = "Square";
@@ -207,7 +208,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Line, x3, y3);
                     vertexSource.writeVertex(GXVertex.Command.Line, x4, y4);
                     vertexSource.writeVertex(GXVertex.Command.Line, x1, y1);
-                    vertexCurve = new GXVertexContainer(5);
+                    /*vertexCurve = new GXVertexContainer(5);
                     vertexCurve.writeVertex(GXVertex.Command.Move, x1, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Line, x2, y2);
                     vertexCurve.writeVertex(GXVertex.Command.Line, x3, y3);
@@ -233,7 +234,7 @@
                                 vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                             }
                         }
-                    }
+                    }  */
                     break;
                 case 2:
                     text.innerHTML = "Curve3 Vertex";
@@ -243,7 +244,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x4, y4);
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x3, y3);
                     vertexSource.writeVertex(GXVertex.Command.Close);
-                    vertexCurve = new GXVertexContainer(5);
+                    /*vertexCurve = new GXVertexContainer(5);
                     vertexCurve.writeVertex(GXVertex.Command.Move, x2, y2);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x1, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x3, y3);
@@ -269,7 +270,7 @@
                                 vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                             }
                         }
-                    }
+                    }     */
                     break;
                 case 3:
                     text.innerHTML = "Curve3 Vertex";
@@ -279,7 +280,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x4 - halfWidth, y4);
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x3 - halfWidth, y3);
                     vertexSource.writeVertex(GXVertex.Command.Close);
-                    vertexCurve = new GXVertexContainer(5);
+                    /*vertexCurve = new GXVertexContainer(5);
                     vertexCurve.writeVertex(GXVertex.Command.Move, x2 + 20 - halfWidth, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x2 - halfWidth, y2 / 2);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x4 - halfWidth, y4);
@@ -305,7 +306,7 @@
                             vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                         }
                         }
-                    }
+                    } */
                     break;
                 case 4:
                     text.innerHTML = "Curve3 Vertex";
@@ -315,7 +316,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x4, y4);
                     vertexSource.writeVertex(GXVertex.Command.Curve2, x3, y3);
                     vertexSource.writeVertex(GXVertex.Command.Close);
-                    vertexCurve = new GXVertexContainer(5);
+                    /*vertexCurve = new GXVertexContainer(5);
                     vertexCurve.writeVertex(GXVertex.Command.Move, x2, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x1, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve2, x4, y4);
@@ -341,7 +342,7 @@
                                 vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                             }
                         }
-                    }
+                    }    */
                     break;
                 case 5:
                     text.innerHTML = "Curve Vertex";
@@ -350,7 +351,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve, cx, cy);
                     vertexSource.writeVertex(GXVertex.Command.Curve, x3, y3);
                     vertexSource.writeVertex(GXVertex.Command.Close);
-                    vertexCurve = new GXVertexContainer(4);
+                    /*vertexCurve = new GXVertexContainer(4);
                     vertexCurve.writeVertex(GXVertex.Command.Move,  x1 + 40, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve, cx, cy);
                     vertexCurve.writeVertex(GXVertex.Command.Curve, x3, y3);
@@ -375,7 +376,7 @@
                                 vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                             }
                         }
-                    }
+                    }  */
                     break;
                 case 6:
                     text.innerHTML = "Curve Vertex";
@@ -384,7 +385,7 @@
                     vertexSource.writeVertex(GXVertex.Command.Curve, x4, y4);
                     vertexSource.writeVertex(GXVertex.Command.Curve, x2, cy);
                     vertexSource.writeVertex(GXVertex.Command.Close);
-                    vertexCurve = new GXVertexContainer(4);
+                    /*vertexCurve = new GXVertexContainer(4);
                     vertexCurve.writeVertex(GXVertex.Command.Move, x1, y1);
                     vertexCurve.writeVertex(GXVertex.Command.Curve, x4, y4);
                     vertexCurve.writeVertex(GXVertex.Command.Curve, x2, cy);
@@ -409,18 +410,23 @@
                                 vertexSource.writeVertex(GXVertex.Command.Line, xPt, yPt+1);
                             }
                         }
-                    }
+                    } */
                     break;
             }
 
-            var widget = new VertexWidget(container, vertexSource);
+            if (i != 4) {
+                var vOffsetter = new GXVertexOffsetter(vertexSource, 3, true, true);
+                var widget = new VertexWidget(container, vOffsetter); //vertexSource);
+            } else {
+                var widget = new VertexWidget(container, vertexSource);
+            }
             widget.resize(width, height);
             widget.paint(widget._paintContext);
         }
     }
 
     gDevelopment.tests.push({
-        title: 'Path Inside Test',
+        title: 'Path Offset Test',
         category: 'Path',
         test: test
     });

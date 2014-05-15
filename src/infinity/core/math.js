@@ -214,7 +214,7 @@
         var rSqr = resid * resid;
         var rSum = rC1 + rC2;
         var rSumSqr = rSum * rSum;
-        if (!this.isEqualEps(dist, 0)) {
+        if (!this.isEqualEps(dSqr, 0)) {
             var tmp = (rC1 * rC1 - rC2 * rC2) / (2 * dSqr);
             var x = (xC1 + xC2) / 2 + (xC2 - xC1) * tmp;
             var y = (yC1 + yC2) / 2 + (yC2 - yC1) * tmp;
