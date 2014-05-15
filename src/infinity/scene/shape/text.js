@@ -344,7 +344,7 @@
                 _getProperty('mr', 0) + 'px ' +
                 _getProperty('mb', 0) + 'px ' +
                 _getProperty('ml', 0) + 'px;' +
-                'line-height: 1;';
+                'line-height: 1.2;';
 
             result += '">';
         }
@@ -415,9 +415,9 @@
                     'position': 'absolute',
                     'z-index': '999999',
                     'top': '0px',
-                    'left': '0px'
+                    'left': '0px',
                     //'visibility': 'hidden'/*,
-                    //'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : 'auto'*/
+                    'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : ''
                 })
                 .html(html)
                 .appendTo($('body'));
@@ -492,7 +492,7 @@
             tmp.find('[data-segment="true"]').each(function (index, span) {
 
                 var x = span.offsetLeft + textBox.getX();
-                var y = /*span.offsetTop + */textBox.getY();
+                var y = span.offsetTop + textBox.getY();
                 var glyph = font.charToGlyph(span.textContent[0]);
 
 
@@ -531,7 +531,14 @@ if (isNaN(baseline)) {
 
                 var asc = maxFontSize * 0.2;// (glyph.font.ascender - glyph.yMax) * (1 / glyph.font.unitsPerEm * maxFontSize);
 
-                var dy = maxAscender - (__leading / 2);//0;//bottom;//__baseline - asc;//36 - asc;// (fontSize - (glyph.font.ascender * scale));
+                var gBottom = (-glyph.yMin * scale);
+                var gTop = (-glyph.yMax * scale);
+
+                var height = (glyph.yMax-glyph.yMin) * scale;
+
+                //var height = (font.ascender - font.descender) *scale;
+
+                var dy = height + (((font.ascender) * scale)-height) - (__leading/2);// height;// bottom - __leading *2;//maxAscender - (__leading / 2);//0;//bottom;//__baseline - asc;//36 - asc;// (fontSize - (glyph.font.ascender * scale));
 
                 var path = glyph.getPath(x, y + dy, fontSize);
                 //var path = font.getPath(run, x, y, run.fontSize);
@@ -574,12 +581,19 @@ if (isNaN(baseline)) {
     GXText.prototype._calculateGeometryBBox = function () {
         var html = this._buildHtml([], this.getContent());
 
+        // Calculate our actual text box and line length
+        var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+        if (this.$trf) {
+            textBox = this.$trf.mapRect(textBox);
+        }
+
         var tmp = $('<div></div>')
             .css({
                 'position': 'absolute',
-                'z-index': '999999'
+                'z-index': '999999',
                 //'visibility': 'hidden'/*,
                 //'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : 'auto'*/
+                'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : ''
             })
             .html(html)
             .appendTo($('body'));

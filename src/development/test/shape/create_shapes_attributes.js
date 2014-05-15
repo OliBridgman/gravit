@@ -61,7 +61,13 @@
         p1.appendChild(sp1);
         p1.appendChild(sp2);
         p1.appendChild(sp3);
+
+
+
         text.getContent().appendChild(p1);
+
+        text.setProperties(['fw', 'trf'], [true, new GTransform(200, 0, 0, 1, 0, 0)]);
+
         text.invalidateText();
         page.appendChild(text);
     }
