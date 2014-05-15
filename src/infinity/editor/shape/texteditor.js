@@ -47,7 +47,7 @@
                 'transform-origin': '0% 0%',
                 '-webkit-transform-origin': '0% 0%'
             })
-            .attr('contenteditable', 'true')
+            //.attr('contenteditable', 'true')
             .on('mousedown', function (evt) {
                 evt.stopPropagation();
             })
@@ -66,8 +66,15 @@
             .on('keyup', function (evt) {
                 evt.stopPropagation();
             })
-            .appendTo(container)
-            .focus();
+            .appendTo(container);
+
+        var Scribe = require('scribe');
+        var scribe = new Scribe(this._inlineEditor[0]);
+
+
+        scribe.setContent('<p>Hello, World!</p>');
+
+        this._inlineEditor.focus();
     };
 
     /** @override */

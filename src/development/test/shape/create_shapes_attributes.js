@@ -50,7 +50,19 @@
         fill = new IFFillAttribute();
         fill.setColor(GXColor.parseCSSColor('black'));
         text.getAttributes().appendChild(fill);
-        text.setProperty('tx', 'Hello, World<p>This is a new<br/>paragraph with inline breaks :)</p>');
+
+
+
+        var p1 = new GXText.Paragraph();
+        var sp1 = new GXText.Span('Aq');
+        var sp2 = new GXText.Span(' xWg');
+        sp2.setProperty('fs', '72');
+        var sp3 = new GXText.Span(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.');
+        p1.appendChild(sp1);
+        p1.appendChild(sp2);
+        p1.appendChild(sp3);
+        text.getContent().appendChild(p1);
+        text.invalidateText();
         page.appendChild(text);
     }
 
