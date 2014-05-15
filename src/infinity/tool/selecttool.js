@@ -399,12 +399,12 @@
                 var mappedSelectArea = this._view.getViewTransform().mapRect(this._selectArea);
                 var x0 = mappedSelectArea.getX(), y0 = mappedSelectArea.getY();
                 var x2 = x0 + mappedSelectArea.getWidth(), y2 = y0 + mappedSelectArea.getHeight();
-                var collisionArea = new GXVertexContainer(5);
-                collisionArea.modifyVertex(GXVertex.Command.Move, x0, y0, 0);
-                collisionArea.modifyVertex(GXVertex.Command.Line, x2, y0, 1);
-                collisionArea.modifyVertex(GXVertex.Command.Line, x2, y2, 2);
-                collisionArea.modifyVertex(GXVertex.Command.Line, x0, y2, 3);
-                collisionArea.modifyVertex(GXVertex.Command.Close, 0, 0, 4);
+                var collisionArea = new GXVertexContainer();
+                collisionArea.addVertex(GXVertex.Command.Move, x0, y0);
+                collisionArea.addVertex(GXVertex.Command.Line, x2, y0);
+                collisionArea.addVertex(GXVertex.Command.Line, x2, y2);
+                collisionArea.addVertex(GXVertex.Command.Line, x0, y2);
+                collisionArea.addVertex(GXVertex.Command.Close, 0, 0);
                 var collisions = this._scene.getCollisions(collisionArea, GXElement.CollisionFlag.GeometryBBox);
                 var selectableElements = this._getSelectableElements(collisions);
 

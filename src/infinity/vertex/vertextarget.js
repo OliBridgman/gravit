@@ -15,7 +15,6 @@
      * @param {Number} command the command of the vertex
      * @param {Number} [x] x-coordinate of vertex, defaults to 0
      * @param {Number} [y] y-coordinate of vertex, defaults to 0
-     * @return {Number} the index of the new vertex
      */
     GXVertexTarget.prototype.addVertex = function (command, x, y) {
         throw new Error("Not Supported");
@@ -40,7 +39,7 @@
      * @version 1.0
      */
     GXVertexTarget.prototype.clearVertices = function () {
-        this.resize(0);
+        throw new Error('Not Supported.');
     }
 
     /** @override */

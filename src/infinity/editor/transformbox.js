@@ -458,7 +458,7 @@
      */
     GXTransformBox.prototype._generateVertices = function () {
         if (!this._vertices || this._vertices.getCount() != 5) {
-            this._vertices = new GXVertexContainer(5);
+            this._vertices = new GXVertexContainer();
         } else {
             this._vertices.rewindVertices(0);
         }
@@ -468,11 +468,11 @@
         var br = this._getPoint(GXTransformBox.Handles.BOTTOM_RIGHT);
         var bl = this._getPoint(GXTransformBox.Handles.BOTTOM_LEFT);
 
-        this._vertices.writeVertex(GXVertex.Command.Move, tl.getX(), tl.getY());
-        this._vertices.writeVertex(GXVertex.Command.Line, tr.getX(), tr.getY());
-        this._vertices.writeVertex(GXVertex.Command.Line, br.getX(), br.getY());
-        this._vertices.writeVertex(GXVertex.Command.Line, bl.getX(), bl.getY());
-        this._vertices.writeVertex(GXVertex.Command.Close);
+        this._vertices.addVertex(GXVertex.Command.Move, tl.getX(), tl.getY());
+        this._vertices.addVertex(GXVertex.Command.Line, tr.getX(), tr.getY());
+        this._vertices.addVertex(GXVertex.Command.Line, br.getX(), br.getY());
+        this._vertices.addVertex(GXVertex.Command.Line, bl.getX(), bl.getY());
+        this._vertices.addVertex(GXVertex.Command.Close);
     };
 
     /**

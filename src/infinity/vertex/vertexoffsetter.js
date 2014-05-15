@@ -1838,8 +1838,8 @@
         for (var i = 0; i < polyLns.length; ++i) {
             poln = polyLns[i];
             var segm = poln.head;
-            var part = new GXVertexContainer(1);
-            part.writeVertex(GXVertex.Command.Move, segm.point.getX(), segm.point.getY());
+            var part = new GXVertexContainer();
+            part.addVertex(GXVertex.Command.Move, segm.point.getX(), segm.point.getY());
             for (var j = 0; j < poln.count - 1; ++j) {
                 if (!segm.bulge) {
                     part.addVertex(GXVertex.Command.Line, segm.next.point.getX(), segm.next.point.getY());
@@ -1902,10 +1902,10 @@
             y1 = y0 + k * cosPhi;
             x2 = x3 + k * sinPhi2;
             y2 = y3 - k * cosPhi2;
-            target.extend(3);
-            target.writeVertex(GXVertex.Command.Curve2, x3, y3);
-            target.writeVertex(GXVertex.Command.Curve2, x1, y1);
-            target.writeVertex(GXVertex.Command.Curve2, x2, y2);
+
+            target.addVertex(GXVertex.Command.Curve2, x3, y3);
+            target.addVertex(GXVertex.Command.Curve2, x1, y1);
+            target.addVertex(GXVertex.Command.Curve2, x2, y2);
         }
     };
 
