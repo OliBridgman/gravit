@@ -34,7 +34,8 @@
                 .translated(x + size/2,  y + size/2));
 
             var editor = GXEditor.getEditor(scene);
-            editor.insertElements([ellipse]);
+            ellipse.getAttributes().appendChild(new IFStrokeAttribute());
+            page.appendChild(ellipse);
 
             x += size + spaceX;
             if (x + size + spaceX >= page.getProperty('w') - page.getProperty('mr')) {

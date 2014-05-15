@@ -28,7 +28,8 @@
                 [segments, cx, cy, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
             var editor = GXEditor.getEditor(scene);
-            editor.insertElements([polygon]);
+            polygon.getAttributes().appendChild(new IFStrokeAttribute());
+            page.appendChild(polygon);
 
             var bbox = null;
 
@@ -59,7 +60,8 @@
                     ap2.setProperties(['x', 'y'], [xPt, yPt + 1]);
                     path.getAnchorPoints().appendChild(ap1);
                     path.getAnchorPoints().appendChild(ap2);
-                    editor.insertElements([path]);
+                    path.getAttributes().appendChild(new IFStrokeAttribute());
+                    page.appendChild(path);
                 }
             }
 

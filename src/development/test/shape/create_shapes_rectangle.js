@@ -37,7 +37,10 @@
                 .translated(+(x + rectSize/2), + (y + rectSize/2)));
 
             var editor = GXEditor.getEditor(scene);
-            editor.insertElements([rect]);
+
+            rect.getAttributes().appendChild(new IFStrokeAttribute());
+
+            page.appendChild(rect);
 
             x += rectSize + spaceX;
         }

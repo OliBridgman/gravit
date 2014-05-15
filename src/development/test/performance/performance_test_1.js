@@ -23,7 +23,8 @@
                 .translated(+(x + rectWidth/2), + (y + rectHeight/2)));
 
             var editor = GXEditor.getEditor(scene);
-            editor.insertElements([rect]);
+            rect.getAttributes().appendChild(new IFStrokeAttribute());
+            page.appendChild(rect);
 
             x += rectWidth + spaceX;
 

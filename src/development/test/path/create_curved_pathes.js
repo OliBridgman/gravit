@@ -57,7 +57,8 @@
                 path.transform(transform);
 
                 var editor = GXEditor.getEditor(scene);
-                editor.insertElements([path]);
+                path.getAttributes().appendChild(new IFStrokeAttribute());
+                page.appendChild(path);
 
                 x += boxWidth + 5;
             }
