@@ -374,7 +374,7 @@
 
             if (i != 4) {
                 var vertex = new GXVertex();
-                var vOffsetter = new GXVertexOffsetter(vertexSource, 3, true, true);
+                var vOffsetter = new GXVertexOffsetter(vertexSource, 3, true, true, 0.001);
                 vertexSource.rewindVertices(0);
                 vertexCurve = new GXVertexContainer();
                 while (vertexSource.readVertex(vertex)) {

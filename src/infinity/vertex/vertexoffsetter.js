@@ -6,11 +6,11 @@
      * @param {Number} offset
      * @param {Boolean} inset
      * @param {Boolean} outset
-     * @version 1.0
+     * @param {Number} tol - tolerance value
      * @constructor
      */
-    function GXVertexOffsetter(source, offset, inset, outset) {
-        var tolerance = 0.01; // TODO: update here
+    function GXVertexOffsetter(source, offset, inset, outset, tol) {
+        var tolerance = tol ? tol / 3 : 0.0001;
         this._source = source;
         this._polyline = new GXVertexOffsetter.PolySegmentContainer();
         this._polyoutset = [];
@@ -1165,6 +1165,7 @@
         var sp2y = psegm.point2.getY();
         var cX = psegm.center.getX();
         var cY = psegm.center.getY();
+        // TODO: process accurately, when segment side is not evident
         if (gMath.segmentSide(sp1x, sp1y, sp2x, sp2y, x, y) ==
             gMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
 
@@ -1174,7 +1175,7 @@
             var pOppX = cX + (cX - pMx) * tmp;
             var pOppY = cY + (cY - pMy) * tmp;
             if (gMath.segmentSide(sp1x, sp1y, pOppX, pOppY, x, y) ==
-                gMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
+                gMath.segmentSide(sp1x, sp1y, pOppX, pOppY, cX, cY)) {
                 intType.FIP = true;
                 intType.PFIP = true;
             } else {
@@ -1536,7 +1537,7 @@
     GXVertexOffsetter.prototype._calcSegmIntersectionPoints = function (
             s1, s2, idx1, idx2, intPts1, intPts2, ignoreCommonEnd) {
         // TODO: fix this ugly tol usage
-        var tol = 0.01;
+        var tol = 0.00001;
         if (!s1.bulge && !s2.bulge) {
             if (!ignoreCommonEnd) {
                 var res = [null, null];
