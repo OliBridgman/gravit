@@ -140,6 +140,13 @@ module.exports = function (grunt) {
                         cwd: 'assets/cursor',
                         dest: '<%= cfg.build %>/source/cursor/',
                         src: '{,*/}*.*'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'assets/font',
+                        dest: '<%= cfg.build %>/source/font/',
+                        src: '{,*/}*.*'
                     }
                 ]
             },
