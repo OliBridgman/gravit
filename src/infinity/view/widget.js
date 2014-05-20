@@ -666,9 +666,9 @@
 
     GUIWidget.prototype._setCapture = function () {
         // Try the hand setCapture/releaseCapture combo, first
-        if (this._htmlElement.setCapture && document.releaseCapture) {
-            this._htmlElement.setCapture(true);
-        } else {
+        //if (this._htmlElement.setCapture && document.releaseCapture) {
+        //    this._htmlElement.setCapture(true);
+        //} else {
             // The hard way: We'll register additional listeners for our capture-events
             // within the document to properly trigger events for them as well
             var self = this;
@@ -698,14 +698,14 @@
                     addDocumentListener(eventClass);
                 }
             }
-        }
+        //}
     };
 
     GUIWidget.prototype._releaseCapture = function () {
         // Try the hand setCapture/releaseCapture combo, first
-        if (this._htmlElement.setCapture && document.releaseCapture) {
-            document.releaseCapture();
-        } else {
+        //if (this._htmlElement.setCapture && document.releaseCapture) {
+        //    document.releaseCapture();
+        //} else {
             // The hard way: We'll remove our listeners from the document
             // that were registered to catch mouse-up and mouse-move events
             // outside the element's client area
@@ -715,7 +715,7 @@
                 }
                 delete this._savedDocumentListeners;
             }
-        }
+        //}
     };
 
     /**
