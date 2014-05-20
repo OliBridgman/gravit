@@ -41,6 +41,16 @@
     };
 
     /**
+     * Transform all vertices in this container with a given matrix
+     * @param {GTransform} transform
+     */
+    GXVertexContainer.prototype.transformVertices = function (transform) {
+        for (var i = 0; i < this._vertices.length; ++i) {
+            transform.map(this._vertices[i]);
+        }
+    };
+
+    /**
      * @returns {Number} the total number of vertices in this container
      * @version 1.0
      */
