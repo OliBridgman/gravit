@@ -12,6 +12,10 @@ body, html {
     font-size: 12px;
   }
 
+  p {
+    margin: 0px;
+  }
+
   [contenteditable='true'] * {
     font-family: inherit;
     font-size: inherit;
