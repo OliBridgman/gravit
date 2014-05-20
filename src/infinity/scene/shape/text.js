@@ -61,17 +61,26 @@
     GObject.inheritAndMix(GXText.Block, GXNode, [GXNode.Properties, GXNode.Store]);
 
     /**
+     * The style of a text
+     * @enum
+     */
+    GXText.Block.TextStyle = {
+        Normal: 'n',
+        Bold: 'b',
+        Italic: 'i',
+        BoldItalic: 'bi'
+    };
+
+    /**
      * The geometry properties of a block with their default values
      */
     GXText.Block.Properties = {
         /** The font family */
         ff: null,
         /** The font size */
-        fs: null,
-        /** Whether font is bold or not */
-        fb: null,
-        /** Whether font is italic or not */
         fi: null,
+        /** The font style (GXText.Block.TextStyle) */
+        fs: null,
         /** The font color */
         fc: null,
         /** The character spacing */
@@ -83,10 +92,33 @@
     GXText.Block.propertyToCss = function (property, value, css) {
         if (property === 'ff') {
             css['font-family'] = value;
-        } else if (property === 'fs') {
+        } else if (property === 'fi') {
             css['font-size'] = value + 'px';
+        } else if (property === 'fs') {
+            switch (value) {
+                case GXText.Block.TextStyle.Normal:
+                    css['font-weight'] = 'normal';
+                    css['font-style'] = 'normal';
+                    break;
+                case GXText.Block.TextStyle.Bold:
+                    css['font-weight'] = 'bold';
+                    css['font-style'] = 'normal';
+                    break;
+                case GXText.Block.TextStyle.Italic:
+                    css['font-weight'] = 'normal';
+                    css['font-style'] = 'italic';
+                    break;
+                case GXText.Block.TextStyle.BoldItalic:
+                    css['font-weight'] = 'bold';
+                    css['font-style'] = 'italic';
+                    break;
+            }
         } else if (property === 'fc') {
             css['color'] = value.asCSSString();
+        } else if (property === 'cs') {
+            css['letter-spacing'] = value + 'px';
+        } else if (property === 'ws') {
+            css['word-spacing'] = value + 'px';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
         }
@@ -97,15 +129,37 @@
             if (css['font-family']) {
                 return css['font-family'];
             }
-        }
-        if (property === 'fs') {
-            var value = parseInt(css['font-size']);
+        } else if (property === 'fi') {
+            var value = parseFloat(css['font-size']);
             if (!isNaN(value)) {
                 return value;
+            }
+        } else if (property === 'fs') {
+            var bold = css['font-weight'] === 'bold';
+            var italic = css['font-style'] === 'italic';
+
+            if (bold && italic) {
+                return GXText.Block.TextStyle.BoldItalic;
+            } else if (bold) {
+                return GXText.Block.TextStyle.Bold;
+            } else if (italic) {
+                GXText.Block.TextStyle.Italic;
+            } else {
+                return GXText.Block.TextStyle.Normal;
             }
         } else if (property === 'fc') {
             var value = GXColor.parseCSSColor(css['color']);
             if (value) {
+                return value;
+            }
+        } else if (property === 'cs') {
+            var value = parseFloat(css['letter-spacing']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'ws') {
+            var value = parseFloat(css['word-spacing']);
+            if (!isNaN(value)) {
                 return value;
             }
         } else {
@@ -301,24 +355,94 @@
             css['column-gap'] = value;
             css['-webkit-column-gap'] = value;
             css['-moz-column-gap'] = value;
+        } else if (property === 'al') {
+            switch (value) {
+                case GXText.Paragraph.Alignment.Left:
+                    css['text-align'] = 'left';
+                    break;
+                case GXText.Paragraph.Alignment.Center:
+                    css['text-align'] = 'center';
+                    break;
+                case GXText.Paragraph.Alignment.Right:
+                    css['text-align'] = 'right';
+                    break;
+                case GXText.Paragraph.Alignment.Justify:
+                    css['text-align'] = 'justify';
+                    break;
+            }
+        } else if (property === 'in') {
+            css['text-indent'] = value + 'px';
         } else if (property === 'lh') {
             css['line-height'] = value;
+        } else if (property === 'mt') {
+            css['margin-top'] = value + 'px';
+        } else if (property === 'mr') {
+            css['margin-right'] = value + 'px';
+        } else if (property === 'mb') {
+            css['margin-bottom'] = value + 'px';
+        } else if (property === 'ml') {
+            css['margin-left'] = value + 'px';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
         }
-        // TODO : MORE
     };
 
     GXText.Paragraph.cssToProperty = function (property, css) {
-        if (property === 'lh') {
+        if (property === 'cc') {
+            var str = css['column-count'] || css['-webkit-column-count'] || css['-moz-column-count'];
+            var value = parseInt(str);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'cg') {
+            var str = css['column-gap'] || css['-webkit-column-gap'] || css['-moz-column-gap'];
+            var value = parseFloat(str);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'al') {
+            if (value === 'left') {
+                return GXText.Paragraph.Alignment.Left;
+            } else if (value === 'center') {
+                return GXText.Paragraph.Alignment.Center;
+            } else if (value === 'right') {
+                return GXText.Paragraph.Alignment.Right;
+            } else if (value === 'justify') {
+                return GXText.Paragraph.Alignment.Justify;
+            }
+        } else if (property === 'in') {
+            var value = parseFloat(css['text-indent']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'lh') {
             var lineHeight = parseFloat(css['line-height']);
             if (!isNaN(lineHeight)) {
                 return lineHeight;
             }
+        } else if (property === 'mt') {
+            var value = parseFloat(css['margin-top']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'mr') {
+            var value = parseFloat(css['margin-right']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'mb') {
+            var value = parseFloat(css['margin-bottom']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'ml') {
+            var value = parseFloat(css['margin-left']);
+            if (!isNaN(value)) {
+                return value;
+            }
         } else {
             throw new Error('Unimplemented property (cssToProperty): ' + property);
         }
-        // TODO : MORE
         return null;
     };
 
@@ -367,9 +491,8 @@
         this._flags |= GXNode.Flag.Shadow;
 
         // Setup default font stuff
-        this.$fs = 12;
         this.$ff = 'Arial';
-        this.$fc = new GXColor(GXColor.Type.Black);
+        this.$fi = 12;
         this.$lh = 1;
     };
 
@@ -383,6 +506,18 @@
     /** @override */
     GXText.Content.prototype.propertiesToCss = function (css) {
         css['word-wrap'] = 'break-word';
+
+        // Setup default color taking care of attributes if any
+        var color = 'black';
+        var text = this._parent;
+        if (text) {
+            var fillColor = text.getAttributes().getFillColor();
+            if (fillColor) {
+                color = fillColor.asCSSString();
+            }
+        }
+        css['color'] = color;
+
         return GXText.Paragraph.prototype.propertiesToCss.call(this, css);
     };
 
@@ -716,7 +851,7 @@
             parent.appendChild(span);
             parent = span;
             span.setProperty('v', element.text());
-            span.setProperty('fs', parseInt(element.css('font-size')));
+            span.setProperty('fi', parseInt(element.css('font-size')));
         }
 
         element.children().each(function (index, element) {

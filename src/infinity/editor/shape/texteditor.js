@@ -60,14 +60,15 @@
 
     /** @override */
     GXTextEditor.prototype.beginInlineEdit = function (view, container) {
+        // Remove size handles and hide our text element
         this.removeFlag(GXBlockEditor.Flag.ResizeAll);
+        this.getElement().setFlag(GXElement.Flag.NoPaint);
 
         this._inlineEditorContainer = $($('<div></div>'))
             .css(this.getElement().getContent().propertiesToCss({}))
             .css({
                 'position': 'absolute',
-                'z-index': '99999',
-                'background': 'white',
+                'background': 'transparent',
                 'transform-origin': '0% 0%',
                 '-webkit-transform-origin': '0% 0%'
             })
@@ -136,7 +137,9 @@
         this._inlineEditorContainer = null;
         this._inlineEditor = null;
 
+        // Show size handles and our text element
         this.setFlag(GXBlockEditor.Flag.ResizeAll);
+        this.getElement().removeFlag(GXElement.Flag.NoPaint);
 
         // TODO : I18N
         return 'Modify Text Content';

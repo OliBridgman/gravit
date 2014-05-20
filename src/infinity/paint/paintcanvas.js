@@ -767,6 +767,10 @@
         if (filter) {
             extents = extents || new GRect(0, 0, this.getWidth(), this.getHeight());
 
+            if (extents.isEmpty()) {
+                return;
+            }
+
             // get pixels
             var imageData = this._canvasContext.getImageData(extents.getX(), extents.getY(), extents.getWidth(), extents.getHeight());
             var arguments = [imageData.data, extents.getWidth(), extents.getHeight()];
