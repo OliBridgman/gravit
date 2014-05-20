@@ -17,7 +17,30 @@
      * @type {HTMLDivElement}
      * @private
      */
+    GXTextEditor.prototype._inlineEditorContainer = null;
+
+    /**
+     * @type {Scribe}
+     * @private
+     */
     GXTextEditor.prototype._inlineEditor = null;
+
+    GXTextEditor.prototype.getParagraphProperty = function (property) {
+        // TODO
+    };
+
+    GXTextEditor.prototype.setParagraphProperty = function (property, value) {
+        this.setParagraphProperties([property], [value]);
+    };
+
+    GXTextEditor.prototype.setParagraphProperties = function (properties, values) {
+
+        // TODO
+        // Inline-Editor=False -> Apply as property to getContent()
+        // Inline-Editor=True -> convert property|value to css, apply to selection range's paragraph
+
+        this.getElement().getContent().setProperties(properties, values);
+    };
 
     /** @override */
     GXTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
@@ -39,7 +62,8 @@
     GXTextEditor.prototype.beginInlineEdit = function (view, container) {
         this.removeFlag(GXBlockEditor.Flag.ResizeAll);
 
-        this._inlineEditor = $(this.getElement().asHtml())
+        this._inlineEditorContainer = $($('<div></div>'))
+            .css(this.getElement().getContent().propertiesToCss({}))
             .css({
                 'position': 'absolute',
                 'z-index': '99999',
@@ -69,12 +93,12 @@
             .appendTo(container);
 
         var Scribe = require('scribe');
-        var scribe = new Scribe(this._inlineEditor[0]);
+        this._inlineEditor = new Scribe(this._inlineEditorContainer[0]);
 
 
-        scribe.setContent('<p>Hello, World!</p>');
+        this._inlineEditor.setContent(this.getElement().asHtml());
 
-        this._inlineEditor.focus();
+        this._inlineEditorContainer.focus();
     };
 
     /** @override */
@@ -94,9 +118,9 @@
         var minWidth = sceneBBox.getWidth() + 'px';
         var minHeight = sceneBBox.getHeight() + 'px';
 
-        this._inlineEditor
+        this._inlineEditorContainer
             .css({
-                'min-width': minWidth,
+                'width': minWidth,
                 'min-height': minHeight,
                 'top': top,
                 'left': left,
@@ -107,8 +131,9 @@
 
     /** @override */
     GXTextEditor.prototype.finishInlineEdit = function () {
-        this.getElement().setProperty('tx', this._inlineEditor.text());
-        this._inlineEditor.remove();
+        this.getElement().fromHtml(this._inlineEditor.getContent());
+        this._inlineEditorContainer.remove();
+        this._inlineEditorContainer = null;
         this._inlineEditor = null;
 
         this.setFlag(GXBlockEditor.Flag.ResizeAll);

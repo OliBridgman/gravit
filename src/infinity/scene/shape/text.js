@@ -11,15 +11,12 @@
             //return callback('Font could not be loaded: ' + request.statusText);
         }
         _fontArray = request.response;
-        font = opentype.parse(_fontArray);
-        if (!font.supported) {
+        _font = opentype.parse(_fontArray);
+        if (!_font.supported) {
             return callback('Font is not supported (is this a Postscript font?)');
         }
     };
     request.send();
-
-
-    var __SIZE = 48;
 
 
     /**
@@ -58,13 +55,15 @@
      * @private
      */
     GXText.Block = function () {
-        this._setDefaultProperties(GXText.Block.GeometryProperties);
+        this._setDefaultProperties(GXText.Block.Properties);
     };
+
+    GObject.inheritAndMix(GXText.Block, GXNode, [GXNode.Properties, GXNode.Store]);
 
     /**
      * The geometry properties of a block with their default values
      */
-    GXText.Block.GeometryProperties = {
+    GXText.Block.Properties = {
         /** The font family */
         ff: null,
         /** The font size */
@@ -81,11 +80,132 @@
         ws: null
     };
 
-    GObject.inheritAndMix(GXText.Block, GXNode, [GXNode.Properties, GXNode.Store]);
+    GXText.Block.propertyToCss = function (property, value, css) {
+        if (property === 'ff') {
+            css['font-family'] = value;
+        } else if (property === 'fs') {
+            css['font-size'] = value + 'px';
+        } else if (property === 'fc') {
+            css['color'] = value.asCSSString();
+        } else {
+            throw new Error('Unimplemented property (propertyToCss): ' + property);
+        }
+    };
+
+    GXText.Block.cssToProperty = function (property, css) {
+        if (property === 'ff') {
+            if (css['font-family']) {
+                return css['font-family'];
+            }
+        }
+        if (property === 'fs') {
+            var value = parseInt(css['font-size']);
+            if (!isNaN(value)) {
+                return value;
+            }
+        } else if (property === 'fc') {
+            var value = GXColor.parseCSSColor(css['color']);
+            if (value) {
+                return value;
+            }
+        } else {
+            throw new Error('Unimplemented property (cssToProperty): ' + property);
+        }
+
+        return null;
+    };
+
+    /**
+     * @return {GXText}
+     */
+    GXText.Block.prototype.getText = function () {
+        for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
+            if (parent instanceof GXText) {
+                return parent;
+            }
+        }
+        return null;
+    };
 
     /** @override */
     GXText.Block.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GXText.Block;
+    };
+
+    /** @override */
+    GXText.Block.prototype._handleChange = function (change, args) {
+        var text = this.getText();
+
+        if (text) {
+            if (text._handleGeometryChangeForProperties(change, args, GXText.Block.Properties) && change == GXNode._Change.BeforePropertiesChange) {
+                text._verticesDirty = true;
+            } else if (change == GXNode._Change.BeforeChildInsert || change == GXNode._Change.BeforeChildRemove) {
+                text.beginUpdate();
+            } else if (change == GXNode._Change.AfterChildInsert || change == GXNode._Change.AfterChildRemove) {
+                text._verticesDirty = true;
+                text.endUpdate();
+            }
+        }
+
+        GXNode.prototype._handleChange.call(this, change, args);
+    };
+
+    /**
+     * @param {{}} css
+     * @returns {{}}
+     */
+    GXText.Block.prototype.propertiesToCss = function (css) {
+        return this._propertiesToCss(css, GXText.Block.Properties, GXText.Block.propertyToCss);
+    };
+
+    /**
+     * @param {{}} css
+     */
+    GXText.Block.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, GXText.Block.Properties, GXText.Block.cssToProperty);
+    };
+
+    GXText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
+        for (var property in propertyMap) {
+            var value = this.getProperty(property);
+            if (value !== null) {
+                propertyConverter(property, value, css);
+            }
+        }
+        return css;
+    };
+
+    GXText.Block.prototype._cssToProperties = function (css, propertyMap, propertyConverter) {
+        var properties = [];
+        var values = [];
+        for (var property in propertyMap) {
+            var value = propertyConverter(property, css);
+            properties.push(property);
+            values.push(value);
+        }
+
+        if (properties.length > 0) {
+            this.setProperties(properties, values);
+        }
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXText.Break Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class GXText.Break
+     * @extends GXText.Block
+     * @private
+     */
+    GXText.Break = function () {
+        GXText.Block.call(this);
+    }
+
+    GXNode.inherit("txBrk", GXText.Break, GXText.Block);
+
+    /** @override */
+    GXText.Break.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GXText.Paragraph || parent instanceof GXText.Span;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -98,7 +218,7 @@
      * @private
      */
     GXText.Span = function (value) {
-        GXBlock.call(this);
+        GXText.Block.call(this);
         this._setDefaultProperties(GXText.Span.Properties);
         if (value) {
             this.$v = value;
@@ -130,24 +250,37 @@
      * @private
      */
     GXText.Paragraph = function () {
-        GXBlock.call(this);
-        this._setDefaultProperties(GXText.Paragraph.GeometryProperties);
+        GXText.Block.call(this);
+        this._setDefaultProperties(GXText.Paragraph.Properties);
     }
 
     GXNode.inheritAndMix("txPara", GXText.Paragraph, GXText.Block, [GXNode.Container]);
 
     /**
+     * Alignment of a paragraph
+     * @enum
+     */
+    GXText.Paragraph.Alignment = {
+        Left: 'l',
+        Center: 'c',
+        Right: 'r',
+        Justify: 'j'
+    };
+
+    /**
      * The geometry properties of a paragraph with their default values
      */
-    GXText.Paragraph.GeometryProperties = {
-        /** Whether to hyphenate or not */
-        hy: null,
-        /** The paragraph's alignment (0=left,1=center,2=right,3=justify) */
+    GXText.Paragraph.Properties = {
+        /** Column count */
+        cc: null,
+        /** Column gap */
+        cg: null,
+        /** The paragraph's alignment (GXText.Paragraph.Alignment) */
         al: null,
         /** The first line intendation */
         in: null,
-        /** The line spacing */
-        ls: null,
+        /** The line height whereas 1 = 100% */
+        lh: null,
         /** Top margin */
         mt: null,
         /** Right margin */
@@ -158,9 +291,67 @@
         ml: null
     };
 
+    GXText.Paragraph.propertyToCss = function (property, value, css) {
+        if (property === 'cc') {
+            value = value || 1;
+            css['column-count'] = value;
+            css['-webkit-column-count'] = value;
+            css['-moz-column-count'] = value;
+        } else if (property === 'cg') {
+            css['column-gap'] = value;
+            css['-webkit-column-gap'] = value;
+            css['-moz-column-gap'] = value;
+        } else if (property === 'lh') {
+            css['line-height'] = value;
+        } else {
+            throw new Error('Unimplemented property (propertyToCss): ' + property);
+        }
+        // TODO : MORE
+    };
+
+    GXText.Paragraph.cssToProperty = function (property, css) {
+        if (property === 'lh') {
+            var lineHeight = parseFloat(css['line-height']);
+            if (!isNaN(lineHeight)) {
+                return lineHeight;
+            }
+        } else {
+            throw new Error('Unimplemented property (cssToProperty): ' + property);
+        }
+        // TODO : MORE
+        return null;
+    };
+
+    /** @override */
+    GXText.Paragraph.prototype._handleChange = function (change, args) {
+        var text = this.getText();
+
+        if (text) {
+            if (text._handleGeometryChangeForProperties(change, args, GXText.Paragraph.Properties) && change == GXNode._Change.BeforePropertiesChange) {
+                text._verticesDirty = true;
+            }
+        }
+
+        GXText.Block.prototype._handleChange.call(this, change, args);
+    };
+
     /** @override */
     GXText.Paragraph.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GXText.Content;
+    };
+
+    /** @override */
+    GXText.Paragraph.prototype.propertiesToCss = function (css) {
+        this._propertiesToCss(css, GXText.Paragraph.Properties, GXText.Paragraph.propertyToCss);
+        return GXText.Block.prototype.propertiesToCss.call(this, css);
+    };
+
+    /**
+     * @param {{}} css
+     */
+    GXText.Paragraph.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, GXText.Paragraph.Properties, GXText.Paragraph.cssToProperty);
+        GXText.Block.prototype.cssToProperties.call(this, css);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -168,20 +359,31 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @class GXText.Content
-     * @extends GXText.Block
-     * @mixes GXNode.Container
+     * @extends GXText.Paragraph
      * @private
      */
     GXText.Content = function () {
-        GXBlock.call(this);
+        GXText.Paragraph.call(this);
         this._flags |= GXNode.Flag.Shadow;
-    }
 
-    GXNode.inheritAndMix("txContent", GXText.Content, GXText.Block, [GXNode.Container]);
+        // Setup default font stuff
+        this.$fs = 12;
+        this.$ff = 'Arial';
+        this.$fc = new GXColor(GXColor.Type.Black);
+        this.$lh = 1;
+    };
+
+    GXNode.inherit("txContent", GXText.Content, GXText.Paragraph);
 
     /** @override */
     GXText.Content.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GXText;
+    };
+
+    /** @override */
+    GXText.Content.prototype.propertiesToCss = function (css) {
+        css['word-wrap'] = 'break-word';
+        return GXText.Paragraph.prototype.propertiesToCss.call(this, css);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -192,6 +394,12 @@
      * @private
      */
     GXText.prototype._content = null;
+
+    /**
+     * @type {GPoint}
+     * @private
+     */
+    GXText.prototype._size = null;
 
     /**
      * @type {GXVertexContainer}
@@ -210,6 +418,12 @@
      * @returns {GXText.Content}
      */
     GXText.prototype.getContent = function () {
+        // If we have a _content reference and it not
+        // has ourself as a parent, then clear it, first
+        if (this._content && this._content.getParent() !== this) {
+            this._content = null;
+        }
+
         if (!this._content) {
             // Find our content and save reference for faster access
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
@@ -226,6 +440,44 @@
         }
 
         return this._content;
+    };
+
+    /**
+     * Converts the underlying content to a html string
+     * @param {Boolean} segments if true, each single character
+     * will be enclosed by a span. Defaults to false.
+     * Defaults to false.
+     * @returns {String}
+     */
+    GXText.prototype.asHtml = function (segments) {
+        var dummy = $('<div></div>');
+        this._asHtml(dummy, this.getContent(), segments);
+        return dummy.html();
+    };
+
+    /**
+     * Clears and replaces the contents of this text from
+     * a given html string
+     * @param {String} html
+     */
+    GXText.prototype.fromHtml = function (html) {
+        this.beginUpdate();
+        try {
+            var content = this.getContent();
+
+            // Clear our contents
+            content.clearChildren(true);
+
+            // Convert html code into a dom
+            var htmlDoc = $(html);
+
+            // Recursively iterate html dom and reconstruct our contents from it
+            htmlDoc.each(function (index, element) {
+                this._fromHtml($(element), content);
+            }.bind(this));
+        } finally {
+            this.endUpdate();
+        }
     };
 
     /** @override */
@@ -247,152 +499,6 @@
         return false;
     };
 
-
-    var cv = document.createElement('canvas');
-    var context = cv.getContext('2d');
-
-
-
-
-    GXText.prototype._buildRuns = function (lineLength, stack, runs, block) {
-        var _getProperty = function (property, defaultValue) {
-            var val = block.getProperty(property, false, null);
-            if (val === null) {
-                for (var i = stack.length - 1; i >= 0; --i) {
-                    val = stack[i].getProperty(property, false, null);
-                    if (val !== null) {
-                        break;
-                    }
-                }
-            }
-            return val !== null ? val : defaultValue;
-        };
-
-        if (block instanceof GXText.Paragraph) {
-            runs.push({
-                type: 'paragraph',
-                hyphenate: _getProperty('hy', false),
-                alignment: _getProperty('al', 0),
-                indentation: _getProperty('in', 0),
-                lineSpacing: _getProperty('ls', 0),
-                marginTop: _getProperty('mt', 0),
-                marginRight: _getProperty('mr', 0),
-                marginBottom: _getProperty('mb', 0),
-                marginLeft: _getProperty('ml', 0)
-            })
-        }
-        else if (block instanceof GXText.Span) {
-            var value = block.getProperty('v');
-            if (value !== null && value !== "") {
-                var words = value.split(/\s/);
-
-                for (var i = 0; i < words.length; ++i) {
-                    var word = words[i];
-
-                    var run = {
-                        type: 'word',
-                        value: word,
-                        charSpacing: _getProperty('cs', 0),
-                        wordSpacing: _getProperty('ws', 0),
-                        fontFamily: _getProperty('ff', 'Arial'),
-                        fontSize: _getProperty('fs', 12),
-                        fontColor: _getProperty('fc', new GXColor(GXColor.Type.Black)),
-                        fontBold: _getProperty('fb', false),
-                        fontItalic: _getProperty('fi', false)
-                    };
-
-                    context.font = run.fontSize + "px " + run.fontFamily;
-                    run.metrics = context.measureText(word);
-
-                    runs.push(run);
-                }
-            }
-        }
-
-        if (block.hasMixin(GXNode.Container)) {
-            stack.push(block);
-
-            for (var child = block.getFirstChild(); child !== null; child = child.getNext()) {
-                this._buildRuns(lineLength, stack, runs, child);
-            }
-
-            stack.pop();
-        }
-    };
-
-    GXText.prototype._buildHtml = function (stack, block) {
-        var _getProperty = function (property, defaultValue) {
-            var val = block.getProperty(property, false, null);
-            if (val === null) {
-                for (var i = stack.length - 1; i >= 0; --i) {
-                    val = stack[i].getProperty(property, false, null);
-                    if (val !== null) {
-                        break;
-                    }
-                }
-            }
-            return val !== null ? val : defaultValue;
-        };
-
-        var result = "";
-
-        if (block instanceof GXText.Paragraph) {
-            result += '<p style="';
-
-            result += 'margin:' +
-                _getProperty('mt', 0) + 'px ' +
-                _getProperty('mr', 0) + 'px ' +
-                _getProperty('mb', 0) + 'px ' +
-                _getProperty('ml', 0) + 'px;' +
-                'line-height: 1.2;';
-
-            result += '">';
-        }
-        else if (block instanceof GXText.Span) {
-            var value = block.getProperty('v');
-            if (value !== null && value !== "") {
-                result += '<span style="';
-
-                var fontSize = _getProperty('fs', 12);
-
-                result += 'letter-spacing:' +
-                    _getProperty('cs', 0) + 'px;' +
-                    'font-family:' +
-                    _getProperty('ff', 'Arial') + ';' +
-                    'font-size:' +
-                    fontSize + 'px;' +
-                'display:inline-block';
-
-                result += '" data-fs="' + fontSize + '">';
-
-                for (var i = 0; i < value.length; ++i) {
-                    result += '<span style="position:relative" data-segment="true">' + value[i] + '</span>'
-                }
-            }
-        }
-
-        if (block.hasMixin(GXNode.Container)) {
-            stack.push(block);
-
-            for (var child = block.getFirstChild(); child !== null; child = child.getNext()) {
-                result += this._buildHtml(stack, child);
-            }
-
-            stack.pop();
-        }
-
-        if (block instanceof GXText.Paragraph) {
-            result += '</p>';
-        }
-        else if (block instanceof GXText.Span) {
-            result += '</span>';
-        }
-
-        return result;
-    };
-
-    var _counter = 0;
-
     /** @override */
     GXText.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null) {
@@ -406,145 +512,49 @@
                 textBox = this.$trf.mapRect(textBox);
             }
 
-            var html = this._buildHtml([], this.getContent());
-
-            //console.log(html);
-
-            var tmp = $('<div></div>')
+            // Create our temporary container for holding our html contents
+            var container = $('<div></div>')
+                .css(this.getContent().propertiesToCss({}))
                 .css({
                     'position': 'absolute',
-                    'z-index': '999999',
                     'top': '0px',
                     'left': '0px',
-                    //'visibility': 'hidden'/*,
+                    'visibility': 'hidden',
                     'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : ''
                 })
-                .html(html)
+                .html(this.asHtml(true))
                 .appendTo($('body'));
 
-            var lineBL = 0;
-            var yMin = null;
-            var yMax = null;
-            var maxFontSize = 72;
+            // Prepare size information
+            var maxWidth = null;
             var maxHeight = null;
-            var minTop = null;
 
-            tmp.find('[data-segment="true"]').each(function (index, span) {
-                var y1 = span.offsetTop;
-                var y2 = span.offsetTop + span.offsetHeight;
+            container.find('span:not(:has(span))').each(function (index, span) {
+                var $span = $(span);
+                var rect = span.getBoundingClientRect();
+                var fontSize = parseInt($span.css('font-size'));
+                var font = _font; // TODO : FIX THIS
+                var char = $span.text()[0];
+                var glyph = font.charToGlyph(char);
+                var scale = 1 / font.unitsPerEm * fontSize;
+                var height = (glyph.yMax - glyph.yMin) * scale;
 
-                if (yMin == null || y1 < yMin) yMin = y1;
-                if (yMax == null || y2 > yMax) yMax = y2;
+                // Ignore zero height spans and empty spans
+                if (rect.height <= 0 || char === ' ') {
+                    return;
+                }
 
-                if (minTop == null || yMin < minTop) minTop = yMin;
-                if (maxHeight == null || span.offsetHeight > maxHeight) maxHeight = span.offsetHeight;
-            });
+                // Calculate our span's baseline
+                var baseline = rect.top + (height + (((font.ascender) * scale) - height));
 
-            lineBL = Math.abs(yMax - yMin);
+                // Calculate our span's real x/y values
+                var x = textBox.getX() + rect.left;
+                var y = textBox.getY() + baseline;
 
-            var maxAscender = (font.ascender) * (1 / font.unitsPerEm * maxFontSize);
-            var totalAscender = (font.ascender - font.descender) * (1 / font.unitsPerEm * maxFontSize);
-            var x = font.charToGlyph('x');
-            var midBL = (x.yMax ) * (1 / font.unitsPerEm * maxFontSize);
+                // Query the path for the glyph
+                var path = glyph.getPath(x, y, fontSize);
 
-
-
-            // For text leading values, we measure a multiline
-            // text container as built by the browser.
-            var leadDiv = document.createElement("div");
-            leadDiv.style.position = "absolute";
-            leadDiv.style.opacity = 0;
-            leadDiv.style.font = maxFontSize + "px 'Arial'";
-            var numLines = 10;
-            leadDiv.innerHTML = 'WqA';
-            for (var i = 1; i < numLines; i++) {
-                leadDiv.innerHTML += "<br/>" + 'WqA';
-            }
-            document.body.appendChild(leadDiv);
-
-            // First we guess at the leading value, using the standard TeX ratio.
-            var __leading = 0.2 * maxFontSize;
-
-            // Shortcut function for getting computed CSS values
-            var getCSSValue = function (element, property) {
-                return document.defaultView.getComputedStyle(element, null).getPropertyValue(property);
-            };
-
-            // We then try to get the real value based on how
-            // the browser renders the text.
-
-            var leadDivHeight = getCSSValue(leadDiv,"height");
-            leadDivHeight = leadDivHeight.replace("px","");
-            if (leadDivHeight >= maxFontSize * numLines) {
-                __leading = (leadDivHeight / numLines) | 0;
-            }
-            document.body.removeChild(leadDiv);
-            __leading = __leading - maxFontSize;
-
-
-
-
-            var __baseline = maxFontSize;
-
-
-            //console.log('BUILD_TEXT_PATH (' + (_counter++) + ': ' + html);
-
-            tmp.find('[data-segment="true"]').each(function (index, span) {
-
-                var x = span.offsetLeft + textBox.getX();
-                var y = span.offsetTop + textBox.getY();
-                var glyph = font.charToGlyph(span.textContent[0]);
-
-
-
-                var fontSize = parseInt(span.parentNode.getAttribute('data-fs'));
-
-                var scale = 1 / glyph.font.unitsPerEm * fontSize;
-                //var dy = glyph.yMax * scale;
-
-                var asc = glyph.font.ascender / glyph.font.unitsPerEm;
-                var leading = (glyph.font.ascender - glyph.font.descender) * scale;
-
-
-                var maxHeight = glyph.yMax - glyph.yMin;
-                var baseline = /* glyphMargin + glyphH */fontSize * glyph.yMax / maxHeight;
-
-
-
-if (isNaN(baseline)) {
-    return;
-}
-
-
-                //console.log('SPAN: ' + span.textContent + '; X=' + span.offsetLeft + '; Y=' + span.offsetTop + ';W=' + span.offsetWidth + '; BL=' + baseline);
-
-                //console.log('LEAD: ' + (glyph.font.ascender * scale));
-
-
-
-
-
-                var bottom = span.getBoundingClientRect().bottom;
-
-                //console.log('BOTTOM: ' + bottom);
-
-
-                var asc = maxFontSize * 0.2;// (glyph.font.ascender - glyph.yMax) * (1 / glyph.font.unitsPerEm * maxFontSize);
-
-                var gBottom = (-glyph.yMin * scale);
-                var gTop = (-glyph.yMax * scale);
-
-                var height = (glyph.yMax-glyph.yMin) * scale;
-
-                //var height = (font.ascender - font.descender) *scale;
-
-                var dy = height + (((font.ascender) * scale)-height) - (__leading/2);// height;// bottom - __leading *2;//maxAscender - (__leading / 2);//0;//bottom;//__baseline - asc;//36 - asc;// (fontSize - (glyph.font.ascender * scale));
-
-                var path = glyph.getPath(x, y + dy, fontSize);
-                //var path = font.getPath(run, x, y, run.fontSize);
-                // If you just want to draw the text you can also use font.draw(ctx, text, x, y, fontSize).
-
-
+                // Add the path to our vertices
                 for (var i = 0; i < path.commands.length; i += 1) {
                     var cmd = path.commands[i];
                     if (cmd.type === 'M') {
@@ -563,10 +573,22 @@ if (isNaN(baseline)) {
                     }
                 }
 
-
+                // Contribute to size if necessary
+                if (maxWidth === null || rect.right > maxWidth) {
+                    maxWidth = rect.right;
+                }
+                if (maxHeight === null || rect.bottom > maxHeight) {
+                    maxHeight = rect.bottom;
+                }
             }.bind(this));
 
-            tmp.remove();
+            // Remove our container now
+            container.remove();
+
+            // Assign new size information
+            this._size = new GPoint(maxWidth, maxHeight);
+
+            // We're done here
             this._verticesDirty = false;
         }
         return this._vertices ? this._vertices.rewindVertices(index) : false;
@@ -579,61 +601,15 @@ if (isNaN(baseline)) {
 
     /** @override */
     GXText.prototype._calculateGeometryBBox = function () {
-        var html = this._buildHtml([], this.getContent());
+        // Always rewind to ensure integrity
+        this.rewindVertices(0);
 
-        // Calculate our actual text box and line length
-        var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+        var origin = new GPoint(0, 0);
         if (this.$trf) {
-            textBox = this.$trf.mapRect(textBox);
+            origin = this.$trf.mapPoint(origin);
         }
 
-        var tmp = $('<div></div>')
-            .css({
-                'position': 'absolute',
-                'z-index': '999999',
-                //'visibility': 'hidden'/*,
-                //'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : 'auto'*/
-                'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : ''
-            })
-            .html(html)
-            .appendTo($('body'));
-
-        var lineBL = 0;
-
-        var pt = new GPoint(0, 0);
-        if (this.$trf) {
-            pt = this.$trf.mapPoint(pt);
-        }
-
-        var result = new GRect(pt.getX(), pt.getY(), tmp.outerWidth(), tmp.outerHeight());
-
-        tmp.remove();
-
-        return result;
-
-        /*
-        if (this.$trf) {
-            var box = this.$trf.mapRect(GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1)));
-
-            if (!this.$fw || !this.$fh) {
-                var vertexBounds = gVertexInfo.calculateBounds(this, true);
-
-                var deltaX = vertexBounds ? vertexBounds.getX() - box.getX() : 0;
-                var deltaY = vertexBounds ? vertexBounds.getY() - box.getY() : 0;
-
-                box = new GRect(
-                    box.getX(),
-                    box.getY(),
-                    !this.$fw && vertexBounds ? vertexBounds.getWidth() + deltaX : box.getWidth(),
-                    !this.$fh && vertexBounds ? vertexBounds.getHeight() + deltaY : box.getHeight()
-                );
-            }
-
-            return box;
-        } else {
-            return GXShape.prototype._calculateGeometryBBox.call(this);
-        }
-        */
+        return new GRect(origin.getX(), origin.getY(), this._size.getX(), this._size.getY());
     };
 
     /** @override */
@@ -652,17 +628,100 @@ if (isNaN(baseline)) {
         }
 
         if (change === GXNode._Change.BeforePropertiesChange) {
-            if (args.properties.indexOf('trf') >= 0) {
+            var transformIdx = args.properties.indexOf('trf');
+            if (transformIdx >= 0 && !this._verticesDirty) {
+                // TODO : Optimize for cases where no invalidation of vertices is required
+                /*
+                 // Check whether only translation was changed and if that's
+                 // the case we'll simply translate our existing vertices,
+                 // otherwise we'll invalidate the vertices
+                 var newTransform = args.values[transformIdx];
+                 var inverseTransform = this.$trf ? this.$trf.inverted() : new GTransform(1, 0, 0, 1, 0, 0);
+                 var deltaTransform = newTransform.multiplied(inverseTransform);
+                 if (deltaTransform.isIdentity(true)) {
+                 if (this._vertices) {
+                 var translation = deltaTransform.getTranslation();
+                 this._vertices.transformVertices(new GTransform(1, 0, 0, 1, translation.getX(), translation.getY()));
+                 }
+                 } else {
+                 this._verticesDirty = true;
+                 }
+                 */
                 this._verticesDirty = true;
             }
         }
     };
 
-    // TODO : Remove this and handle properly / automatically
-    GXText.prototype.invalidateText = function () {
-        this.beginUpdate();
-        this._verticesDirty = true;
-        this.endUpdate();
+    /**
+     * Convert contents to html
+     * @param parent
+     * @param block
+     * @param segments
+     * @private
+     */
+    GXText.prototype._asHtml = function (parent, block, segments) {
+        if (block instanceof GXText.Content) {
+            // ignore root
+        } else if (block instanceof GXText.Paragraph) {
+            parent = $('<p></p>')
+                .css(block.propertiesToCss({}))
+                .appendTo(parent);
+        } else if (block instanceof GXText.Break) {
+            $('<br>')
+                .appendTo(parent);
+        } else if (block instanceof GXText.Span) {
+            var value = block.getProperty('v');
+            if (value && value !== "") {
+                parent = $('<span></span>')
+                    .css(block.propertiesToCss({}))
+                    .appendTo(parent);
+
+                if (segments) {
+                    for (var i = 0; i < value.length; ++i) {
+                        parent.append($('<span></span>')
+                                .text(value[i]))
+                            .appendTo(parent);
+                    }
+                } else {
+                    parent.text(value);
+                }
+            }
+        }
+
+        if (block.hasMixin(GXNode.Container)) {
+            for (var child = block.getFirstChild(); child !== null; child = child.getNext()) {
+                this._asHtml(parent, child, segments);
+            }
+        }
+    };
+
+    /**
+     * @param element
+     * @param parent
+     * @private
+     */
+    GXText.prototype._fromHtml = function (element, parent) {
+        var tagName = element.prop('tagName');
+        if (tagName === 'P') {
+            var paragraph = new GXText.Paragraph();
+            paragraph.cssToProperties(element[0].style);
+            parent.appendChild(paragraph);
+            parent = paragraph;
+
+        } else if (tagName === 'BR') {
+            parent.appendChild(new GXText.Break());
+        } else if (tagName === 'SPAN') {
+            var span = new GXText.Span();
+            span.cssToProperties(element[0].style);
+            parent.appendChild(span);
+            parent = span;
+            span.setProperty('v', element.text());
+            span.setProperty('fs', parseInt(element.css('font-size')));
+        }
+
+        element.children().each(function (index, element) {
+            this._fromHtml($(element), parent);
+        }.bind(this));
     };
 
     /** @override */
