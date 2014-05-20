@@ -4,7 +4,7 @@
     var _font = null;
 
     var request = new XMLHttpRequest();
-    request.open('get', '../bower_components/opentype.js/fonts/Arial.ttf', true);
+    request.open('get', 'font/Arial.ttf', true);
     request.responseType = 'arraybuffer';
     request.onload = function () {
         if (request.status !== 200) {
