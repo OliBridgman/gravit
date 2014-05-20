@@ -26,7 +26,15 @@
          * Defines a flag for being locked
          * @type {Number}
          */
-        Locked: 1 << 22
+        Locked: 1 << 22,
+
+        /**
+         * Defines a flag for no painting which
+         * is different to hidden as this will
+         * behave as being visible just contents
+         * won't be painted at all
+         */
+        NoPaint: 1 << 23
     };
 
     /**
@@ -656,13 +664,11 @@
      * @private
      */
     GXElement.prototype._preparePaint = function (context) {
-        if (this.isPaintable(context)) {
-            return true;
+        if (this.hasFlag(GXElement.Flag.NoPaint)) {
+            return false;
         }
 
-        // TODO : If print mode then set clipping to page
-
-        return false;
+        return this.isPaintable(context);
     };
 
     /**
@@ -892,6 +898,17 @@
             // If child is an element, notify about the change
             if (args instanceof GXElement) {
                 this._notifyChange(GXElement._Change.ChildGeometryUpdate, args);
+            }
+
+            // Call super and be done with it
+            GXNode.prototype._handleChange.call(this, change, args);
+        } else if (change == GXNode._Change.AfterFlagChange) {
+            switch (args.flag) {
+                case GXElement.Flag.NoPaint:
+                    this._requestInvalidation();
+                    break;
+                default:
+                    break;
             }
 
             // Call super and be done with it
