@@ -2,14 +2,11 @@
     "name": "gravit",
     "version": "0.0.1",
     "dependencies": {
-        "almond": "latest",
         "jquery": "~1.10.2",
         "mousetrap": "latest",
         "font-awesome": "latest",
         "jqtree": "latest",
-        "scribe": "latest",
-        "opentype.js": "latest",
-        "typeset": "git+https://github.com/bramstein/typeset#latest"
+        "opentype.js": "latest"
     },
     "devDependencies": {},
     "private": true
