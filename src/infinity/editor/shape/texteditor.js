@@ -17,7 +17,7 @@
      * @type {HTMLDivElement}
      * @private
      */
-    GXTextEditor.prototype._inlineEditorContainer = null;
+    GXTextEditor.prototype._inlineEditor = null;
 
     /**
      * @type {Scribe}
@@ -64,15 +64,19 @@
         this.removeFlag(GXBlockEditor.Flag.ResizeAll);
         this.getElement().setFlag(GXElement.Flag.NoPaint);
 
-        this._inlineEditorContainer = $($('<div></div>'))
+        var html = this.getElement().asHtml();
+
+        this._inlineEditor = $($('<div></div>'))
             .css(this.getElement().getContent().propertiesToCss({}))
             .css({
                 'position': 'absolute',
                 'background': 'transparent',
                 'transform-origin': '0% 0%',
-                '-webkit-transform-origin': '0% 0%'
+                '-webkit-transform-origin': '0% 0%',
+                'min-width': '1em',
+                'min-height': '1em'
             })
-            //.attr('contenteditable', 'true')
+            .attr('contenteditable', 'true')
             .on('mousedown', function (evt) {
                 evt.stopPropagation();
             })
@@ -91,22 +95,20 @@
             .on('keyup', function (evt) {
                 evt.stopPropagation();
             })
+            .html(html)
             .appendTo(container);
 
-        var Scribe = require('scribe');
-        this._inlineEditor = new Scribe(this._inlineEditorContainer[0]);
+        this._inlineEditor.focus();
 
-
-        this._inlineEditor.setContent(this.getElement().asHtml());
-
-        this._inlineEditorContainer.focus();
+        // Let firefox insert no <br> on return
+        document.execCommand("InsertParagraph", false, 'test');
     };
 
     /** @override */
     GXTextEditor.prototype.adjustInlineEditForView = function (view) {
         var sceneBBox = this.getElement().getGeometryBBox();
         if (!sceneBBox) {
-            sceneBBox = GRect.fromPoints(new GPoint(-1, -1), new GPoint(1, 1));
+            sceneBBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
             var transform = this.getElement().getTransform();
             if (transform) {
                 sceneBBox = transform.mapRect(sceneBBox);
@@ -116,12 +118,12 @@
         var viewBBox = view.getWorldTransform().mapRect(sceneBBox);
         var left = viewBBox.getX();
         var top = viewBBox.getY();
-        var minWidth = sceneBBox.getWidth() + 'px';
-        var minHeight = sceneBBox.getHeight() + 'px';
+        var minWidth = sceneBBox.getWidth() <= 0 ? '1em' : sceneBBox.getWidth() + 'px';
+        var minHeight = sceneBBox.getHeight() <= 0 ? '1em' : sceneBBox.getHeight() + 'px';
 
-        this._inlineEditorContainer
+        this._inlineEditor
             .css({
-                'width': minWidth,
+                'min-width': minWidth,
                 'min-height': minHeight,
                 'top': top,
                 'left': left,
@@ -132,9 +134,8 @@
 
     /** @override */
     GXTextEditor.prototype.finishInlineEdit = function () {
-        this.getElement().fromHtml(this._inlineEditor.getContent());
-        this._inlineEditorContainer.remove();
-        this._inlineEditorContainer = null;
+        this.getElement().fromHtml(this._inlineEditor.html().replace(/<br>$/, ''));
+        this._inlineEditor.remove();
         this._inlineEditor = null;
 
         // Show size handles and our text element

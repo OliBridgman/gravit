@@ -45,6 +45,78 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GXText.Chunk Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class GXText.Chunk
+     * @extends GXNode
+     * @mixes GXNode.Store
+     * @private
+     */
+    GXText.Chunk = function (content) {
+        GXNode.call(this);
+        this._content = content;
+    }
+
+    GXNode.inheritAndMix("txChk", GXText.Chunk, GXNode, [GXNode.Store]);
+
+    /**
+     * @type {String}
+     * @private
+     */
+    GXText.Chunk.prototype._content = null;
+
+    /**
+     * @returns {String}
+     */
+    GXText.Chunk.prototype.getContent = function () {
+        return this._content;
+    };
+
+    /** @override */
+    GXText.Chunk.prototype.store = function (blob) {
+        if (GXNode.Store.prototype.store.call(this, blob)) {
+            blob.cnt = this._content;
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    GXText.Chunk.prototype.restore = function (blob) {
+        if (GXNode.Store.prototype.restore.call(this, blob)) {
+            this._content = blob.cnt;
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    GXText.Chunk.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GXText.Block;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXText.Break Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class GXText.Break
+     * @extends GXNode
+     * @mixes GXNode.Store
+     * @private
+     */
+    GXText.Break = function () {
+        GXNode.call(this);
+    }
+
+    GXNode.inheritAndMix("txBrk", GXText.Break, GXNode, [GXNode.Store]);
+
+    /** @override */
+    GXText.Break.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GXText.Block;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GXText.Block Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -244,25 +316,6 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Break Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @class GXText.Break
-     * @extends GXText.Block
-     * @private
-     */
-    GXText.Break = function () {
-        GXText.Block.call(this);
-    }
-
-    GXNode.inherit("txBrk", GXText.Break, GXText.Block);
-
-    /** @override */
-    GXText.Break.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Paragraph || parent instanceof GXText.Span;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
     // GXText.Span Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -271,23 +324,12 @@
      * @mixes GXNode.Container
      * @private
      */
-    GXText.Span = function (value) {
+    GXText.Span = function () {
         GXText.Block.call(this);
         this._setDefaultProperties(GXText.Span.Properties);
-        if (value) {
-            this.$v = value;
-        }
     }
 
     GXNode.inheritAndMix("txSpan", GXText.Span, GXText.Block, [GXNode.Container]);
-
-    /**
-     * The properties of a span with their default values
-     */
-    GXText.Span.Properties = {
-        /** The text value / content */
-        v: ""
-    };
 
     /** @override */
     GXText.Span.prototype.validateInsertion = function (parent, reference) {
@@ -603,13 +645,14 @@
             // Clear our contents
             content.clearChildren(true);
 
-            // Convert html code into a dom
-            var htmlDoc = $(html);
-
-            // Recursively iterate html dom and reconstruct our contents from it
-            htmlDoc.each(function (index, element) {
-                this._fromHtml($(element), content);
-            }.bind(this));
+            // Parse html into a dummy element for iterating (if any)
+            if (html && html !== "") {
+                var doc = document.createElement('div');
+                doc.innerHTML = html;
+                for (var child = doc.firstChild; child !== null; child = child.nextSibling) {
+                    this._fromHtml(child, content);
+                }
+            }
         } finally {
             this.endUpdate();
         }
@@ -790,41 +833,40 @@
     /**
      * Convert contents to html
      * @param parent
-     * @param block
+     * @param node
      * @param segments
      * @private
      */
-    GXText.prototype._asHtml = function (parent, block, segments) {
-        if (block instanceof GXText.Content) {
-            // ignore root
-        } else if (block instanceof GXText.Paragraph) {
-            parent = $('<p></p>')
-                .css(block.propertiesToCss({}))
-                .appendTo(parent);
-        } else if (block instanceof GXText.Break) {
+    GXText.prototype._asHtml = function (parent, node, segments) {
+        if (node instanceof GXText.Break) {
             $('<br>')
                 .appendTo(parent);
-        } else if (block instanceof GXText.Span) {
-            var value = block.getProperty('v');
-            if (value && value !== "") {
-                parent = $('<span></span>')
-                    .css(block.propertiesToCss({}))
-                    .appendTo(parent);
-
+        } else if (node instanceof GXText.Chunk) {
+            var content = node.getContent();
+            if (content && content !== "") {
                 if (segments) {
-                    for (var i = 0; i < value.length; ++i) {
-                        parent.append($('<span></span>')
-                                .text(value[i]))
+                    for (var i = 0; i < content.length; ++i) {
+                        $('<span></span>')
+                            .text(content[i])
                             .appendTo(parent);
                     }
                 } else {
-                    parent.text(value);
+                    parent.append(document.createTextNode(content));
                 }
             }
+        } else if (node instanceof GXText.Content) {
+            // ignore root
+        } else if (node instanceof GXText.Paragraph) {
+            parent = $('<p></p>')
+                .css(node.propertiesToCss({}))
+                .appendTo(parent);
+        } else if (node instanceof GXText.Span) {
+            parent = $('<span></span>')
+                .css(node.propertiesToCss({}))
+                .appendTo(parent);
         }
-
-        if (block.hasMixin(GXNode.Container)) {
-            for (var child = block.getFirstChild(); child !== null; child = child.getNext()) {
+        if (node.hasMixin(GXNode.Container)) {
+            for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
                 this._asHtml(parent, child, segments);
             }
         }
@@ -835,28 +877,42 @@
      * @param parent
      * @private
      */
-    GXText.prototype._fromHtml = function (element, parent) {
-        var tagName = element.prop('tagName');
-        if (tagName === 'P') {
-            var paragraph = new GXText.Paragraph();
-            paragraph.cssToProperties(element[0].style);
-            parent.appendChild(paragraph);
-            parent = paragraph;
+    GXText.prototype._fromHtml = function (node, parent) {
+        if (node.nodeType === 1) {
+            var nodeName = node.nodeName.toLowerCase();
 
-        } else if (tagName === 'BR') {
-            parent.appendChild(new GXText.Break());
-        } else if (tagName === 'SPAN') {
-            var span = new GXText.Span();
-            span.cssToProperties(element[0].style);
-            parent.appendChild(span);
-            parent = span;
-            span.setProperty('v', element.text());
-            span.setProperty('fi', parseInt(element.css('font-size')));
+            if (nodeName === 'p' || nodeName === 'div') {
+                var paragraph = new GXText.Paragraph();
+                paragraph.cssToProperties(node.style);
+                parent.appendChild(paragraph);
+                parent = paragraph;
+            } else if (nodeName === 'span' ||  nodeName === 'b' || nodeName === 'strong' || nodeName === 'i') {
+                var span = new GXText.Span();
+                span.cssToProperties(node.style);
+                parent.appendChild(span);
+                parent = span;
+
+                if (nodeName === 'b' || nodeName === 'strong') {
+                    span.setProperty('fs', GXText.Block.TextStyle.Bold);
+                } else if (nodeName === 'i') {
+                    span.setProperty('fs', GXText.Block.TextStyle.Italic);
+                }
+            } else if (nodeName === 'br') {
+                parent.appendChild(new GXText.Break());
+                return; // no children for breaks
+            } else {
+                // ignore the element alltogether
+                return;
+            }
+
+            for (var child = node.firstChild; child !== null; child = child.nextSibling) {
+                this._fromHtml(child, parent);
+            }
+        } else if (node.nodeType === 3) {
+            if (node.textContent !== "") {
+                parent.appendChild(new GXText.Chunk(node.textContent));
+            }
         }
-
-        element.children().each(function (index, element) {
-            this._fromHtml($(element), parent);
-        }.bind(this));
     };
 
     /** @override */
