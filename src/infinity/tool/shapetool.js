@@ -335,7 +335,7 @@
         var dragLine = [transform.mapPoint(this._dragLine[0]), transform.mapPoint(this._dragLine[1])];
 
         // Update shape with scene coordinates
-        this._updateShape(shape, dragArea, dragLine);
+        this._updateShape(shape, dragArea, dragLine, true);
     };
 
     /**
@@ -386,9 +386,11 @@
      * @param {GXShape} shape the shape to update
      * @param {GRect} area the shape area
      * @param {Array<GPoint>} line the shape line
+     * @param {Boolean} scene true if coordinates are in scene coordinates,
+     * this usually is only the case before the shape gets appended
      * @private
      */
-    GXShapeTool.prototype._updateShape = function (shape, area, line) {
+    GXShapeTool.prototype._updateShape = function (shape, area, line, scene) {
         throw new Error("Not Supported.");
     };
 

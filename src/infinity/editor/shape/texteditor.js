@@ -13,6 +13,8 @@
     GObject.inherit(GXTextEditor, GXShapeEditor);
     GXElementEditor.exports(GXTextEditor, GXText);
 
+    var _firefox = /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
+
     /**
      * @type {HTMLDivElement}
      * @private
@@ -100,8 +102,10 @@
 
         this._inlineEditor.focus();
 
-        // Let firefox insert no <br> on return
-        document.execCommand("InsertParagraph", false, 'test');
+        // Insert paragraph for empty content(s) on firefox
+        if (html === "" && _firefox) {
+            document.execCommand("InsertParagraph", false, 'test');
+        }
     };
 
     /** @override */
@@ -134,7 +138,13 @@
 
     /** @override */
     GXTextEditor.prototype.finishInlineEdit = function () {
-        this.getElement().fromHtml(this._inlineEditor.html().replace(/<br>$/, ''));
+        var html = this._inlineEditor.html();
+
+        if (_firefox) {
+            html = html.replace(/<br><\/p>$/, '</p>');
+        }
+
+        this.getElement().fromHtml(html);
         this._inlineEditor.remove();
         this._inlineEditor = null;
 

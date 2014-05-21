@@ -698,7 +698,8 @@
                     'top': '0px',
                     'left': '0px',
                     'visibility': 'hidden',
-                    'width': textBox.getWidth() > 1 ? textBox.getWidth() + 'px' : ''
+                    'width': textBox.getWidth() > 1 && this.$fw ? textBox.getWidth() + 'px' : '',
+                    'height': textBox.getHeight() > 1 && this.$fh ? textBox.getHeight() + 'px' : ''
                 })
                 .html(this.asHtml(true))
                 .appendTo($('body'));
@@ -764,7 +765,7 @@
             container.remove();
 
             // Assign new size information
-            this._size = new GPoint(maxWidth, maxHeight);
+            this._size = maxWidth && maxHeight ? new GPoint(maxWidth, maxHeight) : null;
 
             // We're done here
             this._verticesDirty = false;
@@ -782,12 +783,20 @@
         // Always rewind to ensure integrity
         this.rewindVertices(0);
 
-        var origin = new GPoint(0, 0);
-        if (this.$trf) {
-            origin = this.$trf.mapPoint(origin);
+        // Not having a size means not having a bbox
+        if (!this._size) {
+            return null;
         }
 
-        return new GRect(origin.getX(), origin.getY(), this._size.getX(), this._size.getY());
+        var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+        if (this.$trf) {
+            textBox = this.$trf.mapRect(textBox);
+        }
+
+        var width = this.$fw ? Math.max(textBox.getWidth(), this._size.getX()) : this._size.getX();
+        var height = this.$fw ? Math.max(textBox.getHeight(), this._size.getY()) : this._size.getY();
+
+        return new GRect(textBox.getX(), textBox.getY(), width, height);
     };
 
     /** @override */
