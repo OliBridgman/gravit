@@ -1248,8 +1248,8 @@
 
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, bulge,
                                 segm2.center, segm2.radius));
-                        } else if (iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1b
-                            var arc = this._constructJoinArc(segm1, segm2, segm2.bulge);
+                        } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
@@ -1263,7 +1263,7 @@
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         }
                     } else { // case 2, construct arc
-                        var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                        var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
                         polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                     }
@@ -1275,8 +1275,10 @@
                                 segm1.bulge);
                             polyONew.end.bulge = newBulge;
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
-                        } else if (iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1b
-                            var arc = this._constructJoinArc(segm1, segm2, segm1.bulge);
+                        } else if (iRes.intTypes[0].FIP &&
+                                iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
+
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                                 //segm2.point, segm2.bulge, segm2.center, segm2.radius));
@@ -1287,7 +1289,7 @@
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else {
-                        var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                        var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
                         polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                     }
@@ -1308,7 +1310,7 @@
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
                                 iRes.point, newBulge, segm2.center, segm2.radius));
                         } else { // case 1b, construct arc
-                            var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                            var arc = this._constructJoinArc(segm1, segm2, false);
                             polyONew.insertSegment(arc);
 
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
@@ -1317,11 +1319,11 @@
                     } else { // case 2
                         var arc = null;
                         if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                            arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, false);
                         } else if (segm1.radius > segm2.radius){
-                            arc = this._constructJoinArc(segm1, segm2, segm1.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, true);
                         } else {
-                            arc = this._constructJoinArc(segm1, segm2, segm2.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, true);
                         }
                         polyONew.insertSegment(arc);
 
@@ -1363,8 +1365,8 @@
 
                             polyONew.head.point = iRes.point;
                             polyONew.head.bulge = bulge;
-                        } else if (iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1b
-                            var arc = this._constructJoinArc(segm1, segm2, segm2.bulge);
+                        } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                         } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
@@ -1375,7 +1377,7 @@
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else { // case 2, construct arc
-                        var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                        var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
                         polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                     }
@@ -1388,8 +1390,10 @@
                             polyONew.end.bulge = newBulge;
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
                             polyONew.head.point = iRes.point;
-                        } else if (iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1b
-                            var arc = this._constructJoinArc(segm1, segm2, segm1.bulge);
+                        } else if (iRes.intTypes[0].FIP &&
+                                iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
+
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                         } else { // case 1c, 1d
@@ -1399,7 +1403,7 @@
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else {
-                        var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                        var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
                         polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
                     }
@@ -1422,7 +1426,7 @@
                             polyONew.head.point = iRes.point;
                             polyONew.head.bulge = newBulge;
                         } else { // case 1b, construct arc
-                            var arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                            var arc = this._constructJoinArc(segm1, segm2, false);
                             polyONew.insertSegment(arc);
 
                             polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
@@ -1430,11 +1434,11 @@
                     } else { // case 2
                         var arc = null;
                         if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                            arc = this._constructJoinArc(segm1, segm2, -segm2.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, false);
                         } else if (segm1.radius > segm2.radius){
-                            arc = this._constructJoinArc(segm1, segm2, segm1.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, true);
                         } else {
-                            arc = this._constructJoinArc(segm1, segm2, segm2.bulge);
+                            arc = this._constructJoinArc(segm1, segm2, true);
                         }
                         polyONew.insertSegment(arc);
 
@@ -1454,10 +1458,30 @@
      * @return {GXVertexOffsetter.PolySegment} [arc] - constructed arc segment
      * @private
      */
-    GXVertexOffsetter.prototype._constructJoinArc = function (segm1, segm2, exampBulge) {
+    GXVertexOffsetter.prototype._constructJoinArc = function (segm1, segm2, collinear) {
+        // Define bulge sign
+        var sign = 0;
+        if (segm1.bulge) {
+            var dx = segm1.point2.getY() - segm1.center.getY();
+            var dy = segm1.center.getX() - segm1.point2.getX();
+            sign = -gMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
+                segm1.point2.getX() + dx, segm1.point2.getY() + dy,
+                segm2.point.getX(), segm2.point.getY());
+        } else {
+            sign = -gMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
+                segm2.point.getX(), segm2.point.getY());
+        }
+
+        if (!collinear) {
+            sign = -sign;
+        }
+
         var arc = null;
-        var bulge = this._calculateBulge(segm1.point2.getX(), segm1.point2.getY(),
-            segm2.point.getX(), segm2.point.getY(), segm2.basepoint.getX(), segm2.basepoint.getY(), exampBulge);
+        var bulge = 0;
+        if (sign) {
+            bulge = this._calculateBulge(segm1.point2.getX(), segm1.point2.getY(),
+                segm2.point.getX(), segm2.point.getY(), segm2.basepoint.getX(), segm2.basepoint.getY(), sign);
+        }
         if (bulge) {
             arc = new GXVertexOffsetter.PolySegment(segm1.point2, bulge, segm2.basepoint,
                 gMath.ptDist(segm1.point2.getX(), segm1.point2.getY(), segm2.basepoint.getX(), segm2.basepoint.getY()));
@@ -1727,14 +1751,16 @@
     GXVertexOffsetter.prototype._excludeCircleInside = function (polyLn, intPts, intPtsMain, offset, resArray) {
         // TODO: process cases, when several segments appears inside of the circle
         var segmIdx = 0;
-        var segm = polyLn.head;
+        var segm = new GXVertexOffsetter.PolySegment(polyLn.head.point, polyLn.head.bulge,
+            polyLn.head.center, polyLn.head.radius);
+
         var s = polyLn.head;
         var tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
         for (var i = 0; i < intPts.length; ++i) {
             for (var j = segmIdx; j < intPts[i].segmIdx - 1; ++j) {
                 tmpPoly.insertSegment(segm);
                 s = s.next;
-                segm = s;
+                segm = new GXVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius);
             }
 
             if (!segm.bulge) {
@@ -1811,7 +1837,7 @@
             if (segm) {
                 tmpPoly.insertSegment(segm);
                 s = s.next;
-                segm = s;
+                segm = s ? new GXVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius) : null;
             }
         }
     };
