@@ -215,5 +215,112 @@
         return result;
     };
 
+    /**
+     * Checks and returns whether a given string is numeric or not
+     * @param {string} string
+     * @returns {boolean}
+     */
+    GUtil.prototype.isNumeric = function(string) {
+        // parseFloat NaNs numeric-cast false positives (null|true|false|"")
+        // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+        // subtraction forces infinities to NaN
+        return string - parseFloat(string) >= 0;
+    };
+
+    /**
+     * Format a number into a string
+     * @param {Number} number the number to format
+     * @param {Number} [decimalPlaces] the number of decimal places,
+     * defaults to 3
+     * @param {String} [decimalSeparator] the decimal separator to be used,
+     * defaults to ','
+     * @param {String} [thousandSeparator] the thousands separator, defaults
+     * to empty (= no separator)
+     * @param {Boolean} [includeEndingZeros] if true, ending zeros until the given
+     * number of decimal places is reached will be added, otherwise any ending
+     * decimal places with zero will be ignored. Defaults to false.
+     * @returns {string}
+     */
+    GUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator, thousandSeparator, includeEndingZeros) {
+        decimalPlaces = decimalPlaces || 3;
+        decimalSeparator = decimalSeparator || ',';
+        thousandSeparator = thousandSeparator || '';
+
+        var sinal = 1;
+        if (number < 0) {
+            number = -number;
+            sinal = -1;
+        }
+
+        var resposta = "";
+        var part = "";
+        if (number != Math.floor(number)) {
+            part = Math.round((number - Math.floor(number)) * Math.pow(10, decimalPlaces)).toString();
+
+            while (part.length < decimalPlaces) {
+                part = '0' + part;
+            }
+
+            if (!includeEndingZeros && part.length) {
+                // remove ending zero if any
+                var tmpPart = '';
+                for (var i = part.length - 1; i >= 0; --i) {
+                    var char = part.charAt(i);
+                    if (char === '0' && !tmpPart.length) {
+                        continue;
+                    }
+                    tmpPart = char + tmpPart;
+                }
+                part = tmpPart;
+            }
+
+            if (decimalPlaces > 0 && part.length) {
+                resposta = decimalSeparator + part;
+                number = Math.floor(number);
+            } else {
+                number = Math.round(number);
+            }
+        }
+
+        while (number > 0) {
+            part = (number - Math.floor(number / 1000) * 1000).toString();
+            number = Math.floor(number / 1000);
+            if (number > 0) {
+                while (part.length < 3) {
+                    part = '0' + part;
+                }
+            }
+            resposta = part + resposta;
+            if (number > 0) {
+                resposta = thousandSeparator + resposta;
+            }
+        }
+
+        if (sinal < 0) {
+            resposta = '-' + resposta;
+        }
+
+        return resposta;
+    };
+
+    /**
+     * Parses a string into a number
+     * @param {string} the string to be parsed as number
+     * @returns {Number}
+     */
+    GUtil.prototype.parseNumber = function (string) {
+        var parseString = "";
+        var foundDecSep = false;
+        for (var i = string.length; i >= 0; --i) {
+            var char = string.charAt(i);
+            if (char === ',' && !foundDecSep) {
+                parseString = '.' + parseString;
+            } else if (this.isNumeric(char)) {
+                parseString = char + parseString;
+            }
+        }
+        return parseFloat(parseString);
+    };
+
     _.gUtil = new GUtil();
 })(this);
