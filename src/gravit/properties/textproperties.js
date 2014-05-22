@@ -88,7 +88,7 @@
                     .gAutoBlur()
                     .on('change', function () {
                         var value = $(this).val();
-                        value = !value || value === "" ? null : GXLength.parseEquationValue(value);
+                        value = !value || value === "" ? null : GXLength.parseEquationValue(value);
                         if (value === null || value > 0) {
                             self._assignProperty(property, value);
                         } else {
@@ -166,6 +166,28 @@
     };
 
     /**
+     * @param {GXEditor.InlineEditorEvent} event
+     * @private
+     */
+    GTextProperties.prototype._inlineEditorEvent = function (event) {
+        switch (event.type) {
+            case GXEditor.InlineEditorEvent.Type.AfterOpen:
+                this._textEditor = event.editor;
+                this._updateProperties();
+                break;
+            case GXEditor.InlineEditorEvent.Type.BeforeClose:
+                this._textEditor = null;
+                this._updateProperties();
+                break;
+            case GXEditor.InlineEditorEvent.Type.SelectionChanged:
+                this._updateProperties();
+                break;
+            default:
+                break;
+        }
+    };
+
+    /**
      * Defaults to false.
      * @private
      */
@@ -195,16 +217,20 @@
      * @private
      */
     GTextProperties.prototype._assignProperties = function (properties, values) {
-        var editor = this._document.getEditor();
-        editor.beginTransaction();
-        try {
-            for (var i = 0; i < this._text.length; ++i) {
-                var textEditor = GXElementEditor.getEditor(this._text[i]);
-                textEditor.setProperties(properties, values);
+        if (this._textEditor) {
+            this._textEditor.setProperties(properties, values);
+        } else {
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                for (var i = 0; i < this._text.length; ++i) {
+                    var textEditor = GXElementEditor.getEditor(this._text[i]);
+                    textEditor.setProperties(properties, values);
+                }
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Modify Text Properties');
             }
-        } finally {
-            // TODO : I18N
-            editor.commitTransaction('Modify Text Properties');
         }
     };
 
