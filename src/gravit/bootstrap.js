@@ -73,6 +73,7 @@ $(document).ready(function () {
 
 // Init when everything is finally loaded
 $(window).load(function () {
+    rangy.init();
     gApp.init();
     gShell.finishLoad();
 });
