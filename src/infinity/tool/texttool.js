@@ -47,10 +47,13 @@
 
     /** @override */
     IFTextTool.prototype._updateShape = function (shape, area, line, scene) {
-        // Original shape is a rectangle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
-        shape.setProperty('trf',
-            new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
-                area.getX() + (scene ? 0 : area.getWidth() / 2), area.getY() + (scene ? 0: area.getHeight() / 2)));
+        if (scene) {
+            shape.setProperty('trf', new GTransform(area.getWidth(), 0, 0, area.getHeight(), area.getX(), area.getY()));
+        } else {
+            shape.setProperty('trf',
+                new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+                    area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
+        }
     };
 
     /** @override */
