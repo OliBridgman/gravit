@@ -9,7 +9,7 @@
     function EXPolygonProperties() {
         this._polygons = [];
     };
-    GObject.inherit(EXPolygonProperties, EXProperties);
+    IFObject.inherit(EXPolygonProperties, EXProperties);
 
     /**
      * @type {JQuery}
@@ -50,11 +50,11 @@
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
-                            var innerAngle = gMath.normalizeAngleRadians(
+                            var innerAngle = ifMath.normalizeAngleRadians(
                                 self._polygons[0].getProperty('oa') + Math.PI / points);
 
                             self._assignProperties([property, 'ia'],
-                                [gMath.normalizeValue(points, 2, 360), innerAngle]);
+                                [ifMath.normalizeValue(points, 2, 360), innerAngle]);
                         } else {
                             self._updateProperties();
                         }
@@ -93,8 +93,8 @@
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
-                            self._assignProperty(property, gMath.PI2 - angle);
+                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
+                            self._assignProperty(property, ifMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -272,9 +272,9 @@
         this._panel.find('input[data-property="ir"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ir')));
         this._panel.find('input[data-property="oa"]').val(
-            gUtil.formatNumber(gMath.toDegrees(gMath.PI2 - polygon.getProperty('oa')), 2));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
-            gUtil.formatNumber(gMath.toDegrees(gMath.PI2 - polygon.getProperty('ia')), 2));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
         this._panel.find('select[data-property="oct"]').val(polygon.getProperty('oct'));
         this._panel.find('select[data-property="ict"]').val(polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(

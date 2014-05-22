@@ -42,20 +42,20 @@
         // Set default global color to white
         this._globalColor = new IFColor(IFColor.Type.White);
     };
-    GObject.inherit(EXApplication, GEventTarget);
+    IFObject.inherit(EXApplication, GEventTarget);
 
     // Constants for pre-defined action categories
-    EXApplication.CATEGORY_FILE = new GLocale.Key(EXApplication, "category.file");
-    EXApplication.CATEGORY_FILE_OPEN = new GLocale.Key(EXApplication, "category.file.open");
-    EXApplication.CATEGORY_FILE_SAVEAS = new GLocale.Key(EXApplication, "category.file.saveas");
-    EXApplication.CATEGORY_FILE_IMPORT = new GLocale.Key(EXApplication, "category.file.import");
-    EXApplication.CATEGORY_FILE_EXPORT = new GLocale.Key(EXApplication, "category.file.export");
-    EXApplication.CATEGORY_EDIT = new GLocale.Key(EXApplication, "category.edit");
-    EXApplication.CATEGORY_MODIFY = new GLocale.Key(EXApplication, "category.modify");
-    EXApplication.CATEGORY_VIEW = new GLocale.Key(EXApplication, "category.view");
-    EXApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(EXApplication, "category.view.magnification");
-    EXApplication.CATEGORY_WINDOW = new GLocale.Key(EXApplication, "category.window");
-    EXApplication.CATEGORY_HELP = new GLocale.Key(EXApplication, "category.help");
+    EXApplication.CATEGORY_FILE = new IFLocale.Key(EXApplication, "category.file");
+    EXApplication.CATEGORY_FILE_OPEN = new IFLocale.Key(EXApplication, "category.file.open");
+    EXApplication.CATEGORY_FILE_SAVEAS = new IFLocale.Key(EXApplication, "category.file.saveas");
+    EXApplication.CATEGORY_FILE_IMPORT = new IFLocale.Key(EXApplication, "category.file.import");
+    EXApplication.CATEGORY_FILE_EXPORT = new IFLocale.Key(EXApplication, "category.file.export");
+    EXApplication.CATEGORY_EDIT = new IFLocale.Key(EXApplication, "category.edit");
+    EXApplication.CATEGORY_MODIFY = new IFLocale.Key(EXApplication, "category.modify");
+    EXApplication.CATEGORY_VIEW = new IFLocale.Key(EXApplication, "category.view");
+    EXApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(EXApplication, "category.view.magnification");
+    EXApplication.CATEGORY_WINDOW = new IFLocale.Key(EXApplication, "category.window");
+    EXApplication.CATEGORY_HELP = new IFLocale.Key(EXApplication, "category.help");
 
     /**
      * Visual parts of the application
@@ -91,7 +91,7 @@
         this.type = type;
         this.document = document;
     };
-    GObject.inherit(EXApplication.DocumentEvent, GEvent);
+    IFObject.inherit(EXApplication.DocumentEvent, GEvent);
 
     /**
      * Enumeration of view event types
@@ -132,7 +132,7 @@
      */
     EXApplication.GlobalColorChangedEvent = function () {
     }
-    GObject.inherit(EXApplication.GlobalColorChangedEvent, GEvent);
+    IFObject.inherit(EXApplication.GlobalColorChangedEvent, GEvent);
 
     /** @override */
     EXApplication.GlobalColorChangedEvent.prototype.toString = function () {
@@ -421,14 +421,14 @@
     /**
      * Add a new document and open up a window for it
      * and mark the view as being active
-     * @param {IFScene|GBlob} source the source to be added, either a scene
+     * @param {IFScene|IFBlob} source the source to be added, either a scene
      * or a blob to read the document from
      * @param {String} [temporaryTitle] optional temporary title to be used
      * for the document if no blob is assigned, defaults to null to use
      * the default naming scheme
      */
     EXApplication.prototype.addDocument = function (source, temporaryTitle) {
-        if (source instanceof GBlob) {
+        if (source instanceof IFBlob) {
             // Iterate all documents first and look if the given
             // blob is already opened and if so, activate the
             // document's last view
@@ -616,15 +616,15 @@
         this._palettes = new GPalettes(palettesPart);
 
         // Append the corresponding hardware class to our body
-        switch (gSystem.hardware) {
-            case GSystem.Hardware.Desktop:
+        switch (ifSystem.hardware) {
+            case IFSystem.Hardware.Desktop:
                 body.addClass('g-desktop');
                 break;
-            case GSystem.Hardware.Tablet:
+            case IFSystem.Hardware.Tablet:
                 body.addClass('g-touch');
                 body.addClass('g-tablet');
                 break;
-            case GSystem.Hardware.Phone:
+            case IFSystem.Hardware.Phone:
                 body.addClass('g-touch');
                 body.addClass('g-phone');
                 break;
@@ -754,7 +754,7 @@
     /**
      * Add a new document
      * @param {IFScene} scene
-     * @param {GBlob} blob
+     * @param {IFBlob} blob
      * @param {String} [temporaryTitle]
      * @private
      */
@@ -816,7 +816,7 @@
                 continue;
             }
 
-            var category = gLocale.get(action.getCategory());
+            var category = ifLocale.get(action.getCategory());
             var group = action.getGroup();
             var categories = category ? category.split('/') : null;
             var groups = group ? [""].concat(group.split('/')) : null;
@@ -871,7 +871,7 @@
             } else if (item.type === 'divider') {
                 item.separator = gShell.addMenuSeparator(parentMenu);
             } else if (item.type === 'item') {
-                item.item = gShell.addMenuItem(parentMenu, gLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
+                item.item = gShell.addMenuItem(parentMenu, ifLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
                 function () {
                     this.executeAction(item.action.getId());
                 }.bind(this));
@@ -884,7 +884,7 @@
                 for (var i = 0; i < tree.items.length; ++i) {
                     var item = tree.items[i];
                     if (item.type === 'item') {
-                        gShell.updateMenuItem(item.item, gLocale.get(item.action.getTitle()),
+                        gShell.updateMenuItem(item.item, ifLocale.get(item.action.getTitle()),
                             item.action.isEnabled(), item.action.isCheckable() ? item.action.isChecked() : false);
                     }
                 }
@@ -1036,106 +1036,106 @@
             var key = shortcut[i];
             if (typeof key == 'number') {
                 switch (key) {
-                    case GUIKey.Constant.META:
+                    case IFKey.Constant.META:
                         result += "meta";
                         break;
-                    case GUIKey.Constant.OPTION:
+                    case IFKey.Constant.OPTION:
                         result += "option";
                         break;
-                    case GUIKey.Constant.REMOVE:
+                    case IFKey.Constant.REMOVE:
                         result += "del";
                         break;
-                    case GUIKey.Constant.SPACE:
+                    case IFKey.Constant.SPACE:
                         result += "space";
                         break;
-                    case GUIKey.Constant.ENTER:
+                    case IFKey.Constant.ENTER:
                         result += "enter";
                         break;
-                    case GUIKey.Constant.TAB:
+                    case IFKey.Constant.TAB:
                         result += "tab";
                         break;
-                    case GUIKey.Constant.BACKSPACE:
+                    case IFKey.Constant.BACKSPACE:
                         result += "backspace";
                         break;
-                    case GUIKey.Constant.CONTROL:
+                    case IFKey.Constant.CONTROL:
                         result += "ctrl";
                         break;
-                    case GUIKey.Constant.SHIFT:
+                    case IFKey.Constant.SHIFT:
                         result += "shift";
                         break;
-                    case GUIKey.Constant.ALT:
+                    case IFKey.Constant.ALT:
                         result += "alt";
                         break;
-                    case GUIKey.Constant.LEFT:
+                    case IFKey.Constant.LEFT:
                         result += "left";
                         break;
-                    case GUIKey.Constant.UP:
+                    case IFKey.Constant.UP:
                         result += "up";
                         break;
-                    case GUIKey.Constant.RIGHT:
+                    case IFKey.Constant.RIGHT:
                         result += "right";
                         break;
-                    case GUIKey.Constant.DOWN:
+                    case IFKey.Constant.DOWN:
                         result += "down";
                         break;
-                    case GUIKey.Constant.PAGE_UP:
+                    case IFKey.Constant.PAGE_UP:
                         result += "pageup";
                         break;
-                    case GUIKey.Constant.PAGE_DOWN:
+                    case IFKey.Constant.PAGE_DOWN:
                         result += "pagedown";
                         break;
-                    case GUIKey.Constant.HOME:
+                    case IFKey.Constant.HOME:
                         result += "home";
                         break;
-                    case GUIKey.Constant.END:
+                    case IFKey.Constant.END:
                         result += "end";
                         break;
-                    case GUIKey.Constant.INSERT:
+                    case IFKey.Constant.INSERT:
                         result += "ins";
                         break;
-                    case GUIKey.Constant.DELETE:
+                    case IFKey.Constant.DELETE:
                         result += "del";
                         break;
-                    case GUIKey.Constant.ESCAPE:
+                    case IFKey.Constant.ESCAPE:
                         result += "esc";
                         break;
-                    case GUIKey.Constant.COMMAND:
+                    case IFKey.Constant.COMMAND:
                         result += "meta";
                         break;
-                    case GUIKey.Constant.F1:
+                    case IFKey.Constant.F1:
                         result += "f1";
                         break;
-                    case GUIKey.Constant.F2:
+                    case IFKey.Constant.F2:
                         result += "f2";
                         break;
-                    case GUIKey.Constant.F3:
+                    case IFKey.Constant.F3:
                         result += "f3";
                         break;
-                    case GUIKey.Constant.F4:
+                    case IFKey.Constant.F4:
                         result += "f4";
                         break;
-                    case GUIKey.Constant.F5:
+                    case IFKey.Constant.F5:
                         result += "f5";
                         break;
-                    case GUIKey.Constant.F6:
+                    case IFKey.Constant.F6:
                         result += "f6";
                         break;
-                    case GUIKey.Constant.F7:
+                    case IFKey.Constant.F7:
                         result += "f7";
                         break;
-                    case GUIKey.Constant.F8:
+                    case IFKey.Constant.F8:
                         result += "f8";
                         break;
-                    case GUIKey.Constant.F9:
+                    case IFKey.Constant.F9:
                         result += "f9";
                         break;
-                    case GUIKey.Constant.F10:
+                    case IFKey.Constant.F10:
                         result += "f10";
                         break;
-                    case GUIKey.Constant.F11:
+                    case IFKey.Constant.F11:
                         result += "f11";
                         break;
-                    case GUIKey.Constant.F12:
+                    case IFKey.Constant.F12:
                         result += "f12";
                         break;
                     default:

@@ -9,10 +9,10 @@
     function EXPaintModeAction(paintMode) {
         this._paintMode = paintMode;
     };
-    GObject.inherit(EXPaintModeAction, GUIAction);
+    IFObject.inherit(EXPaintModeAction, GUIAction);
 
     EXPaintModeAction.ID = 'view.page.decoration';
-    EXPaintModeAction.TITLE = new GLocale.Key(EXPaintModeAction, 'title');
+    EXPaintModeAction.TITLE = new IFLocale.Key(EXPaintModeAction, 'title');
 
     /**
      * @type {IFScenePaintConfiguration.PaintMode}
@@ -31,8 +31,8 @@
      * @override
      */
     EXPaintModeAction.prototype.getTitle = function () {
-        return gLocale.get(EXPaintModeAction.TITLE).replace('%name%',
-            gLocale.get(IFScenePaintConfiguration.PaintModeName[this._paintMode]));
+        return ifLocale.get(EXPaintModeAction.TITLE).replace('%name%',
+            ifLocale.get(IFScenePaintConfiguration.PaintModeName[this._paintMode]));
     };
 
     /**

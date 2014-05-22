@@ -38,7 +38,7 @@
 
         this._currentColor = [new IFColor(IFColor.Type.Black), null];
     };
-    GObject.inherit(IFEditor, GEventTarget);
+    IFObject.inherit(IFEditor, GEventTarget);
 
     IFEditor.options = {
         /** Maximum number of undo-steps */
@@ -77,7 +77,7 @@
     IFEditor.CurrentLayerChangedEvent = function (previousLayer) {
         this.previousLayer = previousLayer;
     };
-    GObject.inherit(IFEditor.CurrentLayerChangedEvent, GEvent);
+    IFObject.inherit(IFEditor.CurrentLayerChangedEvent, GEvent);
 
     /** @type {IFLayer} */
     IFEditor.CurrentLayerChangedEvent.prototype.previousLayer = null;
@@ -100,7 +100,7 @@
     IFEditor.CurrentPageChangedEvent = function (previousPage) {
         this.previousPage = previousPage;
     };
-    GObject.inherit(IFEditor.CurrentPageChangedEvent, GEvent);
+    IFObject.inherit(IFEditor.CurrentPageChangedEvent, GEvent);
 
     /** @type {IFPage} */
     IFEditor.CurrentPageChangedEvent.prototype.previousPage = null;
@@ -124,7 +124,7 @@
         this.type = type;
         this.previousColor = previousColor;
     };
-    GObject.inherit(IFEditor.CurrentColorChangedEvent, GEvent);
+    IFObject.inherit(IFEditor.CurrentColorChangedEvent, GEvent);
 
     /** @type {IFEditor.CurrentColorType} */
     IFEditor.CurrentColorChangedEvent.prototype.type = null;
@@ -148,7 +148,7 @@
      */
     IFEditor.SelectionChangedEvent = function () {
     };
-    GObject.inherit(IFEditor.SelectionChangedEvent, GEvent);
+    IFObject.inherit(IFEditor.SelectionChangedEvent, GEvent);
 
     /** @override */
     IFEditor.SelectionChangedEvent.prototype.toString = function () {
@@ -170,7 +170,7 @@
         this.editor = editor;
         this.type = type;
     };
-    GObject.inherit(IFEditor.InlineEditorEvent, GEvent);
+    IFObject.inherit(IFEditor.InlineEditorEvent, GEvent);
 
     /**
      * Enum of inline editor event types
@@ -233,7 +233,7 @@
         this.editor = editor;
         this.args = args;
     };
-    GObject.inherit(IFEditor.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFEditor.InvalidationRequestEvent, GEvent);
 
     /** @type {IFElementEditor} */
     IFEditor.InvalidationRequestEvent.prototype.editor = null;

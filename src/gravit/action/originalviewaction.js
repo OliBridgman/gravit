@@ -8,10 +8,10 @@
      */
     function EXOriginalViewAction() {
     };
-    GObject.inherit(EXOriginalViewAction, GUIAction);
+    IFObject.inherit(EXOriginalViewAction, GUIAction);
 
     EXOriginalViewAction.ID = 'view.zoom.original';
-    EXOriginalViewAction.TITLE = new GLocale.Key(EXOriginalViewAction, "title");
+    EXOriginalViewAction.TITLE = new IFLocale.Key(EXOriginalViewAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXOriginalViewAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, '0'];
+        return [IFKey.Constant.META, '0'];
     };
 
     /**

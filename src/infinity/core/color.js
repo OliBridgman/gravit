@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * A static color class to work with colors
-     * @class GColor
+     * @class IFColor
      * @constructor
      * @version 1.0
      */
-    function GColor() {
+    function IFColor() {
     };
 
     function _build_color(r, g, b, a) {
         if (typeof a != "number") a = 255;
-        if (gSystem.littleEndian) {
+        if (ifSystem.littleEndian) {
             return (a << 24) | (b << 16) | (g << 8) | r;
         } else {
             return (r << 24) | (g << 16) | (b << 8) | a;
@@ -20,7 +20,7 @@
     /**
      * Constant about preset colors
      */
-    GColor.PRESET = {
+    IFColor.PRESET = {
         darkMagenta: {
             back: _build_color(177, 63, 148),
             fore: _build_color(246, 231, 239)
@@ -96,7 +96,7 @@
     };
 
     /** Array of presets in their natural order */
-    GColor.PRESETS = ['darkMagenta', 'lightMagenta', 'darkGreen', 'lightGreen', 'darkBlue', 'lightBlue', 'darkRed',
+    IFColor.PRESETS = ['darkMagenta', 'lightMagenta', 'darkGreen', 'lightGreen', 'darkBlue', 'lightBlue', 'darkRed',
         'lightRed', 'darkCyan', 'darkBrown', 'darkBrown2', 'lightBrown', 'darkOrange', 'lightOrange', 'darkPurple',
         'lightPurple', 'lightPurple2', 'lightYellow'];
 
@@ -110,7 +110,7 @@
      * @returns {Number} 32bit-encoded color value
      * @version 1.0
      */
-    GColor.prototype.build = function (r, g, b, a) {
+    IFColor.prototype.build = function (r, g, b, a) {
         return _build_color(r, g, b, a);
     };
 
@@ -121,8 +121,8 @@
      * @return {Number} extract channel component value
      * @version 1.0
      */
-    GColor.prototype.getRed = function (color) {
-        if (gSystem.littleEndian) {
+    IFColor.prototype.getRed = function (color) {
+        if (ifSystem.littleEndian) {
             return color & 255;
         } else {
             return color >> 24 & 255;
@@ -137,7 +137,7 @@
      * @return {Number} a new color with modified channel
      * @version 1.0
      */
-    GColor.prototype.setRed = function (color, value) {
+    IFColor.prototype.setRed = function (color, value) {
         // TODO : Optimize this
         return this.build(value, this.getGreen(color), this.getBlue(color), this.getAlpha(color));
     };
@@ -149,8 +149,8 @@
      * @return {Number} extract channel component value
      * @version 1.0
      */
-    GColor.prototype.getGreen = function (color) {
-        if (gSystem.littleEndian) {
+    IFColor.prototype.getGreen = function (color) {
+        if (ifSystem.littleEndian) {
             return color >> 8 & 255;
         } else {
             return color >> 16 & 255;
@@ -165,7 +165,7 @@
      * @return {Number} a new color with modified channel
      * @version 1.0
      */
-    GColor.prototype.setGreen = function (color, value) {
+    IFColor.prototype.setGreen = function (color, value) {
         // TODO : Optimize this
         return this.build(this.getRed(color), value, this.getBlue(color), this.getAlpha(color));
     };
@@ -177,8 +177,8 @@
      * @return {Number} extract channel component value
      * @version 1.0
      */
-    GColor.prototype.getBlue = function (color) {
-        if (gSystem.littleEndian) {
+    IFColor.prototype.getBlue = function (color) {
+        if (ifSystem.littleEndian) {
             return color >> 16 & 255;
         } else {
             return color >> 8 & 255;
@@ -193,7 +193,7 @@
      * @return {Number} a new color with modified channel
      * @version 1.0
      */
-    GColor.prototype.setBlue = function (color, value) {
+    IFColor.prototype.setBlue = function (color, value) {
         // TODO : Optimize this
         return this.build(this.getRed(color), this.getGreen(color), value, this.getAlpha(color));
     };
@@ -205,8 +205,8 @@
      * @return {Number} extract channel component value
      * @version 1.0
      */
-    GColor.prototype.getAlpha = function (color) {
-        if (gSystem.littleEndian) {
+    IFColor.prototype.getAlpha = function (color) {
+        if (ifSystem.littleEndian) {
             return color >> 24 & 255;
         } else {
             return color & 255;
@@ -221,7 +221,7 @@
      * @return {Number} a new color with modified channel
      * @version 1.0
      */
-    GColor.prototype.setAlpha = function (color, value) {
+    IFColor.prototype.setAlpha = function (color, value) {
         // TODO : Optimize this
         return this.build(this.getRed(color), this.getGreen(color), this.getBlue(color), value);
     };
@@ -234,7 +234,7 @@
      * @return {String} css color value
      * @version 1.0
      */
-    GColor.prototype.toCSS = function (color) {
+    IFColor.prototype.toCSS = function (color) {
         var r = this.getRed(color);
         var g = this.getGreen(color);
         var b = this.getBlue(color);
@@ -255,15 +255,15 @@
      * @type Number
      * @version 1.0
      */
-    GColor.prototype.selectionOutline = GColor.prototype.build(0, 168, 255, 255);
+    IFColor.prototype.selectionOutline = IFColor.prototype.build(0, 168, 255, 255);
 
     /**
      * Default color for highlight outlining
      * @type Number
      * @version 1.0
      */
-    GColor.prototype.highlightOutline = GColor.prototype.build(255, 0, 0, 255);
+    IFColor.prototype.highlightOutline = IFColor.prototype.build(255, 0, 0, 255);
 
-    _.GColor = GColor;
-    _.gColor = new GColor();
+    _.IFColor = IFColor;
+    _.gColor = new IFColor();
 })(this);

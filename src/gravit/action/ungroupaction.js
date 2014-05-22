@@ -8,10 +8,10 @@
      */
     function GUngroupAction() {
     };
-    GObject.inherit(GUngroupAction, GUIAction);
+    IFObject.inherit(GUngroupAction, GUIAction);
 
     GUngroupAction.ID = 'modify.ungroup';
-    GUngroupAction.TITLE = new GLocale.Key(GUngroupAction, "title");
+    GUngroupAction.TITLE = new IFLocale.Key(GUngroupAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GUngroupAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'G'];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'G'];
     };
 
     /**

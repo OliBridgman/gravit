@@ -10,7 +10,7 @@
         IFPathBaseEditor.call(this, rectangle);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFRectangleEditor, IFPathBaseEditor);
+    IFObject.inherit(IFRectangleEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFRectangleEditor, IFRectangle);
 
     IFRectangleEditor.LEFT_SHOULDER_PART_ID = gUtil.uuid();
@@ -57,10 +57,10 @@
                 var nearLPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearLPosition = sourceTransform ? sourceTransform.mapPoint(nearLPosition) : nearLPosition;
 
-                var newLShoulderPt = gMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newLShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearLPosition.getX(), nearLPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newLVal = gMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
+                newLVal = ifMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
             if (partId.id === IFRectangleEditor.RIGHT_SHOULDER_PART_ID ||
@@ -70,10 +70,10 @@
                 var nearRPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearRPosition = sourceTransform ? sourceTransform.mapPoint(nearRPosition) : nearRPosition;
 
-                var newRShoulderPt = gMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newRShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearRPosition.getX(), nearRPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newRVal = gMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
+                newRVal = ifMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
 

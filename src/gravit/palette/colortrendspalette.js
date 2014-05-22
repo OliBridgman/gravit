@@ -9,10 +9,10 @@
     function EXColorTrendsPalette() {
         EXPalette.call(this);
     };
-    GObject.inherit(EXColorTrendsPalette, EXPalette);
+    IFObject.inherit(EXColorTrendsPalette, EXPalette);
 
     EXColorTrendsPalette.ID = "color-trends";
-    EXColorTrendsPalette.TITLE = new GLocale.Key(EXColorTrendsPalette, "title");
+    EXColorTrendsPalette.TITLE = new IFLocale.Key(EXColorTrendsPalette, "title");
 
     /**
      * @type {JQuery}

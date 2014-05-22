@@ -8,10 +8,10 @@
      */
     function EXNewAction() {
     };
-    GObject.inherit(EXNewAction, GUIAction);
+    IFObject.inherit(EXNewAction, GUIAction);
 
     EXNewAction.ID = 'file.new';
-    EXNewAction.TITLE = new GLocale.Key(EXNewAction, "title");
+    EXNewAction.TITLE = new IFLocale.Key(EXNewAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXNewAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'N'];
+        return [IFKey.Constant.META, 'N'];
     };
 
     /**

@@ -21,7 +21,7 @@
             this._vertexSource = vertexSource;
         }
 
-        GObject.inherit(VertexWidget, IFViewLayer);
+        IFObject.inherit(VertexWidget, IFViewLayer);
 
         /** override */
         VertexWidget.prototype.paint = function (context) {
@@ -84,8 +84,8 @@
 
         for (i = 0; i < 7; ++i) {
             container = document.createElement("div");
-            elLeft = gMath.mod(i, 4) * width + 40;
-            elTop = gMath.div(i, 4) * (height + 20) + 40;
+            elLeft = ifMath.mod(i, 4) * width + 40;
+            elTop = ifMath.div(i, 4) * (height + 20) + 40;
             if (i != 3) {
                 container.setAttribute("style", "position: absolute; left: " + elLeft.toString() + "px; top: " + elTop.toString() + "px; width: " + width.toString() + "px; border-right: 1px dotted black; border-bottom: 1px dotted black;");
             } else {

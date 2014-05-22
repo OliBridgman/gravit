@@ -68,7 +68,7 @@
     IFScene.InvalidationRequestEvent = function (area) {
         this.area = area ? area : null;
     };
-    GObject.inherit(IFScene.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFScene.InvalidationRequestEvent, GEvent);
 
     /** @type GRect */
     IFScene.InvalidationRequestEvent.prototype.area = null;

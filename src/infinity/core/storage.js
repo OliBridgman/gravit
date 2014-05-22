@@ -4,14 +4,14 @@
      * @constructor
      * @version 1.0
      */
-    function GStorage() {
+    function IFStorage() {
     };
 
     /**
      * Returns whether this storage is available at all or not
      * @return {Boolean}
      */
-    GStorage.prototype.isAvailable = function () {
+    IFStorage.prototype.isAvailable = function () {
         throw new Error('Not supported.');
     };
 
@@ -19,7 +19,7 @@
      * Returns whether this storage can also save blobs or not (open only)
      * @return {Boolean}
      */
-    GStorage.prototype.isSaving = function () {
+    IFStorage.prototype.isSaving = function () {
         throw new Error('Not supported.');
     };
 
@@ -27,7 +27,7 @@
      * Returns whether this storage supports prompting
      * @return {Boolean}
      */
-    GStorage.prototype.isPrompting = function () {
+    IFStorage.prototype.isPrompting = function () {
         throw new Error('Not supported.');
     };
 
@@ -35,7 +35,7 @@
      * Get the unique protocol of this storage
      * @return {String}
      */
-    GStorage.prototype.getProtocol = function () {
+    IFStorage.prototype.getProtocol = function () {
         throw new Error('Not supported.');
     };
 
@@ -45,34 +45,34 @@
      * @return {Array<String>} list of mime-types supported
      * or null for all
      */
-    GStorage.prototype.getMimeTypes = function () {
+    IFStorage.prototype.getMimeTypes = function () {
         throw new Error('Not supported.');
     };
 
     /**
      * Get the human readable name of this storage
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
-    GStorage.prototype.getName = function () {
+    IFStorage.prototype.getName = function () {
         throw new Error('Not supported.');
     };
 
     /**
      * Prompt for opening a blob and open it
-     * @param {GBlob} reference a reference blob to set i.e.
+     * @param {IFBlob} reference a reference blob to set i.e.
      * the current working directory from, defaults to null
      * @param {Array<String>} extensions array of extensions to limit
      * the selection to, can be null for all
      * @param {Function} done called with the blob for
      * restoring
      */
-    GStorage.prototype.openBlobPrompt = function (reference, extensions, done) {
+    IFStorage.prototype.openBlobPrompt = function (reference, extensions, done) {
         throw new Error('Not supported.');
     };
 
     /**
      * Prompt for saving a blob
-     * @param {GBlob} reference a reference blob to set i.e.
+     * @param {IFBlob} reference a reference blob to set i.e.
      * the current working directory from, defaults to null
      * @param {String} proposedName the proposed default name,
      * maybe null for none
@@ -81,7 +81,7 @@
      * @param {Function} done called with the blob for
      * storing
      */
-    GStorage.prototype.saveBlobPrompt = function (reference, proposedName, extension, done) {
+    IFStorage.prototype.saveBlobPrompt = function (reference, proposedName, extension, done) {
         throw new Error('Not supported.');
     };
 
@@ -91,7 +91,7 @@
      * @param {Function} done called with the blob for
      * restoring
      */
-    GStorage.prototype.openBlob = function (location, done) {
+    IFStorage.prototype.openBlob = function (location, done) {
         throw new Error('Not supported.');
     };
 
@@ -101,9 +101,9 @@
      * @param {Function} [done] called with the blob for
      * storing
      */
-    GStorage.prototype.saveBlob = function (location, done) {
+    IFStorage.prototype.saveBlob = function (location, done) {
         throw new Error('Not supported.');
     };
 
-    _.GStorage = GStorage;
+    _.IFStorage = IFStorage;
 })(this);

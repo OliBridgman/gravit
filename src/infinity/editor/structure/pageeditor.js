@@ -10,7 +10,7 @@
         IFBlockEditor.call(this, group);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFPageEditor, IFBlockEditor);
+    IFObject.inherit(IFPageEditor, IFBlockEditor);
     IFPageEditor.exports(IFPageEditor, IFPage);
 
     /** @override */

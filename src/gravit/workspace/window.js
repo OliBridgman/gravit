@@ -27,7 +27,7 @@
         }.bind(this));
 
     };
-    GObject.inherit(EXWindow, GEventTarget);
+    IFObject.inherit(EXWindow, GEventTarget);
 
     /**
      * Constant defining the additional margin for the view

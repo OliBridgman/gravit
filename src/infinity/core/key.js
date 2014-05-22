@@ -1,18 +1,18 @@
 (function (_) {
 
     /**
-     * @class GUIKey
+     * @class IFKey
      * @constructor
      * @version 1.0
      */
-    function GUIKey() {
+    function IFKey() {
     };
 
     /**
      * Enumeration of available key code constants
      * @version 1.0
      */
-    GUIKey.Constant = {
+    IFKey.Constant = {
         /**
          * A printable character
          * @version 1.0
@@ -213,98 +213,98 @@
         REMOVE: 102
     };
 
-    GUIKey.prototype.translateKey = function (keyCode) {
+    IFKey.prototype.translateKey = function (keyCode) {
         var result = null;
         switch (keyCode) {
             case 32 :
-                result = GUIKey.Constant.SPACE;
+                result = IFKey.Constant.SPACE;
                 break;
             case 13 :
-                result = GUIKey.Constant.ENTER;
+                result = IFKey.Constant.ENTER;
                 break;
             case 9 :
-                result = GUIKey.Constant.TAB;
+                result = IFKey.Constant.TAB;
                 break;
             case 8 :
-                result = GUIKey.Constant.BACKSPACE;
+                result = IFKey.Constant.BACKSPACE;
                 break;
             case 16 :
-                result = GUIKey.Constant.SHIFT;
+                result = IFKey.Constant.SHIFT;
                 break;
             case 17:
-                result = GUIKey.Constant.CONTROL;
+                result = IFKey.Constant.CONTROL;
                 break;
             case 18:
-                result = GUIKey.Constant.ALT;
+                result = IFKey.Constant.ALT;
                 break;
             case 37 :
-                result = GUIKey.Constant.LEFT;
+                result = IFKey.Constant.LEFT;
                 break;
             case 38 :
-                result = GUIKey.Constant.UP;
+                result = IFKey.Constant.UP;
                 break;
             case 39 :
-                result = GUIKey.Constant.RIGHT;
+                result = IFKey.Constant.RIGHT;
                 break;
             case 40 :
-                result = GUIKey.Constant.DOWN;
+                result = IFKey.Constant.DOWN;
                 break;
             case 33 :
-                result = GUIKey.Constant.PAGE_UP;
+                result = IFKey.Constant.PAGE_UP;
                 break;
             case 34 :
-                result = GUIKey.Constant.PAGE_DOWN;
+                result = IFKey.Constant.PAGE_DOWN;
                 break;
             case 36 :
-                result = GUIKey.Constant.HOME;
+                result = IFKey.Constant.HOME;
                 break;
             case 35 :
-                result = GUIKey.Constant.END;
+                result = IFKey.Constant.END;
                 break;
             case 45 :
-                result = GUIKey.Constant.INSERT;
+                result = IFKey.Constant.INSERT;
                 break;
             case 46 :
-                result = GUIKey.Constant.DELETE;
+                result = IFKey.Constant.DELETE;
                 break;
             case 27 :
-                result = GUIKey.Constant.ESCAPE;
+                result = IFKey.Constant.ESCAPE;
                 break;
             case 112 :
-                result = GUIKey.Constant.F1;
+                result = IFKey.Constant.F1;
                 break;
             case 113 :
-                result = GUIKey.Constant.F2;
+                result = IFKey.Constant.F2;
                 break;
             case 114 :
-                result = GUIKey.Constant.F3;
+                result = IFKey.Constant.F3;
                 break;
             case 115 :
-                result = GUIKey.Constant.F4;
+                result = IFKey.Constant.F4;
                 break;
             case 116 :
-                result = GUIKey.Constant.F5;
+                result = IFKey.Constant.F5;
                 break;
             case 117 :
-                result = GUIKey.Constant.F6;
+                result = IFKey.Constant.F6;
                 break;
             case 118 :
-                result = GUIKey.Constant.F7;
+                result = IFKey.Constant.F7;
                 break;
             case 119 :
-                result = GUIKey.Constant.F8;
+                result = IFKey.Constant.F8;
                 break;
             case 120 :
-                result = GUIKey.Constant.F9;
+                result = IFKey.Constant.F9;
                 break;
             case 121 :
-                result = GUIKey.Constant.F10;
+                result = IFKey.Constant.F10;
                 break;
             case 122 :
-                result = GUIKey.Constant.F11;
+                result = IFKey.Constant.F11;
                 break;
             case 123 :
-                result = GUIKey.Constant.F12;
+                result = IFKey.Constant.F12;
                 break;
             default:
                 break;
@@ -317,74 +317,74 @@
         return result;
     };
 
-    GUIKey.prototype.transformKey = function (keyCode) {
-        if (keyCode === GUIKey.Constant.META || keyCode === GUIKey.Constant.COMMAND) {
-            if (gSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && gSystem.hardware === GSystem.Hardware.Desktop) {
-                return GUIKey.Constant.COMMAND;
+    IFKey.prototype.transformKey = function (keyCode) {
+        if (keyCode === IFKey.Constant.META || keyCode === IFKey.Constant.COMMAND) {
+            if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
+                return IFKey.Constant.COMMAND;
             } else {
-                return GUIKey.Constant.CONTROL;
+                return IFKey.Constant.CONTROL;
             }
-        } else if (keyCode === GUIKey.Constant.OPTION) {
-            return GUIKey.Constant.ALT;
-        } else if (keyCode === GUIKey.Constant.REMOVE) {
-            if (gSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS) {
-                return GUIKey.Constant.BACKSPACE;
+        } else if (keyCode === IFKey.Constant.OPTION) {
+            return IFKey.Constant.ALT;
+        } else if (keyCode === IFKey.Constant.REMOVE) {
+            if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS) {
+                return IFKey.Constant.BACKSPACE;
             } else {
-                return GUIKey.Constant.DELETE;
+                return IFKey.Constant.DELETE;
             }
         } else {
             return keyCode;
         }
     };
 
-    GUIKey.prototype.toLocalizedName = function (keyCode) {
+    IFKey.prototype.toLocalizedName = function (keyCode) {
         keyCode = this.transformKey(keyCode);
-        return gLocale.getValue(GUIKey, "key." + keyCode.toString());
+        return ifLocale.getValue(IFKey, "key." + keyCode.toString());
     };
 
-    GUIKey.prototype.toLocalizedShort = function (keyCode) {
+    IFKey.prototype.toLocalizedShort = function (keyCode) {
         // Handle special chars on mac
-        if (gSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && gSystem.hardware === GSystem.Hardware.Desktop) {
-            if (keyCode == GUIKey.Constant.ESCAPE) {
+        if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
+            if (keyCode == IFKey.Constant.ESCAPE) {
                 return '\u238B';
-            } else if (keyCode == GUIKey.Constant.TAB) {
+            } else if (keyCode == IFKey.Constant.TAB) {
                 return '\u21E5';
-            } else if (keyCode == GUIKey.Constant.OPTION || keyCode == GUIKey.Constant.ALT) {
+            } else if (keyCode == IFKey.Constant.OPTION || keyCode == IFKey.Constant.ALT) {
                 return '\u2325';
-            } else if (keyCode == GUIKey.Constant.META || keyCode == GUIKey.Constant.COMMAND) {
+            } else if (keyCode == IFKey.Constant.META || keyCode == IFKey.Constant.COMMAND) {
                 return '\u2318';
-            } else if (keyCode == GUIKey.Constant.SHIFT) {
+            } else if (keyCode == IFKey.Constant.SHIFT) {
                 return '\u21E7';
-            } else if (keyCode == GUIKey.Constant.CONTROL) {
+            } else if (keyCode == IFKey.Constant.CONTROL) {
                 return '\u2303';
-            } else if (keyCode == GUIKey.Constant.SPACE) {
+            } else if (keyCode == IFKey.Constant.SPACE) {
                 return '\u2423';
-            } else if (keyCode == GUIKey.Constant.ENTER) {
+            } else if (keyCode == IFKey.Constant.ENTER) {
                 return '\u23CE';
-            } else if (keyCode == GUIKey.Constant.REMOVE) {
+            } else if (keyCode == IFKey.Constant.REMOVE) {
                 return '\u232B';
-            } else if (keyCode == GUIKey.Constant.UP) {
+            } else if (keyCode == IFKey.Constant.UP) {
                 return '\u2191';
-            } else if (keyCode == GUIKey.Constant.DOWN) {
+            } else if (keyCode == IFKey.Constant.DOWN) {
                 return '\u2193';
-            } else if (keyCode == GUIKey.Constant.LEFT) {
+            } else if (keyCode == IFKey.Constant.LEFT) {
                 return '\u2190';
-            } else if (keyCode == GUIKey.Constant.RIGHT) {
+            } else if (keyCode == IFKey.Constant.RIGHT) {
                 return '\u2192';
             }
         }
 
         keyCode = this.transformKey(keyCode);
-        var name = gLocale.getValue(GUIKey, "key." + keyCode.toString() + ".short", null);
+        var name = ifLocale.getValue(IFKey, "key." + keyCode.toString() + ".short", null);
         if (!name) {
-            return gLocale.getValue(GUIKey, "key." + keyCode.toString());
+            return ifLocale.getValue(IFKey, "key." + keyCode.toString());
         } else {
             return name;
         }
     };
 
-    GUIKey.prototype.toSystemShortcut = function (character) {
-        if (gSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && gSystem.hardware === GSystem.Hardware.Desktop) {
+    IFKey.prototype.toSystemShortcut = function (character) {
+        if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
             if (character === '-') {
                 return '\u2212';
             } else if (character === '+') {
@@ -394,12 +394,12 @@
         return character.toUpperCase();
     }
 
-    GUIKey.prototype.shortcutToString = function (shortcut) {
+    IFKey.prototype.shortcutToString = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
                 // On platform others than mac we'll use a separator
-                if (gSystem.operatingSystem != GSystem.OperatingSystem.OSX_IOS) {
+                if (ifSystem.operatingSystem != IFSystem.OperatingSystem.OSX_IOS) {
                     result += "+";
                 }
             }
@@ -413,6 +413,6 @@
         return result;
     };
 
-    _.GUIKey = GUIKey;
-    _.guiKey = new GUIKey();
+    _.IFKey = IFKey;
+    _.ifKey = new IFKey();
 })(this);

@@ -10,7 +10,7 @@
         IFShapeEditor.call(this, image);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFImageEditor, IFShapeEditor);
+    IFObject.inherit(IFImageEditor, IFShapeEditor);
     IFElementEditor.exports(IFImageEditor, IFImage);
 
     /** @override */

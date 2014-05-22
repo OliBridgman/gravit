@@ -15,7 +15,7 @@
         IFAttribute.call(this);
     }
 
-    GObject.inheritAndMix(IFDrawAttribute, IFAttribute, [IFAttribute.Render, IFNode.Container]);
+    IFObject.inheritAndMix(IFDrawAttribute, IFAttribute, [IFAttribute.Render, IFNode.Container]);
 
     /** @override */
     IFDrawAttribute.prototype.validateInsertion = function (parent, reference) {

@@ -108,7 +108,7 @@
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-            return gMath.isEqualEps(left._x, right._x) && gMath.isEqualEps(left._y, right._y) && gMath.isEqualEps(left._width, right._width) && gMath.isEqualEps(left._height, right._height);
+            return ifMath.isEqualEps(left._x, right._x) && ifMath.isEqualEps(left._y, right._y) && ifMath.isEqualEps(left._width, right._width) && ifMath.isEqualEps(left._height, right._height);
         } else {
             return false;
         }

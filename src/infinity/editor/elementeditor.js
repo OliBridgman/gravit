@@ -3,18 +3,18 @@
      * The base for an element editor
      * @param {IFElement} element the element this editor works on
      * @class IFElementEditor
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      */
     function IFElementEditor(element) {
         this._element = element;
     };
-    GObject.inherit(IFElementEditor, GObject);
+    IFObject.inherit(IFElementEditor, IFObject);
 
     IFElementEditor._Editors = {};
 
     IFElementEditor.exports = function (editorClass, nodeClass) {
-        IFElementEditor._Editors[GObject.getTypeId(nodeClass)] = editorClass;
+        IFElementEditor._Editors[IFObject.getTypeId(nodeClass)] = editorClass;
     };
 
     /**
@@ -119,7 +119,7 @@
      * @version 1.0
      */
     IFElementEditor.createEditor = function (element) {
-        var editorClass = IFElementEditor._Editors[GObject.getTypeId(element)];
+        var editorClass = IFElementEditor._Editors[IFObject.getTypeId(element)];
         if (editorClass) {
             return new editorClass(element);
         }
@@ -196,7 +196,7 @@
         var elementEditor = IFElementEditor.getEditor(element);
         if (elementEditor) {
             // Return if editor is not registered
-            var editorClass = IFElementEditor._Editors[GObject.getTypeId(element)];
+            var editorClass = IFElementEditor._Editors[IFObject.getTypeId(element)];
             if (!editorClass) {
                 return;
             }

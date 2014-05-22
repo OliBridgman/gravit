@@ -96,25 +96,25 @@
             anchorPoints.clearChildren();
 
             var an;
-            for (an = Math.PI / 2; an <= this.$sa || gMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {
+            for (an = Math.PI / 2; an <= this.$sa || ifMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {
             }
 
             var anchorPoint = new IFPathBase.AnchorPoint();
             anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), IFPathBase.AnchorPoint.Type.Symmetric, true]);
             anchorPoints.appendChild(anchorPoint);
 
-            var ea = gMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + gMath.PI2 : this.$ea;
+            var ea = ifMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + ifMath.PI2 : this.$ea;
             if (ea < this.$sa) {
-                ea += gMath.PI2;
+                ea += ifMath.PI2;
             }
 
-            for (an; an < ea && !gMath.isEqualEps(an, ea); an += Math.PI / 2) {
+            for (an; an < ea && !ifMath.isEqualEps(an, ea); an += Math.PI / 2) {
                 anchorPoint = new IFPathBase.AnchorPoint();
                 anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), IFPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
             }
 
-            if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
+            if (!ifMath.isEqualEps(this.$sa + ifMath.PI2, ea)) {
                 anchorPoint = new IFPathBase.AnchorPoint();
                 anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), IFPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
@@ -125,7 +125,7 @@
                 // We have only two anchor points, so add one for proper auto-handles, making rounded shape,
                 // and then switch off auto-handles and remove that extra point
                 anchorPoint = new IFPathBase.AnchorPoint();
-                if (gMath.isEqualEps(an, ea)) {
+                if (ifMath.isEqualEps(an, ea)) {
                     an += Math.PI / 2;
                 }
                 anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), IFPathBase.AnchorPoint.Type.Symmetric, true]);
@@ -145,7 +145,7 @@
                 anchorPoints.removeChild(extraPoint);
             }
 
-            if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
+            if (!ifMath.isEqualEps(this.$sa + ifMath.PI2, ea)) {
                 anchorPoints.getFirstChild().setProperties(['tp', 'hlx', 'hly'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null]);
                 anchorPoints.getLastChild().setProperties(['tp', 'hrx', 'hry'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null]);
 

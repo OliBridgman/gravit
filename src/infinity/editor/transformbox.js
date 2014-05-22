@@ -28,7 +28,7 @@
         this.$cx = (this.$tlx + this.$brx) / 2;
         this.$cy = (this.$tly + this.$bry) / 2;
     }
-    GObject.inherit(IFTransformBox, IFItem);
+    IFObject.inherit(IFTransformBox, IFItem);
 
     /**
      * The geometry properties of a shape with their default values
@@ -404,13 +404,13 @@
                         break;
                     default:
                         if (Math.abs(scaleX) > Math.abs(scaleY)) {
-                            if (gMath.isEqualEps(scaleY, 0)) {
+                            if (ifMath.isEqualEps(scaleY, 0)) {
                                 scaleY = scaleX;
                             } else {
                                 scaleY = scaleY * Math.abs(scaleX) / Math.abs(scaleY);
                             }
                         } else {
-                            if (gMath.isEqualEps(scaleX, 0)) {
+                            if (ifMath.isEqualEps(scaleX, 0)) {
                                 scaleX = scaleY;
                             } else {
                                 scaleX = scaleX * Math.abs(scaleY) / Math.abs(scaleX);

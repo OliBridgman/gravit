@@ -8,10 +8,10 @@
      */
     function GPasteAction() {
     };
-    GObject.inherit(GPasteAction, GUIAction);
+    IFObject.inherit(GPasteAction, GUIAction);
 
     GPasteAction.ID = 'edit.paste';
-    GPasteAction.TITLE = new GLocale.Key(GPasteAction, "title");
+    GPasteAction.TITLE = new IFLocale.Key(GPasteAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'V'];
+        return [IFKey.Constant.META, 'V'];
     };
 
     /**

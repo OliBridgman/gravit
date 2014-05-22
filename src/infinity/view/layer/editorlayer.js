@@ -10,7 +10,7 @@
         IFViewLayer.call(this, view);
         view.getEditor().addEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
     }
-    GObject.inherit(IFEditorLayer, IFViewLayer);
+    IFObject.inherit(IFEditorLayer, IFViewLayer);
 
     /** @override */
     IFEditorLayer.prototype.paint = function (context) {

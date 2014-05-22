@@ -9,7 +9,7 @@
     function GEllipseProperties() {
         this._ellipses = [];
     };
-    GObject.inherit(GEllipseProperties, EXProperties);
+    IFObject.inherit(GEllipseProperties, EXProperties);
 
     /**
      * @type {JQuery}
@@ -69,8 +69,8 @@
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
-                            self._assignProperty(property, gMath.PI2 - angle);
+                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
+                            self._assignProperty(property, ifMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -157,9 +157,9 @@
         var ellipse = this._ellipses[0];
         this._panel.find('select[data-property="etp"]').val(ellipse.getProperty('etp'));
         this._panel.find('input[data-property="sa"]').val(
-            gUtil.formatNumber(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('sa')), 2));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('sa')), 2));
         this._panel.find('input[data-property="ea"]').val(
-            gUtil.formatNumber(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('ea')), 2));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('ea')), 2));
     };
 
     /**

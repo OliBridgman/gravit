@@ -2,7 +2,7 @@
     function TestAction(test) {
         this._test = test;
     };
-    GObject.inherit(TestAction, GUIAction);
+    IFObject.inherit(TestAction, GUIAction);
 
     /**
      * @override
@@ -22,7 +22,7 @@
      * @override
      */
     TestAction.prototype.getCategory = function () {
-        return gLocale.get(EXApplication.CATEGORY_FILE) + '/Development/Test/' + this._test.category;
+        return ifLocale.get(EXApplication.CATEGORY_FILE) + '/Development/Test/' + this._test.category;
     };
 
     /**

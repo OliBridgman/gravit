@@ -1,11 +1,11 @@
 (function (_) {
 
     /**
-     * @class GSystem
+     * @class IFSystem
      * @constructor
      * @version 1.0
      */
-    function GSystem() {
+    function IFSystem() {
         // Test little/big-endian using typed arrays
         this.littleEndian = (function () {
             var testBuffer = new ArrayBuffer(8);
@@ -19,22 +19,22 @@
             var phone = !!navigator.userAgent.match(/(iPhone|iPod|blackberry|android 0.5|htc|lg|midp|mmp|mobile|nokia|opera mini|palm|pocket|psp|sgh|smartphone|symbian|treo mini|Playstation Portable|SonyEricsson|Samsung|MobileExplorer|PalmSource|Benq|Windows Phone|Windows Mobile|IEMobile|Windows CE|Nintendo Wii)/i);
 
             if (tablet) {
-                return GSystem.Hardware.Tablet;
+                return IFSystem.Hardware.Tablet;
             } else if (phone) {
-                return GSystem.Hardware.Phone;
+                return IFSystem.Hardware.Phone;
             } else {
-                return GSystem.Hardware.Desktop;
+                return IFSystem.Hardware.Desktop;
             }
         })();
 
         this.operatingSystem = (function () {
             var os_data = [
-                { string: navigator.platform, subString: "Win", identity: GSystem.OperatingSystem.Windows },
-                { string: navigator.platform, subString: "Mac", identity: GSystem.OperatingSystem.OSX_IOS },
-                { string: navigator.userAgent, subString: "iPhone", identity: GSystem.OperatingSystem.OSX_IOS },
-                { string: navigator.userAgent, subString: "iPad", identity: GSystem.OperatingSystem.OSX_IOS },
-                { string: navigator.userAgent, subString: "Android", identity: GSystem.OperatingSystem.Unix },
-                { string: navigator.platform, subString: "Linux", identity: GSystem.OperatingSystem.Unix }
+                { string: navigator.platform, subString: "Win", identity: IFSystem.OperatingSystem.Windows },
+                { string: navigator.platform, subString: "Mac", identity: IFSystem.OperatingSystem.OSX_IOS },
+                { string: navigator.userAgent, subString: "iPhone", identity: IFSystem.OperatingSystem.OSX_IOS },
+                { string: navigator.userAgent, subString: "iPad", identity: IFSystem.OperatingSystem.OSX_IOS },
+                { string: navigator.userAgent, subString: "Android", identity: IFSystem.OperatingSystem.Unix },
+                { string: navigator.platform, subString: "Linux", identity: IFSystem.OperatingSystem.Unix }
             ];
 
             for (var i = 0; i < os_data.length; i++) {
@@ -44,7 +44,7 @@
                 }
             }
 
-            return GSystem.OperatingSystem.Windows;
+            return IFSystem.OperatingSystem.Windows;
         })();
 
         this.language = (function () {
@@ -66,7 +66,7 @@
      * @enum
      * @version 1.0
      */
-    GSystem.OperatingSystem = {
+    IFSystem.OperatingSystem = {
         /**
          * Linux/unix based operating system
          * @type {Number}
@@ -93,7 +93,7 @@
      * @enum
      * @version 1.0
      */
-    GSystem.Hardware = {
+    IFSystem.Hardware = {
         /**
          * PC/Laptop based hardware
          * @type {Number}
@@ -122,31 +122,31 @@
      * @type {Boolean}
      * @version 1.0
      */
-    GSystem.prototype.littleEndian = true;
+    IFSystem.prototype.littleEndian = true;
 
     /**
      * Property defining the operating system type
      * @type {Number}
-     * @see GSystem.OperatingSystem
+     * @see IFSystem.OperatingSystem
      * @version 1.0
      */
-    GSystem.prototype.operatingSystem = null;
+    IFSystem.prototype.operatingSystem = null;
 
     /**
      * Property defining the hardware type
      * @type {Number}
-     * @see GSystem.Hardware
+     * @see IFSystem.Hardware
      * @version 1.0
      */
-    GSystem.prototype.hardware = null;
+    IFSystem.prototype.hardware = null;
 
     /**
      * Property defining the system's language
      * @type {String}
      * @version 1.0
      */
-    GSystem.prototype.language = null;
+    IFSystem.prototype.language = null;
 
-    _.GSystem = GSystem;
-    _.gSystem = new GSystem();
+    _.IFSystem = IFSystem;
+    _.ifSystem = new IFSystem();
 })(this);

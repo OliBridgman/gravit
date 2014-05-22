@@ -8,11 +8,11 @@
      */
     function EXProperties() {
     };
-    GObject.inherit(EXProperties, GEventTarget);
+    IFObject.inherit(EXProperties, GEventTarget);
 
     /**
      * Called to return the category of the panel
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
     EXProperties.prototype.getCategory = function () {
         throw new Error("Not Supported.");

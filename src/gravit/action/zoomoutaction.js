@@ -8,10 +8,10 @@
      */
     function EXZoomOutAction() {
     };
-    GObject.inherit(EXZoomOutAction, GUIAction);
+    IFObject.inherit(EXZoomOutAction, GUIAction);
 
     EXZoomOutAction.ID = 'zoom.out';
-    EXZoomOutAction.TITLE = new GLocale.Key(EXZoomOutAction, "title");
+    EXZoomOutAction.TITLE = new IFLocale.Key(EXZoomOutAction, "title");
     EXZoomOutAction.ZOOM_STEP = 2.0;
 
     /**
@@ -46,7 +46,7 @@
      * @override
      */
     EXZoomOutAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, '-'];
+        return [IFKey.Constant.META, '-'];
     };
 
 

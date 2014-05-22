@@ -11,10 +11,10 @@
 
         this._matcherInfo = [];
     };
-    GObject.inherit(EXColorMatcherPalette, EXPalette);
+    IFObject.inherit(EXColorMatcherPalette, EXPalette);
 
     EXColorMatcherPalette.ID = "color-matcher";
-    EXColorMatcherPalette.TITLE = new GLocale.Key(EXColorMatcherPalette, "title");
+    EXColorMatcherPalette.TITLE = new IFLocale.Key(EXColorMatcherPalette, "title");
 
     /**
      * @type {JQuery}
@@ -150,7 +150,7 @@
         var lastCategory = null;
         for (var i = 0; i < gravit.colorMatchers.length; ++i) {
             var matcher = gravit.colorMatchers[i];
-            var category = gLocale.get(matcher.getCategory());
+            var category = ifLocale.get(matcher.getCategory());
 
             // Add to selector
             if (!lastCategory || category !== lastCategory) {

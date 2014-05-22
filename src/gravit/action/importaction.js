@@ -10,10 +10,10 @@
     function EXImportAction(import_) {
         this._import = import_;
     };
-    GObject.inherit(EXImportAction, GUIAction);
+    IFObject.inherit(EXImportAction, GUIAction);
 
     EXImportAction.ID = 'file.import';
-    EXImportAction.TITLE = new GLocale.Key(EXImportAction, "title");
+    EXImportAction.TITLE = new IFLocale.Key(EXImportAction, "title");
 
     /**
      * @override
@@ -26,7 +26,7 @@
      * @override
      */
     EXImportAction.prototype.getTitle = function () {
-        return gLocale.get(EXImportAction.TITLE).replace('%name%', gLocale.get(this._import.getName()));
+        return ifLocale.get(EXImportAction.TITLE).replace('%name%', ifLocale.get(this._import.getName()));
     };
 
     /**

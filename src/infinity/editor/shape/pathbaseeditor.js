@@ -9,7 +9,7 @@
     function IFPathBaseEditor(path) {
         IFShapeEditor.call(this, path);
     };
-    GObject.inherit(IFPathBaseEditor, IFShapeEditor);
+    IFObject.inherit(IFPathBaseEditor, IFShapeEditor);
 
     /** @override */
     IFPathBaseEditor.prototype.toString = function () {

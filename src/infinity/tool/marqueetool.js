@@ -11,7 +11,7 @@
         this._areaSelector = areaSelector;
     };
 
-    GObject.inherit(IFMarqueeTool, IFTool);
+    IFObject.inherit(IFMarqueeTool, IFTool);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFMarqueeTool._AreaSelector Class
@@ -106,7 +106,7 @@
     /** @override */
     IFMarqueeTool.prototype.getHint = function () {
         return IFTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(IFMarqueeTool, "title"));
+            .setTitle(new IFLocale.Key(IFMarqueeTool, "title"));
     };
 
     /** @override */

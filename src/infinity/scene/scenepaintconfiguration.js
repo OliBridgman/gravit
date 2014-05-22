@@ -8,7 +8,7 @@
     function IFScenePaintConfiguration() {
     }
 
-    GObject.inherit(IFScenePaintConfiguration, IFPaintConfiguration);
+    IFObject.inherit(IFScenePaintConfiguration, IFPaintConfiguration);
 
     /**
      * The paint mode of painting
@@ -45,10 +45,10 @@
      * Localized names for IFScenePaintConfiguration.PaintMode
      */
     IFScenePaintConfiguration.PaintModeName = {
-        'F': new GLocale.Key(IFScenePaintConfiguration, 'paint.full'),
-        'S': new GLocale.Key(IFScenePaintConfiguration, 'paint.fast'),
-        'L': new GLocale.Key(IFScenePaintConfiguration, 'paint.outline'),
-        'O': new GLocale.Key(IFScenePaintConfiguration, 'paint.output')
+        'F': new IFLocale.Key(IFScenePaintConfiguration, 'paint.full'),
+        'S': new IFLocale.Key(IFScenePaintConfiguration, 'paint.fast'),
+        'L': new IFLocale.Key(IFScenePaintConfiguration, 'paint.outline'),
+        'O': new IFLocale.Key(IFScenePaintConfiguration, 'paint.output')
     };
 
     /**

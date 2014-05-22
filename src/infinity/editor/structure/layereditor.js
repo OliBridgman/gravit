@@ -10,7 +10,7 @@
         IFBlockEditor.call(this, layer);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFLayerEditor, IFBlockEditor);
+    IFObject.inherit(IFLayerEditor, IFBlockEditor);
     IFElementEditor.exports(IFLayerEditor, IFLayer);
 
     /** @override */

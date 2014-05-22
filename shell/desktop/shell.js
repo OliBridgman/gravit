@@ -12,7 +12,7 @@
         this._clipboardMimeTypes = {};
     }
 
-    GObject.inherit(GDesktopShell, GShell);
+    IFObject.inherit(GDesktopShell, GShell);
 
     /**
      * @type {nw.gui.Menu}

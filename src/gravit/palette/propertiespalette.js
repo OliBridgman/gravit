@@ -11,10 +11,10 @@
         this._propertyPanels = [];
     }
 
-    GObject.inherit(EXPropertiesPalette, EXPalette);
+    IFObject.inherit(EXPropertiesPalette, EXPalette);
 
     EXPropertiesPalette.ID = "properties";
-    EXPropertiesPalette.TITLE = new GLocale.Key(EXPropertiesPalette, "title");
+    EXPropertiesPalette.TITLE = new IFLocale.Key(EXPropertiesPalette, "title");
 
     // -----------------------------------------------------------------------------------------------------------------
     // EXPropertiesPalette.DocumentState Class
@@ -30,7 +30,7 @@
         this._propertyPanels = propertyPanels;
         this._objectTree = null;
     };
-    GObject.inherit(EXPropertiesPalette.DocumentState, EXPalette.DocumentState);
+    IFObject.inherit(EXPropertiesPalette.DocumentState, EXPalette.DocumentState);
 
     /**
      * The property panels
@@ -543,7 +543,7 @@
      * @override
      */
     EXPropertiesPalette.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'F3'];
+        return [IFKey.Constant.META, 'F3'];
     };
 
     /** @override */
@@ -578,7 +578,7 @@
                     .append($('<i></i>')
                         .addClass('fa fa-caret-down'))
                     .append($('<span></span>')
-                        .text(gLocale.get(properties.getCategory())))
+                        .text(ifLocale.get(properties.getCategory())))
                     .on('click', function () {
                         if (panel.attr('data-available') === 'true') {
                             var me = $(this);

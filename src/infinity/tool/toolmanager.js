@@ -2,7 +2,7 @@
     /**
      * The manager for tools
      * @class IFToolManager
-     * @extends GObject
+     * @extends IFObject
      * @mixes GEventTarget
      * @constructor
      * @version 1.0
@@ -13,7 +13,7 @@
         this._paintLink = this._paint.bind(this);
     }
 
-    GObject.inheritAndMix(IFToolManager, GObject, [GEventTarget]);
+    IFObject.inheritAndMix(IFToolManager, IFObject, [GEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFToolManager.ToolChangedEvent Event
@@ -31,7 +31,7 @@
         this.previousTool = previousTool;
         this.newTool = newTool;
     };
-    GObject.inherit(IFToolManager.ToolChangedEvent, GEvent);
+    IFObject.inherit(IFToolManager.ToolChangedEvent, GEvent);
 
     /** @type IFTool */
     IFToolManager.ToolChangedEvent.prototype.previousTool = null;
@@ -128,7 +128,7 @@
         this._typeIdToIndexMap = {};
         for (var i = 0; i < this._tools.length; ++i) {
             var tool = this._tools[i];
-            this._typeIdToIndexMap[GObject.getTypeId(tool)] = i;
+            this._typeIdToIndexMap[IFObject.getTypeId(tool)] = i;
         }
 
         if (!this._activeTool) {
@@ -143,7 +143,7 @@
      * @version 1.0
      */
     IFToolManager.prototype.hasTool = function (tool) {
-        return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool));
+        return this._typeIdToIndexMap.hasOwnProperty(IFObject.getTypeId(tool));
     };
 
     /**
@@ -158,8 +158,8 @@
      * @returns {Number} the index of the tool class or -1 if there's none
      */
     IFToolManager.prototype.indexOf = function (tool) {
-        return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool)) ?
-            this._typeIdToIndexMap[GObject.getTypeId(tool)] : -1;
+        return this._typeIdToIndexMap.hasOwnProperty(IFObject.getTypeId(tool)) ?
+            this._typeIdToIndexMap[IFObject.getTypeId(tool)] : -1;
     };
 
     /**

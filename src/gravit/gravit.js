@@ -7,7 +7,7 @@
      */
     function GravitModule() {
     }
-    GObject.inherit(GravitModule, EXModule);
+    IFObject.inherit(GravitModule, EXModule);
 
     /** @override */
     GravitModule.prototype.init = function () {
@@ -160,11 +160,11 @@
             new EXMagnificationAction(6, null),
             new EXMagnificationAction(12, null),
             new EXMagnificationAction(25, null),
-            new EXMagnificationAction(50, [GUIKey.Constant.META, '5']),
-            new EXMagnificationAction(100, [GUIKey.Constant.META, '1']),
-            new EXMagnificationAction(200, [GUIKey.Constant.META, '2']),
-            new EXMagnificationAction(400, [GUIKey.Constant.META, '4']),
-            new EXMagnificationAction(800, [GUIKey.Constant.META, '8']),
+            new EXMagnificationAction(50, [IFKey.Constant.META, '5']),
+            new EXMagnificationAction(100, [IFKey.Constant.META, '1']),
+            new EXMagnificationAction(200, [IFKey.Constant.META, '2']),
+            new EXMagnificationAction(400, [IFKey.Constant.META, '4']),
+            new EXMagnificationAction(800, [IFKey.Constant.META, '8']),
             new EXZoomInAction(),
             new EXZoomOutAction(),
 

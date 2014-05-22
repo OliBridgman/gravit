@@ -9,7 +9,7 @@
         IFMarqueeTool.call(this, new IFLassoTool._AreaSelector());
     };
 
-    GObject.inherit(IFLassoTool, IFMarqueeTool);
+    IFObject.inherit(IFLassoTool, IFMarqueeTool);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFLassoTool._AreaSelector Class
@@ -22,7 +22,7 @@
     IFLassoTool._AreaSelector = function () {
         IFMarqueeTool._AreaSelector.call(this);
     };
-    GObject.inherit(IFLassoTool._AreaSelector, IFMarqueeTool._AreaSelector);
+    IFObject.inherit(IFLassoTool._AreaSelector, IFMarqueeTool._AreaSelector);
 
     /**
      * @type {GPoint}
@@ -56,12 +56,12 @@
     /** @override */
     IFLassoTool.prototype.getHint = function () {
         return IFTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(IFLassoTool, "title"));
+            .setTitle(new IFLocale.Key(IFLassoTool, "title"));
     };
 
     /** @override */
     IFLassoTool.prototype.getCursor = function () {
-        return GUICursor.Lasso;
+        return IFCursor.Lasso;
     };
 
     /** override */

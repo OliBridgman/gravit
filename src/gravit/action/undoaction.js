@@ -8,10 +8,10 @@
      */
     function EXUndoAction() {
     };
-    GObject.inherit(EXUndoAction, GUIAction);
+    IFObject.inherit(EXUndoAction, GUIAction);
 
     EXUndoAction.ID = 'edit.undo';
-    EXUndoAction.TITLE = new GLocale.Key(EXUndoAction, "title");
+    EXUndoAction.TITLE = new IFLocale.Key(EXUndoAction, "title");
 
     /**
      * @override
@@ -24,7 +24,7 @@
      * @override
      */
     EXUndoAction.prototype.getTitle = function () {
-        var result = gLocale.get(EXUndoAction.TITLE);
+        var result = ifLocale.get(EXUndoAction.TITLE);
         var document = gApp.getActiveDocument();
         if (document && document.getEditor().hasUndoState()) {
             result += " " + document.getEditor().getUndoStateName();
@@ -50,7 +50,7 @@
      * @override
      */
     EXUndoAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'z'];
+        return [IFKey.Constant.META, 'z'];
     };
 
     /**

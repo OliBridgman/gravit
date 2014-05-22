@@ -10,7 +10,7 @@
         IFViewLayer.call(this, view);
         view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
-    GObject.inherit(IFSceneLayer, IFViewLayer);
+    IFObject.inherit(IFSceneLayer, IFViewLayer);
 
     /**
      * @type {IFPaintCanvas}
@@ -48,7 +48,7 @@
         //context.canvas.setTransform(oldCanvasTransform);
 
         // Handle rendering in pixel mode but only if we're not at 100%
-        if (this._view.getViewConfiguration().pixelMode && !gMath.isEqualEps(this._view.getZoom(), 1.0)) {
+        if (this._view.getViewConfiguration().pixelMode && !ifMath.isEqualEps(this._view.getZoom(), 1.0)) {
             // Create and size our pixel content canvas
             if (!this._pixelContentCanvas) {
                 this._pixelContentCanvas = new IFPaintCanvas();

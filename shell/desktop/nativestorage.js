@@ -5,20 +5,20 @@
      */
     function GNativeStorage() {
     };
-    GObject.inherit(GNativeStorage, GStorage);
+    IFObject.inherit(GNativeStorage, IFStorage);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GNativeStorage._Blob Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @class GNativeStorage._Blob
-     * @extends GBlob
+     * @extends IFBlob
      * @private
      */
     GNativeStorage._Blob = function (storage, location) {
-        GBlob.call(this, storage, location);
+        IFBlob.call(this, storage, location);
     };
-    GObject.inherit(GNativeStorage._Blob, GBlob);
+    IFObject.inherit(GNativeStorage._Blob, IFBlob);
 
     /** @override */
     GNativeStorage._Blob.prototype.restore = function (binary, encoding, done) {

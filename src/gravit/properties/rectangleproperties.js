@@ -9,7 +9,7 @@
     function GRectangleProperties() {
         this._rectangles = [];
     };
-    GObject.inherit(GRectangleProperties, EXProperties);
+    IFObject.inherit(GRectangleProperties, EXProperties);
 
     /**
      * @type {JQuery}

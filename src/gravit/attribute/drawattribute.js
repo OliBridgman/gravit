@@ -8,7 +8,7 @@
      */
     function GDrawAttribute() {
     };
-    GObject.inherit(GDrawAttribute, GAttribute);
+    IFObject.inherit(GDrawAttribute, GAttribute);
 
     /**
      * @type {JQuery}

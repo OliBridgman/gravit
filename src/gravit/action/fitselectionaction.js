@@ -8,10 +8,10 @@
      */
     function EXFitSelectionAction() {
     };
-    GObject.inherit(EXFitSelectionAction, GUIAction);
+    IFObject.inherit(EXFitSelectionAction, GUIAction);
 
     EXFitSelectionAction.ID = 'view.zoom.fit-selection';
-    EXFitSelectionAction.TITLE = new GLocale.Key(EXFitSelectionAction, "title");
+    EXFitSelectionAction.TITLE = new IFLocale.Key(EXFitSelectionAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXFitSelectionAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'O'];
+        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'O'];
     };
 
     /**

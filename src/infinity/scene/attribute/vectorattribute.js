@@ -10,7 +10,7 @@
         IFDrawAttribute.call(this);
     }
 
-    GObject.inherit(IFVectorAttribute, IFDrawAttribute);
+    IFObject.inherit(IFVectorAttribute, IFDrawAttribute);
 
     /** @override */
     IFVectorAttribute.prototype.render = function (context, source, bbox) {

@@ -9,7 +9,7 @@
     function IFElement() {
     }
 
-    GObject.inherit(IFElement, IFNode);
+    IFObject.inherit(IFElement, IFNode);
 
     /**
      * Known flags for a geometry
@@ -117,7 +117,7 @@
         this.element = element;
         this.type = type;
     };
-    GObject.inherit(IFElement.GeometryChangeEvent, GEvent);
+    IFObject.inherit(IFElement.GeometryChangeEvent, GEvent);
 
     /**
      * The type of a geometrical change

@@ -10,7 +10,7 @@
         IFTool.call(this);
     }
 
-    GObject.inherit(IFZoomTool, IFTool);
+    IFObject.inherit(IFZoomTool, IFTool);
 
     /**
      * Global zoom tool options
@@ -57,7 +57,7 @@
 
     /** @override */
     IFZoomTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this).setTitle(new GLocale.Key(IFZoomTool, "title"));
+        return IFTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFZoomTool, "title"));
     };
 
     /** @override */
@@ -70,12 +70,12 @@
         switch (this._zoomMode) {
             case -2:
             case -1:
-                return GUICursor.ZoomMinus;
+                return IFCursor.ZoomMinus;
             case +1:
             case +2:
-                return GUICursor.ZoomPlus;
+                return IFCursor.ZoomPlus;
             default:
-                return GUICursor.ZoomNone;
+                return IFCursor.ZoomNone;
         }
     };
 

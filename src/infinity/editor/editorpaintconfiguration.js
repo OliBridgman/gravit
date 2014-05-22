@@ -8,7 +8,7 @@
     function IFEditorPaintConfiguration() {
     }
 
-    GObject.inherit(IFEditorPaintConfiguration, IFScenePaintConfiguration);
+    IFObject.inherit(IFEditorPaintConfiguration, IFScenePaintConfiguration);
 
     /** @override */
     IFEditorPaintConfiguration.prototype.toString = function () {

@@ -10,7 +10,7 @@
         IFTool.call(this);
     }
 
-    GObject.inherit(IFPathTool, IFTool);
+    IFObject.inherit(IFPathTool, IFTool);
 
     /**
      * Reference to the edited path
@@ -138,7 +138,7 @@
 
     /**
      * Current active cursor
-     * @type {GUICursor}
+     * @type {IFCursor}
      * @private
      */
     IFPathTool.prototype._cursor = null;
@@ -162,7 +162,7 @@
     /** @override */
     IFPathTool.prototype.getHint = function () {
         return IFTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.TAB, new GLocale.Key(IFPathTool, "shortcut.tab"));
+            .addKey(IFKey.Constant.TAB, new IFLocale.Key(IFPathTool, "shortcut.tab"));
     };
 
     /** @override */
@@ -179,7 +179,7 @@
         view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
-        this._cursor = GUICursor.PenStart;
+        this._cursor = IFCursor.PenStart;
         this._transactionType = IFPathTool.Transaction.NoTransaction;
         this._initialSelectCorrection();
     };
@@ -282,7 +282,7 @@
 
                     this._pathEditor.selectOnePoint(this._pathRef.getAnchorPoints().getLastChild());
                 }
-                this._cursor = GUICursor.Pen;
+                this._cursor = IFCursor.Pen;
             }
         }
     };
@@ -493,7 +493,7 @@
      * @private
      */
     IFPathTool.prototype._keyDown = function (event) {
-        if (event.key === GUIKey.Constant.TAB) {
+        if (event.key === IFKey.Constant.TAB) {
             this._lastMouseEvent = null;
             this._tabAction();
         }
@@ -536,7 +536,7 @@
                 this._pathRef.removeFlag(IFNode.Flag.Selected);
                 this._commitChanges();
             }
-            this._setCursorForPosition(GUICursor.PenStart);
+            this._setCursorForPosition(IFCursor.PenStart);
         }
     };
 
@@ -667,15 +667,15 @@
                 if (this._refPt.getProperty('hlx') !== null && this._refPt.getProperty('hly') !== null ||
                     this._refPt.getProperty('hrx') !== null && this._refPt.getProperty('hry') !== null) {
 
-                    this._setCursorForPosition(GUICursor.PenModify);
+                    this._setCursorForPosition(IFCursor.PenModify);
                 } else {
-                    this._setCursorForPosition(GUICursor.PenMinus);
+                    this._setCursorForPosition(IFCursor.PenMinus);
                 }
             }
         } else if (partInfo && partInfo.id.type == IFPathEditor.PartType.Segment &&
                 partInfo.data.type == IFPathEditor.SegmentData.HitRes) {
 
-            this._setCursorForPosition(GUICursor.PenPlus);
+            this._setCursorForPosition(IFCursor.PenPlus);
             this._startTransaction(IFPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
@@ -699,7 +699,7 @@
                 this._mode = IFPathTool.Mode.Append;
             }
         } else { // no path hit
-            this._setCursorForPosition(GUICursor.PenStart);
+            this._setCursorForPosition(IFCursor.PenStart);
             this._pathEditor.updatePartSelection(false);
             this._commitChanges();
             this._mode = IFPathTool.Mode.Append;
@@ -726,7 +726,7 @@
             }
             this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
             this._makePointMajor(this._refPt);
-            this._setCursorForPosition(GUICursor.PenMinus);
+            this._setCursorForPosition(IFCursor.PenMinus);
         } else {
             if (this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) {
                 if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
@@ -763,37 +763,37 @@
                             this._mode == IFPathTool.Mode.Prepend &&
                                 anchorPt === pathRef.getAnchorPoints().getLastChild()) {
 
-                            this._cursor = GUICursor.PenEnd;
+                            this._cursor = IFCursor.PenEnd;
                         } else {
-                            this._cursor = GUICursor.Pen;
+                            this._cursor = IFCursor.Pen;
                         }
                     } else { // middlePoint
                         if (this._mode == IFPathTool.Mode.Edit) {
                             if (anchorPt.getProperty('hlx') !== null && anchorPt.getProperty('hly') !== null ||
                                 anchorPt.getProperty('hrx') !== null && anchorPt.getProperty('hry') !== null) {
 
-                                this._cursor = GUICursor.PenModify;
+                                this._cursor = IFCursor.PenModify;
                             } else {
-                                this._cursor = GUICursor.PenMinus;
+                                this._cursor = IFCursor.PenMinus;
                             }
                         } else {
-                            this._cursor = GUICursor.Pen;
+                            this._cursor = IFCursor.Pen;
                         }
                     }
                 } else if (this._mode == IFPathTool.Mode.Edit) {
                     if (partInfo && partInfo.id.type == IFPathEditor.PartType.Segment) {
-                        this._cursor = GUICursor.PenPlus;
+                        this._cursor = IFCursor.PenPlus;
                     } else { // no path hit
-                        this._cursor = GUICursor.PenStart;
+                        this._cursor = IFCursor.PenStart;
                     }
                 } else {
-                    this._cursor = GUICursor.Pen;
+                    this._cursor = IFCursor.Pen;
                 }
             } else {
-                this._cursor = GUICursor.PenStart;
+                this._cursor = IFCursor.PenStart;
             }
         } else {
-            this._cursor = GUICursor.PenStart;
+            this._cursor = IFCursor.PenStart;
         }
 
         this.updateCursor();

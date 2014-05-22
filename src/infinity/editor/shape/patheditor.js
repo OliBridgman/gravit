@@ -18,7 +18,7 @@
             this._partSelection.push({type: IFPathEditor.PartType.Point, point: selectedAnchorPoints[i]});
         }
     };
-    GObject.inherit(IFPathEditor, IFPathBaseEditor);
+    IFObject.inherit(IFPathEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFPathEditor, IFPath);
 
     /**
@@ -220,7 +220,7 @@
                         var dx = dPt.getX();
                         var dy = dPt.getY();
 
-                        var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                        var prPt = ifMath.getVectorProjection(apL.getX(), apL.getY(),
                             partData.apLhr.getX(), partData.apLhr.getY(), apL.getX() + dx, apL.getY() + dy);
 
                         var prDPt = prPt.subtract(apL);
@@ -230,7 +230,7 @@
                         this._transformPreviewPointCoordinates(
                             selectedPartId.apLeft, 'hrx', 'hry', newTransform, partData.apLhr);
 
-                        var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                        var prPt = ifMath.getVectorProjection(apR.getX(), apR.getY(),
                             partData.apRhl.getX(), partData.apRhl.getY(), apR.getX() + dx, apR.getY() + dy);
 
                         var prDPt = prPt.subtract(apR);
@@ -261,7 +261,7 @@
                         var tmpC = 1 / (partData.cL + partData.cR);
 
                         if (partData.fixedHDirLpt && !partData.fixedHDirRpt) {
-                            var prPt = gMath.getVectorProjection(apL.getX(), apL.getY(),
+                            var prPt = ifMath.getVectorProjection(apL.getX(), apL.getY(),
                                 partData.apLhr.getX(), partData.apLhr.getY(),
                                 apL.getX() + dx, apL.getY() + dy);
                             var prDPt = prPt.subtract(apL);
@@ -271,7 +271,7 @@
                             var dh2x = dx / partData.cR - partData.cL / partData.cR * dh1x;
                             var dh2y = dy / partData.cR - partData.cL / partData.cR * dh1y;
                         } else { // !partData.fixedHDirLpt && partData.fixedHDirRpt
-                            var prPt = gMath.getVectorProjection(apR.getX(), apR.getY(),
+                            var prPt = ifMath.getVectorProjection(apR.getX(), apR.getY(),
                                 partData.apRhl.getX(), partData.apRhl.getY(),
                                 apR.getX() + dx, apR.getY() + dy);
                             var prDPt = prPt.subtract(apR);
@@ -1108,7 +1108,7 @@
         transformToApply = transformToApply ? transformToApply.multiplied(worldToViewTransform) : worldToViewTransform;
 
         basePt = transformToApply.mapPoint(basePt);
-        var constrPt = gMath.convertToConstrain(
+        var constrPt = ifMath.convertToConstrain(
             basePt.getX(), basePt.getY(), position.getX(), position.getY(),
             this._element.getScene().getProperty('crConstraint'));
 
@@ -1452,10 +1452,10 @@
             shoulderLimitPt = pathTransform.mapPoint(shoulderLimitPt);
         }
 
-        var newShoulderPt = gMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+        var newShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
             shoulderLimitPt.getX(), shoulderLimitPt.getY(), position.getX(), position.getY(), true);
 
-        var newVal = gMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
+        var newVal = ifMath.ptDist(newShoulderPt.getX(), newShoulderPt.getY(),
             sourcePosition.getX(), sourcePosition.getY());
 
         var previewPoint = this.getPathPointPreview(partId.point);

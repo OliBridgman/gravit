@@ -10,7 +10,7 @@
         IFSelectTool.call(this);
     };
 
-    GObject.inherit(IFPointerTool, IFSelectTool);
+    IFObject.inherit(IFPointerTool, IFSelectTool);
 
     /** @override */
     IFPointerTool.prototype.getGroup = function () {
@@ -25,7 +25,7 @@
     /** @override */
     IFPointerTool.prototype.getHint = function () {
         return IFSelectTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(IFPointerTool, "title"));
+            .setTitle(new IFLocale.Key(IFPointerTool, "title"));
     };
 
     /** @override */

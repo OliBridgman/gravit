@@ -8,10 +8,10 @@
      */
     function GCopyAction() {
     };
-    GObject.inherit(GCopyAction, GUIAction);
+    IFObject.inherit(GCopyAction, GUIAction);
 
     GCopyAction.ID = 'edit.copy';
-    GCopyAction.TITLE = new GLocale.Key(GCopyAction, "title");
+    GCopyAction.TITLE = new IFLocale.Key(GCopyAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GCopyAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'C'];
+        return [IFKey.Constant.META, 'C'];
     };
 
     /**

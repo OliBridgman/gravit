@@ -68,7 +68,7 @@
     IFImage.StatusEvent = function (status) {
         this.status = status;
     };
-    GObject.inherit(IFImage.StatusEvent, GEvent);
+    IFObject.inherit(IFImage.StatusEvent, GEvent);
 
     /**
      * The status

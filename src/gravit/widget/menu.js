@@ -14,7 +14,7 @@
         this._htmlElement.on("mouseout", this._mouseOut.bind(this));
     };
 
-    GObject.inherit(GUIMenu, GEventTarget);
+    IFObject.inherit(GUIMenu, GEventTarget);
 
     /**
      * A position a menu can be opened at
@@ -165,7 +165,7 @@
                 continue;
             }
 
-            var category = gLocale.get(action.getCategory());
+            var category = ifLocale.get(action.getCategory());
             var group = action.getGroup();
             var categories = category ? category.split('/') : null;
             var groups = group ? [""].concat(group.split('/')) : null;
@@ -215,7 +215,7 @@
      */
     GUIMenu.OpenEvent = function () {
     };
-    GObject.inherit(GUIMenu.OpenEvent, GEvent);
+    IFObject.inherit(GUIMenu.OpenEvent, GEvent);
 
     /** @override */
     GUIMenu.OpenEvent.prototype.toString = function () {
@@ -237,7 +237,7 @@
      */
     GUIMenu.CloseEvent = function () {
     };
-    GObject.inherit(GUIMenu.CloseEvent, GEvent);
+    IFObject.inherit(GUIMenu.CloseEvent, GEvent);
 
     /** @override */
     GUIMenu.CloseEvent.prototype.toString = function () {

@@ -9,7 +9,7 @@
     function GPathProperties() {
         this._pathes = [];
     };
-    GObject.inherit(GPathProperties, EXProperties);
+    IFObject.inherit(GPathProperties, EXProperties);
 
     /**
      * @type {JQuery}

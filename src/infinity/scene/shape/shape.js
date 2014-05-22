@@ -19,7 +19,7 @@
         this._setDefaultProperties(IFShape.GeometryProperties);
     }
 
-    GObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values

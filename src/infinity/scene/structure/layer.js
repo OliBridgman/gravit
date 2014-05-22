@@ -60,9 +60,9 @@
      * Localized names for IFLayer.Type
      */
     IFLayer.TypeName = {
-        'O': new GLocale.Key(IFLayer, 'tp.output'),
-        'D': new GLocale.Key(IFLayer, 'tp.draft'),
-        'G': new GLocale.Key(IFLayer, 'tp.guide')
+        'O': new IFLocale.Key(IFLayer, 'tp.output'),
+        'D': new IFLocale.Key(IFLayer, 'tp.draft'),
+        'G': new IFLocale.Key(IFLayer, 'tp.guide')
     };
 
     /** @override */

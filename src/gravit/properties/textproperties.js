@@ -9,7 +9,7 @@
     function GTextProperties() {
         this._text = [];
     };
-    GObject.inherit(GTextProperties, EXProperties);
+    IFObject.inherit(GTextProperties, EXProperties);
 
     /**
      * @type {JQuery}

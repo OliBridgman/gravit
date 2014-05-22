@@ -22,13 +22,13 @@
      */
     GTransform.serialize = function (transform) {
         var result = [];
-        if (!gMath.isEqualEps(transform._sx, 1.0) || !gMath.isEqualEps(transform._sy, 1.0)) {
+        if (!ifMath.isEqualEps(transform._sx, 1.0) || !ifMath.isEqualEps(transform._sy, 1.0)) {
             result = result.concat(['S'], transform._sx, transform._sy);
         }
-        if (!gMath.isEqualEps(transform._shx, 0.0) || !gMath.isEqualEps(transform._shy, 0.0)) {
+        if (!ifMath.isEqualEps(transform._shx, 0.0) || !ifMath.isEqualEps(transform._shy, 0.0)) {
             result = result.concat(['H'], transform._shx, transform._shy);
         }
-        if (!gMath.isEqualEps(transform._tx, 0.0) || !gMath.isEqualEps(transform._ty, 0.0)) {
+        if (!ifMath.isEqualEps(transform._tx, 0.0) || !ifMath.isEqualEps(transform._ty, 0.0)) {
             result = result.concat(['T'], transform._tx, transform._ty);
         }
         return result;
@@ -91,9 +91,9 @@
         if (left && left == right) {
             return true;
         } else if (left && right) {
-            return gMath.isEqualEps(left._sx, right._sx) && gMath.isEqualEps(left._shy, right._shy) &&
-                gMath.isEqualEps(left._shx, right._shx) && gMath.isEqualEps(left._sy, right._sy) &&
-                gMath.isEqualEps(left._tx, right._tx) && gMath.isEqualEps(left._ty, right._ty);
+            return ifMath.isEqualEps(left._sx, right._sx) && ifMath.isEqualEps(left._shy, right._shy) &&
+                ifMath.isEqualEps(left._shx, right._shx) && ifMath.isEqualEps(left._sy, right._sy) &&
+                ifMath.isEqualEps(left._tx, right._tx) && ifMath.isEqualEps(left._ty, right._ty);
         } else {
             return false;
         }
@@ -146,9 +146,9 @@
      * @version 1.0
      */
     GTransform.prototype.isIdentity = function () {
-        return gMath.isEqualEps(this._sx, 1.0) && gMath.isEqualEps(this._shy, 0.0) &&
-            gMath.isEqualEps(this._shx, 0.0) && gMath.isEqualEps(this._sy, 1.0) &&
-            gMath.isEqualEps(this._tx, 0.0) && gMath.isEqualEps(this._ty, 0.0);
+        return ifMath.isEqualEps(this._sx, 1.0) && ifMath.isEqualEps(this._shy, 0.0) &&
+            ifMath.isEqualEps(this._shx, 0.0) && ifMath.isEqualEps(this._sy, 1.0) &&
+            ifMath.isEqualEps(this._tx, 0.0) && ifMath.isEqualEps(this._ty, 0.0);
     };
 
     /**
@@ -156,7 +156,7 @@
      * @version 1.0
      */
     GTransform.prototype.isValid = function () {
-        return Math.abs(this._sx) > gMath.defaultEps && Math.abs(this._sy) > gMath.defaultEps;
+        return Math.abs(this._sx) > ifMath.defaultEps && Math.abs(this._sy) > ifMath.defaultEps;
     };
 
     /**

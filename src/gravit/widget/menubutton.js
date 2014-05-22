@@ -40,7 +40,7 @@
     };
 
     /**
-     * @returns {GLocale.Key|String} the menu-button's caption
+     * @returns {IFLocale.Key|String} the menu-button's caption
      * @version 1.0
      */
     GUIMenuButton.prototype.getCaption = function () {
@@ -49,7 +49,7 @@
 
     /**
      * Assigns the menu-button's the caption
-     * @param {GLocale.Key|String} caption
+     * @param {IFLocale.Key|String} caption
      * @version 1.0
      */
     GUIMenuButton.prototype.setCaption = function (caption) {

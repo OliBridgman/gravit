@@ -10,7 +10,7 @@
     function EXShowPaletteAction(palette) {
         this._palette = palette;
     };
-    GObject.inherit(EXShowPaletteAction, GUIAction);
+    IFObject.inherit(EXShowPaletteAction, GUIAction);
 
     EXShowPaletteAction.ID = 'view.show.palette';
 

@@ -10,7 +10,7 @@
         IFShapeTool.call(this, false, false);
     }
 
-    GObject.inherit(IFPolygonTool, IFShapeTool);
+    IFObject.inherit(IFPolygonTool, IFShapeTool);
 
     /**
      * @type {number}
@@ -37,9 +37,9 @@
     /** @override */
     IFPolygonTool.prototype.getHint = function () {
         return IFShapeTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.UP, new GLocale.Key(IFPolygonTool, "shortcut.shift"))
-            .addKey(GUIKey.Constant.DOWN, new GLocale.Key(IFPolygonTool, "shortcut.option"))
-            .setTitle(new GLocale.Key(IFPolygonTool, "title"));
+            .addKey(IFKey.Constant.UP, new IFLocale.Key(IFPolygonTool, "shortcut.shift"))
+            .addKey(IFKey.Constant.DOWN, new IFLocale.Key(IFPolygonTool, "shortcut.option"))
+            .setTitle(new IFLocale.Key(IFPolygonTool, "title"));
     };
 
     /** @override */
@@ -64,8 +64,8 @@
     IFPolygonTool.prototype._updateShape = function (shape, area, line) {
         var deltaX = line[1].getX() - line[0].getX();
         var deltaY = line[1].getY() - line[0].getY();
-        var angle = gMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
-        var distance = gMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
+        var angle = ifMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
+        var distance = ifMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
 
         // Lock angle to 15° if desired
         if (gPlatform.modifiers.shiftKey) {
@@ -73,7 +73,7 @@
         }
 
         var outerAngle = angle;
-        var innerAngle = gMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
+        var innerAngle = ifMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
 
         var outerRadius = distance;
         var innerRadius = distance * Math.cos(Math.PI / this._numberOfPoints);

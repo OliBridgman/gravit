@@ -8,7 +8,7 @@
      */
     function GPatternAttribute() {
     };
-    GObject.inherit(GPatternAttribute, GPaintAttribute);
+    IFObject.inherit(GPatternAttribute, GPaintAttribute);
 
     /**
      * @type {boolean}

@@ -10,7 +10,7 @@
     function IFAttributes() {
     }
 
-    GObject.inheritAndMix(IFAttributes, IFAttribute, [IFNode.Container]);
+    IFObject.inheritAndMix(IFAttributes, IFAttribute, [IFNode.Container]);
 
     /**
      * Attribute's mime-type

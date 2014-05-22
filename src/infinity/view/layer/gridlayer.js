@@ -10,7 +10,7 @@
         IFViewLayer.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
     }
-    GObject.inherit(IFGridLayer, IFViewLayer);
+    IFObject.inherit(IFGridLayer, IFViewLayer);
 
     IFGridLayer.MIN_CELL_SPACE = 10;
 

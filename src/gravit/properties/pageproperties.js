@@ -9,7 +9,7 @@
     function GPageProperties() {
         this._pages = [];
     };
-    GObject.inherit(GPageProperties, EXProperties);
+    IFObject.inherit(GPageProperties, EXProperties);
 
     GPageProperties.SIZE_PRESETS = [
         {

@@ -8,10 +8,10 @@
      */
     function EXFitAllAction() {
     };
-    GObject.inherit(EXFitAllAction, GUIAction);
+    IFObject.inherit(EXFitAllAction, GUIAction);
 
     EXFitAllAction.ID = 'view.zoom.fit.all';
-    EXFitAllAction.TITLE = new GLocale.Key(EXFitAllAction, "title");
+    EXFitAllAction.TITLE = new IFLocale.Key(EXFitAllAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXFitAllAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'O'];
+        return [IFKey.Constant.META, 'O'];
     };
 
     /**

@@ -14,7 +14,7 @@
         this._transform = transform;
     }
 
-    GObject.inherit(IFVertexTransformer, IFVertexSource);
+    IFObject.inherit(IFVertexTransformer, IFVertexSource);
 
     IFVertexTransformer.transformVertex = function (vertex, transform) {
         if (transform) {

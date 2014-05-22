@@ -9,7 +9,7 @@
         IFShapeTool.call(this, true, true);
     }
 
-    GObject.inherit(IFEllipseTool, IFShapeTool);
+    IFObject.inherit(IFEllipseTool, IFShapeTool);
 
     /** @override */
     IFEllipseTool.prototype.getGroup = function () {
@@ -24,7 +24,7 @@
     /** @override */
     IFEllipseTool.prototype.getHint = function () {
         return IFShapeTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(IFEllipseTool, "title"));
+            .setTitle(new IFLocale.Key(IFEllipseTool, "title"));
     };
 
     /** @override */

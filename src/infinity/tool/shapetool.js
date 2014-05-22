@@ -16,7 +16,7 @@
         this._fromCenter = fromCenter;
     }
 
-    GObject.inherit(IFShapeTool, IFTool);
+    IFObject.inherit(IFShapeTool, IFTool);
 
     /**
      * Options for shape tools
@@ -85,10 +85,10 @@
         var hint = IFTool.prototype.getHint.call(this);
 
         if (this._keepRatio) {
-            hint.addKey(GUIKey.Constant.SHIFT, new GLocale.Key(IFShapeTool, "shortcut.shift"), true);
+            hint.addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFShapeTool, "shortcut.shift"), true);
         }
         if (this._fromCenter) {
-            hint.addKey(GUIKey.Constant.OPTION, new GLocale.Key(IFShapeTool, "shortcut.option"), true);
+            hint.addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFShapeTool, "shortcut.option"), true);
         }
 
         return hint;
@@ -96,7 +96,7 @@
 
     /** @override */
     IFShapeTool.prototype.getCursor = function () {
-        return GUICursor.Cross;
+        return IFCursor.Cross;
     };
 
     /** @override */

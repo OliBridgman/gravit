@@ -9,7 +9,7 @@
     function EXPalette() {
         this._documentStates = [];
     };
-    GObject.inherit(EXPalette, GEventTarget);
+    IFObject.inherit(EXPalette, GEventTarget);
 
     EXPalette.GROUP_PROPERTIES = 'properties';
     EXPalette.GROUP_COLOR = 'color';
@@ -26,7 +26,7 @@
      */
     EXPalette.UpdateEvent = function () {
     };
-    GObject.inherit(EXPalette.UpdateEvent, GEvent);
+    IFObject.inherit(EXPalette.UpdateEvent, GEvent);
 
     /** @override */
     EXPalette.UpdateEvent.prototype.toString = function () {
@@ -99,7 +99,7 @@
 
     /**
      * Get the title of the palette
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
     EXPalette.prototype.getTitle = function () {
         throw new Error("Not Supported");

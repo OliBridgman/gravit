@@ -8,10 +8,10 @@
      */
     function GCopyAttributesAction() {
     };
-    GObject.inherit(GCopyAttributesAction, GUIAction);
+    IFObject.inherit(GCopyAttributesAction, GUIAction);
 
     GCopyAttributesAction.ID = 'edit.copy-attributes';
-    GCopyAttributesAction.TITLE = new GLocale.Key(GCopyAttributesAction, "title");
+    GCopyAttributesAction.TITLE = new IFLocale.Key(GCopyAttributesAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GCopyAttributesAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.F4];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.F4];
     };
 
     /**

@@ -9,7 +9,7 @@
     function IFBlockEditor(block) {
         IFElementEditor.call(this, block);
     };
-    GObject.inherit(IFBlockEditor, IFElementEditor);
+    IFObject.inherit(IFBlockEditor, IFElementEditor);
 
     IFBlockEditor.Flag = {
         /**

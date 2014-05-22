@@ -9,7 +9,7 @@
     function IFSceneEditor(scene) {
         IFElementEditor.call(this, scene);
     };
-    GObject.inherit(IFSceneEditor, IFElementEditor);
+    IFObject.inherit(IFSceneEditor, IFElementEditor);
     IFElementEditor.exports(IFSceneEditor, IFScene);
 
     /** @override */

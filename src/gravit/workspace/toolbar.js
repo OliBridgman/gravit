@@ -95,7 +95,7 @@
             // Concat/read the tool's title
             var hint = toolInstance.getHint();
             if (hint) {
-                var title = gLocale.get(hint.getTitle());
+                var title = ifLocale.get(hint.getTitle());
                 if (!title || title === "") {
                     return null;
                 }
@@ -108,7 +108,7 @@
                         } else {
                             title += ", ";
                         }
-                        title += guiKey.shortcutToString(shortcuts[i]);
+                        title += ifKey.shortcutToString(shortcuts[i]);
                     }
                     title += ")";
                 }
@@ -116,7 +116,7 @@
                 button.attr('title', title);
             }
 
-            this._toolTypeToButtonMap[GObject.getTypeId(toolInstance)] = button;
+            this._toolTypeToButtonMap[IFObject.getTypeId(toolInstance)] = button;
         }.bind(this);
 
         // Append all tools now
@@ -154,11 +154,11 @@
      * @private
      */
     GToolbar.prototype._toolChanged = function (event) {
-        if (event.previousTool && this._toolTypeToButtonMap[GObject.getTypeId(event.previousTool)]) {
-            this._toolTypeToButtonMap[GObject.getTypeId(event.previousTool)].removeClass('g-active');
+        if (event.previousTool && this._toolTypeToButtonMap[IFObject.getTypeId(event.previousTool)]) {
+            this._toolTypeToButtonMap[IFObject.getTypeId(event.previousTool)].removeClass('g-active');
         }
-        if (event.newTool && this._toolTypeToButtonMap[GObject.getTypeId(event.newTool)]) {
-            this._toolTypeToButtonMap[GObject.getTypeId(event.newTool)].addClass('g-active');
+        if (event.newTool && this._toolTypeToButtonMap[IFObject.getTypeId(event.newTool)]) {
+            this._toolTypeToButtonMap[IFObject.getTypeId(event.newTool)].addClass('g-active');
         }
     };
 

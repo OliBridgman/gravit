@@ -8,10 +8,10 @@
      */
     function EXShortcutMapAction() {
     };
-    GObject.inherit(EXShortcutMapAction, GUIAction);
+    IFObject.inherit(EXShortcutMapAction, GUIAction);
 
     EXShortcutMapAction.ID = 'help.shortcutmap';
-    EXShortcutMapAction.TITLE = new GLocale.Key(EXShortcutMapAction, "title");
+    EXShortcutMapAction.TITLE = new IFLocale.Key(EXShortcutMapAction, "title");
 
     /**
      * @override
@@ -81,7 +81,7 @@
             if (i < actions.length) {
                 action = actions[i];
 
-                category = gLocale.get(action.getCategory());
+                category = ifLocale.get(action.getCategory());
 
                 if (!category) {
                     continue;
@@ -161,7 +161,7 @@
                 title: 'Shortcuts',
                 buttons: [
                     {
-                        title: GLocale.Constant.Close,
+                        title: IFLocale.Constant.Close,
                         click: function () {
                             $(this).gDialog('close');
                         }

@@ -8,10 +8,10 @@
      */
     function EXShowRulersAction() {
     };
-    GObject.inherit(EXShowRulersAction, GUIAction);
+    IFObject.inherit(EXShowRulersAction, GUIAction);
 
     EXShowRulersAction.ID = 'view.show.rulers';
-    EXShowRulersAction.TITLE = new GLocale.Key(EXShowRulersAction, "title");
+    EXShowRulersAction.TITLE = new IFLocale.Key(EXShowRulersAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXShowRulersAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'R'];
+        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'R'];
     };
 
     /**

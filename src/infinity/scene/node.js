@@ -2,14 +2,14 @@
     /**
      * Base node representing a single item within a scene
      * @class IFNode
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      * @version 1.0
      */
     function IFNode() {
     };
 
-    GObject.inherit(IFNode, GObject);
+    IFObject.inherit(IFNode, IFObject);
 
     /**
      * Nodes's mime-type
@@ -18,22 +18,22 @@
     IFNode.MIME_TYPE = "application/infinity+node";
 
     /**
-     * GObject.inherit descendant for nodes
+     * IFObject.inherit descendant for nodes
      * @param {String} name the unique name for the node
-     * @see GObject.inherit
+     * @see IFObject.inherit
      */
     IFNode.inherit = function (name, target, base) {
-        GObject.inherit(target, base);
+        IFObject.inherit(target, base);
         IFNode._registerNodeClass(name, target);
     };
 
     /**
-     * GObject.inheritAndMix descendant for nodes
+     * IFObject.inheritAndMix descendant for nodes
      * @param {String} name the unique name for the node
-     * @see GObject.inheritAndMix
+     * @see IFObject.inheritAndMix
      */
     IFNode.inheritAndMix = function (name, target, base, mixins) {
-        GObject.inheritAndMix(target, base, mixins);
+        IFObject.inheritAndMix(target, base, mixins);
         IFNode._registerNodeClass(name, target);
     };
 
@@ -42,7 +42,7 @@
      * @param {Object|Function|Number} node
      */
     IFNode.getName = function (node) {
-        return IFNode._nodeClassToNameMap[GObject.getTypeId(node)];
+        return IFNode._nodeClassToNameMap[IFObject.getTypeId(node)];
     };
 
     /**
@@ -53,7 +53,7 @@
     IFNode.store = function (node) {
         if (node.hasMixin(IFNode.Store)) {
             var blob = {
-                '@': IFNode._nodeClassToNameMap[GObject.getTypeId(node)]
+                '@': IFNode._nodeClassToNameMap[IFObject.getTypeId(node)]
             };
 
             if (node.store(blob)) {
@@ -185,7 +185,7 @@
      * @private
      */
     IFNode._registerNodeClass = function (name, clazz) {
-        IFNode._nodeClassToNameMap[GObject.getTypeId(clazz)] = name;
+        IFNode._nodeClassToNameMap[IFObject.getTypeId(clazz)] = name;
         IFNode._nameToNodeClassMap[name] = clazz;
     };
 
@@ -313,7 +313,7 @@
     IFNode.BeforeInsertEvent = function (node) {
         this.node = node;
     };
-    GObject.inherit(IFNode.BeforeInsertEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeInsertEvent, GEvent);
 
     /**
      * The node that has will be inserted
@@ -342,7 +342,7 @@
     IFNode.AfterInsertEvent = function (node) {
         this.node = node;
     };
-    GObject.inherit(IFNode.AfterInsertEvent, GEvent);
+    IFObject.inherit(IFNode.AfterInsertEvent, GEvent);
 
     /**
      * The node that was inserted
@@ -370,7 +370,7 @@
     IFNode.BeforeRemoveEvent = function (node) {
         this.node = node;
     };
-    GObject.inherit(IFNode.BeforeRemoveEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeRemoveEvent, GEvent);
 
     /**
      * The node that will be removed
@@ -398,7 +398,7 @@
     IFNode.AfterRemoveEvent = function (node) {
         this.node = node;
     };
-    GObject.inherit(IFNode.AfterRemoveEvent, GEvent);
+    IFObject.inherit(IFNode.AfterRemoveEvent, GEvent);
 
     /**
      * The node that was removed
@@ -430,7 +430,7 @@
         this.values = values;
     };
 
-    GObject.inherit(IFNode.BeforePropertiesChangeEvent, GEvent);
+    IFObject.inherit(IFNode.BeforePropertiesChangeEvent, GEvent);
 
     /**
      * The node which' property is affected by the change
@@ -473,7 +473,7 @@
         this.values = values;
     };
 
-    GObject.inherit(IFNode.AfterPropertiesChangeEvent, GEvent);
+    IFObject.inherit(IFNode.AfterPropertiesChangeEvent, GEvent);
 
     /**
      * The node which' property is affected by the change
@@ -516,7 +516,7 @@
         this.set = set;
     };
 
-    GObject.inherit(IFNode.BeforeFlagChangeEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeFlagChangeEvent, GEvent);
 
     /**
      * The node which' flag is affected by the change
@@ -562,7 +562,7 @@
         this.set = set;
     };
 
-    GObject.inherit(IFNode.AfterFlagChangeEvent, GEvent);
+    IFObject.inherit(IFNode.AfterFlagChangeEvent, GEvent);
 
     /**
      * The node which' flag was affected by the change
@@ -1243,7 +1243,7 @@
      * @version 1.0
      */
     IFNode.prototype.getNodeNameTranslated = function () {
-        return gLocale.getValue(this, "name", this.getNodeName());
+        return ifLocale.getValue(this, "name", this.getNodeName());
     };
 
     /**
@@ -1550,7 +1550,7 @@
         }
 
         for (var i = 0; i < eventClasses.length; ++i) {
-            var event_id = GObject.getTypeId(eventClasses[i]);
+            var event_id = IFObject.getTypeId(eventClasses[i]);
             if (event_id in this._blockedEvents) {
                 this._blockedEvents[event_id]++;
             } else {
@@ -1568,7 +1568,7 @@
     IFNode.prototype._endBlockEvents = function (eventClasses) {
         if (this._blockedEvents) {
             for (var i = 0; i < eventClasses.length; ++i) {
-                var event_id = GObject.getTypeId(eventClasses[i]);
+                var event_id = IFObject.getTypeId(eventClasses[i]);
                 if (event_id in this._blockedEvents) {
                     if (--this._blockedEvents[event_id] == 0) {
                         if (--this._blockedEvents._counter == 0) {
@@ -1669,7 +1669,7 @@
             return false;
         }
 
-        var event_id = GObject.getTypeId(eventClass);
+        var event_id = IFObject.getTypeId(eventClass);
         return !this._blockedEvents || !this._blockedEvents[event_id];
     };
 

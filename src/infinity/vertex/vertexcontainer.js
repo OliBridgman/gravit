@@ -11,7 +11,7 @@
         this._vertices = [];
     }
 
-    GObject.mix(IFVertexContainer, [IFVertexSource, IFVertexTarget]);
+    IFObject.mix(IFVertexContainer, [IFVertexSource, IFVertexTarget]);
 
     /**
      * @type {number}

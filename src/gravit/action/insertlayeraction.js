@@ -8,10 +8,10 @@
      */
     function GInsertLayerAction() {
     };
-    GObject.inherit(GInsertLayerAction, GUIAction);
+    IFObject.inherit(GInsertLayerAction, GUIAction);
 
     GInsertLayerAction.ID = 'modify.insert-layer';
-    GInsertLayerAction.TITLE = new GLocale.Key(GInsertLayerAction, "title");
+    GInsertLayerAction.TITLE = new IFLocale.Key(GInsertLayerAction, "title");
 
     /**
      * @override

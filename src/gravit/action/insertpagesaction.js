@@ -8,10 +8,10 @@
      */
     function GInsertPagesAction() {
     };
-    GObject.inherit(GInsertPagesAction, GUIAction);
+    IFObject.inherit(GInsertPagesAction, GUIAction);
 
     GInsertPagesAction.ID = 'modify.insert-pages';
-    GInsertPagesAction.TITLE = new GLocale.Key(GInsertPagesAction, "title");
+    GInsertPagesAction.TITLE = new IFLocale.Key(GInsertPagesAction, "title");
 
     GInsertPagesAction.options = {
         sizePresets: [

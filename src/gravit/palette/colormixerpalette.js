@@ -9,10 +9,10 @@
     function EXColorMixerPalette() {
         EXPalette.call(this);
     };
-    GObject.inherit(EXColorMixerPalette, EXPalette);
+    IFObject.inherit(EXColorMixerPalette, EXPalette);
 
     EXColorMixerPalette.ID = "color-mixer";
-    EXColorMixerPalette.TITLE = new GLocale.Key(EXColorMixerPalette, "title");
+    EXColorMixerPalette.TITLE = new IFLocale.Key(EXColorMixerPalette, "title");
 
     /**
      * @private
@@ -328,7 +328,7 @@
      * @override
      */
     EXColorMixerPalette.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, 'F9'];
+        return [IFKey.Constant.SHIFT, 'F9'];
     };
 
     /** @override */

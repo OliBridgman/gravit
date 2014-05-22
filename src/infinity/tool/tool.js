@@ -2,14 +2,14 @@
     /**
      * The base for a tool
      * @class IFTool
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      * @version 1.0
      */
     function IFTool() {
     }
 
-    GObject.inherit(IFTool, GObject);
+    IFObject.inherit(IFTool, IFObject);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFTool Class
@@ -65,7 +65,7 @@
      * @version 1.0
      */
     IFTool.prototype.getHint = function () {
-        var hint = new GUIHint().addKey(GUIKey.Constant.ESCAPE, new GLocale.Key(IFTool, "shortcut.esc"));
+        var hint = new GUIHint().addKey(IFKey.Constant.ESCAPE, new IFLocale.Key(IFTool, "shortcut.esc"));
         var activationChars = this.getActivationCharacters();
         if (activationChars) {
             var hintShortcuts = [];
@@ -91,11 +91,11 @@
      * Should return the current cursor for this tool.
      * If you need to update the cursor, simply call updateCursor()
      * @returns {String}
-     * @see GUICursor
+     * @see IFCursor
      * @version 1.0
      */
     IFTool.prototype.getCursor = function () {
-        return GUICursor.Default;
+        return IFCursor.Default;
     };
 
     /**

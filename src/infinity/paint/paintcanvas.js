@@ -2,7 +2,7 @@
     /**
      * A canvas wrapper to paint onto
      * @class IFPaintCanvas
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      */
     function IFPaintCanvas() {
@@ -10,7 +10,7 @@
         this._canvasContext = canvasElement.getContext("2d");
     }
 
-    GObject.inherit(IFPaintCanvas, GObject);
+    IFObject.inherit(IFPaintCanvas, IFObject);
 
     IFPaintCanvas.LineCap = {
         Butt: 0,

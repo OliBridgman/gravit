@@ -2,7 +2,7 @@
 
     /**
      * Action opening a document on a specific storage
-     * @param {GStorage} storage
+     * @param {IFStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class EXOpenAction
      * @extends GUIAction
@@ -12,11 +12,11 @@
         this._storage = storage;
         this._default = isDefault;
     };
-    GObject.inherit(EXOpenAction, GUIAction);
+    IFObject.inherit(EXOpenAction, GUIAction);
 
     EXOpenAction.ID = 'file.open';
-    EXOpenAction.TITLE = new GLocale.Key(EXOpenAction, "title");
-    EXOpenAction.TITLE_DEFAULT = new GLocale.Key(EXOpenAction, "title-default");
+    EXOpenAction.TITLE = new IFLocale.Key(EXOpenAction, "title");
+    EXOpenAction.TITLE_DEFAULT = new IFLocale.Key(EXOpenAction, "title-default");
 
     /**
      * @override
@@ -30,8 +30,8 @@
      */
     EXOpenAction.prototype.getTitle = function () {
         return this._default ?
-            gLocale.get(EXOpenAction.TITLE_DEFAULT) :
-        gLocale.get(EXOpenAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
+            ifLocale.get(EXOpenAction.TITLE_DEFAULT) :
+        ifLocale.get(EXOpenAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
     };
 
     /**
@@ -52,7 +52,7 @@
      * @override
      */
     EXOpenAction.prototype.getShortcut = function () {
-        return this._default ? [GUIKey.Constant.META, 'O'] : null;
+        return this._default ? [IFKey.Constant.META, 'O'] : null;
     };
 
     /**

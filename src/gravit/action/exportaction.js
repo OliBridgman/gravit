@@ -10,10 +10,10 @@
     function EXExportAction(export_) {
         this._export = export_;
     };
-    GObject.inherit(EXExportAction, GUIAction);
+    IFObject.inherit(EXExportAction, GUIAction);
 
     EXExportAction.ID = 'file.export';
-    EXExportAction.TITLE = new GLocale.Key(EXExportAction, "title");
+    EXExportAction.TITLE = new IFLocale.Key(EXExportAction, "title");
 
     /**
      * @override
@@ -26,7 +26,7 @@
      * @override
      */
     EXExportAction.prototype.getTitle = function () {
-        return gLocale.get(EXExportAction.TITLE).replace('%name%', gLocale.get(this._export.getName()));
+        return ifLocale.get(EXExportAction.TITLE).replace('%name%', ifLocale.get(this._export.getName()));
     };
 
     /**

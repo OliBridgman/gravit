@@ -8,10 +8,10 @@
      */
     function EXColorMatcher() {
     };
-    GObject.inherit(EXColorMatcher, GEventTarget);
+    IFObject.inherit(EXColorMatcher, GEventTarget);
 
-    EXColorMatcher.CATEGORY_HARMONY = new GLocale.Key(EXColorMatcher, "category.harmony");
-    EXColorMatcher.CATEGORY_PALETTE = new GLocale.Key(EXColorMatcher, "category.palette");
+    EXColorMatcher.CATEGORY_HARMONY = new IFLocale.Key(EXColorMatcher, "category.harmony");
+    EXColorMatcher.CATEGORY_PALETTE = new IFLocale.Key(EXColorMatcher, "category.palette");
 
     // -----------------------------------------------------------------------------------------------------------------
     // EXColorMatcher.MatchUpdateEvent Event
@@ -24,7 +24,7 @@
      */
     EXColorMatcher.MatchUpdateEvent = function () {
     };
-    GObject.inherit(EXColorMatcher.MatchUpdateEvent, GEvent);
+    IFObject.inherit(EXColorMatcher.MatchUpdateEvent, GEvent);
 
     /** @override */
     EXColorMatcher.MatchUpdateEvent.prototype.toString = function () {
@@ -38,7 +38,7 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Get the title of the matcher
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
     EXColorMatcher.prototype.getTitle = function () {
         throw new Error("Not Supported");
@@ -46,7 +46,7 @@
 
     /**
      * Get the category of the matcher
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
     EXColorMatcher.prototype.getCategory = function () {
         return null;

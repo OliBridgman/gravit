@@ -130,7 +130,7 @@
      */
     IFPath.prototype.insertHitPoint = function (hitResult) {
         if (!hitResult || !hitResult.slope ||
-            gMath.isEqualEps(hitResult.slope, 0) || gMath.isEqualEps(hitResult.slope, 1)) {
+            ifMath.isEqualEps(hitResult.slope, 0) || ifMath.isEqualEps(hitResult.slope, 1)) {
 
             return null;
         }
@@ -190,8 +190,8 @@
             c2x = aNext.getProperty('hlx');
             c2y = aNext.getProperty('hly');
 
-            var zeroC1 = c1x == null || c1y == null || gMath.isEqualEps(c1x, p1x) && gMath.isEqualEps(c1y, p1y);
-            var zeroC2 = c2x == null || c2y == null || gMath.isEqualEps(c2x, p2x) && gMath.isEqualEps(c2y, p2y);
+            var zeroC1 = c1x == null || c1y == null || ifMath.isEqualEps(c1x, p1x) && ifMath.isEqualEps(c1y, p1y);
+            var zeroC2 = c2x == null || c2y == null || ifMath.isEqualEps(c2x, p2x) && ifMath.isEqualEps(c2y, p2y);
 
             // If line
             if (zeroC1 && zeroC2) {
@@ -206,15 +206,15 @@
                 var ctrls1Y = new Float64Array(3);
                 var ctrls2X = new Float64Array(3);
                 var ctrls2Y = new Float64Array(3);
-                gMath.divideQuadraticCurve(p1x, cx, p2x, slope, ctrls1X, ctrls2X);
-                gMath.divideQuadraticCurve(p1y, cy, p2y, slope, ctrls1Y, ctrls2Y);
+                ifMath.divideQuadraticCurve(p1x, cx, p2x, slope, ctrls1X, ctrls2X);
+                ifMath.divideQuadraticCurve(p1y, cy, p2y, slope, ctrls1Y, ctrls2Y);
 
                 newAPt = new IFPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'], [ctrls1X[2], ctrls1Y[2], tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
 
                 if (zeroC1) {
-                    if (gMath.isEqualEps(ctrls1X[1], ctrls1X[2]) && gMath.isEqualEps(ctrls1Y[1], ctrls1Y[2])) {
+                    if (ifMath.isEqualEps(ctrls1X[1], ctrls1X[2]) && ifMath.isEqualEps(ctrls1Y[1], ctrls1Y[2])) {
                         newAPt.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         newAPt.setProperties(['hlx', 'hly'], [ctrls1X[1], ctrls1Y[1]]);
@@ -225,19 +225,19 @@
                     c1y = ctrls2Y[0] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[0]);
                     c2x = ctrls2X[2] + 2 / 3 * (ctrls2X[1] - ctrls2X[2]);
                     c2y = ctrls2Y[2] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[2]);
-                    if (gMath.isEqualEps(c1x, ctrls2X[0]) && gMath.isEqualEps(c1y, ctrls2Y[0])) {
+                    if (ifMath.isEqualEps(c1x, ctrls2X[0]) && ifMath.isEqualEps(c1y, ctrls2Y[0])) {
                         newAPt.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         newAPt.setProperties(['hrx', 'hry'], [c1x, c1y]);
                     }
 
-                    if (gMath.isEqualEps(c2x, ctrls2X[2]) && gMath.isEqualEps(c2y, ctrls2Y[2])) {
+                    if (ifMath.isEqualEps(c2x, ctrls2X[2]) && ifMath.isEqualEps(c2y, ctrls2Y[2])) {
                         aNext.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         aNext.setProperties(['hlx', 'hly'], [c2x, c2y]);
                     }
                 } else { // zeroC2
-                    if (gMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && gMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
+                    if (ifMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && ifMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
                         newAPt.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         newAPt.setProperties(['hrx', 'hry'], [ctrls2X[1], ctrls2Y[1]]);
@@ -248,13 +248,13 @@
                     c1y = ctrls1Y[0] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[0]);
                     c2x = ctrls1X[2] + 2 / 3 * (ctrls1X[1] - ctrls1X[2]);
                     c2y = ctrls1Y[2] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[2]);
-                    if (gMath.isEqualEps(c2x, ctrls1X[2]) && gMath.isEqualEps(c2y, ctrls1Y[2])) {
+                    if (ifMath.isEqualEps(c2x, ctrls1X[2]) && ifMath.isEqualEps(c2y, ctrls1Y[2])) {
                         newAPt.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         newAPt.setProperties(['hlx', 'hly'], [c2x, c2y]);
                     }
 
-                    if (gMath.isEqualEps(c1x, ctrls1X[0]) && gMath.isEqualEps(c1y, ctrls1Y[0])) {
+                    if (ifMath.isEqualEps(c1x, ctrls1X[0]) && ifMath.isEqualEps(c1y, ctrls1Y[0])) {
                         aPrev.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         aPrev.setProperties(['hrx', 'hry'], [c1x, c1y]);
@@ -266,12 +266,12 @@
                 var ctrls2X = new Float64Array(4);
                 var ctrls2Y = new Float64Array(4);
 
-                gMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 1, ctrls1X);
-                gMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 1, ctrls1Y);
-                gMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 2, ctrls2X);
-                gMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 2, ctrls2Y);
+                ifMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 1, ctrls1X);
+                ifMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 1, ctrls1Y);
+                ifMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 2, ctrls2X);
+                ifMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 2, ctrls2Y);
 
-                if (gMath.isEqualEps(ctrls1X[1], p1x) && gMath.isEqualEps(ctrls1Y[1], p1y)) {
+                if (ifMath.isEqualEps(ctrls1X[1], p1x) && ifMath.isEqualEps(ctrls1Y[1], p1y)) {
                     aPrev.setProperties(['hrx', 'hry'], [null, null]);
                 } else {
                     aPrev.setProperties(['hrx', 'hry'], [ctrls1X[1], ctrls1Y[1]]);
@@ -280,18 +280,18 @@
                 newAPt = new IFPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'], [ctrls1X[3], ctrls1Y[3], tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
-                if (gMath.isEqualEps(ctrls1X[2], ctrls1X[3]) && gMath.isEqualEps(ctrls1Y[2], ctrls1Y[3])) {
+                if (ifMath.isEqualEps(ctrls1X[2], ctrls1X[3]) && ifMath.isEqualEps(ctrls1Y[2], ctrls1Y[3])) {
                     newAPt.setProperties(['hlx', 'hly'], [null, null]);
                 } else {
                     newAPt.setProperties(['hlx', 'hly'], [ctrls1X[2], ctrls1Y[2]]);
                 }
-                if (gMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && gMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
+                if (ifMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && ifMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
                     newAPt.setProperties(['hrx', 'hry'], [null, null]);
                 } else {
                     newAPt.setProperties(['hrx', 'hry'], [ctrls2X[1], ctrls2Y[1]]);
                 }
 
-                if (gMath.isEqualEps(ctrls2X[2], ctrls2X[3]) && gMath.isEqualEps(ctrls2Y[2], ctrls2Y[3])) {
+                if (ifMath.isEqualEps(ctrls2X[2], ctrls2X[3]) && ifMath.isEqualEps(ctrls2Y[2], ctrls2Y[3])) {
                     aNext.setProperties(['hlx', 'hly'], [null, null]);
                 } else {
                     aNext.setProperties(['hlx', 'hly'], [ctrls2X[2], ctrls2Y[2]]);

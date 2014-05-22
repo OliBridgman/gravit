@@ -8,9 +8,9 @@
      */
     function EXComplementaryMatcher() {
     };
-    GObject.inherit(EXComplementaryMatcher, EXColorMatcher);
+    IFObject.inherit(EXComplementaryMatcher, EXColorMatcher);
 
-    EXComplementaryMatcher.TITLE = new GLocale.Key(EXComplementaryMatcher, "title");
+    EXComplementaryMatcher.TITLE = new IFLocale.Key(EXComplementaryMatcher, "title");
 
     /** @override */
     EXComplementaryMatcher.prototype.getTitle = function () {
@@ -34,7 +34,7 @@
     /** @override */
     EXComplementaryMatcher.prototype.match = function (referenceColor) {
         var hsl = referenceColor.asHSL();
-        hsl[0] = gMath.normalizeAngleDegrees(hsl[0] + 180);
+        hsl[0] = ifMath.normalizeAngleDegrees(hsl[0] + 180);
         return [new IFColor(IFColor.Type.HSL, hsl)];
     };
 

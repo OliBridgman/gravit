@@ -38,7 +38,7 @@
             }.bind(this));
     }
 
-    GObject.inherit(IFEditorView, IFView);
+    IFObject.inherit(IFEditorView, IFView);
 
     /**
      * @type {IFEditor}

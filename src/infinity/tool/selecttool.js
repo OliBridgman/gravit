@@ -10,7 +10,7 @@
         IFTool.call(this);
     };
 
-    GObject.inherit(IFSelectTool, IFTool);
+    IFObject.inherit(IFSelectTool, IFTool);
 
     /**
      * @enum
@@ -90,21 +90,21 @@
     /** @override */
     IFSelectTool.prototype.getHint = function () {
         return IFTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.SHIFT, new GLocale.Key(IFSelectTool, "shortcut.shift"), true)
-            .addKey(GUIKey.Constant.META, new GLocale.Key(IFSelectTool, "shortcut.meta"), true)
-            .addKey(GUIKey.Constant.OPTION, new GLocale.Key(IFSelectTool, "shortcut.option"), true)
-            .addKey(GUIKey.Constant.UP, new GLocale.Key(IFSelectTool, "shortcut.up"), false)
-            .addKey(GUIKey.Constant.DOWN, new GLocale.Key(IFSelectTool, "shortcut.down"), false)
-            .addKey(GUIKey.Constant.LEFT, new GLocale.Key(IFSelectTool, "shortcut.left"), false)
-            .addKey(GUIKey.Constant.RIGHT, new GLocale.Key(IFSelectTool, "shortcut.right"), false);
+            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFSelectTool, "shortcut.shift"), true)
+            .addKey(IFKey.Constant.META, new IFLocale.Key(IFSelectTool, "shortcut.meta"), true)
+            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFSelectTool, "shortcut.option"), true)
+            .addKey(IFKey.Constant.UP, new IFLocale.Key(IFSelectTool, "shortcut.up"), false)
+            .addKey(IFKey.Constant.DOWN, new IFLocale.Key(IFSelectTool, "shortcut.down"), false)
+            .addKey(IFKey.Constant.LEFT, new IFLocale.Key(IFSelectTool, "shortcut.left"), false)
+            .addKey(IFKey.Constant.RIGHT, new IFLocale.Key(IFSelectTool, "shortcut.right"), false);
     };
 
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
         if (this._editorUnderMouseInfo) {
-            return GUICursor.SelectDot;
+            return IFCursor.SelectDot;
         } else {
-            return GUICursor.Select;
+            return IFCursor.Select;
         }
     };
 
@@ -467,8 +467,8 @@
      * @private
      */
     IFSelectTool.prototype._keyDown = function (evt) {
-        if (evt.key === GUIKey.Constant.UP || evt.key === GUIKey.Constant.DOWN ||
-            evt.key === GUIKey.Constant.LEFT || evt.key === GUIKey.Constant.RIGHT) {
+        if (evt.key === IFKey.Constant.UP || evt.key === IFKey.Constant.DOWN ||
+            evt.key === IFKey.Constant.LEFT || evt.key === IFKey.Constant.RIGHT) {
 
             // Shift selection if any
             if (this._editor.hasSelection() && (!this._mode || this._mode === IFSelectTool._Mode.Moving)) {
@@ -482,16 +482,16 @@
                 var dx = 0;
                 var dy = 0;
                 switch (evt.key) {
-                    case GUIKey.Constant.UP:
+                    case IFKey.Constant.UP:
                         dy -= crDistance;
                         break;
-                    case GUIKey.Constant.DOWN:
+                    case IFKey.Constant.DOWN:
                         dy += crDistance;
                         break;
-                    case GUIKey.Constant.LEFT:
+                    case IFKey.Constant.LEFT:
                         dx -= crDistance;
                         break;
-                    case GUIKey.Constant.RIGHT:
+                    case IFKey.Constant.RIGHT:
                         dx += crDistance;
                         break;
                     default:
@@ -509,8 +509,8 @@
      * @private
      */
     IFSelectTool.prototype._keyRelease = function (evt) {
-        if (evt.key === GUIKey.Constant.UP || evt.key === GUIKey.Constant.DOWN ||
-            evt.key === GUIKey.Constant.LEFT || evt.key === GUIKey.Constant.RIGHT) {
+        if (evt.key === IFKey.Constant.UP || evt.key === IFKey.Constant.DOWN ||
+            evt.key === IFKey.Constant.LEFT || evt.key === IFKey.Constant.RIGHT) {
 
             // Apply transformation applied through keys if any and reset it
             if (this._keyDelta) {
@@ -548,7 +548,7 @@
                 if (gPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
                     var crConstraint = this._scene.getProperty('crConstraint');
-                    position = gMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
+                    position = ifMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
                         position.getX(), position.getY(), crConstraint);
                 }
 

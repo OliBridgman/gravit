@@ -8,7 +8,7 @@
      */
     function GDocumentProperties() {
     };
-    GObject.inherit(GDocumentProperties, EXProperties);
+    IFObject.inherit(GDocumentProperties, EXProperties);
 
     /**
      * @type {JQuery}
@@ -90,7 +90,7 @@
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
+                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
                             self._assignProperty(property, angle);
                         } else {
                             self._updateProperties();
@@ -239,7 +239,7 @@
         this._panel.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
         this._panel.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
         this._panel.find('input[data-property="crConstraint"]').val(
-            gUtil.formatNumber(gMath.toDegrees(scene.getProperty('crConstraint')), 2));
+            gUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
     };

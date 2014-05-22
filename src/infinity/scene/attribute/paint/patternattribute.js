@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFPatternAttribute.VisualProperties);
     }
 
-    GObject.inheritAndMix(IFPatternAttribute, IFPaintAttribute, [IFNode.Properties]);
+    IFObject.inheritAndMix(IFPatternAttribute, IFPaintAttribute, [IFNode.Properties]);
 
     /**
      * The type of the pattern

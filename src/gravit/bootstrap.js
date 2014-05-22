@@ -5,7 +5,7 @@ var gravit = {
     modules: [],
 
     /**
-     * Array<GStorage>
+     * Array<IFStorage>
      */
     storages: [],
 

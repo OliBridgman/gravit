@@ -8,10 +8,10 @@
      */
     function EXZoomInAction() {
     };
-    GObject.inherit(EXZoomInAction, GUIAction);
+    IFObject.inherit(EXZoomInAction, GUIAction);
 
     EXZoomInAction.ID = 'view.zoom.in';
-    EXZoomInAction.TITLE = new GLocale.Key(EXZoomInAction, "title");
+    EXZoomInAction.TITLE = new IFLocale.Key(EXZoomInAction, "title");
     EXZoomInAction.ZOOM_STEP = 2.0;
 
     /**
@@ -46,7 +46,7 @@
      * @override
      */
     EXZoomInAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, '+'];
+        return [IFKey.Constant.META, '+'];
     };
 
     /**

@@ -11,7 +11,7 @@
         IFElement.call(this);
         this._setDefaultProperties(IFBlock.VisualProperties, IFBlock.MetaProperties);
     }
-    GObject.inheritAndMix(IFBlock, IFElement, [IFNode.Properties, IFNode.Store]);
+    IFObject.inheritAndMix(IFBlock, IFElement, [IFNode.Properties, IFNode.Store]);
 
     /**
      * The visual properties of a block with their default values

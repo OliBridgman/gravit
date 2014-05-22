@@ -9,7 +9,7 @@
     function GStrokeAttribute() {
         GPatternAttribute.call(this);
     };
-    GObject.inherit(GStrokeAttribute, GPatternAttribute);
+    IFObject.inherit(GStrokeAttribute, GPatternAttribute);
 
     /** @override */
     GStrokeAttribute.prototype.getAttributeClass = function () {

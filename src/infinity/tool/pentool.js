@@ -10,7 +10,7 @@
         IFPathTool.call(this);
     }
 
-    GObject.inherit(IFPenTool, IFPathTool);
+    IFObject.inherit(IFPenTool, IFPathTool);
 
     /** @override */
     IFPenTool.prototype.getGroup = function () {
@@ -25,9 +25,9 @@
     /** @override */
     IFPenTool.prototype.getHint = function () {
         return IFPathTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.OPTION, new GLocale.Key(IFPenTool, "shortcut.option"), true)
-            .addKey(GUIKey.Constant.SHIFT, new GLocale.Key(IFPenTool, "shortcut.shift"), true)
-            .setTitle(new GLocale.Key(IFPenTool, "title"));
+            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFPenTool, "shortcut.option"), true)
+            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFPenTool, "shortcut.shift"), true)
+            .setTitle(new IFLocale.Key(IFPenTool, "title"));
     };
 
     /** @override */
@@ -264,9 +264,9 @@
                     otherPt = this._pathRef.getAnchorPoints().getLastChild();
                 }
                 if (this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-                    this._setCursorForPosition(GUICursor.PenEnd);
+                    this._setCursorForPosition(IFCursor.PenEnd);
                 } else {
-                    this._setCursorForPosition(GUICursor.Pen);
+                    this._setCursorForPosition(IFCursor.Pen);
                 }
             } else {
                 this._setCursorForPosition(null, event.client);
@@ -368,11 +368,11 @@
                     if (prevPt) {
                         var prevX = prevPt.getProperty('x');
                         var prevY = prevPt.getProperty('y');
-                        var dirLen = Math.sqrt(gMath.ptSqrDist(ptx, pty, prevX, prevY));
-                        if (!gMath.isEqualEps(dirLen, 0)) {
+                        var dirLen = Math.sqrt(ifMath.ptSqrDist(ptx, pty, prevX, prevY));
+                        if (!ifMath.isEqualEps(dirLen, 0)) {
                             var ex = (ptx - prevX) / dirLen;
                             var ey = (pty - prevY) / dirLen;
-                            var hLen = gMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            var hLen = ifMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
                             if (hLen > 0) {
                                 hrx = ptx + ex * hLen;
                                 hry = pty + ey * hLen;
@@ -399,11 +399,11 @@
                     if (nextPt) {
                         var nextX = nextPt.getProperty('x');
                         var nextY = nextPt.getProperty('y');
-                        var dirLen = Math.sqrt(gMath.ptSqrDist(ptx, pty, nextX, nextY));
-                        if (!gMath.isEqualEps(dirLen, 0)) {
+                        var dirLen = Math.sqrt(ifMath.ptSqrDist(ptx, pty, nextX, nextY));
+                        if (!ifMath.isEqualEps(dirLen, 0)) {
                             var ex = (ptx - nextX) / dirLen;
                             var ey = (pty - nextY) / dirLen;
-                            var hLen = gMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            var hLen = ifMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
                             if (hLen > 0) {
                                 hlx = ptx + ex * hLen;
                                 hly = pty + ey * hLen;
@@ -442,7 +442,7 @@
         }
         if (!this._released && this._editPt) {
             this._lastMouseEvent = event;
-            this._setCursorForPosition(GUICursor.PenDrag);
+            this._setCursorForPosition(IFCursor.PenDrag);
             if (!this._dragStartPt) {
                 this._dragStartPt = this._refPt ? this._refPt : this._editPt;
                 if (event.button == GUIMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != IFPathBase.AnchorPoint.Type.Connector) {
@@ -521,9 +521,9 @@
                         if (otherPt && otherPt != this._refPt &&
                             this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
 
-                            this._setCursorForPosition(GUICursor.PenEnd);
+                            this._setCursorForPosition(IFCursor.PenEnd);
                         } else {
-                            this._setCursorForPosition(GUICursor.Pen);
+                            this._setCursorForPosition(IFCursor.Pen);
                         }
                         this._commitChanges();
                     } else {
@@ -572,7 +572,7 @@
             var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
             var sourcePos = new GPoint(this._editPt.getProperty('x'), this._editPt.getProperty('y'));
             sourcePos = transformToNewPos.mapPoint(sourcePos);
-            var newVal = gMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
+            var newVal = ifMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
 
             if (this._mode == IFPathTool.Mode.Append) {
                 this._editPt.setProperty('cr', newVal);

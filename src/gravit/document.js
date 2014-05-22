@@ -15,7 +15,7 @@
         // TODO : I18N
         this._temporaryTitle = temporaryTitle;
     };
-    GObject.inherit(EXDocument, GEventTarget);
+    IFObject.inherit(EXDocument, GEventTarget);
 
     /**
      * The underlying scene
@@ -26,7 +26,7 @@
 
     /**
      * The underlying blob, may be null
-     * @type {GBlob}
+     * @type {IFBlob}
      * @private
      */
     EXDocument.prototype._blob = null;
@@ -69,7 +69,7 @@
 
     /**
      * Returns the blob this document is working on if any
-     * @returns {GBlob}
+     * @returns {IFBlob}
      */
     EXDocument.prototype.getBlob = function () {
         return this._blob;
@@ -77,7 +77,7 @@
 
     /**
      * Assigns a blob this document is working on
-     * @param {GBlob} blob
+     * @param {IFBlob} blob
      */
     EXDocument.prototype.setBlob = function (blob) {
         if (blob && blob !== this.blob) {

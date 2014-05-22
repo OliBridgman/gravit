@@ -24,7 +24,7 @@
         this._initLayers();
     }
 
-    GObject.inherit(IFView, GUIWidget);
+    IFObject.inherit(IFView, GUIWidget);
 
     /**
      * Global view options

@@ -8,7 +8,7 @@
      */
     function GShadowAttribute() {
     };
-    GObject.inherit(GShadowAttribute, GDrawAttribute);
+    IFObject.inherit(GShadowAttribute, GDrawAttribute);
 
     /**
      * @type {JQuery}

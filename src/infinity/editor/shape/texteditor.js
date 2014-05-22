@@ -10,7 +10,7 @@
         IFShapeEditor.call(this, rectangle);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFTextEditor, IFShapeEditor);
+    IFObject.inherit(IFTextEditor, IFShapeEditor);
     IFElementEditor.exports(IFTextEditor, IFText);
 
     // -----------------------------------------------------------------------------------------------------------------

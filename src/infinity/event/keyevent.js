@@ -9,14 +9,14 @@
     function GUIKeyEvent() {
     }
 
-    GObject.inherit(GUIKeyEvent, GUIInputEvent);
+    IFObject.inherit(GUIKeyEvent, GUIInputEvent);
 
     /**
-     * The key for the key event. Might either be one of GUIKey.Constant (number)
+     * The key for the key event. Might either be one of IFKey.Constant (number)
      * or a String if printable character key
      * @type {String|Number}
      * @version 1.0
-     * @see GUIKey.Constant
+     * @see IFKey.Constant
      */
     GUIKeyEvent.prototype.key = null;
 
@@ -45,7 +45,7 @@
      */
     GUIKeyEvent.Down = function () {
     }
-    GObject.inherit(GUIKeyEvent.Down, GUIKeyEvent);
+    IFObject.inherit(GUIKeyEvent.Down, GUIKeyEvent);
 
 
     /** @override */
@@ -66,7 +66,7 @@
      */
     GUIKeyEvent.Release = function () {
     }
-    GObject.inherit(GUIKeyEvent.Release, GUIKeyEvent);
+    IFObject.inherit(GUIKeyEvent.Release, GUIKeyEvent);
 
 
     /** @override */
@@ -87,7 +87,7 @@
      */
     GUIKeyEvent.Press = function () {
     }
-    GObject.inherit(GUIKeyEvent.Press, GUIKeyEvent);
+    IFObject.inherit(GUIKeyEvent.Press, GUIKeyEvent);
 
 
     /** @override */

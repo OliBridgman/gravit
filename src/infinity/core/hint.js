@@ -9,7 +9,7 @@
     };
 
     /**
-     * @type {GLocale.Key}
+     * @type {IFLocale.Key}
      * @private
      */
     GUIHint.prototype._title = null;
@@ -21,20 +21,20 @@
     GUIHint.prototype._shortcuts = null;
 
     /**
-     * @type {GLocale.Key}
+     * @type {IFLocale.Key}
      * @private
      */
     GUIHint.prototype._introduction = null;
 
     /**
-     * @type {Array<{{shortcut: String, description: GLocale.Key, pressed: Boolean}}>}
+     * @type {Array<{{shortcut: String, description: IFLocale.Key, pressed: Boolean}}>}
      * @private
      */
     GUIHint.prototype._keys = null;
 
     /**
      * Get the title of the hint
-     * @return {GLocale.Key} title
+     * @return {IFLocale.Key} title
      * @version 1.0
      */
     GUIHint.prototype.getTitle = function () {
@@ -43,7 +43,7 @@
 
     /**
      * Assign a title for the hint
-     * @param {GLocale.Key} title
+     * @param {IFLocale.Key} title
      * @return {GUIHint} this pointer
      * @version 1.0
      */
@@ -54,7 +54,7 @@
 
     /**
      * Assign an introduction for the hint
-     * @param {GLocale.Key} introduction
+     * @param {IFLocale.Key} introduction
      * @return {GUIHint} this pointer
      * @version 1.0
      */
@@ -85,11 +85,11 @@
     /**
      * Add a shortcut description for the hint
      * @param {Number|String|Array} key the key or an array of key-combination
-     * @param {GLocale.Key} description description of the shortcut
+     * @param {IFLocale.Key} description description of the shortcut
      * @param {Boolean} [pressed] if true, the shortcut needs to be pressed
      * to take action (visually hinted). Defaults to false.
      * @return {GUIHint} this pointer
-     * @see GUIKey.Constant
+     * @see IFKey.Constant
      * @version 1.0
      */
     GUIHint.prototype.addKey = function (key, description, pressed) {
@@ -116,14 +116,14 @@
     GUIHint.prototype.asHtml = function () {
         var result = "";
         if (this._title) {
-            result += '<div class="title">' + gLocale.get(this._title);
+            result += '<div class="title">' + ifLocale.get(this._title);
             var shortcuts = "";
             if (this._shortcuts) {
                 for (var i = 0; i < this._shortcuts.length; ++i) {
                     if (shortcuts != "") {
                         shortcuts += ", ";
                     }
-                    shortcuts += guiKey.shortcutToString(this._shortcuts[i]);
+                    shortcuts += ifKey.shortcutToString(this._shortcuts[i]);
                 }
             }
             if (shortcuts) {
@@ -132,7 +132,7 @@
             result += '</div>';
         }
         if (this._introduction) {
-            result += '<div class="introduction">' + gLocale.get(this._introduction) + '</div>';
+            result += '<div class="introduction">' + ifLocale.get(this._introduction) + '</div>';
         }
         if (this._keys && this._keys.length > 0) {
             result += '<table class="shortcuts" cellspacing="0" borderspacing="0">';
@@ -148,10 +148,10 @@
                     keyCode += '<span class="shortcut' + (key.pressed ? ' pressed' : '') + '">';
 
                     if (typeof keys[k] == 'number') {
-                        keyCode += guiKey.toLocalizedShort(keys[k]);
+                        keyCode += ifKey.toLocalizedShort(keys[k]);
                     } else {
                         // Return uppercase chars
-                        keyCode += guiKey.toSystemShortcut(keys[k]);
+                        keyCode += ifKey.toSystemShortcut(keys[k]);
                     }
 
                     keyCode += '</span>';
@@ -160,7 +160,7 @@
                 result += '<tr>';
                 result += '<td>' + keyCode + '</td>';
                 result += '<td>&nbsp;&nbsp;</td>';
-                result += '<td>' + gLocale.get(key.description) + '</td>';
+                result += '<td>' + ifLocale.get(key.description) + '</td>';
                 result += '</tr>';
             }
             result += '</table>';

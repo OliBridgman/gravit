@@ -130,7 +130,7 @@
         this._setDefaultProperties(IFText.Block.Properties);
     };
 
-    GObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store]);
+    IFObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store]);
 
     /**
      * The style of a text

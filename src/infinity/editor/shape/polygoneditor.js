@@ -10,7 +10,7 @@
         IFPathBaseEditor.call(this, polygon);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFPolygonEditor, IFPathBaseEditor);
+    IFObject.inherit(IFPolygonEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFPolygonEditor, IFPolygon);
 
     IFPolygonEditor.INSIDE_PART_ID = gUtil.uuid();
@@ -64,7 +64,7 @@
 
             var center = this._element.getCenter(false);
             var angle = Math.atan2(newPos.getY() - center.getY(), newPos.getX() - center.getX()) - partData;
-            var distance = gMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
+            var distance = ifMath.ptDist(newPos.getX(), newPos.getY(), center.getX(), center.getY());
 
             var oa = this._element.getProperty('oa');
             var or = this._element.getProperty('or');
@@ -81,38 +81,38 @@
             if (this._partSelection.length == 1) {
                 if (moveInner) {
                     if (!shift) {
-                        ia_new = gMath.normalizeAngleRadians(angle + ia);
+                        ia_new = ifMath.normalizeAngleRadians(angle + ia);
                     }
                     ir_new = distance;
                 }
 
                 if (moveOuter) {
                     if (!shift) {
-                        oa_new = gMath.normalizeAngleRadians(angle + oa);
+                        oa_new = ifMath.normalizeAngleRadians(angle + oa);
                     }
                     or_new = distance;
                 }
             } else if (moveInner && moveOuter) {
                 if (partId == IFPolygonEditor.INSIDE_PART_ID) {
                     if (!shift) {
-                        ia_new = gMath.normalizeAngleRadians(angle + ia);
+                        ia_new = ifMath.normalizeAngleRadians(angle + ia);
                     }
                     ir_new = distance;
                     var moveX = ir_new * Math.cos(ia_new) - ir * Math.cos(ia);
                     var moveY = ir_new * Math.sin(ia_new) - ir * Math.sin(ia);
                     var oPt_new = new GPoint(or * Math.cos(oa) + moveX, or * Math.sin(oa) + moveY);
                     oa_new = Math.atan2(oPt_new.getY(), oPt_new.getX());
-                    or_new = gMath.ptDist(oPt_new.getX(), oPt_new.getY(), 0, 0);
+                    or_new = ifMath.ptDist(oPt_new.getX(), oPt_new.getY(), 0, 0);
                 } else if (partId == IFPolygonEditor.OUTSIDE_PART_ID) {
                     if (!shift) {
-                        oa_new = gMath.normalizeAngleRadians(angle + oa);
+                        oa_new = ifMath.normalizeAngleRadians(angle + oa);
                     }
                     or_new = distance;
                     var moveX = or_new * Math.cos(oa_new) - or * Math.cos(oa);
                     var moveY = or_new * Math.sin(oa_new) - or * Math.sin(oa);
                     var iPt_new = new GPoint(ir * Math.cos(ia) + moveX, ir * Math.sin(ia) + moveY);
                     ia_new = Math.atan2(iPt_new.getY(), iPt_new.getX());
-                    ir_new = gMath.ptDist(iPt_new.getX(), iPt_new.getY(), 0, 0);
+                    ir_new = ifMath.ptDist(iPt_new.getX(), iPt_new.getY(), 0, 0);
                 }
             }
 

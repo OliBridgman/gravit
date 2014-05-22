@@ -8,7 +8,7 @@
      */
     function GPaintAttribute() {
     };
-    GObject.inherit(GPaintAttribute, GAttribute);
+    IFObject.inherit(GPaintAttribute, GAttribute);
 
     /**
      * @type {JQuery}

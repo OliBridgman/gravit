@@ -8,10 +8,10 @@
      */
     function EXCloseAllAction() {
     };
-    GObject.inherit(EXCloseAllAction, GUIAction);
+    IFObject.inherit(EXCloseAllAction, GUIAction);
 
     EXCloseAllAction.ID = 'file.close-all';
-    EXCloseAllAction.TITLE = new GLocale.Key(EXCloseAllAction, "title");
+    EXCloseAllAction.TITLE = new IFLocale.Key(EXCloseAllAction, "title");
 
     /**
      * @override

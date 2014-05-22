@@ -11,7 +11,7 @@
         this._attributesInfo = [];
         this._assignAttributePropertiesHandler = this._assignAttributeProperties.bind(this);
     };
-    GObject.inherit(GAttributeProperties, EXProperties);
+    IFObject.inherit(GAttributeProperties, EXProperties);
 
     /**
      * @type {JQuery}
@@ -64,7 +64,7 @@
             var addItem = new GUIMenuItem();
             menu.addItem(addItem);
             // TODO : I18N
-            var addLabel = 'Add ' + gLocale.getValue(attribute.getAttributeClass(), 'name');
+            var addLabel = 'Add ' + ifLocale.getValue(attribute.getAttributeClass(), 'name');
             addItem.setCaption(addLabel);
             addItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
                 addItem.setEnabled(attribute.isCreateable(this._elements, this._attribute));

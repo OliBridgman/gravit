@@ -10,7 +10,7 @@
         this._scene = scene;
     }
 
-    GObject.inherit(IFGuides, GEventTarget);
+    IFObject.inherit(IFGuides, GEventTarget);
 
     /**
      * @type {IFScene}

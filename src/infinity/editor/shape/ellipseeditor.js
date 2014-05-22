@@ -10,7 +10,7 @@
         IFPathBaseEditor.call(this, ellipse);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(IFEllipseEditor, IFPathBaseEditor);
+    IFObject.inherit(IFEllipseEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFEllipseEditor, IFEllipse);
 
     IFEllipseEditor.START_ANGLE_PART_ID = gUtil.uuid();
@@ -76,8 +76,8 @@
 
             if (moveStart || moveEnd) {
                 this._elementPreview.setProperties(['sa', 'ea'],
-                    [moveStart ? gMath.normalizeAngleRadians(sa + aDelta) : sa,
-                        moveEnd ? gMath.normalizeAngleRadians(ea + aDelta) : ea]);
+                    [moveStart ? ifMath.normalizeAngleRadians(sa + aDelta) : sa,
+                        moveEnd ? ifMath.normalizeAngleRadians(ea + aDelta) : ea]);
 
                 this.requestInvalidation();
             }

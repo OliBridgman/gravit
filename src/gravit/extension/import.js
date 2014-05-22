@@ -9,7 +9,7 @@
 
     /**
      * The name of the import-filter
-     * @return {String|GLocale.Key}
+     * @return {String|IFLocale.Key}
      */
     IFImport.prototype.getName = function () {
         throw new Error('Not Supported.');

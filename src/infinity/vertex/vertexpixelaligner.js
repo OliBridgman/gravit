@@ -12,7 +12,7 @@
         this._source = source;
     }
 
-    GObject.inherit(IFVertexPixelAligner, IFVertexSource);
+    IFObject.inherit(IFVertexPixelAligner, IFVertexSource);
 
     /**
      * @type {IFVertexSource}

@@ -9,7 +9,7 @@
         IFShapeTool.call(this, true, true);
     }
 
-    GObject.inherit(IFLineTool, IFShapeTool);
+    IFObject.inherit(IFLineTool, IFShapeTool);
 
     /** @override */
     IFLineTool.prototype.getGroup = function () {
@@ -23,7 +23,7 @@
 
     /** @override */
     IFLineTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this).setTitle(new GLocale.Key(IFLineTool, "title"));
+        return IFShapeTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFLineTool, "title"));
     };
 
     /** @override */

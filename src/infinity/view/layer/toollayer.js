@@ -9,7 +9,7 @@
     function IFToolLayer(view) {
         IFViewLayer.call(this, view);
     }
-    GObject.inherit(IFToolLayer, IFViewLayer);
+    IFObject.inherit(IFToolLayer, IFViewLayer);
 
     /** @override */
     IFToolLayer.prototype.toString = function () {

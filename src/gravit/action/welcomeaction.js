@@ -8,10 +8,10 @@
      */
     function GWelcomeAction() {
     };
-    GObject.inherit(GWelcomeAction, GUIAction);
+    IFObject.inherit(GWelcomeAction, GUIAction);
 
     GWelcomeAction.ID = 'help.welcome';
-    GWelcomeAction.TITLE = new GLocale.Key(GWelcomeAction, "title");
+    GWelcomeAction.TITLE = new IFLocale.Key(GWelcomeAction, "title");
 
     /**
      * @override

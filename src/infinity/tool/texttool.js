@@ -9,7 +9,7 @@
         IFShapeTool.call(this, true, true);
     }
 
-    GObject.inherit(IFTextTool, IFShapeTool);
+    IFObject.inherit(IFTextTool, IFShapeTool);
 
     /** @override */
     IFTextTool.prototype.getGroup = function () {
@@ -23,7 +23,7 @@
 
     /** @override */
     IFTextTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this).setTitle(new GLocale.Key(IFTextTool, "title"));
+        return IFShapeTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFTextTool, "title"));
     };
 
     /** @override */
@@ -34,7 +34,7 @@
     /** @override */
     IFTextTool.prototype.getCursor = function () {
         if (!this._shape) {
-            return GUICursor.Text;
+            return IFCursor.Text;
         } else {
             return IFShapeTool.prototype.getCursor.call(this);
         }

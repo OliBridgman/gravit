@@ -1,40 +1,40 @@
 (function (_) {
     /**
      * The blob base class
-     * @param {GStorage} storage the owner storage
+     * @param {IFStorage} storage the owner storage
      * @param {String} location the location
      * @param {String} name the name
      * @constructor
      * @version 1.0
      */
-    function GBlob(storage, location, name) {
+    function IFBlob(storage, location, name) {
         this._storage = storage;
         this._location = location;
     };
 
     /**
-     * @type {GStorage}
+     * @type {IFStorage}
      * @private
      */
-    GBlob.prototype._storage = null;
+    IFBlob.prototype._storage = null;
 
     /**
      * @type {String}
      * @private
      */
-    GBlob.prototype._location = null;
+    IFBlob.prototype._location = null;
 
     /**
      * @type {String}
      * @private
      */
-    GBlob.prototype._name = null;
+    IFBlob.prototype._name = null;
 
     /**
      * Get the underlying storage
-     * @returns {GStorage}
+     * @returns {IFStorage}
      */
-    GBlob.prototype.getStorage = function () {
+    IFBlob.prototype.getStorage = function () {
         return this._storage;
     };
 
@@ -42,7 +42,7 @@
      * Get the underlying location
      * @returns {String}
      */
-    GBlob.prototype.getLocation = function () {
+    IFBlob.prototype.getLocation = function () {
         return this._location;
     };
 
@@ -50,7 +50,7 @@
      * Get the underlying name
      * @returns {String}
      */
-    GBlob.prototype.getName = function () {
+    IFBlob.prototype.getName = function () {
         return this._name;
     };
 
@@ -62,7 +62,7 @@
      * @param {Function} callback called with the data restored
      * @return {String}
      */
-    GBlob.prototype.restore = function (binary, encoding, done) {
+    IFBlob.prototype.restore = function (binary, encoding, done) {
         throw new Error('Not Supported.');
     };
 
@@ -75,9 +75,9 @@
      * and 'utf8'
      * @param {Function} callback called when data was stored
      */
-    GBlob.prototype.store = function (data, binary, encoding, done) {
+    IFBlob.prototype.store = function (data, binary, encoding, done) {
         throw new Error('Not Supported.');
     };
 
-    _.GBlob = GBlob;
+    _.IFBlob = IFBlob;
 })(this);

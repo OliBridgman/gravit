@@ -8,7 +8,7 @@
     function IFShapeEditor(shape) {
         IFBlockEditor.call(this, shape);
     };
-    GObject.inherit(IFShapeEditor, IFBlockEditor);
+    IFObject.inherit(IFShapeEditor, IFBlockEditor);
 
     /** @override */
     IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {

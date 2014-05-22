@@ -9,7 +9,7 @@
     function EXDimensionsProperties() {
         this._elements = [];
     };
-    GObject.inherit(EXDimensionsProperties, EXProperties);
+    IFObject.inherit(EXDimensionsProperties, EXProperties);
 
     /**
      * @type {JQuery}

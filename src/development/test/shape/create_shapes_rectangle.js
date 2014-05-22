@@ -33,7 +33,7 @@
                 [anchorCTypes[getRandomInt(0, anchorCTypes.length-1)], cornerRadius, new GTransform(rectSize, 0.0, 0.0, rectSize, x, y)]);
 
             rect.transform(new GTransform(1.0, 0.0, 0.0, 1.0, -(x + rectSize/2), -(y + rectSize/2))
-                .rotated(gMath.toRadians(getRandomInt(0, 360)))
+                .rotated(ifMath.toRadians(getRandomInt(0, 360)))
                 .translated(+(x + rectSize/2), + (y + rectSize/2)));
 
             var editor = IFEditor.getEditor(scene);

@@ -8,10 +8,10 @@
      */
     function EXNewWindowAction() {
     };
-    GObject.inherit(EXNewWindowAction, GUIAction);
+    IFObject.inherit(EXNewWindowAction, GUIAction);
 
     EXNewWindowAction.ID = 'view.clone';
-    EXNewWindowAction.TITLE = new GLocale.Key(EXNewWindowAction, "title");
+    EXNewWindowAction.TITLE = new IFLocale.Key(EXNewWindowAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXNewWindowAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'N'];
+        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'N'];
     };
 
     /**

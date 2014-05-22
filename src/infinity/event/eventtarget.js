@@ -24,7 +24,7 @@
      * @version 1.0
      */
     GEventTarget.prototype.addEventListener = function (eventClass, listener, target, args) {
-        var event_id = GObject.getTypeId(eventClass);
+        var event_id = IFObject.getTypeId(eventClass);
 
         if (!this._listeners) {
             this._listeners = {};
@@ -58,7 +58,7 @@
      * @version 1.0
      */
     GEventTarget.prototype.removeEventListener = function (eventClass, listener) {
-        var event_id = GObject.getTypeId(eventClass);
+        var event_id = IFObject.getTypeId(eventClass);
 
         if (this._listeners && event_id in this._listeners) {
             var array = this._listeners[event_id].listeners;
@@ -81,7 +81,7 @@
      * @version 1.0
      */
     GEventTarget.prototype.hasEventListeners = function (eventClass) {
-        var event_id = GObject.getTypeId(eventClass);
+        var event_id = IFObject.getTypeId(eventClass);
         return this._listeners && event_id in this._listeners ? true : false;
     };
 
@@ -94,7 +94,7 @@
      */
     GEventTarget.prototype.trigger = function (event) {
         if (this._listeners) {
-            var event_id = GObject.getTypeId(event);
+            var event_id = IFObject.getTypeId(event);
             if (event_id in this._listeners) {
                 var array = this._listeners[event_id].listeners;
                 for (var i = 0; i < array.length; ++i) {

@@ -2,7 +2,7 @@
 
     /**
      * Action saving a document filed under a name
-     * @param {GStorage} storage
+     * @param {IFStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class EXSaveAsAction
      * @extends GUIAction
@@ -12,10 +12,10 @@
         this._storage = storage;
         this._default = isDefault;
     };
-    GObject.inherit(EXSaveAsAction, GUIAction);
+    IFObject.inherit(EXSaveAsAction, GUIAction);
 
     EXSaveAsAction.ID = 'file.save-as';
-    EXSaveAsAction.TITLE = new GLocale.Key(EXSaveAsAction, "title");
+    EXSaveAsAction.TITLE = new IFLocale.Key(EXSaveAsAction, "title");
 
     /**
      * @override
@@ -28,7 +28,7 @@
      * @override
      */
     EXSaveAsAction.prototype.getTitle = function () {
-        return gLocale.get(EXSaveAsAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
+        return ifLocale.get(EXSaveAsAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
     };
 
     /**
@@ -49,7 +49,7 @@
      * @override
      */
     EXSaveAsAction.prototype.getShortcut = function () {
-        return this._default ? [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'S'] : null;
+        return this._default ? [IFKey.Constant.SHIFT, IFKey.Constant.META, 'S'] : null;
     };
 
     /**

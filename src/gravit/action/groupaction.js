@@ -8,10 +8,10 @@
      */
     function GGroupAction() {
     };
-    GObject.inherit(GGroupAction, GUIAction);
+    IFObject.inherit(GGroupAction, GUIAction);
 
     GGroupAction.ID = 'modify.group';
-    GGroupAction.TITLE = new GLocale.Key(GGroupAction, "title");
+    GGroupAction.TITLE = new IFLocale.Key(GGroupAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GGroupAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'G'];
+        return [IFKey.Constant.META, 'G'];
     };
 
     /**

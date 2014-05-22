@@ -9,9 +9,9 @@
     function EXImagePaletteMatcher() {
         this._palette = null;
     };
-    GObject.inherit(EXImagePaletteMatcher, EXColorMatcher);
+    IFObject.inherit(EXImagePaletteMatcher, EXColorMatcher);
 
-    EXImagePaletteMatcher.TITLE = new GLocale.Key(EXImagePaletteMatcher, "title");
+    EXImagePaletteMatcher.TITLE = new IFLocale.Key(EXImagePaletteMatcher, "title");
 
     /**
      * @type {JQuery}

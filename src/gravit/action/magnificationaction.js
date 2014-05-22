@@ -10,7 +10,7 @@
         this._magnification = magnification;
         this._shortcut = shortcut;
     };
-    GObject.inherit(EXMagnificationAction, GUIAction);
+    IFObject.inherit(EXMagnificationAction, GUIAction);
 
     EXMagnificationAction.ID = 'view.magnification';
 

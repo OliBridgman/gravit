@@ -10,7 +10,7 @@
         IFPathTool.call(this);
     }
 
-    GObject.inherit(IFBezigonTool, IFPathTool);
+    IFObject.inherit(IFBezigonTool, IFPathTool);
 
     /** @override */
     IFBezigonTool.prototype.getGroup = function () {
@@ -25,9 +25,9 @@
     /** @override */
     IFBezigonTool.prototype.getHint = function () {
         return IFPathTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.OPTION, new GLocale.Key(IFBezigonTool, "shortcut.option"), true)
-            .addKey(GUIKey.Constant.SHIFT, new GLocale.Key(IFBezigonTool, "shortcut.shift"), true)
-            .setTitle(new GLocale.Key(IFBezigonTool, "title"));
+            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFBezigonTool, "shortcut.option"), true)
+            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFBezigonTool, "shortcut.shift"), true)
+            .setTitle(new IFLocale.Key(IFBezigonTool, "title"));
     };
 
     /** @override */
@@ -103,7 +103,7 @@
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-                    this._setCursorForPosition(GUICursor.PenEnd);
+                    this._setCursorForPosition(IFCursor.PenEnd);
                     this._startTransaction(IFPathTool.Transaction.ModifyPathProperties);
                     // Close path
                     this._pathRef.setProperty('closed', true);
@@ -113,7 +113,7 @@
                     this._editPt = this._pathEditor.getPathPointPreview(otherPt);
                     this._pathEditor.requestInvalidation();
                 } else {
-                    this._setCursorForPosition(GUICursor.Pen);
+                    this._setCursorForPosition(IFCursor.Pen);
                     var prevPt;
                     if (this._pathEditor) {
                         if (this._mode == IFPathTool.Mode.Append) {
@@ -184,12 +184,12 @@
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-                    this._setCursorForPosition(GUICursor.PenEnd);
+                    this._setCursorForPosition(IFCursor.PenEnd);
                 } else {
-                    this._setCursorForPosition(GUICursor.Pen);
+                    this._setCursorForPosition(IFCursor.Pen);
                 }
             } else {
-                this._setCursorForPosition(GUICursor.Pen);
+                this._setCursorForPosition(IFCursor.Pen);
             }
 
             this._pathEditor.requestInvalidation();
@@ -290,17 +290,17 @@
                     var newPos = this._updatePoint(event.client);
                     this._closeIfNeeded();
                     if (this._pathRef.getProperty('closed')) {
-                        this._setCursorForPosition(GUICursor.PenMinus);
+                        this._setCursorForPosition(IFCursor.PenMinus);
                         this._mode = IFPathTool.Mode.Edit;
                     } else if (this._newPoint) {
                         this._addPoint(this._editPt, false, true);
-                        this._setCursorForPosition(GUICursor.Pen);
+                        this._setCursorForPosition(IFCursor.Pen);
                     } else if (this._editPt) {
                         if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
                             this._startTransaction(IFPathTool.Transaction.MovePoint);
                         }
                         this._pathEditor.applyTransform(this._pathRef);
-                        this._setCursorForPosition(GUICursor.PenEnd);
+                        this._setCursorForPosition(IFCursor.PenEnd);
                     }
                     this._commitChanges();
                     // hit test result becomes invalid if any;

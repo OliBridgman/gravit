@@ -8,10 +8,10 @@
      */
     function GPasteAttributesAction() {
     };
-    GObject.inherit(GPasteAttributesAction, GUIAction);
+    IFObject.inherit(GPasteAttributesAction, GUIAction);
 
     GPasteAttributesAction.ID = 'edit.paste-attributes';
-    GPasteAttributesAction.TITLE = new GLocale.Key(GPasteAttributesAction, "title");
+    GPasteAttributesAction.TITLE = new IFLocale.Key(GPasteAttributesAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.F4];
+        return [IFKey.Constant.F4];
     };
 
     /**

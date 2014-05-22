@@ -8,7 +8,7 @@
     function IFItem() {
         IFBlock.call(this);
     }
-    GObject.inherit(IFItem, IFBlock);
+    IFObject.inherit(IFItem, IFBlock);
 
     _.IFItem = IFItem;
 })(this);

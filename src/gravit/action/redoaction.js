@@ -8,10 +8,10 @@
      */
     function EXRedoAction() {
     };
-    GObject.inherit(EXRedoAction, GUIAction);
+    IFObject.inherit(EXRedoAction, GUIAction);
 
     EXRedoAction.ID = 'edit.redo';
-    EXRedoAction.TITLE = new GLocale.Key(EXRedoAction, "title");
+    EXRedoAction.TITLE = new IFLocale.Key(EXRedoAction, "title");
 
     /**
      * @override
@@ -24,7 +24,7 @@
      * @override
      */
     EXRedoAction.prototype.getTitle = function () {
-        var result = gLocale.get(EXRedoAction.TITLE);
+        var result = ifLocale.get(EXRedoAction.TITLE);
         var document = gApp.getActiveDocument();
         if (document && document.getEditor().hasRedoState()) {
             result += " " + document.getEditor().getRedoStateName();
@@ -50,7 +50,7 @@
      * @override
      */
     EXRedoAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'z'];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'z'];
     };
 
     /**

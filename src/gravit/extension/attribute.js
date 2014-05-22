@@ -8,7 +8,7 @@
      */
     function GAttribute() {
     };
-    GObject.inherit(GAttribute, GEventTarget);
+    IFObject.inherit(GAttribute, GEventTarget);
 
     /**
      * Called to return the attribute class of this

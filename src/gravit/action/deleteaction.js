@@ -8,10 +8,10 @@
      */
     function EXDeleteAction() {
     };
-    GObject.inherit(EXDeleteAction, GUIAction);
+    IFObject.inherit(EXDeleteAction, GUIAction);
 
     EXDeleteAction.ID = 'edit.delete';
-    EXDeleteAction.TITLE = new GLocale.Key(EXDeleteAction, "title");
+    EXDeleteAction.TITLE = new IFLocale.Key(EXDeleteAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     EXDeleteAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.REMOVE];
+        return [IFKey.Constant.REMOVE];
     };
 
     /**

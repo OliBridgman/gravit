@@ -9,7 +9,7 @@
         this._menuBar = new GUIMenuBar();
         this._clipboardMimeTypes = {};
     };
-    GObject.inherit(GWebShell, GShell);
+    IFObject.inherit(GWebShell, GShell);
 
     /**
      * @type {GUIMenuBar}

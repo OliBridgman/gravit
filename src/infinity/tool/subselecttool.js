@@ -10,7 +10,7 @@
         IFSelectTool.call(this);
     };
 
-    GObject.inherit(IFSubSelectTool, IFSelectTool);
+    IFObject.inherit(IFSubSelectTool, IFSelectTool);
 
     /** @override */
     IFSubSelectTool.prototype.getGroup = function () {
@@ -25,7 +25,7 @@
     /** @override */
     IFSubSelectTool.prototype.getHint = function () {
         return IFSelectTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(IFSubSelectTool, "title"));
+            .setTitle(new IFLocale.Key(IFSubSelectTool, "title"));
     };
 
     /** @override */
@@ -36,10 +36,10 @@
     /** @override */
     IFSubSelectTool.prototype.getCursor = function () {
         var result = IFSelectTool.prototype.getCursor.call(this);
-        if (result === GUICursor.Select) {
-            return GUICursor.SelectInverse;
-        } else if (result === GUICursor.SelectDot) {
-            return GUICursor.SelectDotInverse;
+        if (result === IFCursor.Select) {
+            return IFCursor.SelectInverse;
+        } else if (result === IFCursor.SelectDot) {
+            return IFCursor.SelectDotInverse;
         } else {
             return result;
         }

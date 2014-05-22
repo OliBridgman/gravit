@@ -9,7 +9,7 @@
         this._htmlElement = htmlElement;
         this._windows = [];
     };
-    GObject.inherit(EXWindows, GEventTarget);
+    IFObject.inherit(EXWindows, GEventTarget);
 
     // -----------------------------------------------------------------------------------------------------------------
     // EXWindows.WindowEvent Event
@@ -25,7 +25,7 @@
         this.type = type;
         this.window = window;
     };
-    GObject.inherit(EXWindows.WindowEvent, GEvent);
+    IFObject.inherit(EXWindows.WindowEvent, GEvent);
 
     /**
      * Enumeration of window event types

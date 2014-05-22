@@ -10,7 +10,7 @@
         IFTool.call(this);
     }
 
-    GObject.inherit(IFHandTool, IFTool);
+    IFObject.inherit(IFHandTool, IFTool);
 
     /**
      * @type {Boolean}
@@ -42,7 +42,7 @@
 
     /** @override */
     IFHandTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this).setTitle(new GLocale.Key(IFHandTool, "title"));
+        return IFTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFHandTool, "title"));
     };
 
     /** @override */
@@ -52,7 +52,7 @@
 
     /** @override */
     IFHandTool.prototype.getCursor = function () {
-        return this._panning ? GUICursor.HandClosed : GUICursor.HandOpen;
+        return this._panning ? IFCursor.HandClosed : IFCursor.HandOpen;
     };
 
     /** @override */

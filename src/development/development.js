@@ -7,7 +7,7 @@
      */
     function GDevelopmentModule() {
     }
-    GObject.inherit(GDevelopmentModule, EXModule);
+    IFObject.inherit(GDevelopmentModule, EXModule);
 
     /** @override */
     GDevelopmentModule.prototype.init = function () {

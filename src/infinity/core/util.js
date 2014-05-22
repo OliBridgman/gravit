@@ -1,11 +1,11 @@
 (function (_) {
 
     /**
-     * @class GUtil
+     * @class IFUtil
      * @constructor
      * @version 1.0
      */
-    function GUtil() {
+    function IFUtil() {
     };
 
     /**
@@ -19,7 +19,7 @@
      * @return {Number} a value less than zero if element is not found or
      * the index of the given element in the given array
      */
-    GUtil.prototype.indexOfEquals = function (array, element, objectByValue) {
+    IFUtil.prototype.indexOfEquals = function (array, element, objectByValue) {
         for (var i = 0; i < array.length; ++i) {
             if (this.equals(array[i], element, objectByValue)) {
                 return i;
@@ -43,7 +43,7 @@
      * not by their reference. Defaults to false if not provided.
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    GUtil.prototype.equals = function (left, right, objectByValue) {
+    IFUtil.prototype.equals = function (left, right, objectByValue) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -84,7 +84,7 @@
                     if (isNaN(left) || isNaN(right)) {
                         return isNaN(left) && isNaN(right);
                     } else {
-                        return gMath.isEqualEps(left, right);
+                        return ifMath.isEqualEps(left, right);
                     }
                 } else if (leftType === 'string') {
                     return left.localeCompare(right) === 0;
@@ -124,7 +124,7 @@
      * @param {Array<*>} array
      * @param {*} object
      */
-    GUtil.prototype.containsObjectKey = function (array, object) {
+    IFUtil.prototype.containsObjectKey = function (array, object) {
         for (var key in object) {
             if (array.indexOf(key) >= 0) {
                 return true;
@@ -140,7 +140,7 @@
      * @param {Number} [len] the desired length of the uid, defaults to 32
      * @returns {String} more or less unique id depending on the desired length
      */
-    GUtil.prototype.uuid = function (len) {
+    IFUtil.prototype.uuid = function (len) {
         var chars = CHARS, uuid = [], i;
         var radix = chars.length;
         var len = len ? len : 32;
@@ -157,7 +157,7 @@
      * @param {String} with_ the string to replace with
      * @returns {String}
      */
-    GUtil.prototype.replaceAll = function (string, what_, with_) {
+    IFUtil.prototype.replaceAll = function (string, what_, with_) {
         var result = string;
         while (result.indexOf(what_) >= 0) {
             result = result.replace(what_, with_);
@@ -167,7 +167,7 @@
 
     // Makes unique sort of array elements, leaving only the elements from [a,b] segment
     // New array is written into newnums
-    GUtil.prototype.uSortSegment = function (a, b, nums, newnums) {
+    IFUtil.prototype.uSortSegment = function (a, b, nums, newnums) {
         var nElms = 0;
         nums.sort(function (s, k) {
             return s - k;
@@ -197,7 +197,7 @@
      * @param {String} html
      * @returns {String}
      */
-    GUtil.prototype.escape = function (html) {
+    IFUtil.prototype.escape = function (html) {
         return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     };
 
@@ -206,7 +206,7 @@
      * @param {String} html
      * @returns {String}
      */
-    GUtil.prototype.unescape = function (html) {
+    IFUtil.prototype.unescape = function (html) {
         var result = gUtil.replaceAll(html, "&lt;", '<');
         result = gUtil.replaceAll(result, "&gt;", '>');
         result = gUtil.replaceAll(result, "&quot;", '"');
@@ -220,7 +220,7 @@
      * @param {string} string
      * @returns {boolean}
      */
-    GUtil.prototype.isNumeric = function(string) {
+    IFUtil.prototype.isNumeric = function(string) {
         // parseFloat NaNs numeric-cast false positives (null|true|false|"")
         // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
         // subtraction forces infinities to NaN
@@ -241,7 +241,7 @@
      * decimal places with zero will be ignored. Defaults to false.
      * @returns {string}
      */
-    GUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator, thousandSeparator, includeEndingZeros) {
+    IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator, thousandSeparator, includeEndingZeros) {
         decimalPlaces = decimalPlaces || 3;
         decimalSeparator = decimalSeparator || ',';
         thousandSeparator = thousandSeparator || '';
@@ -308,7 +308,7 @@
      * @param {string} the string to be parsed as number
      * @returns {Number}
      */
-    GUtil.prototype.parseNumber = function (string) {
+    IFUtil.prototype.parseNumber = function (string) {
         var parseString = "";
         var foundDecSep = false;
         for (var i = string.length; i >= 0; --i) {
@@ -322,5 +322,5 @@
         return parseFloat(parseString);
     };
 
-    _.gUtil = new GUtil();
+    _.gUtil = new IFUtil();
 })(this);

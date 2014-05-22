@@ -8,10 +8,10 @@
      */
     function EXPixelPreviewAction() {
     };
-    GObject.inherit(EXPixelPreviewAction, GUIAction);
+    IFObject.inherit(EXPixelPreviewAction, GUIAction);
 
     EXPixelPreviewAction.ID = 'view.pixel-preview';
-    EXPixelPreviewAction.TITLE = new GLocale.Key(EXPixelPreviewAction, 'title');
+    EXPixelPreviewAction.TITLE = new IFLocale.Key(EXPixelPreviewAction, 'title');
 
     /**
      * @override
