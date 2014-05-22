@@ -805,10 +805,34 @@
             textBox = this.$trf.mapRect(textBox);
         }
 
-        var width = this.$fw ? Math.max(textBox.getWidth(), this._size.getX()) : this._size.getX();
-        var height = this.$fw ? Math.max(textBox.getHeight(), this._size.getY()) : this._size.getY();
+        var width = this.$fw ? textBox.getWidth() : this._size.getX();
+        var height = this.$fh ? textBox.getHeight() : this._size.getY();
 
         return new GRect(textBox.getX(), textBox.getY(), width, height);
+    };
+
+    /** @override */
+    GXText.prototype._preparePaint = function (context) {
+        if (GXShape.prototype._preparePaint.call(this, context)) {
+            // Check if we need to clip rect
+            var clipBox = this._getClipBox(context);
+            if (clipBox) {
+                context.canvas.clipRect(clipBox.getX(), clipBox.getY(), clipBox.getWidth(), clipBox.getHeight());
+            }
+
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    GXText.prototype._finishPaint = function (context) {
+        // Reset clipping if done previously
+        if (this._getClipBox(context) !== null) {
+            context.canvas.resetClip();
+        }
+
+        GXShape.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
@@ -849,6 +873,25 @@
                 this._verticesDirty = true;
             }
         }
+    };
+
+    /**
+     * Returns a clip-box if required, otherwise null
+     * @param context
+     * @returns {GRect}
+     * @private
+     */
+    GXText.prototype._getClipBox = function (context) {
+        var bbox = this.getGeometryBBox();
+        if (this._size &&
+            ((this.$fw && this._size.getX() >= bbox.getWidth()) ||
+                (this.$fh && this._size.getY() >= bbox.getHeight()))) {
+
+            return new GRect(bbox.getX(), bbox.getY(),
+                this.$fw ? bbox.getWidth() : context.canvas.getWidth(),
+                this.$fh ? bbox.getHeight() : context.canvas.getHeight());
+        }
+        return null;
     };
 
     /**

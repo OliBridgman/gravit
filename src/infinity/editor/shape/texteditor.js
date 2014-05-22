@@ -248,13 +248,20 @@
         var viewBBox = view.getWorldTransform().mapRect(sceneBBox);
         var left = viewBBox.getX();
         var top = viewBBox.getY();
-        var minWidth = sceneBBox.getWidth() <= 0 ? '1em' : sceneBBox.getWidth() + 'px';
-        var minHeight = sceneBBox.getHeight() <= 0 ? '1em' : sceneBBox.getHeight() + 'px';
+
+        var width = '';
+        var height = '';
+        if (this.getElement().getProperty('fw') === true && sceneBBox.getWidth() > 0) {
+            width = sceneBBox.getWidth() + 'px';
+        }
+        if (this.getElement().getProperty('fh') === true && sceneBBox.getHeight() > 0) {
+            height = sceneBBox.getHeight() + 'px';
+        }
 
         this._inlineEditor
             .css({
-                'width': minWidth,
-                'min-height': minHeight,
+                'width': width,
+                'height': height,
                 'top': top,
                 'left': left,
                 'transform': 'scale(' + view.getZoom() + ')',

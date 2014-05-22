@@ -60,7 +60,7 @@
     IFTextTool.prototype._insertShape = function (shape) {
         // Create our text out of our rectangle here
         var text = new GXText();
-        text.setProperties(['fw', 'fh', 'trf'], [true, true, shape.getProperty('trf')]);
+        text.setProperties(['fw', 'trf'], [true, shape.getProperty('trf')]);
 
         this._insertText(text);
     };
