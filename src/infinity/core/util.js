@@ -133,26 +133,6 @@
         return false;
     };
 
-    /**
-     * Compares a flag subtract in two given bitmasks.
-     * @param {Number} leftMask
-     * @param {Number} rightMask
-     * @param {Number} flag
-     * @returns {Number}
-     * returns 0 if flag is the same on both masks (aka either set or unset),
-     * returns -1 if flag is set in left mask but not in right mask,
-     * returns +1 if flag is set in right mask but not in left mask
-     */
-    GUtil.prototype.flagDelta = function (leftMask, rightMask, flag) {
-        if ((leftMask & flag) == (rightMask & flag)) {
-            return 0;
-        } else if ((leftMask & flag) != 0) {
-            return -1;
-        } else {
-            return 1;
-        }
-    };
-
     var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
     /**
@@ -233,29 +213,6 @@
         result = gUtil.replaceAll(result, "&#039;", "'");
         result = gUtil.replaceAll(result, "&amp;", '&');
         return result;
-    };
-
-    GUtil.prototype._memcpy = function (dst, dstOffset, src, srcOffset, length) {
-        src = src.subarray || src.slice ? src : src.buffer;
-        dst = dst.subarray || dst.slice ? dst : dst.buffer;
-
-        src = srcOffset ? src.subarray ?
-            src.subarray(srcOffset, length && srcOffset + length) :
-            src.slice(srcOffset, length && srcOffset + length) : src;
-
-        if (dst.set) {
-            dst.set(src, dstOffset);
-        } else {
-            for (var i = 0; i < src.length; i++) {
-                dst[i + dstOffset] = src[i];
-            }
-        }
-
-        return dst;
-    };
-
-    GUtil.prototype.memcpy = function (dst, src, length) {
-        return this._memcpy(dst, 0, src, 0, length);
     };
 
     _.gUtil = new GUtil();
