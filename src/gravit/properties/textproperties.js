@@ -29,6 +29,12 @@
      */
     GTextProperties.prototype._text = null;
 
+    /**
+     * @type {GXTextEditor}
+     * @private
+     */
+    GTextProperties.prototype._textEditor = null;
+
     /** @override */
     GTextProperties.prototype.getCategory = function () {
         // TODO : I18N
@@ -120,14 +126,8 @@
     GTextProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getEditor().removeEventListener(GXEditor.InlineEditorEvent, this._inlineEditorEvent);
             this._document = null;
-        }
-
-        if (this._text) {
-            for (var i = 0; i < this._text.length; ++i) {
-                var textEditor = GXElementEditor.getEditor(this._text[0]);
-                textEditor.removeEventListener(GXTextEditor.SelectionChangedEvent, this._updateProperties);
-            }
         }
 
         // We'll work on elements, only
@@ -146,15 +146,8 @@
         if (this._text.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getEditor().addEventListener(GXEditor.InlineEditorEvent, this._inlineEditorEvent, this);
             this._updateProperties();
-
-            if (this._text) {
-                for (var i = 0; i < this._text.length; ++i) {
-                    var textEditor = GXElementEditor.getEditor(this._text[0]);
-                    textEditor.addEventListener(GXTextEditor.SelectionChangedEvent, this._updateProperties, this);
-                }
-            }
-
             return true;
         } else {
             return false;
@@ -177,15 +170,14 @@
      * @private
      */
     GTextProperties.prototype._updateProperties = function () {
-        // We'll always read properties of first text
-        var text = this._text[0];
-        var textEditor = GXElementEditor.getEditor(text);
+        // Read properties from active editor or first text' editor
+        var propertySource = this._textEditor ? this._textEditor : GXElementEditor.getEditor(this._text[0]);
 
         this._panel.find('input[data-property="fi"]').val(
-            this._document.getScene().pointToString(textEditor.getProperty('fi')));
+            this._document.getScene().pointToString(propertySource.getProperty('fi')));
 
-        var lh = textEditor.getProperty('lh');
-        this._panel.find('input[data-property="lh"]').val(lh !== null ? lh.toString().replace('.', ',') : "");
+        var lh = propertySource.getProperty('lh');
+        this._panel.find('input[data-property="lh"]').val(lh !== null ? gUtil.formatNumber(lh) : "");
     };
 
     /**

@@ -146,5 +146,19 @@
         }
     };
 
+    /**
+     * Called before this document gets activated
+     */
+    EXDocument.prototype.activate = function () {
+        // NO-OP
+    };
+
+    /**
+     * Called before this document gets deactivated
+     */
+    EXDocument.prototype.deactivate = function () {
+        // NO-OP
+    };
+
     _.EXDocument = EXDocument;
 })(this);

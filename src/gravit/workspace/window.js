@@ -103,6 +103,22 @@
     };
 
     /**
+     * Called before this document gets activated
+     */
+    EXWindow.prototype.activate = function () {
+        // NO-OP
+    };
+
+    /**
+     * Called before this document gets deactivated
+     */
+    EXWindow.prototype.deactivate = function () {
+        // Always finish inline editing of editor if any
+        // when a view gets deactivated
+        this._document.getEditor().closeInlineEditor();
+    };
+
+    /**
      * Creates the context menu for the view
      * @returns {GUIMenu}
      * @private

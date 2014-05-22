@@ -475,8 +475,12 @@
         if (document != this._activeDocument) {
             // Deactivate previous one if any
             if (this._activeDocument) {
-                if (this._activeDocument && this.hasEventListeners(EXApplication.DocumentEvent)) {
-                    this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Deactivated, this._activeDocument));
+                if (this._activeDocument) {
+                    this._activeDocument.deactivate();
+
+                    if (this.hasEventListeners(EXApplication.DocumentEvent)) {
+                        this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Deactivated, this._activeDocument));
+                    }
                 }
 
                 this._activeDocument = null;
@@ -488,6 +492,8 @@
                 if (!noWindowActivation) {
                     this._windows.activateWindow(document.getActiveWindow());
                 }
+
+                document.activate();
 
                 // Now assign the active document
                 this._activeDocument = document;

@@ -279,6 +279,9 @@
 
             // remove any cursor from the view
             this._view.setCursor(null);
+
+            // Let editor on view if any finish inline editing
+            this._view.getEditor().closeInlineEditor();
         }
     };
 

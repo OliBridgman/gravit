@@ -107,6 +107,9 @@
 
             // If we have an active window, clear that one out, first
             if (this._activeWindow) {
+                // Notify the window
+                this._activeWindow.deactivate();
+
                 // Mark deactivated on document
                 this._activeWindow.getDocument()._activeWindow = null;
 
@@ -131,6 +134,9 @@
 
             // Activate the new window if we have any
             if (window) {
+                // Notify the window
+                this._activeWindow.activate();
+
                 // Mark as active on document
                 window.getDocument()._activeWindow = window;
 

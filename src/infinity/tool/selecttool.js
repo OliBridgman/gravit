@@ -446,9 +446,9 @@
         if (this._elementUnderMouse) {
             var editor = GXElementEditor.getEditor(this._elementUnderMouse);
             if (editor && editor.canInlineEdit()) {
-                editor.beginInlineEdit(this._view, this._view._htmlElement);
-                editor.adjustInlineEditForView(this._view);
-                openTransformBox = false;
+                if (this._editor.openInlineEditor(this._elementUnderMouse, this._view)) {
+                    openTransformBox = false;
+                }
             }
         }
 

@@ -4,35 +4,14 @@
      * @param {GXText} text the text this editor works on
      * @class GXTextEditor
      * @extends GXShapeEditor
-     * @mixes GEventTarget
      * @constructor
      */
     function GXTextEditor(rectangle) {
         GXShapeEditor.call(this, rectangle);
         this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
-    GObject.inheritAndMix(GXTextEditor, GXShapeEditor, [GEventTarget]);
+    GObject.inherit(GXTextEditor, GXShapeEditor);
     GXElementEditor.exports(GXTextEditor, GXText);
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GXTextEditor.SelectionChangedEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever the current selection has been changed
-     * @class GXTextEditor.SelectionChangedEvent
-     * @extends GEvent
-     * @constructor
-     */
-    GXTextEditor.SelectionChangedEvent = function () {
-    };
-    GObject.inherit(GXTextEditor.SelectionChangedEvent, GEvent);
-
-    /** @override */
-    GXTextEditor.SelectionChangedEvent.prototype.toString = function () {
-        return "[Event GXTextEditor.SelectionChangedEvent]";
-    };
-
-    GXTextEditor.SELECTION_CHANGED_EVENT = new GXTextEditor.SelectionChangedEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
     // GXTextEditor Class
@@ -215,8 +194,11 @@
                         }
                     }
                 }
-                
-                this.trigger(GXTextEditor.SELECTION_CHANGED_EVENT);
+
+                var editor = GXEditor.getEditor(this.getElement().getScene());
+                if (editor.hasEventListeners(GXEditor.InlineEditorEvent)) {
+                    editor.trigger(new GXEditor.InlineEditorEvent(this, GXEditor.InlineEditorEvent.Type.SelectionChanged));
+                }
             }.bind(this))
             .on('click', function (evt) {
                 evt.stopPropagation();

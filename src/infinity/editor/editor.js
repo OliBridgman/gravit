@@ -158,6 +158,67 @@
     GXEditor.SELECTION_CHANGED_EVENT = new GXEditor.SelectionChangedEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GXEditor.InlineEditorEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event providing inline editor events
+     * @class GXEditor.InlineEditorEvent
+     * @extends GEvent
+     * @constructor
+     */
+    GXEditor.InlineEditorEvent = function (editor, type) {
+        this.editor = editor;
+        this.type = type;
+    };
+    GObject.inherit(GXEditor.InlineEditorEvent, GEvent);
+
+    /**
+     * Enum of inline editor event types
+     * @enum
+     */
+    GXEditor.InlineEditorEvent.Type = {
+        /**
+         * Inline editor is about to be opened
+         */
+        BeforeOpen: 0,
+        
+        /**
+         * Inline editor has been opened
+         */
+        AfterOpen: 1,
+
+        /**
+         * Inline editor is about to close
+         */
+        BeforeClose: 10,
+
+        /**
+         * Inline editor has been closed
+         */
+        AfterClose: 11,
+
+        /**
+         * Some selection in inline editor has been changed
+         */
+        SelectionChanged: 100
+    };
+
+    /**
+     * @type {GXElementEditor}
+     */
+    GXEditor.InlineEditorEvent.prototype.editor = null;
+
+    /**
+     * @type {GXEditor.InlineEditorEvent.Type}
+     */
+    GXEditor.InlineEditorEvent.prototype.type = null;
+
+    /** @override */
+    GXEditor.InlineEditorEvent.prototype.toString = function () {
+        return "[Event GXEditor.InlineEditorEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GXEditor.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -229,6 +290,12 @@
      * @private
      */
     GXEditor.prototype._guides = null;
+
+    /**
+     * @type {GXNode}
+     * @private
+     */
+    GXEditor.prototype._currentInlineEditorNode = null;
 
     /**
      * @type {GXPage}
@@ -1025,6 +1092,45 @@
     };
 
     /**
+     * Called to close any active inline editor
+     */
+    GXEditor.prototype.closeInlineEditor = function () {
+        if (this._currentInlineEditorNode) {
+            this._finishEditorInlineEdit(this._currentInlineEditorNode);
+        }
+    };
+    
+    /**
+     * Called to open an inline editor for a given node and view
+     * @param {GXNode} node
+     * @param {GXEditorView} view
+     * @return {Boolean} true if an inline editor was opened, false if not
+     */
+    GXEditor.prototype.openInlineEditor = function (node, view) {
+        this.closeInlineEditor();
+        
+        var editor = GXElementEditor.getEditor(node);
+        if (editor && editor.canInlineEdit()) {
+            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
+                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.BeforeOpen));
+            }
+            
+            editor.beginInlineEdit(view, view._htmlElement);
+            editor.adjustInlineEditForView(view);
+            
+            this._currentInlineEditorNode = node;
+
+            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
+                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.AfterOpen));
+            }
+            
+            return true;
+        }
+        
+        return false;
+    };
+
+    /**
      * @param {GXNode.AfterInsertEvent} evt
      * @private
      */
@@ -1319,6 +1425,10 @@
     GXEditor.prototype._finishEditorInlineEdit = function (node) {
         var editor = GXElementEditor.getEditor(node);
         if (editor && editor.isInlineEdit()) {
+            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
+                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.BeforeClose));
+            }
+            
             var editText = null;
             this.beginTransaction();
             try {
@@ -1326,6 +1436,14 @@
             } finally {
                 // TODO : I18N
                 this.commitTransaction(editText ? editText : 'Inline Editing');
+            }
+            
+            if (node === this._currentInlineEditorNode) {
+                this._currentInlineEditorNode = null;
+            }
+            
+            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
+                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.AfterClose));
             }
         }
     };
