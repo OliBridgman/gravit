@@ -364,6 +364,27 @@
     };
 
     /**
+     * Wrap-Mode of a paragraph
+     * @enum
+     */
+    GXText.Paragraph.WrapMode = {
+        /**
+         * No word-break
+         */
+        None: 'n',
+
+        /**
+         * Break after words only
+         */
+        Words: 'w',
+
+        /**
+         * Break anywhere including characters
+         */
+        All: 'a'
+    };
+
+    /**
      * The geometry properties of a paragraph with their default values
      */
     GXText.Paragraph.Properties = {
@@ -371,8 +392,8 @@
         cc: null,
         /** Column gap */
         cg: null,
-        /** Wether to word-wrap the paragraph or not */
-        ww: null,
+        /** Wrap-Mode of a paragraph (GXText.Paragraph.WrapMode) */
+        wm: null,
         /** The paragraph's alignment (GXText.Paragraph.Alignment) */
         al: null,
         /** The first line intendation */
@@ -399,8 +420,19 @@
             css['column-gap'] = value;
             css['-webkit-column-gap'] = value;
             css['-moz-column-gap'] = value;
-        } else if (property === 'ww') {
-            css['white-space'] = value ? 'pre-wrap' : 'nowrap';
+        } else if (property === 'wm') {
+            switch (value) {
+                case GXText.Paragraph.WrapMode.None:
+                    css['white-space'] = 'nowrap';
+                    break;
+                case GXText.Paragraph.WrapMode.Words:
+                    css['white-space'] = 'pre-wrap';
+                    break;
+                case GXText.Paragraph.WrapMode.All:
+                    css['white-space'] = 'pre-wrap';
+                    css['word-break'] = 'break-all';
+                    break;
+            }
         } else if (property === 'al') {
             switch (value) {
                 case GXText.Paragraph.Alignment.Left:
@@ -446,11 +478,18 @@
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'ww') {
-            if (value === 'pre-wrap') {
-                return true;
-            } else if (value === 'nowrap') {
-                return false;
+        } else if (property === 'wm') {
+            var wspace = css['white-space'];
+            var wbreak = css['word-break'];
+
+            if (wspace === 'pre-wrap') {
+                if (wbreak === 'break-all') {
+                    return GXText.Paragraph.WrapMode.All;
+                } else {
+                    return GXText.Paragraph.WrapMode.Words;
+                }
+            } else if (wspace === 'nowrap') {
+                return GXText.Paragraph.WrapMode.None;
             }
         } else if (property === 'al') {
             if (value === 'left') {
@@ -547,7 +586,7 @@
         this.$fi = 12;
         this.$fs = GXText.Block.TextStyle.Normal;
         this.$lh = 1;
-        this.$ww = true;
+        this.$wm = GXText.Paragraph.WrapMode.All;
     };
 
     GXNode.inherit("txContent", GXText.Content, GXText.Paragraph);
@@ -559,8 +598,6 @@
 
     /** @override */
     GXText.Content.prototype.propertiesToCss = function (css) {
-        css['word-wrap'] = 'break-word';
-
         // Setup default color taking care of attributes if any
         var color = 'black';
         var text = this._parent;
