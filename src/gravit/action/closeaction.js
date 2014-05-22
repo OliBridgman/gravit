@@ -2,70 +2,70 @@
 
     /**
      * Action closing a document
-     * @class EXCloseAction
+     * @class GCloseAction
      * @extends GUIAction
      * @constructor
      */
-    function EXCloseAction() {
+    function GCloseAction() {
     };
-    IFObject.inherit(EXCloseAction, GUIAction);
+    IFObject.inherit(GCloseAction, GUIAction);
 
-    EXCloseAction.ID = "file.close";
-    EXCloseAction.TITLE = new IFLocale.Key(EXCloseAction, "title");
+    GCloseAction.ID = "file.close";
+    GCloseAction.TITLE = new IFLocale.Key(GCloseAction, "title");
 
     /**
      * @override
      */
-    EXCloseAction.prototype.getId = function () {
-        return EXCloseAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXCloseAction.prototype.getTitle = function () {
-        return EXCloseAction.TITLE;
+    GCloseAction.prototype.getId = function () {
+        return GCloseAction.ID;
     };
 
     /**
      * @override
      */
-    EXCloseAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE;
+    GCloseAction.prototype.getTitle = function () {
+        return GCloseAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXCloseAction.prototype.getGroup = function () {
+    GCloseAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE;
+    };
+
+    /**
+     * @override
+     */
+    GCloseAction.prototype.getGroup = function () {
         return "close";
     };
 
     /**
      * @override
      */
-    EXCloseAction.prototype.getShortcut = function () {
+    GCloseAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, 'Q'];
     };
 
     /**
      * @override
      */
-    EXCloseAction.prototype.isEnabled = function () {
+    GCloseAction.prototype.isEnabled = function () {
         return !!gApp.getWindows().getActiveWindow();
     };
 
     /**
      * @override
      */
-    EXCloseAction.prototype.execute = function () {
+    GCloseAction.prototype.execute = function () {
         gApp.getWindows().closeWindow(gApp.getWindows().getActiveWindow());
     };
 
     /** @override */
-    EXCloseAction.prototype.toString = function () {
-        return "[Object EXCloseAction]";
+    GCloseAction.prototype.toString = function () {
+        return "[Object GCloseAction]";
     };
 
-    _.EXCloseAction = EXCloseAction;
+    _.GCloseAction = GCloseAction;
 })(this);

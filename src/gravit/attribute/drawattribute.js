@@ -17,7 +17,7 @@
     GDrawAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GDrawAttribute.prototype._document = null;

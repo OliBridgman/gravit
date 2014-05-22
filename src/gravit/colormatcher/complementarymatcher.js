@@ -2,46 +2,46 @@
 
     /**
      * Complementary Color Matcher
-     * @class EXComplementaryMatcher
-     * @extends EXColorMatcher
+     * @class GComplementaryMatcher
+     * @extends GColorMatcher
      * @constructor
      */
-    function EXComplementaryMatcher() {
+    function GComplementaryMatcher() {
     };
-    IFObject.inherit(EXComplementaryMatcher, EXColorMatcher);
+    IFObject.inherit(GComplementaryMatcher, GColorMatcher);
 
-    EXComplementaryMatcher.TITLE = new IFLocale.Key(EXComplementaryMatcher, "title");
+    GComplementaryMatcher.TITLE = new IFLocale.Key(GComplementaryMatcher, "title");
 
     /** @override */
-    EXComplementaryMatcher.prototype.getTitle = function () {
-        return EXComplementaryMatcher.TITLE;
-    };
-
-    /** @override */
-    EXComplementaryMatcher.prototype.getCategory = function () {
-        return EXColorMatcher.CATEGORY_HARMONY;
+    GComplementaryMatcher.prototype.getTitle = function () {
+        return GComplementaryMatcher.TITLE;
     };
 
     /** @override */
-    EXComplementaryMatcher.prototype.init = function (htmlElement) {
+    GComplementaryMatcher.prototype.getCategory = function () {
+        return GColorMatcher.CATEGORY_HARMONY;
     };
 
     /** @override */
-    EXComplementaryMatcher.prototype.isReferenceColorBased = function () {
+    GComplementaryMatcher.prototype.init = function (htmlElement) {
+    };
+
+    /** @override */
+    GComplementaryMatcher.prototype.isReferenceColorBased = function () {
         return true;
     };
 
     /** @override */
-    EXComplementaryMatcher.prototype.match = function (referenceColor) {
+    GComplementaryMatcher.prototype.match = function (referenceColor) {
         var hsl = referenceColor.asHSL();
         hsl[0] = ifMath.normalizeAngleDegrees(hsl[0] + 180);
         return [new IFColor(IFColor.Type.HSL, hsl)];
     };
 
     /** @override */
-    EXComplementaryMatcher.prototype.toString = function () {
-        return "[Object EXComplementaryMatcher]";
+    GComplementaryMatcher.prototype.toString = function () {
+        return "[Object GComplementaryMatcher]";
     };
 
-    _.EXComplementaryMatcher = EXComplementaryMatcher;
+    _.GComplementaryMatcher = GComplementaryMatcher;
 })(this);

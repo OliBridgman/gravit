@@ -2,98 +2,98 @@
 
     /**
      * Base class for an palette
-     * @class EXPalette
+     * @class GPalette
      * @extends GEventTarget
      * @constructor
      */
-    function EXPalette() {
+    function GPalette() {
         this._documentStates = [];
     };
-    IFObject.inherit(EXPalette, GEventTarget);
+    IFObject.inherit(GPalette, GEventTarget);
 
-    EXPalette.GROUP_PROPERTIES = 'properties';
-    EXPalette.GROUP_COLOR = 'color';
+    GPalette.GROUP_PROPERTIES = 'properties';
+    GPalette.GROUP_COLOR = 'color';
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXPalette.UpdateEvent Event
+    // GPalette.UpdateEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the palette requires an update like changed
      * title or enabled status
-     * @class EXPalette.UpdateEvent
+     * @class GPalette.UpdateEvent
      * @extends GEvent
      * @constructor
      */
-    EXPalette.UpdateEvent = function () {
+    GPalette.UpdateEvent = function () {
     };
-    IFObject.inherit(EXPalette.UpdateEvent, GEvent);
+    IFObject.inherit(GPalette.UpdateEvent, GEvent);
 
     /** @override */
-    EXPalette.UpdateEvent.prototype.toString = function () {
-        return "[Object EXPalette.UpdateEvent]";
+    GPalette.UpdateEvent.prototype.toString = function () {
+        return "[Object GPalette.UpdateEvent]";
     };
 
-    EXPalette.UPDATE_EVENT = new EXPalette.UpdateEvent();
+    GPalette.UPDATE_EVENT = new GPalette.UpdateEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXPalette.DocumentState Class
+    // GPalette.DocumentState Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A class that keeps a Palette-State for each document
-     * @class EXPalette.DocumentState
+     * @class GPalette.DocumentState
      * @constructor
      */
-    EXPalette.DocumentState = function (document) {
+    GPalette.DocumentState = function (document) {
         this.document = document;
     };
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      */
-    EXPalette.DocumentState.prototype.document = null;
+    GPalette.DocumentState.prototype.document = null;
 
     /**
      * Called whenever this state gets activated
      */
-    EXPalette.DocumentState.prototype.activate = function () {
+    GPalette.DocumentState.prototype.activate = function () {
         // NO-OP
     };
 
     /**
      * Called whenever this state gets deactivated
      */
-    EXPalette.DocumentState.prototype.deactivate = function () {
+    GPalette.DocumentState.prototype.deactivate = function () {
         // NO-OP
     };
 
     /**
      * Called when this state gets initialized
      */
-    EXPalette.DocumentState.prototype.init = function () {
+    GPalette.DocumentState.prototype.init = function () {
         // NO-OP
     };
 
     /**
      * Called when this state gets released
      */
-    EXPalette.DocumentState.prototype.release = function () {
+    GPalette.DocumentState.prototype.release = function () {
         // NO-OP
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXPalette Class
+    // GPalette Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {Array<EXPalette.DocumentState>}
+     * @type {Array<GPalette.DocumentState>}
      * @private
      */
-    EXPalette.prototype._documentStates = null;
+    GPalette.prototype._documentStates = null;
 
     /**
      * Get the unique id of the palette.
      */
-    EXPalette.prototype.getId = function () {
+    GPalette.prototype.getId = function () {
         throw new Error("Not Supported");
     };
 
@@ -101,7 +101,7 @@
      * Get the title of the palette
      * @return {String|IFLocale.Key}
      */
-    EXPalette.prototype.getTitle = function () {
+    GPalette.prototype.getTitle = function () {
         throw new Error("Not Supported");
     };
 
@@ -109,7 +109,7 @@
      * Get the default group of the palette, null for none
      * @return {String}
      */
-    EXPalette.prototype.getGroup = function () {
+    GPalette.prototype.getGroup = function () {
         return null;
     };
 
@@ -118,7 +118,7 @@
      * @return {Array<Number>}
      * @version 1.0
      */
-    EXPalette.prototype.getShortcut = function () {
+    GPalette.prototype.getShortcut = function () {
         return null;
     };
 
@@ -129,7 +129,7 @@
      * of those needs to be manually managed by the palette.
      * @return {Boolean}
      */
-    EXPalette.prototype.isEnabled = function () {
+    GPalette.prototype.isEnabled = function () {
         return true;
     };
 
@@ -140,82 +140,82 @@
      * @param {GUIMenu} menu the menu
      * @version 1.0
      */
-    EXPalette.prototype.init = function (htmlElement, menu) {
-        gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
+    GPalette.prototype.init = function (htmlElement, menu) {
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
     };
 
     /**
      * Should create a new state for a given document if desired.
-     * @param {EXDocument} document
-     * @return {EXPalette.DocumentState}
+     * @param {GDocument} document
+     * @return {GPalette.DocumentState}
      * @private
      */
-    EXPalette.prototype._createDocumentState = function (document) {
+    GPalette.prototype._createDocumentState = function (document) {
         return null;
     };
 
     /**
      * Called whenever a given document state should be activated
-     * @param {EXPalette.DocumentState} state
+     * @param {GPalette.DocumentState} state
      * @private
      */
-    EXPalette.prototype._activateDocumentState = function (state) {
+    GPalette.prototype._activateDocumentState = function (state) {
         // NO-OP
     };
 
     /**
      * Called whenever a given document state should be deactivated
-     * @param {EXPalette.DocumentState} state
+     * @param {GPalette.DocumentState} state
      * @private
      */
-    EXPalette.prototype._deactivateDocumentState = function (state) {
+    GPalette.prototype._deactivateDocumentState = function (state) {
         // NO-OP
     };
 
     /**
-     * @param {EXApplication.DocumentEvent} event
+     * @param {GApplication.DocumentEvent} event
      * @private
      */
-    EXPalette.prototype._documentEvent = function (event) {
+    GPalette.prototype._documentEvent = function (event) {
         switch (event.type) {
-            case EXApplication.DocumentEvent.Type.Added:
+            case GApplication.DocumentEvent.Type.Added:
                 // Initiate a new state and add it
                 var state = this._createDocumentState(event.document);
                 if (state) {
                     state.init();
                     this._documentStates.push(state);
 
-                    this.trigger(EXPalette.UPDATE_EVENT);
+                    this.trigger(GPalette.UPDATE_EVENT);
                 }
                 break;
-            case EXApplication.DocumentEvent.Type.Removed:
+            case GApplication.DocumentEvent.Type.Removed:
                 // Find and release state
                 var state = this._findDocumentState(event.document);
                 if (state) {
                     state.release();
                     this._documentStates.splice(this._documentStates.indexOf(state), 1);
 
-                    this.trigger(EXPalette.UPDATE_EVENT);
+                    this.trigger(GPalette.UPDATE_EVENT);
                 }
                 break;
-            case EXApplication.DocumentEvent.Type.Activated:
+            case GApplication.DocumentEvent.Type.Activated:
                 // Find and activate state
                 var state = this._findDocumentState(event.document);
                 if (state) {
                     state.activate();
                     this._activateDocumentState(state);
 
-                    this.trigger(EXPalette.UPDATE_EVENT);
+                    this.trigger(GPalette.UPDATE_EVENT);
                 }
                 break;
-            case EXApplication.DocumentEvent.Type.Deactivated:
+            case GApplication.DocumentEvent.Type.Deactivated:
                 // Find and deactivate state
                 var state = this._findDocumentState(event.document);
                 if (state) {
                     state.deactivate();
                     this._deactivateDocumentState(state);
 
-                    this.trigger(EXPalette.UPDATE_EVENT);
+                    this.trigger(GPalette.UPDATE_EVENT);
                 }
                 break;
 
@@ -225,11 +225,11 @@
     };
 
     /**
-     * @param {EXDocument} document
-     * @return {EXPalette.DocumentState}
+     * @param {GDocument} document
+     * @return {GPalette.DocumentState}
      * @private
      */
-    EXPalette.prototype._findDocumentState = function (document) {
+    GPalette.prototype._findDocumentState = function (document) {
         for (var i = 0; i < this._documentStates.length; ++i) {
             if (this._documentStates[i].document === document) {
                 return this._documentStates[i];
@@ -238,9 +238,9 @@
     };
 
     /** @override */
-    EXPalette.prototype.toString = function () {
-        return "[Object EXPalette]";
+    GPalette.prototype.toString = function () {
+        return "[Object GPalette]";
     };
 
-    _.EXPalette = EXPalette;
+    _.GPalette = GPalette;
 })(this);

@@ -2,56 +2,56 @@
 
     /**
      * Action for fitting everything into the current view
-     * @class EXFitAllAction
+     * @class GFitAllAction
      * @extends GUIAction
      * @constructor
      */
-    function EXFitAllAction() {
+    function GFitAllAction() {
     };
-    IFObject.inherit(EXFitAllAction, GUIAction);
+    IFObject.inherit(GFitAllAction, GUIAction);
 
-    EXFitAllAction.ID = 'view.zoom.fit.all';
-    EXFitAllAction.TITLE = new IFLocale.Key(EXFitAllAction, "title");
+    GFitAllAction.ID = 'view.zoom.fit.all';
+    GFitAllAction.TITLE = new IFLocale.Key(GFitAllAction, "title");
 
     /**
      * @override
      */
-    EXFitAllAction.prototype.getId = function () {
-        return EXFitAllAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXFitAllAction.prototype.getTitle = function () {
-        return EXFitAllAction.TITLE;
+    GFitAllAction.prototype.getId = function () {
+        return GFitAllAction.ID;
     };
 
     /**
      * @override
      */
-    EXFitAllAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GFitAllAction.prototype.getTitle = function () {
+        return GFitAllAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXFitAllAction.prototype.getGroup = function () {
+    GFitAllAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GFitAllAction.prototype.getGroup = function () {
         return "zoom";
     };
 
     /**
      * @override
      */
-    EXFitAllAction.prototype.getShortcut = function () {
+    GFitAllAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, 'O'];
     };
 
     /**
      * @override
      */
-    EXFitAllAction.prototype.isEnabled = function () {
+    GFitAllAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         var paintBBox = document ? document.getScene().getPaintBBox() : null;
         return (paintBBox && !paintBBox.isEmpty());
@@ -60,15 +60,15 @@
     /**
      * @override
      */
-    EXFitAllAction.prototype.execute = function () {
+    GFitAllAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         document.getActiveWindow().getView().zoomAll(document.getScene().getPaintBBox(), false);
     };
 
     /** @override */
-    EXFitAllAction.prototype.toString = function () {
-        return "[Object EXFitAllAction]";
+    GFitAllAction.prototype.toString = function () {
+        return "[Object GFitAllAction]";
     };
 
-    _.EXFitAllAction = EXFitAllAction;
+    _.GFitAllAction = GFitAllAction;
 })(this);

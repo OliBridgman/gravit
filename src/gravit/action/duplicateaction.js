@@ -31,7 +31,7 @@
      * @override
      */
     GDuplicateAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**

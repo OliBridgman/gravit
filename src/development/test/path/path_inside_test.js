@@ -8,7 +8,7 @@
         //var page = resetDocumentWithMainPage();
         //page = null;
 
-        var wrapper = document.getElementById(EXApplication.Part.Windows.id);
+        var wrapper = document.getElementById(GApplication.Part.Windows.id);
         page.setProperties(['w'], [1400]);
         var width = 400;
         var height = 400;

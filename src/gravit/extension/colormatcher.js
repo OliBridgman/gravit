@@ -2,45 +2,45 @@
 
     /**
      * Base class for a color matcher
-     * @class EXColorMatcher
+     * @class GColorMatcher
      * @extends GEventTarget
      * @constructor
      */
-    function EXColorMatcher() {
+    function GColorMatcher() {
     };
-    IFObject.inherit(EXColorMatcher, GEventTarget);
+    IFObject.inherit(GColorMatcher, GEventTarget);
 
-    EXColorMatcher.CATEGORY_HARMONY = new IFLocale.Key(EXColorMatcher, "category.harmony");
-    EXColorMatcher.CATEGORY_PALETTE = new IFLocale.Key(EXColorMatcher, "category.palette");
+    GColorMatcher.CATEGORY_HARMONY = new IFLocale.Key(GColorMatcher, "category.harmony");
+    GColorMatcher.CATEGORY_PALETTE = new IFLocale.Key(GColorMatcher, "category.palette");
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXColorMatcher.MatchUpdateEvent Event
+    // GColorMatcher.MatchUpdateEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the matches are updated
-     * @class EXColorMatcher.MatchUpdateEvent
+     * @class GColorMatcher.MatchUpdateEvent
      * @extends GEvent
      * @constructor
      */
-    EXColorMatcher.MatchUpdateEvent = function () {
+    GColorMatcher.MatchUpdateEvent = function () {
     };
-    IFObject.inherit(EXColorMatcher.MatchUpdateEvent, GEvent);
+    IFObject.inherit(GColorMatcher.MatchUpdateEvent, GEvent);
 
     /** @override */
-    EXColorMatcher.MatchUpdateEvent.prototype.toString = function () {
-        return "[Object EXColorMatcher.MatchUpdateEvent]";
+    GColorMatcher.MatchUpdateEvent.prototype.toString = function () {
+        return "[Object GColorMatcher.MatchUpdateEvent]";
     };
 
-    EXColorMatcher.MATCH_UPDATE_EVENT = new EXColorMatcher.MatchUpdateEvent();
+    GColorMatcher.MATCH_UPDATE_EVENT = new GColorMatcher.MatchUpdateEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXColorMatcher Class
+    // GColorMatcher Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Get the title of the matcher
      * @return {String|IFLocale.Key}
      */
-    EXColorMatcher.prototype.getTitle = function () {
+    GColorMatcher.prototype.getTitle = function () {
         throw new Error("Not Supported");
     };
 
@@ -48,7 +48,7 @@
      * Get the category of the matcher
      * @return {String|IFLocale.Key}
      */
-    EXColorMatcher.prototype.getCategory = function () {
+    GColorMatcher.prototype.getCategory = function () {
         return null;
     };
 
@@ -56,7 +56,7 @@
      * Whether the matcher works on a given reference color or not
      * @return {Boolean}
      */
-    EXColorMatcher.prototype.isReferenceColorBased = function () {
+    GColorMatcher.prototype.isReferenceColorBased = function () {
         return false;
     };
 
@@ -64,7 +64,7 @@
      * Called to let the matcher initialize on a given panel
      * @param {HTMLDivElement} htmlElement the panel
      */
-    EXColorMatcher.prototype.init = function (htmlElement) {
+    GColorMatcher.prototype.init = function (htmlElement) {
         // NO-OP
     };
 
@@ -77,14 +77,14 @@
      * reference color based.
      * @return {Array<IFColor>}
      */
-    EXColorMatcher.prototype.match = function (referenceColor) {
+    GColorMatcher.prototype.match = function (referenceColor) {
         throw new Error("Not Supported");
     };
 
     /** @override */
-    EXColorMatcher.prototype.toString = function () {
-        return "[Object EXColorMatcher]";
+    GColorMatcher.prototype.toString = function () {
+        return "[Object GColorMatcher]";
     };
 
-    _.EXColorMatcher = EXColorMatcher;
+    _.GColorMatcher = GColorMatcher;
 })(this);

@@ -137,7 +137,7 @@
         }
 
         // Subscribe to some events
-        gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
         gApp.getToolManager().addEventListener(IFToolManager.ToolChangedEvent, this._toolChanged, this);
     };
 
@@ -163,20 +163,20 @@
     };
 
     /**
-     * @param {EXApplication.DocumentEvent} event
+     * @param {GApplication.DocumentEvent} event
      * @private
      */
     GToolbar.prototype._documentEvent = function (event) {
         switch (event.type) {
-            case EXApplication.DocumentEvent.Type.Activated:
+            case GApplication.DocumentEvent.Type.Activated:
                 this._registerDocument(event.document);
                 this._updateColorButtons();
                 break;
-            case EXApplication.DocumentEvent.Type.Deactivated:
+            case GApplication.DocumentEvent.Type.Deactivated:
                 this._unregisterDocument(event.document);
                 this._updateColorButtons();
                 break;
-            case EXApplication.DocumentEvent.Type.Removed:
+            case GApplication.DocumentEvent.Type.Removed:
                 this._updateColorButtons();
                 break;
 
@@ -186,7 +186,7 @@
     };
 
     /**
-     * @param {EXDocument} document
+     * @param {GDocument} document
      * @private
      */
     GToolbar.prototype._registerDocument = function (document) {
@@ -197,7 +197,7 @@
     };
 
     /**
-     * @param {EXDocument} document
+     * @param {GDocument} document
      * @private
      */
     GToolbar.prototype._unregisterDocument = function (document) {

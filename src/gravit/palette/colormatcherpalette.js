@@ -2,61 +2,61 @@
 
     /**
      * Color Matcher Palette
-     * @class EXColorMatcherPalette
-     * @extends EXPalette
+     * @class GColorMatcherPalette
+     * @extends GPalette
      * @constructor
      */
-    function EXColorMatcherPalette() {
-        EXPalette.call(this);
+    function GColorMatcherPalette() {
+        GPalette.call(this);
 
         this._matcherInfo = [];
     };
-    IFObject.inherit(EXColorMatcherPalette, EXPalette);
+    IFObject.inherit(GColorMatcherPalette, GPalette);
 
-    EXColorMatcherPalette.ID = "color-matcher";
-    EXColorMatcherPalette.TITLE = new IFLocale.Key(EXColorMatcherPalette, "title");
+    GColorMatcherPalette.ID = "color-matcher";
+    GColorMatcherPalette.TITLE = new IFLocale.Key(GColorMatcherPalette, "title");
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXColorMatcherPalette.prototype._htmlElement = null;
+    GColorMatcherPalette.prototype._htmlElement = null;
 
     /**
      * @type {GUIMenuButton}
      * @private
      */
-    EXColorMatcherPalette.prototype._colorMatcherButton = null;
+    GColorMatcherPalette.prototype._colorMatcherButton = null;
 
     /**
-     * @type {Array<{{panel: JQuery, matcher: EXColorMatcher}}>}
+     * @type {Array<{{panel: JQuery, matcher: GColorMatcher}}>}
      * @private
      */
-    EXColorMatcherPalette.prototype._matcherInfo = null;
+    GColorMatcherPalette.prototype._matcherInfo = null;
 
     /**
-     * @type {EXColorMatcher}
+     * @type {GColorMatcher}
      * @private
      */
-    EXColorMatcherPalette.prototype._matcher = null;
+    GColorMatcherPalette.prototype._matcher = null;
 
     /**
      * @type {IFColor}
      * @private
      */
-    EXColorMatcherPalette.prototype._currentColor = null;
+    GColorMatcherPalette.prototype._currentColor = null;
 
     /**
-     * @returns {EXColorMatcher}
+     * @returns {GColorMatcher}
      */
-    EXColorMatcherPalette.prototype.getMatcher = function () {
+    GColorMatcherPalette.prototype.getMatcher = function () {
         return this._matcher;
     };
 
     /**
-     * @param {EXColorMatcher} matcher
+     * @param {GColorMatcher} matcher
      */
-    EXColorMatcherPalette.prototype.setMatcher = function (matcher) {
+    GColorMatcherPalette.prototype.setMatcher = function (matcher) {
         if (matcher !== this._matcher) {
             if (this._matcher !== null) {
                 var matcherInfo = this._getMatcherInfo(this._matcher);
@@ -76,23 +76,23 @@
     };
 
     /** @override */
-    EXColorMatcherPalette.prototype.getId = function () {
-        return EXColorMatcherPalette.ID;
+    GColorMatcherPalette.prototype.getId = function () {
+        return GColorMatcherPalette.ID;
     };
 
     /** @override */
-    EXColorMatcherPalette.prototype.getTitle = function () {
-        return EXColorMatcherPalette.TITLE;
+    GColorMatcherPalette.prototype.getTitle = function () {
+        return GColorMatcherPalette.TITLE;
     };
 
     /** @override */
-    EXColorMatcherPalette.prototype.getGroup = function () {
-        return EXPalette.GROUP_COLOR;
+    GColorMatcherPalette.prototype.getGroup = function () {
+        return GPalette.GROUP_COLOR;
     };
 
     /** @override */
-    EXColorMatcherPalette.prototype.init = function (htmlElement, menu) {
-        EXPalette.prototype.init.call(this, htmlElement, menu);
+    GColorMatcherPalette.prototype.init = function (htmlElement, menu) {
+        GPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
 
@@ -135,7 +135,7 @@
             matcher.init(panel);
 
             // Register on update event
-            matcher.addEventListener(EXColorMatcher.MatchUpdateEvent, function () {
+            matcher.addEventListener(GColorMatcher.MatchUpdateEvent, function () {
                 if (this._matcher === matcher) {
                     this._updateMatches();
                 }
@@ -188,7 +188,7 @@
         this._updateFromGlobalColor();
 
         // Subscribe to global color change event
-        gApp.addEventListener(EXApplication.GlobalColorChangedEvent, function () {
+        gApp.addEventListener(GApplication.GlobalColorChangedEvent, function () {
             this._updateFromGlobalColor();
         }.bind(this));
     };
@@ -196,7 +196,7 @@
     /**
      * @private
      */
-    EXColorMatcherPalette.prototype._updateMatches = function () {
+    GColorMatcherPalette.prototype._updateMatches = function () {
         var palettePanel = this._htmlElement.find('.color-palette-panel');
         palettePanel.empty();
 
@@ -237,7 +237,7 @@
      * Update from current global color
      * @private
      */
-    EXColorMatcherPalette.prototype._updateFromGlobalColor = function () {
+    GColorMatcherPalette.prototype._updateFromGlobalColor = function () {
         // Update global color preview
         this._htmlElement.find('.color-preview [data-color-type="global"]').gColorSwatch('value', gApp.getGlobalColor());
 
@@ -251,7 +251,7 @@
      * Update the current color
      * @private
      */
-    EXColorMatcherPalette.prototype._updateCurrentColor = function (color) {
+    GColorMatcherPalette.prototype._updateCurrentColor = function (color) {
         if (!IFColor.equals(color, this._currentColor)) {
             this._currentColor = color;
 
@@ -261,11 +261,11 @@
     };
 
     /**
-     * @param {EXColorMatcher} matcher
+     * @param {GColorMatcher} matcher
      * @returns {*}
      * @private
      */
-    EXColorMatcherPalette.prototype._getMatcherInfo = function (matcher) {
+    GColorMatcherPalette.prototype._getMatcherInfo = function (matcher) {
         for (var i = 0; i < this._matcherInfo.length; ++i) {
             if (this._matcherInfo[i].matcher === matcher) {
                 return this._matcherInfo[i];
@@ -275,9 +275,9 @@
     };
 
     /** @override */
-    EXColorMatcherPalette.prototype.toString = function () {
-        return "[Object EXColorMatcherPalette]";
+    GColorMatcherPalette.prototype.toString = function () {
+        return "[Object GColorMatcherPalette]";
     };
 
-    _.EXColorMatcherPalette = EXColorMatcherPalette;
+    _.GColorMatcherPalette = GColorMatcherPalette;
 })(this);

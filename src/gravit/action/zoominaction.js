@@ -2,57 +2,57 @@
 
     /**
      * Action for zooming into the current view
-     * @class EXZoomInAction
+     * @class GZoomInAction
      * @extends GUIAction
      * @constructor
      */
-    function EXZoomInAction() {
+    function GZoomInAction() {
     };
-    IFObject.inherit(EXZoomInAction, GUIAction);
+    IFObject.inherit(GZoomInAction, GUIAction);
 
-    EXZoomInAction.ID = 'view.zoom.in';
-    EXZoomInAction.TITLE = new IFLocale.Key(EXZoomInAction, "title");
-    EXZoomInAction.ZOOM_STEP = 2.0;
+    GZoomInAction.ID = 'view.zoom.in';
+    GZoomInAction.TITLE = new IFLocale.Key(GZoomInAction, "title");
+    GZoomInAction.ZOOM_STEP = 2.0;
 
     /**
      * @override
      */
-    EXZoomInAction.prototype.getId = function () {
-        return EXZoomInAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXZoomInAction.prototype.getTitle = function () {
-        return EXZoomInAction.TITLE;
+    GZoomInAction.prototype.getId = function () {
+        return GZoomInAction.ID;
     };
 
     /**
      * @override
      */
-    EXZoomInAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW_MAGNIFICATION;
+    GZoomInAction.prototype.getTitle = function () {
+        return GZoomInAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXZoomInAction.prototype.getGroup = function () {
+    GZoomInAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW_MAGNIFICATION;
+    };
+
+    /**
+     * @override
+     */
+    GZoomInAction.prototype.getGroup = function () {
         return "zoom/magnification";
     };
 
     /**
      * @override
      */
-    EXZoomInAction.prototype.getShortcut = function () {
+    GZoomInAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, '+'];
     };
 
     /**
      * @override
      */
-    EXZoomInAction.prototype.isEnabled = function () {
+    GZoomInAction.prototype.isEnabled = function () {
         var window = gApp.getWindows().getActiveWindow();
         var view = window ? window.getView() : null;
         return view && view.getZoom() < IFView.options.maxZoomFactor;
@@ -61,17 +61,17 @@
     /**
      * @override
      */
-    EXZoomInAction.prototype.execute = function () {
+    GZoomInAction.prototype.execute = function () {
         var view = gApp.getWindows().getActiveWindow().getView();
-        var newZoom = view.getZoom() * EXZoomInAction.ZOOM_STEP;
+        var newZoom = view.getZoom() * GZoomInAction.ZOOM_STEP;
         var zoomPoint = view.getViewTransform().mapPoint(new GPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
         view.zoomAt(zoomPoint, newZoom);
     };
 
     /** @override */
-    EXZoomInAction.prototype.toString = function () {
-        return "[Object EXZoomInAction]";
+    GZoomInAction.prototype.toString = function () {
+        return "[Object GZoomInAction]";
     };
 
-    _.EXZoomInAction = EXZoomInAction;
+    _.GZoomInAction = GZoomInAction;
 })(this);

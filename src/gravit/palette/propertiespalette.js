@@ -2,65 +2,65 @@
 
     /**
      * Object Palette
-     * @class EXPropertiesPalette
-     * @extends EXPalette
+     * @class GPropertiesPalette
+     * @extends GPalette
      * @constructor
      */
-    function EXPropertiesPalette() {
-        EXPalette.call(this);
+    function GPropertiesPalette() {
+        GPalette.call(this);
         this._propertyPanels = [];
     }
 
-    IFObject.inherit(EXPropertiesPalette, EXPalette);
+    IFObject.inherit(GPropertiesPalette, GPalette);
 
-    EXPropertiesPalette.ID = "properties";
-    EXPropertiesPalette.TITLE = new IFLocale.Key(EXPropertiesPalette, "title");
+    GPropertiesPalette.ID = "properties";
+    GPropertiesPalette.TITLE = new IFLocale.Key(GPropertiesPalette, "title");
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXPropertiesPalette.DocumentState Class
+    // GPropertiesPalette.DocumentState Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @class EXPropertiesPalette.DocumentState
-     * @extends EXPalette.DocumentState
+     * @class GPropertiesPalette.DocumentState
+     * @extends GPalette.DocumentState
      * @constructor
      */
-    EXPropertiesPalette.DocumentState = function (document, propertyPanels) {
-        EXPalette.DocumentState.call(this, document);
+    GPropertiesPalette.DocumentState = function (document, propertyPanels) {
+        GPalette.DocumentState.call(this, document);
         this._propertyPanels = propertyPanels;
         this._objectTree = null;
     };
-    IFObject.inherit(EXPropertiesPalette.DocumentState, EXPalette.DocumentState);
+    IFObject.inherit(GPropertiesPalette.DocumentState, GPalette.DocumentState);
 
     /**
      * The property panels
-     * @type {Array<{{category: JQuery, panel: JQuery, properties: EXProperties}}>}
+     * @type {Array<{{category: JQuery, panel: JQuery, properties: GProperties}}>}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._propertyPanels = null;
+    GPropertiesPalette.DocumentState.prototype._propertyPanels = null;
 
     /**
      * The container for the object tree
      * @type {JQuery}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._objectTree = null;
+    GPropertiesPalette.DocumentState.prototype._objectTree = null;
 
     /**
      * A mapping of IFNode to Tree nodes
      * @type {Array<{{node: IFNode, treeId: String}}>}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._treeNodeMap = null;
+    GPropertiesPalette.DocumentState.prototype._treeNodeMap = null;
 
     /**
      * @type {Array<IFElement>}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._elements = null;
+    GPropertiesPalette.DocumentState.prototype._elements = null;
 
     /** @override */
-    EXPropertiesPalette.DocumentState.prototype.init = function () {
+    GPropertiesPalette.DocumentState.prototype.init = function () {
         var scene = this.document.getScene();
 
         // Subscribe to the document scene's events
@@ -71,7 +71,7 @@
     };
 
     /** @override */
-    EXPropertiesPalette.DocumentState.prototype.release = function () {
+    GPropertiesPalette.DocumentState.prototype.release = function () {
         var scene = this.document.getScene();
 
         // Unsubscribe from the document scene's events
@@ -82,7 +82,7 @@
     };
 
     /** @override */
-    EXPropertiesPalette.DocumentState.prototype.activate = function () {
+    GPropertiesPalette.DocumentState.prototype.activate = function () {
         if (!this._objectTree) {
             // First time activation
             this._objectTree = $('<div></div>')
@@ -114,7 +114,7 @@
     };
 
     /** @override */
-    EXPropertiesPalette.DocumentState.prototype.deactivate = function () {
+    GPropertiesPalette.DocumentState.prototype.deactivate = function () {
         var editor = this.document.getEditor();
 
         // Unsubscribe from the editor's events
@@ -133,7 +133,7 @@
      * @param {IFNode.AfterInsertEvent} event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._afterInsert = function (event) {
+    GPropertiesPalette.DocumentState.prototype._afterInsert = function (event) {
         if (event.node instanceof IFAttribute) {
             // Check if attribute is owned by any of our elements
             var ownerElement = event.node.getOwnerElement();
@@ -151,7 +151,7 @@
      * @param {IFNode.AfterRemoveEvent} event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._afterRemove = function (event) {
+    GPropertiesPalette.DocumentState.prototype._afterRemove = function (event) {
         if (event.node instanceof IFAttribute) {
             var treeNode = this._getTreeNode(event.node);
 
@@ -183,7 +183,7 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._afterPropertiesChange = function (event) {
+    GPropertiesPalette.DocumentState.prototype._afterPropertiesChange = function (event) {
         // TODO
     };
 
@@ -191,7 +191,7 @@
      * @param {IFNode.AfterFlagChangeEvent} event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._afterFlagChange = function (event) {
+    GPropertiesPalette.DocumentState.prototype._afterFlagChange = function (event) {
         // TODO
     };
 
@@ -201,7 +201,7 @@
      * or null if the actual move is not allowed
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
+    GPropertiesPalette.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
         // special case: no target means root element
         if (!target) {
             target = this._elements[0];
@@ -249,7 +249,7 @@
      * @param event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+    GPropertiesPalette.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
         // TODO : Support multiple elements drag'drop one day..
         if (this._elements.length > 1) {
             return null;
@@ -262,7 +262,7 @@
      * @param event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._moveTreeNode = function (event) {
+    GPropertiesPalette.DocumentState.prototype._moveTreeNode = function (event) {
         event.preventDefault();
 
         var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
@@ -296,7 +296,7 @@
      * @param event
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._clickTreeNode = function (event) {
+    GPropertiesPalette.DocumentState.prototype._clickTreeNode = function (event) {
         event.preventDefault();
 
         if (event.node) {
@@ -309,7 +309,7 @@
     /**
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
+    GPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
         var elements = this.document.getEditor().getSelection();
 
         // If there's no selection, select the scene
@@ -346,7 +346,7 @@
     };
 
     /** @private */
-    EXPropertiesPalette.DocumentState.prototype._updatePropertyPanels = function () {
+    GPropertiesPalette.DocumentState.prototype._updatePropertyPanels = function () {
         var activeNode = null;
         var selectedTreeNode = this._objectTree.tree('getSelectedNode');
         if (selectedTreeNode !== null && selectedTreeNode.id !== '#'/*root*/) {
@@ -383,7 +383,7 @@
     };
 
     /** @private */
-    EXPropertiesPalette.DocumentState.prototype._insertAttributeNode = function (attribute, select) {
+    GPropertiesPalette.DocumentState.prototype._insertAttributeNode = function (attribute, select) {
         var canAdd = true;
         var forceAddChildren = false;
 
@@ -475,7 +475,7 @@
      * @param {IFNode} node
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._updateNodeProperties = function (node) {
+    GPropertiesPalette.DocumentState.prototype._updateNodeProperties = function (node) {
         var treeNode = this._getTreeNode(node);
         if (treeNode) {
             this._objectTree.tree('updateNode', treeNode, {
@@ -490,7 +490,7 @@
      * @return {*}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._getTreeNodeId = function (node) {
+    GPropertiesPalette.DocumentState.prototype._getTreeNodeId = function (node) {
         for (var i = 0; i < this._treeNodeMap.length; ++i) {
             if (this._treeNodeMap[i].node === node) {
                 return this._treeNodeMap[i].treeId;
@@ -503,57 +503,57 @@
      * @return {*}
      * @private
      */
-    EXPropertiesPalette.DocumentState.prototype._getTreeNode = function (node) {
+    GPropertiesPalette.DocumentState.prototype._getTreeNode = function (node) {
         return this._objectTree.tree('getNodeById', this._getTreeNodeId(node));
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXPropertiesPalette Class
+    // GPropertiesPalette Class
     // -----------------------------------------------------------------------------------------------------------------    
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXPropertiesPalette.prototype._htmlElement = null;
+    GPropertiesPalette.prototype._htmlElement = null;
 
     /**
      * The property panels
-     * @type {Array<{{category: JQuery, panel: JQuery, properties: EXProperties}}>}
+     * @type {Array<{{category: JQuery, panel: JQuery, properties: GProperties}}>}
      * @private
      */
-    EXPropertiesPalette.prototype._propertyPanels = null;
+    GPropertiesPalette.prototype._propertyPanels = null;
 
     /** @override */
-    EXPropertiesPalette.prototype.getId = function () {
-        return EXPropertiesPalette.ID;
+    GPropertiesPalette.prototype.getId = function () {
+        return GPropertiesPalette.ID;
     };
 
     /** @override */
-    EXPropertiesPalette.prototype.getTitle = function () {
-        return EXPropertiesPalette.TITLE;
+    GPropertiesPalette.prototype.getTitle = function () {
+        return GPropertiesPalette.TITLE;
     };
 
     /** @override */
-    EXPropertiesPalette.prototype.getGroup = function () {
-        return EXPalette.GROUP_PROPERTIES;
+    GPropertiesPalette.prototype.getGroup = function () {
+        return GPalette.GROUP_PROPERTIES;
     };
 
     /**
      * @override
      */
-    EXPropertiesPalette.prototype.getShortcut = function () {
+    GPropertiesPalette.prototype.getShortcut = function () {
         return [IFKey.Constant.META, 'F3'];
     };
 
     /** @override */
-    EXPropertiesPalette.prototype.isEnabled = function () {
+    GPropertiesPalette.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /** @override */
-    EXPropertiesPalette.prototype.init = function (htmlElement, menu) {
-        EXPalette.prototype.init.call(this, htmlElement, menu);
+    GPropertiesPalette.prototype.init = function (htmlElement, menu) {
+        GPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
 
@@ -618,26 +618,26 @@
     };
 
     /** @override */
-    EXPropertiesPalette.prototype._createDocumentState = function (document) {
-        return new EXPropertiesPalette.DocumentState(document, this._propertyPanels);
+    GPropertiesPalette.prototype._createDocumentState = function (document) {
+        return new GPropertiesPalette.DocumentState(document, this._propertyPanels);
     };
 
     /** @override */
-    EXPropertiesPalette.prototype._activateDocumentState = function (state) {
+    GPropertiesPalette.prototype._activateDocumentState = function (state) {
         // Attach the state's tree to ourself
         state._objectTree.prependTo(this._htmlElement);
     };
 
     /** @override */
-    EXPropertiesPalette.prototype._deactivateDocumentState = function (state) {
+    GPropertiesPalette.prototype._deactivateDocumentState = function (state) {
         // Detach the state's tree from ourself
         state._objectTree.detach();
     };
 
     /** @override */
-    EXPropertiesPalette.prototype.toString = function () {
-        return "[Object EXPropertiesPalette]";
+    GPropertiesPalette.prototype.toString = function () {
+        return "[Object GPropertiesPalette]";
     };
 
-    _.EXPropertiesPalette = EXPropertiesPalette;
+    _.GPropertiesPalette = GPropertiesPalette;
 })(this);

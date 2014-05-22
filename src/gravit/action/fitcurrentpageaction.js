@@ -2,56 +2,56 @@
 
     /**
      * Action for fitting the current page into the current view
-     * @class EXFitCurrentPageAction
+     * @class GFitCurrentPageAction
      * @extends GUIAction
      * @constructor
      */
-    function EXFitCurrentPageAction() {
+    function GFitCurrentPageAction() {
     };
-    IFObject.inherit(EXFitCurrentPageAction, GUIAction);
+    IFObject.inherit(GFitCurrentPageAction, GUIAction);
 
-    EXFitCurrentPageAction.ID = 'view.zoom.fit-current-page';
-    EXFitCurrentPageAction.TITLE = new IFLocale.Key(EXFitCurrentPageAction, "title");
+    GFitCurrentPageAction.ID = 'view.zoom.fit-current-page';
+    GFitCurrentPageAction.TITLE = new IFLocale.Key(GFitCurrentPageAction, "title");
 
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.getId = function () {
-        return EXFitCurrentPageAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXFitCurrentPageAction.prototype.getTitle = function () {
-        return EXFitCurrentPageAction.TITLE;
+    GFitCurrentPageAction.prototype.getId = function () {
+        return GFitCurrentPageAction.ID;
     };
 
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GFitCurrentPageAction.prototype.getTitle = function () {
+        return GFitCurrentPageAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.getGroup = function () {
+    GFitCurrentPageAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GFitCurrentPageAction.prototype.getGroup = function () {
         return "zoom";
     };
 
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.getShortcut = function () {
+    GFitCurrentPageAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, IFKey.Constant.SHIFT, 'W'];
     };
 
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.isEnabled = function () {
+    GFitCurrentPageAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         var currentPage = document ? document.getEditor().getCurrentPage() : null;
 
@@ -61,15 +61,15 @@
     /**
      * @override
      */
-    EXFitCurrentPageAction.prototype.execute = function () {
+    GFitCurrentPageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         document.getActiveWindow().getView().zoomAll(document.getEditor().getCurrentPage().getPaintBBox(), false);
     };
 
     /** @override */
-    EXFitCurrentPageAction.prototype.toString = function () {
-        return "[Object EXFitCurrentPageAction]";
+    GFitCurrentPageAction.prototype.toString = function () {
+        return "[Object GFitCurrentPageAction]";
     };
 
-    _.EXFitCurrentPageAction = EXFitCurrentPageAction;
+    _.GFitCurrentPageAction = GFitCurrentPageAction;
 })(this);

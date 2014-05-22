@@ -3,13 +3,13 @@
     /**
      * Rectangle properties panel
      * @class GRectangleProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GRectangleProperties() {
         this._rectangles = [];
     };
-    IFObject.inherit(GRectangleProperties, EXProperties);
+    IFObject.inherit(GRectangleProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -18,7 +18,7 @@
     GRectangleProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GRectangleProperties.prototype._document = null;

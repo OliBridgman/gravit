@@ -3,50 +3,50 @@
     /**
      * Action importing a document
      * @param {IFExport} export_
-     * @class EXExportAction
+     * @class GExportAction
      * @extends GUIAction
      * @constructor
      */
-    function EXExportAction(export_) {
+    function GExportAction(export_) {
         this._export = export_;
     };
-    IFObject.inherit(EXExportAction, GUIAction);
+    IFObject.inherit(GExportAction, GUIAction);
 
-    EXExportAction.ID = 'file.export';
-    EXExportAction.TITLE = new IFLocale.Key(EXExportAction, "title");
+    GExportAction.ID = 'file.export';
+    GExportAction.TITLE = new IFLocale.Key(GExportAction, "title");
 
     /**
      * @override
      */
-    EXExportAction.prototype.getId = function () {
-        return EXExportAction.ID + '.' + this._export.getExtension();
+    GExportAction.prototype.getId = function () {
+        return GExportAction.ID + '.' + this._export.getExtension();
     };
 
     /**
      * @override
      */
-    EXExportAction.prototype.getTitle = function () {
-        return ifLocale.get(EXExportAction.TITLE).replace('%name%', ifLocale.get(this._export.getName()));
+    GExportAction.prototype.getTitle = function () {
+        return ifLocale.get(GExportAction.TITLE).replace('%name%', ifLocale.get(this._export.getName()));
     };
 
     /**
      * @override
      */
-    EXExportAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE_EXPORT;
+    GExportAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE_GPORT;
     };
 
     /**
      * @override
      */
-    EXExportAction.prototype.isEnabled = function () {
+    GExportAction.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
-    EXExportAction.prototype.execute = function () {
+    GExportAction.prototype.execute = function () {
         // TODO : Handle progress dialog
 
         var document = gApp.getActiveDocument();
@@ -59,9 +59,9 @@
     };
 
     /** @override */
-    EXExportAction.prototype.toString = function () {
-        return "[Object EXExportAction]";
+    GExportAction.prototype.toString = function () {
+        return "[Object GExportAction]";
     };
 
-    _.EXExportAction = EXExportAction;
+    _.GExportAction = GExportAction;
 })(this);

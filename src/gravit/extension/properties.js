@@ -2,19 +2,19 @@
 
     /**
      * Base class for properties
-     * @class EXProperties
+     * @class GProperties
      * @extends GEventTarget
      * @constructor
      */
-    function EXProperties() {
+    function GProperties() {
     };
-    IFObject.inherit(EXProperties, GEventTarget);
+    IFObject.inherit(GProperties, GEventTarget);
 
     /**
      * Called to return the category of the panel
      * @return {String|IFLocale.Key}
      */
-    EXProperties.prototype.getCategory = function () {
+    GProperties.prototype.getCategory = function () {
         throw new Error("Not Supported.");
     };
 
@@ -24,24 +24,24 @@
      * @param {JQuery} controls the controls panel to init on
      * @param {GUIMenu} menu the properties menu to init on
      */
-    EXProperties.prototype.init = function (panel, controls, menu) {
+    GProperties.prototype.init = function (panel, controls, menu) {
         throw new Error("Not Supported.");
     };
 
     /**
      * Called to update from an active node.
-     * @param {EXDocument} document the document to work on
+     * @param {GDocument} document the document to work on
      * @param {Array<IFElement>} elements array of elements, contains at least one
      * @param {IFNode} node the active node. May be null to indicate to work on elements
      */
-    EXProperties.prototype.updateFromNode = function (document, elements, node) {
+    GProperties.prototype.updateFromNode = function (document, elements, node) {
         throw new Error("Not Supported.");
     };
 
     /** @override */
-    EXProperties.prototype.toString = function () {
-        return "[Object EXProperties]";
+    GProperties.prototype.toString = function () {
+        return "[Object GProperties]";
     };
 
-    _.EXProperties = EXProperties;
+    _.GProperties = GProperties;
 })(this);

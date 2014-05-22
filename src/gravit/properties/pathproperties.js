@@ -3,13 +3,13 @@
     /**
      * Path properties panel
      * @class GPathProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GPathProperties() {
         this._pathes = [];
     };
-    IFObject.inherit(GPathProperties, EXProperties);
+    IFObject.inherit(GPathProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -18,7 +18,7 @@
     GPathProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPathProperties.prototype._document = null;

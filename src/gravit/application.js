@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * The global application class
-     * @class EXApplication
+     * @class GApplication
      * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
-    function EXApplication() {
+    function GApplication() {
         document.addEventListener("touchstart", this._touchHandler, true);
         document.addEventListener("touchmove", this._touchHandler, true);
         document.addEventListener("touchend", this._touchHandler, true);
@@ -42,25 +42,25 @@
         // Set default global color to white
         this._globalColor = new IFColor(IFColor.Type.White);
     };
-    IFObject.inherit(EXApplication, GEventTarget);
+    IFObject.inherit(GApplication, GEventTarget);
 
     // Constants for pre-defined action categories
-    EXApplication.CATEGORY_FILE = new IFLocale.Key(EXApplication, "category.file");
-    EXApplication.CATEGORY_FILE_OPEN = new IFLocale.Key(EXApplication, "category.file.open");
-    EXApplication.CATEGORY_FILE_SAVEAS = new IFLocale.Key(EXApplication, "category.file.saveas");
-    EXApplication.CATEGORY_FILE_IMPORT = new IFLocale.Key(EXApplication, "category.file.import");
-    EXApplication.CATEGORY_FILE_EXPORT = new IFLocale.Key(EXApplication, "category.file.export");
-    EXApplication.CATEGORY_EDIT = new IFLocale.Key(EXApplication, "category.edit");
-    EXApplication.CATEGORY_MODIFY = new IFLocale.Key(EXApplication, "category.modify");
-    EXApplication.CATEGORY_VIEW = new IFLocale.Key(EXApplication, "category.view");
-    EXApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(EXApplication, "category.view.magnification");
-    EXApplication.CATEGORY_WINDOW = new IFLocale.Key(EXApplication, "category.window");
-    EXApplication.CATEGORY_HELP = new IFLocale.Key(EXApplication, "category.help");
+    GApplication.CATEGORY_FILE = new IFLocale.Key(GApplication, "category.file");
+    GApplication.CATEGORY_FILE_OPEN = new IFLocale.Key(GApplication, "category.file.open");
+    GApplication.CATEGORY_FILE_SAVEAS = new IFLocale.Key(GApplication, "category.file.saveas");
+    GApplication.CATEGORY_FILE_IMPORT = new IFLocale.Key(GApplication, "category.file.import");
+    GApplication.CATEGORY_FILE_GPORT = new IFLocale.Key(GApplication, "category.file.export");
+    GApplication.CATEGORY_EDIT = new IFLocale.Key(GApplication, "category.edit");
+    GApplication.CATEGORY_MODIFY = new IFLocale.Key(GApplication, "category.modify");
+    GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");
+    GApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(GApplication, "category.view.magnification");
+    GApplication.CATEGORY_WINDOW = new IFLocale.Key(GApplication, "category.window");
+    GApplication.CATEGORY_HELP = new IFLocale.Key(GApplication, "category.help");
 
     /**
      * Visual parts of the application
      */
-    EXApplication.Part = {
+    GApplication.Part = {
         Header: {
             id: "header"
         },
@@ -79,25 +79,25 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXApplication.DocumentEvent Event
+    // GApplication.DocumentEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever a document event occurrs
-     * @class EXApplication.DocumentEvent
+     * @class GApplication.DocumentEvent
      * @extends GEvent
      * @constructor
      */
-    EXApplication.DocumentEvent = function (type, document) {
+    GApplication.DocumentEvent = function (type, document) {
         this.type = type;
         this.document = document;
     };
-    IFObject.inherit(EXApplication.DocumentEvent, GEvent);
+    IFObject.inherit(GApplication.DocumentEvent, GEvent);
 
     /**
      * Enumeration of view event types
      * @enum
      */
-    EXApplication.DocumentEvent.Type = {
+    GApplication.DocumentEvent.Type = {
         Added: 0,
         Removed: 1,
         Deactivated: 10,
@@ -106,122 +106,122 @@
     };
 
     /**
-     * @type {EXApplication.DocumentEvent.Type}
+     * @type {GApplication.DocumentEvent.Type}
      */
-    EXApplication.DocumentEvent.prototype.type = null;
+    GApplication.DocumentEvent.prototype.type = null;
 
     /**
      * The affected document
-     * @type {EXDocument}
+     * @type {GDocument}
      */
-    EXApplication.DocumentEvent.prototype.document = null;
+    GApplication.DocumentEvent.prototype.document = null;
 
     /** @override */
-    EXApplication.DocumentEvent.prototype.toString = function () {
-        return "[Object EXApplication.DocumentEvent]";
+    GApplication.DocumentEvent.prototype.toString = function () {
+        return "[Object GApplication.DocumentEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXApplication.GlobalColorChangedEvent Event
+    // GApplication.GlobalColorChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the global color has changed
-     * @class EXApplication.GlobalColorChangedEvent
+     * @class GApplication.GlobalColorChangedEvent
      * @extends GEvent
      * @constructor
      */
-    EXApplication.GlobalColorChangedEvent = function () {
+    GApplication.GlobalColorChangedEvent = function () {
     }
-    IFObject.inherit(EXApplication.GlobalColorChangedEvent, GEvent);
+    IFObject.inherit(GApplication.GlobalColorChangedEvent, GEvent);
 
     /** @override */
-    EXApplication.GlobalColorChangedEvent.prototype.toString = function () {
-        return "[Object EXApplication.GlobalColorChangedEvent]";
+    GApplication.GlobalColorChangedEvent.prototype.toString = function () {
+        return "[Object GApplication.GlobalColorChangedEvent]";
     };
 
-    EXApplication.GLOBAL_COLOR_CHANGED_EVENT = new EXApplication.GlobalColorChangedEvent();
+    GApplication.GLOBAL_COLOR_CHANGED_EVENT = new GApplication.GlobalColorChangedEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXApplication Class
+    // GApplication Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {boolean}
      * @private
      */
-    EXApplication.prototype._initialized = false;
+    GApplication.prototype._initialized = false;
 
     /**
      * @type {IFToolManager}
      * @private
      */
-    EXApplication.prototype._toolManager = null;
+    GApplication.prototype._toolManager = null;
 
     /**
      * @type {number}
      * @private
      */
-    EXApplication.prototype._documentUntitledCount = 0;
+    GApplication.prototype._documentUntitledCount = 0;
 
     /**
-     * @type {Array<EXDocument>}
+     * @type {Array<GDocument>}
      * @private
      */
-    EXApplication.prototype._documents = null;
+    GApplication.prototype._documents = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
-    EXApplication.prototype._activeDocument = null;
+    GApplication.prototype._activeDocument = null;
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXApplication.prototype._view = null;
+    GApplication.prototype._view = null;
 
     /**
      * @type {GHeader}
      * @private
      */
-    EXApplication.prototype._header = null;
+    GApplication.prototype._header = null;
 
     /**
      * @type {GToolbar}
      * @private
      */
-    EXApplication.prototype._toolbar = null;
+    GApplication.prototype._toolbar = null;
 
     /**
-     * @type {EXSidebar}
+     * @type {GSidebar}
      * @private
      */
-    EXApplication.prototype._sidebar = null;
+    GApplication.prototype._sidebar = null;
 
     /**
-     * @type {EXWindows}
+     * @type {GWindows}
      * @private
      */
-    EXApplication.prototype._windows = null;
+    GApplication.prototype._windows = null;
 
     /**
      * @type {GPalettes}
      * @private
      */
-    EXApplication.prototype._palettes = null;
+    GApplication.prototype._palettes = null;
 
     /**
      * @type {IFColor}
      * @private
      */
-    EXApplication.prototype._globalColor = null;
+    GApplication.prototype._globalColor = null;
 
     /**
      * @type {Number}
      * @private
      */
-    EXApplication.prototype._resizeTimerId = null;
+    GApplication.prototype._resizeTimerId = null;
 
 
     /**
@@ -229,41 +229,41 @@
      * @type {Array<GUIAction>}
      * @private
      */
-    EXApplication.prototype._actions = null;
+    GApplication.prototype._actions = null;
 
     /**
      * Application window shell menu
      * @type {*}
      * @private
      */
-    EXApplication.prototype._windowMenu = null;
+    GApplication.prototype._windowMenu = null;
 
     /**
-     * @type {Array<{window: EXWindow, item: *}>}
+     * @type {Array<{window: GWindow, item: *}>}
      * @private
      */
-    EXApplication.prototype._windowMenuMap = null;
+    GApplication.prototype._windowMenuMap = null;
 
     /**
      * @returns {IFToolManager}
      */
-    EXApplication.prototype.getToolManager = function () {
+    GApplication.prototype.getToolManager = function () {
         return this._toolManager;
     };
 
     /**
      * Returns a list of all opened documents
-     * @return {Array<EXDocument>}
+     * @return {Array<GDocument>}
      */
-    EXApplication.prototype.getDocuments = function () {
+    GApplication.prototype.getDocuments = function () {
         return this._documents;
     };
 
     /**
      * Returns the currently active document
-     * @return {EXDocument}
+     * @return {GDocument}
      */
-    EXApplication.prototype.getActiveDocument = function () {
+    GApplication.prototype.getActiveDocument = function () {
         return this._activeDocument ? this._activeDocument : null;
     };
 
@@ -271,7 +271,7 @@
      * Return access to the header
      * @returns {GHeader}
      */
-    EXApplication.prototype.getHeader = function () {
+    GApplication.prototype.getHeader = function () {
         return this._header;
     };
 
@@ -279,23 +279,23 @@
      * Return access to the toolbar
      * @returns {GToolbar}
      */
-    EXApplication.prototype.getToolbar = function () {
+    GApplication.prototype.getToolbar = function () {
         return this._toolbar;
     };
 
     /**
      * Return access to the sidebar
-     * @returns {EXSidebar}
+     * @returns {GSidebar}
      */
-    EXApplication.prototype.getSidebar = function () {
+    GApplication.prototype.getSidebar = function () {
         return this._sidebar;
     };
 
     /**
      * Return access to the window container
-     * @returns {EXWindows}
+     * @returns {GWindows}
      */
-    EXApplication.prototype.getWindows = function () {
+    GApplication.prototype.getWindows = function () {
         return this._windows;
     };
 
@@ -303,46 +303,46 @@
      * Return access to the palettes container
      * @returns {GPalettes}
      */
-    EXApplication.prototype.getPalettes = function () {
+    GApplication.prototype.getPalettes = function () {
         return this._palettes;
     };
 
     /**
      * @return {IFColor}
      */
-    EXApplication.prototype.getGlobalColor = function () {
+    GApplication.prototype.getGlobalColor = function () {
         return this._globalColor;
     };
 
     /**
      * @param {IFColor} color
      */
-    EXApplication.prototype.setGlobalColor = function (color) {
+    GApplication.prototype.setGlobalColor = function (color) {
         if (!IFColor.equals(color, this._globalColor)) {
             this._globalColor = color;
 
             // Trigger update event
-            if (this.hasEventListeners(EXApplication.GlobalColorChangedEvent)) {
-                this.trigger(EXApplication.GLOBAL_COLOR_CHANGED_EVENT);
+            if (this.hasEventListeners(GApplication.GlobalColorChangedEvent)) {
+                this.trigger(GApplication.GLOBAL_COLOR_CHANGED_EVENT);
             }
         }
     };
 
     /**
      * Checks if a given part is visible or not
-     * @param {EXApplication.Part} part the part to check for
+     * @param {GApplication.Part} part the part to check for
      * @returns {boolean} true if part is visible, false if not
      */
-    EXApplication.prototype.isPartVisible = function (part) {
+    GApplication.prototype.isPartVisible = function (part) {
         return this.getPart(part).css('display') !== 'none';
     };
 
     /**
      * Make a given part visible or not
-     * @param {EXApplication.Part} part the part
+     * @param {GApplication.Part} part the part
      * @param visible whether to make the part visible or not
      */
-    EXApplication.prototype.setPartVisible = function (part, visible) {
+    GApplication.prototype.setPartVisible = function (part, visible) {
         if (visible != this.isPartVisible(part)) {
             this.getPart(part).css('display', (visible ? 'block' : 'none'));
         }
@@ -350,10 +350,10 @@
 
     /**
      * Return reference to a given part
-     * @param {EXApplication.Part} part
+     * @param {GApplication.Part} part
      * @returns {JQuery}
      */
-    EXApplication.prototype.getPart = function (part) {
+    GApplication.prototype.getPart = function (part) {
         return this._view.find('#' + part.id);
     };
 
@@ -361,7 +361,7 @@
      * Get a list of all registered actions
      * @return {Array<GUIAction>} list of registered actions
      */
-    EXApplication.prototype.getActions = function () {
+    GApplication.prototype.getActions = function () {
         return this._actions;
     };
 
@@ -369,7 +369,7 @@
      * Get an action instance by it's given id
      * @param {String} id
      */
-    EXApplication.prototype.getAction = function (id) {
+    GApplication.prototype.getAction = function (id) {
         for (var i = 0; i < this._actions.length; ++i) {
             if (this._actions[i].getId() === id) {
                 return this._actions[i];
@@ -387,7 +387,7 @@
      * @param {Boolean} multiple whether to allow multiple file
      * selection, defaults to false
      */
-    EXApplication.prototype.openFile = function (done, multiple) {
+    GApplication.prototype.openFile = function (done, multiple) {
         var fileChooserInput = $('#appFileChooser');
 
         if (fileChooserInput.length === 0) {
@@ -427,7 +427,7 @@
      * for the document if no blob is assigned, defaults to null to use
      * the default naming scheme
      */
-    EXApplication.prototype.addDocument = function (source, temporaryTitle) {
+    GApplication.prototype.addDocument = function (source, temporaryTitle) {
         if (source instanceof IFBlob) {
             // Iterate all documents first and look if the given
             // blob is already opened and if so, activate the
@@ -467,19 +467,19 @@
     /**
      * Mark a given document as being the active one and activates
      * the first window for the document as well
-     * @param {EXDocument} document may be null to only deactivate the current one
+     * @param {GDocument} document may be null to only deactivate the current one
      * @param {boolean} [noWindowActivation] optional param that, if set, avoids
      * activating the corresponding window when the document gets activated
      */
-    EXApplication.prototype.activateDocument = function (document, noWindowActivation) {
+    GApplication.prototype.activateDocument = function (document, noWindowActivation) {
         if (document != this._activeDocument) {
             // Deactivate previous one if any
             if (this._activeDocument) {
                 if (this._activeDocument) {
                     this._activeDocument.deactivate();
 
-                    if (this.hasEventListeners(EXApplication.DocumentEvent)) {
-                        this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Deactivated, this._activeDocument));
+                    if (this.hasEventListeners(GApplication.DocumentEvent)) {
+                        this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Deactivated, this._activeDocument));
                     }
                 }
 
@@ -498,8 +498,8 @@
                 // Now assign the active document
                 this._activeDocument = document;
 
-                if (this.hasEventListeners(EXApplication.DocumentEvent)) {
-                    this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Activated, document));
+                if (this.hasEventListeners(GApplication.DocumentEvent)) {
+                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Activated, document));
                 }
             }
         }
@@ -507,9 +507,9 @@
 
     /**
      * Closes and removes a document and all of it's views
-     * @param {EXDocument} document
+     * @param {GDocument} document
      */
-    EXApplication.prototype.closeDocument = function (document) {
+    GApplication.prototype.closeDocument = function (document) {
         if (document._windows.length) {
             // Document has windows so remove them first which
             // will then trigger this function again
@@ -528,8 +528,8 @@
             // Remove and trigger event
             this._documents.splice(this._documents.indexOf(document), 1);
 
-            if (this.hasEventListeners(EXApplication.DocumentEvent)) {
-                this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Removed, document));
+            if (this.hasEventListeners(GApplication.DocumentEvent)) {
+                this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Removed, document));
             }
 
             // Execute welcome dialog if there're no documents available
@@ -545,7 +545,7 @@
      * @param {*} [args] optional args to be supplied to the action
      * @return {*} the result of the action if any
      */
-    EXApplication.prototype.executeAction = function (id, args) {
+    GApplication.prototype.executeAction = function (id, args) {
         var actionInstance = this.getAction(id);
 
         if (!actionInstance) {
@@ -566,7 +566,7 @@
     /**
      * Called to initialize the application
      */
-    EXApplication.prototype.init = function () {
+    GApplication.prototype.init = function () {
         var body = $('body');
 
         // Iterate modules and let each one initialize
@@ -582,35 +582,35 @@
 
         // Windows-Part
         var windowsPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Windows.id)
+            .attr('id', GApplication.Part.Windows.id)
             .appendTo(this._view);
 
-        this._windows = new EXWindows(windowsPart);
+        this._windows = new GWindows(windowsPart);
 
         // Header-Part
         var headerPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Header.id)
+            .attr('id', GApplication.Part.Header.id)
             .appendTo(this._view);
 
         this._header = new GHeader(headerPart);
 
         // Toolbar-Part
         var toolbarPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Toolbar.id)
+            .attr('id', GApplication.Part.Toolbar.id)
             .appendTo(this._view);
 
         this._toolbar = new GToolbar(toolbarPart);
 
         // Sidebar-Part
         var sidebarPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Sidebar.id)
+            .attr('id', GApplication.Part.Sidebar.id)
             .appendTo(this._view);
 
-        this._sidebar = new EXSidebar(sidebarPart);
+        this._sidebar = new GSidebar(sidebarPart);
 
         // Palettes-Part
         var palettesPart = $("<div></div>")
-            .attr('id', EXApplication.Part.Palettes.id)
+            .attr('id', GApplication.Part.Palettes.id)
             .appendTo(this._view);
 
         this._palettes = new GPalettes(palettesPart);
@@ -687,7 +687,7 @@
         this.relayout();
 
         // Subscribe to window events
-        this._windows.addEventListener(EXWindows.WindowEvent, this._windowEvent, this);
+        this._windows.addEventListener(GWindows.WindowEvent, this._windowEvent, this);
 
         // Execute welcome dialog if there're no documents available but
         // provide a slight timeout to ensure our window is properly resized
@@ -699,7 +699,7 @@
     /**
      * Called to relayout the application
      */
-    EXApplication.prototype.relayout = function () {
+    GApplication.prototype.relayout = function () {
         if (!this._initialized) {
             // ignore
             return;
@@ -711,24 +711,24 @@
             var rightOffset = 0;
             var bottomOffset = 0;
 
-            var headerPart = this.getPart(EXApplication.Part.Header);
-            topOffset += this.isPartVisible(EXApplication.Part.Header) ? headerPart.outerHeight() : 0;
+            var headerPart = this.getPart(GApplication.Part.Header);
+            topOffset += this.isPartVisible(GApplication.Part.Header) ? headerPart.outerHeight() : 0;
 
-            var toolbarPart = this.getPart(EXApplication.Part.Toolbar);
+            var toolbarPart = this.getPart(GApplication.Part.Toolbar);
             toolbarPart.css('top', topOffset.toString() + 'px');
             toolbarPart.height(this._view.height() - topOffset);
-            leftOffset += this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0;
+            leftOffset += this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0;
 
-            var sidebarPart = this.getPart(EXApplication.Part.Sidebar);
+            var sidebarPart = this.getPart(GApplication.Part.Sidebar);
             sidebarPart.css('top', topOffset.toString() + 'px');
-            sidebarPart.css('left', (this.isPartVisible(EXApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
+            sidebarPart.css('left', (this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
             sidebarPart.height(this._view.height() - topOffset);
-            leftOffset += this.isPartVisible(EXApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0;
+            leftOffset += this.isPartVisible(GApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0;
 
-            var palettesPart = this.getPart(EXApplication.Part.Palettes);
+            var palettesPart = this.getPart(GApplication.Part.Palettes);
             palettesPart.css('top', topOffset.toString() + 'px');
             palettesPart.height(this._view.height() - topOffset);
-            rightOffset += this.isPartVisible(EXApplication.Part.Palettes) ? palettesPart.outerWidth() : 0;
+            rightOffset += this.isPartVisible(GApplication.Part.Palettes) ? palettesPart.outerWidth() : 0;
 
             this._header.relayout();
             this._toolbar.relayout();
@@ -744,7 +744,7 @@
      * @param {Function} action an action to be executed when the
      * shortcut is called
      */
-    EXApplication.prototype.registerShortcut = function (shortcut, action) {
+    GApplication.prototype.registerShortcut = function (shortcut, action) {
         Mousetrap.bind(this._shortcutToMouseTrapShortcut(shortcut), function () {
             action();
             return false;
@@ -758,14 +758,14 @@
      * @param {String} [temporaryTitle]
      * @private
      */
-    EXApplication.prototype._addDocument = function (scene, blob, temporaryTitle) {
+    GApplication.prototype._addDocument = function (scene, blob, temporaryTitle) {
         // Initiate a new document instance
         // TODO : I18N
-        var document = new EXDocument(scene, blob, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
+        var document = new GDocument(scene, blob, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
 
         // Send an event
-        if (this.hasEventListeners(EXApplication.DocumentEvent)) {
-            this.trigger(new EXApplication.DocumentEvent(EXApplication.DocumentEvent.Type.Added, document));
+        if (this.hasEventListeners(GApplication.DocumentEvent)) {
+            this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Added, document));
         }
 
         // Add a window for the document making it activated by default
@@ -777,7 +777,7 @@
      * @param {Array<GUIAction>} actions
      * @private
      */
-    EXApplication.prototype._createMainMenu = function () {
+    GApplication.prototype._createMainMenu = function () {
         // Create our menu structure based on actions
         // TODO : Order given actions by category & group
 
@@ -844,7 +844,7 @@
                             type: 'menu',
                             caption: category,
                             items: [],
-                            windowMenu : EXApplication.CATEGORY_WINDOW === action.getCategory() &&
+                            windowMenu : GApplication.CATEGORY_WINDOW === action.getCategory() &&
                                 currentTree === treeRoot
                         };
                         _addItemGroupAndDivider(currentTree, item, group);
@@ -912,22 +912,22 @@
     };
 
     /**
-     * @param {EXWindows.WindowEvent} evt
+     * @param {GWindows.WindowEvent} evt
      * @private
      */
-    EXApplication.prototype._windowEvent = function (evt) {
+    GApplication.prototype._windowEvent = function (evt) {
         switch (evt.type) {
-            case EXWindows.WindowEvent.Type.Added:
+            case GWindows.WindowEvent.Type.Added:
                 this._addWindowMenuItem(evt.window);
                 break;
-            case EXWindows.WindowEvent.Type.Removed:
+            case GWindows.WindowEvent.Type.Removed:
                 this._removeWindowMenuItem(evt.window);
                 break;
-            case EXWindows.WindowEvent.Type.Activated:
+            case GWindows.WindowEvent.Type.Activated:
                 this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(evt.window.getView());
                 break;
-            case EXWindows.WindowEvent.Type.Deactivated:
+            case GWindows.WindowEvent.Type.Deactivated:
                 this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(null);
                 break;
@@ -937,10 +937,10 @@
     };
 
     /**
-     * @param {EXWindow} window
+     * @param {GWindow} window
      * @private
      */
-    EXApplication.prototype._addWindowMenuItem = function (window) {
+    GApplication.prototype._addWindowMenuItem = function (window) {
         this._windowMenuMap.push({
             window : window,
             item : gShell.addMenuItem(this._windowMenu, window.getTitle(), true, null, function () {
@@ -951,10 +951,10 @@
     };
 
     /**
-     * @param {EXWindow} window
+     * @param {GWindow} window
      * @private
      */
-    EXApplication.prototype._removeWindowMenuItem = function (window) {
+    GApplication.prototype._removeWindowMenuItem = function (window) {
         for (var i = 0; i < this._windowMenuMap.length; ++i) {
             var map = this._windowMenuMap[i];
             if (map.window === window) {
@@ -966,10 +966,10 @@
     };
 
     /**
-     * @param {EXWindow} window
+     * @param {GWindow} window
      * @private
      */
-    EXApplication.prototype._updateWindowMenuItem = function (window) {
+    GApplication.prototype._updateWindowMenuItem = function (window) {
         for (var i = 0; i < this._windowMenuMap.length; ++i) {
             var map = this._windowMenuMap[i];
             if (map.window === window) {
@@ -984,7 +984,7 @@
      * every further propagation to guarantee mouse events not being fired twice
      * @private
      */
-    EXApplication.prototype._touchHandler = function (event) {
+    GApplication.prototype._touchHandler = function (event) {
         // allow default multi-touch gestures to work
         if (event.touches.length > 1) {
             return;
@@ -1026,7 +1026,7 @@
      * @param {Array<*>} shortcut
      * @returns {String}
      */
-    EXApplication.prototype._shortcutToMouseTrapShortcut = function(shortcut) {
+    GApplication.prototype._shortcutToMouseTrapShortcut = function(shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
@@ -1148,5 +1148,5 @@
         return result;
     };
 
-    _.EXApplication = EXApplication;
+    _.GApplication = GApplication;
 })(this);

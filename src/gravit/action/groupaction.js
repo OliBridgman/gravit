@@ -31,7 +31,7 @@
      * @override
      */
     GGroupAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**

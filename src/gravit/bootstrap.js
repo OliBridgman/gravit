@@ -25,7 +25,7 @@ var gravit = {
     actions: [],
 
     /**
-     * Array<EXPalette>
+     * Array<GPalette>
      */
     palettes: [],
 
@@ -35,12 +35,12 @@ var gravit = {
     tools: [],
 
     /**
-     * Array<EXColorMatcher>
+     * Array<GColorMatcher>
      */
     colorMatchers: [],
 
     /**
-     * Array<EXProperties>
+     * Array<GProperties>
      */
     properties: [],
 
@@ -56,7 +56,7 @@ var gravit = {
 var gShell = null;
 
 /**
- * @type {EXApplication}
+ * @type {GApplication}
  */
 var gApp = null;
 
@@ -66,7 +66,7 @@ $(document).ready(function () {
         throw new Error("Shell needs to be initialized, first.");
     }
 
-    gApp = new EXApplication();
+    gApp = new GApplication();
     gShell.prepareLoad();
 });
 

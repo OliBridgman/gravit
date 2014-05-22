@@ -17,7 +17,7 @@
     GShadowAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GShadowAttribute.prototype._document = null;

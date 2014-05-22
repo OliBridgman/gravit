@@ -3,7 +3,7 @@
     /**
      * Attribute properties panel
      * @class GAttributeProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GAttributeProperties() {
@@ -11,7 +11,7 @@
         this._attributesInfo = [];
         this._assignAttributePropertiesHandler = this._assignAttributeProperties.bind(this);
     };
-    IFObject.inherit(GAttributeProperties, EXProperties);
+    IFObject.inherit(GAttributeProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -20,7 +20,7 @@
     GAttributeProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GAttributeProperties.prototype._document = null;

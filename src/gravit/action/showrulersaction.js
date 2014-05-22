@@ -2,69 +2,69 @@
 
     /**
      * Action for showing / hiding the rulers
-     * @class EXShowRulersAction
+     * @class GShowRulersAction
      * @extends GUIAction
      * @constructor
      */
-    function EXShowRulersAction() {
+    function GShowRulersAction() {
     };
-    IFObject.inherit(EXShowRulersAction, GUIAction);
+    IFObject.inherit(GShowRulersAction, GUIAction);
 
-    EXShowRulersAction.ID = 'view.show.rulers';
-    EXShowRulersAction.TITLE = new IFLocale.Key(EXShowRulersAction, "title");
+    GShowRulersAction.ID = 'view.show.rulers';
+    GShowRulersAction.TITLE = new IFLocale.Key(GShowRulersAction, "title");
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.getId = function () {
-        return EXShowRulersAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXShowRulersAction.prototype.getTitle = function () {
-        return EXShowRulersAction.TITLE;
+    GShowRulersAction.prototype.getId = function () {
+        return GShowRulersAction.ID;
     };
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GShowRulersAction.prototype.getTitle = function () {
+        return GShowRulersAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.getGroup = function () {
+    GShowRulersAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GShowRulersAction.prototype.getGroup = function () {
         return "guides";
     };
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.getShortcut = function () {
+    GShowRulersAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, IFKey.Constant.OPTION, 'R'];
     };
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.isEnabled = function () {
+    GShowRulersAction.prototype.isEnabled = function () {
         // TODO
         return false;
     };
 
     /** @override */
-    EXShowRulersAction.prototype.isCheckable = function () {
+    GShowRulersAction.prototype.isCheckable = function () {
         return true;
     };
 
     /**
      * @override
      */
-    EXShowRulersAction.prototype.isChecked = function () {
+    GShowRulersAction.prototype.isChecked = function () {
         // TODO
         return false;
     };
@@ -72,15 +72,15 @@
     /**
      * @override
      */
-    EXShowRulersAction.prototype.execute = function () {
+    GShowRulersAction.prototype.execute = function () {
         // TODO
         return false;
     };
 
     /** @override */
-    EXShowRulersAction.prototype.toString = function () {
-        return "[Object EXShowRulersAction]";
+    GShowRulersAction.prototype.toString = function () {
+        return "[Object GShowRulersAction]";
     };
 
-    _.EXShowRulersAction = EXShowRulersAction;
+    _.GShowRulersAction = GShowRulersAction;
 })(this);

@@ -2,56 +2,56 @@
 
     /**
      * Action saving a document
-     * @class EXSaveAction
+     * @class GSaveAction
      * @extends GUIAction
      * @constructor
      */
-    function EXSaveAction() {
+    function GSaveAction() {
     };
-    IFObject.inherit(EXSaveAction, GUIAction);
+    IFObject.inherit(GSaveAction, GUIAction);
 
-    EXSaveAction.ID = 'file.save';
-    EXSaveAction.TITLE = new IFLocale.Key(EXSaveAction, "title");
+    GSaveAction.ID = 'file.save';
+    GSaveAction.TITLE = new IFLocale.Key(GSaveAction, "title");
 
     /**
      * @override
      */
-    EXSaveAction.prototype.getId = function () {
-        return EXSaveAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXSaveAction.prototype.getTitle = function () {
-        return EXSaveAction.TITLE;
+    GSaveAction.prototype.getId = function () {
+        return GSaveAction.ID;
     };
 
     /**
      * @override
      */
-    EXSaveAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE;
+    GSaveAction.prototype.getTitle = function () {
+        return GSaveAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXSaveAction.prototype.getGroup = function () {
+    GSaveAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE;
+    };
+
+    /**
+     * @override
+     */
+    GSaveAction.prototype.getGroup = function () {
         return "file";
     };
 
     /**
      * @override
      */
-    EXSaveAction.prototype.getShortcut = function () {
+    GSaveAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, 'S'];
     };
 
     /**
      * @override
      */
-    EXSaveAction.prototype.isEnabled = function () {
+    GSaveAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         return document && document.isSaveable();
     };
@@ -59,14 +59,14 @@
     /**
      * @override
      */
-    EXSaveAction.prototype.execute = function () {
+    GSaveAction.prototype.execute = function () {
         gApp.getActiveDocument().save();
     };
 
     /** @override */
-    EXSaveAction.prototype.toString = function () {
-        return "[Object EXSaveAction]";
+    GSaveAction.prototype.toString = function () {
+        return "[Object GSaveAction]";
     };
 
-    _.EXSaveAction = EXSaveAction;
+    _.GSaveAction = GSaveAction;
 })(this);

@@ -3,13 +3,13 @@
     /**
      * Page properties panel
      * @class GPageProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GPageProperties() {
         this._pages = [];
     };
-    IFObject.inherit(GPageProperties, EXProperties);
+    IFObject.inherit(GPageProperties, GProperties);
 
     GPageProperties.SIZE_PRESETS = [
         {
@@ -89,7 +89,7 @@
     GPageProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPageProperties.prototype._document = null;

@@ -2,59 +2,59 @@
 
     /**
      * Dimension properties panel
-     * @class EXDimensionsProperties
-     * @extends EXProperties
+     * @class GDimensionsProperties
+     * @extends GProperties
      * @constructor
      */
-    function EXDimensionsProperties() {
+    function GDimensionsProperties() {
         this._elements = [];
     };
-    IFObject.inherit(EXDimensionsProperties, EXProperties);
+    IFObject.inherit(GDimensionsProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXDimensionsProperties.prototype._controls = null;
+    GDimensionsProperties.prototype._controls = null;
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXDimensionsProperties.prototype._panel = null;
+    GDimensionsProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
-    EXDimensionsProperties.prototype._document = null;
+    GDimensionsProperties.prototype._document = null;
 
     /**
      * @type {Array<IFElement>}
      * @private
      */
-    EXDimensionsProperties.prototype._elements = null;
+    GDimensionsProperties.prototype._elements = null;
 
     /**
      * @type {GRect}
      * @private
      */
-    EXDimensionsProperties.prototype._elementsBBox = null;
+    GDimensionsProperties.prototype._elementsBBox = null;
 
     /**
      * @type {GRect}
      * @private
      */
-    EXDimensionsProperties.prototype._firstElementsBBox = null;
+    GDimensionsProperties.prototype._firstElementsBBox = null;
 
     /** @override */
-    EXDimensionsProperties.prototype.getCategory = function () {
+    GDimensionsProperties.prototype.getCategory = function () {
         // TODO : I18N
         return 'Dimensions';
     };
 
     /** @override */
-    EXDimensionsProperties.prototype.init = function (panel, controls) {
+    GDimensionsProperties.prototype.init = function (panel, controls) {
         this._controls = controls;
         this._panel = panel;
 
@@ -131,7 +131,7 @@
     };
 
     /** @override */
-    EXDimensionsProperties.prototype.updateFromNode = function (document, elements, node) {
+    GDimensionsProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
             this._document = null;
@@ -166,7 +166,7 @@
      * @param {IFElement.GeometryChangeEvent} event
      * @private
      */
-    EXDimensionsProperties.prototype._geometryChange = function (event) {
+    GDimensionsProperties.prototype._geometryChange = function (event) {
         if ((event.type === IFElement.GeometryChangeEvent.Type.After) ||
             (event.type === IFElement.GeometryChangeEvent.Type.Child))
             if (this._elements.indexOf(event.element) >= 0) {
@@ -179,7 +179,7 @@
      * Defaults to false.
      * @private
      */
-    EXDimensionsProperties.prototype._updateDimensions = function (noBBoxCalculation) {
+    GDimensionsProperties.prototype._updateDimensions = function (noBBoxCalculation) {
         var _updateDimension = function (dimension, value) {
             this._panel.find('input[data-dimension="' + dimension + '"]').val(this._document.getScene().pointToString(value));
         }.bind(this);
@@ -222,7 +222,7 @@
     /**
      * @private
      */
-    EXDimensionsProperties.prototype._assignDimension = function (dimension, valueString) {
+    GDimensionsProperties.prototype._assignDimension = function (dimension, valueString) {
         var value = this._document.getScene().stringToPoint(valueString);
 
         // Check for invalid value and if it is invalid, reset dimension values and return here
@@ -277,9 +277,9 @@
     };
 
     /** @override */
-    EXDimensionsProperties.prototype.toString = function () {
-        return "[Object EXDimensionsProperties]";
+    GDimensionsProperties.prototype.toString = function () {
+        return "[Object GDimensionsProperties]";
     };
 
-    _.EXDimensionsProperties = EXDimensionsProperties;
+    _.GDimensionsProperties = GDimensionsProperties;
 })(this);

@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * An instance of an opened document
-     * @class EXDocument
+     * @class GDocument
      * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
-    function EXDocument(scene, blob, temporaryTitle) {
+    function GDocument(scene, blob, temporaryTitle) {
         this._blob = blob;
         this._scene = scene;
         this._editor = new IFEditor(scene);
@@ -15,55 +15,55 @@
         // TODO : I18N
         this._temporaryTitle = temporaryTitle;
     };
-    IFObject.inherit(EXDocument, GEventTarget);
+    IFObject.inherit(GDocument, GEventTarget);
 
     /**
      * The underlying scene
      * @type {IFScene}
      * @private
      */
-    EXDocument.prototype._scene = null;
+    GDocument.prototype._scene = null;
 
     /**
      * The underlying blob, may be null
      * @type {IFBlob}
      * @private
      */
-    EXDocument.prototype._blob = null;
+    GDocument.prototype._blob = null;
 
     /**
      * The underlying editor working on the document
      * @type {IFSceneEditor}
      * @private
      */
-    EXDocument.prototype._editor = null;
+    GDocument.prototype._editor = null;
 
     /**
      * The windows attached to the document
-     * @type {Array<EXWindow>}
+     * @type {Array<GWindow>}
      * @private
      */
-    EXDocument.prototype._windows = null;
+    GDocument.prototype._windows = null;
 
     /**
      * The currently active window of this document
-     * @type {EXWindow}
+     * @type {GWindow}
      * @private
      */
-    EXDocument.prototype._activeWindow = null;
+    GDocument.prototype._activeWindow = null;
 
     /**
      * The temporary title of no blob is assigned
      * @type {String}
      * @private
      */
-    EXDocument.prototype._temporaryTitle = null;
+    GDocument.prototype._temporaryTitle = null;
 
     /**
      * Returns the scene this document is working on
      * @returns {IFScene}
      */
-    EXDocument.prototype.getScene = function () {
+    GDocument.prototype.getScene = function () {
         return this._scene;
     };
 
@@ -71,7 +71,7 @@
      * Returns the blob this document is working on if any
      * @returns {IFBlob}
      */
-    EXDocument.prototype.getBlob = function () {
+    GDocument.prototype.getBlob = function () {
         return this._blob;
     };
 
@@ -79,7 +79,7 @@
      * Assigns a blob this document is working on
      * @param {IFBlob} blob
      */
-    EXDocument.prototype.setBlob = function (blob) {
+    GDocument.prototype.setBlob = function (blob) {
         if (blob && blob !== this.blob) {
             this._blob = blob;
 
@@ -91,23 +91,23 @@
      * Return the underlying editor
      * @returns {IFSceneEditor}
      */
-    EXDocument.prototype.getEditor = function () {
+    GDocument.prototype.getEditor = function () {
         return this._editor;
     };
 
     /**
      * Returns a list of all windows attached to this document
-     * @return {Array<EXWindow>}
+     * @return {Array<GWindow>}
      */
-    EXDocument.prototype.getWindows = function () {
+    GDocument.prototype.getWindows = function () {
         return this._windows;
     };
 
     /**
      * Returns the currently active window of this document
-     * @return {EXWindow}
+     * @return {GWindow}
      */
-    EXDocument.prototype.getActiveWindow = function () {
+    GDocument.prototype.getActiveWindow = function () {
         return this._activeWindow;
     };
 
@@ -115,7 +115,7 @@
      * Returns the title for the document
      * @return {String}
      */
-    EXDocument.prototype.getTitle = function () {
+    GDocument.prototype.getTitle = function () {
         if (this._blob) {
             return this._blob.getName();
         } else {
@@ -130,14 +130,14 @@
      * modifications.
      * @return {Boolean}
      */
-    EXDocument.prototype.isSaveable = function () {
+    GDocument.prototype.isSaveable = function () {
         return !!this._blob;
     };
 
     /**
      * Saves the document if it has an underlying blob
      */
-    EXDocument.prototype.save = function () {
+    GDocument.prototype.save = function () {
         // TODO : Reset undo list/set save point
         if (this._blob) {
             this._blob.store(IFNode.serialize(this._scene), false, 'binary', function () {
@@ -149,16 +149,16 @@
     /**
      * Called before this document gets activated
      */
-    EXDocument.prototype.activate = function () {
+    GDocument.prototype.activate = function () {
         // NO-OP
     };
 
     /**
      * Called before this document gets deactivated
      */
-    EXDocument.prototype.deactivate = function () {
+    GDocument.prototype.deactivate = function () {
         // NO-OP
     };
 
-    _.EXDocument = EXDocument;
+    _.GDocument = GDocument;
 })(this);

@@ -3,13 +3,13 @@
     /**
      * Ellipse properties panel
      * @class GEllipseProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GEllipseProperties() {
         this._ellipses = [];
     };
-    IFObject.inherit(GEllipseProperties, EXProperties);
+    IFObject.inherit(GEllipseProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -18,7 +18,7 @@
     GEllipseProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GEllipseProperties.prototype._document = null;

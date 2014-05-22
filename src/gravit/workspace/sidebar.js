@@ -1,11 +1,11 @@
 (function (_) {
     /**
      * The global idebar class
-     * @class EXSidebar
+     * @class GSidebar
      * @constructor
      * @version 1.0
      */
-    function EXSidebar(htmlElement) {
+    function GSidebar(htmlElement) {
         this._htmlElement = htmlElement;
         this._htmlElement.append($('<div></div>')
             .addClass('structure-tree-container'));
@@ -13,14 +13,14 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXSidebar.DocumentState Class
+    // GSidebar.DocumentState Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @class EXSidebar.DocumentState
+     * @class GSidebar.DocumentState
      * @constructor
      */
-    EXSidebar.DocumentState = function (document) {
+    GSidebar.DocumentState = function (document) {
         this.document = document;
 
         // Initiate our tree container widget
@@ -46,25 +46,25 @@
     };
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      */
-    EXSidebar.DocumentState.prototype.document = null;
+    GSidebar.DocumentState.prototype.document = null;
 
     /**
      * The container for the structure tree
      * @type {JQuery}
      * @private
      */
-    EXSidebar.DocumentState.prototype._htmlTreeContainer = null;
+    GSidebar.DocumentState.prototype._htmlTreeContainer = null;
 
     /**
      * A mapping of IFBlock to Tree nodes
      * @type {Array<{{block: IFBlock, treeId: String}}>}
      * @private
      */
-    EXSidebar.DocumentState.prototype._treeNodeMap = null;
+    GSidebar.DocumentState.prototype._treeNodeMap = null;
 
-    EXSidebar.DocumentState.prototype.init = function () {
+    GSidebar.DocumentState.prototype.init = function () {
         var scene = this.document.getScene();
 
         // Subscribe to the document scene's events
@@ -77,7 +77,7 @@
         this._insertBlock(scene);
     };
 
-    EXSidebar.DocumentState.prototype.release = function () {
+    GSidebar.DocumentState.prototype.release = function () {
         var scene = this.document.getScene();
 
         // Unsubscribe from the document scene's events
@@ -91,7 +91,7 @@
      * @param {IFNode.AfterInsertEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._afterInsert = function (event) {
+    GSidebar.DocumentState.prototype._afterInsert = function (event) {
         if (event.node instanceof IFBlock) {
             this._insertBlock(event.node);
         }
@@ -101,7 +101,7 @@
      * @param {IFNode.AfterRemoveEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._afterRemove = function (event) {
+    GSidebar.DocumentState.prototype._afterRemove = function (event) {
         if (event.node instanceof IFBlock) {
             var treeNode = this._getTreeNode(event.node);
 
@@ -128,7 +128,7 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._afterPropertiesChange = function (event) {
+    GSidebar.DocumentState.prototype._afterPropertiesChange = function (event) {
         if (event.node instanceof IFBlock) {
             this._updateBlockProperties(event.node);
         }
@@ -138,7 +138,7 @@
      * @param {IFNode.AfterFlagChangeEvent} event
      * @private
      */
-    EXSidebar.DocumentState.prototype._afterFlagChange = function (event) {
+    GSidebar.DocumentState.prototype._afterFlagChange = function (event) {
         if (event.node instanceof IFBlock) {
             this._updateBlockProperties(event.node);
         }
@@ -149,7 +149,7 @@
      * @return {*}
      * @private
      */
-    EXSidebar.DocumentState.prototype._getTreeNodeId = function (block) {
+    GSidebar.DocumentState.prototype._getTreeNodeId = function (block) {
         for (var i = 0; i < this._treeNodeMap.length; ++i) {
             if (this._treeNodeMap[i].block === block) {
                 return this._treeNodeMap[i].treeId;
@@ -162,14 +162,14 @@
      * @return {*}
      * @private
      */
-    EXSidebar.DocumentState.prototype._getTreeNode = function (block) {
+    GSidebar.DocumentState.prototype._getTreeNode = function (block) {
         return this._htmlTreeContainer.tree('getNodeById', this._getTreeNodeId(block));
     };
 
     /**
      * @private
      */
-    EXSidebar.DocumentState.prototype._createListItem = function (node, li) {
+    GSidebar.DocumentState.prototype._createListItem = function (node, li) {
         if (node.block) {
             var block = node.block;
             var scene = this.document.getScene();
@@ -196,7 +196,7 @@
      * or null if the actual move is not allowed
      * @private
      */
-    EXSidebar.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
+    GSidebar.DocumentState.prototype._getMoveTreeNodeInfo = function (position, source, target) {
         if (source && target && position !== 'none') {
             var parent = null;
             var before = null;
@@ -232,7 +232,7 @@
      * @param event
      * @private
      */
-    EXSidebar.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
+    GSidebar.DocumentState.prototype._canMoveTreeNode = function (moved_node, target_node, position) {
         return this._getMoveTreeNodeInfo(position, moved_node.block, target_node.block) !== null;
     };
 
@@ -240,7 +240,7 @@
      * @param event
      * @private
      */
-    EXSidebar.DocumentState.prototype._moveTreeNode = function (event) {
+    GSidebar.DocumentState.prototype._moveTreeNode = function (event) {
         event.preventDefault();
 
         var moveInfo = this._getMoveTreeNodeInfo(event.move_info.position,
@@ -263,7 +263,7 @@
      * @param event
      * @private
      */
-    EXSidebar.DocumentState.prototype._clickTreeNode = function (event) {
+    GSidebar.DocumentState.prototype._clickTreeNode = function (event) {
         event.preventDefault();
 
         if (event.node && event.node.block) {
@@ -277,7 +277,7 @@
      * @param {IFBlock} block
      * @private
      */
-    EXSidebar.DocumentState.prototype._updateBlockProperties = function (block) {
+    GSidebar.DocumentState.prototype._updateBlockProperties = function (block) {
         var treeNode = this._getTreeNode(block);
         if (treeNode) {
             this._htmlTreeContainer.tree('updateNode', treeNode, {
@@ -291,7 +291,7 @@
      * @param {IFBlock} block
      * @private
      */
-    EXSidebar.DocumentState.prototype._insertBlock = function (block) {
+    GSidebar.DocumentState.prototype._insertBlock = function (block) {
         // Recursively add blocks
         block.accept(function (node) {
             if (node instanceof IFBlock) {
@@ -320,48 +320,48 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXSidebar Class
+    // GSidebar Class
     // -----------------------------------------------------------------------------------------------------------------    
 
     /**
      * @type {HTMLDivElement}
      * @private
      */
-    EXSidebar.prototype._htmlElement = null;
+    GSidebar.prototype._htmlElement = null;
 
     /**
-     * @type {Array<EXSidebar.DocumentState>}
+     * @type {Array<GSidebar.DocumentState>}
      * @private
      */
-    EXSidebar.prototype._documentStates = null;
+    GSidebar.prototype._documentStates = null;
 
     /**
      * Called from the workspace to initialize
      */
-    EXSidebar.prototype.init = function () {
-        gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
+    GSidebar.prototype.init = function () {
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
     };
 
     /**
      * Called from the workspace to relayout
      */
-    EXSidebar.prototype.relayout = function () {
+    GSidebar.prototype.relayout = function () {
         // NO-OP
     };
 
     /**
-     * @param {EXApplication.DocumentEvent} event
+     * @param {GApplication.DocumentEvent} event
      * @private
      */
-    EXSidebar.prototype._documentEvent = function (event) {
+    GSidebar.prototype._documentEvent = function (event) {
         switch (event.type) {
-            case EXApplication.DocumentEvent.Type.Added:
+            case GApplication.DocumentEvent.Type.Added:
                 // Initiate a new state and add it
-                var state = new EXSidebar.DocumentState(event.document);
+                var state = new GSidebar.DocumentState(event.document);
                 state.init();
                 this._documentStates.push(state);
                 break;
-            case EXApplication.DocumentEvent.Type.Removed:
+            case GApplication.DocumentEvent.Type.Removed:
                 // Find and release state
                 var state = this._findDocumentState(event.document);
                 if (state) {
@@ -369,7 +369,7 @@
                     this._documentStates.splice(this._documentStates.indexOf(state), 1);
                 }
                 break;
-            case EXApplication.DocumentEvent.Type.Activated:
+            case GApplication.DocumentEvent.Type.Activated:
                 // Find and activate state
                 var state = this._findDocumentState(event.document);
                 if (state) {
@@ -378,7 +378,7 @@
                     state._htmlTreeContainer.appendTo(this._htmlElement.find('.structure-tree-container'));
                 }
                 break;
-            case EXApplication.DocumentEvent.Type.Deactivated:
+            case GApplication.DocumentEvent.Type.Deactivated:
                 // Find and deactivate state
                 var state = this._findDocumentState(event.document);
                 if (state) {
@@ -394,11 +394,11 @@
     };
 
     /**
-     * @param {EXDocument} document
-     * @return {EXSidebar.DocumentState}
+     * @param {GDocument} document
+     * @return {GSidebar.DocumentState}
      * @private
      */
-    EXSidebar.prototype._findDocumentState = function (document) {
+    GSidebar.prototype._findDocumentState = function (document) {
         for (var i = 0; i < this._documentStates.length; ++i) {
             if (this._documentStates[i].document === document) {
                 return this._documentStates[i];
@@ -406,5 +406,5 @@
         }
     };
 
-    _.EXSidebar = EXSidebar;
+    _.GSidebar = GSidebar;
 })(this);

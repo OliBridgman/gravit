@@ -2,56 +2,56 @@
 
     /**
      * Action for showing the shortcut map
-     * @class EXShortcutMapAction
+     * @class GShortcutMapAction
      * @extends GUIAction
      * @constructor
      */
-    function EXShortcutMapAction() {
+    function GShortcutMapAction() {
     };
-    IFObject.inherit(EXShortcutMapAction, GUIAction);
+    IFObject.inherit(GShortcutMapAction, GUIAction);
 
-    EXShortcutMapAction.ID = 'help.shortcutmap';
-    EXShortcutMapAction.TITLE = new IFLocale.Key(EXShortcutMapAction, "title");
+    GShortcutMapAction.ID = 'help.shortcutmap';
+    GShortcutMapAction.TITLE = new IFLocale.Key(GShortcutMapAction, "title");
 
     /**
      * @override
      */
-    EXShortcutMapAction.prototype.getId = function () {
-        return EXShortcutMapAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXShortcutMapAction.prototype.getTitle = function () {
-        return EXShortcutMapAction.TITLE;
+    GShortcutMapAction.prototype.getId = function () {
+        return GShortcutMapAction.ID;
     };
 
     /**
      * @override
      */
-    EXShortcutMapAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_HELP;
+    GShortcutMapAction.prototype.getTitle = function () {
+        return GShortcutMapAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXShortcutMapAction.prototype.getGroup = function () {
+    GShortcutMapAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_HELP;
+    };
+
+    /**
+     * @override
+     */
+    GShortcutMapAction.prototype.getGroup = function () {
         return "help";
     };
 
     /**
      * @override
      */
-    EXShortcutMapAction.prototype.isEnabled = function () {
+    GShortcutMapAction.prototype.isEnabled = function () {
         return true;
     };
 
     /**
      * @override
      */
-    EXShortcutMapAction.prototype.execute = function () {
+    GShortcutMapAction.prototype.execute = function () {
         var shortcutMaps = [
             {
                 // TODO : I18N
@@ -172,9 +172,9 @@
     };
 
     /** @override */
-    EXShortcutMapAction.prototype.toString = function () {
-        return "[Object EXShortcutMapAction]";
+    GShortcutMapAction.prototype.toString = function () {
+        return "[Object GShortcutMapAction]";
     };
 
-    _.EXShortcutMapAction = EXShortcutMapAction;
+    _.GShortcutMapAction = GShortcutMapAction;
 })(this);

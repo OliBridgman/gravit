@@ -17,7 +17,7 @@
     GPaintAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPaintAttribute.prototype._document = null;

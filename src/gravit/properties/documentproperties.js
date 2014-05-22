@@ -3,12 +3,12 @@
     /**
      * Document properties panel
      * @class GDocumentProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GDocumentProperties() {
     };
-    IFObject.inherit(GDocumentProperties, EXProperties);
+    IFObject.inherit(GDocumentProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -17,7 +17,7 @@
     GDocumentProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GDocumentProperties.prototype._document = null;

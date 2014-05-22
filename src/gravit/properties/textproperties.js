@@ -3,13 +3,13 @@
     /**
      * Text properties panel
      * @class GTextProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GTextProperties() {
         this._text = [];
     };
-    IFObject.inherit(GTextProperties, EXProperties);
+    IFObject.inherit(GTextProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -18,7 +18,7 @@
     GTextProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GTextProperties.prototype._document = null;

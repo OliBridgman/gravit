@@ -2,41 +2,41 @@
 
     /**
      * Polygon properties panel
-     * @class EXPolygonProperties
-     * @extends EXProperties
+     * @class GPolygonProperties
+     * @extends GProperties
      * @constructor
      */
-    function EXPolygonProperties() {
+    function GPolygonProperties() {
         this._polygons = [];
     };
-    IFObject.inherit(EXPolygonProperties, EXProperties);
+    IFObject.inherit(GPolygonProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXPolygonProperties.prototype._panel = null;
+    GPolygonProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
-    EXPolygonProperties.prototype._document = null;
+    GPolygonProperties.prototype._document = null;
 
     /**
      * @type {Array<IFPolygon>}
      * @private
      */
-    EXPolygonProperties.prototype._polygons = null;
+    GPolygonProperties.prototype._polygons = null;
 
     /** @override */
-    EXPolygonProperties.prototype.getCategory = function () {
+    GPolygonProperties.prototype.getCategory = function () {
         // TODO : I18N
         return 'Polygon';
     };
 
     /** @override */
-    EXPolygonProperties.prototype.init = function (panel, controls) {
+    GPolygonProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -219,7 +219,7 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
+    GPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
@@ -252,7 +252,7 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    EXPolygonProperties.prototype._afterPropertiesChange = function (event) {
+    GPolygonProperties.prototype._afterPropertiesChange = function (event) {
         // If properties of first polygon has changed then update ourself
         if (this._polygons.length > 0 && this._polygons[0] === event.node) {
             this._updateProperties();
@@ -262,7 +262,7 @@
     /**
      * @private
      */
-    EXPolygonProperties.prototype._updateProperties = function () {
+    GPolygonProperties.prototype._updateProperties = function () {
         // We'll always read properties of first polygon
         var polygon = this._polygons[0];
         this._panel.find('input[data-property="pts"]').val(polygon.getProperty('pts'));
@@ -288,7 +288,7 @@
      * @param {*} value
      * @private
      */
-    EXPolygonProperties.prototype._assignProperty = function (property, value) {
+    GPolygonProperties.prototype._assignProperty = function (property, value) {
         this._assignProperties([property], [value]);
     };
 
@@ -297,7 +297,7 @@
      * @param {Array<*>} values
      * @private
      */
-    EXPolygonProperties.prototype._assignProperties = function (properties, values) {
+    GPolygonProperties.prototype._assignProperties = function (properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
@@ -311,9 +311,9 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.toString = function () {
-        return "[Object EXPolygonProperties]";
+    GPolygonProperties.prototype.toString = function () {
+        return "[Object GPolygonProperties]";
     };
 
-    _.EXPolygonProperties = EXPolygonProperties;
+    _.GPolygonProperties = GPolygonProperties;
 })(this);

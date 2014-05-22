@@ -3,76 +3,76 @@
     /**
      * Action for showing / hiding a palette
      * @param {GPalette} palette the palette this action is bound to
-     * @class EXShowPaletteAction
+     * @class GShowPaletteAction
      * @extends GUIAction
      * @constructor
      */
-    function EXShowPaletteAction(palette) {
+    function GShowPaletteAction(palette) {
         this._palette = palette;
     };
-    IFObject.inherit(EXShowPaletteAction, GUIAction);
+    IFObject.inherit(GShowPaletteAction, GUIAction);
 
-    EXShowPaletteAction.ID = 'view.show.palette';
+    GShowPaletteAction.ID = 'view.show.palette';
 
     /**
      * @type {GPalette}
      * @private
      */
-    EXShowPaletteAction.prototype._palette = null;
+    GShowPaletteAction.prototype._palette = null;
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.getId = function () {
-        return EXShowPaletteAction.ID + '-' + this._palette.getId();
+    GShowPaletteAction.prototype.getId = function () {
+        return GShowPaletteAction.ID + '-' + this._palette.getId();
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.getTitle = function () {
+    GShowPaletteAction.prototype.getTitle = function () {
         return this._palette.getTitle();
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_WINDOW;
+    GShowPaletteAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_WINDOW;
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.getGroup = function () {
+    GShowPaletteAction.prototype.getGroup = function () {
         return "palette-" + (this._palette.getGroup() ? this._palette.getGroup() : "");
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.getShortcut = function () {
+    GShowPaletteAction.prototype.getShortcut = function () {
         return this._palette.getShortcut();
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.isEnabled = function () {
+    GShowPaletteAction.prototype.isEnabled = function () {
         return true;
     };
 
     /**
      * @override
      */
-    EXShowPaletteAction.prototype.execute = function () {
+    GShowPaletteAction.prototype.execute = function () {
         gApp.getPalettes().setPaletteActive(this._palette.getId(), !gApp.getPalettes().isPaletteActive(this._palette.getId()));
     };
 
     /** @override */
-    EXShowPaletteAction.prototype.toString = function () {
-        return "[Object EXShowPaletteAction]";
+    GShowPaletteAction.prototype.toString = function () {
+        return "[Object GShowPaletteAction]";
     };
 
-    _.EXShowPaletteAction = EXShowPaletteAction;
+    _.GShowPaletteAction = GShowPaletteAction;
 })(this);

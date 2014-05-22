@@ -2,56 +2,56 @@
 
     /**
      * Action for deleting the selection from the current document
-     * @class EXDeleteAction
+     * @class GDeleteAction
      * @extends GUIAction
      * @constructor
      */
-    function EXDeleteAction() {
+    function GDeleteAction() {
     };
-    IFObject.inherit(EXDeleteAction, GUIAction);
+    IFObject.inherit(GDeleteAction, GUIAction);
 
-    EXDeleteAction.ID = 'edit.delete';
-    EXDeleteAction.TITLE = new IFLocale.Key(EXDeleteAction, "title");
+    GDeleteAction.ID = 'edit.delete';
+    GDeleteAction.TITLE = new IFLocale.Key(GDeleteAction, "title");
 
     /**
      * @override
      */
-    EXDeleteAction.prototype.getId = function () {
-        return EXDeleteAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXDeleteAction.prototype.getTitle = function () {
-        return EXDeleteAction.TITLE;
+    GDeleteAction.prototype.getId = function () {
+        return GDeleteAction.ID;
     };
 
     /**
      * @override
      */
-    EXDeleteAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+    GDeleteAction.prototype.getTitle = function () {
+        return GDeleteAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXDeleteAction.prototype.getGroup = function () {
+    GDeleteAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_EDIT;
+    };
+
+    /**
+     * @override
+     */
+    GDeleteAction.prototype.getGroup = function () {
         return "ccp";
     };
 
     /**
      * @override
      */
-    EXDeleteAction.prototype.getShortcut = function () {
+    GDeleteAction.prototype.getShortcut = function () {
         return [IFKey.Constant.REMOVE];
     };
 
     /**
      * @override
      */
-    EXDeleteAction.prototype.isEnabled = function () {
+    GDeleteAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         return document && !!document.getEditor().getSelection();
     };
@@ -59,15 +59,15 @@
     /**
      * @override
      */
-    EXDeleteAction.prototype.execute = function () {
+    GDeleteAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
         editor.deleteSelection();
     };
 
     /** @override */
-    EXDeleteAction.prototype.toString = function () {
-        return "[Object EXDeleteAction]";
+    GDeleteAction.prototype.toString = function () {
+        return "[Object GDeleteAction]";
     };
 
-    _.EXDeleteAction = EXDeleteAction;
+    _.GDeleteAction = GDeleteAction;
 })(this);

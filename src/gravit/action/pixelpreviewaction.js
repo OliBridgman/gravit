@@ -2,54 +2,54 @@
 
     /**
      * Action for switching between pixel-mode and vector mode
-     * @class EXPixelPreviewAction
+     * @class GPixelPreviewAction
      * @extends GUIAction
      * @constructor
      */
-    function EXPixelPreviewAction() {
+    function GPixelPreviewAction() {
     };
-    IFObject.inherit(EXPixelPreviewAction, GUIAction);
+    IFObject.inherit(GPixelPreviewAction, GUIAction);
 
-    EXPixelPreviewAction.ID = 'view.pixel-preview';
-    EXPixelPreviewAction.TITLE = new IFLocale.Key(EXPixelPreviewAction, 'title');
+    GPixelPreviewAction.ID = 'view.pixel-preview';
+    GPixelPreviewAction.TITLE = new IFLocale.Key(GPixelPreviewAction, 'title');
 
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.getId = function () {
-        return EXPixelPreviewAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXPixelPreviewAction.prototype.getTitle = function () {
-        return EXPixelPreviewAction.TITLE;
+    GPixelPreviewAction.prototype.getId = function () {
+        return GPixelPreviewAction.ID;
     };
 
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GPixelPreviewAction.prototype.getTitle = function () {
+        return GPixelPreviewAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.getGroup = function () {
+    GPixelPreviewAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GPixelPreviewAction.prototype.getGroup = function () {
         return "view-render";
     };
 
     /** @override */
-    EXPixelPreviewAction.prototype.isCheckable = function () {
+    GPixelPreviewAction.prototype.isCheckable = function () {
         return true;
     };
 
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.isChecked = function () {
+    GPixelPreviewAction.prototype.isChecked = function () {
         var window = gApp.getWindows().getActiveWindow();
         if (window) {
             return window.getView().getViewConfiguration().pixelMode;
@@ -60,23 +60,23 @@
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.isEnabled = function () {
+    GPixelPreviewAction.prototype.isEnabled = function () {
         return !!gApp.getWindows().getActiveWindow();
     };
 
     /**
      * @override
      */
-    EXPixelPreviewAction.prototype.execute = function () {
+    GPixelPreviewAction.prototype.execute = function () {
         var view = gApp.getWindows().getActiveWindow().getView();
         view.getViewConfiguration().pixelMode = !view.getViewConfiguration().pixelMode;
         view.invalidate();
     };
 
     /** @override */
-    EXPixelPreviewAction.prototype.toString = function () {
-        return "[Object EXPixelPreviewAction]";
+    GPixelPreviewAction.prototype.toString = function () {
+        return "[Object GPixelPreviewAction]";
     };
 
-    _.EXPixelPreviewAction = EXPixelPreviewAction;
+    _.GPixelPreviewAction = GPixelPreviewAction;
 })(this);

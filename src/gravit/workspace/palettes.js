@@ -281,7 +281,7 @@
         this._palettesInfo.push(paletteInfo);
 
         // Add update listener to palette
-        palette.addEventListener(EXPalette.UpdateEvent, function () {
+        palette.addEventListener(GPalette.UpdateEvent, function () {
             this.setPaletteEnabled(palette.getId(), palette.isEnabled());
             // TODO : Update title, shortcut, etc.
         }.bind(this));

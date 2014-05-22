@@ -3,43 +3,43 @@
     /**
      * Action importing a document
      * @param {IFImport} import_
-     * @class EXImportAction
+     * @class GImportAction
      * @extends GUIAction
      * @constructor
      */
-    function EXImportAction(import_) {
+    function GImportAction(import_) {
         this._import = import_;
     };
-    IFObject.inherit(EXImportAction, GUIAction);
+    IFObject.inherit(GImportAction, GUIAction);
 
-    EXImportAction.ID = 'file.import';
-    EXImportAction.TITLE = new IFLocale.Key(EXImportAction, "title");
+    GImportAction.ID = 'file.import';
+    GImportAction.TITLE = new IFLocale.Key(GImportAction, "title");
 
     /**
      * @override
      */
-    EXImportAction.prototype.getId = function () {
-        return EXImportAction.ID + '.' + this._import.getExtensions().join('-');
+    GImportAction.prototype.getId = function () {
+        return GImportAction.ID + '.' + this._import.getExtensions().join('-');
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.getTitle = function () {
-        return ifLocale.get(EXImportAction.TITLE).replace('%name%', ifLocale.get(this._import.getName()));
+    GImportAction.prototype.getTitle = function () {
+        return ifLocale.get(GImportAction.TITLE).replace('%name%', ifLocale.get(this._import.getName()));
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE_IMPORT;
+    GImportAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE_IMPORT;
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.execute = function () {
+    GImportAction.prototype.execute = function () {
         // TODO : Handle progress dialog & failure
 
         gApp.openFile(function (file) {
@@ -66,9 +66,9 @@
     };
 
     /** @override */
-    EXImportAction.prototype.toString = function () {
-        return "[Object EXImportAction]";
+    GImportAction.prototype.toString = function () {
+        return "[Object GImportAction]";
     };
 
-    _.EXImportAction = EXImportAction;
+    _.GImportAction = GImportAction;
 })(this);

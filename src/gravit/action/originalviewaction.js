@@ -2,72 +2,72 @@
 
     /**
      * Action for reseting the current view to the original view
-     * @class EXOriginalViewAction
+     * @class GOriginalViewAction
      * @extends GUIAction
      * @constructor
      */
-    function EXOriginalViewAction() {
+    function GOriginalViewAction() {
     };
-    IFObject.inherit(EXOriginalViewAction, GUIAction);
+    IFObject.inherit(GOriginalViewAction, GUIAction);
 
-    EXOriginalViewAction.ID = 'view.zoom.original';
-    EXOriginalViewAction.TITLE = new IFLocale.Key(EXOriginalViewAction, "title");
+    GOriginalViewAction.ID = 'view.zoom.original';
+    GOriginalViewAction.TITLE = new IFLocale.Key(GOriginalViewAction, "title");
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.getId = function () {
-        return EXOriginalViewAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXOriginalViewAction.prototype.getTitle = function () {
-        return EXOriginalViewAction.TITLE;
+    GOriginalViewAction.prototype.getId = function () {
+        return GOriginalViewAction.ID;
     };
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GOriginalViewAction.prototype.getTitle = function () {
+        return GOriginalViewAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.getGroup = function () {
+    GOriginalViewAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GOriginalViewAction.prototype.getGroup = function () {
         return "zoom";
     };
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.getShortcut = function () {
+    GOriginalViewAction.prototype.getShortcut = function () {
         return [IFKey.Constant.META, '0'];
     };
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.isEnabled = function () {
+    GOriginalViewAction.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
-    EXOriginalViewAction.prototype.execute = function () {
+    GOriginalViewAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var paintBBox = document.getScene().getPaintBBox();
         document.getActiveWindow().getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(GRect.Side.CENTER) : new GPoint(0, 0), 1.0);
     };
 
     /** @override */
-    EXOriginalViewAction.prototype.toString = function () {
-        return "[Object EXOriginalViewAction]";
+    GOriginalViewAction.prototype.toString = function () {
+        return "[Object GOriginalViewAction]";
     };
 
-    _.EXOriginalViewAction = EXOriginalViewAction;
+    _.GOriginalViewAction = GOriginalViewAction;
 })(this);

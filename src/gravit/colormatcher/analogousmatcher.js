@@ -2,37 +2,37 @@
 
     /**
      * Analogous Color Matcher
-     * @class EXAnalogousMatcher
-     * @extends EXColorMatcher
+     * @class GAnalogousMatcher
+     * @extends GColorMatcher
      * @constructor
      */
-    function EXAnalogousMatcher() {
+    function GAnalogousMatcher() {
     };
-    IFObject.inherit(EXAnalogousMatcher, EXColorMatcher);
+    IFObject.inherit(GAnalogousMatcher, GColorMatcher);
 
-    EXAnalogousMatcher.TITLE = new IFLocale.Key(EXAnalogousMatcher, "title");
+    GAnalogousMatcher.TITLE = new IFLocale.Key(GAnalogousMatcher, "title");
 
     /** @override */
-    EXAnalogousMatcher.prototype.getTitle = function () {
-        return EXAnalogousMatcher.TITLE;
-    };
-
-    /** @override */
-    EXAnalogousMatcher.prototype.getCategory = function () {
-        return EXColorMatcher.CATEGORY_HARMONY;
+    GAnalogousMatcher.prototype.getTitle = function () {
+        return GAnalogousMatcher.TITLE;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.init = function (htmlElement) {
+    GAnalogousMatcher.prototype.getCategory = function () {
+        return GColorMatcher.CATEGORY_HARMONY;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.isReferenceColorBased = function () {
+    GAnalogousMatcher.prototype.init = function (htmlElement) {
+    };
+
+    /** @override */
+    GAnalogousMatcher.prototype.isReferenceColorBased = function () {
         return true;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.match = function (referenceColor) {
+    GAnalogousMatcher.prototype.match = function (referenceColor) {
         var result = [];
         var hslLeft = referenceColor.asHSL();
         var hslRight = hslLeft.slice();
@@ -49,9 +49,9 @@
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.toString = function () {
-        return "[Object EXAnalogousMatcher]";
+    GAnalogousMatcher.prototype.toString = function () {
+        return "[Object GAnalogousMatcher]";
     };
 
-    _.EXAnalogousMatcher = EXAnalogousMatcher;
+    _.GAnalogousMatcher = GAnalogousMatcher;
 })(this);

@@ -2,22 +2,22 @@
 
     /**
      * Color Mixer Palette
-     * @class EXColorMixerPalette
-     * @extends EXPalette
+     * @class GColorMixerPalette
+     * @extends GPalette
      * @constructor
      */
-    function EXColorMixerPalette() {
-        EXPalette.call(this);
+    function GColorMixerPalette() {
+        GPalette.call(this);
     };
-    IFObject.inherit(EXColorMixerPalette, EXPalette);
+    IFObject.inherit(GColorMixerPalette, GPalette);
 
-    EXColorMixerPalette.ID = "color-mixer";
-    EXColorMixerPalette.TITLE = new IFLocale.Key(EXColorMixerPalette, "title");
+    GColorMixerPalette.ID = "color-mixer";
+    GColorMixerPalette.TITLE = new IFLocale.Key(GColorMixerPalette, "title");
 
     /**
      * @private
      */
-    EXColorMixerPalette._Modes = [
+    GColorMixerPalette._Modes = [
         {
             id: 'cmyk',
             name: 'CMYK',
@@ -230,34 +230,34 @@
      * @type {JQuery}
      * @private
      */
-    EXColorMixerPalette.prototype._htmlElement = null;
+    GColorMixerPalette.prototype._htmlElement = null;
 
     /**
      * @type {*}
      * @private
      */
-    EXColorMixerPalette.prototype._modeInfo = null;
+    GColorMixerPalette.prototype._modeInfo = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    EXColorMixerPalette.prototype._noPreviousColorUpdate = false;
+    GColorMixerPalette.prototype._noPreviousColorUpdate = false;
 
     /**
      * @returns {string}
      */
-    EXColorMixerPalette.prototype.getMode = function () {
+    GColorMixerPalette.prototype.getMode = function () {
         return this._mode;
     };
 
     /**
      * @returns {string}
      */
-    EXColorMixerPalette.prototype.setMode = function (mode) {
+    GColorMixerPalette.prototype.setMode = function (mode) {
         if (!this._modeInfo || mode !== this._modeInfo.id) {
-            for (var i = 0; i < EXColorMixerPalette._Modes.length; ++i) {
-                var modeInfo = EXColorMixerPalette._Modes[i];
+            for (var i = 0; i < GColorMixerPalette._Modes.length; ++i) {
+                var modeInfo = GColorMixerPalette._Modes[i];
                 if (modeInfo.id === mode) {
                     this._modeInfo = modeInfo;
 
@@ -310,30 +310,30 @@
     };
 
     /** @override */
-    EXColorMixerPalette.prototype.getId = function () {
-        return EXColorMixerPalette.ID;
+    GColorMixerPalette.prototype.getId = function () {
+        return GColorMixerPalette.ID;
     };
 
     /** @override */
-    EXColorMixerPalette.prototype.getTitle = function () {
-        return EXColorMixerPalette.TITLE;
+    GColorMixerPalette.prototype.getTitle = function () {
+        return GColorMixerPalette.TITLE;
     };
 
     /** @override */
-    EXColorMixerPalette.prototype.getGroup = function () {
-        return EXPalette.GROUP_COLOR;
+    GColorMixerPalette.prototype.getGroup = function () {
+        return GPalette.GROUP_COLOR;
     };
 
     /**
      * @override
      */
-    EXColorMixerPalette.prototype.getShortcut = function () {
+    GColorMixerPalette.prototype.getShortcut = function () {
         return [IFKey.Constant.SHIFT, 'F9'];
     };
 
     /** @override */
-    EXColorMixerPalette.prototype.init = function (htmlElement, menu) {
-        EXPalette.prototype.init.call(this, htmlElement, menu);
+    GColorMixerPalette.prototype.init = function (htmlElement, menu) {
+        GPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
 
@@ -387,8 +387,8 @@
             .appendTo(toolbar);
 
         // Initiate component modes
-        for (var i = 0; i < EXColorMixerPalette._Modes.length; ++i) {
-            var _modeInfo = EXColorMixerPalette._Modes[i];
+        for (var i = 0; i < GColorMixerPalette._Modes.length; ++i) {
+            var _modeInfo = GColorMixerPalette._Modes[i];
             $('<button></button>')
                 .attr('data-mode-id', _modeInfo.id)
                 .text(_modeInfo.name)
@@ -432,22 +432,22 @@
         this._updateFromGlobalColor(true);
 
         // Subscribe to global color change event
-        gApp.addEventListener(EXApplication.GlobalColorChangedEvent, function () {
+        gApp.addEventListener(GApplication.GlobalColorChangedEvent, function () {
             this._updateFromGlobalColor(!this._noPreviousColorUpdate);
         }.bind(this));
     };
 
     /** @override */
-    EXColorMixerPalette.prototype._createDocumentState = function (document) {
+    GColorMixerPalette.prototype._createDocumentState = function (document) {
         // Return dummy state for now to retrieve state updates
-        return new EXPalette.DocumentState(document);
+        return new GPalette.DocumentState(document);
     };
 
     /**
      * Update current global color from components
      * @private
      */
-    EXColorMixerPalette.prototype._updateToGlobalColor = function (color) {
+    GColorMixerPalette.prototype._updateToGlobalColor = function (color) {
         // Collect component values / correct them for current mode
         var components = [];
         for (var i = 0; i < this._modeInfo.components.length; ++i) {
@@ -483,7 +483,7 @@
      * Update components from current global color
      * @private
      */
-    EXColorMixerPalette.prototype._updateFromGlobalColor = function (updatePrevious) {
+    GColorMixerPalette.prototype._updateFromGlobalColor = function (updatePrevious) {
         var globalColor = gApp.getGlobalColor();
 
         // TODO !!! Take CMS into account !!!
@@ -545,9 +545,9 @@
     };
 
     /** @override */
-    EXColorMixerPalette.prototype.toString = function () {
-        return "[Object EXColorMixerPalette]";
+    GColorMixerPalette.prototype.toString = function () {
+        return "[Object GColorMixerPalette]";
     };
 
-    _.EXColorMixerPalette = EXColorMixerPalette;
+    _.GColorMixerPalette = GColorMixerPalette;
 })(this);

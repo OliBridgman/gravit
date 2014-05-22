@@ -2,49 +2,49 @@
 
     /**
      * Action saving all documents
-     * @class EXSaveAllAction
+     * @class GSaveAllAction
      * @extends GUIAction
      * @constructor
      */
-    function EXSaveAllAction() {
+    function GSaveAllAction() {
     };
-    IFObject.inherit(EXSaveAllAction, GUIAction);
+    IFObject.inherit(GSaveAllAction, GUIAction);
 
-    EXSaveAllAction.ID = 'file.save-all';
-    EXSaveAllAction.TITLE = new IFLocale.Key(EXSaveAllAction, "title");
+    GSaveAllAction.ID = 'file.save-all';
+    GSaveAllAction.TITLE = new IFLocale.Key(GSaveAllAction, "title");
 
     /**
      * @override
      */
-    EXSaveAllAction.prototype.getId = function () {
-        return EXSaveAllAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXSaveAllAction.prototype.getTitle = function () {
-        return EXSaveAllAction.TITLE;
+    GSaveAllAction.prototype.getId = function () {
+        return GSaveAllAction.ID;
     };
 
     /**
      * @override
      */
-    EXSaveAllAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE;
+    GSaveAllAction.prototype.getTitle = function () {
+        return GSaveAllAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXSaveAllAction.prototype.getGroup = function () {
+    GSaveAllAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE;
+    };
+
+    /**
+     * @override
+     */
+    GSaveAllAction.prototype.getGroup = function () {
         return "file";
     };
 
     /**
      * @override
      */
-    EXSaveAllAction.prototype.isEnabled = function () {
+    GSaveAllAction.prototype.isEnabled = function () {
         var documents = gApp.getDocuments();
         for (var i = 0; i < documents.length; ++i) {
             if (documents[i].isSaveable()) {
@@ -57,7 +57,7 @@
     /**
      * @override
      */
-    EXSaveAllAction.prototype.execute = function () {
+    GSaveAllAction.prototype.execute = function () {
         var documents = gApp.getDocuments();
         for (var i = 0; i < documents.length; ++i) {
             if (documents[i].isSaveable()) {
@@ -67,9 +67,9 @@
     };
 
     /** @override */
-    EXSaveAllAction.prototype.toString = function () {
-        return "[Object EXSaveAllAction]";
+    GSaveAllAction.prototype.toString = function () {
+        return "[Object GSaveAllAction]";
     };
 
-    _.EXSaveAllAction = EXSaveAllAction;
+    _.GSaveAllAction = GSaveAllAction;
 })(this);
