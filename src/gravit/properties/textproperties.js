@@ -60,17 +60,31 @@
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
-            } else if (property === 'sa' || property === 'ea') {
+            } else if (property === 'fi') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = parseFloat($(this).val());
-                        if (!isNaN(angle)) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
-                            self._assignProperty(property, gMath.PI2 - angle);
+                        var value = self._document.getScene().stringToPoint($(this).val());
+                        if (value !== null && typeof value === 'number' && value >= 0) {
+                            self._assignProperty(property, value);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
+            } else if (property === 'lh') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .css('width', '4em')
+                    .gAutoBlur()
+                    .on('change', function () {
+                        var value = $(this).val();
+                        value = !value || value === "" ? null : parseFloat(value);
+                        if (value === null || (!isNaN(value) && value > 0)) {
+                            self._assignProperty(property, value);
                         } else {
                             self._updateProperties();
                         }
@@ -83,7 +97,6 @@
         $('<div>Text Properties</div>')
             .appendTo(panel);
 
-        /*
         $('<table></table>')
             .addClass('g-form')
             .css('margin', '0px auto')
@@ -91,24 +104,16 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Style:'))
+                    .text('Size:'))
                 .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('etp'))))
-            .append($('<tr></tr>')
+                    .append(_createInput('fi')))
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Angle:'))
+                    .text('Line:'))
                 .append($('<td></td>')
-                    .append(_createInput('sa')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
-                .append($('<td></td>')
-                    .append(_createInput('ea'))))
+                    .append(_createInput('lh'))))
             .appendTo(panel);
-            */
     };
 
     /** @override */
@@ -116,6 +121,13 @@
         if (this._document) {
             this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
+        }
+
+        if (this._text) {
+            for (var i = 0; i < this._text.length; ++i) {
+                var textEditor = GXElementEditor.getEditor(this._text[0]);
+                textEditor.removeEventListener(GXTextEditor.SelectionChangedEvent, this._updateProperties);
+            }
         }
 
         // We'll work on elements, only
@@ -135,6 +147,14 @@
             this._document = document;
             this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
+
+            if (this._text) {
+                for (var i = 0; i < this._text.length; ++i) {
+                    var textEditor = GXElementEditor.getEditor(this._text[0]);
+                    textEditor.addEventListener(GXTextEditor.SelectionChangedEvent, this._updateProperties, this);
+                }
+            }
+
             return true;
         } else {
             return false;
@@ -159,13 +179,13 @@
     GTextProperties.prototype._updateProperties = function () {
         // We'll always read properties of first text
         var text = this._text[0];
-        /*
-        this._panel.find('select[data-property="etp"]').val(ellipse.getProperty('etp'));
-        this._panel.find('input[data-property="sa"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('sa')), 2).toString().replace('.', ','));
-        this._panel.find('input[data-property="ea"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('ea')), 2).toString().replace('.', ','));
-            */
+        var textEditor = GXElementEditor.getEditor(text);
+
+        this._panel.find('input[data-property="fi"]').val(
+            this._document.getScene().pointToString(textEditor.getProperty('fi')));
+
+        var lh = textEditor.getProperty('lh');
+        this._panel.find('input[data-property="lh"]').val(lh !== null ? lh.toString().replace('.', ',') : "");
     };
 
     /**
@@ -187,7 +207,8 @@
         editor.beginTransaction();
         try {
             for (var i = 0; i < this._text.length; ++i) {
-                this._text[i].setProperties(properties, values);
+                var textEditor = GXElementEditor.getEditor(this._text[i]);
+                textEditor.setProperties(properties, values);
             }
         } finally {
             // TODO : I18N

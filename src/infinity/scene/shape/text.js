@@ -535,6 +535,7 @@
         // Setup default font stuff
         this.$ff = 'Arial';
         this.$fi = 12;
+        this.$fs = GXText.Block.TextStyle.Normal;
         this.$lh = 1;
     };
 

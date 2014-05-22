@@ -4,16 +4,39 @@
      * @param {GXText} text the text this editor works on
      * @class GXTextEditor
      * @extends GXShapeEditor
+     * @mixes GEventTarget
      * @constructor
      */
     function GXTextEditor(rectangle) {
         GXShapeEditor.call(this, rectangle);
         this._flags |= GXBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(GXTextEditor, GXShapeEditor);
+    GObject.inheritAndMix(GXTextEditor, GXShapeEditor, [GEventTarget]);
     GXElementEditor.exports(GXTextEditor, GXText);
 
-    var _firefox = /Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent);
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXTextEditor.SelectionChangedEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever the current selection has been changed
+     * @class GXTextEditor.SelectionChangedEvent
+     * @extends GEvent
+     * @constructor
+     */
+    GXTextEditor.SelectionChangedEvent = function () {
+    };
+    GObject.inherit(GXTextEditor.SelectionChangedEvent, GEvent);
+
+    /** @override */
+    GXTextEditor.SelectionChangedEvent.prototype.toString = function () {
+        return "[Event GXTextEditor.SelectionChangedEvent]";
+    };
+
+    GXTextEditor.SELECTION_CHANGED_EVENT = new GXTextEditor.SelectionChangedEvent();
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // GXTextEditor Class
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {HTMLDivElement}
@@ -22,26 +45,107 @@
     GXTextEditor.prototype._inlineEditor = null;
 
     /**
-     * @type {Scribe}
+     * @type {HTMLSpanElement}
      * @private
      */
-    GXTextEditor.prototype._inlineEditor = null;
+    GXTextEditor.prototype._activeSpanElement = null;
 
-    GXTextEditor.prototype.getParagraphProperty = function (property) {
-        // TODO
+    /**
+     * @type {HTMLParagraphElement}
+     * @private
+     */
+    GXTextEditor.prototype._activeParagraphElement = null;
+
+    GXTextEditor.prototype.getProperty = function (property) {
+        if (this.isInlineEdit()) {
+            if (GXText.Block.Properties.hasOwnProperty(property)) {
+                if (this._activeSpanElement) {
+                    return GXText.Block.cssToProperty(property, this._activeSpanElement.style);
+                } else if (this._activeParagraphElement) {
+                    return GXText.Block.cssToProperty(property, this._activeParagraphElement.style);
+                }
+            } else if (this._activeParagraphElement) {
+                return GXText.Paragraph.cssToProperty(property, this._activeParagraphElement.style);
+            }
+
+            return null;
+        } else {
+            return this.getElement().getContent().getProperty(property);
+        }
     };
 
-    GXTextEditor.prototype.setParagraphProperty = function (property, value) {
-        this.setParagraphProperties([property], [value]);
-    };
+    GXTextEditor.prototype.setProperties = function (properties, values) {
+        var blockProperties = [];
+        var blockValues = [];
+        var paragraphProperties = [];
+        var paragraphValues = [];
 
-    GXTextEditor.prototype.setParagraphProperties = function (properties, values) {
+        // Separate block and paragraph properties
+        for (var i = 0; i < properties.length; ++i) {
+            if (GXText.Block.Properties.hasOwnProperty(properties[i])) {
+                blockProperties.push(properties[i]);
+                blockValues.push(values[i]);
+            } else {
+                paragraphProperties.push(properties[i]);
+                paragraphValues.push(values[i]);
+            }
+        }
 
-        // TODO
-        // Inline-Editor=False -> Apply as property to getContent()
-        // Inline-Editor=True -> convert property|value to css, apply to selection range's paragraph
 
-        this.getElement().getContent().setProperties(properties, values);
+        if (this._inlineEditor) {
+            setTimeout(function () {
+                var blockCSS = {};
+                for (var i = 0; i < blockProperties.length; ++i) {
+                    GXText.Block.propertyToCss(blockProperties[i], blockValues[i], blockCSS);
+                }
+                ;
+
+                var paragraphCSS = {};
+                for (var i = 0; i < paragraphProperties.length; ++i) {
+                    GXText.Paragraph.propertyToCss(paragraphProperties[i], paragraphValues[i], paragraphCSS);
+                }
+                ;
+
+
+                this._inlineEditor.focus();
+                if (this._savedSelection) {
+                    rangy.restoreSelection(this._savedSelection);
+                    this._savedSelection = rangy.saveSelection();
+                }
+
+                var sel = rangy.getSelection();
+                if (sel.rangeCount) {
+                    var range = sel.getRangeAt(0);
+                    var nodes = range.collapsed ? [range.startContainer] : range.getNodes();
+                    for (var i = 0; i < nodes.length; ++i) {
+                        var node = nodes[i];
+                        if (node.nodeType === 3) {
+                            var blockElement = null;
+                            for (var parent = node.parentNode; parent !== null; parent = parent.parentNode) {
+                                if (parent.nodeType === 1 && parent.nodeName.toLowerCase() === 'p') {
+                                    blockElement = parent;
+                                    break;
+                                }
+                            }
+
+                            if (blockElement) {
+                                for (var prop in paragraphCSS) {
+                                    blockElement.style[prop] = paragraphCSS[prop];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //var cssApplier = rangy.createCssClassApplier("dummy", {normalize: true}, ['span', 'p']);
+                //cssApplier.toggleSelection();
+            }.bind(this), 0);
+            return;
+        } else {
+            // Apply to outer element
+            this.getElement().getContent().setProperties(blockProperties, blockValues);
+            this.getElement().getContent().setProperties(paragraphProperties, paragraphValues);
+        }
     };
 
     /** @override */
@@ -84,7 +188,36 @@
             })
             .on('mouseup', function (evt) {
                 evt.stopPropagation();
-            })
+                if (this._savedSelection) {
+                    rangy.removeMarkers(this._savedSelection);
+                }
+                this._savedSelection = rangy.saveSelection();
+
+                this._activeParagraphElement = null;
+                var sel = rangy.getSelection();
+                if (sel.rangeCount) {
+                    var range = sel.getRangeAt(0);
+                    var nodes = range.collapsed ? [range.endContainer] : range.getNodes();
+                    for (var i = 0; i < nodes.length; ++i) {
+                        var node = nodes[i];
+                        if (node.nodeType === 3) {
+                            var blockElement = null;
+                            for (var parent = node.parentNode; parent !== null; parent = parent.parentNode) {
+                                if (parent.nodeType === 1 && parent.nodeName.toLowerCase() === 'p') {
+                                    blockElement = parent;
+                                    break;
+                                }
+                            }
+
+                            if (blockElement) {
+                                this._activeParagraphElement = blockElement;
+                            }
+                        }
+                    }
+                }
+                
+                this.trigger(GXTextEditor.SELECTION_CHANGED_EVENT);
+            }.bind(this))
             .on('click', function (evt) {
                 evt.stopPropagation();
             })
@@ -96,15 +229,26 @@
             })
             .on('keyup', function (evt) {
                 evt.stopPropagation();
-            })
+                if (this._savedSelection) {
+                    rangy.removeMarkers(this._savedSelection);
+                }
+                this._savedSelection = rangy.saveSelection();
+            }.bind(this))
+            //.html('<style type="text/css">.dummy{font-size: 30px}</style>' + html)
             .html(html)
             .appendTo(container);
 
         this._inlineEditor.focus();
 
-        // Insert paragraph for empty content(s) on firefox
-        if (html === "" && _firefox) {
-            document.execCommand("InsertParagraph", false, 'test');
+        if (html === "") {
+            var pTag = document.createElement('p');
+            $(pTag).text('Your Text Here');
+            this._inlineEditor.append(pTag);
+
+            var range = rangy.createRange();
+            range.selectNodeContents(pTag);
+            var sel = rangy.getSelection();
+            sel.setSingleRange(range);
         }
     };
 
@@ -127,7 +271,7 @@
 
         this._inlineEditor
             .css({
-                'min-width': minWidth,
+                'width': minWidth,
                 'min-height': minHeight,
                 'top': top,
                 'left': left,
@@ -138,11 +282,12 @@
 
     /** @override */
     GXTextEditor.prototype.finishInlineEdit = function () {
-        var html = this._inlineEditor.html();
-
-        if (_firefox) {
-            html = html.replace(/<br><\/p>$/, '</p>');
+        if (this._savedSelection) {
+            rangy.removeMarkers(this._savedSelection);
+            this._savedSelection = null;
         }
+
+        var html = this._inlineEditor.html();
 
         this.getElement().fromHtml(html);
         this._inlineEditor.remove();
