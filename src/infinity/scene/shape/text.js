@@ -371,6 +371,8 @@
         cc: null,
         /** Column gap */
         cg: null,
+        /** Wether to word-wrap the paragraph or not */
+        ww: null,
         /** The paragraph's alignment (GXText.Paragraph.Alignment) */
         al: null,
         /** The first line intendation */
@@ -397,6 +399,8 @@
             css['column-gap'] = value;
             css['-webkit-column-gap'] = value;
             css['-moz-column-gap'] = value;
+        } else if (property === 'ww') {
+            css['white-space'] = value ? 'pre-wrap' : 'nowrap';
         } else if (property === 'al') {
             switch (value) {
                 case GXText.Paragraph.Alignment.Left:
@@ -441,6 +445,12 @@
             var value = parseFloat(str);
             if (!isNaN(value)) {
                 return value;
+            }
+        } else if (property === 'ww') {
+            if (value === 'pre-wrap') {
+                return true;
+            } else if (value === 'nowrap') {
+                return false;
             }
         } else if (property === 'al') {
             if (value === 'left') {
@@ -537,6 +547,7 @@
         this.$fi = 12;
         this.$fs = GXText.Block.TextStyle.Normal;
         this.$lh = 1;
+        this.$ww = true;
     };
 
     GXNode.inherit("txContent", GXText.Content, GXText.Paragraph);
@@ -891,18 +902,18 @@
         if (node.nodeType === 1) {
             var nodeName = node.nodeName.toLowerCase();
 
-            if (nodeName === 'p' || nodeName === 'div') {
+            if (nodeName === 'p' || nodeName === 'div') {
                 var paragraph = new GXText.Paragraph();
                 paragraph.cssToProperties(node.style);
                 parent.appendChild(paragraph);
                 parent = paragraph;
-            } else if (nodeName === 'span' ||  nodeName === 'b' || nodeName === 'strong' || nodeName === 'i') {
+            } else if (nodeName === 'span' || nodeName === 'b' || nodeName === 'strong' || nodeName === 'i') {
                 var span = new GXText.Span();
                 span.cssToProperties(node.style);
                 parent.appendChild(span);
                 parent = span;
 
-                if (nodeName === 'b' || nodeName === 'strong') {
+                if (nodeName === 'b' || nodeName === 'strong') {
                     span.setProperty('fs', GXText.Block.TextStyle.Bold);
                 } else if (nodeName === 'i') {
                     span.setProperty('fs', GXText.Block.TextStyle.Italic);
