@@ -2,25 +2,25 @@
     /**
      * A graphic editor keeps track of all editing related stuff for a scene
      * like handling selection, keeping undo/redo information and more.
-     * @param {GXScene} scene the scene this editor works on
-     * @class GXEditor
+     * @param {IFScene} scene the scene this editor works on
+     * @class IFEditor
      * @extend GEventTarget
      * @constructor
      */
-    function GXEditor(scene) {
+    function IFEditor(scene) {
         this._scene = scene;
         this._scene.__graphic_editor__ = this;
         this._undoStates = [];
         this._redoStates = [];
-        this._guides = new GXGuides(this._scene);
+        this._guides = new IFGuides(this._scene);
 
         // Subscribe to various scene changes
-        this._scene.addEventListener(GXNode.AfterInsertEvent, this._afterNodeInsert, this);
-        this._scene.addEventListener(GXNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-        this._scene.addEventListener(GXNode.BeforePropertiesChangeEvent, this._beforePropertiesChange, this);
-        this._scene.addEventListener(GXNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
-        this._scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        this._scene.addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
+        this._scene.addEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
+        this._scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+        this._scene.addEventListener(IFNode.BeforePropertiesChangeEvent, this._beforePropertiesChange, this);
+        this._scene.addEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
+        this._scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
 
         // Try to create internal selection for all selected nodes
         var selectedNodes = this._scene.queryAll(":selected");
@@ -36,11 +36,11 @@
             this.setCurrentPage(firstPage);
         }
 
-        this._currentColor = [new GXColor(GXColor.Type.Black), null];
+        this._currentColor = [new IFColor(IFColor.Type.Black), null];
     };
-    GObject.inherit(GXEditor, GEventTarget);
+    GObject.inherit(IFEditor, GEventTarget);
 
-    GXEditor.options = {
+    IFEditor.options = {
         /** Maximum number of undo-steps */
         maxUndoSteps: 10
     };
@@ -49,134 +49,134 @@
      * Current Color Type
      * @enum
      */
-    GXEditor.CurrentColorType = {
+    IFEditor.CurrentColorType = {
         Stroke: 0,
         Fill: 1
     };
 
     /**
      * Get the underlying graphic editor for a given scene
-     * @param {GXScene} scene
-     * @returns {GXEditor} a graphic editor for the scene
+     * @param {IFScene} scene
+     * @returns {IFEditor} a graphic editor for the scene
      * or null if it has no such one
      */
-    GXEditor.getEditor = function (scene) {
+    IFEditor.getEditor = function (scene) {
         return scene.__graphic_editor__ ? scene.__graphic_editor__ : null;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.CurrentLayerChangedEvent Event
+    // IFEditor.CurrentLayerChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the current layer has been changed
-     * @class GXEditor.CurrentLayerChangedEvent
+     * @class IFEditor.CurrentLayerChangedEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXEditor.CurrentLayerChangedEvent = function (previousLayer) {
+    IFEditor.CurrentLayerChangedEvent = function (previousLayer) {
         this.previousLayer = previousLayer;
     };
-    GObject.inherit(GXEditor.CurrentLayerChangedEvent, GEvent);
+    GObject.inherit(IFEditor.CurrentLayerChangedEvent, GEvent);
 
-    /** @type {GXLayer} */
-    GXEditor.CurrentLayerChangedEvent.prototype.previousLayer = null;
+    /** @type {IFLayer} */
+    IFEditor.CurrentLayerChangedEvent.prototype.previousLayer = null;
 
     /** @override */
-    GXEditor.CurrentLayerChangedEvent.prototype.toString = function () {
-        return "[Event GXEditor.CurrentLayerChangedEvent]";
+    IFEditor.CurrentLayerChangedEvent.prototype.toString = function () {
+        return "[Event IFEditor.CurrentLayerChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.CurrentPageChangedEvent Event
+    // IFEditor.CurrentPageChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the current page has been changed
-     * @class GXEditor.CurrentPageChangedEvent
+     * @class IFEditor.CurrentPageChangedEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXEditor.CurrentPageChangedEvent = function (previousPage) {
+    IFEditor.CurrentPageChangedEvent = function (previousPage) {
         this.previousPage = previousPage;
     };
-    GObject.inherit(GXEditor.CurrentPageChangedEvent, GEvent);
+    GObject.inherit(IFEditor.CurrentPageChangedEvent, GEvent);
 
-    /** @type {GXPage} */
-    GXEditor.CurrentPageChangedEvent.prototype.previousPage = null;
+    /** @type {IFPage} */
+    IFEditor.CurrentPageChangedEvent.prototype.previousPage = null;
 
     /** @override */
-    GXEditor.CurrentPageChangedEvent.prototype.toString = function () {
-        return "[Event GXEditor.CurrentPageChangedEvent]";
+    IFEditor.CurrentPageChangedEvent.prototype.toString = function () {
+        return "[Event IFEditor.CurrentPageChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.CurrentColorChangedEvent Event
+    // IFEditor.CurrentColorChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever a current color has been changed
-     * @class GXEditor.CurrentColorChangedEvent
+     * @class IFEditor.CurrentColorChangedEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXEditor.CurrentColorChangedEvent = function (type, previousColor) {
+    IFEditor.CurrentColorChangedEvent = function (type, previousColor) {
         this.type = type;
         this.previousColor = previousColor;
     };
-    GObject.inherit(GXEditor.CurrentColorChangedEvent, GEvent);
+    GObject.inherit(IFEditor.CurrentColorChangedEvent, GEvent);
 
-    /** @type {GXEditor.CurrentColorType} */
-    GXEditor.CurrentColorChangedEvent.prototype.type = null;
+    /** @type {IFEditor.CurrentColorType} */
+    IFEditor.CurrentColorChangedEvent.prototype.type = null;
 
-    /** @type {GXColor} */
-    GXEditor.CurrentColorChangedEvent.prototype.previousColor = null;
+    /** @type {IFColor} */
+    IFEditor.CurrentColorChangedEvent.prototype.previousColor = null;
 
     /** @override */
-    GXEditor.CurrentColorChangedEvent.prototype.toString = function () {
-        return "[Event GXEditor.CurrentColorChangedEvent]";
+    IFEditor.CurrentColorChangedEvent.prototype.toString = function () {
+        return "[Event IFEditor.CurrentColorChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.SelectionChangedEvent Event
+    // IFEditor.SelectionChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the selection has been changed
-     * @class GXEditor.SelectionChangedEvent
+     * @class IFEditor.SelectionChangedEvent
      * @extends GEvent
      * @constructor
      */
-    GXEditor.SelectionChangedEvent = function () {
+    IFEditor.SelectionChangedEvent = function () {
     };
-    GObject.inherit(GXEditor.SelectionChangedEvent, GEvent);
+    GObject.inherit(IFEditor.SelectionChangedEvent, GEvent);
 
     /** @override */
-    GXEditor.SelectionChangedEvent.prototype.toString = function () {
-        return "[Event GXEditor.SelectionChangedEvent]";
+    IFEditor.SelectionChangedEvent.prototype.toString = function () {
+        return "[Event IFEditor.SelectionChangedEvent]";
     };
 
-    GXEditor.SELECTION_CHANGED_EVENT = new GXEditor.SelectionChangedEvent();
+    IFEditor.SELECTION_CHANGED_EVENT = new IFEditor.SelectionChangedEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.InlineEditorEvent Event
+    // IFEditor.InlineEditorEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event providing inline editor events
-     * @class GXEditor.InlineEditorEvent
+     * @class IFEditor.InlineEditorEvent
      * @extends GEvent
      * @constructor
      */
-    GXEditor.InlineEditorEvent = function (editor, type) {
+    IFEditor.InlineEditorEvent = function (editor, type) {
         this.editor = editor;
         this.type = type;
     };
-    GObject.inherit(GXEditor.InlineEditorEvent, GEvent);
+    GObject.inherit(IFEditor.InlineEditorEvent, GEvent);
 
     /**
      * Enum of inline editor event types
      * @enum
      */
-    GXEditor.InlineEditorEvent.Type = {
+    IFEditor.InlineEditorEvent.Type = {
         /**
          * Inline editor is about to be opened
          */
@@ -204,121 +204,121 @@
     };
 
     /**
-     * @type {GXElementEditor}
+     * @type {IFElementEditor}
      */
-    GXEditor.InlineEditorEvent.prototype.editor = null;
+    IFEditor.InlineEditorEvent.prototype.editor = null;
 
     /**
-     * @type {GXEditor.InlineEditorEvent.Type}
+     * @type {IFEditor.InlineEditorEvent.Type}
      */
-    GXEditor.InlineEditorEvent.prototype.type = null;
+    IFEditor.InlineEditorEvent.prototype.type = null;
 
     /** @override */
-    GXEditor.InlineEditorEvent.prototype.toString = function () {
-        return "[Event GXEditor.InlineEditorEvent]";
+    IFEditor.InlineEditorEvent.prototype.toString = function () {
+        return "[Event IFEditor.InlineEditorEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor.InvalidationRequestEvent Event
+    // IFEditor.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for an invalidation request event
-     * @param {GXElementEditor} editor the requesting editor
+     * @param {IFElementEditor} editor the requesting editor
      * @param {*} [args] optional arguments to be passed back to editor
-     * @class GXEditor.InvalidationRequestEvent
+     * @class IFEditor.InvalidationRequestEvent
      * @extends GEvent
      * @constructor
      */
-    GXEditor.InvalidationRequestEvent = function (editor, args) {
+    IFEditor.InvalidationRequestEvent = function (editor, args) {
         this.editor = editor;
         this.args = args;
     };
-    GObject.inherit(GXEditor.InvalidationRequestEvent, GEvent);
+    GObject.inherit(IFEditor.InvalidationRequestEvent, GEvent);
 
-    /** @type {GXElementEditor} */
-    GXEditor.InvalidationRequestEvent.prototype.editor = null;
+    /** @type {IFElementEditor} */
+    IFEditor.InvalidationRequestEvent.prototype.editor = null;
     /** @type {*} */
-    GXEditor.InvalidationRequestEvent.prototype.args = null;
+    IFEditor.InvalidationRequestEvent.prototype.args = null;
 
     /** @override */
-    GXEditor.InvalidationRequestEvent.prototype.toString = function () {
-        return "[Event GXEditor.InvalidationRequestEvent]";
+    IFEditor.InvalidationRequestEvent.prototype.toString = function () {
+        return "[Event IFEditor.InvalidationRequestEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXEditor Class
+    // IFEditor Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {GXScene}
+     * @type {IFScene}
      * @private
      */
-    GXEditor.prototype._scene = null;
+    IFEditor.prototype._scene = null;
 
     /**
-     * @type {Array<GXElement>}
+     * @type {Array<IFElement>}
      * @private
      */
-    GXEditor.prototype._selection = null;
+    IFEditor.prototype._selection = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    GXEditor.prototype._selectionDetail = false;
+    IFEditor.prototype._selectionDetail = false;
 
     /**
-     * @type {{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: GXElement, parts: Array<*>}>}}
+     * @type {{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: IFElement, parts: Array<*>}>}}
      * @private
      */
-    GXEditor.prototype._transaction = null;
+    IFEditor.prototype._transaction = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    GXEditor.prototype._undoStates = null;
+    IFEditor.prototype._undoStates = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    GXEditor.prototype._redoStates = null;
+    IFEditor.prototype._redoStates = null;
 
     /**
-     * @type {GXGuides}
+     * @type {IFGuides}
      * @private
      */
-    GXEditor.prototype._guides = null;
+    IFEditor.prototype._guides = null;
 
     /**
-     * @type {GXNode}
+     * @type {IFNode}
      * @private
      */
-    GXEditor.prototype._currentInlineEditorNode = null;
+    IFEditor.prototype._currentInlineEditorNode = null;
 
     /**
-     * @type {GXPage}
+     * @type {IFPage}
      * @private
      */
-    GXEditor.prototype._currentPage = null;
+    IFEditor.prototype._currentPage = null;
 
     /**
-     * @type {GXLayer}
+     * @type {IFLayer}
      * @private
      */
-    GXEditor.prototype._currentLayer = null;
+    IFEditor.prototype._currentLayer = null;
 
     /**
-     * @type {Array<GXColor>}
+     * @type {Array<IFColor>}
      * @private
      */
-    GXEditor.prototype._currentColor = null;
+    IFEditor.prototype._currentColor = null;
 
     /**
-     * @returns {GXScene}
+     * @returns {IFScene}
      */
-    GXEditor.prototype.getScene = function () {
+    IFEditor.prototype.getScene = function () {
         return this._scene;
     };
 
@@ -327,16 +327,16 @@
      * @return {Boolean} true if a selection is available, false if not
      * @version 1.0
      */
-    GXEditor.prototype.hasSelection = function () {
+    IFEditor.prototype.hasSelection = function () {
         return this._selection && this._selection.length > 0;
     };
 
     /**
      * Return the selection array
-     * @return {Array<GXElement>} the selection array or null for no selection
+     * @return {Array<IFElement>} the selection array or null for no selection
      * @version 1.0
      */
-    GXEditor.prototype.getSelection = function () {
+    IFEditor.prototype.getSelection = function () {
         return this._selection;
     };
 
@@ -344,7 +344,7 @@
      * Returns whether selection details are available or not
      * @returns {boolean}
      */
-    GXEditor.prototype.hasSelectionDetail = function () {
+    IFEditor.prototype.hasSelectionDetail = function () {
         return this._selectionDetail;
     };
 
@@ -352,19 +352,19 @@
      * Assigns whether selection details are available or not
      * @param {Boolean} detail
      */
-    GXEditor.prototype.setSelectionDetail = function (detail) {
+    IFEditor.prototype.setSelectionDetail = function (detail) {
         if (detail !== this._selectionDetail) {
             this._selectionDetail = detail;
 
             // Re-flag selection if any
             if (this._selection) {
                 for (var i = 0; i < this._selection.length; ++i) {
-                    var editor = GXElementEditor.getEditor(this._selection[i]);
+                    var editor = IFElementEditor.getEditor(this._selection[i]);
                     if (editor) {
                         if (this._selectionDetail) {
-                            editor.setFlag(GXElementEditor.Flag.Detail);
+                            editor.setFlag(IFElementEditor.Flag.Detail);
                         } else {
-                            editor.removeFlag(GXElementEditor.Flag.Detail);
+                            editor.removeFlag(IFElementEditor.Flag.Detail);
                         }
                     }
                 }
@@ -374,48 +374,48 @@
 
     /**
      * Return the editor's guides
-     * @returns {GXGuides}
+     * @returns {IFGuides}
      */
-    GXEditor.prototype.getGuides = function () {
+    IFEditor.prototype.getGuides = function () {
         return this._guides;
     };
 
     /**
      * Return the currently active page if any
-     * @return {GXPage}
+     * @return {IFPage}
      */
-    GXEditor.prototype.getCurrentPage = function () {
+    IFEditor.prototype.getCurrentPage = function () {
         return this._currentPage;
     };
 
     /**
      * Set the currently active page
-     * @param {GXPage} page
+     * @param {IFPage} page
      */
-    GXEditor.prototype.setCurrentPage = function (page) {
+    IFEditor.prototype.setCurrentPage = function (page) {
         if (page !== this._currentPage) {
             if (this._currentPage) {
-                this._currentPage.removeFlag(GXNode.Flag.Active);
+                this._currentPage.removeFlag(IFNode.Flag.Active);
             }
 
             var previousPage = this._currentPage;
             this._currentPage = page;
 
             if (this._currentPage) {
-                this._currentPage.setFlag(GXNode.Flag.Active);
+                this._currentPage.setFlag(IFNode.Flag.Active);
             }
 
-            if (this.hasEventListeners(GXEditor.CurrentPageChangedEvent)) {
-                this.trigger(new GXEditor.CurrentPageChangedEvent(previousPage));
+            if (this.hasEventListeners(IFEditor.CurrentPageChangedEvent)) {
+                this.trigger(new IFEditor.CurrentPageChangedEvent(previousPage));
             }
         }
     };
 
     /**
      * Return the currently active layer if any
-     * @return {GXLayer}
+     * @return {IFLayer}
      */
-    GXEditor.prototype.getCurrentLayer = function () {
+    IFEditor.prototype.getCurrentLayer = function () {
         return this._currentLayer;
     };
 
@@ -423,9 +423,9 @@
      * Set the currently active layer and moves the current
      * selection into the new current layer
      *
-     * @param {GXLayer} layer
+     * @param {IFLayer} layer
      */
-    GXEditor.prototype.setCurrentLayer = function (layer) {
+    IFEditor.prototype.setCurrentLayer = function (layer) {
         if (layer !== this._currentLayer) {
             var previousLayer = this._currentLayer;
 
@@ -453,35 +453,35 @@
                 this.updateSelection(false, modelSelection);
             }
 
-            if (this.hasEventListeners(GXEditor.CurrentLayerChangedEvent)) {
-                this.trigger(new GXEditor.CurrentLayerChangedEvent(previousLayer));
+            if (this.hasEventListeners(IFEditor.CurrentLayerChangedEvent)) {
+                this.trigger(new IFEditor.CurrentLayerChangedEvent(previousLayer));
             }
         }
     };
 
     /**
      * Get a current color for a given type
-     * @param {GXEditor.CurrentColorType} type
+     * @param {IFEditor.CurrentColorType} type
      */
-    GXEditor.prototype.getCurrentColor = function (type) {
+    IFEditor.prototype.getCurrentColor = function (type) {
         return this._currentColor[type];
     };
 
     /**
      * Set a current color for a given type
-     * @param {GXEditor.CurrentColorType} type
-     * @param {GXColor} color
+     * @param {IFEditor.CurrentColorType} type
+     * @param {IFColor} color
      */
-    GXEditor.prototype.setCurrentColor = function (type, color) {
-        if (!GXColor.equals(color, this._currentColor[type])) {
+    IFEditor.prototype.setCurrentColor = function (type, color) {
+        if (!IFColor.equals(color, this._currentColor[type])) {
             var oldColor = this._currentColor[type];
 
             // Assign new color
             this._currentColor[type] = color;
 
             // Trigger event
-            if (this.hasEventListeners(GXEditor.CurrentColorChangedEvent)) {
-                this.trigger(new GXEditor.CurrentColorChangedEvent(type, oldColor));
+            if (this.hasEventListeners(IFEditor.CurrentColorChangedEvent)) {
+                this.trigger(new IFEditor.CurrentColorChangedEvent(type, oldColor));
             }
         }
     };
@@ -489,15 +489,15 @@
     /**
      * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
-     * @return {GXPath} the selected path
+     * @return {IFPath} the selected path
      */
-    GXEditor.prototype.getPathSelection = function () {
+    IFEditor.prototype.getPathSelection = function () {
         var pathRef = null;
         var i;
 
         if (this.hasSelection()) {
             for (i = 0; i < this._selection.length; ++i) {
-                if (this._selection[i] instanceof GXPath) {
+                if (this._selection[i] instanceof IFPath) {
                     if (pathRef) {
                         pathRef = null;
                         break;
@@ -519,25 +519,25 @@
     /**
      * Called to close and detach this editor
      */
-    GXEditor.prototype.close = function () {
+    IFEditor.prototype.close = function () {
         delete this._scene.__graphic_editor__;
 
-        this._scene.removeEventListener(GXNode.AfterInsertEvent, this._afterNodeInsert);
-        this._scene.removeEventListener(GXNode.BeforeRemoveEvent, this._beforeNodeRemove);
-        this._scene.removeEventListener(GXNode.BeforePropertiesChangeEvent, this._beforePropertiesChange);
-        this._scene.removeEventListener(GXNode.BeforeFlagChangeEvent, this._beforeFlagChange);
-        this._scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
-        this._scene.removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
+        this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert);
+        this._scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove);
+        this._scene.removeEventListener(IFNode.BeforePropertiesChangeEvent, this._beforePropertiesChange);
+        this._scene.removeEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange);
+        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange);
+        this._scene.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
     };
 
     /**
      * Request the invalidation of an editor
-     * @param {GXElementEditor} editor the requesting editor
+     * @param {IFElementEditor} editor the requesting editor
      * @param {*} [args] optional arguments to be passed back to the editor
      */
-    GXEditor.prototype.requestInvalidation = function (editor, args) {
-        if (this.hasEventListeners(GXEditor.InvalidationRequestEvent)) {
-            this.trigger(new GXEditor.InvalidationRequestEvent(editor, args));
+    IFEditor.prototype.requestInvalidation = function (editor, args) {
+        if (this.hasEventListeners(IFEditor.InvalidationRequestEvent)) {
+            this.trigger(new IFEditor.InvalidationRequestEvent(editor, args));
         }
     };
 
@@ -545,9 +545,9 @@
      * Clone current selection (if any) and make it the new selection
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
-     * @return {Array<GXElement>} the array of clones or null for no clones
+     * @return {Array<IFElement>} the array of clones or null for no clones
      */
-    GXEditor.prototype.cloneSelection = function (noTransaction) {
+    IFEditor.prototype.cloneSelection = function (noTransaction) {
         if (this._selection && this._selection.length > 0) {
             if (!noTransaction) {
                 this.beginTransaction();
@@ -558,7 +558,7 @@
 
                 for (var i = 0; i < this._selection.length; ++i) {
                     var selElement = this._selection[i];
-                    if (selElement.hasMixin(GXNode.Store)) {
+                    if (selElement.hasMixin(IFNode.Store)) {
                         var clone = selElement.clone();
                         if (clone) {
                             // Append clone to parent of selected item
@@ -590,14 +590,14 @@
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.deleteSelection = function (noTransaction) {
+    IFEditor.prototype.deleteSelection = function (noTransaction) {
         if (this._selection && this._selection.length > 0) {
             if (!noTransaction) {
                 this.beginTransaction();
             }
 
             try {
-                var orderedSelection = GXNode.order(this._selection, true);
+                var orderedSelection = IFNode.order(this._selection, true);
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[0];
                     selElement.getParent().removeChild(selElement);
@@ -617,14 +617,14 @@
      * @param {boolean} toggle if true then this will merge/united the
      * current selection with the new one, otherwise the current selection
      * will be replaced with the new one
-     * @param {Array<GXElement>} selection the new array of nodes to be selected
+     * @param {Array<IFElement>} selection the new array of nodes to be selected
      */
-    GXEditor.prototype.updateSelection = function (toggle, selection) {
+    IFEditor.prototype.updateSelection = function (toggle, selection) {
         if (!toggle) {
             // Select new selection if any
             if (selection && selection.length > 0) {
                 for (var i = 0; i < selection.length; ++i) {
-                    selection[i].setFlag(GXNode.Flag.Selected);
+                    selection[i].setFlag(IFNode.Flag.Selected);
                 }
             }
 
@@ -637,10 +637,10 @@
             if (selection && selection.length) {
                 for (var i = 0; i < selection.length; ++i) {
                     // Simply invert our selection flag at this point
-                    if (selection[i].hasFlag(GXNode.Flag.Selected)) {
-                        selection[i].removeFlag(GXNode.Flag.Selected);
+                    if (selection[i].hasFlag(IFNode.Flag.Selected)) {
+                        selection[i].removeFlag(IFNode.Flag.Selected);
                     } else {
-                        selection[i].setFlag(GXNode.Flag.Selected);
+                        selection[i].setFlag(IFNode.Flag.Selected);
                     }
                 }
             }
@@ -649,17 +649,17 @@
 
     /**
      * Clears the whole selection if any
-     * @param {Array<GXElement>} [exclusion] an array to exclude from removing
+     * @param {Array<IFElement>} [exclusion] an array to exclude from removing
      * from the selection or null for none
      */
-    GXEditor.prototype.clearSelection = function (exclusion) {
+    IFEditor.prototype.clearSelection = function (exclusion) {
         var index = 0;
         while (this._selection && index < this._selection.length) {
             if (exclusion && exclusion.indexOf(this._selection[index]) >= 0) {
                 index++;
                 continue;
             }
-            this._selection[index].removeFlag(GXNode.Flag.Selected);
+            this._selection[index].removeFlag(IFNode.Flag.Selected);
         }
     };
 
@@ -670,7 +670,7 @@
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [data] optional data of part that has started the transformation
      */
-    GXEditor.prototype.moveSelection = function (delta, align, partId, partData) {
+    IFEditor.prototype.moveSelection = function (delta, align, partId, partData) {
         if (align) {
             var selBBox = this._getSelectionBBox(false);
 
@@ -696,7 +696,7 @@
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [partData] optional data of part that has started the transformation
      */
-    GXEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
+    IFEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
         var selBBox = this._getSelectionBBox(false);
         if (selBBox) {
             // TODO : Align support
@@ -733,11 +733,11 @@
      * @param {*} [part] optional id of part that has started the transformation
      * @param {*} [partId] optional data of part that has started the transformation
      */
-    GXEditor.prototype.transformSelection = function (transform, partId, partData) {
+    IFEditor.prototype.transformSelection = function (transform, partId, partData) {
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = GXElementEditor.getEditor(item);
+                var editor = IFElementEditor.getEditor(item);
                 if (editor) {
                     editor.transform(transform, partId, partData);
                 }
@@ -748,11 +748,11 @@
     /**
      * Reset the transformation of the selection
      */
-    GXEditor.prototype.resetSelectionTransform = function () {
+    IFEditor.prototype.resetSelectionTransform = function () {
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = GXElementEditor.getEditor(item);
+                var editor = IFElementEditor.getEditor(item);
                 if (editor) {
                     editor.resetTransform();
                 }
@@ -770,14 +770,14 @@
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
+    IFEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
         if (this._selection && this._selection.length) {
             // Filter selection by editors that can not be transformed
             // and reset those instead here
             var newSelection = [];
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = GXElementEditor.getEditor(item);
+                var editor = IFElementEditor.getEditor(item);
                 if (editor) {
                     if (!editor.canApplyTransform()) {
                         // Reset editor transformation
@@ -798,13 +798,13 @@
                     var clonedSelection = [];
                     for (var i = 0; i < newSelection.length; ++i) {
                         var item = newSelection[i];
-                        var editor = GXElementEditor.getEditor(item);
+                        var editor = IFElementEditor.getEditor(item);
                         if (editor) {
                             var selectionElement = newSelection[i];
                             var elementToApplyTransform = selectionElement;
 
                             if (cloneSelection) {
-                                if (selectionElement.hasMixin(GXNode.Store)) {
+                                if (selectionElement.hasMixin(IFNode.Store)) {
                                     elementToApplyTransform = selectionElement.clone();
 
                                     // Append clone to parent of selected item
@@ -842,21 +842,21 @@
         }
     };
 
-    GXEditor.prototype.updateSelectionTransformBox = function () {
+    IFEditor.prototype.updateSelectionTransformBox = function () {
         this._transformBox = null;
         if (this.getSelection()) {
             var selBBox = this._getSelectionBBox(false);
             if (selBBox) {
-                this._transformBox = new GXTransformBox(selBBox);
+                this._transformBox = new IFTransformBox(selBBox);
             }
         }
     };
 
-    GXEditor.prototype.getTransformBox = function () {
+    IFEditor.prototype.getTransformBox = function () {
         return this._transformBox;
     };
 
-    GXEditor.prototype.cleanTransformBox = function () {
+    IFEditor.prototype.cleanTransformBox = function () {
         this._transformBox = null;
     };
 
@@ -864,14 +864,14 @@
      * Inserts one or more elements into the right target parent
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
-     * @param {Array<GXElement>} elements the elements to be inserted
+     * @param {Array<IFElement>} elements the elements to be inserted
      * @param {Boolean} noInitial if true, the editor will not be
      * called to handle the newly inserted element to assign some defaults.
      * Defaults to false.
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    GXEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
+    IFEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
         var target = this.getCurrentPage();// this.getCurrentLayer();
 
@@ -879,8 +879,8 @@
             this.beginTransaction();
         }
 
-        var fillColor = this._currentColor[GXEditor.CurrentColorType.Fill];
-        var strokeColor = this._currentColor[GXEditor.CurrentColorType.Stroke];
+        var fillColor = this._currentColor[IFEditor.CurrentColorType.Fill];
+        var strokeColor = this._currentColor[IFEditor.CurrentColorType.Stroke];
 
         try {
             for (var i = 0; i < elements.length; ++i) {
@@ -891,7 +891,7 @@
 
                 if (!noInitial) {
                     // Create a temporary editor for the element to handle it's insertion
-                    var editor = GXElementEditor.createEditor(element);
+                    var editor = IFElementEditor.createEditor(element);
                     if (editor) {
                         editor.initialSetup(fillColor, strokeColor);
                     }
@@ -914,11 +914,11 @@
      * @param {GPoint} position the mouse position
      * @param {GTransform} transform optional transformation for the position
      */
-    GXEditor.prototype.updateByMousePosition = function (position, transformation) {
+    IFEditor.prototype.updateByMousePosition = function (position, transformation) {
         // TODO : Make this more efficient than hit-testing everything (aka iterate pages instead)
         // Try to update the active page under mouse if any
         var pageHits = this._scene.hitTest(position, transformation, function (hit) {
-            return hit instanceof GXPage;
+            return hit instanceof IFPage;
         }.bind(this), false, 1/*one level deep only*/);
 
         if (pageHits && pageHits.length === 1) {
@@ -931,7 +931,7 @@
      * modifications including property changes to be replayed
      * as undo / redo states.
      */
-    GXEditor.prototype.beginTransaction = function () {
+    IFEditor.prototype.beginTransaction = function () {
         if (this._transaction) {
             throw new Error('There already is an active transaction.');
         }
@@ -950,7 +950,7 @@
      * include any changes, no undo/redo state will be committed.
      * @param {String} name
      */
-    GXEditor.prototype.commitTransaction = function (name) {
+    IFEditor.prototype.commitTransaction = function (name) {
         if (!this._transaction) {
             throw new Error('No active transaction to be committed.');
         }
@@ -1005,8 +1005,8 @@
      * @param {Function} revert the action to be executed when undoing
      * @param {String} name a name for the state
      */
-    GXEditor.prototype.pushState = function (action, revert, name) {
-        if (this._undoStates.length >= GXEditor.options.maxUndoSteps) {
+    IFEditor.prototype.pushState = function (action, revert, name) {
+        if (this._undoStates.length >= IFEditor.options.maxUndoSteps) {
             // Cut undo list of when reaching our undo limit
             this._undoStates.shift();
         }
@@ -1025,7 +1025,7 @@
      * Returns whether at least one undo state is available or not
      * @returns {boolean}
      */
-    GXEditor.prototype.hasUndoState = function () {
+    IFEditor.prototype.hasUndoState = function () {
         return this._undoStates.length > 0;
     };
 
@@ -1033,7 +1033,7 @@
      * Returns whether at least one redo state is available or not
      * @returns {boolean}
      */
-    GXEditor.prototype.hasRedoState = function () {
+    IFEditor.prototype.hasRedoState = function () {
         return this._redoStates.length > 0;
     };
 
@@ -1041,7 +1041,7 @@
      * Returns the name of the last undo state if any or null for none
      * @returns {String}
      */
-    GXEditor.prototype.getUndoStateName = function () {
+    IFEditor.prototype.getUndoStateName = function () {
         if (this._undoStates.length > 0) {
             return this._undoStates[this._undoStates.length - 1].name;
         }
@@ -1052,7 +1052,7 @@
      * Returns the name of the last redo state if any or null for none
      * @returns {String}
      */
-    GXEditor.prototype.getRedoStateName = function () {
+    IFEditor.prototype.getRedoStateName = function () {
         if (this._redoStates.length > 0) {
             return this._redoStates[this._redoStates.length - 1].name;
         }
@@ -1062,7 +1062,7 @@
     /**
      * Undo the latest state if any
      */
-    GXEditor.prototype.undoState = function () {
+    IFEditor.prototype.undoState = function () {
         if (this._undoStates.length > 0) {
             // Get state and shift it from undo list
             var state = this._undoStates.pop();
@@ -1078,7 +1078,7 @@
     /**
      * Redo the latest state if any
      */
-    GXEditor.prototype.redoState = function () {
+    IFEditor.prototype.redoState = function () {
         if (this._redoStates.length > 0) {
             // Get state and shift it from redo list
             var state = this._redoStates.pop();
@@ -1093,17 +1093,17 @@
     
     /**
      * Called to open an inline editor for a given node and view
-     * @param {GXNode} node
-     * @param {GXEditorView} view
+     * @param {IFNode} node
+     * @param {IFEditorView} view
      * @return {Boolean} true if an inline editor was opened, false if not
      */
-    GXEditor.prototype.openInlineEditor = function (node, view) {
+    IFEditor.prototype.openInlineEditor = function (node, view) {
         this.closeInlineEditor();
         
-        var editor = GXElementEditor.getEditor(node);
+        var editor = IFElementEditor.getEditor(node);
         if (editor && editor.canInlineEdit()) {
-            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
-                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.BeforeOpen));
+            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
+                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeOpen));
             }
             
             editor.beginInlineEdit(view, view._htmlElement);
@@ -1111,8 +1111,8 @@
             
             this._currentInlineEditorNode = node;
 
-            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
-                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.AfterOpen));
+            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
+                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterOpen));
             }
             
             return true;
@@ -1123,11 +1123,11 @@
 
     /**
      * Called to update any active inline editor for a given view
-     * @param {GXEditorView} view
+     * @param {IFEditorView} view
      */
-    GXEditor.prototype.updateInlineEditorForView = function (view) {
+    IFEditor.prototype.updateInlineEditorForView = function (view) {
         if (this._currentInlineEditorNode) {
-            var editor = GXElementEditor.getEditor(this._currentInlineEditorNode);
+            var editor = IFElementEditor.getEditor(this._currentInlineEditorNode);
             if (editor && editor.isInlineEdit()) {
                 editor.adjustInlineEditForView(view);
             }
@@ -1137,17 +1137,17 @@
     /**
      * Called to close any active inline editor
      */
-    GXEditor.prototype.closeInlineEditor = function () {
+    IFEditor.prototype.closeInlineEditor = function () {
         if (this._currentInlineEditorNode) {
             this._finishEditorInlineEdit(this._currentInlineEditorNode);
         }
     };
 
     /**
-     * @param {GXNode.AfterInsertEvent} evt
+     * @param {IFNode.AfterInsertEvent} evt
      * @private
      */
-    GXEditor.prototype._afterNodeInsert = function (evt) {
+    IFEditor.prototype._afterNodeInsert = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transaction) {
             var node = evt.node;
@@ -1172,16 +1172,16 @@
         this._tryAddToSelection(evt.node);
 
         // If page and we don't have a current one yet, mark it active now
-        if (evt.node instanceof GXPage && !this._currentPage) {
+        if (evt.node instanceof IFPage && !this._currentPage) {
             this.setCurrentPage(evt.node);
         }
     };
 
     /**
-     * @param {GXNode.BeforeRemoveEvent} evt
+     * @param {IFNode.BeforeRemoveEvent} evt
      * @private
      */
-    GXEditor.prototype._beforeNodeRemove = function (evt) {
+    IFEditor.prototype._beforeNodeRemove = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transaction) {
             var node = evt.node;
@@ -1201,10 +1201,10 @@
             });
         }
 
-        if (evt.node instanceof GXElement) {
+        if (evt.node instanceof IFElement) {
             // If element is in selection, unselect it, first
             if (this._selection && this._selection.indexOf(evt.node) >= 0) {
-                evt.node.removeFlag(GXNode.Flag.Selected);
+                evt.node.removeFlag(IFNode.Flag.Selected);
             } else {
                 // Otherwise try to close any editors the node may have
                 this._closeEditor(evt.node);
@@ -1228,10 +1228,10 @@
     };
 
     /**
-     * @param {GXNode.BeforePropertiesChangeEvent} evt
+     * @param {IFNode.BeforePropertiesChangeEvent} evt
      * @private
      */
-    GXEditor.prototype._beforePropertiesChange = function (evt) {
+    IFEditor.prototype._beforePropertiesChange = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transaction) {
             var node = evt.node;
@@ -1258,27 +1258,27 @@
     };
 
     /**
-     * @param {GXNode.BeforeFlagChangeEvent} evt
+     * @param {IFNode.BeforeFlagChangeEvent} evt
      * @private
      */
-    GXEditor.prototype._beforeFlagChange = function (evt) {
-        if (evt.node instanceof GXElement) {
-            if (evt.flag === GXElement.Flag.Hidden) {
+    IFEditor.prototype._beforeFlagChange = function (evt) {
+        if (evt.node instanceof IFElement) {
+            if (evt.flag === IFElement.Flag.Hidden) {
                 if (evt.set) {
                     // Deselect elements getting hidden
-                    evt.node.removeFlag(GXNode.Flag.Selected);
+                    evt.node.removeFlag(IFNode.Flag.Selected);
                 }
             }
         }
     };
 
     /**
-     * @param {GXNode.AfterFlagChangeEvent} evt
+     * @param {IFNode.AfterFlagChangeEvent} evt
      * @private
      */
-    GXEditor.prototype._afterFlagChange = function (evt) {
-        if (evt.node instanceof GXElement) {
-            if (evt.flag === GXNode.Flag.Selected) {
+    IFEditor.prototype._afterFlagChange = function (evt) {
+        if (evt.node instanceof IFElement) {
+            if (evt.flag === IFNode.Flag.Selected) {
                 if (evt.set) {
                     // Try to add node to the internal selection
                     this._tryAddToSelection(evt.node);
@@ -1286,16 +1286,16 @@
                     // Try to remove node from the internal selection
                     this._tryRemoveFromSelection(evt.node);
                 }
-            } else if (evt.flag == GXNode.Flag.Highlighted) {
+            } else if (evt.flag == IFNode.Flag.Highlighted) {
                 if (evt.set) {
-                    var editor = GXElementEditor.openEditor(evt.node);
+                    var editor = IFElementEditor.openEditor(evt.node);
                     if (editor) {
-                        editor.setFlag(GXElementEditor.Flag.Highlighted);
+                        editor.setFlag(IFElementEditor.Flag.Highlighted);
                     }
                 } else {
-                    var editor = GXElementEditor.openEditor(evt.node);
+                    var editor = IFElementEditor.openEditor(evt.node);
                     if (editor) {
-                        editor.removeFlag(GXElementEditor.Flag.Highlighted);
+                        editor.removeFlag(IFElementEditor.Flag.Highlighted);
                     }
                     this._tryCloseEditor(evt.node);
                 }
@@ -1304,16 +1304,16 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} evt
+     * @param {IFElement.GeometryChangeEvent} evt
      * @private
      */
-    GXEditor.prototype._geometryChange = function (evt) {
+    IFEditor.prototype._geometryChange = function (evt) {
         if (this._selection && this._selection.indexOf(evt.element) >= 0) {
             switch (evt.type) {
-                case GXElement.GeometryChangeEvent.Type.Before:
-                case GXElement.GeometryChangeEvent.Type.After:
-                case GXElement.GeometryChangeEvent.Type.Child:
-                    var editor = GXElementEditor.getEditor(evt.element);
+                case IFElement.GeometryChangeEvent.Type.Before:
+                case IFElement.GeometryChangeEvent.Type.After:
+                case IFElement.GeometryChangeEvent.Type.Child:
+                    var editor = IFElementEditor.getEditor(evt.element);
                     if (editor) {
                         editor.requestInvalidation();
                     }
@@ -1324,19 +1324,19 @@
 
     /**
      * Try to add a node to internal selection if it is selected
-     * @param {GXNode} node
+     * @param {IFNode} node
      * @private
      */
-    GXEditor.prototype._tryAddToSelection = function (node) {
-        if (node instanceof GXElement) {
-            if (node.hasFlag(GXNode.Flag.Selected)) {
+    IFEditor.prototype._tryAddToSelection = function (node) {
+        if (node instanceof IFElement) {
+            if (node.hasFlag(IFNode.Flag.Selected)) {
                 // Try to open an editor for the selected node
-                var editor = GXElementEditor.openEditor(node);
+                var editor = IFElementEditor.openEditor(node);
                 if (editor) {
-                    editor.setFlag(GXElementEditor.Flag.Selected);
+                    editor.setFlag(IFElementEditor.Flag.Selected);
 
                     if (this._selectionDetail) {
-                        editor.setFlag(GXElementEditor.Flag.Detail);
+                        editor.setFlag(IFElementEditor.Flag.Detail);
                     }
                 }
 
@@ -1347,13 +1347,13 @@
                 this._selection.push(node);
 
                 // Trigger selection change event
-                if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
-                    this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
+                if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
+                    this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
                 }
 
                 // Mark containing layer active if any
-                if (node.getParent() instanceof GXLayer) {
-                    node.getParent().setFlag(GXNode.Flag.Active);
+                if (node.getParent() instanceof IFLayer) {
+                    node.getParent().setFlag(IFNode.Flag.Active);
                 }
             }
         }
@@ -1361,15 +1361,15 @@
 
     /**
      * Try to remove a node from the internal selection
-     * @param {GXNode} node
+     * @param {IFNode} node
      * @private
      */
-    GXEditor.prototype._tryRemoveFromSelection = function (node) {
-        if (node instanceof GXElement) {
+    IFEditor.prototype._tryRemoveFromSelection = function (node) {
+        if (node instanceof IFElement) {
             // Close the editor for the previously selected node if it has any
-            var editor = GXElementEditor.getEditor(node);
-            if (editor && editor.hasFlag(GXElementEditor.Flag.Selected)) {
-                editor.removeFlag(GXElementEditor.Flag.Selected);
+            var editor = IFElementEditor.getEditor(node);
+            if (editor && editor.hasFlag(IFElementEditor.Flag.Selected)) {
+                editor.removeFlag(IFElementEditor.Flag.Selected);
                 this._tryCloseEditor(node);
             }
 
@@ -1395,27 +1395,27 @@
                 }
 
                 // Trigger selection change event
-                if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
-                    this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
+                if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
+                    this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
                 }
 
                 // Deactivate parent if layer and no other selected
                 // item has had the same parent
-                if (node.getParent() instanceof GXLayer && !sameParentInSelection) {
-                    node.getParent().removeFlag(GXNode.Flag.Active);
+                if (node.getParent() instanceof IFLayer && !sameParentInSelection) {
+                    node.getParent().removeFlag(IFNode.Flag.Active);
                 }
             }
-        } else if (node instanceof GXNode && node.hasFlag(GXNode.Flag.Selected)) {
+        } else if (node instanceof IFNode && node.hasFlag(IFNode.Flag.Selected)) {
             // Trigger selection change event
-            if (this.hasEventListeners(GXEditor.SelectionChangedEvent)) {
-                this.trigger(GXEditor.SELECTION_CHANGED_EVENT);
+            if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
+                this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
             }
         }
     };
 
-    GXEditor.prototype._tryCloseEditor = function (node) {
-        var editor = GXElementEditor.getEditor(node);
-        if (!editor || editor.hasFlag(GXElementEditor.Flag.Selected) || editor.hasFlag(GXElementEditor.Flag.Highlighted)) {
+    IFEditor.prototype._tryCloseEditor = function (node) {
+        var editor = IFElementEditor.getEditor(node);
+        if (!editor || editor.hasFlag(IFElementEditor.Flag.Selected) || editor.hasFlag(IFElementEditor.Flag.Highlighted)) {
             // can not close editor in this case(s)
             return;
         }
@@ -1435,11 +1435,11 @@
         }
     };
 
-    GXEditor.prototype._finishEditorInlineEdit = function (node) {
-        var editor = GXElementEditor.getEditor(node);
+    IFEditor.prototype._finishEditorInlineEdit = function (node) {
+        var editor = IFElementEditor.getEditor(node);
         if (editor && editor.isInlineEdit()) {
-            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
-                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.BeforeClose));
+            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
+                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeClose));
             }
             
             var editText = null;
@@ -1455,23 +1455,23 @@
                 this._currentInlineEditorNode = null;
             }
             
-            if (this.hasEventListeners(GXEditor.InlineEditorEvent)) {
-                this.trigger(new GXEditor.InlineEditorEvent(editor, GXEditor.InlineEditorEvent.Type.AfterClose));
+            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
+                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterClose));
             }
         }
     };
 
-    GXEditor.prototype._closeEditor = function (node) {
+    IFEditor.prototype._closeEditor = function (node) {
         this._finishEditorInlineEdit(node);
-        GXElementEditor.closeEditor(node);
+        IFElementEditor.closeEditor(node);
     };
 
     /**
      * Saves and returns the current selection
-     * @return {Array<{element: GXElement, parts: Array<*>}>}
+     * @return {Array<{element: IFElement, parts: Array<*>}>}
      * @private
      */
-    GXEditor.prototype._saveSelection = function () {
+    IFEditor.prototype._saveSelection = function () {
         if (!this._selection || this._selection.length === 0) {
             return null;
         }
@@ -1479,7 +1479,7 @@
         var result = [];
         for (var i = 0; i < this._selection.length; ++i) {
             var element = this._selection[i];
-            var editor = GXElementEditor.getEditor(element);
+            var editor = IFElementEditor.getEditor(element);
             var parts = editor ? editor.getPartSelection() : null;
             result.push({
                 element: element,
@@ -1492,10 +1492,10 @@
 
     /**
      * Loads a saved selection
-     * @param {Array<{element: GXElement, parts: Array<*>}>} selection
+     * @param {Array<{element: IFElement, parts: Array<*>}>} selection
      * @private
      */
-    GXEditor.prototype._loadSelection = function (selection) {
+    IFEditor.prototype._loadSelection = function (selection) {
         if (!selection || selection.length === 0) {
             this.clearSelection();
         } else {
@@ -1510,7 +1510,7 @@
             // Iterate selection again and assign part selections if any
             for (var i = 0; i < selection.length; ++i) {
                 if (selection[i].parts) {
-                    var editor = GXElementEditor.getEditor(selection[i].element);
+                    var editor = IFElementEditor.getEditor(selection[i].element);
                     if (editor) {
                         editor.updatePartSelection(false, selection[i].parts);
                     }
@@ -1519,7 +1519,7 @@
         }
     };
 
-    GXEditor.prototype._getSelectionBBox = function (paintBBox) {
+    IFEditor.prototype._getSelectionBBox = function (paintBBox) {
         var selBBox = null;
         if (this.getSelection()) {
             for (var i = 0; i < this.getSelection().length; ++i) {
@@ -1534,9 +1534,9 @@
     };
 
     /** @override */
-    GXEditor.prototype.toString = function () {
-        return "[Object GXEditor]";
+    IFEditor.prototype.toString = function () {
+        return "[Object IFEditor]";
     };
 
-    _.GXEditor = GXEditor;
+    _.IFEditor = IFEditor;
 })(this);

@@ -15,14 +15,14 @@
                 x = spaceX;
             }
 
-            var rect = new GXRectangle();
+            var rect = new IFRectangle();
             rect.setProperties(['trf'], [new GTransform(rectWidth, 0.0, 0.0, rectHeight, x, y)]);
 
             rect.transform(new GTransform(1.0, 0.0, 0.0, 1.0, -(x + rectWidth/2), -(y + rectHeight/2))
                 .rotated(gMath.toRadians(rotate))
                 .translated(+(x + rectWidth/2), + (y + rectHeight/2)));
 
-            var editor = GXEditor.getEditor(scene);
+            var editor = IFEditor.getEditor(scene);
             rect.getAttributes().appendChild(new IFStrokeAttribute());
             page.appendChild(rect);
 

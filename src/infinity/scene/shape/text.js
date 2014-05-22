@@ -21,23 +21,23 @@
 
     /**
      * A text shape
-     * @class GXText
-     * @extends GXShape
+     * @class IFText
+     * @extends IFShape
      * @constructor
      */
-    function GXText() {
-        GXShape.call(this);
-        this._setDefaultProperties(GXText.GeometryProperties);
-        this._vertices = new GXVertexContainer();
+    function IFText() {
+        IFShape.call(this);
+        this._setDefaultProperties(IFText.GeometryProperties);
+        this._vertices = new IFVertexContainer();
         this._verticesDirty = false;
     }
 
-    GXNode.inherit("text", GXText, GXShape);
+    IFNode.inherit("text", IFText, IFShape);
 
     /**
      * The geometry properties of text with their default values
      */
-    GXText.GeometryProperties = {
+    IFText.GeometryProperties = {
         /** Fixed width or not */
         fw: false,
         /** Fixed height or not */
@@ -45,37 +45,37 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Chunk Class
+    // IFText.Chunk Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Chunk
-     * @extends GXNode
-     * @mixes GXNode.Store
+     * @class IFText.Chunk
+     * @extends IFNode
+     * @mixes IFNode.Store
      * @private
      */
-    GXText.Chunk = function (content) {
-        GXNode.call(this);
+    IFText.Chunk = function (content) {
+        IFNode.call(this);
         this._content = content;
     }
 
-    GXNode.inheritAndMix("txChk", GXText.Chunk, GXNode, [GXNode.Store]);
+    IFNode.inheritAndMix("txChk", IFText.Chunk, IFNode, [IFNode.Store]);
 
     /**
      * @type {String}
      * @private
      */
-    GXText.Chunk.prototype._content = null;
+    IFText.Chunk.prototype._content = null;
 
     /**
      * @returns {String}
      */
-    GXText.Chunk.prototype.getContent = function () {
+    IFText.Chunk.prototype.getContent = function () {
         return this._content;
     };
 
     /** @override */
-    GXText.Chunk.prototype.store = function (blob) {
-        if (GXNode.Store.prototype.store.call(this, blob)) {
+    IFText.Chunk.prototype.store = function (blob) {
+        if (IFNode.Store.prototype.store.call(this, blob)) {
             blob.cnt = this._content;
             return true;
         }
@@ -83,8 +83,8 @@
     };
 
     /** @override */
-    GXText.Chunk.prototype.restore = function (blob) {
-        if (GXNode.Store.prototype.restore.call(this, blob)) {
+    IFText.Chunk.prototype.restore = function (blob) {
+        if (IFNode.Store.prototype.restore.call(this, blob)) {
             this._content = blob.cnt;
             return true;
         }
@@ -92,51 +92,51 @@
     };
 
     /** @override */
-    GXText.Chunk.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Block;
+    IFText.Chunk.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText.Block;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Break Class
+    // IFText.Break Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Break
-     * @extends GXNode
-     * @mixes GXNode.Store
+     * @class IFText.Break
+     * @extends IFNode
+     * @mixes IFNode.Store
      * @private
      */
-    GXText.Break = function () {
-        GXNode.call(this);
+    IFText.Break = function () {
+        IFNode.call(this);
     }
 
-    GXNode.inheritAndMix("txBrk", GXText.Break, GXNode, [GXNode.Store]);
+    IFNode.inheritAndMix("txBrk", IFText.Break, IFNode, [IFNode.Store]);
 
     /** @override */
-    GXText.Break.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Block;
+    IFText.Break.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText.Block;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Block Class
+    // IFText.Block Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Block
-     * @extends GXNode
-     * @mixes GXNode.Properties
-     * @mixes GXNode.Store
+     * @class IFText.Block
+     * @extends IFNode
+     * @mixes IFNode.Properties
+     * @mixes IFNode.Store
      * @private
      */
-    GXText.Block = function () {
-        this._setDefaultProperties(GXText.Block.Properties);
+    IFText.Block = function () {
+        this._setDefaultProperties(IFText.Block.Properties);
     };
 
-    GObject.inheritAndMix(GXText.Block, GXNode, [GXNode.Properties, GXNode.Store]);
+    GObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store]);
 
     /**
      * The style of a text
      * @enum
      */
-    GXText.Block.TextStyle = {
+    IFText.Block.TextStyle = {
         Normal: 'n',
         Bold: 'b',
         Italic: 'i',
@@ -146,12 +146,12 @@
     /**
      * The geometry properties of a block with their default values
      */
-    GXText.Block.Properties = {
+    IFText.Block.Properties = {
         /** The font family */
         ff: null,
         /** The font size */
         fi: null,
-        /** The font style (GXText.Block.TextStyle) */
+        /** The font style (IFText.Block.TextStyle) */
         fs: null,
         /** The font color */
         fc: null,
@@ -161,26 +161,26 @@
         ws: null
     };
 
-    GXText.Block.propertyToCss = function (property, value, css) {
+    IFText.Block.propertyToCss = function (property, value, css) {
         if (property === 'ff') {
             css['font-family'] = value;
         } else if (property === 'fi') {
             css['font-size'] = value + 'px';
         } else if (property === 'fs') {
             switch (value) {
-                case GXText.Block.TextStyle.Normal:
+                case IFText.Block.TextStyle.Normal:
                     css['font-weight'] = 'normal';
                     css['font-style'] = 'normal';
                     break;
-                case GXText.Block.TextStyle.Bold:
+                case IFText.Block.TextStyle.Bold:
                     css['font-weight'] = 'bold';
                     css['font-style'] = 'normal';
                     break;
-                case GXText.Block.TextStyle.Italic:
+                case IFText.Block.TextStyle.Italic:
                     css['font-weight'] = 'normal';
                     css['font-style'] = 'italic';
                     break;
-                case GXText.Block.TextStyle.BoldItalic:
+                case IFText.Block.TextStyle.BoldItalic:
                     css['font-weight'] = 'bold';
                     css['font-style'] = 'italic';
                     break;
@@ -196,7 +196,7 @@
         }
     };
 
-    GXText.Block.cssToProperty = function (property, css) {
+    IFText.Block.cssToProperty = function (property, css) {
         if (property === 'ff') {
             if (css['font-family']) {
                 return css['font-family'];
@@ -211,16 +211,16 @@
             var italic = css['font-style'] === 'italic';
 
             if (bold && italic) {
-                return GXText.Block.TextStyle.BoldItalic;
+                return IFText.Block.TextStyle.BoldItalic;
             } else if (bold) {
-                return GXText.Block.TextStyle.Bold;
+                return IFText.Block.TextStyle.Bold;
             } else if (italic) {
-                GXText.Block.TextStyle.Italic;
+                IFText.Block.TextStyle.Italic;
             } else {
-                return GXText.Block.TextStyle.Normal;
+                return IFText.Block.TextStyle.Normal;
             }
         } else if (property === 'fc') {
-            var value = GXColor.parseCSSColor(css['color']);
+            var value = IFColor.parseCSSColor(css['color']);
             if (value) {
                 return value;
             }
@@ -242,11 +242,11 @@
     };
 
     /**
-     * @return {GXText}
+     * @return {IFText}
      */
-    GXText.Block.prototype.getText = function () {
+    IFText.Block.prototype.getText = function () {
         for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
-            if (parent instanceof GXText) {
+            if (parent instanceof IFText) {
                 return parent;
             }
         }
@@ -254,44 +254,44 @@
     };
 
     /** @override */
-    GXText.Block.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Block;
+    IFText.Block.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText.Block;
     };
 
     /** @override */
-    GXText.Block.prototype._handleChange = function (change, args) {
+    IFText.Block.prototype._handleChange = function (change, args) {
         var text = this.getText();
 
         if (text) {
-            if (text._handleGeometryChangeForProperties(change, args, GXText.Block.Properties) && change == GXNode._Change.BeforePropertiesChange) {
+            if (text._handleGeometryChangeForProperties(change, args, IFText.Block.Properties) && change == IFNode._Change.BeforePropertiesChange) {
                 text._verticesDirty = true;
-            } else if (change == GXNode._Change.BeforeChildInsert || change == GXNode._Change.BeforeChildRemove) {
+            } else if (change == IFNode._Change.BeforeChildInsert || change == IFNode._Change.BeforeChildRemove) {
                 text.beginUpdate();
-            } else if (change == GXNode._Change.AfterChildInsert || change == GXNode._Change.AfterChildRemove) {
+            } else if (change == IFNode._Change.AfterChildInsert || change == IFNode._Change.AfterChildRemove) {
                 text._verticesDirty = true;
                 text.endUpdate();
             }
         }
 
-        GXNode.prototype._handleChange.call(this, change, args);
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * @param {{}} css
      * @returns {{}}
      */
-    GXText.Block.prototype.propertiesToCss = function (css) {
-        return this._propertiesToCss(css, GXText.Block.Properties, GXText.Block.propertyToCss);
+    IFText.Block.prototype.propertiesToCss = function (css) {
+        return this._propertiesToCss(css, IFText.Block.Properties, IFText.Block.propertyToCss);
     };
 
     /**
      * @param {{}} css
      */
-    GXText.Block.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, GXText.Block.Properties, GXText.Block.cssToProperty);
+    IFText.Block.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, IFText.Block.Properties, IFText.Block.cssToProperty);
     };
 
-    GXText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
+    IFText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
         for (var property in propertyMap) {
             var value = this.getProperty(property);
             if (value !== null) {
@@ -301,7 +301,7 @@
         return css;
     };
 
-    GXText.Block.prototype._cssToProperties = function (css, propertyMap, propertyConverter) {
+    IFText.Block.prototype._cssToProperties = function (css, propertyMap, propertyConverter) {
         var properties = [];
         var values = [];
         for (var property in propertyMap) {
@@ -316,47 +316,47 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Span Class
+    // IFText.Span Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Span
-     * @extends GXText.Block
-     * @mixes GXNode.Container
+     * @class IFText.Span
+     * @extends IFText.Block
+     * @mixes IFNode.Container
      * @private
      */
-    GXText.Span = function () {
-        GXText.Block.call(this);
-        this._setDefaultProperties(GXText.Span.Properties);
+    IFText.Span = function () {
+        IFText.Block.call(this);
+        this._setDefaultProperties(IFText.Span.Properties);
     }
 
-    GXNode.inheritAndMix("txSpan", GXText.Span, GXText.Block, [GXNode.Container]);
+    IFNode.inheritAndMix("txSpan", IFText.Span, IFText.Block, [IFNode.Container]);
 
     /** @override */
-    GXText.Span.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Paragraph || parent instanceof GXText.Span;
+    IFText.Span.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText.Paragraph || parent instanceof IFText.Span;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Paragraph Class
+    // IFText.Paragraph Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Paragraph
-     * @extends GXText.Block
-     * @mixes GXNode.Container
+     * @class IFText.Paragraph
+     * @extends IFText.Block
+     * @mixes IFNode.Container
      * @private
      */
-    GXText.Paragraph = function () {
-        GXText.Block.call(this);
-        this._setDefaultProperties(GXText.Paragraph.Properties);
+    IFText.Paragraph = function () {
+        IFText.Block.call(this);
+        this._setDefaultProperties(IFText.Paragraph.Properties);
     }
 
-    GXNode.inheritAndMix("txPara", GXText.Paragraph, GXText.Block, [GXNode.Container]);
+    IFNode.inheritAndMix("txPara", IFText.Paragraph, IFText.Block, [IFNode.Container]);
 
     /**
      * Alignment of a paragraph
      * @enum
      */
-    GXText.Paragraph.Alignment = {
+    IFText.Paragraph.Alignment = {
         Left: 'l',
         Center: 'c',
         Right: 'r',
@@ -367,7 +367,7 @@
      * Wrap-Mode of a paragraph
      * @enum
      */
-    GXText.Paragraph.WrapMode = {
+    IFText.Paragraph.WrapMode = {
         /**
          * No word-break
          */
@@ -387,14 +387,14 @@
     /**
      * The geometry properties of a paragraph with their default values
      */
-    GXText.Paragraph.Properties = {
+    IFText.Paragraph.Properties = {
         /** Column count */
         cc: null,
         /** Column gap */
         cg: null,
-        /** Wrap-Mode of a paragraph (GXText.Paragraph.WrapMode) */
+        /** Wrap-Mode of a paragraph (IFText.Paragraph.WrapMode) */
         wm: null,
-        /** The paragraph's alignment (GXText.Paragraph.Alignment) */
+        /** The paragraph's alignment (IFText.Paragraph.Alignment) */
         al: null,
         /** The first line intendation */
         in: null,
@@ -410,7 +410,7 @@
         ml: null
     };
 
-    GXText.Paragraph.propertyToCss = function (property, value, css) {
+    IFText.Paragraph.propertyToCss = function (property, value, css) {
         if (property === 'cc') {
             value = value || 1;
             css['column-count'] = value;
@@ -422,29 +422,29 @@
             css['-moz-column-gap'] = value;
         } else if (property === 'wm') {
             switch (value) {
-                case GXText.Paragraph.WrapMode.None:
+                case IFText.Paragraph.WrapMode.None:
                     css['white-space'] = 'nowrap';
                     break;
-                case GXText.Paragraph.WrapMode.Words:
+                case IFText.Paragraph.WrapMode.Words:
                     css['white-space'] = 'pre-wrap';
                     break;
-                case GXText.Paragraph.WrapMode.All:
+                case IFText.Paragraph.WrapMode.All:
                     css['white-space'] = 'pre-wrap';
                     css['word-break'] = 'break-all';
                     break;
             }
         } else if (property === 'al') {
             switch (value) {
-                case GXText.Paragraph.Alignment.Left:
+                case IFText.Paragraph.Alignment.Left:
                     css['text-align'] = 'left';
                     break;
-                case GXText.Paragraph.Alignment.Center:
+                case IFText.Paragraph.Alignment.Center:
                     css['text-align'] = 'center';
                     break;
-                case GXText.Paragraph.Alignment.Right:
+                case IFText.Paragraph.Alignment.Right:
                     css['text-align'] = 'right';
                     break;
-                case GXText.Paragraph.Alignment.Justify:
+                case IFText.Paragraph.Alignment.Justify:
                     css['text-align'] = 'justify';
                     break;
             }
@@ -465,7 +465,7 @@
         }
     };
 
-    GXText.Paragraph.cssToProperty = function (property, css) {
+    IFText.Paragraph.cssToProperty = function (property, css) {
         if (property === 'cc') {
             var str = css['column-count'] || css['-webkit-column-count'] || css['-moz-column-count'];
             var value = parseInt(str);
@@ -484,22 +484,22 @@
 
             if (wspace === 'pre-wrap') {
                 if (wbreak === 'break-all') {
-                    return GXText.Paragraph.WrapMode.All;
+                    return IFText.Paragraph.WrapMode.All;
                 } else {
-                    return GXText.Paragraph.WrapMode.Words;
+                    return IFText.Paragraph.WrapMode.Words;
                 }
             } else if (wspace === 'nowrap') {
-                return GXText.Paragraph.WrapMode.None;
+                return IFText.Paragraph.WrapMode.None;
             }
         } else if (property === 'al') {
             if (value === 'left') {
-                return GXText.Paragraph.Alignment.Left;
+                return IFText.Paragraph.Alignment.Left;
             } else if (value === 'center') {
-                return GXText.Paragraph.Alignment.Center;
+                return IFText.Paragraph.Alignment.Center;
             } else if (value === 'right') {
-                return GXText.Paragraph.Alignment.Right;
+                return IFText.Paragraph.Alignment.Right;
             } else if (value === 'justify') {
-                return GXText.Paragraph.Alignment.Justify;
+                return IFText.Paragraph.Alignment.Justify;
             }
         } else if (property === 'in') {
             var value = parseFloat(css['text-indent']);
@@ -538,66 +538,66 @@
     };
 
     /** @override */
-    GXText.Paragraph.prototype._handleChange = function (change, args) {
+    IFText.Paragraph.prototype._handleChange = function (change, args) {
         var text = this.getText();
 
         if (text) {
-            if (text._handleGeometryChangeForProperties(change, args, GXText.Paragraph.Properties) && change == GXNode._Change.BeforePropertiesChange) {
+            if (text._handleGeometryChangeForProperties(change, args, IFText.Paragraph.Properties) && change == IFNode._Change.BeforePropertiesChange) {
                 text._verticesDirty = true;
             }
         }
 
-        GXText.Block.prototype._handleChange.call(this, change, args);
+        IFText.Block.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    GXText.Paragraph.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText.Content;
+    IFText.Paragraph.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText.Content;
     };
 
     /** @override */
-    GXText.Paragraph.prototype.propertiesToCss = function (css) {
-        this._propertiesToCss(css, GXText.Paragraph.Properties, GXText.Paragraph.propertyToCss);
-        return GXText.Block.prototype.propertiesToCss.call(this, css);
+    IFText.Paragraph.prototype.propertiesToCss = function (css) {
+        this._propertiesToCss(css, IFText.Paragraph.Properties, IFText.Paragraph.propertyToCss);
+        return IFText.Block.prototype.propertiesToCss.call(this, css);
     };
 
     /**
      * @param {{}} css
      */
-    GXText.Paragraph.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, GXText.Paragraph.Properties, GXText.Paragraph.cssToProperty);
-        GXText.Block.prototype.cssToProperties.call(this, css);
+    IFText.Paragraph.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, IFText.Paragraph.Properties, IFText.Paragraph.cssToProperty);
+        IFText.Block.prototype.cssToProperties.call(this, css);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText.Content Class
+    // IFText.Content Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXText.Content
-     * @extends GXText.Paragraph
+     * @class IFText.Content
+     * @extends IFText.Paragraph
      * @private
      */
-    GXText.Content = function () {
-        GXText.Paragraph.call(this);
-        this._flags |= GXNode.Flag.Shadow;
+    IFText.Content = function () {
+        IFText.Paragraph.call(this);
+        this._flags |= IFNode.Flag.Shadow;
 
         // Setup default font stuff
         this.$ff = 'Arial';
         this.$fi = 12;
-        this.$fs = GXText.Block.TextStyle.Normal;
+        this.$fs = IFText.Block.TextStyle.Normal;
         this.$lh = 1;
-        this.$wm = GXText.Paragraph.WrapMode.All;
+        this.$wm = IFText.Paragraph.WrapMode.All;
     };
 
-    GXNode.inherit("txContent", GXText.Content, GXText.Paragraph);
+    IFNode.inherit("txContent", IFText.Content, IFText.Paragraph);
 
     /** @override */
-    GXText.Content.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXText;
+    IFText.Content.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFText;
     };
 
     /** @override */
-    GXText.Content.prototype.propertiesToCss = function (css) {
+    IFText.Content.prototype.propertiesToCss = function (css) {
         // Setup default color taking care of attributes if any
         var color = 'black';
         var text = this._parent;
@@ -609,41 +609,41 @@
         }
         css['color'] = color;
 
-        return GXText.Paragraph.prototype.propertiesToCss.call(this, css);
+        return IFText.Paragraph.prototype.propertiesToCss.call(this, css);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXText Class
+    // IFText Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @type {GXText.Content}
+     * @type {IFText.Content}
      * @private
      */
-    GXText.prototype._content = null;
+    IFText.prototype._content = null;
 
     /**
      * @type {GPoint}
      * @private
      */
-    GXText.prototype._size = null;
+    IFText.prototype._size = null;
 
     /**
-     * @type {GXVertexContainer}
+     * @type {IFVertexContainer}
      * @private
      */
-    GXText.prototype._vertices = null;
+    IFText.prototype._vertices = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    GXText.prototype._verticesDirty = false;
+    IFText.prototype._verticesDirty = false;
 
     /**
      * Returns the content container of the text node
-     * @returns {GXText.Content}
+     * @returns {IFText.Content}
      */
-    GXText.prototype.getContent = function () {
+    IFText.prototype.getContent = function () {
         // If we have a _content reference and it not
         // has ourself as a parent, then clear it, first
         if (this._content && this._content.getParent() !== this) {
@@ -653,14 +653,14 @@
         if (!this._content) {
             // Find our content and save reference for faster access
             for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof GXText.Content) {
+                if (child instanceof IFText.Content) {
                     this._content = child;
                     break;
                 }
             }
 
             if (!this._content) {
-                this._content = new GXText.Content();
+                this._content = new IFText.Content();
                 this.appendChild(this._content);
             }
         }
@@ -675,7 +675,7 @@
      * Defaults to false.
      * @returns {String}
      */
-    GXText.prototype.asHtml = function (segments) {
+    IFText.prototype.asHtml = function (segments) {
         var dummy = $('<div></div>');
         this._asHtml(dummy, this.getContent(), segments);
         return dummy.html();
@@ -686,7 +686,7 @@
      * a given html string
      * @param {String} html
      */
-    GXText.prototype.fromHtml = function (html) {
+    IFText.prototype.fromHtml = function (html) {
         this.beginUpdate();
         try {
             var content = this.getContent();
@@ -708,18 +708,18 @@
     };
 
     /** @override */
-    GXText.prototype.store = function (blob) {
-        if (GXShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXText.GeometryProperties);
+    IFText.prototype.store = function (blob) {
+        if (IFShape.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFText.GeometryProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXText.prototype.restore = function (blob) {
-        if (GXShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXText.GeometryProperties);
+    IFText.prototype.restore = function (blob) {
+        if (IFShape.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFText.GeometryProperties);
             this._verticesDirty = true;
             return true;
         }
@@ -727,7 +727,7 @@
     };
 
     /** @override */
-    GXText.prototype.rewindVertices = function (index) {
+    IFText.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null) {
             this._vertices.clearVertices();
 
@@ -786,18 +786,18 @@
                 for (var i = 0; i < path.commands.length; i += 1) {
                     var cmd = path.commands[i];
                     if (cmd.type === 'M') {
-                        this._vertices.addVertex(GXVertex.Command.Move, cmd.x, cmd.y);
+                        this._vertices.addVertex(IFVertex.Command.Move, cmd.x, cmd.y);
                     } else if (cmd.type === 'L') {
-                        this._vertices.addVertex(GXVertex.Command.Line, cmd.x, cmd.y);
+                        this._vertices.addVertex(IFVertex.Command.Line, cmd.x, cmd.y);
                     } else if (cmd.type === 'C') {
-                        this._vertices.addVertex(GXVertex.Command.Curve2, cmd.x, cmd.y);
-                        this._vertices.addVertex(GXVertex.Command.Curve2, cmd.x1, cmd.y1);
-                        this._vertices.addVertex(GXVertex.Command.Curve2, cmd.x2, cmd.y2);
+                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x, cmd.y);
+                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x1, cmd.y1);
+                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x2, cmd.y2);
                     } else if (cmd.type === 'Q') {
-                        this._vertices.addVertex(GXVertex.Command.Curve, cmd.x, cmd.y);
-                        this._vertices.addVertex(GXVertex.Command.Curve, cmd.x1, cmd.y1);
+                        this._vertices.addVertex(IFVertex.Command.Curve, cmd.x, cmd.y);
+                        this._vertices.addVertex(IFVertex.Command.Curve, cmd.x1, cmd.y1);
                     } else if (cmd.type === 'Z') {
-                        this._vertices.addVertex(GXVertex.Command.Close);
+                        this._vertices.addVertex(IFVertex.Command.Close);
                     }
                 }
 
@@ -823,12 +823,12 @@
     };
 
     /** @override */
-    GXText.prototype.readVertex = function (vertex) {
+    IFText.prototype.readVertex = function (vertex) {
         return this._vertices.readVertex(vertex);
     };
 
     /** @override */
-    GXText.prototype._calculateGeometryBBox = function () {
+    IFText.prototype._calculateGeometryBBox = function () {
         // Always rewind to ensure integrity
         this.rewindVertices(0);
 
@@ -849,8 +849,8 @@
     };
 
     /** @override */
-    GXText.prototype._preparePaint = function (context) {
-        if (GXShape.prototype._preparePaint.call(this, context)) {
+    IFText.prototype._preparePaint = function (context) {
+        if (IFShape.prototype._preparePaint.call(this, context)) {
             // Check if we need to clip rect
             var clipBox = this._getClipBox(context);
             if (clipBox) {
@@ -863,31 +863,31 @@
     };
 
     /** @override */
-    GXText.prototype._finishPaint = function (context) {
+    IFText.prototype._finishPaint = function (context) {
         // Reset clipping if done previously
         if (this._getClipBox(context) !== null) {
             context.canvas.resetClip();
         }
 
-        GXShape.prototype._finishPaint.call(this, context);
+        IFShape.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
-    GXText.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    IFText.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // For now, text is always hit-test by its bbox only so return ourself
         // TODO : Add support for detailed range hit test information here
-        return new GXElement.HitResult(this);
+        return new IFElement.HitResult(this);
     };
 
     /** @override */
-    GXText.prototype._handleChange = function (change, args) {
-        GXShape.prototype._handleChange.call(this, change, args);
+    IFText.prototype._handleChange = function (change, args) {
+        IFShape.prototype._handleChange.call(this, change, args);
 
-        if (this._handleGeometryChangeForProperties(change, args, GXText.GeometryProperties) && change == GXNode._Change.BeforePropertiesChange) {
+        if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {
             this._verticesDirty = true;
         }
 
-        if (change === GXNode._Change.BeforePropertiesChange) {
+        if (change === IFNode._Change.BeforePropertiesChange) {
             var transformIdx = args.properties.indexOf('trf');
             if (transformIdx >= 0 && !this._verticesDirty) {
                 // TODO : Optimize for cases where no invalidation of vertices is required
@@ -918,7 +918,7 @@
      * @returns {GRect}
      * @private
      */
-    GXText.prototype._getClipBox = function (context) {
+    IFText.prototype._getClipBox = function (context) {
         var bbox = this.getGeometryBBox();
         if (this._size &&
             ((this.$fw && this._size.getX() >= bbox.getWidth()) ||
@@ -938,11 +938,11 @@
      * @param segments
      * @private
      */
-    GXText.prototype._asHtml = function (parent, node, segments) {
-        if (node instanceof GXText.Break) {
+    IFText.prototype._asHtml = function (parent, node, segments) {
+        if (node instanceof IFText.Break) {
             $('<br>')
                 .appendTo(parent);
-        } else if (node instanceof GXText.Chunk) {
+        } else if (node instanceof IFText.Chunk) {
             var content = node.getContent();
             if (content && content !== "") {
                 if (segments) {
@@ -955,18 +955,18 @@
                     parent.append(document.createTextNode(content));
                 }
             }
-        } else if (node instanceof GXText.Content) {
+        } else if (node instanceof IFText.Content) {
             // ignore root
-        } else if (node instanceof GXText.Paragraph) {
+        } else if (node instanceof IFText.Paragraph) {
             parent = $('<p></p>')
                 .css(node.propertiesToCss({}))
                 .appendTo(parent);
-        } else if (node instanceof GXText.Span) {
+        } else if (node instanceof IFText.Span) {
             parent = $('<span></span>')
                 .css(node.propertiesToCss({}))
                 .appendTo(parent);
         }
-        if (node.hasMixin(GXNode.Container)) {
+        if (node.hasMixin(IFNode.Container)) {
             for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
                 this._asHtml(parent, child, segments);
             }
@@ -978,28 +978,28 @@
      * @param parent
      * @private
      */
-    GXText.prototype._fromHtml = function (node, parent) {
+    IFText.prototype._fromHtml = function (node, parent) {
         if (node.nodeType === 1) {
             var nodeName = node.nodeName.toLowerCase();
 
             if (nodeName === 'p' || nodeName === 'div') {
-                var paragraph = new GXText.Paragraph();
+                var paragraph = new IFText.Paragraph();
                 paragraph.cssToProperties(node.style);
                 parent.appendChild(paragraph);
                 parent = paragraph;
             } else if (nodeName === 'span' || nodeName === 'b' || nodeName === 'strong' || nodeName === 'i') {
-                var span = new GXText.Span();
+                var span = new IFText.Span();
                 span.cssToProperties(node.style);
                 parent.appendChild(span);
                 parent = span;
 
                 if (nodeName === 'b' || nodeName === 'strong') {
-                    span.setProperty('fs', GXText.Block.TextStyle.Bold);
+                    span.setProperty('fs', IFText.Block.TextStyle.Bold);
                 } else if (nodeName === 'i') {
-                    span.setProperty('fs', GXText.Block.TextStyle.Italic);
+                    span.setProperty('fs', IFText.Block.TextStyle.Italic);
                 }
             } else if (nodeName === 'br') {
-                parent.appendChild(new GXText.Break());
+                parent.appendChild(new IFText.Break());
                 return; // no children for breaks
             } else {
                 // ignore the element alltogether
@@ -1011,15 +1011,15 @@
             }
         } else if (node.nodeType === 3) {
             if (node.textContent !== "") {
-                parent.appendChild(new GXText.Chunk(node.textContent));
+                parent.appendChild(new IFText.Chunk(node.textContent));
             }
         }
     };
 
     /** @override */
-    GXText.prototype.toString = function () {
-        return "[GXText]";
+    IFText.prototype.toString = function () {
+        return "[IFText]";
     };
 
-    _.GXText = GXText;
+    _.IFText = IFText;
 })(this);

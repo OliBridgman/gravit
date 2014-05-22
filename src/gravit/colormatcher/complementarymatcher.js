@@ -35,7 +35,7 @@
     EXComplementaryMatcher.prototype.match = function (referenceColor) {
         var hsl = referenceColor.asHSL();
         hsl[0] = gMath.normalizeAngleDegrees(hsl[0] + 180);
-        return [new GXColor(GXColor.Type.HSL, hsl)];
+        return [new IFColor(IFColor.Type.HSL, hsl)];
     };
 
     /** @override */

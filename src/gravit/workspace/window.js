@@ -9,7 +9,7 @@
     function EXWindow(document) {
         this._container = $('<div></div>');
         this._document = document;
-        this._view = new GXEditorView(this._document.getEditor());
+        this._view = new IFEditorView(this._document.getEditor());
         this._view.setViewMargin([EXWindow.VIEW_MARGIN, EXWindow.VIEW_MARGIN, EXWindow.VIEW_MARGIN, EXWindow.VIEW_MARGIN]);
         this._container.append(this._view._htmlElement);
 
@@ -51,7 +51,7 @@
 
     /**
      * The underlying view
-     * @type {GXEditorView}
+     * @type {IFEditorView}
      * @private
      */
     EXWindow.prototype._view = null;
@@ -74,7 +74,7 @@
 
     /**
      * Returns the underlying editor view this window is bound to
-     * @return {GXEditorView}
+     * @return {IFEditorView}
      */
     EXWindow.prototype.getView = function () {
         return this._view;
@@ -150,13 +150,13 @@
                     stackItem.element = elementHits[i].element;
                     stackItem.setCaption((i + 1).toString() + '. ' + elementHits[i].element.getNodeNameTranslated());
                     stackItem.addEventListener(GUIMenuItem.EnterEvent, function () {
-                        this.element.setFlag(GXNode.Flag.Highlighted);
+                        this.element.setFlag(IFNode.Flag.Highlighted);
                     });
                     stackItem.addEventListener(GUIMenuItem.LeaveEvent, function () {
-                        this.element.removeFlag(GXNode.Flag.Highlighted);
+                        this.element.removeFlag(IFNode.Flag.Highlighted);
                     });
                     stackItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-                        this.element.removeFlag(GXNode.Flag.Highlighted);
+                        this.element.removeFlag(IFNode.Flag.Highlighted);
                         self._document.getEditor().updateSelection(gPlatform.modifiers.shiftKey, [this.element]);
                     });
                     selectItem.getMenu().addItem(stackItem);
@@ -167,7 +167,7 @@
         menu.setMenuBlocker(function () {
             var toolManager = gApp.getToolManager();
             var tool = toolManager.getActiveTool();
-            if (tool instanceof GXBezigonTool || tool instanceof GXPenTool) {
+            if (tool instanceof IFBezigonTool || tool instanceof IFPenTool) {
                 return true;
             }
             return false;

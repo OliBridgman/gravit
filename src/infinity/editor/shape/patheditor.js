@@ -1,13 +1,13 @@
 (function (_) {
     /**
      * An editor for a path
-     * @param {GXPath} path the path this editor works on
-     * @class GXPathEditor
-     * @extends GXPathBaseEditor
+     * @param {IFPath} path the path this editor works on
+     * @class IFPathEditor
+     * @extends IFPathBaseEditor
      * @constructor
      */
-    function GXPathEditor(path) {
-        GXPathBaseEditor.call(this, path);
+    function IFPathEditor(path) {
+        IFPathBaseEditor.call(this, path);
 
         // Add all selected anchor points into our part selection if there're any
         var selectedAnchorPoints = path.getAnchorPoints().queryAll(':selected');
@@ -15,17 +15,17 @@
             if (!this._partSelection) {
                 this._partSelection = [];
             }
-            this._partSelection.push({type: GXPathEditor.PartType.Point, point: selectedAnchorPoints[i]});
+            this._partSelection.push({type: IFPathEditor.PartType.Point, point: selectedAnchorPoints[i]});
         }
     };
-    GObject.inherit(GXPathEditor, GXPathBaseEditor);
-    GXElementEditor.exports(GXPathEditor, GXPath);
+    GObject.inherit(IFPathEditor, IFPathBaseEditor);
+    IFElementEditor.exports(IFPathEditor, IFPath);
 
     /**
      * Type of path an editor part
      * @enum
      */
-    GXPathEditor.PartType = {
+    IFPathEditor.PartType = {
         Segment: 1,
         Point: 2,
         LeftHandle: 3,
@@ -38,33 +38,33 @@
      * Type of additional data of segment part
      * @enum
      */
-    GXPathEditor.SegmentData = {
+    IFPathEditor.SegmentData = {
         HitRes: 1,
         Handles: 2
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXPathEditor Class
+    // IFPathEditor Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Mapping of source point indices (key) to preview point indices (value)
      * @type {*}
      * @private
      */
-    GXPathEditor.prototype._sourceIndexToPreviewIndex = null;
+    IFPathEditor.prototype._sourceIndexToPreviewIndex = null;
 
     /**
      * Indicates if path extension is expected to be continued by path tools
      * @type {Boolean}
      * @private
      */
-    GXPathEditor.prototype._activeExtedingMode = false;
+    IFPathEditor.prototype._activeExtedingMode = false;
 
     /**
      * Returns if path editor is in path actively axtending mode
      * @returns {Boolean}
      */
-    GXPathEditor.prototype.isActiveExtendingMode = function () {
+    IFPathEditor.prototype.isActiveExtendingMode = function () {
         return this._activeExtedingMode;
     };
 
@@ -72,13 +72,13 @@
      * Sets the value of _activeExtedingMode flag
      * @param {Boolean} activeFlag - value to set
      */
-    GXPathEditor.prototype.setActiveExtendingMode = function (activeFlag) {
+    IFPathEditor.prototype.setActiveExtendingMode = function (activeFlag) {
         this._activeExtedingMode = activeFlag;
     };
 
     /** @override */
-    GXPathEditor.prototype.getBBox = function (transform) {
-        var bbox = GXPathBaseEditor.prototype.getBBox.call(this, transform);
+    IFPathEditor.prototype.getBBox = function (transform) {
+        var bbox = IFPathBaseEditor.prototype.getBBox.call(this, transform);
         if (this._showAnnotations()) {
 
             // Pre-multiply internal transformation if any
@@ -122,19 +122,19 @@
 
 
     /** @override */
-    GXPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+    IFPathEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
         this.requestInvalidation();
         this._createPathPreviewIfNecessary(partId.point);
 
         switch (partId.type) {
-            case GXPathEditor.PartType.LeftHandle:
+            case IFPathEditor.PartType.LeftHandle:
                 this._movePreviewPointCoordinates(partId.point, 'hlx', 'hly', position, viewToWorldTransform, shift, guides);
                 break;
-            case GXPathEditor.PartType.RightHandle:
+            case IFPathEditor.PartType.RightHandle:
                 this._movePreviewPointCoordinates(partId.point, 'hrx', 'hry', position, viewToWorldTransform, shift, guides);
                 break;
-            case GXPathEditor.PartType.LeftShoulder:
-            case GXPathEditor.PartType.RightShoulder:
+            case IFPathEditor.PartType.LeftShoulder:
+            case IFPathEditor.PartType.RightShoulder:
                 var newPos = viewToWorldTransform.mapPoint(position);
                 this._movePreviewPointShoulders(partId, newPos, shift);
                 break;
@@ -144,22 +144,22 @@
     };
 
     /** @override */
-    GXPathEditor.prototype.resetPartMove = function (partId, partData) {
+    IFPathEditor.prototype.resetPartMove = function (partId, partData) {
         this.releasePathPreview();
         this.requestInvalidation();
     };
 
     /** @override */
-    GXPathEditor.prototype.applyPartMove = function (partId, partData) {
+    IFPathEditor.prototype.applyPartMove = function (partId, partData) {
         switch (partId.type) {
-            case GXPathEditor.PartType.LeftHandle:
+            case IFPathEditor.PartType.LeftHandle:
                 this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['hlx', 'hly', 'ah']);
                 break;
-            case GXPathEditor.PartType.RightHandle:
+            case IFPathEditor.PartType.RightHandle:
                 this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['hrx', 'hry', 'ah']);
                 break;
-            case GXPathEditor.PartType.LeftShoulder:
-            case GXPathEditor.PartType.RightShoulder:
+            case IFPathEditor.PartType.LeftShoulder:
+            case IFPathEditor.PartType.RightShoulder:
                 this._assignPreviewPointPropertiesToSourcePoint(partId.point, ['cl', 'cr']);
                 break;
         }
@@ -167,7 +167,7 @@
     };
 
     /** @override */
-    GXPathEditor.prototype.transform = function (transform, partId, partData) {
+    IFPathEditor.prototype.transform = function (transform, partId, partData) {
         if (this._partSelection && this._partSelection.length > 0) {
             this.requestInvalidation();
             this._createPathPreviewIfNecessary();
@@ -180,7 +180,7 @@
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var selectedPartId = this._partSelection[i];
 
-                if (selectedPartId.type === GXPathEditor.PartType.Point) {
+                if (selectedPartId.type === IFPathEditor.PartType.Point) {
                     var selectedPoint = selectedPartId.point;
                     this._transformPreviewPointCoordinates(selectedPoint, 'x', 'y', transform);
 
@@ -193,9 +193,9 @@
                             this._transformPreviewPointCoordinates(selectedPoint, 'hrx', 'hry', transform);
                         }
                     }
-                } else if (selectedPartId.type === GXPathEditor.PartType.Segment && partId &&
+                } else if (selectedPartId.type === IFPathEditor.PartType.Segment && partId &&
                     this._partIdAreEqual(selectedPartId, partId) &&
-                    partData.type == GXPathEditor.SegmentData.Handles) {
+                    partData.type == IFPathEditor.SegmentData.Handles) {
 
                     var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
                     var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);
@@ -295,57 +295,57 @@
 
             this.requestInvalidation();
         } else {
-            GXPathBaseEditor.prototype.transform.call(this, transform, partId, partData);
+            IFPathBaseEditor.prototype.transform.call(this, transform, partId, partData);
         }
     };
 
     /** @override */
-    GXPathEditor.prototype.resetTransform = function () {
+    IFPathEditor.prototype.resetTransform = function () {
         this.releasePathPreview();
-        GXPathBaseEditor.prototype.resetTransform.call(this);
+        IFPathBaseEditor.prototype.resetTransform.call(this);
     };
 
     /** @override */
-    GXPathEditor.prototype.canApplyTransform = function () {
+    IFPathEditor.prototype.canApplyTransform = function () {
         return this._partSelection && this._partSelection.length > 0 ||
             this._transform && !this._transform.isIdentity();
     };
 
     /** @override */
-    GXPathEditor.prototype.applyTransform = function (element) {
+    IFPathEditor.prototype.applyTransform = function (element) {
         if (this._partSelection && this._partSelection.length > 0) {
-            this._element._beginBlockEvents([GXElement.GeometryChangeEvent]);
+            this._element._beginBlockEvents([IFElement.GeometryChangeEvent]);
             var newSelection = [];
             // Iterate selection and apply changes in preview anchor points
             for (var i = 0; i < this._partSelection.length; ++i) {
                 var part = this._partSelection[i];
-                if (part.type === GXPathEditor.PartType.Point) {
+                if (part.type === IFPathEditor.PartType.Point) {
                     if (i == this._partSelection.length - 1) {
-                        this._element._endBlockEvents([GXElement.GeometryChangeEvent]);
+                        this._element._endBlockEvents([IFElement.GeometryChangeEvent]);
                     }
                     this._transferPreviewProperties(part.point, element);
                     newSelection.push(part);
-                } else if (part.type === GXPathEditor.PartType.Segment) {
+                } else if (part.type === IFPathEditor.PartType.Segment) {
                     this._transferPreviewProperties(part.apLeft, element);
                     if (i == this._partSelection.length - 1) {
-                        this._element._endBlockEvents([GXElement.GeometryChangeEvent]);
+                        this._element._endBlockEvents([IFElement.GeometryChangeEvent]);
                     }
                     this._transferPreviewProperties(part.apRight, element);
                     // Update now _partSelection to contain segment end points instead of segment itself
-                    newSelection.push({type: GXPathEditor.PartType.Point, point: part.apLeft});
-                    newSelection.push({type: GXPathEditor.PartType.Point, point: part.apRight});
+                    newSelection.push({type: IFPathEditor.PartType.Point, point: part.apLeft});
+                    newSelection.push({type: IFPathEditor.PartType.Point, point: part.apRight});
                 }
             }
             this.requestInvalidation();
             this.resetTransform();
             this.updatePartSelection(false, newSelection);
         } else {
-            GXPathBaseEditor.prototype.applyTransform.call(this, element);
+            IFPathBaseEditor.prototype.applyTransform.call(this, element);
         }
     };
 
     /** @override */
-    GXPathEditor.prototype.subSelectDragStartAction = function (partInfo) {
+    IFPathEditor.prototype.subSelectDragStartAction = function (partInfo) {
         if (partInfo.editor !== this) {
             return null;
         }
@@ -363,12 +363,12 @@
         // d) if a point was selected and had both handles - drag the point together with other selected points
 
         var newPartInfo = partInfo;
-        if (!partInfo.isolated && partInfo.id.type == GXPathEditor.PartType.Point) {
+        if (!partInfo.isolated && partInfo.id.type == IFPathEditor.PartType.Point) {
             var aPt = partInfo.id.point;
-            var idType = GXPathEditor.PartType.Point;
+            var idType = IFPathEditor.PartType.Point;
             var aPtType = aPt.getProperty('tp');
 
-            if (GXPathBase.isCornerType(aPtType) &&
+            if (IFPathBase.isCornerType(aPtType) &&
                     this._element.getAnchorPoints().getPreviousPoint(aPt) != null &&
                     this._element.getAnchorPoints().getNextPoint(aPt) != null) {
 
@@ -377,13 +377,13 @@
 
                 var pickDist = this._element.getScene().getProperty('pickDist');
                 if (cr == null || cr < pickDist * 2) {
-                    idType = GXPathEditor.PartType.RightShoulder;
+                    idType = IFPathEditor.PartType.RightShoulder;
                 } else if (cl == null || cl < pickDist * 2) {
-                    idType = GXPathEditor.PartType.LeftShoulder;
+                    idType = IFPathEditor.PartType.LeftShoulder;
                 }
             }
 
-            if (idType != GXPathEditor.PartType.Point) {
+            if (idType != IFPathEditor.PartType.Point) {
                 cl = cl != null ? cl : pickDist;
                 cr = cr != null ? cr : pickDist;
                 this.requestInvalidation();
@@ -396,7 +396,7 @@
 
                     var isolated = true; // all is isolated except points
                     var selectable = false; // only point is selectable
-                    newPartInfo = new GXElementEditor.PartInfo(
+                    newPartInfo = new IFElementEditor.PartInfo(
                         this, {type: idType, point: aPt}, null, isolated, selectable);
                 }
             } else {
@@ -405,14 +405,14 @@
                 var hrx = aPt.getProperty('hrx');
                 var hry = aPt.getProperty('hry');
                 // check option a)
-                if (!partInfo.data.apSelected || !aPt.hasFlag(GXNode.Flag.Selected)) {
+                if (!partInfo.data.apSelected || !aPt.hasFlag(IFNode.Flag.Selected)) {
                     // anchor point should be already selected, but it was not so at the moment of getting the part info
 
-                    if (!aPt.hasFlag(GXNode.Flag.Selected)) { // might be some error, select a point
+                    if (!aPt.hasFlag(IFNode.Flag.Selected)) { // might be some error, select a point
                         this.selectOnePoint(aPt);
                     }
-                    newPartInfo = new GXElementEditor.PartInfo(
-                        this, {type: GXPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
+                    newPartInfo = new IFElementEditor.PartInfo(
+                        this, {type: IFPathEditor.PartType.Point, point: aPt}, {apSelected: true}, isolated, selectable);
                 } else if (hlx === null || hly === null || hrx === null || hry === null) { // option b) or c)
                     this.requestInvalidation();
                     this._createPathPreviewIfNecessary(aPt);
@@ -426,24 +426,24 @@
 
                         if (hrx === null || hry === null) {
                             // option b)
-                            partType = GXPathEditor.PartType.RightHandle;
+                            partType = IFPathEditor.PartType.RightHandle;
                             previewPoint.setProperties(
                                 ['ah', 'hrx', 'hry'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
                         } else { // hlx === null || hly === null
                             // option c)
-                            partType = GXPathEditor.PartType.LeftHandle;
+                            partType = IFPathEditor.PartType.LeftHandle;
                             previewPoint.setProperties(
                                 ['ah', 'hlx', 'hly'], [false, aPt.getProperty('x'), aPt.getProperty('y')]);
                         }
 
-                        newPartInfo = new GXElementEditor.PartInfo(
+                        newPartInfo = new IFElementEditor.PartInfo(
                             this, {type: partType, point: aPt}, {apSelected: true}, isolated, selectable);
 
                         this.updatePartSelection(true, [newPartInfo.id]);
                     }
                 } // else option d) - NOOP
             }
-        } else if (partInfo.id.type == GXPathEditor.PartType.Segment) {
+        } else if (partInfo.id.type == IFPathEditor.PartType.Segment) {
             var pathHitResult = partInfo.data.hitRes;
             var apLeft = partInfo.id.apLeft;
             var apRight = partInfo.id.apRight;
@@ -492,9 +492,9 @@
                             [false, pathHitResult.x + rightHDx, pathHitResult.y + rightHDy]);
                         this.requestInvalidation();
 
-                        newPartInfo = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
-                            {type: GXPathEditor.SegmentData.Handles,
+                        newPartInfo = new IFElementEditor.PartInfo(
+                            this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: IFPathEditor.SegmentData.Handles,
                                 cL: 4 / 3, apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
                                 cR: 4 / 3, apRhl: new GPoint(hlx, hly), fixedHDirRpt: false},
                             null, false, true);
@@ -524,9 +524,9 @@
                         apRightPreview.setProperties(['ah', 'hlx', 'hly'], [false, hlx, hly]);
                         this.requestInvalidation();
 
-                        newPartInfo = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
-                            {type: GXPathEditor.SegmentData.Handles,
+                        newPartInfo = new IFElementEditor.PartInfo(
+                            this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
                                 cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
@@ -543,9 +543,9 @@
                         apRightPreview.setProperties(['ah', 'hlx', 'hly'], [false, hlx, hly]);
                         this.requestInvalidation();
 
-                        newPartInfo = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
-                            {type: GXPathEditor.SegmentData.Handles,
+                        newPartInfo = new IFElementEditor.PartInfo(
+                            this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
                                 cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
@@ -561,9 +561,9 @@
                         var hlx = apRightPreview.getProperty('hlx');
                         var hly = apRightPreview.getProperty('hly');
 
-                        newPartInfo = new GXElementEditor.PartInfo(
-                            this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
-                            {type: GXPathEditor.SegmentData.Handles,
+                        newPartInfo = new IFElementEditor.PartInfo(
+                            this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                            {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope),
                                 apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
                                 cR: 3 * pathHitResult.slope,
@@ -580,38 +580,38 @@
     };
 
     /** @override */
-    GXPathEditor.prototype._attach = function () {
+    IFPathEditor.prototype._attach = function () {
         var scene = this._element.getScene();
         if (scene != null) {
-            scene.addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
+            scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
         }
     };
 
     /** @override */
-    GXPathEditor.prototype._detach = function () {
+    IFPathEditor.prototype._detach = function () {
         // Ensure to de-select all selected anchor points when detaching
         for (var anchorPoint = this._element.getAnchorPoints().getFirstChild(); anchorPoint != null; anchorPoint = anchorPoint.getNext()) {
-            anchorPoint.removeFlag(GXNode.Flag.Selected);
+            anchorPoint.removeFlag(IFNode.Flag.Selected);
         }
 
         var scene = this._element.getScene();
         if (scene != null) {
-            scene.removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
+            scene.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
         }
 
-        GXPathBaseEditor.prototype._detach.call(this);
+        IFPathBaseEditor.prototype._detach.call(this);
     };
 
     /**
      * Hit-test anchor point's annotation
-     * @param {GXPathBase.AnchorPoint} anchorPt - anchor point to hit-test
+     * @param {IFPathBase.AnchorPoint} anchorPt - anchor point to hit-test
      * @param {GPoint} location
      * @param {GTransform} [transform] a transformation to apply to anchor point's coordinates before hit-testing,
      * defaults to null
      * @param {Number} [tolerance] optional tolerance for hit testing, defaults to zero
      * @returns {boolean} the result of hit-test
      */
-    GXPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
+    IFPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
         if (anchorPt) {
             var transformToApply = this._element.getTransform();
             if (transform) {
@@ -628,10 +628,10 @@
 
     /**
      * Calculates and returns GPoint in scene coordinates, corresponding to the given anchor point
-     * @param {GXPathBase.AnchorPoint} anchorPt - the given anchor point
+     * @param {IFPathBase.AnchorPoint} anchorPt - the given anchor point
      * @returns {GPoint}
      */
-    GXPathEditor.prototype.getPointCoord = function (anchorPt) {
+    IFPathEditor.prototype.getPointCoord = function (anchorPt) {
         var pt = null;
 
         if (anchorPt.getPath() == this._element || this._elementPreview && anchorPt.getPath() == this._elementPreview) {
@@ -652,7 +652,7 @@
     };
 
     /** @override */
-    GXPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    IFPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         if (this._showAnnotations()) {
             var _isInAnnotationBBox = function (position, smallAnnotation) {
                 if (position) {
@@ -671,39 +671,39 @@
                 var selectable = false; // only point is selectable
 
                 if (_isInAnnotationBBox(args.rightHandlePosition, true)) {
-                    partType = GXPathEditor.PartType.RightHandle;
+                    partType = IFPathEditor.PartType.RightHandle;
                 } else if (_isInAnnotationBBox(args.leftHandlePosition, true)) {
-                    partType = GXPathEditor.PartType.LeftHandle;
+                    partType = IFPathEditor.PartType.LeftHandle;
                 } else if (_isInAnnotationBBox(args.rightShoulderPosition, true)) {
-                    partType = GXPathEditor.PartType.RightShoulder;
+                    partType = IFPathEditor.PartType.RightShoulder;
                 } else if (_isInAnnotationBBox(args.leftShoulderPosition, true)) {
-                    partType = GXPathEditor.PartType.LeftShoulder;
+                    partType = IFPathEditor.PartType.LeftShoulder;
                 } else if (_isInAnnotationBBox(args.position, true)) {
-                    partType = GXPathEditor.PartType.Point;
+                    partType = IFPathEditor.PartType.Point;
                     isolated = false;
                     selectable = true;
                 }
 
                 if (partType) {
-                    result = new GXElementEditor.PartInfo(
+                    result = new IFElementEditor.PartInfo(
                         this, {type: partType, point: args.anchorPoint},
-                        {apSelected: args.anchorPoint.hasFlag(GXNode.Flag.Selected)}, isolated, selectable);
+                        {apSelected: args.anchorPoint.hasFlag(IFNode.Flag.Selected)}, isolated, selectable);
                     return true;
                 }
             }.bind(this));
 
             if (result) {
                 return result;
-            } else if (this.hasFlag(GXElementEditor.Flag.Detail)) {
+            } else if (this.hasFlag(IFElementEditor.Flag.Detail)) {
                 // In detail mode we're able to select segments so hit test for one here
                 var pathHitResult = this._element.pathHitTest(location, transform, false, this._element.getScene().getProperty('pickDist'));
                 if (pathHitResult) {
                     var hitRes = pathHitResult.data;
                     var apLeft = this._element.getAnchorPoints().getChildByIndex(hitRes.segment - 1);
                     var apRight = apLeft ? this._element.getAnchorPoints().getNextPoint(apLeft) : null;
-                    return new GXElementEditor.PartInfo(
-                        this, {type: GXPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
-                        {type: GXPathEditor.SegmentData.HitRes, hitRes: pathHitResult.data}, false, true);
+                    return new IFElementEditor.PartInfo(
+                        this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
+                        {type: IFPathEditor.SegmentData.HitRes, hitRes: pathHitResult.data}, false, true);
                 }
                 return null;
             }
@@ -713,8 +713,8 @@
     };
 
     /** @override */
-    GXPathEditor.prototype._postPaint = function (transform, context) {
-        GXPathBaseEditor.prototype._postPaint.call(this, transform, context);
+    IFPathEditor.prototype._postPaint = function (transform, context) {
+        IFPathBaseEditor.prototype._postPaint.call(this, transform, context);
         if (this._showAnnotations()) {
             this._iteratePoints(true, function (args) {
                 // Paint handle(s)
@@ -727,31 +727,31 @@
 
                 // Paint shoulders
                 if (args.leftShoulderPosition) {
-                    this._paintAnnotation(context, transform, args.leftShoulderPosition, GXElementEditor.Annotation.Diamond, false, true);
+                    this._paintAnnotation(context, transform, args.leftShoulderPosition, IFElementEditor.Annotation.Diamond, false, true);
                 }
                 if (args.rightShoulderPosition) {
-                    this._paintAnnotation(context, transform, args.rightShoulderPosition, GXElementEditor.Annotation.Diamond, false, true);
+                    this._paintAnnotation(context, transform, args.rightShoulderPosition, IFElementEditor.Annotation.Diamond, false, true);
                 }
 
                 // Paint point annotation
-                this._paintAnnotation(context, transform, args.position, args.annotation, args.anchorPoint.hasFlag(GXNode.Flag.Selected), true);
+                this._paintAnnotation(context, transform, args.position, args.annotation, args.anchorPoint.hasFlag(IFNode.Flag.Selected), true);
             }.bind(this));
         }
     };
 
     /** @override */
-    GXPathEditor.prototype._partIdAreEqual = function (a, b) {
+    IFPathEditor.prototype._partIdAreEqual = function (a, b) {
         var eqs = (a.type === b.type);
-        if (eqs && a.type == GXPathEditor.PartType.Point) {
+        if (eqs && a.type == IFPathEditor.PartType.Point) {
             eqs = (a.point === b.point);
-        } else if (eqs && a.type == GXPathEditor.PartType.Segment) {
+        } else if (eqs && a.type == IFPathEditor.PartType.Segment) {
             eqs = (a.apLeft === b.apLeft && a.apRight == b.apRight);
         }
         return eqs;
     };
 
     /** @override */
-    GXPathEditor.prototype._updatePartSelection = function (selection) {
+    IFPathEditor.prototype._updatePartSelection = function (selection) {
         this.requestInvalidation();
 
         var newSelection = this._filterSelection(selection);
@@ -766,7 +766,7 @@
                 if (newSelection) {
                     for (var k = 0; k < newSelection.length; ++k) {
                         if (newSelection[k].point === part.point && part.point ||
-                            part.type == GXPathEditor.PartType.Segment && part.type == newSelection[k].type &&
+                            part.type == IFPathEditor.PartType.Segment && part.type == newSelection[k].type &&
                                 part.apLeft == newSelection[k].apLeft && part.apRight == newSelection[k].apRight) {
                             isInNewSelection = true;
                             break;
@@ -776,10 +776,10 @@
 
                 if (!isInNewSelection) {
                     if (part.point) {
-                        part.point.removeFlag(GXNode.Flag.Selected);
-                    } else if (part.type == GXPathEditor.PartType.Segment) {
-                        part.apLeft.removeFlag(GXNode.Flag.Selected);
-                        part.apRight.removeFlag(GXNode.Flag.Selected);
+                        part.point.removeFlag(IFNode.Flag.Selected);
+                    } else if (part.type == IFPathEditor.PartType.Segment) {
+                        part.apLeft.removeFlag(IFNode.Flag.Selected);
+                        part.apRight.removeFlag(IFNode.Flag.Selected);
                     }
                 }
             }
@@ -790,10 +790,10 @@
             for (var i = 0; i < newSelection.length; ++i) {
                 var part = newSelection[i];
                 if (part.point) {
-                    part.point.setFlag(GXNode.Flag.Selected);
-                } else if (part.type == GXPathEditor.PartType.Segment) {
-                    part.apLeft.setFlag(GXNode.Flag.Selected);
-                    part.apRight.setFlag(GXNode.Flag.Selected);
+                    part.point.setFlag(IFNode.Flag.Selected);
+                } else if (part.type == IFPathEditor.PartType.Segment) {
+                    part.apLeft.setFlag(IFNode.Flag.Selected);
+                    part.apRight.setFlag(IFNode.Flag.Selected);
                 }
             }
         }
@@ -805,12 +805,12 @@
     /**
      * Paint a handle
      * @param {GTransform} transform
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @param {GPoint} from
      * @param {GPoint} to
      * @private
      */
-    GXPathEditor.prototype._paintHandle = function (transform, context, from, to) {
+    IFPathEditor.prototype._paintHandle = function (transform, context, from, to) {
         var lineFrom = from;
         var lineTo = to;
         if (transform) {
@@ -818,19 +818,19 @@
             lineTo = transform.mapPoint(to);
         }
         context.canvas.strokeLine(lineFrom.getX(), lineFrom.getY(), lineTo.getX(), lineTo.getY(), 1, context.selectionOutlineColor);
-        this._paintAnnotation(context, transform, to, GXElementEditor.Annotation.Circle, false, true);
+        this._paintAnnotation(context, transform, to, IFElementEditor.Annotation.Circle, false, true);
     };
 
     /**
      * Iterate all point annotations
      * @param {Boolean} paintElement whether to take the paint element for iteration
      * or not (which will then take the source element}
-     * @param {Function(args: {{type: GXPathBase.AnchorPoint.Type|GXPathBase.CornerType, anchorPoint: GXPathBase.AnchorPoint,
-     * position: GPoint, annotation: GXElementEditor.Annotation, leftHandlePosition: GPoint, rightHandlePosition: GPoint,
+     * @param {Function(args: {{type: IFPathBase.AnchorPoint.Type|IFPathBase.CornerType, anchorPoint: IFPathBase.AnchorPoint,
+     * position: GPoint, annotation: IFElementEditor.Annotation, leftHandlePosition: GPoint, rightHandlePosition: GPoint,
      * leftShoulderPosition: GPoint, rightShoulderPosition: GPoint)}})} iterator may return true for stopping iteration
      * @private
      */
-    GXPathEditor.prototype._iteratePoints = function (paintElement, iterator) {
+    IFPathEditor.prototype._iteratePoints = function (paintElement, iterator) {
         var element = paintElement ? this.getPaintElement() : this._element;
         var anchorPoints = element.getAnchorPoints();
         var transform = element.getTransform();
@@ -845,40 +845,40 @@
                 type: type,
                 anchorPoint: anchorPoint,
                 position: position,
-                annotation: GXElementEditor.Annotation.Rectangle,
+                annotation: IFElementEditor.Annotation.Rectangle,
                 leftHandlePosition: null,
                 rightHandlePosition: null,
                 leftShoulderPosition: null,
                 rightShoulderPosition: null
             };
 
-            if (anchorPoint.hasFlag(GXNode.Flag.Selected)) {
-                if (type === GXPathBase.AnchorPoint.Type.Connector) {
-                    itArgs.annotation = GXElementEditor.Annotation.Diamond;
-                } else if (type === GXPathBase.AnchorPoint.Type.Symmetric || type === GXPathBase.AnchorPoint.Type.Mirror) {
-                    itArgs.annotation = GXElementEditor.Annotation.Circle;
+            if (anchorPoint.hasFlag(IFNode.Flag.Selected)) {
+                if (type === IFPathBase.AnchorPoint.Type.Connector) {
+                    itArgs.annotation = IFElementEditor.Annotation.Diamond;
+                } else if (type === IFPathBase.AnchorPoint.Type.Symmetric || type === IFPathBase.AnchorPoint.Type.Mirror) {
+                    itArgs.annotation = IFElementEditor.Annotation.Circle;
                 }
             }
 
-            if (anchorPoint.hasFlag(GXNode.Flag.Selected) || (previousPt && previousPt.hasFlag(GXNode.Flag.Selected))) {
+            if (anchorPoint.hasFlag(IFNode.Flag.Selected) || (previousPt && previousPt.hasFlag(IFNode.Flag.Selected))) {
                 var pt = new GPoint(anchorPoint.getProperty('hlx'), anchorPoint.getProperty('hly'));
                 if (pt.getX() !== null && pt.getY() !== null) {
                     itArgs.leftHandlePosition = pt;
                 }
             }
 
-            if (anchorPoint.hasFlag(GXNode.Flag.Selected) || (nextPt && nextPt.hasFlag(GXNode.Flag.Selected))) {
+            if (anchorPoint.hasFlag(IFNode.Flag.Selected) || (nextPt && nextPt.hasFlag(IFNode.Flag.Selected))) {
                 var pt = new GPoint(anchorPoint.getProperty('hrx'), anchorPoint.getProperty('hry'));
                 if (pt.getX() !== null && pt.getY() !== null) {
                     itArgs.rightHandlePosition = pt;
                 }
             }
 
-            if (anchorPoint.hasFlag(GXNode.Flag.Selected) &&
-                type !== GXPathBase.AnchorPoint.Type.Asymmetric &&
-                type !== GXPathBase.AnchorPoint.Type.Symmetric &&
-                type !== GXPathBase.AnchorPoint.Type.Mirror &&
-                type !== GXPathBase.AnchorPoint.Type.Connector) {
+            if (anchorPoint.hasFlag(IFNode.Flag.Selected) &&
+                type !== IFPathBase.AnchorPoint.Type.Asymmetric &&
+                type !== IFPathBase.AnchorPoint.Type.Symmetric &&
+                type !== IFPathBase.AnchorPoint.Type.Mirror &&
+                type !== IFPathBase.AnchorPoint.Type.Connector) {
 
                 var cl = anchorPoint.getProperty('cl');
                 if (cl && previousPt) {
@@ -940,10 +940,10 @@
     /**
      * Returns path preview
      * @param {Boolean} full - indicates if full path preview is needed
-     * @param {GXPathBase.AnchorPoint} selectedAnchorPoint - the point for which preview is needed; may be null
-     * @returns {GXPath}
+     * @param {IFPathBase.AnchorPoint} selectedAnchorPoint - the point for which preview is needed; may be null
+     * @returns {IFPath}
      */
-    GXPathEditor.prototype.getPathPreview = function (full, selectedAnchorPoint) {
+    IFPathEditor.prototype.getPathPreview = function (full, selectedAnchorPoint) {
         this.requestInvalidation();
         if (full) {
             this.extendPreviewToFull();
@@ -956,9 +956,9 @@
 
     /**
      * Returns path reference
-     * @returns {GXPath}
+     * @returns {IFPath}
      */
-    GXPathEditor.prototype.getPath = function () {
+    IFPathEditor.prototype.getPath = function () {
         return this._element;
     };
 
@@ -966,7 +966,7 @@
      * Indicates how many points and which are selected
      * @enum
      */
-    GXPathEditor.PointsSelectionType = {
+    IFPathEditor.PointsSelectionType = {
         No: 'N',
         First: 'F',
         Last: 'L',
@@ -976,21 +976,21 @@
 
     /**
      * Checks how many points and which are selected
-     * @returns {GXPathEditor.PointsSelectionType}
+     * @returns {IFPathEditor.PointsSelectionType}
      */
-    GXPathEditor.prototype.getPointsSelectionType = function () {
-        var selType = GXPathEditor.PointsSelectionType.No;
+    IFPathEditor.prototype.getPointsSelectionType = function () {
+        var selType = IFPathEditor.PointsSelectionType.No;
         if (this._partSelection) {
             if (this._partSelection.length > 1) {
-                selType = GXPathEditor.PointsSelectionType.Several;
-            } else if (this._partSelection[0].point.hasFlag(GXNode.Flag.Selected)) {
+                selType = IFPathEditor.PointsSelectionType.Several;
+            } else if (this._partSelection[0].point.hasFlag(IFNode.Flag.Selected)) {
                 var pt = this._partSelection[0].point;
                 if (pt === this._element.getAnchorPoints().getLastChild()) {
-                    selType = GXPathEditor.PointsSelectionType.Last;
+                    selType = IFPathEditor.PointsSelectionType.Last;
                 } else if (pt === this._element.getAnchorPoints().getFirstChild()) {
-                    selType = GXPathEditor.PointsSelectionType.First;
+                    selType = IFPathEditor.PointsSelectionType.First;
                 } else {
-                    selType = GXPathEditor.PointsSelectionType.Middle;
+                    selType = IFPathEditor.PointsSelectionType.Middle;
                 }
             }
         }
@@ -1000,11 +1000,11 @@
 
     /**
      * Updates _partSelection with one selected point
-     * @param {GXPathBase.AnchorPoint} anchorPt - a point to select
+     * @param {IFPathBase.AnchorPoint} anchorPt - a point to select
      */
-    GXPathEditor.prototype.selectOnePoint = function (anchorPt) {
+    IFPathEditor.prototype.selectOnePoint = function (anchorPt) {
         this.updatePartSelection(false, [
-            {type: GXPathEditor.PartType.Point, point: anchorPt}
+            {type: IFPathEditor.PartType.Point, point: anchorPt}
         ]);
     };
 
@@ -1016,7 +1016,7 @@
      * @param {Number} shiftTo - update indices up to shiftTo source path index. May be null,
      * then indices will be updated up to table end
      */
-    GXPathEditor.prototype.shiftPreviewTable = function (shiftVal, shiftFrom, shiftTo) {
+    IFPathEditor.prototype.shiftPreviewTable = function (shiftVal, shiftFrom, shiftTo) {
         shiftFrom = shiftFrom != null ? shiftFrom : 0;
         shiftTo = shiftTo != null ? shiftTo : this._sourceIndexToPreviewIndex.length - 1;
         for (var i = shiftFrom; i < shiftTo; ++i) {
@@ -1027,7 +1027,7 @@
     /**
      * Used to extend preview to full path, when partial preview is getting not enough in some cases
      */
-    GXPathEditor.prototype.extendPreviewToFull = function () {
+    IFPathEditor.prototype.extendPreviewToFull = function () {
         this._createPathPreviewIfNecessary();
         var sourceAnchorPoints = this._element.getAnchorPoints();
         var previewAnchorPoints = this._elementPreview.getAnchorPoints();
@@ -1039,16 +1039,16 @@
 
 
         previewAnchorPoints._beginBlockChanges([
-            GXNode._Change.BeforeChildInsert,
-            GXNode._Change.AfterChildInsert
+            IFNode._Change.BeforeChildInsert,
+            IFNode._Change.AfterChildInsert
         ]);
 
         try {
             while (!hasPreview && ap) {
-                var previewAnchorPoint = new GXPathBase.AnchorPoint();
-                previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
-                if (ap.hasFlag(GXNode.Flag.Selected)) {
-                    previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                var previewAnchorPoint = new IFPathBase.AnchorPoint();
+                previewAnchorPoint.transferProperties(ap, [IFPathBase.AnchorPoint.GeometryProperties]);
+                if (ap.hasFlag(IFNode.Flag.Selected)) {
+                    previewAnchorPoint.setFlag(IFNode.Flag.Selected);
                 }
 
                 previewAnchorPoints.insertChild(previewAnchorPoint, firstPreviewPtOrig);
@@ -1070,10 +1070,10 @@
             ++previewIdx;
 
             while (!hasPreview && ap) {
-                var previewAnchorPoint = new GXPathBase.AnchorPoint();
-                previewAnchorPoint.transferProperties(ap, [GXPathBase.AnchorPoint.GeometryProperties]);
-                if (ap.hasFlag(GXNode.Flag.Selected)) {
-                    previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                var previewAnchorPoint = new IFPathBase.AnchorPoint();
+                previewAnchorPoint.transferProperties(ap, [IFPathBase.AnchorPoint.GeometryProperties]);
+                if (ap.hasFlag(IFNode.Flag.Selected)) {
+                    previewAnchorPoint.setFlag(IFNode.Flag.Selected);
                 }
 
                 previewAnchorPoints.appendChild(previewAnchorPoint);
@@ -1085,14 +1085,14 @@
             }
         } finally {
             previewAnchorPoints._endBlockChanges([
-                GXNode._Change.BeforeChildInsert,
-                GXNode._Change.AfterChildInsert
+                IFNode._Change.BeforeChildInsert,
+                IFNode._Change.AfterChildInsert
             ]);
         }
 
         // There may be one more hasPreview block, but it should not be updated in this case,
         // as this is the beginning of preview
-        this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+        this._elementPreview.transferProperties(this._element, [IFShape.GeometryProperties, IFPath.GeometryProperties]);
     };
 
     /**
@@ -1102,7 +1102,7 @@
      * @param sourcePoint - a base point
      * @returns {GPoint} - new constrained position
      */
-    GXPathEditor.prototype.constrainPosition = function (position, worldToViewTransform, sourcePoint) {
+    IFPathEditor.prototype.constrainPosition = function (position, worldToViewTransform, sourcePoint) {
         var basePt = new GPoint(sourcePoint.getProperty('x'), sourcePoint.getProperty('y'));
         var transformToApply = this._element.getTransform();
         transformToApply = transformToApply ? transformToApply.multiplied(worldToViewTransform) : worldToViewTransform;
@@ -1117,21 +1117,21 @@
 
     /**
      * Create path preview if not yet existent.
-     * @param {GXPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
+     * @param {IFPathBase.AnchorPoint} [selectedAnchorPoint] if provided then this point
      * will be taken as the only selected one, if this is not provided, the selected
      * anchor points will be taken from the source path. Defaults to null if not provided.
-     * @return {GXPath} the path preview
+     * @return {IFPath} the path preview
      * @private
      */
-    GXPathEditor.prototype._createPathPreviewIfNecessary = function (selectedAnchorPoint) {
+    IFPathEditor.prototype._createPathPreviewIfNecessary = function (selectedAnchorPoint) {
         if (!this._elementPreview) {
             this._sourceIndexToPreviewIndex = {};
 
-            this._elementPreview = new GXPath();
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+            this._elementPreview = new IFPath();
+            this._elementPreview.transferProperties(this._element, [IFShape.GeometryProperties, IFPath.GeometryProperties]);
 
             var _anchorPointIsSelected = function (anchorPoint) {
-                return (selectedAnchorPoint && anchorPoint === selectedAnchorPoint) || (!selectedAnchorPoint && anchorPoint.hasFlag(GXNode.Flag.Selected));
+                return (selectedAnchorPoint && anchorPoint === selectedAnchorPoint) || (!selectedAnchorPoint && anchorPoint.hasFlag(IFNode.Flag.Selected));
             };
 
             var sourceAnchorPoints = this._element.getAnchorPoints();
@@ -1215,15 +1215,15 @@
             var anchorPoint = firstSelPoint;
 
             previewAnchorPoints._beginBlockChanges([
-                GXNode._Change.BeforeChildInsert,
-                GXNode._Change.AfterChildInsert
+                IFNode._Change.BeforeChildInsert,
+                IFNode._Change.AfterChildInsert
             ]);
             try {
                 while (!finished) {
-                    var previewAnchorPoint = new GXPathBase.AnchorPoint();
-                    previewAnchorPoint.transferProperties(anchorPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+                    var previewAnchorPoint = new IFPathBase.AnchorPoint();
+                    previewAnchorPoint.transferProperties(anchorPoint, [IFPathBase.AnchorPoint.GeometryProperties]);
                     if (_anchorPointIsSelected(anchorPoint)) {
-                        previewAnchorPoint.setFlag(GXNode.Flag.Selected);
+                        previewAnchorPoint.setFlag(IFNode.Flag.Selected);
                     }
 
                     previewAnchorPoints.appendChild(previewAnchorPoint);
@@ -1243,12 +1243,12 @@
                 }
             } finally {
                 previewAnchorPoints._endBlockChanges([
-                    GXNode._Change.BeforeChildInsert,
-                    GXNode._Change.AfterChildInsert
+                    IFNode._Change.BeforeChildInsert,
+                    IFNode._Change.AfterChildInsert
                 ]);
             }
 
-            this._elementPreview.transferProperties(this._element, [GXShape.GeometryProperties, GXPath.GeometryProperties]);
+            this._elementPreview.transferProperties(this._element, [IFShape.GeometryProperties, IFPath.GeometryProperties]);
             if (firstSelPoint.getProperty('ah') || lastSelPoint && lastSelPoint.getProperty('ah')) {
                 this.extendPreviewToFull();
             } else {
@@ -1265,16 +1265,16 @@
      * Release a path preview if there was any
      * @private
      */
-    GXPathEditor.prototype.releasePathPreview = function () {
+    IFPathEditor.prototype.releasePathPreview = function () {
         this._elementPreview = null;
         this._sourceIndexToPreviewIndex = null;
     };
 
     /**
      * Returns a mapping of a source point to it's preview point
-     * @param {GXPathBase.AnchorPoint} sourcePoint
+     * @param {IFPathBase.AnchorPoint} sourcePoint
      */
-    GXPathEditor.prototype.getPathPointPreview = function (sourcePoint) {
+    IFPathEditor.prototype.getPathPointPreview = function (sourcePoint) {
         var sourceIndex = sourcePoint.getParent().getIndexOfChild(sourcePoint);
         if (!this._sourceIndexToPreviewIndex) {
             this.extendPreviewToFull();
@@ -1291,7 +1291,7 @@
      * @param {GTransform}transform
      * @returns {GTransform}
      */
-    GXPathEditor.prototype.getTransformFromNative = function (transform) {
+    IFPathEditor.prototype.getTransformFromNative = function (transform) {
         var transformToNewPos = this._element.getTransform();
         if (transform) {
             transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
@@ -1306,14 +1306,14 @@
      * Moves single anchor point to a new position. The anchor point should not necessary have source point.
      * This function may be used for both preview or original path points. If the original path has a transform,
      * then it is used without any concern, if preview or original path point is moving.
-     * @param {GXPathBase.AnchorPoint} anchorPoint - an anchor point to move to new position
+     * @param {IFPathBase.AnchorPoint} anchorPoint - an anchor point to move to new position
      * @param {GPoint} newPosition - new point's position
      * @param {GTransform} transform - transformation to be applied to path points to make their coordinate system
      * the same in which new position is specified (usually worldToViewTransform)
-     * @param {GXPathBase.AnchorPoint} origPoint - if present, this anchor point is used as a source point instead of
+     * @param {IFPathBase.AnchorPoint} origPoint - if present, this anchor point is used as a source point instead of
      * anchor point itself. Useful when dragging an existing point to not lose it's handles accuracy.
      */
-    GXPathEditor.prototype.movePoint = function (anchorPoint, newPosition, transform, origPoint) {
+    IFPathEditor.prototype.movePoint = function (anchorPoint, newPosition, transform, origPoint) {
         var transformToNewPos = this.getTransformFromNative(transform);
         var transformToNative = transformToNewPos.inverted();
 
@@ -1353,7 +1353,7 @@
 
     /**
      * Move coordinate properties of a preview point
-     * @param {GXPathBase.AnchorPoint} sourcePoint
+     * @param {IFPathBase.AnchorPoint} sourcePoint
      * @param {String} xProperty
      * @param {String} yProperty
      * @param {GPoint} position - a destination position in view coordinates
@@ -1361,7 +1361,7 @@
      * @param {Boolean} ratio
      * @private
      */
-    GXPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty,
+    IFPathEditor.prototype._movePreviewPointCoordinates = function (sourcePoint, xProperty, yProperty,
                                                                     position, viewToWorldTransform, ratio, guides) {
         var newPos = position;
         if (ratio) {
@@ -1389,14 +1389,14 @@
 
     /**
      * Transform coordinate properties of a preview point
-     * @param {GXPathBase.AnchorPoint} sourcePoint
+     * @param {IFPathBase.AnchorPoint} sourcePoint
      * @param {String} xProperty
      * @param {String} yProperty
      * @param {GTransform} transform
      * @param {GPoint} sourcePos if present, used for source position
      * @private
      */
-    GXPathEditor.prototype._transformPreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, transform, sourcePos) {
+    IFPathEditor.prototype._transformPreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, transform, sourcePos) {
         var pathTransform = this._element.getTransform();
 
         var previewPoint = this.getPathPointPreview(sourcePoint);
@@ -1436,12 +1436,12 @@
      * @param {Boolean} ratio - if true, modify both shoulders the same way
      * @private
      */
-    GXPathEditor.prototype._movePreviewPointShoulders = function (partId, position, ratio) {
+    IFPathEditor.prototype._movePreviewPointShoulders = function (partId, position, ratio) {
         var pathTransform = this._element.getTransform();
         var sourcePosition = new GPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
 
         var shoulderLimitPt;
-        if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+        if (partId.type == IFPathEditor.PartType.LeftShoulder) {
             shoulderLimitPt = partId.point.getLeftShoulderLimitPoint();
         } else { // right shoulder
             shoulderLimitPt = partId.point.getRightShoulderLimitPoint();
@@ -1463,12 +1463,12 @@
         // We do not apply pathTransform to shoulders when generating vertices,
         // assign new value directly to previewPoint without any further transforms
         if (ratio) {
-            if (this.hasFlag(GXElementEditor.Flag.Detail) && previewPoint.getProperty('cu') != true) {
+            if (this.hasFlag(IFElementEditor.Flag.Detail) && previewPoint.getProperty('cu') != true) {
                 var oldLVal = partId.point.getProperty('cl');
                 oldLVal = oldLVal != null ? oldLVal : 0;
                 var oldRVal = partId.point.getProperty('cr');
                 oldRVal = oldRVal != null ? oldLVal : 0;
-                if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+                if (partId.type == IFPathEditor.PartType.LeftShoulder) {
                     var delta = newVal - oldLVal;
                     var newRVal = oldRVal - delta;
                     newRVal = newRVal > 0 ? newRVal : 0;
@@ -1482,7 +1482,7 @@
             } else {
                 previewPoint.setProperties(['cl', 'cr'], [newVal, newVal]);
             }
-        } else if (partId.type == GXPathEditor.PartType.LeftShoulder) {
+        } else if (partId.type == IFPathEditor.PartType.LeftShoulder) {
             previewPoint.setProperty('cl', newVal);
         } else { // right shoulder
             previewPoint.setProperty('cr', newVal);
@@ -1491,11 +1491,11 @@
 
     /**
      * Assign a given set of preview point to source point
-     * @param {GXPathBase.AnchorPoint} sourcePoint
+     * @param {IFPathBase.AnchorPoint} sourcePoint
      * @param {Array<String>} properties
      * @private
      */
-    GXPathEditor.prototype._assignPreviewPointPropertiesToSourcePoint = function (sourcePoint, properties) {
+    IFPathEditor.prototype._assignPreviewPointPropertiesToSourcePoint = function (sourcePoint, properties) {
         var previewPoint = this.getPathPointPreview(sourcePoint);
         if (previewPoint) {
             // Simply assign preview position back to source
@@ -1505,18 +1505,18 @@
 
     /**
      * Assign all geometry properties of preview point to corresponding point of an element
-     * @param {GXPathBase.AnchorPoint} point - a point to use for finding preview point
-     * @param {GXElement} element the element to which point to apply the transformation,
+     * @param {IFPathBase.AnchorPoint} point - a point to use for finding preview point
+     * @param {IFElement} element the element to which point to apply the transformation,
      * might be different than the one this editor works on. This will be never null.
      * @private
      */
-    GXPathEditor.prototype._transferPreviewProperties = function (point, element) {
+    IFPathEditor.prototype._transferPreviewProperties = function (point, element) {
         // Work with indices as element might not be ourself
         var mySourceIndex = this._element.getAnchorPoints().getIndexOfChild(point);
         var elSourcePoint = element.getAnchorPoints().getChildByIndex(mySourceIndex);
         var previewPoint = this.getPathPointPreview(elSourcePoint);
         if (previewPoint) {
-            elSourcePoint.transferProperties(previewPoint, [GXPathBase.AnchorPoint.GeometryProperties]);
+            elSourcePoint.transferProperties(previewPoint, [IFPathBase.AnchorPoint.GeometryProperties]);
         }
     };
 
@@ -1526,19 +1526,19 @@
      * @returns {Array<*>} the new filtered selection
      * @private
      */
-    GXPathEditor.prototype._filterSelection = function (selection) {
+    IFPathEditor.prototype._filterSelection = function (selection) {
         if (!selection) {
             return null;
         }
         var newSelection = [];
         var isInNewSelection;
         for (var i = 0; i < selection.length; ++i) {
-            if (selection[i].type != GXPathEditor.PartType.Point) {
+            if (selection[i].type != IFPathEditor.PartType.Point) {
                 newSelection.push(selection[i]);
             } else {
                 isInNewSelection = true;
                 for (var k = 0; k < selection.length; ++k) {
-                    if (selection[k].type == GXPathEditor.PartType.Segment &&
+                    if (selection[k].type == IFPathEditor.PartType.Segment &&
                         (selection[i].point == selection[k].apLeft || selection[i].point == selection[k].apRight)) {
 
                         isInNewSelection = false;
@@ -1555,11 +1555,11 @@
 
     /**
      * If the path is updated (may be way around of this path editor), handle this by updating preview
-     * @param {GXElement.GeometryChangeEvent} evt
+     * @param {IFElement.GeometryChangeEvent} evt
      * @private
      */
-    GXPathEditor.prototype._geometryChange = function (evt) {
-        if (evt.type == GXElement.GeometryChangeEvent.Type.After && evt.element == this._element) {
+    IFPathEditor.prototype._geometryChange = function (evt) {
+        if (evt.type == IFElement.GeometryChangeEvent.Type.After && evt.element == this._element) {
             if (this._elementPreview) {
                 this.releasePathPreview();
                 this.requestInvalidation();
@@ -1568,9 +1568,9 @@
     };
 
     /** @override */
-    GXPathEditor.prototype.toString = function () {
-        return "[Object GXPathEditor]";
+    IFPathEditor.prototype.toString = function () {
+        return "[Object IFPathEditor]";
     };
 
-    _.GXPathEditor = GXPathEditor;
+    _.IFPathEditor = IFPathEditor;
 })(this);

@@ -13,7 +13,7 @@
         document.addEventListener("touchcancel", this._touchHandler, true);
 
         this._actions = [];
-        this._toolManager = new GXToolManager();
+        this._toolManager = new IFToolManager();
         this._documents = [];
         this._windowMenuMap = [];
 
@@ -40,7 +40,7 @@
         }, true);
 
         // Set default global color to white
-        this._globalColor = new GXColor(GXColor.Type.White);
+        this._globalColor = new IFColor(IFColor.Type.White);
     };
     GObject.inherit(EXApplication, GEventTarget);
 
@@ -152,7 +152,7 @@
     EXApplication.prototype._initialized = false;
 
     /**
-     * @type {GXToolManager}
+     * @type {IFToolManager}
      * @private
      */
     EXApplication.prototype._toolManager = null;
@@ -212,7 +212,7 @@
     EXApplication.prototype._palettes = null;
 
     /**
-     * @type {GXColor}
+     * @type {IFColor}
      * @private
      */
     EXApplication.prototype._globalColor = null;
@@ -245,7 +245,7 @@
     EXApplication.prototype._windowMenuMap = null;
 
     /**
-     * @returns {GXToolManager}
+     * @returns {IFToolManager}
      */
     EXApplication.prototype.getToolManager = function () {
         return this._toolManager;
@@ -308,17 +308,17 @@
     };
 
     /**
-     * @return {GXColor}
+     * @return {IFColor}
      */
     EXApplication.prototype.getGlobalColor = function () {
         return this._globalColor;
     };
 
     /**
-     * @param {GXColor} color
+     * @param {IFColor} color
      */
     EXApplication.prototype.setGlobalColor = function (color) {
-        if (!GXColor.equals(color, this._globalColor)) {
+        if (!IFColor.equals(color, this._globalColor)) {
             this._globalColor = color;
 
             // Trigger update event
@@ -421,7 +421,7 @@
     /**
      * Add a new document and open up a window for it
      * and mark the view as being active
-     * @param {GXScene|GBlob} source the source to be added, either a scene
+     * @param {IFScene|GBlob} source the source to be added, either a scene
      * or a blob to read the document from
      * @param {String} [temporaryTitle] optional temporary title to be used
      * for the document if no blob is assigned, defaults to null to use
@@ -445,7 +445,7 @@
                 source.restore(false, 'binary', function (data) {
                     var scene = null;
                     try {
-                        scene = GXNode.deserialize(data);
+                        scene = IFNode.deserialize(data);
 
                         if (!scene) {
                             throw new Error('Failure.');
@@ -753,7 +753,7 @@
 
     /**
      * Add a new document
-     * @param {GXScene} scene
+     * @param {IFScene} scene
      * @param {GBlob} blob
      * @param {String} [temporaryTitle]
      * @private

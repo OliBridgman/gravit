@@ -25,15 +25,15 @@ gLocale.setValues(GUIKey, GLocale.Language.English, ["key.19", "key.19.short"], 
 gLocale.setValues(GUIKey, GLocale.Language.English, ["key.30", "key.31", "key.32", "key.33", "key.34", "key.35", "key.36", "key.37", "key.38", "key.39", "key.40", "key.41"], ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"]);
 
 // Scene
-gLocale.setValues(GXEllipse, GLocale.Language.English, ["name"], ["Ellipse"]);
-gLocale.setValues(GXRectangle, GLocale.Language.English, ["name"], ["Rectangle"]);
-gLocale.setValues(GXLayer, GLocale.Language.English, ["name", "type.output", "type.draft", "type.guide"], ["Layer", "Output", "Draft", "Guide"]);
-gLocale.setValues(GXScene, GLocale.Language.English, ["name"], ["Scene"]);
-gLocale.setValues(GXPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
-gLocale.setValues(GXPage, GLocale.Language.English, ["name"], ["Page"]);
-gLocale.setValues(GXPath, GLocale.Language.English, ["name"], ["Path"]);
-gLocale.setValues(GXText, GLocale.Language.English, ["name"], ["Text"]);
-gLocale.setValues(GXScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
+gLocale.setValues(IFEllipse, GLocale.Language.English, ["name"], ["Ellipse"]);
+gLocale.setValues(IFRectangle, GLocale.Language.English, ["name"], ["Rectangle"]);
+gLocale.setValues(IFLayer, GLocale.Language.English, ["name", "type.output", "type.draft", "type.guide"], ["Layer", "Output", "Draft", "Guide"]);
+gLocale.setValues(IFScene, GLocale.Language.English, ["name"], ["Scene"]);
+gLocale.setValues(IFPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
+gLocale.setValues(IFPage, GLocale.Language.English, ["name"], ["Page"]);
+gLocale.setValues(IFPath, GLocale.Language.English, ["name"], ["Path"]);
+gLocale.setValues(IFText, GLocale.Language.English, ["name"], ["Text"]);
+gLocale.setValues(IFScenePaintConfiguration, GLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
 gLocale.setValues(IFFillAttribute, GLocale.Language.English, ["name"], ["Fill"]);
 gLocale.setValues(IFStrokeAttribute, GLocale.Language.English, ["name"], ["Stroke"]);
 gLocale.setValues(IFContentAttribute, GLocale.Language.English, ["name"], ["Contents"]);
@@ -41,23 +41,23 @@ gLocale.setValues(IFBlurAttribute, GLocale.Language.English, ["name"], ["Blur"])
 gLocale.setValues(IFShadowAttribute, GLocale.Language.English, ["name"], ["Shadow"]);
 
 // Tools
-gLocale.setValues(GXTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);
-gLocale.setValues(GXShapeTool, GLocale.Language.English, ["shortcut.shift", "shortcut.option"], ["Equal sizing of each side", "Draw from the center side"]);
-gLocale.setValues(GXEllipseTool, GLocale.Language.English, ["title"], ["Ellipse"]);
-gLocale.setValues(GXLineTool, GLocale.Language.English, ["title"], ["Line"]);
-gLocale.setValues(GXPathTool, GLocale.Language.English, ["shortcut.tab"], ["Finish editing and deselect path"]);
-gLocale.setValues(GXHandTool, GLocale.Language.English, ["title"], ["Hand"]);
-gLocale.setValues(GXPenTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Pen", "%TODO%", "%TODO%"]);
-gLocale.setValues(GXBezigonTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
-gLocale.setValues(GXPolygonTool, GLocale.Language.English, ["title", "shortcut.shift", "shortcut.option"], ["Polygon", "Lock angle to 15° degree steps", "Switch between Polygon and Star"]);
-gLocale.setValues(GXRectangleTool, GLocale.Language.English, ["title"], ["Rectangle"]);
+gLocale.setValues(IFTool, GLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);
+gLocale.setValues(IFShapeTool, GLocale.Language.English, ["shortcut.shift", "shortcut.option"], ["Equal sizing of each side", "Draw from the center side"]);
+gLocale.setValues(IFEllipseTool, GLocale.Language.English, ["title"], ["Ellipse"]);
+gLocale.setValues(IFLineTool, GLocale.Language.English, ["title"], ["Line"]);
+gLocale.setValues(IFPathTool, GLocale.Language.English, ["shortcut.tab"], ["Finish editing and deselect path"]);
+gLocale.setValues(IFHandTool, GLocale.Language.English, ["title"], ["Hand"]);
+gLocale.setValues(IFPenTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Pen", "%TODO%", "%TODO%"]);
+gLocale.setValues(IFBezigonTool, GLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
+gLocale.setValues(IFPolygonTool, GLocale.Language.English, ["title", "shortcut.shift", "shortcut.option"], ["Polygon", "Lock angle to 15° degree steps", "Switch between Polygon and Star"]);
+gLocale.setValues(IFRectangleTool, GLocale.Language.English, ["title"], ["Rectangle"]);
 gLocale.setValues(IFTextTool, GLocale.Language.English, ["title"], ["Text"]);
-gLocale.setValues(GXZoomTool, GLocale.Language.English, ["title"], ["Zoom"]);
-gLocale.setValues(GXSelectTool, GLocale.Language.English, ["shortcut.shift", "shortcut.meta", "shortcut.option", "shortcut.up", "shortcut.down", "shortcut.left", "shortcut.right"], ["Add/Remove to/from current selection. When duplicating will create a template instead of a copy, for arrow keys will increase the shift amount", "Select next object underneath", "Duplicate when dragging selection", "Move selection up", "Move selection down", "Move selection left", "Move selection right"]);
-gLocale.setValues(GXPointerTool, GLocale.Language.English, ["title"], ["Pointer"]);
-gLocale.setValues(GXSubSelectTool, GLocale.Language.English, ["title"], ["Subselect"]);
-gLocale.setValues(GXPageTool, GLocale.Language.English, ["title"], ["Page"]);
-gLocale.setValues(GXLassoTool, GLocale.Language.English, ["title"], ["Lasso"]);
+gLocale.setValues(IFZoomTool, GLocale.Language.English, ["title"], ["Zoom"]);
+gLocale.setValues(IFSelectTool, GLocale.Language.English, ["shortcut.shift", "shortcut.meta", "shortcut.option", "shortcut.up", "shortcut.down", "shortcut.left", "shortcut.right"], ["Add/Remove to/from current selection. When duplicating will create a template instead of a copy, for arrow keys will increase the shift amount", "Select next object underneath", "Duplicate when dragging selection", "Move selection up", "Move selection down", "Move selection left", "Move selection right"]);
+gLocale.setValues(IFPointerTool, GLocale.Language.English, ["title"], ["Pointer"]);
+gLocale.setValues(IFSubSelectTool, GLocale.Language.English, ["title"], ["Subselect"]);
+gLocale.setValues(IFPageTool, GLocale.Language.English, ["title"], ["Page"]);
+gLocale.setValues(IFLassoTool, GLocale.Language.English, ["title"], ["Lasso"]);
 
 // Editor
-gLocale.setValues(GXSceneEditor, GLocale.Language.English, ["action.insert", "action.remove", "action.properties"], ["Insert", "Remove", "Change Properties"]);
+gLocale.setValues(IFSceneEditor, GLocale.Language.English, ["action.insert", "action.remove", "action.properties"], ["Insert", "Remove", "Change Properties"]);

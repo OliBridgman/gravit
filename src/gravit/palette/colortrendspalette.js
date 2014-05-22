@@ -21,7 +21,7 @@
     EXColorTrendsPalette.prototype._htmlElement = null;
 
     /**
-     * @type {GXColor}
+     * @type {IFColor}
      * @private
      */
     EXColorTrendsPalette.prototype._currentColor = null;
@@ -176,7 +176,7 @@
      * Update a trend's current value and returns the new color
      * @param {Number} trend
      * @param {Number|String} value
-     * @return {GXColor}
+     * @return {IFColor}
      * @private
      */
     EXColorTrendsPalette.prototype._updateTrendValue = function (trend, value) {
@@ -209,7 +209,7 @@
      * Calculate a color for a given trend number and value
      * @param {Number} trend
      * @param {Number} value
-     * @return {GXColor}
+     * @return {IFColor}
      * @private
      */
     EXColorTrendsPalette.prototype._colorForTrendAndValue = function (trend, value) {
@@ -239,7 +239,7 @@
      * @private
      */
     EXColorTrendsPalette.prototype._updateCurrentColor = function (color) {
-        if (!GXColor.equals(color, this._currentColor)) {
+        if (!IFColor.equals(color, this._currentColor)) {
             this._currentColor = color;
 
             // Update preview

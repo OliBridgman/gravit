@@ -2,22 +2,22 @@
 
     /**
      * A polygon shape
-     * @class GXPolygon
-     * @extends GXPathBase
+     * @class IFPolygon
+     * @extends IFPathBase
      * @constructor
      */
-    function GXPolygon() {
-        GXPathBase.call(this);
+    function IFPolygon() {
+        IFPathBase.call(this);
         this.$closed = true; // polygons are always closed
-        this._setDefaultProperties(GXPolygon.GeometryProperties);
+        this._setDefaultProperties(IFPolygon.GeometryProperties);
     }
 
-    GXNode.inherit("polygon", GXPolygon, GXPathBase);
+    IFNode.inherit("polygon", IFPolygon, IFPathBase);
 
     /**
      * The geometry properties of a polygon with their default values
      */
-    GXPolygon.GeometryProperties = {
+    IFPolygon.GeometryProperties = {
         /** Number of points / segments */
         pts: 6,
         /** Horizontal Center */
@@ -33,9 +33,9 @@
         /** Inner Angle */
         ia: gMath.PI2 - Math.PI / 3,
         /** Outer Corner Type */
-        oct: GXPathBase.CornerType.Rounded,
+        oct: IFPathBase.CornerType.Rounded,
         /** Inner Corner Type */
-        ict: GXPathBase.CornerType.Rounded,
+        ict: IFPathBase.CornerType.Rounded,
         /** Outer Corner Radius */
         ocr: 0,
         /** Inner Corner Radius */
@@ -49,7 +49,7 @@
      * @param {Boolean} [includeTransform] if true, includes the transformation of the polygon
      * if any in the returned coordinates. Defaults to false.
      */
-    GXPolygon.prototype.iterateSegments = function (iterator, includeTransform) {
+    IFPolygon.prototype.iterateSegments = function (iterator, includeTransform) {
         // Accuracy or considering start and end angles the same (2*PI overall)
         var ACC = 1.0e-6;
         var endArc = this.$oa + gMath.PI2;
@@ -85,18 +85,18 @@
     };
 
     /** @override */
-    GXPolygon.prototype.store = function (blob) {
-        if (GXPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXPolygon.GeometryProperties);
+    IFPolygon.prototype.store = function (blob) {
+        if (IFPathBase.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFPolygon.GeometryProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXPolygon.prototype.restore = function (blob) {
-        if (GXPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPolygon.GeometryProperties);
+    IFPolygon.prototype.restore = function (blob) {
+        if (IFPathBase.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFPolygon.GeometryProperties);
             this._invalidatePath();
             return true;
         }
@@ -104,17 +104,17 @@
     };
 
     /** @override */
-    GXPolygon.prototype._handleChange = function (change, args) {
-        if (this._handleGeometryChangeForProperties(change, args, GXPolygon.GeometryProperties) && change == GXNode._Change.AfterPropertiesChange) {
+    IFPolygon.prototype._handleChange = function (change, args) {
+        if (this._handleGeometryChangeForProperties(change, args, IFPolygon.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             this._invalidatePath();
         }
-        GXPathBase.prototype._handleChange.call(this, change, args);
+        IFPathBase.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * @private
      */
-    GXPolygon.prototype._invalidatePath = function () {
+    IFPolygon.prototype._invalidatePath = function () {
         var anchorPoints = this._getAnchorPoints();
 
         this.beginUpdate();
@@ -124,7 +124,7 @@
             anchorPoints.clearChildren();
 
             this.iterateSegments(function (point, inside, angle) {
-                var anchorPoint = new GXPathBase.AnchorPoint();
+                var anchorPoint = new IFPathBase.AnchorPoint();
                 anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
                     [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
                 anchorPoints.appendChild(anchorPoint);
@@ -137,7 +137,7 @@
     };
 
     /** @override */
-    GXPolygon.prototype.getCenter = function (includeTransform) {
+    IFPolygon.prototype.getCenter = function (includeTransform) {
         var center = new GPoint(this.$cx, this.$cy);
         if (includeTransform && this.$trf) {
             center = this.$trf.mapPoint(center);
@@ -146,19 +146,19 @@
     };
 
     /** @override */
-    GXPolygon.prototype.getOrigHalfWidth = function () {
+    IFPolygon.prototype.getOrigHalfWidth = function () {
         return this.$or >= this.$ir ? this.$or : this.$ir;
     };
 
     /** @override */
-    GXPolygon.prototype.getOrigHalfHeight = function () {
+    IFPolygon.prototype.getOrigHalfHeight = function () {
         return this.$or >= this.$ir ? this.$or : this.$ir;
     };
 
     /** @override */
-    GXPolygon.prototype.toString = function () {
-        return "[GXPolygon]";
+    IFPolygon.prototype.toString = function () {
+        return "[IFPolygon]";
     };
 
-    _.GXPolygon = GXPolygon;
+    _.IFPolygon = IFPolygon;
 })(this);

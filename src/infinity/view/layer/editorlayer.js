@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A layer for rendering editors
-     * @param {GXEditorView} view
-     * @class GXEditorLayer
-     * @extends GXViewLayer
+     * @param {IFEditorView} view
+     * @class IFEditorLayer
+     * @extends IFViewLayer
      * @constructor
      */
-    function GXEditorLayer(view) {
-        GXViewLayer.call(this, view);
-        view.getEditor().addEventListener(GXEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
+    function IFEditorLayer(view) {
+        IFViewLayer.call(this, view);
+        view.getEditor().addEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
     }
-    GObject.inherit(GXEditorLayer, GXViewLayer);
+    GObject.inherit(IFEditorLayer, IFViewLayer);
 
     /** @override */
-    GXEditorLayer.prototype.paint = function (context) {
-        var sceneEditor = GXElementEditor.getEditor(this._view.getScene());
+    IFEditorLayer.prototype.paint = function (context) {
+        var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
         if (sceneEditor) {
             sceneEditor.paint(this._view.getWorldTransform(), context);
         }
@@ -22,10 +22,10 @@
 
     /**
      * Event listener for editor's repaintRequest
-     * @param {GXEditor.InvalidationRequestEvent} event the invalidation request event
+     * @param {IFEditor.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    GXEditorLayer.prototype._editorInvalidationRequest = function (event) {
+    IFEditorLayer.prototype._editorInvalidationRequest = function (event) {
         if (event.editor) {
             var area = event.editor.invalidate(this._view.getWorldTransform(), event.args);
             if (area) {
@@ -35,9 +35,9 @@
     };
 
     /** @override */
-    GXEditorLayer.prototype.toString = function () {
-        return "[Object GXEditorLayer]";
+    IFEditorLayer.prototype.toString = function () {
+        return "[Object IFEditorLayer]";
     };
 
-    _.GXEditorLayer = GXEditorLayer;
+    _.IFEditorLayer = IFEditorLayer;
 })(this);

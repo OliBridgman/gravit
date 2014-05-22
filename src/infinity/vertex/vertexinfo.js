@@ -2,23 +2,23 @@
 
     /**
      * Static vertex information collector used for bbox calc, hit-test etc.
-     * @class GXVertexInfo
+     * @class IFVertexInfo
      * @version 1.0
      * @constructor
      */
-    function GXVertexInfo() {
+    function IFVertexInfo() {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertexInfo.HitResult Class
+    // IFVertexInfo.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A class to keep the result of a hit test
-     * @class GXVertexInfo.HitResult
+     * @class IFVertexInfo.HitResult
      * @constructor
      * @version 1.0
      */
-    GXVertexInfo.HitResult = function () {
+    IFVertexInfo.HitResult = function () {
     };
 
     /**
@@ -27,7 +27,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.segment = null;
+    IFVertexInfo.HitResult.prototype.segment = null;
 
     /**
      * Defines the exact x-coordinate of the
@@ -38,7 +38,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.x = null;
+    IFVertexInfo.HitResult.prototype.x = null;
 
     /**
      * Defines the exact y-coordinate of the
@@ -49,7 +49,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.y = null;
+    IFVertexInfo.HitResult.prototype.y = null;
 
     /**
      * Defines the slope of the hit within
@@ -57,7 +57,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.slope = null;
+    IFVertexInfo.HitResult.prototype.slope = null;
 
     /**
      * Defines whether the hit is on the outline
@@ -65,10 +65,10 @@
      * @type {Boolean}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.outline = null;
+    IFVertexInfo.HitResult.prototype.outline = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertexInfo Class
+    // IFVertexInfo Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
@@ -83,7 +83,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the segment in the path to be written into result, when segment is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -91,7 +91,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestSegment = function (px1, py1, px2, py2, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestSegment = function (px1, py1, px2, py2, x, y, sqrOutline, chainIdx, result) {
         // ptMin[0] for [a, b]: 0 - min dist in a; 1 - min dist in b; 0 < t < 1- min dist in a+t*(b-a) ==
         var ptMin = [];
         var sqrDst = gMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
@@ -124,7 +124,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the curve in the path to be written into result, when curve is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -132,7 +132,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestCurve = function (px1, py1, px2, py2, cx, cy, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestCurve = function (px1, py1, px2, py2, cx, cy, x, y, sqrOutline, chainIdx, result) {
         // The first and the second quadratic curve coefficients for P(t)x and P(t)y
         var ax, ay, bx, by;
 
@@ -330,7 +330,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the curve in the path to be written into result, when curve is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -338,7 +338,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y, sqrOutline, chainIdx, result) {
         // There is a hit if the shortest squared distance from point to curve is less than sqrOutline.
         // An exact distance from a point to a point on curve is a polynomial of 6 degree.
         // To find a distance minimization point, we need to check curve ends and find and check roots
@@ -743,7 +743,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderSegment = function (px1, py1, px2, py2, x, y, countSegm) {
+    IFVertexInfo.prototype._hitUnderSegment = function (px1, py1, px2, py2, x, y, countSegm) {
         var s1, s2, s3;
 
         s1 = gMath.segmentSide(0, 0, px1, py1, x, y);
@@ -809,7 +809,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._evalConicReg = function (px1, py1, px2, py2, cx, cy, cHullCheck, curvFunc, x, y) {
+    IFVertexInfo.prototype._evalConicReg = function (px1, py1, px2, py2, cx, cy, cHullCheck, curvFunc, x, y) {
         var alpha;
         var chullres; // result of checking against controls convex hull
         var sideC; // value of curve function in the control point
@@ -865,7 +865,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderCurve = function (px1, py1, px2, py2, cx, cy, x, y) {
+    IFVertexInfo.prototype._hitUnderCurve = function (px1, py1, px2, py2, cx, cy, x, y) {
         // Here is used formulas for curve implicitization from the document of
         // Alois Zingl "A Rasterizing Algorithm for Drawing Curves"
 
@@ -927,7 +927,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y) {
+    IFVertexInfo.prototype._hitUnderCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y) {
         // Here is used formulas for curve implicitization and self-intersection point from the document of
         // Alois Zingl "A Rasterizing Algorithm for Drawing Curves"
 
@@ -1191,12 +1191,12 @@
      * If orientation is not provided, inside will be defined automatically for even/odd fill of the shape
      * @param {Number} x the x-position of the point to hit-test against
      * @param {Number} y the y-position of the point to hit-test against
-     * @param {GXVertexSource} source the vertex source used for hit-testing
+     * @param {IFVertexSource} source the vertex source used for hit-testing
      * @param {Number} outlineWidth the width of the outline. If this is
      * zero, it is assumed that it is sqrt(gMath.defaultEps)
      * @param {Boolean} area if true, the fill area will be tested as well,
      * otherwise only the outline will be considered
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
      * @param {Boolean} orientationCW - true means that clock-wise orientation should be used,
@@ -1205,11 +1205,11 @@
      * @return {Boolean} true if a hit was made, false if not
      * @version 1.0
      */
-    GXVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result, orientationCW) {
+    IFVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result, orientationCW) {
         var px1, py1, px2, py2, cx1, cy1, pStartX, pStartY;
         var chainIdx = 0;
         var res = false;
-        var vertex = new GXVertex();
+        var vertex = new IFVertex();
         var sqrOutline = outlineWidth ? (outlineWidth / 2) * (outlineWidth / 2) : gMath.defaultEps;
         var tot = 0;
         var xshift = 0;
@@ -1230,14 +1230,14 @@
             // iterate through curves
             while (source.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case GXVertex.Command.Move:
+                    case IFVertex.Command.Move:
                         px1 = vertex.x;
                         py1 = vertex.y;
                         pStartX = px1;
                         pStartY = py1;
                         break;
 
-                    case GXVertex.Command.Line:
+                    case IFVertex.Command.Line:
                         ++chainIdx;
                         res = this._hitTestSegment(px1, py1, vertex.x, vertex.y, x, y, sqrOutline, chainIdx, result);
                         if (res) {
@@ -1251,7 +1251,7 @@
                         py1 = vertex.y;
                         break;
 
-                    case GXVertex.Command.Curve:
+                    case IFVertex.Command.Curve:
                         ++chainIdx;
                         px2 = vertex.x;
                         py2 = vertex.y;
@@ -1270,7 +1270,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Curve2:
+                    case IFVertex.Command.Curve2:
                         ++chainIdx;
                         px2 = vertex.x;
                         py2 = vertex.y;
@@ -1294,7 +1294,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Close:
+                    case IFVertex.Command.Close:
                         if (pStartX != px1 || pStartY != py1) {
                             ++chainIdx;
                             res = this._hitTestSegment(px1, py1, pStartX, pStartY, x, y, sqrOutline, chainIdx, result);
@@ -1333,7 +1333,7 @@
     /**
      * Calculate bounding box for a vertex source. The vertex source will
      * be automatically rewinded to the beginning.
-     * @param {GXVertexSource} source the vertex source used for calculation
+     * @param {IFVertexSource} source the vertex source used for calculation
      * @param {Boolean} exact if true, the bounding box will include exact
      * curve calculation, otherwise if false, the bounding box will include
      * the max. bbox also surrounding any curve control points
@@ -1342,7 +1342,7 @@
      * empty rectangle if segments are at the same position or too less.
      * @version 1.0
      */
-    GXVertexInfo.prototype.calculateBounds = function (source, exact) {
+    IFVertexInfo.prototype.calculateBounds = function (source, exact) {
         if (source.rewindVertices(0)) {
             var minX = null;
             var minY = null;
@@ -1468,20 +1468,20 @@
                 measureAtRoot(ay, by, cy);
             }
 
-            var vertex = new GXVertex();
+            var vertex = new IFVertex();
 
             var px1, py1, px2, py2, cx1, cy1;
 
             while (source.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case GXVertex.Command.Move:
-                    case GXVertex.Command.Line:
+                    case IFVertex.Command.Move:
+                    case IFVertex.Command.Line:
                         measurePoint(vertex.x, vertex.y);
                         px1 = vertex.x;
                         py1 = vertex.y;
                         break;
 
-                    case GXVertex.Command.Curve:
+                    case IFVertex.Command.Curve:
                         px2 = vertex.x;
                         py2 = vertex.y;
                         if (source.readVertex(vertex)) {
@@ -1496,7 +1496,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Curve2:
+                    case IFVertex.Command.Curve2:
                         px2 = vertex.x;
                         py2 = vertex.y;
                         if (source.readVertex(vertex)) {
@@ -1517,7 +1517,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Close:
+                    case IFVertex.Command.Close:
                         break;
 
                     default:
@@ -1533,10 +1533,10 @@
     };
 
     /** @override */
-    GXVertexInfo.prototype.toString = function () {
-        return "[Object GXVertexInfo]";
+    IFVertexInfo.prototype.toString = function () {
+        return "[Object IFVertexInfo]";
     };
 
-    _.GXVertexInfo = GXVertexInfo;
-    _.gVertexInfo = new GXVertexInfo();
+    _.IFVertexInfo = IFVertexInfo;
+    _.gVertexInfo = new IFVertexInfo();
 })(this);

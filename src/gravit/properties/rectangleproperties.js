@@ -24,7 +24,7 @@
     GRectangleProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXRectangle>}
+     * @type {Array<IFRectangle>}
      * @private
      */
     GRectangleProperties.prototype._rectangles = null;
@@ -161,7 +161,7 @@
     /** @override */
     GRectangleProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -173,14 +173,14 @@
         // Collect all rectangle elements
         this._rectangles = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXRectangle) {
+            if (elements[i] instanceof IFRectangle) {
                 this._rectangles.push(elements[i]);
             }
         }
 
         if (this._rectangles.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -189,7 +189,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GRectangleProperties.prototype._afterPropertiesChange = function (event) {

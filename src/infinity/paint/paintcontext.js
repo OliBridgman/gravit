@@ -1,32 +1,32 @@
 (function (_) {
     /**
      * A class representing a context for painting
-     * @class GXPaintContext
+     * @class IFPaintContext
      * @constructor
      */
-    function GXPaintContext() {
+    function IFPaintContext() {
         this.outlineColors = [];
     }
 
     /**
      * The configuration for this context
-     * @type {GXPaintConfiguration}
+     * @type {IFPaintConfiguration}
      */
-    GXPaintContext.prototype.configuration = null;
+    IFPaintContext.prototype.configuration = null;
 
     /**
      * The canvas this context is working on
-     * @type GXPaintCanvas
+     * @type IFPaintCanvas
      * @version 1.0
      */
-    GXPaintContext.prototype.canvas = null;
+    IFPaintContext.prototype.canvas = null;
 
     /**
      * A dirty list matcher if painting dirty, may be null
-     * @type GXDirtyList.Matcher
+     * @type IFDirtyList.Matcher
      * @version 1.0
      */
-    GXPaintContext.prototype.dirtyMatcher = null;
+    IFPaintContext.prototype.dirtyMatcher = null;
 
     /**
      * An array of outline colors. If this has
@@ -35,27 +35,27 @@
      * outline color entry of this array
      * @type {null}
      */
-    GXPaintContext.prototype.outlineColors = null;
+    IFPaintContext.prototype.outlineColors = null;
 
     /**
      * The current outline color for the selection
      * @type Number
      * @version 1.0
      */
-    GXPaintContext.prototype.selectionOutlineColor = gColor.selectionOutline;
+    IFPaintContext.prototype.selectionOutlineColor = gColor.selectionOutline;
 
     /**
      * The current outline color for the highlight
      * @type Number
      * @version 1.0
      */
-    GXPaintContext.prototype.highlightOutlineColor = gColor.highlightOutline;
+    IFPaintContext.prototype.highlightOutlineColor = gColor.highlightOutline;
 
     /**
      * Returns whether the paint context is in outline/wireframe mode or not
      * @return {boolean}
      */
-    GXPaintContext.prototype.isOutline = function () {
+    IFPaintContext.prototype.isOutline = function () {
         return this.outlineColors && this.outlineColors.length > 0;
     };
 
@@ -63,7 +63,7 @@
      * Returns the current outline/wireframe color defaulting to black
      * @returns {Number}
      */
-    GXPaintContext.prototype.getOutlineColor = function () {
+    IFPaintContext.prototype.getOutlineColor = function () {
         if (this.outlineColors && this.outlineColors.length > 0) {
             return this.outlineColors[this.outlineColors.length - 1];
         } else {
@@ -73,9 +73,9 @@
     };
 
     /** @override */
-    GXPaintContext.prototype.toString = function () {
-        return "[Object GXPaintContext]";
+    IFPaintContext.prototype.toString = function () {
+        return "[Object IFPaintContext]";
     };
 
-    _.GXPaintContext = GXPaintContext;
+    _.IFPaintContext = IFPaintContext;
 })(this);

@@ -1,10 +1,10 @@
 (function() {
     function test(scene, page, view) {
         // TODO : Create and size on whole page
-        var image = new GXImage();
+        var image = new IFImage();
         image.setProperties(['src'], ['/assets/icon/icon_144x144.png']);
         //layer.appendChild(image);
-        var editor = GXEditor.getEditor(scene);
+        var editor = IFEditor.getEditor(scene);
         editor.insertElements([image]);
     }
 

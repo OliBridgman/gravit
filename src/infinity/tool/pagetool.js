@@ -1,42 +1,42 @@
 (function (_) {
     /**
      * The page tool
-     * @class GXPageTool
-     * @extends GXSelectTool
+     * @class IFPageTool
+     * @extends IFSelectTool
      * @constructor
      * @version 1.0
      */
-    function GXPageTool() {
-        GXSelectTool.call(this);
+    function IFPageTool() {
+        IFSelectTool.call(this);
     };
 
-    GObject.inherit(GXPageTool, GXSelectTool);
+    GObject.inherit(IFPageTool, IFSelectTool);
 
     /** @override */
-    GXPageTool.prototype.getGroup = function () {
+    IFPageTool.prototype.getGroup = function () {
         return 'select';
     };
 
     /** @override */
-    GXPageTool.prototype.getIcon = function () {
+    IFPageTool.prototype.getIcon = function () {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M15.5,18.5v10h-1v-9h-7v3h-3v10h3v1h-4v-12l3-3H15.5z M8.5,25.5v11l3.5-4h5.5L8.5,25.5z"/>\n</svg>\n';
     };
 
     /** @override */
-    GXPageTool.prototype.getHint = function () {
-        return GXSelectTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(GXPageTool, "title"));
+    IFPageTool.prototype.getHint = function () {
+        return IFSelectTool.prototype.getHint.call(this)
+            .setTitle(new GLocale.Key(IFPageTool, "title"));
     };
 
     /** @override */
-    GXPageTool.prototype.getActivationCharacters = function () {
+    IFPageTool.prototype.getActivationCharacters = function () {
         return ['D'];
     };
 
     /** @override */
-    GXPageTool.prototype._getSelectableElement = function (element) {
+    IFPageTool.prototype._getSelectableElement = function (element) {
         for (var p = element; p !== null; p = p.getParent()) {
-            if (p instanceof GXPage) {
+            if (p instanceof IFPage) {
                 return p;
             }
         }
@@ -45,9 +45,9 @@
     };
 
     /** override */
-    GXPageTool.prototype.toString = function () {
-        return "[Object GXPageTool]";
+    IFPageTool.prototype.toString = function () {
+        return "[Object IFPageTool]";
     };
 
-    _.GXPageTool = GXPageTool;
+    _.IFPageTool = IFPageTool;
 })(this);

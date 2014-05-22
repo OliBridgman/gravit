@@ -57,13 +57,13 @@
                 .css('background', color)
                 .attr('data-color', color)
                 .on('mouseenter', function () {
-                    hover(GXColor.parseCSSColor($(this).attr('data-color')));
+                    hover(IFColor.parseCSSColor($(this).attr('data-color')));
                 })
                 .on('mouseleave', function () {
                     hover(null);
                 })
                 .on('click', function () {
-                    activate(GXColor.parseCSSColor($(this).attr('data-color')));
+                    activate(IFColor.parseCSSColor($(this).attr('data-color')));
                 })
                 .appendTo(parent);
 
@@ -97,13 +97,13 @@
                 .css('background', color)
                 .attr('data-color', color)
                 .on('mouseenter', function () {
-                    hover(GXColor.parseCSSColor($(this).attr('data-color')));
+                    hover(IFColor.parseCSSColor($(this).attr('data-color')));
                 })
                 .on('mouseleave', function () {
                     hover(null);
                 })
                 .on('click', function () {
-                    activate(GXColor.parseCSSColor($(this).attr('data-color')));
+                    activate(IFColor.parseCSSColor($(this).attr('data-color')));
                 })
                 .appendTo(parent);
 
@@ -195,7 +195,7 @@
                         .on('input', function (evt) {
                             var val = $(evt.target).val();
                             if (val && val !== "") {
-                                var color = GXColor.parseCSSColor(val);
+                                var color = IFColor.parseCSSColor(val);
                                 if (color) {
                                     data.color = color;
                                     $this.trigger('change', color);
@@ -263,7 +263,7 @@
             if (!arguments.length) {
                 return $this.data('gcolorpanel').color;
             } else {
-                value = typeof value === 'string' ? GXColor.parseColor(value) : value;
+                value = typeof value === 'string' ? IFColor.parseColor(value) : value;
                 $this.data('gcolorpanel').color = value;
                 updatePreviewColor($this, null);
                 return this;

@@ -24,7 +24,7 @@
     GEllipseProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXEllipse>}
+     * @type {Array<IFEllipse>}
      * @private
      */
     GEllipseProperties.prototype._ellipses = null;
@@ -46,15 +46,15 @@
                     .attr('data-property', 'etp')
                     .css('width', '100%')
                     .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Arc)
+                        .attr('value', IFEllipse.Type.Arc)
                         // TODO : I18N
                         .text('Arc'))
                     .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Chord)
+                        .attr('value', IFEllipse.Type.Chord)
                         // TODO : I18N
                         .text('Chord'))
                     .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Pie)
+                        .attr('value', IFEllipse.Type.Pie)
                         // TODO : I18N
                         .text('Pie'))
                     .on('change', function () {
@@ -67,7 +67,7 @@
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = GXLength.parseEquationValue($(this).val());
+                        var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
                             angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
                             self._assignProperty(property, gMath.PI2 - angle);
@@ -109,7 +109,7 @@
     /** @override */
     GEllipseProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -121,14 +121,14 @@
         // Collect all ellipse elements
         this._ellipses = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXEllipse) {
+            if (elements[i] instanceof IFEllipse) {
                 this._ellipses.push(elements[i]);
             }
         }
 
         if (this._ellipses.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -137,7 +137,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GEllipseProperties.prototype._afterPropertiesChange = function (event) {

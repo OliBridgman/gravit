@@ -24,13 +24,13 @@
     GPathProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXPath>}
+     * @type {Array<IFPath>}
      * @private
      */
     GPathProperties.prototype._pathes = null;
 
     /**
-     * @type {Array<GXPathBase.AnchorPoint>}
+     * @type {Array<IFPathBase.AnchorPoint>}
      * @private
      */
     GPathProperties.prototype._points = null;
@@ -87,19 +87,19 @@
                         // TODO : I18N
                         .attr('label', 'Curve')
                         .append($('<option></option>')
-                            .attr('value', GXPathBase.AnchorPoint.Type.Symmetric)
+                            .attr('value', IFPathBase.AnchorPoint.Type.Symmetric)
                             // TODO : I18N
                             .text('Symmetric'))
                         .append($('<option></option>')
-                            .attr('value', GXPathBase.AnchorPoint.Type.Asymmetric)
+                            .attr('value', IFPathBase.AnchorPoint.Type.Asymmetric)
                             // TODO : I18N
                             .text('Asymmetric'))
                         .append($('<option></option>')
-                            .attr('value', GXPathBase.AnchorPoint.Type.Mirror)
+                            .attr('value', IFPathBase.AnchorPoint.Type.Mirror)
                             // TODO : I18N
                             .text('Mirror'))
                         .append($('<option></option>')
-                            .attr('value', GXPathBase.AnchorPoint.Type.Connector)
+                            .attr('value', IFPathBase.AnchorPoint.Type.Connector)
                             // TODO : I18N
                             .text('Connector')))
                     .append($('<optgroup></optgroup>')
@@ -109,7 +109,7 @@
                     .on('change', function () {
                         var val = $(this).val();
                         if (val === '-') {
-                            val = GXPathBase.CornerType.Rounded;
+                            val = IFPathBase.CornerType.Rounded;
                         }
                         self._assignPointProperty('tp', val);
                     });
@@ -247,8 +247,8 @@
     /** @override */
     GPathProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-            this._document.getScene().removeEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFElement.AfterFlagChangeEvent, this._afterFlagChange);
             this._document = null;
         }
 
@@ -261,13 +261,13 @@
         this._pathes = [];
         this._points = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXPath) {
+            if (elements[i] instanceof IFPath) {
                 var path = elements[i];
 
                 this._pathes.push(elements[i]);
 
                 for (var ap = path.getAnchorPoints().getFirstChild(); ap !== null; ap = ap.getNext()) {
-                    if (ap.hasFlag(GXNode.Flag.Selected)) {
+                    if (ap.hasFlag(IFNode.Flag.Selected)) {
                         this._points.push(ap);
                     }
                 }
@@ -276,8 +276,8 @@
 
         if (this._pathes.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().addEventListener(GXElement.AfterFlagChangeEvent, this._afterFlagChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFElement.AfterFlagChangeEvent, this._afterFlagChange, this);
             this._updatePathProperties();
             this._updatePointProperties();
             return true;
@@ -287,7 +287,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPathProperties.prototype._afterPropertiesChange = function (event) {
@@ -302,11 +302,11 @@
     };
 
     /**
-     * @param {GXElement.AfterFlagChangeEvent} event
+     * @param {IFElement.AfterFlagChangeEvent} event
      * @private
      */
     GPathProperties.prototype._afterFlagChange = function (event) {
-        if (event.flag === GXNode.Flag.Selected && event.node instanceof GXPathBase.AnchorPoint) {
+        if (event.flag === IFNode.Flag.Selected && event.node instanceof IFPathBase.AnchorPoint) {
             var path = event.node.getParent().getParent();
             if (path && this._pathes.indexOf(path) >= 0) {
                 if (event.set) {
@@ -346,8 +346,8 @@
 
             var isCorner = true;
             var apType = point.getProperty('tp');
-            for (var p in GXPathBase.AnchorPoint.Type) {
-                if (GXPathBase.AnchorPoint.Type[p] === apType) {
+            for (var p in IFPathBase.AnchorPoint.Type) {
+                if (IFPathBase.AnchorPoint.Type[p] === apType) {
                     isCorner = false;
                     break;
                 }

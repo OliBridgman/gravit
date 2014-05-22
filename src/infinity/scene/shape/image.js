@@ -2,13 +2,13 @@
 
     /**
      * A raster image shape
-     * @class GXImage
-     * @extends GXShape
+     * @class IFImage
+     * @extends IFShape
      * @constructor
      */
-    function GXImage() {
-        GXShape.call(this);
-        this._setDefaultProperties(GXImage.VisualProperties);
+    function IFImage() {
+        IFShape.call(this);
+        this._setDefaultProperties(IFImage.VisualProperties);
         this._image = new Image();
         this._image.onload = this._updatedImage.bind(this);
         this._image.onerror = this._updatedImage.bind(this);
@@ -16,19 +16,19 @@
         this._updateImage();
     }
 
-    GXNode.inheritAndMix("image", GXImage, GXShape);
+    IFNode.inheritAndMix("image", IFImage, IFShape);
 
     /**
      * Visual properties of an image
      */
-    GXImage.VisualProperties = {
+    IFImage.VisualProperties = {
         src: null
     };
 
     /**
      * @enum
      */
-    GXImage.ImageStatus = {
+    IFImage.ImageStatus = {
         Loaded: 0,
         Loading: 1,
         Error: 2
@@ -37,84 +37,84 @@
     /**
      * @type {Number}
      */
-    GXImage.NO_IMAGE_WIDTH = 100;
+    IFImage.NO_IMAGE_WIDTH = 100;
 
     /**
      * @type {Number}
      */
-    GXImage.NO_IMAGE_HEIGHT = 100;
+    IFImage.NO_IMAGE_HEIGHT = 100;
 
     /**
      * @type {Number}
      */
-    GXImage.NO_IMAGE_BACKGROUND = gColor.build(240, 240, 240, 255);
+    IFImage.NO_IMAGE_BACKGROUND = gColor.build(240, 240, 240, 255);
 
     /**
      * @type {Number}
      */
-    GXImage.NO_IMAGE_ERROR_STROKE = gColor.build(255, 0, 0, 255);
+    IFImage.NO_IMAGE_ERROR_STROKE = gColor.build(255, 0, 0, 255);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXImage.StatusEvent Event
+    // IFImage.StatusEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event called when the status of this image changes
-     * @param {GXImage.ImageStatus} status the status
-     * @class GXImage.StatusEvent
+     * @param {IFImage.ImageStatus} status the status
+     * @class IFImage.StatusEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXImage.StatusEvent = function (status) {
+    IFImage.StatusEvent = function (status) {
         this.status = status;
     };
-    GObject.inherit(GXImage.StatusEvent, GEvent);
+    GObject.inherit(IFImage.StatusEvent, GEvent);
 
     /**
      * The status
-     * @type GXImage.ImageStatus
+     * @type IFImage.ImageStatus
      */
-    GXImage.StatusEvent.prototype.status = null;
+    IFImage.StatusEvent.prototype.status = null;
 
     /** @override */
-    GXImage.StatusEvent.prototype.toString = function () {
-        return "[Event GXImage.StatusEvent]";
+    IFImage.StatusEvent.prototype.toString = function () {
+        return "[Event IFImage.StatusEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXImage Class
+    // IFImage Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @type {GXImage.ImageStatus}
+     * @type {IFImage.ImageStatus}
      * @private
      */
-    GXImage.prototype._status = null;
+    IFImage.prototype._status = null;
 
     /**
      * @type {Image}
      * @private
      */
-    GXImage.prototype._image = null;
+    IFImage.prototype._image = null;
 
     /**
      * @type {number}
      * @private
      */
-    GXImage.prototype._vertexIterator = 0;
+    IFImage.prototype._vertexIterator = 0;
 
     /** @override */
-    GXImage.prototype.store = function (blob) {
-        if (GXShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXImage.VisualProperties);
+    IFImage.prototype.store = function (blob) {
+        if (IFShape.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFImage.VisualProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXImage.prototype.restore = function (blob) {
-        if (GXShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXImage.VisualProperties);
+    IFImage.prototype.restore = function (blob) {
+        if (IFShape.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFImage.VisualProperties);
             this._updatedImage();
             return true;
         }
@@ -122,42 +122,42 @@
     };
 
     /** @override */
-    GXImage.prototype.rewindVertices = function (index) {
+    IFImage.prototype.rewindVertices = function (index) {
         this._vertexIterator = index;
         return true;
     };
 
     /** @override */
-    GXImage.prototype.readVertex = function (vertex) {
+    IFImage.prototype.readVertex = function (vertex) {
         switch (this._vertexIterator) {
             case 0:
-                vertex.command = GXVertex.Command.Move;
+                vertex.command = IFVertex.Command.Move;
                 vertex.x = 0;
                 vertex.y = 0;
                 break;
             case 1:
-                vertex.command = GXVertex.Command.Line;
+                vertex.command = IFVertex.Command.Line;
                 vertex.x = this._getWidth();
                 vertex.y = 0;
                 break;
             case 2:
-                vertex.command = GXVertex.Command.Line;
+                vertex.command = IFVertex.Command.Line;
                 vertex.x = this._getWidth();
                 vertex.y = this._getHeight();
                 break;
             case 3:
-                vertex.command = GXVertex.Command.Line;
+                vertex.command = IFVertex.Command.Line;
                 vertex.x = 0;
                 vertex.y = this._getHeight();
                 break;
             case 4:
-                vertex.command = GXVertex.Command.Close;
+                vertex.command = IFVertex.Command.Close;
                 break;
             default:
                 return false;
         }
 
-        if (vertex.command !== GXVertex.Command.Close && this.$trf) {
+        if (vertex.command !== IFVertex.Command.Close && this.$trf) {
             this.$trf.map(vertex);
         }
 
@@ -167,7 +167,7 @@
     };
 
     /** @overide */
-    GXImage.prototype._paintBackground = function (context) {
+    IFImage.prototype._paintBackground = function (context) {
         // We'll be painting our image before any other contents
         // but only, if we're not painting outline only!
 
@@ -181,23 +181,23 @@
 
             // Paint depending on our status
             switch (this._status) {
-                case GXImage.ImageStatus.Loaded:
+                case IFImage.ImageStatus.Loaded:
                     context.canvas.drawImage(this._image);
                     break;
 
-                case GXImage.ImageStatus.Loading:
-                case GXImage.ImageStatus.Error:
+                case IFImage.ImageStatus.Loading:
+                case IFImage.ImageStatus.Error:
                     var width = this._getWidth();
                     var height = this._getHeight();
 
-                    context.canvas.fillRect(0, 0, width, height, GXImage.NO_IMAGE_BACKGROUND);
+                    context.canvas.fillRect(0, 0, width, height, IFImage.NO_IMAGE_BACKGROUND);
 
                     // TODO : Paint some loading indicator!?
 
-                    if (this._status === GXImage.ImageStatus.Error) {
+                    if (this._status === IFImage.ImageStatus.Error) {
                         // Paint red cross
-                        context.canvas.strokeLine(0, 0, width, height, 2, GXImage.NO_IMAGE_ERROR_STROKE);
-                        context.canvas.strokeLine(width, 0, 0, height, 2, GXImage.NO_IMAGE_ERROR_STROKE);
+                        context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
+                        context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
                     }
                     break;
 
@@ -209,24 +209,24 @@
             context.canvas.setTransform(canvasTransform);
         }
 
-        GXShape.prototype._paintBackground.call(this, context);
+        IFShape.prototype._paintBackground.call(this, context);
     };
 
     /** @override */
-    GXImage.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    IFImage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // TODO : Make correct shape hit test here instead
-        return new GXElement.HitResult(this);
+        return new IFElement.HitResult(this);
     };
 
     /** @override */
-    GXImage.prototype._handleChange = function (change, args) {
-        if (change == GXNode._Change.AfterPropertiesChange) {
+    IFImage.prototype._handleChange = function (change, args) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
             if (args.properties.indexOf('src') >= 0) {
                 this._updateImage();
             }
         }
 
-        GXShape.prototype._handleChange.call(this, change, args);
+        IFShape.prototype._handleChange.call(this, change, args);
     };
 
     /**
@@ -234,11 +234,11 @@
      * @returns {number}
      * @private
      */
-    GXImage.prototype._getWidth = function () {
+    IFImage.prototype._getWidth = function () {
         if (this._image.naturalWidth) {
             return this._image.naturalWidth;
         } else {
-            return GXImage.NO_IMAGE_WIDTH;
+            return IFImage.NO_IMAGE_WIDTH;
         }
     };
 
@@ -247,11 +247,11 @@
      * @returns {number}
      * @private
      */
-    GXImage.prototype._getHeight = function () {
+    IFImage.prototype._getHeight = function () {
         if (this._image.naturalHeight) {
             return this._image.naturalHeight;
         } else {
-            return GXImage.NO_IMAGE_HEIGHT;
+            return IFImage.NO_IMAGE_HEIGHT;
         }
     };
 
@@ -259,11 +259,11 @@
      * Called to update the src of our image
      * @private
      */
-    GXImage.prototype._updateImage = function () {
-        this._setStatus(GXImage.ImageStatus.Loading);
+    IFImage.prototype._updateImage = function () {
+        this._setStatus(IFImage.ImageStatus.Loading);
 
-        this._notifyChange(GXElement._Change.InvalidationRequest);
-        this._notifyChange(GXElement._Change.PrepareGeometryUpdate);
+        this._notifyChange(IFElement._Change.InvalidationRequest);
+        this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
 
         this._image.src = this.$src;
     };
@@ -272,33 +272,33 @@
      * Called from one of the listeners on our image
      * @private
      */
-    GXImage.prototype._updatedImage = function () {
-        this._notifyChange(GXElement._Change.FinishGeometryUpdate);
+    IFImage.prototype._updatedImage = function () {
+        this._notifyChange(IFElement._Change.FinishGeometryUpdate);
 
         if (this._image.naturalWidth !== 0 && this._image.naturalHeight !== 0) {
-            this._setStatus(GXImage.ImageStatus.Loaded);
+            this._setStatus(IFImage.ImageStatus.Loaded);
         } else {
-            this._setStatus(GXImage.ImageStatus.Error);
+            this._setStatus(IFImage.ImageStatus.Error);
         }
     };
 
     /**
-     * @param {GXImage.ImageStatus} status
+     * @param {IFImage.ImageStatus} status
      * @private
      */
-    GXImage.prototype._setStatus = function (status) {
+    IFImage.prototype._setStatus = function (status) {
         if (status !== this._status) {
             this._status = status;
-            if (this.isAttached() && this._scene.hasEventListeners(GXImage.StatusEvent)) {
-                this._scene.trigger(new GXImage.StatusEvent(this._status));
+            if (this.isAttached() && this._scene.hasEventListeners(IFImage.StatusEvent)) {
+                this._scene.trigger(new IFImage.StatusEvent(this._status));
             }
         }
     };
 
     /** @override */
-    GXImage.prototype.toString = function () {
-        return "[GXImage]";
+    IFImage.prototype.toString = function () {
+        return "[IFImage]";
     };
 
-    _.GXImage = GXImage;
+    _.IFImage = IFImage;
 })(this);

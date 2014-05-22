@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * A base editor for shapes
-     * @param {GXShape} shape the shape this editor works on
-     * @extends GXBlockEditor
+     * @param {IFShape} shape the shape this editor works on
+     * @extends IFBlockEditor
      * @constructor
      */
-    function GXShapeEditor(shape) {
-        GXBlockEditor.call(this, shape);
+    function IFShapeEditor(shape) {
+        IFBlockEditor.call(this, shape);
     };
-    GObject.inherit(GXShapeEditor, GXBlockEditor);
+    GObject.inherit(IFShapeEditor, IFBlockEditor);
 
     /** @override */
-    GXShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
-        if (GXElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
+    IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
+        if (IFElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
             // TODO : Attributes are supposed to gain their own editors so this should become obsolete
-            // TODO : Also support dropping GXSwatch
-            if (type === GXElementEditor.DropType.Color) {
-                var editor = GXEditor.getEditor(this.getElement().getScene());
+            // TODO : Also support dropping IFSwatch
+            if (type === IFElementEditor.DropType.Color) {
+                var editor = IFEditor.getEditor(this.getElement().getScene());
 
                 // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
                 editor.beginTransaction();
@@ -37,7 +37,7 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype.initialSetup = function (fillColor, strokeColor) {
+    IFShapeEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // Assign default fill and stroke attributes for shapes
         if (fillColor || strokeColor) {
             var attributes = this.getElement().getAttributes();
@@ -56,21 +56,21 @@
      * @return {Boolean} true if a center cross should be painted, false if not (default)
      * @private
      */
-    GXShapeEditor.prototype._hasCenterCross = function () {
+    IFShapeEditor.prototype._hasCenterCross = function () {
         return false;
     };
 
     /** @override */
-    GXShapeEditor.prototype._prePaint = function (transform, context) {
-        if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+    IFShapeEditor.prototype._prePaint = function (transform, context) {
+        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             var element = this.getPaintElement();
 
             // Work in transformed coordinates to avoid scaling outline
-            var transformer = new GXVertexTransformer(element, transform);
-            context.canvas.putVertices(new GXVertexPixelAligner(transformer));
+            var transformer = new IFVertexTransformer(element, transform);
+            context.canvas.putVertices(new IFVertexPixelAligner(transformer));
 
             // Paint either outlined or highlighted (highlighted has a higher precedence)
-            if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+            if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
                 context.canvas.strokeVertices(context.highlightOutlineColor, 2);
             } else {
                 context.canvas.strokeVertices(context.selectionOutlineColor, 1);
@@ -79,14 +79,14 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype._postPaint = function (transform, context) {
+    IFShapeEditor.prototype._postPaint = function (transform, context) {
         // Paint center cross if desired + selected + in detail mode
-        if (this.hasFlag(GXElementEditor.Flag.Selected) && this.hasFlag(GXElementEditor.Flag.Detail) && this._hasCenterCross()) {
+        if (this.hasFlag(IFElementEditor.Flag.Selected) && this.hasFlag(IFElementEditor.Flag.Detail) && this._hasCenterCross()) {
             var element = this.getPaintElement();
             var sourceTransform = element.getTransform();
             var targetTransform = sourceTransform ? sourceTransform : new GTransform(1, 0, 0, 1, 0, 0);
             targetTransform = transform ? targetTransform.multiplied(transform) : targetTransform;
-            var crossHalfSizeMax = GXElementEditor.OPTIONS.centerCrossSize * 2;
+            var crossHalfSizeMax = IFElementEditor.OPTIONS.centerCrossSize * 2;
             var tMatrix = targetTransform.getMatrix();
 
             if (Math.abs(tMatrix[0]) * element.getOrigHalfWidth() > crossHalfSizeMax &&
@@ -95,7 +95,7 @@
                 var center = targetTransform.mapPoint(element.getCenter(false));
                 var cx = Math.floor(center.getX()) + 0.5;
                 var cy = Math.floor(center.getY()) + 0.5;
-                var cs = GXElementEditor.OPTIONS.centerCrossSize / 2;
+                var cs = IFElementEditor.OPTIONS.centerCrossSize / 2;
                 context.canvas.strokeLine(cx - cs, cy - cs, cx + cs, cy + cs, 1, context.selectionOutlineColor);
                 context.canvas.strokeLine(cx + cs, cy - cs, cx - cs, cy + cs, 1, context.selectionOutlineColor);
             }
@@ -103,9 +103,9 @@
     };
 
     /** @override */
-    GXShapeEditor.prototype.toString = function () {
-        return "[Object GXShapeEditor]";
+    IFShapeEditor.prototype.toString = function () {
+        return "[Object IFShapeEditor]";
     };
 
-    _.GXShapeEditor = GXShapeEditor;
+    _.IFShapeEditor = IFShapeEditor;
 })(this);

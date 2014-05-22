@@ -115,7 +115,7 @@
     };
 
     /**
-     * @param {GXScene} [scene] specific scene to add pages to,
+     * @param {IFScene} [scene] specific scene to add pages to,
      * if not provided (default), takes the active document
      * @override
      */
@@ -125,7 +125,7 @@
     };
 
     /**
-     * @param {GXScene} [scene] specific scene to add pages to,
+     * @param {IFScene} [scene] specific scene to add pages to,
      * if not provided (default), takes the active document
      * @param {Function} [done] if provided, this callback will be
      * called when the user has setup the page(s)
@@ -136,7 +136,7 @@
         var insertPos = scene.getPageInsertPosition();
 
         // Create page
-        var page = new GXPage();
+        var page = new IFPage();
 
         // Assign page properties
         page.setProperties([
@@ -152,7 +152,7 @@
             insertPos.getY(),
             980,
             1000,
-            GXColor.parseCSSColor('white')
+            IFColor.parseCSSColor('white')
         ]);
 
         // Append child and be done with it

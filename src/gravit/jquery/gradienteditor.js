@@ -54,7 +54,7 @@
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
 
-                                    methods.insertStop.call(self, percentPos, GXColor.parseCSSColor('black'), true);
+                                    methods.insertStop.call(self, percentPos, IFColor.parseCSSColor('black'), true);
                                     $this.trigger('change');
                                 }
                             })));

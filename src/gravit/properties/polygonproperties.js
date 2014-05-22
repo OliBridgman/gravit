@@ -24,7 +24,7 @@
     EXPolygonProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXPolygon>}
+     * @type {Array<IFPolygon>}
      * @private
      */
     EXPolygonProperties.prototype._polygons = null;
@@ -91,7 +91,7 @@
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = GXLength.parseEquationValue($(this).val());
+                        var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
                             angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
                             self._assignProperty(property, gMath.PI2 - angle);
@@ -221,7 +221,7 @@
     /** @override */
     EXPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -233,14 +233,14 @@
         // Collect all polygon elements
         this._polygons = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXPolygon) {
+            if (elements[i] instanceof IFPolygon) {
                 this._polygons.push(elements[i]);
             }
         }
 
         if (this._polygons.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -249,7 +249,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     EXPolygonProperties.prototype._afterPropertiesChange = function (event) {

@@ -43,7 +43,7 @@
                         clearColor: true
                     })
                     .on('change', function (evt, color) {
-                        this._assignCurrentColor(GXEditor.CurrentColorType.Fill, color);
+                        this._assignCurrentColor(IFEditor.CurrentColorType.Fill, color);
                     }.bind(this)))
                 .append($('<button></button>')
                     .attr('data-color-button', 'stroke')
@@ -56,7 +56,7 @@
                         clearColor: true
                     })
                     .on('change', function (evt, color) {
-                        this._assignCurrentColor(GXEditor.CurrentColorType.Stroke, color);
+                        this._assignCurrentColor(IFEditor.CurrentColorType.Stroke, color);
                     }.bind(this))));
 
         this._toolTypeToButtonMap = {};
@@ -138,7 +138,7 @@
 
         // Subscribe to some events
         gApp.addEventListener(EXApplication.DocumentEvent, this._documentEvent, this);
-        gApp.getToolManager().addEventListener(GXToolManager.ToolChangedEvent, this._toolChanged, this);
+        gApp.getToolManager().addEventListener(IFToolManager.ToolChangedEvent, this._toolChanged, this);
     };
 
     /**
@@ -193,7 +193,7 @@
         var editor = document.getEditor();
 
         // Subscribe to editor changes
-        editor.addEventListener(GXEditor.SelectionChangedEvent, this._selectionChangedEvent, this);
+        editor.addEventListener(IFEditor.SelectionChangedEvent, this._selectionChangedEvent, this);
     };
 
     /**
@@ -204,11 +204,11 @@
         var editor = document.getEditor();
 
         // Unsubscribe from editor changes
-        editor.removeEventListener(GXEditor.SelectionChangedEvent, this._selectionChangedEvent);
+        editor.removeEventListener(IFEditor.SelectionChangedEvent, this._selectionChangedEvent);
     };
 
     /**
-     * @param {GXEditor.SelectionChangedEvent} event
+     * @param {IFEditor.SelectionChangedEvent} event
      * @private
      */
     GToolbar.prototype._selectionChangedEvent = function (event) {
@@ -230,8 +230,8 @@
         if (editor) {
             var selection = editor.getSelection();
 
-            var fillColor = editor.getCurrentColor(GXEditor.CurrentColorType.Fill);
-            var strokeColor = editor.getCurrentColor(GXEditor.CurrentColorType.Stroke);
+            var fillColor = editor.getCurrentColor(IFEditor.CurrentColorType.Fill);
+            var strokeColor = editor.getCurrentColor(IFEditor.CurrentColorType.Stroke);
 
             // If there's a selection, take fill and stroke color from it.
             // If selection is more than one, set both to null
@@ -239,7 +239,7 @@
                 fillColor = null;
                 strokeColor = null;
 
-                if (selection.length === 1 && selection[0].hasMixin(GXElement.Attributes)) {
+                if (selection.length === 1 && selection[0].hasMixin(IFElement.Attributes)) {
                     var attributes = selection[0].getAttributes();
                     if (attributes.hasMixin(IFAttributes.Pattern)) {
                         fillColor = attributes.getFillColor();
@@ -274,12 +274,12 @@
             try {
                 for (var i = 0; i < selection.length; ++i) {
                     var element = selection[i];
-                    if (element.hasMixin(GXElement.Attributes)) {
+                    if (element.hasMixin(IFElement.Attributes)) {
                         var attributes = element.getAttributes();
                         if (attributes.hasMixin(IFAttributes.Pattern)) {
-                            if (type === GXEditor.CurrentColorType.Fill) {
+                            if (type === IFEditor.CurrentColorType.Fill) {
                                 attributes.setFillColor(color);
-                            } else if (type === GXEditor.CurrentColorType.Stroke) {
+                            } else if (type === IFEditor.CurrentColorType.Stroke) {
                                 attributes.setStrokeColor(color);
                             }
                         }

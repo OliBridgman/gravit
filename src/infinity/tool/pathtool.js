@@ -1,79 +1,79 @@
 (function (_) {
     /**
      * The base tool for path creating tools
-     * @class GXPathTool
-     * @extends GXTool
+     * @class IFPathTool
+     * @extends IFTool
      * @constructor
      * @version 1.0
      */
-    function GXPathTool() {
-        GXTool.call(this);
+    function IFPathTool() {
+        IFTool.call(this);
     }
 
-    GObject.inherit(GXPathTool, GXTool);
+    GObject.inherit(IFPathTool, IFTool);
 
     /**
      * Reference to the edited path
-     * @type {GXPath}
+     * @type {IFPath}
      * @private
      */
-    GXPathTool.prototype._pathRef = null;
+    IFPathTool.prototype._pathRef = null;
 
     /**
      * Reference to the edited path preview
-     * @type {GXPath}
+     * @type {IFPath}
      * @private
      */
-    GXPathTool.prototype._dpathRef = null;
+    IFPathTool.prototype._dpathRef = null;
 
     /**
      * Indicates if a new point is created for this._editPt
      * @type {Boolean}
      * @private
      */
-    GXPathTool.prototype._newPoint = null;
+    IFPathTool.prototype._newPoint = null;
 
     /**
      * Contains reference to preview anchor point to edit
-     * @type {GXPathBase.AnchorPoint}
+     * @type {IFPathBase.AnchorPoint}
      * @private
      */
-    GXPathTool.prototype._editPt = null;
+    IFPathTool.prototype._editPt = null;
 
     /**
      * Contains reference to original path anchor point to edit in place
-     * @type {GXPathBase.AnchorPoint}
+     * @type {IFPathBase.AnchorPoint}
      * @private
      */
-    GXPathTool.prototype._refPt = null;
+    IFPathTool.prototype._refPt = null;
 
     /**
      * Contains reference to an editor of the currently edited path
-     * @type {GXPathEditor}
+     * @type {IFPathEditor}
      * @private
      */
-    GXPathTool.prototype._pathEditor = null;
+    IFPathTool.prototype._pathEditor = null;
 
     /**
      * Indicates if the mouse released (all buttons)
      * @type {boolean}
      * @private
      */
-    GXPathTool.prototype._released = true;
+    IFPathTool.prototype._released = true;
 
     /**
      * Indicates if the mouse drag started (all buttons)
      * @type {boolean}
      * @private
      */
-    GXPathTool.prototype._dragStarted = false;
+    IFPathTool.prototype._dragStarted = false;
 
     /**
      * Contains reference to original path anchor point (if exists) for the case when it's preview is moving
-     * @type {GXPathBase.AnchorPoint}
+     * @type {IFPathBase.AnchorPoint}
      * @private
      */
-    GXPathTool.prototype._dragStartPt = null;
+    IFPathTool.prototype._dragStartPt = null;
 
     /**
      * Indicates if option key is pressed the first time with current mouse down.
@@ -81,13 +81,13 @@
      * @type {boolean}
      * @private
      */
-    GXPathTool.prototype._firstAlt = false;
+    IFPathTool.prototype._firstAlt = false;
 
     /**
      * Possible transaction types
      * @enum
      */
-    GXPathTool.Transaction = {
+    IFPathTool.Transaction = {
         NoTransaction: 0,
         InsertPoint: 1,
         AppendPoint: 2,
@@ -100,16 +100,16 @@
 
     /**
      * Stores transaction type between transaction begin and end, or indicates that no transaction is started
-     * @type {GXPathTool.Transaction}
+     * @type {IFPathTool.Transaction}
      * @private
      */
-    GXPathTool.prototype._transactionType = GXPathTool.Transaction.NoTransaction;
+    IFPathTool.prototype._transactionType = IFPathTool.Transaction.NoTransaction;
 
     /**
      * Possible working modes of Path Tool
      * @type {{Append: number, Prepend: number, Edit: number}}
      */
-    GXPathTool.Mode = {
+    IFPathTool.Mode = {
         Append: 0,
         Prepend: 1,
         Edit: 2
@@ -117,10 +117,10 @@
 
     /**
      * The current working mode
-     * @type {GXPathTool.Mode}
+     * @type {IFPathTool.Mode}
      * @private
      */
-    GXPathTool.prototype._mode = GXPathTool.Mode.Append;
+    IFPathTool.prototype._mode = IFPathTool.Mode.Append;
 
     /**
      * Time in milliseconds of the last mouse down event since 1 Jan 1970.
@@ -128,20 +128,20 @@
      * @type {number}
      * @private
      */
-    GXPathTool.prototype._mDownTime = 0;
+    IFPathTool.prototype._mDownTime = 0;
 
     /**
      * Time in milliseconds, which is used to distinguish two single clicks from double-click
      * @type {number}
      */
-    GXPathTool.DBLCLICKTM = 300;
+    IFPathTool.DBLCLICKTM = 300;
 
     /**
      * Current active cursor
      * @type {GUICursor}
      * @private
      */
-    GXPathTool.prototype._cursor = null;
+    IFPathTool.prototype._cursor = null;
 
     /**
      * Stores the details of the last mouse event, which leaves tool in the state, when it may be needed to
@@ -149,7 +149,7 @@
      * @type {GUIMouseEvent}
      * @private
      */
-    GXPathTool.prototype._lastMouseEvent = null;
+    IFPathTool.prototype._lastMouseEvent = null;
 
     /**
      * Indicates if deactivation will not break internal tool's logic
@@ -157,22 +157,22 @@
      * @type {boolean}
      * @private
      */
-    GXPathTool.prototype._deactivationAllowed = true;
+    IFPathTool.prototype._deactivationAllowed = true;
 
     /** @override */
-    GXPathTool.prototype.getHint = function () {
-        return GXTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.TAB, new GLocale.Key(GXPathTool, "shortcut.tab"));
+    IFPathTool.prototype.getHint = function () {
+        return IFTool.prototype.getHint.call(this)
+            .addKey(GUIKey.Constant.TAB, new GLocale.Key(IFPathTool, "shortcut.tab"));
     };
 
     /** @override */
-    GXPathTool.prototype.getCursor = function () {
+    IFPathTool.prototype.getCursor = function () {
         return this._cursor;
     };
 
     /** @override */
-    GXPathTool.prototype.activate = function (view) {
-        GXTool.prototype.activate.call(this, view);
+    IFPathTool.prototype.activate = function (view) {
+        IFTool.prototype.activate.call(this, view);
 
         view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
@@ -180,12 +180,12 @@
         gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = GUICursor.PenStart;
-        this._transactionType = GXPathTool.Transaction.NoTransaction;
+        this._transactionType = IFPathTool.Transaction.NoTransaction;
         this._initialSelectCorrection();
     };
 
     /** @override */
-    GXPathTool.prototype.deactivate = function (view) {
+    IFPathTool.prototype.deactivate = function (view) {
         if (this._newPoint || this._dpathRef) {
             this._pathEditor.requestInvalidation();
             this._pathEditor.releasePathPreview();
@@ -194,7 +194,7 @@
         this._finishTransaction();
         this._allowDeactivation();
         this._reset();
-        GXTool.prototype.deactivate.call(this, view);
+        IFTool.prototype.deactivate.call(this, view);
 
         view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
@@ -203,7 +203,7 @@
     };
 
     /** @override */
-    GXPathTool.prototype.isDeactivatable = function () {
+    IFPathTool.prototype.isDeactivatable = function () {
         return this._deactivationAllowed;
     };
 
@@ -211,7 +211,7 @@
      * Remove deactivation blocking flag if any
      * @private
      */
-    GXPathTool.prototype._allowDeactivation = function () {
+    IFPathTool.prototype._allowDeactivation = function () {
         this._deactivationAllowed = true;
     };
 
@@ -219,7 +219,7 @@
      * Mark that deactivation should be blocked
      * @private
      */
-    GXPathTool.prototype._blockDeactivation = function () {
+    IFPathTool.prototype._blockDeactivation = function () {
         this._deactivationAllowed = false;
     };
 
@@ -227,11 +227,11 @@
      * Stores a reference to an editor of the selected path, if any
      * @private
      */
-    GXPathTool.prototype._checkPathEditor = function () {
+    IFPathTool.prototype._checkPathEditor = function () {
         var path = this._editor.getPathSelection();
         if (path) {
-            this._pathEditor = GXElementEditor.openEditor(path);
-            this._pathEditor.setFlag(GXElementEditor.Flag.Detail);
+            this._pathEditor = IFElementEditor.openEditor(path);
+            this._pathEditor.setFlag(IFElementEditor.Flag.Detail);
         }
     };
 
@@ -239,26 +239,26 @@
      * Defines current working mode
      * @private
      */
-    GXPathTool.prototype._checkMode = function () {
+    IFPathTool.prototype._checkMode = function () {
         this._checkPathEditor();
         if (!this._pathEditor) {
-            this._mode = GXPathTool.Mode.Append;
+            this._mode = IFPathTool.Mode.Append;
             this._pathRef = null;
         } else {
             this._pathRef = this._pathEditor.getPath();
             if (this._pathRef.getProperty('closed')) {
-                this._mode = GXPathTool.Mode.Edit;
+                this._mode = IFPathTool.Mode.Edit;
             } else {
                 var selType = this._pathEditor.getPointsSelectionType();
-                if (selType == GXPathEditor.PointsSelectionType.No ||
-                    selType == GXPathEditor.PointsSelectionType.Several ||
-                    selType == GXPathEditor.PointsSelectionType.Middle) {
+                if (selType == IFPathEditor.PointsSelectionType.No ||
+                    selType == IFPathEditor.PointsSelectionType.Several ||
+                    selType == IFPathEditor.PointsSelectionType.Middle) {
 
-                    this._mode = GXPathTool.Mode.Edit;
-                } else if (selType == GXPathEditor.PointsSelectionType.Last) {
-                    this._mode = GXPathTool.Mode.Append;
-                } else if (selType == GXPathEditor.PointsSelectionType.First) {
-                    this._mode = GXPathTool.Mode.Prepend;
+                    this._mode = IFPathTool.Mode.Edit;
+                } else if (selType == IFPathEditor.PointsSelectionType.Last) {
+                    this._mode = IFPathTool.Mode.Append;
+                } else if (selType == IFPathEditor.PointsSelectionType.First) {
+                    this._mode = IFPathTool.Mode.Prepend;
                 }
             }
         }
@@ -269,7 +269,7 @@
      * if selection was changed by temporary tool, and the path continued extension is indicated in path editor
      * @private
      */
-    GXPathTool.prototype._initialSelectCorrection = function () {
+    IFPathTool.prototype._initialSelectCorrection = function () {
         this._checkPathEditor();
         if (this._pathEditor) {
             this._pathRef = this._pathEditor.getPath();
@@ -277,8 +277,8 @@
                 this._pathEditor.setActiveExtendingMode(false);
             } else if (this._pathEditor.isActiveExtendingMode()) {
                 var selType = this._pathEditor.getPointsSelectionType();
-                if (selType != GXPathEditor.PointsSelectionType.Last &&
-                        selType != GXPathEditor.PointsSelectionType.First) {
+                if (selType != IFPathEditor.PointsSelectionType.Last &&
+                        selType != IFPathEditor.PointsSelectionType.First) {
 
                     this._pathEditor.selectOnePoint(this._pathRef.getAnchorPoints().getLastChild());
                 }
@@ -291,7 +291,7 @@
      * Updates internal links to path preview to be consistent with currently edited path
      * @private
      */
-    GXPathTool.prototype._renewPreviewLink = function () {
+    IFPathTool.prototype._renewPreviewLink = function () {
         if (!this._pathEditor) {
             this._dpathRef = null;
         } else {
@@ -304,10 +304,10 @@
      * @param {GPoint} clickPt - coordinates to be used for new position in view system
      * @private
      */
-    GXPathTool.prototype._updatePoint = function (clickPt) {
+    IFPathTool.prototype._updatePoint = function (clickPt) {
         var newPos = null;
         if (this._pathRef && this._editPt) {
-            if (this._mode != GXPathTool.Mode.Edit) {
+            if (this._mode != IFPathTool.Mode.Edit) {
                 newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(), this._pathRef);
             } else {
                 newPos = this._constrainIfNeeded(clickPt, this._view.getWorldTransform(),
@@ -328,15 +328,15 @@
     /**
      * Adds new anchor point to the end of edited path. Creates a new path with one point,
      * if no path is selected for editing
-     * @param {GXPathBase.AnchorPoint} anchorPt - new anchor point to add into path in scene or path native coordinates
+     * @param {IFPathBase.AnchorPoint} anchorPt - new anchor point to add into path in scene or path native coordinates
      * @param {Boolean} draft - indicates if the path itself or path preview should be used for point insertion
      * @param {Boolean} nativeCoord - indicates if the new point already in path native coordinates
      * @param {Boolean} oldPreviewSelection - if set, don't update previous preview point
      * @private
      */
-    GXPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord, oldPreviewSelection) {
+    IFPathTool.prototype._addPoint = function (anchorPt, draft, nativeCoord, oldPreviewSelection) {
         if (!oldPreviewSelection) {
-            anchorPt.setFlag(GXNode.Flag.Selected);
+            anchorPt.setFlag(IFNode.Flag.Selected);
         }
         if (this._pathEditor && !nativeCoord) {
             var transform = this._pathRef.getTransform();
@@ -348,7 +348,7 @@
         }
         if (draft) {
             if (!this._pathEditor) {
-                this._startTransaction(GXPathTool.Transaction.InsertElement);
+                this._startTransaction(IFPathTool.Transaction.InsertElement);
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
@@ -358,17 +358,17 @@
                 this._pathEditor.setActiveExtendingMode(true);
             } else {
                 this._pathEditor.requestInvalidation();
-                if (this._mode == GXPathTool.Mode.Append) {
+                if (this._mode == IFPathTool.Mode.Append) {
                     if (!oldPreviewSelection) {
-                        this._dpathRef.getAnchorPoints().getLastChild().removeFlag(GXNode.Flag.Selected);
+                        this._dpathRef.getAnchorPoints().getLastChild().removeFlag(IFNode.Flag.Selected);
                     }
                     this._dpathRef.getAnchorPoints().appendChild(anchorPt);
                     this._editPt = this._dpathRef.getAnchorPoints().getLastChild();
                     this._newPoint = true;
                     this._pathEditor.setActiveExtendingMode(true);
-                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                } else if (this._mode == IFPathTool.Mode.Prepend) {
                     if (!oldPreviewSelection) {
-                        this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(GXNode.Flag.Selected);
+                        this._dpathRef.getAnchorPoints().getFirstChild().removeFlag(IFNode.Flag.Selected);
                     }
                     this._dpathRef.getAnchorPoints().insertChild(anchorPt, this._dpathRef.getAnchorPoints().getFirstChild());
                     this._pathEditor.shiftPreviewTable(1);
@@ -380,7 +380,7 @@
             }
         } else {
             if (!this._pathEditor) {
-                this._startTransaction(GXPathTool.Transaction.InsertElement);
+                this._startTransaction(IFPathTool.Transaction.InsertElement);
                 this._createAndAppendPath(anchorPt);
                 this._pathEditor.selectOnePoint(anchorPt);
                 this._checkMode();
@@ -389,17 +389,17 @@
                 this._pathEditor.setActiveExtendingMode(true);
             } else {
                 this._pathEditor.requestInvalidation();
-                if (this._mode == GXPathTool.Mode.Append) {
+                if (this._mode == IFPathTool.Mode.Append) {
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
-                    this._startTransaction(GXPathTool.Transaction.AppendPoint);
+                    this._startTransaction(IFPathTool.Transaction.AppendPoint);
                     this._pathRef.getAnchorPoints().appendChild(anchorPt);
                     this._pathEditor.selectOnePoint(anchorPt);
                     this._pathEditor.setActiveExtendingMode(true);
-                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                } else if (this._mode == IFPathTool.Mode.Prepend) {
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
-                    this._startTransaction(GXPathTool.Transaction.AppendPoint);
+                    this._startTransaction(IFPathTool.Transaction.AppendPoint);
                     this._pathRef.getAnchorPoints().insertChild(anchorPt, this._pathRef.getAnchorPoints().getFirstChild());
 
                     this._pathEditor.selectOnePoint(anchorPt);
@@ -415,7 +415,7 @@
      * and cleans all the saved data relevant to edited path
      * @private
      */
-    GXPathTool.prototype._commitChanges = function () {
+    IFPathTool.prototype._commitChanges = function () {
         this._pathEditor.requestInvalidation();
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
@@ -424,14 +424,14 @@
 
     /**
      * Create a path shape with one point, and adds it for rendering
-     * @param {GXPathBase.AnchorPoint} apt - new anchor point to create path from
+     * @param {IFPathBase.AnchorPoint} apt - new anchor point to create path from
      * @private
      */
-    GXPathTool.prototype._createAndAppendPath = function (apt) {
-        var path = new GXPath();
+    IFPathTool.prototype._createAndAppendPath = function (apt) {
+        var path = new IFPath();
         path.getAnchorPoints().appendChild(apt);
-        apt.setFlag(GXNode.Flag.Selected);
-        path.setFlag(GXNode.Flag.Selected);
+        apt.setFlag(IFNode.Flag.Selected);
+        path.setFlag(IFNode.Flag.Selected);
         this._editor.insertElements([path], false, true);
         this._checkPathEditor();
     };
@@ -440,7 +440,7 @@
      * @param {GUIMouseEvent.Down} event
      * @private
      */
-    GXPathTool.prototype._mouseDown = function (event) {
+    IFPathTool.prototype._mouseDown = function (event) {
         this._released = false;
     };
 
@@ -448,7 +448,7 @@
      * @param {GUIMouseEvent.DblClick} event
      * @private
      */
-    GXPathTool.prototype._mouseDblClick = function (event) {
+    IFPathTool.prototype._mouseDblClick = function (event) {
         this._lastMouseEvent = null;
         this._checkMode();
         if (this._pathEditor) {
@@ -456,7 +456,7 @@
             this._pathEditor.setActiveExtendingMode(false);
             this._commitChanges();
         }
-        this._mode = GXPathTool.Mode.Edit;
+        this._mode = IFPathTool.Mode.Edit;
         this._setCursorForPosition(null, event.client);
         //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
     };
@@ -465,7 +465,7 @@
      * @param {GUIMouseEvent.Release} event
      * @private
      */
-    GXPathTool.prototype._mouseRelease = function (event) {
+    IFPathTool.prototype._mouseRelease = function (event) {
         this._released = true;
         this._dragStarted = false;
         this._dragStartPt = null;
@@ -475,9 +475,9 @@
      * Reset the tool i.e. when done or canceling
      * @private
      */
-    GXPathTool.prototype._reset = function () {
+    IFPathTool.prototype._reset = function () {
         if (this._pathEditor) {
-            this._pathEditor.removeFlag(GXElementEditor.Flag.Detail);
+            this._pathEditor.removeFlag(IFElementEditor.Flag.Detail);
         }
         this._dpathRef = null;
         this._pathRef = null;
@@ -492,7 +492,7 @@
      * @param {GUIKeyEvent} event
      * @private
      */
-    GXPathTool.prototype._keyDown = function (event) {
+    IFPathTool.prototype._keyDown = function (event) {
         if (event.key === GUIKey.Constant.TAB) {
             this._lastMouseEvent = null;
             this._tabAction();
@@ -503,7 +503,7 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    GXPathTool.prototype._modifiersChanged = function (event) {
+    IFPathTool.prototype._modifiersChanged = function (event) {
         if (event.changed.shiftKey && this._lastMouseEvent) {
             if (!this._released) {
                 this._mouseDrag(this._lastMouseEvent);
@@ -526,14 +526,14 @@
      * Finish path editing and deselect a path if TAB is pressed
      * @private
      */
-    GXPathTool.prototype._tabAction = function () {
+    IFPathTool.prototype._tabAction = function () {
         // Action should be taken only if mouse released
         if (this._released) {
             this._checkMode();
             if (this._pathEditor) {
                 this._pathEditor.updatePartSelection(false);
                 this._pathEditor.setActiveExtendingMode(false);
-                this._pathRef.removeFlag(GXNode.Flag.Selected);
+                this._pathRef.removeFlag(IFNode.Flag.Selected);
                 this._commitChanges();
             }
             this._setCursorForPosition(GUICursor.PenStart);
@@ -545,13 +545,13 @@
      * and calculates a new location
      * @param {GPoint} pt - original point
      * @param {GTransform} transform - a transformation to apply to base point before using it for constraining
-     * @param {GXPath} path - a path to look for base point; used only if no orientation point is passed
-     * @param {GXPathBase.AnchorPoint} orientPt - orientation anchor point to be used as a base to constrain location with,
+     * @param {IFPath} path - a path to look for base point; used only if no orientation point is passed
+     * @param {IFPathBase.AnchorPoint} orientPt - orientation anchor point to be used as a base to constrain location with,
      * may be null
      * @returns {GPoint} - original or newly created bounded point
      * @private
      */
-    GXPathTool.prototype._constrainIfNeeded = function (pt, transform, path, orientPt) {
+    IFPathTool.prototype._constrainIfNeeded = function (pt, transform, path, orientPt) {
         var constrPt = pt;
 
         if (gPlatform.modifiers.shiftKey) {
@@ -559,9 +559,9 @@
             if (orientPt) {
                 otherPt = orientPt;
             } else if (path) {
-                if (this._mode == GXPathTool.Mode.Append) {
+                if (this._mode == IFPathTool.Mode.Append) {
                     otherPt = path.getAnchorPoints().getLastChild();
-                } else if (this._mode == GXPathTool.Mode.Prepend) {
+                } else if (this._mode == IFPathTool.Mode.Prepend) {
                     otherPt = path.getAnchorPoints().getFirstChild();
                 }
             }
@@ -575,10 +575,10 @@
 
     /**
      * Makes a point the only selected and updates preview accordingly
-     * @param {GXPathBase.AnchorPoint} anchorPt - anchor point, which should be made major
+     * @param {IFPathBase.AnchorPoint} anchorPt - anchor point, which should be made major
      * @private
      */
-    GXPathTool.prototype._makePointMajor = function (anchorPt) {
+    IFPathTool.prototype._makePointMajor = function (anchorPt) {
         this._pathEditor.selectOnePoint(anchorPt);
         this._dpathRef = null;
         this._pathEditor.releasePathPreview();
@@ -588,54 +588,54 @@
 
     /**
      * Starts transaction, if it was not started earlier, updates this._transactionType
-     * @param {GXPathTool.Transaction} transactionType - transaction type of the current transaction to be set
+     * @param {IFPathTool.Transaction} transactionType - transaction type of the current transaction to be set
      * @private
      */
-    GXPathTool.prototype._startTransaction = function (transactionType) {
-        if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
+    IFPathTool.prototype._startTransaction = function (transactionType) {
+        if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
             this._editor.beginTransaction();
         }
         this._transactionType = transactionType;
     };
 
     /**
-     * Commit transaction if it was started, sets this._transactionType to GXPathTool.Transaction.NoTransaction
+     * Commit transaction if it was started, sets this._transactionType to IFPathTool.Transaction.NoTransaction
      * @private
      */
-    GXPathTool.prototype._finishTransaction = function () {
+    IFPathTool.prototype._finishTransaction = function () {
         try {
             switch (this._transactionType) {
-                case GXPathTool.Transaction.AppendPoint:
+                case IFPathTool.Transaction.AppendPoint:
                     // TODO : I18N
                     this._editor.commitTransaction('Append Point');
                     break;
-                case GXPathTool.Transaction.InsertElement:
+                case IFPathTool.Transaction.InsertElement:
                     // TODO : I18N
                     this._editor.commitTransaction('Insert Element(s)');
                     break;
-                case GXPathTool.Transaction.InsertPoint:
+                case IFPathTool.Transaction.InsertPoint:
                     // TODO : I18N
                     this._editor.commitTransaction('Insert Point');
                     break;
-                case GXPathTool.Transaction.MovePoint:
+                case IFPathTool.Transaction.MovePoint:
                     // TODO : I18N
                     this._editor.commitTransaction('Move Point');
                     break;
-                case GXPathTool.Transaction.DeletePoint:
+                case IFPathTool.Transaction.DeletePoint:
                     // TODO : I18N
                     this._editor.commitTransaction('Delete Point');
                     break;
-                case GXPathTool.Transaction.ModifyPointProperties:
+                case IFPathTool.Transaction.ModifyPointProperties:
                     // TODO : I18N
                     this._editor.commitTransaction('Modify Point Properties');
                     break;
-                case GXPathTool.Transaction.ModifyPathProperties:
+                case IFPathTool.Transaction.ModifyPathProperties:
                     // TODO : I18N
                     this._editor.commitTransaction('Modify Path Properties');
                     break;
             }
         } finally {
-            this._transactionType = GXPathTool.Transaction.NoTransaction;
+            this._transactionType = IFPathTool.Transaction.NoTransaction;
         }
     };
 
@@ -644,23 +644,23 @@
      * selects a point for editing or creates a new one, or just updates the working mode
      * @param {GUIMouseEvent.Down} event
      * @param {Function} customizer - a function to make tool-specific actions after new point has been created,
-     * accepts (GXPathBase.AnchorPoint) a new point as a parameter
+     * accepts (IFPathBase.AnchorPoint) a new point as a parameter
      * @private
      */
-    GXPathTool.prototype._mouseDownOnEdit = function (event, customizer) {
+    IFPathTool.prototype._mouseDownOnEdit = function (event, customizer) {
         var eventPt = event.client;
         this._pathEditor.requestInvalidation();
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
 
         var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
-        if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
+        if (partInfo && partInfo.id.type == IFPathEditor.PartType.Point) {
             var anchorPt = partInfo.id.point;
             if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getLastChild()) {
-                this._mode = GXPathTool.Mode.Append;
+                this._mode = IFPathTool.Mode.Append;
                 this._makePointMajor(anchorPt);
             } else if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getFirstChild()) {
-                this._mode = GXPathTool.Mode.Prepend;
+                this._mode = IFPathTool.Mode.Prepend;
                 this._makePointMajor(anchorPt);
             } else { // middlePoint
                 this._refPt = anchorPt;
@@ -672,17 +672,17 @@
                     this._setCursorForPosition(GUICursor.PenMinus);
                 }
             }
-        } else if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment &&
-                partInfo.data.type == GXPathEditor.SegmentData.HitRes) {
+        } else if (partInfo && partInfo.id.type == IFPathEditor.PartType.Segment &&
+                partInfo.data.type == IFPathEditor.SegmentData.HitRes) {
 
             this._setCursorForPosition(GUICursor.PenPlus);
-            this._startTransaction(GXPathTool.Transaction.InsertPoint);
+            this._startTransaction(IFPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
                 if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
                     var tp = anchorPt.getProperty('tp');
-                    if (tp == GXPathBase.AnchorPoint.Type.Asymmetric) {
-                        anchorPt.setProperty('tp', GXPathBase.AnchorPoint.Type.Connector);
+                    if (tp == IFPathBase.AnchorPoint.Type.Asymmetric) {
+                        anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
                     }
                 }
                 if (customizer) {
@@ -692,17 +692,17 @@
                 this._refPt = anchorPt;
                 this._editPt = this._pathEditor.getPathPointPreview(anchorPt);
                 this._pathEditor.requestInvalidation();
-                this._mode = GXPathTool.Mode.Edit;
+                this._mode = IFPathTool.Mode.Edit;
             } else {
                 this._finishTransaction();
                 this._reset();
-                this._mode = GXPathTool.Mode.Append;
+                this._mode = IFPathTool.Mode.Append;
             }
         } else { // no path hit
             this._setCursorForPosition(GUICursor.PenStart);
             this._pathEditor.updatePartSelection(false);
             this._commitChanges();
-            this._mode = GXPathTool.Mode.Append;
+            this._mode = IFPathTool.Mode.Append;
         }
     };
 
@@ -711,7 +711,7 @@
      * Removes handles of the hit anchor point, or the point itself, if it doesn't have handles
      * @private
      */
-    GXPathTool.prototype._mouseNoDragReleaseOnEdit = function (clickPt) {
+    IFPathTool.prototype._mouseNoDragReleaseOnEdit = function (clickPt) {
         if (!this._refPt) {
             return;
         }
@@ -721,18 +721,18 @@
             this._refPt.getProperty('hrx') != null ||
             this._refPt.getProperty('hry') != null) {
 
-            if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
-                this._startTransaction(GXPathTool.Transaction.ModifyPointProperties);
+            if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
+                this._startTransaction(IFPathTool.Transaction.ModifyPointProperties);
             }
             this._refPt.setProperties(['ah', 'hlx', 'hly', 'hrx', 'hry'], [false, null, null, null, null]);
             this._makePointMajor(this._refPt);
             this._setCursorForPosition(GUICursor.PenMinus);
         } else {
             if (this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) {
-                if (this._transactionType == GXPathTool.Transaction.NoTransaction) {
-                    this._startTransaction(GXPathTool.Transaction.DeletePoint);
+                if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
+                    this._startTransaction(IFPathTool.Transaction.DeletePoint);
                 } else {
-                    this._transactionType = GXPathTool.Transaction.DeletePoint;
+                    this._transactionType = IFPathTool.Transaction.DeletePoint;
                 }
                 this._pathRef.getAnchorPoints().removeChild(this._refPt);
             }
@@ -742,7 +742,7 @@
         this._commitChanges();
     };
 
-    GXPathTool.prototype._setCursorForPosition = function (cursor, clickPt) {
+    IFPathTool.prototype._setCursorForPosition = function (cursor, clickPt) {
         if (cursor !== null) {
             this._cursor = cursor;
         } else if (clickPt) {
@@ -751,16 +751,16 @@
             }
             if (this._pathEditor) {
                 var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
-                if (partInfo && partInfo.id.type == GXPathEditor.PartType.Point) {
+                if (partInfo && partInfo.id.type == IFPathEditor.PartType.Point) {
                     var anchorPt = partInfo.id.point;
                     var pathRef = this._pathEditor.getPath();
                     if (!pathRef.getProperty('closed') &&
                         (anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
                             anchorPt === pathRef.getAnchorPoints().getLastChild())) {
 
-                        if (this._mode == GXPathTool.Mode.Append &&
+                        if (this._mode == IFPathTool.Mode.Append &&
                             anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
-                            this._mode == GXPathTool.Mode.Prepend &&
+                            this._mode == IFPathTool.Mode.Prepend &&
                                 anchorPt === pathRef.getAnchorPoints().getLastChild()) {
 
                             this._cursor = GUICursor.PenEnd;
@@ -768,7 +768,7 @@
                             this._cursor = GUICursor.Pen;
                         }
                     } else { // middlePoint
-                        if (this._mode == GXPathTool.Mode.Edit) {
+                        if (this._mode == IFPathTool.Mode.Edit) {
                             if (anchorPt.getProperty('hlx') !== null && anchorPt.getProperty('hly') !== null ||
                                 anchorPt.getProperty('hrx') !== null && anchorPt.getProperty('hry') !== null) {
 
@@ -780,8 +780,8 @@
                             this._cursor = GUICursor.Pen;
                         }
                     }
-                } else if (this._mode == GXPathTool.Mode.Edit) {
-                    if (partInfo && partInfo.id.type == GXPathEditor.PartType.Segment) {
+                } else if (this._mode == IFPathTool.Mode.Edit) {
+                    if (partInfo && partInfo.id.type == IFPathEditor.PartType.Segment) {
                         this._cursor = GUICursor.PenPlus;
                     } else { // no path hit
                         this._cursor = GUICursor.PenStart;
@@ -800,9 +800,9 @@
     };
 
     /** override */
-    GXPathTool.prototype.toString = function () {
-        return "[Object GXPathTool]";
+    IFPathTool.prototype.toString = function () {
+        return "[Object IFPathTool]";
     };
 
-    _.GXPathTool = GXPathTool;
+    _.IFPathTool = IFPathTool;
 })(this);

@@ -10,12 +10,12 @@ var gravit = {
     storages: [],
 
     /**
-     * Array<GXImport>
+     * Array<IFImport>
      */
     importers: [],
 
     /**
-     * Array<GXExport>
+     * Array<IFExport>
      */
     exporters: [],
 
@@ -30,7 +30,7 @@ var gravit = {
     palettes: [],
 
     /**
-     * Array<GXTool>
+     * Array<IFTool>
      */
     tools: [],
 

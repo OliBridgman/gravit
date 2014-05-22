@@ -1,50 +1,50 @@
 (function (_) {
     /**
      * An editor for a text
-     * @param {GXText} text the text this editor works on
-     * @class GXTextEditor
-     * @extends GXShapeEditor
+     * @param {IFText} text the text this editor works on
+     * @class IFTextEditor
+     * @extends IFShapeEditor
      * @constructor
      */
-    function GXTextEditor(rectangle) {
-        GXShapeEditor.call(this, rectangle);
-        this._flags |= GXBlockEditor.Flag.ResizeAll;
+    function IFTextEditor(rectangle) {
+        IFShapeEditor.call(this, rectangle);
+        this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(GXTextEditor, GXShapeEditor);
-    GXElementEditor.exports(GXTextEditor, GXText);
+    GObject.inherit(IFTextEditor, IFShapeEditor);
+    IFElementEditor.exports(IFTextEditor, IFText);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXTextEditor Class
+    // IFTextEditor Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {HTMLDivElement}
      * @private
      */
-    GXTextEditor.prototype._inlineEditor = null;
+    IFTextEditor.prototype._inlineEditor = null;
 
     /**
      * @type {HTMLSpanElement}
      * @private
      */
-    GXTextEditor.prototype._activeSpanElement = null;
+    IFTextEditor.prototype._activeSpanElement = null;
 
     /**
      * @type {HTMLParagraphElement}
      * @private
      */
-    GXTextEditor.prototype._activeParagraphElement = null;
+    IFTextEditor.prototype._activeParagraphElement = null;
 
-    GXTextEditor.prototype.getProperty = function (property) {
+    IFTextEditor.prototype.getProperty = function (property) {
         if (this.isInlineEdit()) {
-            if (GXText.Block.Properties.hasOwnProperty(property)) {
+            if (IFText.Block.Properties.hasOwnProperty(property)) {
                 if (this._activeSpanElement) {
-                    return GXText.Block.cssToProperty(property, this._activeSpanElement.style);
+                    return IFText.Block.cssToProperty(property, this._activeSpanElement.style);
                 } else if (this._activeParagraphElement) {
-                    return GXText.Block.cssToProperty(property, this._activeParagraphElement.style);
+                    return IFText.Block.cssToProperty(property, this._activeParagraphElement.style);
                 }
             } else if (this._activeParagraphElement) {
-                return GXText.Paragraph.cssToProperty(property, this._activeParagraphElement.style);
+                return IFText.Paragraph.cssToProperty(property, this._activeParagraphElement.style);
             }
 
             return null;
@@ -53,7 +53,7 @@
         }
     };
 
-    GXTextEditor.prototype.setProperties = function (properties, values) {
+    IFTextEditor.prototype.setProperties = function (properties, values) {
         var blockProperties = [];
         var blockValues = [];
         var paragraphProperties = [];
@@ -61,7 +61,7 @@
 
         // Separate block and paragraph properties
         for (var i = 0; i < properties.length; ++i) {
-            if (GXText.Block.Properties.hasOwnProperty(properties[i])) {
+            if (IFText.Block.Properties.hasOwnProperty(properties[i])) {
                 blockProperties.push(properties[i]);
                 blockValues.push(values[i]);
             } else {
@@ -75,13 +75,13 @@
             setTimeout(function () {
                 var blockCSS = {};
                 for (var i = 0; i < blockProperties.length; ++i) {
-                    GXText.Block.propertyToCss(blockProperties[i], blockValues[i], blockCSS);
+                    IFText.Block.propertyToCss(blockProperties[i], blockValues[i], blockCSS);
                 }
                 ;
 
                 var paragraphCSS = {};
                 for (var i = 0; i < paragraphProperties.length; ++i) {
-                    GXText.Paragraph.propertyToCss(paragraphProperties[i], paragraphValues[i], paragraphCSS);
+                    IFText.Paragraph.propertyToCss(paragraphProperties[i], paragraphValues[i], paragraphCSS);
                 }
                 ;
 
@@ -128,26 +128,26 @@
     };
 
     /** @override */
-    GXTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
+    IFTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // Text will always retrieve a black fill if there's no other fill
-        GXShapeEditor.prototype.initialSetup.call(this, fillColor ? fillColor : new GXColor(GXColor.Type.Black), null);
+        IFShapeEditor.prototype.initialSetup.call(this, fillColor ? fillColor : new IFColor(IFColor.Type.Black), null);
     };
 
     /** @override */
-    GXTextEditor.prototype.canInlineEdit = function () {
+    IFTextEditor.prototype.canInlineEdit = function () {
         return true;
     };
 
     /** @override */
-    GXTextEditor.prototype.isInlineEdit = function () {
+    IFTextEditor.prototype.isInlineEdit = function () {
         return this._inlineEditor !== null;
     };
 
     /** @override */
-    GXTextEditor.prototype.beginInlineEdit = function (view, container) {
+    IFTextEditor.prototype.beginInlineEdit = function (view, container) {
         // Remove size handles and hide our text element
-        this.removeFlag(GXBlockEditor.Flag.ResizeAll);
-        this.getElement().setFlag(GXElement.Flag.NoPaint);
+        this.removeFlag(IFBlockEditor.Flag.ResizeAll);
+        this.getElement().setFlag(IFElement.Flag.NoPaint);
 
         var html = this.getElement().asHtml();
 
@@ -195,9 +195,9 @@
                     }
                 }
 
-                var editor = GXEditor.getEditor(this.getElement().getScene());
-                if (editor.hasEventListeners(GXEditor.InlineEditorEvent)) {
-                    editor.trigger(new GXEditor.InlineEditorEvent(this, GXEditor.InlineEditorEvent.Type.SelectionChanged));
+                var editor = IFEditor.getEditor(this.getElement().getScene());
+                if (editor.hasEventListeners(IFEditor.InlineEditorEvent)) {
+                    editor.trigger(new IFEditor.InlineEditorEvent(this, IFEditor.InlineEditorEvent.Type.SelectionChanged));
                 }
             }.bind(this))
             .on('click', function (evt) {
@@ -235,7 +235,7 @@
     };
 
     /** @override */
-    GXTextEditor.prototype.adjustInlineEditForView = function (view) {
+    IFTextEditor.prototype.adjustInlineEditForView = function (view) {
         var sceneBBox = this.getElement().getGeometryBBox();
         if (!sceneBBox) {
             sceneBBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
@@ -270,7 +270,7 @@
     };
 
     /** @override */
-    GXTextEditor.prototype.finishInlineEdit = function () {
+    IFTextEditor.prototype.finishInlineEdit = function () {
         if (this._savedSelection) {
             rangy.removeMarkers(this._savedSelection);
             this._savedSelection = null;
@@ -283,16 +283,16 @@
         this._inlineEditor = null;
 
         // Show size handles and our text element
-        this.setFlag(GXBlockEditor.Flag.ResizeAll);
-        this.getElement().removeFlag(GXElement.Flag.NoPaint);
+        this.setFlag(IFBlockEditor.Flag.ResizeAll);
+        this.getElement().removeFlag(IFElement.Flag.NoPaint);
 
         // TODO : I18N
         return 'Modify Text Content';
     };
 
     /** @override */
-    GXTextEditor.prototype._prePaint = function (transform, context) {
-        if ((this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) && !this.isInlineEdit()) {
+    IFTextEditor.prototype._prePaint = function (transform, context) {
+        if ((this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) && !this.isInlineEdit()) {
             // Paint textbox outline instead of glyphs
             var textRect = this._element.getGeometryBBox();
             if (textRect) {
@@ -304,7 +304,7 @@
                 var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
                 var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
 
-                if (this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+                if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
                     context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
                 } else {
                     context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
@@ -314,9 +314,9 @@
     };
 
     /** @override */
-    GXTextEditor.prototype.toString = function () {
-        return "[Object GXTextEditor]";
+    IFTextEditor.prototype.toString = function () {
+        return "[Object IFTextEditor]";
     };
 
-    _.GXTextEditor = GXTextEditor;
+    _.IFTextEditor = IFTextEditor;
 })(this);

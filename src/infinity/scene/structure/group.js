@@ -1,21 +1,21 @@
 (function (_) {
     /**
      * The base for a groups
-     * @class GXGroup
-     * @extends GXItem
-     * @mixes GXNode.Container
-     * @mixes GXElement.Transform
+     * @class IFGroup
+     * @extends IFItem
+     * @mixes IFNode.Container
+     * @mixes IFElement.Transform
      * @constructor
      */
-    function GXGroup() {
-        GXItem.call(this);
+    function IFGroup() {
+        IFItem.call(this);
     }
-    GXNode.inheritAndMix('group', GXGroup, GXItem, [GXNode.Container, GXElement.Transform]);
+    IFNode.inheritAndMix('group', IFGroup, IFItem, [IFNode.Container, IFElement.Transform]);
 
     /** @override */
-    GXGroup.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXBlock;
+    IFGroup.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFBlock;
     };
 
-    _.GXGroup = GXGroup;
+    _.IFGroup = IFGroup;
 })(this);

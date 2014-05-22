@@ -22,7 +22,7 @@
 
     /**
      * Paint an annotation
-     * @param {GXPaintContext} context the paint context to paint on
+     * @param {IFPaintContext} context the paint context to paint on
      * @param {GTransform} transform the current transformation in use
      * @param {GPoint} center the center point of the annotation
      * @param {GAnnotation.AnnotType} annotation the annotation to be painted
@@ -51,9 +51,9 @@
         var sy = size / 2 / annotationTemplate.scaleFactor;
         var canvas = context.canvas;
 
-        var vertices = new GXVertexTransformer(annotationTemplate.vertices, new GTransform(sx, 0, 0, sy, cx, cy));
+        var vertices = new IFVertexTransformer(annotationTemplate.vertices, new GTransform(sx, 0, 0, sy, cx, cy));
         //if (annotation != this.AnnotType.Circle) {
-        //    vertices = new GXVertexPixelAligner(vertices);
+        //    vertices = new IFVertexPixelAligner(vertices);
         //}
         canvas.putVertices(vertices);
         canvas.fillVertices(fillColor);
@@ -85,36 +85,36 @@
         // Prepare vertex cache, first
         var annotationTemplate = _annotationTemplates[annotation];
         if (!annotationTemplate) {
-            var vertices = new GXVertexContainer();
+            var vertices = new IFVertexContainer();
             var scaleFactor = 1;
 
             switch (annotation) {
                 case this.AnnotType.Rectangle:
-                    vertices.addVertex(GXVertex.Command.Move, -1, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, 1);
-                    vertices.addVertex(GXVertex.Command.Line, -1, 1);
-                    vertices.addVertex(GXVertex.Command.Close);
+                    vertices.addVertex(IFVertex.Command.Move, -1, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, 1);
+                    vertices.addVertex(IFVertex.Command.Line, -1, 1);
+                    vertices.addVertex(IFVertex.Command.Close);
                     break;
 
                 case this.AnnotType.Circle:
-                    vertices.addVertex(GXVertex.Command.Move, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, 0, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, 0, 1);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, 1);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, 1);
+                    vertices.addVertex(IFVertex.Command.Move, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, 0, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, 0, 1);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, 1);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, 1);
                     break;
 
                 case this.AnnotType.Diamond:
-                    vertices.addVertex(GXVertex.Command.Move, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Line, 0, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, 0);
-                    vertices.addVertex(GXVertex.Command.Line, 0, 1);
-                    vertices.addVertex(GXVertex.Command.Close);
+                    vertices.addVertex(IFVertex.Command.Move, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Line, 0, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, 0);
+                    vertices.addVertex(IFVertex.Command.Line, 0, 1);
+                    vertices.addVertex(IFVertex.Command.Close);
                     scaleFactor = Math.cos(Math.PI / 4);
                     break;
             }

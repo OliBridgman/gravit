@@ -20,7 +20,7 @@
     EXImagePaletteMatcher.prototype._htmlElement = null;
 
     /**
-     * @type {Array<GXColor>}
+     * @type {Array<IFColor>}
      * @private
      */
     EXImagePaletteMatcher.prototype._palette = null;
@@ -98,7 +98,7 @@
                             var convertedColor = this._convertThiefColor(palette[i]);
 
                             // Take care to avoid duplications with dominant color
-                            if (!GXColor.equals(convertedColor, this._palette[0])) {
+                            if (!IFColor.equals(convertedColor, this._palette[0])) {
                                 this._palette.push(convertedColor);
                             }
                         }
@@ -122,7 +122,7 @@
      * @private
      */
     EXImagePaletteMatcher.prototype._convertThiefColor = function (color) {
-        return new GXColor(GXColor.Type.RGB, [color[0], color[1], color[2], 100]);
+        return new IFColor(IFColor.Type.RGB, [color[0], color[1], color[2], 100]);
     };
 
     /** @override */

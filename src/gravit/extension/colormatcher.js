@@ -72,10 +72,10 @@
      * Called to match and return an array of matching
      * colors. Note that more than eight colors will be cut off.
      * Returning null or empty array will ignore the call.
-     * @param {GXColor} referenceColor a reference color
+     * @param {IFColor} referenceColor a reference color
      * used for matching. This is null if the matcher is not
      * reference color based.
-     * @return {Array<GXColor>}
+     * @return {Array<IFColor>}
      */
     EXColorMatcher.prototype.match = function (referenceColor) {
         throw new Error("Not Supported");

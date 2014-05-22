@@ -1,28 +1,28 @@
 (function (_) {
     /**
      * Guides for managing guides like grid, smart guides etc.
-     * @param {GXScene} scene
-     * @class GXGuides
+     * @param {IFScene} scene
+     * @class IFGuides
      * @extend GEventTarget
      * @constructor
      */
-    function GXGuides(scene) {
+    function IFGuides(scene) {
         this._scene = scene;
     }
 
-    GObject.inherit(GXGuides, GEventTarget);
+    GObject.inherit(IFGuides, GEventTarget);
 
     /**
-     * @type {GXScene}
+     * @type {IFScene}
      * @private
      */
-    GXGuides.prototype._scene = null;
+    IFGuides.prototype._scene = null;
 
-    GXGuides.prototype.beginMap = function () {
+    IFGuides.prototype.beginMap = function () {
         // TODO
     };
 
-    GXGuides.prototype.finishMap = function () {
+    IFGuides.prototype.finishMap = function () {
         // TODO
     };
 
@@ -31,7 +31,7 @@
      * @param {GPoint} point the point to map
      * @returns {GPoint} a mapped point
      */
-    GXGuides.prototype.mapPoint = function (point) {
+    IFGuides.prototype.mapPoint = function (point) {
         var result = point;
 
         // Snap to grid
@@ -44,14 +44,14 @@
         return result;
     };
 
-    GXGuides.prototype.mapRect = function (rect) {
+    IFGuides.prototype.mapRect = function (rect) {
         // TODO
     };
 
     /** @override */
-    GXGuides.prototype.toString = function () {
-        return "[Object GXGuides]";
+    IFGuides.prototype.toString = function () {
+        return "[Object IFGuides]";
     };
 
-    _.GXGuides = GXGuides;
+    _.IFGuides = IFGuides;
 })(this);

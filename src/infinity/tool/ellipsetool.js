@@ -1,44 +1,44 @@
 (function (_) {
     /**
      * The ellipse tool
-     * @class GXEllipseTool
-     * @extends GXShapeTool
+     * @class IFEllipseTool
+     * @extends IFShapeTool
      * @constructor
      */
-    function GXEllipseTool() {
-        GXShapeTool.call(this, true, true);
+    function IFEllipseTool() {
+        IFShapeTool.call(this, true, true);
     }
 
-    GObject.inherit(GXEllipseTool, GXShapeTool);
+    GObject.inherit(IFEllipseTool, IFShapeTool);
 
     /** @override */
-    GXEllipseTool.prototype.getGroup = function () {
+    IFEllipseTool.prototype.getGroup = function () {
         return 'draw';
     };
 
     /** @override */
-    GXEllipseTool.prototype.getIcon = function () {
+    IFEllipseTool.prototype.getIcon = function () {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<ellipse style="fill:none; stroke: inherit" cx="9.5" cy="27.5" rx="8.5" ry="7.5"/>\n</svg>\n';
     };
 
     /** @override */
-    GXEllipseTool.prototype.getHint = function () {
-        return GXShapeTool.prototype.getHint.call(this)
-            .setTitle(new GLocale.Key(GXEllipseTool, "title"));
+    IFEllipseTool.prototype.getHint = function () {
+        return IFShapeTool.prototype.getHint.call(this)
+            .setTitle(new GLocale.Key(IFEllipseTool, "title"));
     };
 
     /** @override */
-    GXEllipseTool.prototype.getActivationCharacters = function () {
+    IFEllipseTool.prototype.getActivationCharacters = function () {
         return ['E', '3'];
     };
 
     /** @override */
-    GXEllipseTool.prototype._createShape = function () {
-        return new GXEllipse();
+    IFEllipseTool.prototype._createShape = function () {
+        return new IFEllipse();
     };
 
     /** @override */
-    GXEllipseTool.prototype._updateShape = function (shape, area, line) {
+    IFEllipseTool.prototype._updateShape = function (shape, area, line) {
         // Original shape is a circle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
         shape.setProperty('trf',
             new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
@@ -46,14 +46,14 @@
     };
 
     /** @override */
-    GXEllipseTool.prototype._hasCenterCross = function () {
+    IFEllipseTool.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** override */
-    GXEllipseTool.prototype.toString = function () {
-        return "[Object GXEllipseTool]";
+    IFEllipseTool.prototype.toString = function () {
+        return "[Object IFEllipseTool]";
     };
 
-    _.GXEllipseTool = GXEllipseTool;
+    _.IFEllipseTool = IFEllipseTool;
 })(this);

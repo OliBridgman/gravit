@@ -1,12 +1,12 @@
 (function (_) {
     /**
-     * GXView is a widget to render a scene
-     * @param {GXScene} [scene] the scene this view is bound too, defaults to null
-     * @class GXView
+     * IFView is a widget to render a scene
+     * @param {IFScene} [scene] the scene this view is bound too, defaults to null
+     * @class IFView
      * @extends GUIWidget
      * @constructor
      */
-    function GXView(scene) {
+    function IFView(scene) {
         this._updateViewTransforms();
         GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
@@ -17,21 +17,21 @@
 
         // TODO : Move all transformation / view stuff into viewConfiguration!!
         if (!this._viewConfiguration) {
-            this._viewConfiguration = new GXScenePaintConfiguration();
+            this._viewConfiguration = new IFScenePaintConfiguration();
         }
 
         // Initialize our layers
         this._initLayers();
     }
 
-    GObject.inherit(GXView, GUIWidget);
+    GObject.inherit(IFView, GUIWidget);
 
     /**
      * Global view options
      * @type {Object}
      * @version 1.0
      */
-    GXView.options = {
+    IFView.options = {
         /**
          * The smallest zoom factor allowed whereas 0 = 0% and 1.0 = 100%
          * @type {Number}
@@ -48,75 +48,75 @@
     };
 
     /**
-     * @type {GXScene}
+     * @type {IFScene}
      * @private
      */
-    GXView.prototype._scene = null;
+    IFView.prototype._scene = null;
 
     /**
      * An array of layers
-     * @type {Array<GXViewLayer>}
+     * @type {Array<IFViewLayer>}
      * @private
      */
-    GXView.prototype._layers = null;
+    IFView.prototype._layers = null;
 
     /**
      * Left, top, right, bottom offsets
      * @type {Array<Number>}
      * @private
      */
-    GXView.prototype._viewOffset = null;
+    IFView.prototype._viewOffset = null;
 
     /**
      * Left, top, right, bottom margins
      * @type {Array<Number>}
      * @private
      */
-    GXView.prototype._viewMargin = null;
+    IFView.prototype._viewMargin = null;
 
     /**
      * The current horizontal scroll of this view
      * @type Number
      * @private
      */
-    GXView.prototype._scrollX = 0.0;
+    IFView.prototype._scrollX = 0.0;
 
     /**
      * The current vertical scroll of this view
      * @type Number
      * @private
      */
-    GXView.prototype._scrollY = 0.0;
+    IFView.prototype._scrollY = 0.0;
 
     /**
      * The current zoom of this view
      * @type Number
      * @private
      */
-    GXView.prototype._zoom = 1.0;
+    IFView.prototype._zoom = 1.0;
 
     /**
      * World to view transformation
      * @type {GTransform}
      * @private
      */
-    GXView.prototype._worldToViewTransform = null;
+    IFView.prototype._worldToViewTransform = null;
 
     /**
      * View to world transform
      * @type {GTransform}
      * @private
      */
-    GXView.prototype._viewToWorldTransform = null;
+    IFView.prototype._viewToWorldTransform = null;
 
     /**
-     * @type {GXScenePaintConfiguration}
+     * @type {IFScenePaintConfiguration}
      * @private
      */
-    GXView.prototype._viewConfiguration = null;
+    IFView.prototype._viewConfiguration = null;
 
     /** @override */
-    GXView.prototype.resize = function (width, height) {
+    IFView.prototype.resize = function (width, height) {
         GUIWidget.prototype.resize.call(this, width, height);
 
         // Resize layers if any
@@ -129,16 +129,16 @@
 
     /**
      * Return the scene this view is rendering
-     * @returns {GXScene}
+     * @returns {IFScene}
      */
-    GXView.prototype.getScene = function () {
+    IFView.prototype.getScene = function () {
         return this._scene;
     };
 
     /**
-     * @return {GXScenePaintConfiguration}
+     * @return {IFScenePaintConfiguration}
      */
-    GXView.prototype.getViewConfiguration = function () {
+    IFView.prototype.getViewConfiguration = function () {
         return this._viewConfiguration;
     };
 
@@ -146,7 +146,7 @@
      * Get the current view offset
      * @return {Array<Number>} Left, top, right, bottom
      */
-    GXView.prototype.getViewOffset = function () {
+    IFView.prototype.getViewOffset = function () {
         return this._viewOffset;
     };
 
@@ -154,7 +154,7 @@
      * Set the current view offset
      * @param {Array<Number>} Offset Left, top, right, bottom
      */
-    GXView.prototype.setViewOffset = function (offset) {
+    IFView.prototype.setViewOffset = function (offset) {
         this._viewOffset = [0, 0, 0, 0];
         if (offset && offset.length > 0) {
             for (var i = 0; i < Math.min(4, offset.length); ++i) {
@@ -175,7 +175,7 @@
      * @return {Array<Number>} Left, top, right, bottom
      * @version 1.0
      */
-    GXView.prototype.getViewMargin = function () {
+    IFView.prototype.getViewMargin = function () {
         return this._viewMargin;
     };
 
@@ -184,7 +184,7 @@
      * @param {Array<Number>} margin Left, top, right, bottom
      * @version 1.0
      */
-    GXView.prototype.setViewMargin = function (margin) {
+    IFView.prototype.setViewMargin = function (margin) {
         this._viewMargin = [0, 0, 0, 0];
         if (margin && margin.length > 0) {
             for (var i = 0; i < Math.min(4, margin.length); ++i) {
@@ -198,7 +198,7 @@
      * @return {Number} The current horizontal scroll position of this view
      * @version 1.0
      */
-    GXView.prototype.getScrollX = function () {
+    IFView.prototype.getScrollX = function () {
         return this._scrollX;
     };
 
@@ -206,7 +206,7 @@
      * @return {Number} The current vertical scroll position of this view
      * @version 1.0
      */
-    GXView.prototype.getScrollY = function () {
+    IFView.prototype.getScrollY = function () {
         return this._scrollY;
     };
 
@@ -214,7 +214,7 @@
      * @return {Number} The current zoom of this view
      * @version 1.0
      */
-    GXView.prototype.getZoom = function () {
+    IFView.prototype.getZoom = function () {
         return this._zoom;
     };
 
@@ -223,7 +223,7 @@
      * world coordinates into view coordinates
      * @returns {GTransform}
      */
-    GXView.prototype.getWorldTransform = function () {
+    IFView.prototype.getWorldTransform = function () {
         return this._worldToViewTransform;
     };
 
@@ -232,7 +232,7 @@
      * view coordinates into world coordinates
      * @returns {GTransform}
      */
-    GXView.prototype.getViewTransform = function () {
+    IFView.prototype.getViewTransform = function () {
         return this._viewToWorldTransform;
     };
 
@@ -242,7 +242,7 @@
      * defaults to false (= include margin)
      * @returns {GRect}
      */
-    GXView.prototype.getViewBox = function (noMargin) {
+    IFView.prototype.getViewBox = function (noMargin) {
         var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
         var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
         return new GRect(
@@ -259,7 +259,7 @@
      * @param {Number} scrollY the vertical scrolling
      * @param {Number} zoom the zoom
      */
-    GXView.prototype.transform = function (scrollX, scrollY, zoom) {
+    IFView.prototype.transform = function (scrollX, scrollY, zoom) {
         this._scrollX = scrollX;
         this._scrollY = scrollY;
         this._zoom = zoom;
@@ -273,11 +273,11 @@
      * @param {Number} [zoom] the new zoom, defaults to current zoom
      * @version 1.0
      */
-    GXView.prototype.zoomAtCenter = function (center, zoom) {
+    IFView.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
-        var normalizedZoom = Math.min(GXView.options.maxZoomFactor, Math.max(zoom, GXView.options.minZoomFactor));
+        var normalizedZoom = Math.min(IFView.options.maxZoomFactor, Math.max(zoom, IFView.options.minZoomFactor));
         if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
             return;
         }
@@ -301,7 +301,7 @@
      * @param {GPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
      */
-    GXView.prototype.zoomAt = function (pos, zoom) {
+    IFView.prototype.zoomAt = function (pos, zoom) {
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
@@ -316,7 +316,7 @@
      * @param {Boolean} [reverse] if set, the reverse action will be taken so
      * that the view is zoomed out onto the given rect. Defaults to false
      */
-    GXView.prototype.zoomAll = function (rect, reverse) {
+    IFView.prototype.zoomAll = function (rect, reverse) {
         var center = rect.getSide(GRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
@@ -337,7 +337,7 @@
      * @param {Number} dy vertical subtract
      * @version 1.0
      */
-    GXView.prototype.scrollBy = function (dx, dy) {
+    IFView.prototype.scrollBy = function (dx, dy) {
         if (dx != 0 || dy != 0) {
             this._scrollX = this._scrollX + dx;
             this._scrollY = this._scrollY + dy;
@@ -353,7 +353,7 @@
      * @return {Boolean} true if any invalidation ocurred, false if not
      * @version 1.0
      */
-    GXView.prototype.invalidate = function (area) {
+    IFView.prototype.invalidate = function (area) {
         var result = false;
         if (this._layers) {
             for (var i = 0; i < this._layers.length; ++i) {
@@ -365,11 +365,11 @@
 
     /**
      * Add an internal layer
-     * @param {GXViewLayer} layer
-     * @returns {GXViewLayer} the provided layer
+     * @param {IFViewLayer} layer
+     * @returns {IFViewLayer} the provided layer
      * @private
      */
-    GXView.prototype._addLayer = function (layer) {
+    IFView.prototype._addLayer = function (layer) {
         if (this._layers == null) {
             this._layers = [];
         }
@@ -390,7 +390,7 @@
      * scrollbars and virtual space as well as do a repaint if anything has changed
      * @private
      */
-    GXView.prototype._updateViewTransforms = function () {
+    IFView.prototype._updateViewTransforms = function () {
         // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
         // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
         var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-Math.round(this._scrollX), -Math.round(this._scrollY));
@@ -406,15 +406,15 @@
      * Called to init/add all layers
      * @private
      */
-    GXView.prototype._initLayers = function () {
-        this._addLayer(new GXSceneLayer(this));
+    IFView.prototype._initLayers = function () {
+        this._addLayer(new IFSceneLayer(this));
     };
 
     /** @override */
-    GXView.prototype.toString = function () {
-        return "[Object GXView]";
+    IFView.prototype.toString = function () {
+        return "[Object IFView]";
     };
 
-    _.GXView = GXView;
+    _.IFView = IFView;
 
 })(this);

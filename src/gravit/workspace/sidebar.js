@@ -58,8 +58,8 @@
     EXSidebar.DocumentState.prototype._htmlTreeContainer = null;
 
     /**
-     * A mapping of GXBlock to Tree nodes
-     * @type {Array<{{block: GXBlock, treeId: String}}>}
+     * A mapping of IFBlock to Tree nodes
+     * @type {Array<{{block: IFBlock, treeId: String}}>}
      * @private
      */
     EXSidebar.DocumentState.prototype._treeNodeMap = null;
@@ -68,10 +68,10 @@
         var scene = this.document.getScene();
 
         // Subscribe to the document scene's events
-        scene.addEventListener(GXNode.AfterInsertEvent, this._afterInsert, this);
-        scene.addEventListener(GXNode.AfterRemoveEvent, this._afterRemove, this);
-        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        scene.addEventListener(IFNode.AfterInsertEvent, this._afterInsert, this);
+        scene.addEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
+        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
         // Add our root
         this._insertBlock(scene);
@@ -81,28 +81,28 @@
         var scene = this.document.getScene();
 
         // Unsubscribe from the document scene's events
-        scene.removeEventListener(GXNode.AfterInsertEvent, this._afterInsert);
-        scene.removeEventListener(GXNode.AfterRemoveEvent, this._afterRemove);
-        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
+        scene.removeEventListener(IFNode.AfterInsertEvent, this._afterInsert);
+        scene.removeEventListener(IFNode.AfterRemoveEvent, this._afterRemove);
+        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+        scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange);
     };
 
     /**
-     * @param {GXNode.AfterInsertEvent} event
+     * @param {IFNode.AfterInsertEvent} event
      * @private
      */
     EXSidebar.DocumentState.prototype._afterInsert = function (event) {
-        if (event.node instanceof GXBlock) {
+        if (event.node instanceof IFBlock) {
             this._insertBlock(event.node);
         }
     };
 
     /**
-     * @param {GXNode.AfterRemoveEvent} event
+     * @param {IFNode.AfterRemoveEvent} event
      * @private
      */
     EXSidebar.DocumentState.prototype._afterRemove = function (event) {
-        if (event.node instanceof GXBlock) {
+        if (event.node instanceof IFBlock) {
             var treeNode = this._getTreeNode(event.node);
 
             if (treeNode) {
@@ -111,7 +111,7 @@
 
                 // Iterate node and remove all tree mappings
                 event.node.accept(function (node) {
-                    if (node instanceof GXBlock) {
+                    if (node instanceof IFBlock) {
                         for (var i = 0; i < this._treeNodeMap.length; ++i) {
                             if (this._treeNodeMap[i].block === node) {
                                 this._treeNodeMap.splice(i, 1);
@@ -125,27 +125,27 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     EXSidebar.DocumentState.prototype._afterPropertiesChange = function (event) {
-        if (event.node instanceof GXBlock) {
+        if (event.node instanceof IFBlock) {
             this._updateBlockProperties(event.node);
         }
     };
 
     /**
-     * @param {GXNode.AfterFlagChangeEvent} event
+     * @param {IFNode.AfterFlagChangeEvent} event
      * @private
      */
     EXSidebar.DocumentState.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof GXBlock) {
+        if (event.node instanceof IFBlock) {
             this._updateBlockProperties(event.node);
         }
     };
 
     /**
-     * @param {GXBlock} block
+     * @param {IFBlock} block
      * @return {*}
      * @private
      */
@@ -158,7 +158,7 @@
     };
 
     /**
-     * @param {GXBlock} block
+     * @param {IFBlock} block
      * @return {*}
      * @private
      */
@@ -180,10 +180,10 @@
             li.removeClass('jqtree-selected');
             li.removeClass('jqtree-active');
 
-            if (block.hasFlag(GXNode.Flag.Selected)) {
+            if (block.hasFlag(IFNode.Flag.Selected)) {
                 li.addClass('jqtree-selected');
             } else {
-                if (block.hasFlag(GXNode.Flag.Active)) {
+                if (block.hasFlag(IFNode.Flag.Active)) {
                     li.addClass('jqtree-active');
                 }
             }
@@ -192,7 +192,7 @@
 
     /**
      * @param event
-     * @return {{parent: GXNode, before: GXNode, source: GXNode}} the result of the move
+     * @return {{parent: IFNode, before: IFNode, source: IFNode}} the result of the move
      * or null if the actual move is not allowed
      * @private
      */
@@ -202,7 +202,7 @@
             var before = null;
 
             if (position === 'inside') {
-                if (!target.hasMixin(GXNode.Container)) {
+                if (!target.hasMixin(IFNode.Container)) {
                     return null;
                 }
 
@@ -274,7 +274,7 @@
     };
 
     /**
-     * @param {GXBlock} block
+     * @param {IFBlock} block
      * @private
      */
     EXSidebar.DocumentState.prototype._updateBlockProperties = function (block) {
@@ -288,13 +288,13 @@
     };
 
     /**
-     * @param {GXBlock} block
+     * @param {IFBlock} block
      * @private
      */
     EXSidebar.DocumentState.prototype._insertBlock = function (block) {
         // Recursively add blocks
         block.accept(function (node) {
-            if (node instanceof GXBlock) {
+            if (node instanceof IFBlock) {
                 // Create an unique treeId for the new block
                 var treeId = gUtil.uuid();
 

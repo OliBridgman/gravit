@@ -2,7 +2,7 @@
 
     /**
      * Action importing a document
-     * @param {GXImport} import_
+     * @param {IFImport} import_
      * @class EXImportAction
      * @extends GUIAction
      * @constructor
@@ -49,7 +49,7 @@
             for (var i = 0; i < this._import.getExtensions().length; ++i) {
                 if (this._import.getExtensions()[i].toLowerCase() === ext) {
                     foundExt = true;
-                    var scene = new GXScene();
+                    var scene = new IFScene();
                     this._import.import(file, scene, function (result) {
                         if (result) {
                             gApp.addDocument(scene, name);

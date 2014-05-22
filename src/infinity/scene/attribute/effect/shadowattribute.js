@@ -4,7 +4,7 @@
      * A shadow render attribute
      * @class IFShadowAttribute
      * @extends IFEffectAttribute
-     * @mixes GXNode.Properties
+     * @mixes IFNode.Properties
      * @constructor
      */
     function IFShadowAttribute() {
@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFShadowAttribute.GeometryProperties, IFShadowAttribute.VisualProperties);
     }
 
-    GXNode.inheritAndMix("shadowAttr", IFShadowAttribute, IFEffectAttribute, [GXNode.Properties]);
+    IFNode.inheritAndMix("shadowAttr", IFShadowAttribute, IFEffectAttribute, [IFNode.Properties]);
 
     /**
      * Geometry properties
@@ -31,7 +31,7 @@
      */
     IFShadowAttribute.VisualProperties = {
         // The color of the shadow
-        cls: GXColor.parseCSSColor('rgba(0,0,0,0.5)'),
+        cls: IFColor.parseCSSColor('rgba(0,0,0,0.5)'),
         // Whether to knock-out contents or not
         ko: false
     };
@@ -81,7 +81,7 @@
             this.restoreProperties(blob, IFShadowAttribute.GeometryProperties);
             this.restoreProperties(blob, IFShadowAttribute.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return GXColor.parseColor(value);
+                    return IFColor.parseColor(value);
                 }
                 return value;
             });

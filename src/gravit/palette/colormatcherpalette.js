@@ -41,7 +41,7 @@
     EXColorMatcherPalette.prototype._matcher = null;
 
     /**
-     * @type {GXColor}
+     * @type {IFColor}
      * @private
      */
     EXColorMatcherPalette.prototype._currentColor = null;
@@ -252,7 +252,7 @@
      * @private
      */
     EXColorMatcherPalette.prototype._updateCurrentColor = function (color) {
-        if (!GXColor.equals(color, this._currentColor)) {
+        if (!IFColor.equals(color, this._currentColor)) {
             this._currentColor = color;
 
             // Update preview

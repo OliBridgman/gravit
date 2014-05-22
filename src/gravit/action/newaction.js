@@ -53,7 +53,7 @@
      */
     EXNewAction.prototype.execute = function () {
         // Create Scene
-        var scene = new GXScene();
+        var scene = new IFScene();
 
         // Execute insert pages action
         gApp.executeAction(GInsertPagesAction.ID, [scene, function () {

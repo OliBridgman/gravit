@@ -39,11 +39,11 @@
         var step = 180.0 / 8;
         for (var i = 3; i >= 0; --i) {
             hslRight[0] = gMath.normalizeAngleDegrees(hslRight[0] + step);
-            result[i] = (new GXColor(GXColor.Type.HSL, hslRight));
+            result[i] = (new IFColor(IFColor.Type.HSL, hslRight));
         }
         for (var i = 0; i < 4; ++i) {
             hslLeft[0] = gMath.normalizeAngleDegrees(hslLeft[0] - step);
-            result.push(new GXColor(GXColor.Type.HSL, hslLeft));
+            result.push(new IFColor(IFColor.Type.HSL, hslLeft));
         }
         return result;
     };

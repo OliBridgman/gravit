@@ -1,10 +1,10 @@
 (function (_) {
     /**
      * A class representing a color gradient
-     * @class GXGradient
+     * @class IFGradient
      * @constructor
      */
-    function GXGradient(stops) {
+    function IFGradient(stops) {
         if (stops) {
             this._stops = [];
             for (var i = 0; i < stops.length; ++i) {
@@ -14,7 +14,7 @@
                 });
             }
         } else {
-            this._stops = [new GXColor(GXColor.Type.Black), new GXColor(GXColor.Type.White)];
+            this._stops = [new IFColor(IFColor.Type.Black), new IFColor(IFColor.Type.White)];
         }
     }
 
@@ -22,21 +22,21 @@
      * Gradient's mime-type
      * @type {string}
      */
-    GXGradient.MIME_TYPE = "application/infinity+gradient";
+    IFGradient.MIME_TYPE = "application/infinity+gradient";
 
     /**
-     * Parse a string into a GXGradient
+     * Parse a string into a IFGradient
      * @param {String} string
-     * @return {GXGradient}
+     * @return {IFGradient}
      */
-    GXGradient.parseGradient = function (string) {
+    IFGradient.parseGradient = function (string) {
         if (!string || string === "") {
             return null;
         }
 
         var blob = JSON.parse(string);
         if (blob && blob instanceof Array) {
-            var result = new GXGradient();
+            var result = new IFGradient();
 
             result._stops = [];
 
@@ -44,7 +44,7 @@
                 var stop = blob[i];
                 result._stops.push({
                     position: stop.p,
-                    color: GXColor.parseColor(stop.c)
+                    color: IFColor.parseColor(stop.c)
                 })
             }
 
@@ -56,11 +56,11 @@
 
     /**
      * Compare two gradients for equality Also takes care of null parameters
-     * @param {GXGradient} left left side gradient
-     * @param {GXGradient} right right side gradient
+     * @param {IFGradient} left left side gradient
+     * @param {IFGradient} right right side gradient
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    GXGradient.equals = function (left, right) {
+    IFGradient.equals = function (left, right) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -75,7 +75,7 @@
                         return false;
                     }
 
-                    if (!GXColor.equals(s1[i].color, s2[i].color)) {
+                    if (!IFColor.equals(s1[i].color, s2[i].color)) {
                         return false;
                     }
                 }
@@ -84,18 +84,18 @@
     };
 
     /**
-     * @type {Array<{{position: Number, color: GXColor}}>}
+     * @type {Array<{{position: Number, color: IFColor}}>}
      * @private
      */
-    GXGradient.prototype._stops = null;
+    IFGradient.prototype._stops = null;
 
     /**
      * You may modify the return value though this class
      * is supposed to be immutable so ensure you know what
      * you are actually doing!!
-     * @returns {Array<{{position: Number, color: GXColor}}>}
+     * @returns {Array<{{position: Number, color: IFColor}}>}
      */
-    GXGradient.prototype.getStops = function () {
+    IFGradient.prototype.getStops = function () {
         return this._stops;
     };
 
@@ -103,7 +103,7 @@
      * Return string representation of the underlying gradient
      * @return {String}
      */
-    GXGradient.prototype.asString = function () {
+    IFGradient.prototype.asString = function () {
         var blob = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
@@ -123,7 +123,7 @@
      * otherwise the internal gradient's type will be taken instead
      * @return {String}
      */
-    GXGradient.prototype.asCSSString = function (ignoreType) {
+    IFGradient.prototype.asCSSString = function (ignoreType) {
         var cssStops = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
@@ -135,9 +135,9 @@
     };
 
     /** @override */
-    GXGradient.prototype.toString = function () {
-        return "[Object GXGradient]";
+    IFGradient.prototype.toString = function () {
+        return "[Object IFGradient]";
     };
 
-    _.GXGradient = GXGradient;
+    _.IFGradient = IFGradient;
 })(this);

@@ -47,14 +47,14 @@
     EXPropertiesPalette.DocumentState.prototype._objectTree = null;
 
     /**
-     * A mapping of GXNode to Tree nodes
-     * @type {Array<{{node: GXNode, treeId: String}}>}
+     * A mapping of IFNode to Tree nodes
+     * @type {Array<{{node: IFNode, treeId: String}}>}
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._treeNodeMap = null;
 
     /**
-     * @type {Array<GXElement>}
+     * @type {Array<IFElement>}
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._elements = null;
@@ -64,10 +64,10 @@
         var scene = this.document.getScene();
 
         // Subscribe to the document scene's events
-        scene.addEventListener(GXNode.AfterInsertEvent, this._afterInsert, this);
-        scene.addEventListener(GXNode.AfterRemoveEvent, this._afterRemove, this);
-        scene.addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        scene.addEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        scene.addEventListener(IFNode.AfterInsertEvent, this._afterInsert, this);
+        scene.addEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
+        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
     };
 
     /** @override */
@@ -75,10 +75,10 @@
         var scene = this.document.getScene();
 
         // Unsubscribe from the document scene's events
-        scene.removeEventListener(GXNode.AfterInsertEvent, this._afterInsert);
-        scene.removeEventListener(GXNode.AfterRemoveEvent, this._afterRemove);
-        scene.removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-        scene.removeEventListener(GXNode.AfterFlagChangeEvent, this._afterFlagChange);
+        scene.removeEventListener(IFNode.AfterInsertEvent, this._afterInsert);
+        scene.removeEventListener(IFNode.AfterRemoveEvent, this._afterRemove);
+        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+        scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange);
     };
 
     /** @override */
@@ -107,7 +107,7 @@
         var editor = this.document.getEditor();
 
         // Subscribe to the editor's events
-        editor.addEventListener(GXEditor.SelectionChangedEvent, this._updateFromSelection, this);
+        editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
         // Update property panels
         this._updatePropertyPanels();
@@ -118,7 +118,7 @@
         var editor = this.document.getEditor();
 
         // Unsubscribe from the editor's events
-        editor.addEventListener(GXEditor.SelectionChangedEvent, this._updateFromSelection, this);
+        editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
         // Remove all property panels
         for (var i = 0; i < this._propertyPanels.length; ++i) {
@@ -130,7 +130,7 @@
     };
 
     /**
-     * @param {GXNode.AfterInsertEvent} event
+     * @param {IFNode.AfterInsertEvent} event
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._afterInsert = function (event) {
@@ -148,7 +148,7 @@
     };
 
     /**
-     * @param {GXNode.AfterRemoveEvent} event
+     * @param {IFNode.AfterRemoveEvent} event
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._afterRemove = function (event) {
@@ -180,7 +180,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._afterPropertiesChange = function (event) {
@@ -188,7 +188,7 @@
     };
 
     /**
-     * @param {GXNode.AfterFlagChangeEvent} event
+     * @param {IFNode.AfterFlagChangeEvent} event
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._afterFlagChange = function (event) {
@@ -197,7 +197,7 @@
 
     /**
      * @param event
-     * @return {{parent: GXNode, before: GXNode, source: GXNode}} the result of the move
+     * @return {{parent: IFNode, before: IFNode, source: IFNode}} the result of the move
      * or null if the actual move is not allowed
      * @private
      */
@@ -212,15 +212,15 @@
             var before = null;
 
             // Special case when source is attribute and target element
-            if (source instanceof IFAttribute && target instanceof GXElement) {
-                if (!target.hasMixin(GXElement.Attributes)) {
+            if (source instanceof IFAttribute && target instanceof IFElement) {
+                if (!target.hasMixin(IFElement.Attributes)) {
                     return null;
                 }
                 target = target.getAttributes();
             }
 
             if (position === 'inside') {
-                if (!target.hasMixin(GXNode.Container)) {
+                if (!target.hasMixin(IFNode.Container)) {
                     return null;
                 }
                 parent = target;
@@ -300,7 +300,7 @@
         event.preventDefault();
 
         if (event.node) {
-            //event.node.setFlag(GXNode.Flag.Selected);
+            //event.node.setFlag(IFNode.Flag.Selected);
             this._objectTree.tree('selectNode', event.node);
             this._updatePropertyPanels();
         }
@@ -327,7 +327,7 @@
         if (elements.length > 1) {
             // TODO : I18N
             rootLabel = elements.length.toString() + ' Objects';
-        } else if (elements[0] instanceof GXBlock) {
+        } else if (elements[0] instanceof IFBlock) {
             rootLabel = elements[0].getLabel();
         }
 
@@ -335,7 +335,7 @@
 
         // Iterate attributes
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXElement && elements[i].hasMixin(GXElement.Attributes)) {
+            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Attributes)) {
                 this._insertAttributeNode(elements[i].getAttributes());
             }
         }
@@ -388,7 +388,7 @@
         var forceAddChildren = false;
 
         // Avoid to add root attribute but force children
-        if (attribute.getParent() instanceof GXElement) {
+        if (attribute.getParent() instanceof IFElement) {
             canAdd = false;
             forceAddChildren = true;
         }
@@ -457,7 +457,7 @@
         }
 
         // Add children (if any)
-        if ((canAdd || forceAddChildren) && attribute.hasMixin(GXNode.Container)) {
+        if ((canAdd || forceAddChildren) && attribute.hasMixin(IFNode.Container)) {
             for (var child = attribute.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof IFAttribute) {
                     this._insertAttributeNode(child);
@@ -472,7 +472,7 @@
     };
 
     /**
-     * @param {GXNode} node
+     * @param {IFNode} node
      * @private
      */
     EXPropertiesPalette.DocumentState.prototype._updateNodeProperties = function (node) {
@@ -486,7 +486,7 @@
     };
 
     /**
-     * @param {GXNode} node
+     * @param {IFNode} node
      * @return {*}
      * @private
      */
@@ -499,7 +499,7 @@
     };
 
     /**
-     * @param {GXNode} node
+     * @param {IFNode} node
      * @return {*}
      * @private
      */

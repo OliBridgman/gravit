@@ -4,17 +4,17 @@
         //
         // Round rectangle with contents
         //
-        rect = new GXRectangle();
+        rect = new IFRectangle();
         var shadow = new IFShadowAttribute();
         fill = new IFFillAttribute();
-        fill.setColor(GXColor.parseCSSColor('yellow'));
+        fill.setColor(IFColor.parseCSSColor('yellow'));
         rect.getAttributes().appendChild(shadow);
         shadow.appendChild(fill);
         rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(100, 0, 0, 50, 110, 180)]);
 
-        var subRect = new GXRectangle();
+        var subRect = new IFRectangle();
         fill = new IFFillAttribute();
-        fill.setColor(GXColor.parseCSSColor('blue'));
+        fill.setColor(IFColor.parseCSSColor('blue'));
         subRect.getAttributes().appendChild(fill);
         subRect.setProperty('trf', new GTransform(100, 0, 0, 50, 75, 200));
         rect.appendChild(subRect);
@@ -27,16 +27,16 @@
         //
         // Blurred Rectangle
         //
-        var rect = new GXRectangle();
+        var rect = new IFRectangle();
         var filter = new IFBlurAttribute();
         rect.getAttributes().appendChild(filter);
 
         var fill = new IFFillAttribute();
-        fill.setColor(GXColor.parseCSSColor('rgba(255, 0, 0, 1)'));
+        fill.setColor(IFColor.parseCSSColor('rgba(255, 0, 0, 1)'));
         filter.appendChild(fill);
 
         var stroke = new IFStrokeAttribute();
-        stroke.setColor(GXColor.parseCSSColor('black'));
+        stroke.setColor(IFColor.parseCSSColor('black'));
         stroke.setProperty('sw', '4');
         filter.appendChild(stroke);
 
@@ -46,27 +46,27 @@
         //
         // Text
         //
-        var text = new GXText();
+        var text = new IFText();
         fill = new IFFillAttribute();
-        fill.setColor(GXColor.parseCSSColor('black'));
+        fill.setColor(IFColor.parseCSSColor('black'));
         text.getAttributes().appendChild(fill);
 
 
 
-        var p1 = new GXText.Paragraph();
-        p1.appendChild(new GXText.Chunk('Aq'));
-        p1.setProperties(['cc', 'cg', 'lh', 'al'], [2, 40, 1.3, GXText.Paragraph.Alignment.Left]);
-        var sp1 = new GXText.Span();
-        sp1.appendChild(new GXText.Chunk('xWg'));
+        var p1 = new IFText.Paragraph();
+        p1.appendChild(new IFText.Chunk('Aq'));
+        p1.setProperties(['cc', 'cg', 'lh', 'al'], [2, 40, 1.3, IFText.Paragraph.Alignment.Left]);
+        var sp1 = new IFText.Span();
+        sp1.appendChild(new IFText.Chunk('xWg'));
         sp1.setProperty('fi', '72');
-        var sp2 = new GXText.Span();
-        sp2.appendChild(new GXText.Chunk(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.'));
+        var sp2 = new IFText.Span();
+        sp2.appendChild(new IFText.Chunk(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.'));
         p1.appendChild(sp1);
         p1.appendChild(sp2);
 
-        var p2 = new GXText.Paragraph();
-        //p2.setProperties(['cc', 'cg', 'lh', 'al'], [1, 40, 1.3, GXText.Paragraph.Alignment.Justify]);
-        p2.appendChild(new GXText.Chunk(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.'));
+        var p2 = new IFText.Paragraph();
+        //p2.setProperties(['cc', 'cg', 'lh', 'al'], [1, 40, 1.3, IFText.Paragraph.Alignment.Justify]);
+        p2.appendChild(new IFText.Chunk(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.'));
 
         text.getContent().setProperties(['lh'], [2]);
         text.getContent().appendChild(p1);

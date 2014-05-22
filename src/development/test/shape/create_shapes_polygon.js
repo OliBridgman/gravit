@@ -26,11 +26,11 @@
             var innerRoundness = getRandomInt(0, polySize / 3);
             var outerRoundness = getRandomInt(0, polySize / 3);
 
-            var polygon = new GXPolygon();
+            var polygon = new IFPolygon();
             polygon.setProperties(['pts', 'cx', 'cy', 'ir', 'or', 'ia', 'oa', 'icr', 'ocr'],
                 [segments, x + polySize / 2, y + polySize / 2, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
-            var editor = GXEditor.getEditor(scene);
+            var editor = IFEditor.getEditor(scene);
             polygon.getAttributes().appendChild(new IFStrokeAttribute());
             page.appendChild(polygon);
 

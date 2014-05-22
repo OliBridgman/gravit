@@ -1,101 +1,101 @@
 (function (_) {
     /**
      * The manager for tools
-     * @class GXToolManager
+     * @class IFToolManager
      * @extends GObject
      * @mixes GEventTarget
      * @constructor
      * @version 1.0
      */
-    function GXToolManager() {
+    function IFToolManager() {
         this._tools = [];
         this._typeIdToIndexMap = {};
         this._paintLink = this._paint.bind(this);
     }
 
-    GObject.inheritAndMix(GXToolManager, GObject, [GEventTarget]);
+    GObject.inheritAndMix(IFToolManager, GObject, [GEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXToolManager.ToolChangedEvent Event
+    // IFToolManager.ToolChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for tool activation/deactivation
-     * @param {GXTool} previousTool previous tool instance, may be null for no previous tool
-     * @param {GXTool} newTool new tool instance, may be null for deactivation only
-     * @class GXToolManager.ToolChangedEvent
+     * @param {IFTool} previousTool previous tool instance, may be null for no previous tool
+     * @param {IFTool} newTool new tool instance, may be null for deactivation only
+     * @class IFToolManager.ToolChangedEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXToolManager.ToolChangedEvent = function (previousTool, newTool) {
+    IFToolManager.ToolChangedEvent = function (previousTool, newTool) {
         this.previousTool = previousTool;
         this.newTool = newTool;
     };
-    GObject.inherit(GXToolManager.ToolChangedEvent, GEvent);
+    GObject.inherit(IFToolManager.ToolChangedEvent, GEvent);
 
-    /** @type GXTool */
-    GXToolManager.ToolChangedEvent.prototype.previousTool = null;
-    /** @type GXTool */
-    GXToolManager.ToolChangedEvent.prototype.newTool = null;
+    /** @type IFTool */
+    IFToolManager.ToolChangedEvent.prototype.previousTool = null;
+    /** @type IFTool */
+    IFToolManager.ToolChangedEvent.prototype.newTool = null;
 
     /** @override */
-    GXToolManager.ToolChangedEvent.prototype.toString = function () {
-        return "[Event GXToolManager.ToolChangedEvent]";
+    IFToolManager.ToolChangedEvent.prototype.toString = function () {
+        return "[Event IFToolManager.ToolChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXToolManager Class
+    // IFToolManager Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {Array<GXTool>}
+     * @type {Array<IFTool>}
      * @private
      */
-    GXToolManager.prototype._tools = null;
+    IFToolManager.prototype._tools = null;
 
     /**
      * @type {Object}
      * @private
      */
-    GXToolManager.prototype._typeIdToIndexMap = null;
+    IFToolManager.prototype._typeIdToIndexMap = null;
 
     /**
-     * @type {GXTool}
+     * @type {IFTool}
      * @private
      */
-    GXToolManager.prototype._activeTool = null;
+    IFToolManager.prototype._activeTool = null;
 
     /**
-     * @type {GXEditorView}
+     * @type {IFEditorView}
      * @private
      */
-    GXToolManager.prototype._view = null;
+    IFToolManager.prototype._view = null;
 
     /**
-     * @type {GXViewLayer}
+     * @type {IFViewLayer}
      * @private
      */
-    GXToolManager.prototype._viewLayer = null;
+    IFToolManager.prototype._viewLayer = null;
 
     /**
-     * @type {GXTool}
+     * @type {IFTool}
      * @private
      */
-    GXToolManager.prototype._temporaryActiveTool = null;
+    IFToolManager.prototype._temporaryActiveTool = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    GXToolManager.prototype._temporarySubselect = false;
+    IFToolManager.prototype._temporarySubselect = false;
 
     /**
      * Add a new tool at the end of this manager. Note that the tool
      * will automatically be activated if the manager does not yet have an active one.
-     * @param {GXTool} tool the tool to add
+     * @param {IFTool} tool the tool to add
      * @version 1.0
      */
-    GXToolManager.prototype.addTool = function (tool) {
+    IFToolManager.prototype.addTool = function (tool) {
         if (tool._manager) {
             throw new Error('Tool is already registered');
         }
@@ -142,14 +142,14 @@
      * @return {Boolean} true if available, false if not
      * @version 1.0
      */
-    GXToolManager.prototype.hasTool = function (tool) {
+    IFToolManager.prototype.hasTool = function (tool) {
         return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool));
     };
 
     /**
      * @returns {Number} the total count of tools in this manager
      */
-    GXToolManager.prototype.getToolCount = function () {
+    IFToolManager.prototype.getToolCount = function () {
         return this._tools.length;
     };
 
@@ -157,39 +157,39 @@
      * @param {Function} tool the tool class to get an index for
      * @returns {Number} the index of the tool class or -1 if there's none
      */
-    GXToolManager.prototype.indexOf = function (tool) {
+    IFToolManager.prototype.indexOf = function (tool) {
         return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool)) ?
             this._typeIdToIndexMap[GObject.getTypeId(tool)] : -1;
     };
 
     /**
      * @param {Number} index the tool-index to get an instance for
-     * @returns {GXTool} the tool or null if index is out of range
+     * @returns {IFTool} the tool or null if index is out of range
      */
-    GXToolManager.prototype.getTool = function (index) {
+    IFToolManager.prototype.getTool = function (index) {
         return index >= 0 && index < this._tools.length ? this._tools[index] : null;
     };
 
     /**
-     * @return {GXTool} the active tool or null for none
+     * @return {IFTool} the active tool or null for none
      */
-    GXToolManager.prototype.getActiveTool = function () {
+    IFToolManager.prototype.getActiveTool = function () {
         return this._activeTool;
     };
 
     /**
-     * @returns {GXTool} the temporary active tool if any
+     * @returns {IFTool} the temporary active tool if any
      */
-    GXToolManager.prototype.getTemporaryActiveTool = function () {
+    IFToolManager.prototype.getTemporaryActiveTool = function () {
         return this._temporaryActiveTool;
     };
 
     /**
      * Activate a tool
-     * @param {Function|GXTool} tool the tool class or instance to get activate
+     * @param {Function|IFTool} tool the tool class or instance to get activate
      * @return {Boolean} true if activated, false if not
      */
-    GXToolManager.prototype.activateTool = function (tool) {
+    IFToolManager.prototype.activateTool = function (tool) {
         if (!this._temporaryActiveTool) {
             return this._activateTool(tool);
         }
@@ -198,10 +198,10 @@
 
     /**
      * Assign the view this tool manager is operating on
-     * @param {GXEditorView} view the editor view this tool manager
+     * @param {IFEditorView} view the editor view this tool manager
      * is operating on, may also be null to remove all views
      */
-    GXToolManager.prototype.setView = function (view) {
+    IFToolManager.prototype.setView = function (view) {
         if (view != this._view) {
 
             if (this._view) {
@@ -231,13 +231,13 @@
     /**
      * @private
      */
-    GXToolManager.prototype._activateTool = function (tool) {
+    IFToolManager.prototype._activateTool = function (tool) {
         // Stop here if current tool is not deactivatable
         if (this._activeTool && !this._activeTool.isDeactivatable()) {
             return false;
         }
 
-        if (!(tool instanceof GXTool)) {
+        if (!(tool instanceof IFTool)) {
             tool = this.getTool(this.indexOf(tool));
         }
 
@@ -247,8 +247,8 @@
             this._activeTool = tool;
             this._addActiveToolToView();
 
-            if (this.hasEventListeners(GXToolManager.ToolChangedEvent)) {
-                this.trigger(new GXToolManager.ToolChangedEvent(oldTool, tool));
+            if (this.hasEventListeners(IFToolManager.ToolChangedEvent)) {
+                this.trigger(new IFToolManager.ToolChangedEvent(oldTool, tool));
             }
 
             return true;
@@ -259,7 +259,7 @@
     /**
      * @private
      */
-    GXToolManager.prototype._addActiveToolToView = function () {
+    IFToolManager.prototype._addActiveToolToView = function () {
         if (this._activeTool && this._view) {
             // Let tool activate on the view
             this._activeTool.activate(this._view);
@@ -272,7 +272,7 @@
     /**
      * @private
      */
-    GXToolManager.prototype._removeActiveToolFromView = function () {
+    IFToolManager.prototype._removeActiveToolFromView = function () {
         if (this._activeTool && this._view) {
             // Let tool deactivate on the view
             this._activeTool.deactivate(this._view);
@@ -290,7 +290,7 @@
      * This is usually called from the tools
      * @private
      */
-    GXToolManager.prototype._updateActiveToolCursor = function () {
+    IFToolManager.prototype._updateActiveToolCursor = function () {
         if (this._activeTool && this._view) {
             this._view.setCursor(this._activeTool.getCursor());
         }
@@ -302,7 +302,7 @@
      * or null, invalidates the whole area
      * @private
      */
-    GXToolManager.prototype._invalidateActiveToolArea = function (area) {
+    IFToolManager.prototype._invalidateActiveToolArea = function (area) {
         if (this._activeTool && this._view) {
             this._viewLayer.invalidate(area);
         }
@@ -310,10 +310,10 @@
 
     /**
      * Called when this toolmanager should paint itself.
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @version 1.0
      */
-    GXToolManager.prototype._paint = function (context) {
+    IFToolManager.prototype._paint = function (context) {
         if (this._activeTool) {
             this._activeTool.paint(context);
         }
@@ -322,11 +322,11 @@
     /**
      * @private
      */
-    GXToolManager.prototype._updateTemporaryTool = function () {
-        var pointerToolInstance = this.getTool(this.indexOf(GXPointerTool));
-        var subselectToolInstance = this.getTool(this.indexOf(GXSubSelectTool));
-        var handToolInstance = this.getTool(this.indexOf(GXHandTool));
-        var zoomToolInstance = this.getTool(this.indexOf(GXZoomTool));
+    IFToolManager.prototype._updateTemporaryTool = function () {
+        var pointerToolInstance = this.getTool(this.indexOf(IFPointerTool));
+        var subselectToolInstance = this.getTool(this.indexOf(IFSubSelectTool));
+        var handToolInstance = this.getTool(this.indexOf(IFHandTool));
+        var zoomToolInstance = this.getTool(this.indexOf(IFZoomTool));
 
         var temporaryTool = null;
 
@@ -348,7 +348,7 @@
         // .) Option Key is hold
         // .) The active tool is the pointer tool or the temporaryTool is the pointer tool or the temporary active tool is the pointer tool
         //
-        if (gPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof GXPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
+        if (gPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof IFPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
             temporaryTool = subselectToolInstance;
         }
 
@@ -368,7 +368,7 @@
         // .) Meta Key is hold
         // .) The active tool is the hand tool or the temporaryTool is the hand tool
         //
-        if (gPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof GXHandTool)) {
+        if (gPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof IFHandTool)) {
             temporaryTool = zoomToolInstance;
         }
 
@@ -391,15 +391,15 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    GXToolManager.prototype._modifiersChanged = function (event) {
+    IFToolManager.prototype._modifiersChanged = function (event) {
         // Update temporary tool
         this._updateTemporaryTool();
     };
 
     /** override */
-    GXToolManager.prototype.toString = function () {
-        return "[Object GXToolManager]";
+    IFToolManager.prototype.toString = function () {
+        return "[Object IFToolManager]";
     };
 
-    _.GXToolManager = GXToolManager;
+    _.IFToolManager = IFToolManager;
 })(this);

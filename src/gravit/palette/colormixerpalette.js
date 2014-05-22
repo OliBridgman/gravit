@@ -31,8 +31,8 @@
                     stops: function (components) {
                         var cmyk = components;
                         return [
-                            new GXColor(GXColor.Type.CMYK, [0, cmyk[1], cmyk[2], cmyk[3]]),
-                            new GXColor(GXColor.Type.CMYK, [100, cmyk[1], cmyk[2], cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [0, cmyk[1], cmyk[2], cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [100, cmyk[1], cmyk[2], cmyk[3]]),
                         ];
                     }
                 },
@@ -45,8 +45,8 @@
                     stops: function (components) {
                         var cmyk = components;
                         return [
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], 0, cmyk[2], cmyk[3]]),
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], 100, cmyk[2], cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], 0, cmyk[2], cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], 100, cmyk[2], cmyk[3]]),
                         ];
                     }
                 },
@@ -59,8 +59,8 @@
                     stops: function (components) {
                         var cmyk = components;
                         return [
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], 0, cmyk[3]]),
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], 100, cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], 0, cmyk[3]]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], 100, cmyk[3]]),
                         ];
                     }
                 },
@@ -73,14 +73,14 @@
                     stops: function (components) {
                         var cmyk = components;
                         return [
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 0]),
-                            new GXColor(GXColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 100]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 0]),
+                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 100]),
                         ];
                     }
                 }
             ],
             makeColor: function (components) {
-                return new GXColor(GXColor.Type.CMYK, components);
+                return new IFColor(IFColor.Type.CMYK, components);
             }
         },
         {
@@ -96,8 +96,8 @@
                     stops: function (components) {
                         var rgba = components;
                         return [
-                            new GXColor(GXColor.Type.RGB, [0, rgba[1], rgba[2], 100]),
-                            new GXColor(GXColor.Type.RGB, [255, rgba[1], rgba[2], 100]),
+                            new IFColor(IFColor.Type.RGB, [0, rgba[1], rgba[2], 100]),
+                            new IFColor(IFColor.Type.RGB, [255, rgba[1], rgba[2], 100]),
                         ];
                     }
                 },
@@ -110,8 +110,8 @@
                     stops: function (components) {
                         var rgba = components;
                         return [
-                            new GXColor(GXColor.Type.RGB, [rgba[0], 0, rgba[2], 100]),
-                            new GXColor(GXColor.Type.RGB, [rgba[0], 255, rgba[2], 100]),
+                            new IFColor(IFColor.Type.RGB, [rgba[0], 0, rgba[2], 100]),
+                            new IFColor(IFColor.Type.RGB, [rgba[0], 255, rgba[2], 100]),
                         ];
                     }
                 },
@@ -124,8 +124,8 @@
                     stops: function (components) {
                         var rgba = components;
                         return [
-                            new GXColor(GXColor.Type.RGB, [rgba[0], rgba[1], 0, 100]),
-                            new GXColor(GXColor.Type.RGB, [rgba[0], rgba[1], 255, 100]),
+                            new IFColor(IFColor.Type.RGB, [rgba[0], rgba[1], 0, 100]),
+                            new IFColor(IFColor.Type.RGB, [rgba[0], rgba[1], 255, 100]),
                         ];
                     }
                 },
@@ -137,7 +137,7 @@
                 }
             ],
             makeColor: function (components) {
-                return new GXColor(GXColor.Type.RGB, components);
+                return new IFColor(IFColor.Type.RGB, components);
             }
         },
         {
@@ -155,7 +155,7 @@
                         var result = [];
                         var steps = 60;
                         for (var i = 0; i <= 360; i += steps) {
-                            result.push(new GXColor(GXColor.Type.HSL, [i, hsla[1], hsla[2], 100]));
+                            result.push(new IFColor(IFColor.Type.HSL, [i, hsla[1], hsla[2], 100]));
                         }
                         return result;
                     }
@@ -169,8 +169,8 @@
                     stops: function (components) {
                         var hsla = components;
                         return [
-                            new GXColor(GXColor.Type.HSL, [hsla[0], 0, hsla[2], 100]),
-                            new GXColor(GXColor.Type.HSL, [hsla[0], 100, hsla[2], 100]),
+                            new IFColor(IFColor.Type.HSL, [hsla[0], 0, hsla[2], 100]),
+                            new IFColor(IFColor.Type.HSL, [hsla[0], 100, hsla[2], 100]),
                         ];
                     }
                 },
@@ -183,8 +183,8 @@
                     stops: function (components) {
                         var hsla = components;
                         return [
-                            new GXColor(GXColor.Type.HSL, [hsla[0], hsla[1], 0, 100]),
-                            new GXColor(GXColor.Type.HSL, [hsla[0], hsla[1], 100, 100]),
+                            new IFColor(IFColor.Type.HSL, [hsla[0], hsla[1], 0, 100]),
+                            new IFColor(IFColor.Type.HSL, [hsla[0], hsla[1], 100, 100]),
                         ];
                     }
                 },
@@ -196,7 +196,7 @@
                 }
             ],
             makeColor: function (components) {
-                return new GXColor(GXColor.Type.HSL, components);
+                return new IFColor(IFColor.Type.HSL, components);
             }
         },
         {
@@ -210,7 +210,7 @@
                     max: 100,
                     unit: '%',
                     stops: function (components) {
-                        return [GXColor.parseCSSColor('white'), GXColor.parseCSSColor('black')];
+                        return [IFColor.parseCSSColor('white'), IFColor.parseCSSColor('black')];
                     }
                 },
                 {
@@ -221,7 +221,7 @@
                 }
             ],
             makeColor: function (components) {
-                return new GXColor(GXColor.Type.Tone, components);
+                return new IFColor(IFColor.Type.Tone, components);
             }
         }
     ];

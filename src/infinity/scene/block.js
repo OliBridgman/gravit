@@ -1,29 +1,29 @@
 (function (_) {
     /**
      * A block element that supports properties and storage
-     * @class GXBlock
-     * @extends GXElement
-     * @mixes GXNode.Properties
-     * @mixes GXNode.Store
+     * @class IFBlock
+     * @extends IFElement
+     * @mixes IFNode.Properties
+     * @mixes IFNode.Store
      * @constructor
      */
-    function GXBlock() {
-        GXElement.call(this);
-        this._setDefaultProperties(GXBlock.VisualProperties, GXBlock.MetaProperties);
+    function IFBlock() {
+        IFElement.call(this);
+        this._setDefaultProperties(IFBlock.VisualProperties, IFBlock.MetaProperties);
     }
-    GObject.inheritAndMix(GXBlock, GXElement, [GXNode.Properties, GXNode.Store]);
+    GObject.inheritAndMix(IFBlock, IFElement, [IFNode.Properties, IFNode.Store]);
 
     /**
      * The visual properties of a block with their default values
      */
-    GXBlock.VisualProperties = {
+    IFBlock.VisualProperties = {
         visible: true
     };
 
     /**
      * The meta properties of a block with their default values
      */
-    GXBlock.MetaProperties = {
+    IFBlock.MetaProperties = {
         name: null,
         locked: false
     };
@@ -33,7 +33,7 @@
      * of the block if it has one or the name of the block's type
      * @return {String}
      */
-    GXBlock.prototype.getLabel = function () {
+    IFBlock.prototype.getLabel = function () {
         if (this.$name && this.$name !== "") {
             return this.$name;
         }
@@ -41,28 +41,28 @@
     };
 
     /** @override */
-    GXBlock.prototype.store = function (blob) {
-        if (GXNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXBlock.VisualProperties);
-            this.storeProperties(blob, GXBlock.MetaProperties);
+    IFBlock.prototype.store = function (blob) {
+        if (IFNode.Store.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFBlock.VisualProperties);
+            this.storeProperties(blob, IFBlock.MetaProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXBlock.prototype.restore = function (blob) {
-        if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXBlock.VisualProperties);
-            this.restoreProperties(blob, GXBlock.MetaProperties);
+    IFBlock.prototype.restore = function (blob) {
+        if (IFNode.Store.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFBlock.VisualProperties);
+            this.restoreProperties(blob, IFBlock.MetaProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXBlock.prototype._handleChange = function (change, args) {
-        if (change == GXNode._Change.AfterPropertiesChange) {
+    IFBlock.prototype._handleChange = function (change, args) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
 
@@ -75,11 +75,11 @@
 
                 // Change hidden flag of this and all elemental children and invalidate their geometry
                 this.accept(function (node) {
-                    if (node instanceof GXElement) {
+                    if (node instanceof IFElement) {
                         if (isVisible) {
-                            node.removeFlag(GXElement.Flag.Hidden);
+                            node.removeFlag(IFElement.Flag.Hidden);
                         } else {
-                            node.setFlag(GXElement.Flag.Hidden);
+                            node.setFlag(IFElement.Flag.Hidden);
                         }
                         node._invalidateGeometry();
                     }
@@ -87,13 +87,13 @@
 
                 // Deliver child geometry update to parent
                 if (this.getParent()) {
-                    this.getParent()._notifyChange(GXElement._Change.ChildGeometryUpdate, this);
+                    this.getParent()._notifyChange(IFElement._Change.ChildGeometryUpdate, this);
                 }
 
                 // Request a repaint of either old paint bbox if getting hidden or from
                 // the current paint bbox if getting visible
                 if (isVisible) {
-                    this._handleChange(GXElement._Change.InvalidationRequest);
+                    this._handleChange(IFElement._Change.InvalidationRequest);
                 } else {
                     this._requestInvalidationArea(oldPaintBBox);
                 }
@@ -102,23 +102,23 @@
 
                 // Change locked flag of this and all elemental children
                 this.accept(function (node) {
-                    if (node instanceof GXElement) {
+                    if (node instanceof IFElement) {
                         if (isLocked) {
-                            node.removeFlag(GXElement.Flag.Locked);
+                            node.removeFlag(IFElement.Flag.Locked);
                         } else {
-                            node.setFlag(GXElement.Flag.Locked);
+                            node.setFlag(IFElement.Flag.Locked);
                         }
                     }
                 });
             }
 
             // Call super and be done with it
-            GXElement.prototype._handleChange.call(this, change, args);
+            IFElement.prototype._handleChange.call(this, change, args);
         } else {
             // Call super by default and be done with it
-            GXElement.prototype._handleChange.call(this, change, args);
+            IFElement.prototype._handleChange.call(this, change, args);
         }
     };
 
-    _.GXBlock = GXBlock;
+    _.IFBlock = IFBlock;
 })(this);

@@ -30,7 +30,7 @@
     EXDimensionsProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXElement>}
+     * @type {Array<IFElement>}
      * @private
      */
     EXDimensionsProperties.prototype._elements = null;
@@ -133,7 +133,7 @@
     /** @override */
     EXDimensionsProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXElement.GeometryChangeEvent, this._geometryChange);
+            this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
             this._document = null;
         }
 
@@ -145,14 +145,14 @@
         // Collect all transformable elements
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXElement && elements[i].hasMixin(GXElement.Transform)) {
+            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Transform)) {
                 this._elements.push(elements[i]);
             }
         }
 
         if (this._elements.length > 0) {
             this._document = document;
-            this._document.getScene().addEventListener(GXElement.GeometryChangeEvent, this._geometryChange, this);
+            this._document.getScene().addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
             this._controls.find('button[data-apply="selection"]').css('display', this._elements.length > 1 ? '' : 'none');
             this._controls.find('button[data-apply="objects"]').css('display', this._elements.length > 1 ? '' : 'none');
             this._updateDimensions();
@@ -163,12 +163,12 @@
     };
 
     /**
-     * @param {GXElement.GeometryChangeEvent} event
+     * @param {IFElement.GeometryChangeEvent} event
      * @private
      */
     EXDimensionsProperties.prototype._geometryChange = function (event) {
-        if ((event.type === GXElement.GeometryChangeEvent.Type.After) ||
-            (event.type === GXElement.GeometryChangeEvent.Type.Child))
+        if ((event.type === IFElement.GeometryChangeEvent.Type.After) ||
+            (event.type === IFElement.GeometryChangeEvent.Type.Child))
             if (this._elements.indexOf(event.element) >= 0) {
                 this._updateDimensions();
             }

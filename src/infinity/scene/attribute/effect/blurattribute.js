@@ -4,7 +4,7 @@
      * Effect attribute for blurring the contents
      * @class IFBlurAttribute
      * @extends IFEffectAttribute
-     * @mixes GXNode.Properties
+     * @mixes IFNode.Properties
      * @constructor
      */
     function IFBlurAttribute() {
@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFBlurAttribute.GeometryProperties);
     }
 
-    GXNode.inheritAndMix("blurAttr", IFBlurAttribute, IFEffectAttribute, [GXNode.Properties]);
+    IFNode.inheritAndMix("blurAttr", IFBlurAttribute, IFEffectAttribute, [IFNode.Properties]);
 
     /**
      * Geometry properties

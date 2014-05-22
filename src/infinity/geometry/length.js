@@ -2,21 +2,21 @@
     /**
      * A class representing a unit with a value
      * @param {Number} value
-     * @param {GXLength.Unit} [unit] the unit unit, defaults to GXLength.Unit.PT
-     * @see GXLength.Unit
-     * @class GXLength
+     * @param {IFLength.Unit} [unit] the unit unit, defaults to IFLength.Unit.PT
+     * @see IFLength.Unit
+     * @class IFLength
      * @constructor
      */
-    function GXLength(value, unit) {
+    function IFLength(value, unit) {
         this._value = value;
-        this._unit = unit ? unit : GXLength.Unit.PT;
+        this._unit = unit ? unit : IFLength.Unit.PT;
     };
 
     /**
      * The unit of a length
      * @enum
      */
-    GXLength.Unit = {
+    IFLength.Unit = {
         /**
          * Point Unit ('pt')
          * @unit Number
@@ -78,10 +78,10 @@
      * this returns null. If string contains a number but invalid unit-unit or
      * none, then the unit-unit of the result defaults to defaultUnit
      * @param {String} string the string to parse for value and unit-unit
-     * @param {GXLength.Unit} [defaultUnit] the default unit to be used,
-     * defaults to GXLength.Unit.PT
+     * @param {IFLength.Unit} [defaultUnit] the default unit to be used,
+     * defaults to IFLength.Unit.PT
      */
-    GXLength.parseLength = function (string, defaultUnit) {
+    IFLength.parseLength = function (string, defaultUnit) {
         if (!string) {
             return null;
         }
@@ -95,46 +95,46 @@
             return null;
         }
 
-        var unitType = defaultUnit ? defaultUnit : GXLength.Unit.PT;
+        var unitType = defaultUnit ? defaultUnit : IFLength.Unit.PT;
         var unitStr = string.substr(number.toString().length);
         if (unitStr && unitStr.length > 0) {
             unitStr = unitStr.trim().toLowerCase();
             if (unitStr.length >= 2 && unitStr.charAt(0) == 'p' && unitStr.charAt(1) == 't') {
-                unitType = GXLength.Unit.PT;
+                unitType = IFLength.Unit.PT;
             } else if (unitStr.length >= 2 && unitStr.charAt(0) == 'p' && unitStr.charAt(1) == 'x') {
-                unitType = GXLength.Unit.PX;
+                unitType = IFLength.Unit.PX;
             } else if (unitStr.length >= 2 && unitStr.charAt(0) == 'p' && unitStr.charAt(1) == 'c') {
-                unitType = GXLength.Unit.PC;
+                unitType = IFLength.Unit.PC;
             } else if (unitStr.length >= 2 && unitStr.charAt(0) == 'i' && unitStr.charAt(1) == 'n') {
-                unitType = GXLength.Unit.IN;
+                unitType = IFLength.Unit.IN;
             } else if (unitStr.length >= 2 && unitStr.charAt(0) == 'm' && unitStr.charAt(1) == 'm') {
-                unitType = GXLength.Unit.MM;
+                unitType = IFLength.Unit.MM;
             } else if (unitStr.length >= 2 && unitStr.charAt(0) == 'c' && unitStr.charAt(1) == 'm') {
-                unitType = GXLength.Unit.CM;
+                unitType = IFLength.Unit.CM;
             } else if (unitStr.length >= 1 && unitStr.charAt(0) == 'm') {
-                unitType = GXLength.Unit.M;
+                unitType = IFLength.Unit.M;
             }
         }
 
-        return new GXLength(number, unitType);
+        return new IFLength(number, unitType);
     };
 
     /**
      * Parses an equation (supports /, *, + and -) with optional unit
      * identifiers and evaluates the equation by converting to points
      * @param {String} string the source equation to parse
-     * @param {GXLength.Unit} [unit] the unit to be used,
-     * defaults to GXLength.Unit.PT
-     * @returns {GXLength} null if equation is invalid or a valid length
+     * @param {IFLength.Unit} [unit] the unit to be used,
+     * defaults to IFLength.Unit.PT
+     * @returns {IFLength} null if equation is invalid or a valid length
      * in the given unit space
      */
-    GXLength.parseEquation = function (string, unit) {
-        unit = unit || GXLength.Unit.PT;
+    IFLength.parseEquation = function (string, unit) {
+        unit = unit || IFLength.Unit.PT;
         var context = new LengthHelpers.Context(unit);
         var evaluator = new LengthHelpers.Evaluator(context);
         try {
             result = evaluator.evaluate(string);
-            return new GXLength(result, unit);
+            return new IFLength(result, unit);
         } catch (e) {
             return null;
         }
@@ -146,50 +146,50 @@
      * @param {string} expression
      * @returns {Number} null for error in expression or a value number
      */
-    GXLength.parseEquationValue = function (string) {
-        var length = GXLength.parseEquation(string);
+    IFLength.parseEquationValue = function (string) {
+        var length = IFLength.parseEquation(string);
         return length ? length.getValue() : null;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXLength Class
+    // IFLength Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @unit {Number}
      * @private
      */
-    GXLength.prototype._value = null;
+    IFLength.prototype._value = null;
 
     /**
      * @unit {Number}
-     * @see GXLength.Unit
+     * @see IFLength.Unit
      * @private
      */
-    GXLength.prototype._unit = GXLength.Unit.PT;
+    IFLength.prototype._unit = IFLength.Unit.PT;
 
     /**
      * @return {Number}
      */
-    GXLength.prototype.getValue = function () {
+    IFLength.prototype.getValue = function () {
         return this._value;
     };
 
     /**
-     * @return {GXLength.Unit}
+     * @return {IFLength.Unit}
      */
-    GXLength.prototype.getUnit = function () {
+    IFLength.prototype.getUnit = function () {
         return this._unit;
     };
 
-    GXLength.prototype.toPoint = function () {
-        if (this._unit != GXLength.Unit.PT) {
+    IFLength.prototype.toPoint = function () {
+        if (this._unit != IFLength.Unit.PT) {
             return DPI_MAP[this._unit] * this._value;
         } else {
             return this._value;
         }
     };
 
-    GXLength.prototype.toUnit = function (unit) {
+    IFLength.prototype.toUnit = function (unit) {
         if (this._unit != unit) {
             var ptValue = this.toPoint();
             return ptValue / DPI_MAP[unit];
@@ -198,35 +198,35 @@
         }
     };
 
-    GXLength.prototype.convert = function (unit) {
+    IFLength.prototype.convert = function (unit) {
         if (this._unit != unit) {
             var ptValue = this.toPoint();
-            return new GXLength(ptValue / DPI_MAP[unit], unit);
+            return new IFLength(ptValue / DPI_MAP[unit], unit);
         } else {
-            return new GXLength(this._value, unit);
+            return new IFLength(this._value, unit);
         }
     };
 
-    GXLength.prototype.toString = function (digits) {
+    IFLength.prototype.toString = function (digits) {
         var result = gUtil.formatNumber(this._value, digits);
 
         switch (this._unit) {
-            case GXLength.Unit.PT:
+            case IFLength.Unit.PT:
                 result += "pt";
                 break;
-            case GXLength.Unit.PX:
+            case IFLength.Unit.PX:
                 result += "px";
                 break;
-            case GXLength.Unit.PC:
+            case IFLength.Unit.PC:
                 result += "pc";
                 break;
-            case GXLength.Unit.IN:
+            case IFLength.Unit.IN:
                 result += "in";
                 break;
-            case GXLength.Unit.MM:
+            case IFLength.Unit.MM:
                 result += "mm";
                 break;
-            case GXLength.Unit.CM:
+            case IFLength.Unit.CM:
                 result += "cm";
                 break;
         }
@@ -718,7 +718,7 @@
     LengthHelpers.Evaluator = function (ctx) {
 
         var parser = new LengthHelpers.Parser(),
-            context = (arguments.length < 1) ? new LengthHelpers.Context(GXLength.Unit.PT) : ctx;
+            context = (arguments.length < 1) ? new LengthHelpers.Context(IFLength.Unit.PT) : ctx;
 
         function exec(node) {
             var left, right, expr, args, i;
@@ -728,7 +728,7 @@
             }
 
             if (node.hasOwnProperty('Number')) {
-                var length = GXLength.parseLength(node.Number, ctx.Unit);
+                var length = IFLength.parseLength(node.Number, ctx.Unit);
                 if (!length) {
                     throw new SyntaxError('Invalid length ' + node.Number);
                 }
@@ -808,5 +808,5 @@
     };
 
 
-    _.GXLength = GXLength;
+    _.IFLength = IFLength;
 })(this);

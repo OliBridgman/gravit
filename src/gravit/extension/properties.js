@@ -31,8 +31,8 @@
     /**
      * Called to update from an active node.
      * @param {EXDocument} document the document to work on
-     * @param {Array<GXElement>} elements array of elements, contains at least one
-     * @param {GXNode} node the active node. May be null to indicate to work on elements
+     * @param {Array<IFElement>} elements array of elements, contains at least one
+     * @param {IFNode} node the active node. May be null to indicate to work on elements
      */
     EXProperties.prototype.updateFromNode = function (document, elements, node) {
         throw new Error("Not Supported.");

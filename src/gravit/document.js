@@ -9,7 +9,7 @@
     function EXDocument(scene, blob, temporaryTitle) {
         this._blob = blob;
         this._scene = scene;
-        this._editor = new GXEditor(scene);
+        this._editor = new IFEditor(scene);
         this._windows = [];
         this._activeWindow = null;
         // TODO : I18N
@@ -19,7 +19,7 @@
 
     /**
      * The underlying scene
-     * @type {GXScene}
+     * @type {IFScene}
      * @private
      */
     EXDocument.prototype._scene = null;
@@ -33,7 +33,7 @@
 
     /**
      * The underlying editor working on the document
-     * @type {GXSceneEditor}
+     * @type {IFSceneEditor}
      * @private
      */
     EXDocument.prototype._editor = null;
@@ -61,7 +61,7 @@
 
     /**
      * Returns the scene this document is working on
-     * @returns {GXScene}
+     * @returns {IFScene}
      */
     EXDocument.prototype.getScene = function () {
         return this._scene;
@@ -89,7 +89,7 @@
 
     /**
      * Return the underlying editor
-     * @returns {GXSceneEditor}
+     * @returns {IFSceneEditor}
      */
     EXDocument.prototype.getEditor = function () {
         return this._editor;
@@ -140,7 +140,7 @@
     EXDocument.prototype.save = function () {
         // TODO : Reset undo list/set save point
         if (this._blob) {
-            this._blob.store(GXNode.serialize(this._scene), false, 'binary', function () {
+            this._blob.store(IFNode.serialize(this._scene), false, 'binary', function () {
                 // NO-OP
             });
         }

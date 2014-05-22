@@ -65,9 +65,9 @@
         // intern format, rasterized and as svg format
 
         // Make sure to serialize ordered
-        var selection = GXNode.order(gApp.getActiveDocument().getEditor().getSelection());
-        var serializedSelection = GXNode.serialize(selection);
-        gShell.setClipboardContent(GXNode.MIME_TYPE, serializedSelection);
+        var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelection());
+        var serializedSelection = IFNode.serialize(selection);
+        gShell.setClipboardContent(IFNode.MIME_TYPE, serializedSelection);
     };
 
     /** @override */

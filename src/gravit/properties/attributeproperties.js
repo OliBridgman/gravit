@@ -26,7 +26,7 @@
     GAttributeProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXElement>}
+     * @type {Array<IFElement>}
      * @private
      */
     GAttributeProperties.prototype._elements = null;
@@ -95,7 +95,7 @@
     /** @override */
     GAttributeProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._attribute) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
             this._attribute = null;
         }
@@ -103,7 +103,7 @@
         // Collect all attribute elements
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(GXElement.Attributes)) {
+            if (elements[i].hasMixin(IFElement.Attributes)) {
                 this._elements.push(elements[i]);
             }
         }
@@ -123,7 +123,7 @@
                 return false;
             }
 
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._attribute = node;
             return true;
         } else {
@@ -132,7 +132,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GAttributeProperties.prototype._afterPropertiesChange = function (event) {

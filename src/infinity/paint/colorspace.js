@@ -2,7 +2,7 @@
     /**
      * @enum
      */
-    var GXColorSpace = {
+    var IFColorSpace = {
         None: 0,
         RGB: 10,
         CMYK: 11,
@@ -10,5 +10,5 @@
         XYZ: 21
     };
 
-    _.GXColorSpace = GXColorSpace;
+    _.IFColorSpace = IFColorSpace;
 })(this);

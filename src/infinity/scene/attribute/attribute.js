@@ -3,14 +3,14 @@
     /**
      * A base attribute class
      * @class IFAttribute
-     * @extends GXNode
-     * @mixes GXNode.Store
+     * @extends IFNode
+     * @mixes IFNode.Store
      * @constructor
      */
     function IFAttribute() {
     }
 
-    GObject.inheritAndMix(IFAttribute, GXNode, [GXNode.Store]);
+    GObject.inheritAndMix(IFAttribute, IFNode, [IFNode.Store]);
 
     /**
      * Attribute's mime-type
@@ -61,13 +61,13 @@
     /**
      * Called to render this attribute providing the painting
      * context and the vertex source used for painting and the bbox
-     * @param {GXPaintContext} context the context used for painting
-     * @parma {GXVertexSource} source the source vertices
+     * @param {IFPaintContext} context the context used for painting
+     * @parma {IFVertexSource} source the source vertices
      * @param {GRect} bbox the source geometry bbox
      */
     IFAttribute.Render.prototype.render = function (context, source, bbox) {
         // by default, simply render our children if we're a container
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             this._renderChildren(context, source, bbox);
         }
     };
@@ -79,7 +79,7 @@
      */
     IFAttribute.Render.prototype.getBBox = function (source) {
         // by default, either return children bbox for container or source
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             return this._getChildrenBBox(source);
         } else {
             return source;
@@ -88,7 +88,7 @@
 
     /**
      * Called whenever a hit-test should be made on this attribute.
-     * @parma {GXVertexSource} source the vertice source for the attribute
+     * @parma {IFVertexSource} source the vertice source for the attribute
      * @param {GPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
      * @param {GTransform} transform the transformation of the scene
@@ -98,7 +98,7 @@
      */
     IFAttribute.Render.prototype.hitTest = function (source, location, transform, tolerance) {
         // by default, hit test children if this is a container
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             return this._hitTestChildren(source, location, transform, tolerance);
         }
     };
@@ -196,11 +196,11 @@
 
     /**
      * Returns the owner element in hierarchy of the attribute
-     * @returns {GXElement}
+     * @returns {IFElement}
      */
     IFAttribute.prototype.getOwnerElement = function () {
         for (var p = this.getParent(); p !== null; p = p.getParent()) {
-            if (p instanceof GXElement) {
+            if (p instanceof IFElement) {
                 return p;
             }
         }
@@ -210,18 +210,18 @@
     /** @override */
     IFAttribute.prototype._handleChange = function (change, args) {
         // Adding or removing render attribute need to notify parent
-        if (change === GXNode._Change.BeforeChildInsert || change === GXNode._Change.BeforeChildRemove) {
+        if (change === IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) {
             if (args instanceof IFAttribute && args.hasMixin(IFAttribute.Render)) {
-                this._notifyOwnerElementChange(GXElement._Change.PrepareGeometryUpdate);
+                this._notifyOwnerElementChange(IFElement._Change.PrepareGeometryUpdate);
             }
-        } else if (change === GXNode._Change.AfterChildInsert || change === GXNode._Change.AfterChildRemove) {
+        } else if (change === IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) {
             if (args instanceof IFAttribute && args.hasMixin(IFAttribute.Render)) {
-                this._notifyOwnerElementChange(GXElement._Change.FinishGeometryUpdate);
+                this._notifyOwnerElementChange(IFElement._Change.FinishGeometryUpdate);
             }
         }
 
         // Call super by default and be done with it
-        GXNode.prototype._handleChange.call(this, change, args);
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     /**

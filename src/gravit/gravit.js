@@ -21,19 +21,19 @@
 
         // Register default tools
         gravit.tools.push(
-            new GXPointerTool(),
-            new GXSubSelectTool(),
-            new GXPageTool(),
-            new GXLassoTool(),
-            new GXPenTool(),
-            new GXBezigonTool(),
-            new GXLineTool(),
-            new GXRectangleTool(),
-            new GXEllipseTool(),
-            new GXPolygonTool(),
+            new IFPointerTool(),
+            new IFSubSelectTool(),
+            new IFPageTool(),
+            new IFLassoTool(),
+            new IFPenTool(),
+            new IFBezigonTool(),
+            new IFLineTool(),
+            new IFRectangleTool(),
+            new IFEllipseTool(),
+            new IFPolygonTool(),
             new IFTextTool(),
-            new GXZoomTool(),
-            new GXHandTool()
+            new IFZoomTool(),
+            new IFHandTool()
         );
 
         // Register default color matcher
@@ -168,10 +168,10 @@
             new EXZoomInAction(),
             new EXZoomOutAction(),
 
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Full),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Fast),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Outline),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Output),
+            new EXPaintModeAction(IFScenePaintConfiguration.PaintMode.Full),
+            new EXPaintModeAction(IFScenePaintConfiguration.PaintMode.Fast),
+            new EXPaintModeAction(IFScenePaintConfiguration.PaintMode.Outline),
+            new EXPaintModeAction(IFScenePaintConfiguration.PaintMode.Output),
 
             new EXPixelPreviewAction(),
 

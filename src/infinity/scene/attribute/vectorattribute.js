@@ -26,10 +26,10 @@
     };
 
     /**
-     * @param {GXPaintContext} context
-     * @param {GXVertexSource} source
-     * @param {GXRect} bbox
-     * @returns {GXVertexSource}
+     * @param {IFPaintContext} context
+     * @param {IFVertexSource} source
+     * @param {IFRect} bbox
+     * @returns {IFVertexSource}
      * @private
      */
     IFVectorAttribute.prototype._createVectorSource = function (context, source, bbox) {

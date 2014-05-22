@@ -53,7 +53,7 @@
      */
     GPasteAction.prototype.isEnabled = function () {
         var cpMimeTypes = gShell.getClipboardMimeTypes();
-        if (cpMimeTypes && cpMimeTypes.indexOf(GXNode.MIME_TYPE) >= 0) {
+        if (cpMimeTypes && cpMimeTypes.indexOf(IFNode.MIME_TYPE) >= 0) {
             return !!gApp.getActiveDocument();
         }
         return false;
@@ -64,11 +64,11 @@
      */
     GPasteAction.prototype.execute = function () {
         // TODO : Support pasting other formats like raster images
-        var nodes = GXNode.deserialize(gShell.getClipboardContent(GXNode.MIME_TYPE));
+        var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
         if (nodes && nodes.length > 0) {
             var elements = [];
             for (var i = 0; i < nodes.length; ++i) {
-                if (nodes[i] instanceof GXElement) {
+                if (nodes[i] instanceof IFElement) {
                     elements.push(nodes[i]);
                 }
             }

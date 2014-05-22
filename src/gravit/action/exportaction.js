@@ -2,7 +2,7 @@
 
     /**
      * Action importing a document
-     * @param {GXExport} export_
+     * @param {IFExport} export_
      * @class EXExportAction
      * @extends GUIAction
      * @constructor

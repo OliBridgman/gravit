@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * A paint configuration for editor painting
-     * @class GXEditorPaintConfiguration
+     * @class IFEditorPaintConfiguration
      * @constructor
-     * @extends GXScenePaintConfiguration
+     * @extends IFScenePaintConfiguration
      */
-    function GXEditorPaintConfiguration() {
+    function IFEditorPaintConfiguration() {
     }
 
-    GObject.inherit(GXEditorPaintConfiguration, GXScenePaintConfiguration);
+    GObject.inherit(IFEditorPaintConfiguration, IFScenePaintConfiguration);
 
     /** @override */
-    GXEditorPaintConfiguration.prototype.toString = function () {
-        return "[Object GXEditorPaintConfiguration]";
+    IFEditorPaintConfiguration.prototype.toString = function () {
+        return "[Object IFEditorPaintConfiguration]";
     };
 
-    _.GXEditorPaintConfiguration = GXEditorPaintConfiguration;
+    _.IFEditorPaintConfiguration = IFEditorPaintConfiguration;
 })(this);

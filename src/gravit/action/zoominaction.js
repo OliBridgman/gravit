@@ -55,7 +55,7 @@
     EXZoomInAction.prototype.isEnabled = function () {
         var window = gApp.getWindows().getActiveWindow();
         var view = window ? window.getView() : null;
-        return view && view.getZoom() < GXView.options.maxZoomFactor;
+        return view && view.getZoom() < IFView.options.maxZoomFactor;
     };
 
     /**

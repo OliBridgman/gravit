@@ -57,7 +57,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i].hasMixin(GXElement.Attributes)) {
+                    if (selection[i].hasMixin(IFElement.Attributes)) {
                         return true;
                     }
                 }
@@ -72,10 +72,10 @@
     GCopyAttributesAction.prototype.execute = function () {
         var selection = gApp.getActiveDocument().getEditor().getSelection();
         for (var i = 0; i < selection.length; ++i) {
-            if (selection[i].hasMixin(GXElement.Attributes)) {
+            if (selection[i].hasMixin(IFElement.Attributes)) {
                 var attributes = selection[i].getAttributes();
-                if (attributes && attributes.hasMixin(GXNode.Container) && attributes.getFirstChild()) {
-                    var serializedAttributes = GXNode.serialize(attributes);
+                if (attributes && attributes.hasMixin(IFNode.Container) && attributes.getFirstChild()) {
+                    var serializedAttributes = IFNode.serialize(attributes);
                     gShell.setClipboardContent(IFAttribute.MIME_TYPE, serializedAttributes);
                     break;
                 }

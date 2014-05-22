@@ -55,7 +55,7 @@
         var editor = gApp.getActiveDocument().getEditor();
         var scene = editor.getScene();
         var target = editor.getCurrentLayer() || editor.getCurrentLayer() || editor.getScene();
-        var layer = new GXLayer();
+        var layer = new IFLayer();
         layer.setProperties([
             'name'
         ], [

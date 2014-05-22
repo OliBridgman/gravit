@@ -15,7 +15,7 @@
     EXPaintModeAction.TITLE = new GLocale.Key(EXPaintModeAction, 'title');
 
     /**
-     * @type {GXScenePaintConfiguration.PaintMode}
+     * @type {IFScenePaintConfiguration.PaintMode}
      * @private
      */
     EXPaintModeAction.prototype._paintMode = null;
@@ -32,7 +32,7 @@
      */
     EXPaintModeAction.prototype.getTitle = function () {
         return gLocale.get(EXPaintModeAction.TITLE).replace('%name%',
-            gLocale.get(GXScenePaintConfiguration.PaintModeName[this._paintMode]));
+            gLocale.get(IFScenePaintConfiguration.PaintModeName[this._paintMode]));
     };
 
     /**

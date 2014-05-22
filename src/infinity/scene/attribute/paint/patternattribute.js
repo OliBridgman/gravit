@@ -4,7 +4,7 @@
      * Attributes that keep a pattern information for fill / stroke / text etc.
      * @class IFPatternAttribute
      * @extends IFPaintAttribute
-     * @mixes GXNode.Properties
+     * @mixes IFNode.Properties
      * @constructor
      */
     function IFPatternAttribute() {
@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFPatternAttribute.VisualProperties);
     }
 
-    GObject.inheritAndMix(IFPatternAttribute, IFPaintAttribute, [GXNode.Properties]);
+    GObject.inheritAndMix(IFPatternAttribute, IFPaintAttribute, [IFNode.Properties]);
 
     /**
      * The type of the pattern
@@ -57,11 +57,11 @@
         // Type of the pattern
         tp: IFPatternAttribute.Type.Color,
         // Composite operator of the pattern
-        cmp: GXPaintCanvas.CompositeOperator.SourceOver,
+        cmp: IFPaintCanvas.CompositeOperator.SourceOver,
         // Opacity of the pattern
         opc: 1.0,
         // Value of the pattern, depending on type
-        val: new GXColor(GXColor.Type.Black),
+        val: new IFColor(IFColor.Type.Black),
         // Transform of the pattern in unit space
         trf: null
     };
@@ -72,9 +72,9 @@
             this.storeProperties(blob, IFPatternAttribute.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'val') {
-                        if (value instanceof GXColor) {
+                        if (value instanceof IFColor) {
                             return value.asString();
-                        } else if (value instanceof GXGradient) {
+                        } else if (value instanceof IFGradient) {
                             return value.asString();
                         } else {
                             // TODO
@@ -99,9 +99,9 @@
                     if (property === 'val') {
                         var tp = blob.hasOwnProperty('tp') ? blob.tp : IFPatternAttribute.VisualProperties.tp;
                         if (IFPatternAttribute.isGradientType(tp)) {
-                            return GXGradient.parseGradient(value);
+                            return IFGradient.parseGradient(value);
                         } else if (tp === IFPatternAttribute.Type.Color) {
-                            return GXColor.parseColor(value);
+                            return IFColor.parseColor(value);
                         } else{
                             // TODO
                             throw new Error('Unsupported.');/**/
@@ -119,7 +119,7 @@
 
     /**
      * Returns the pattern color
-     * @return {GXColor} color
+     * @return {IFColor} color
      */
     IFPatternAttribute.prototype.getColor = function () {
         if (this.$tp === IFPatternAttribute.Type.Color) {
@@ -133,13 +133,13 @@
 
     /**
      * Assigns the pattern color
-     * @param {GXColor} color
+     * @param {IFColor} color
      */
     IFPatternAttribute.prototype.setColor = function (color) {
         if (this.$tp === IFPatternAttribute.Type.Color) {
             this.setProperty('val', color);
         } else if (IFPatternAttribute.isGradientType(this.$tp)) {
-            var newGradient = new GXGradient(this.$val.getStops());
+            var newGradient = new IFGradient(this.$val.getStops());
             newGradient.getStops()[0].color = color;
             this.setProperty('val', newGradient);
         }
@@ -156,7 +156,7 @@
 
     /**
      * Creates and returns a paintable pattern
-     * @param {GXPaintContext} context the context used for
+     * @param {IFPaintContext} context the context used for
      * creating the pattern
      * @param {GRect} bbox the bounding box to be used
      * @return {*} a canvas-specific fill pattern or null if

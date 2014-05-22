@@ -50,7 +50,7 @@
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(GXColor.MIME_TYPE, color.asString());
+                            event.dataTransfer.setData(IFColor.MIME_TYPE, color.asString());
                             event.dataTransfer.setDragImage(img, previewBoxSize / 2, previewBoxSize / 2);
                             event.dataTransfer.sourceElement = this;
                         });
@@ -73,11 +73,11 @@
                             var event = evt.originalEvent;
                             event.preventDefault();
                             event.stopPropagation();
-                            var sourceColor = event.dataTransfer.getData(GXColor.MIME_TYPE);
+                            var sourceColor = event.dataTransfer.getData(IFColor.MIME_TYPE);
                             if (sourceColor && sourceColor !== "") {
-                                var color = GXColor.parseColor(sourceColor);
+                                var color = IFColor.parseColor(sourceColor);
                                 var myColor = $this.data('gcolortarget').color;
-                                if (color && !GXColor.equals(color, myColor)) {
+                                if (color && !IFColor.equals(color, myColor)) {
                                     methods.value.call(self, color);
                                     $this.trigger('colordrop', [color, event]);
                                     $this.trigger('change', color);
@@ -104,7 +104,7 @@
             if (!arguments.length) {
                 return $this.data('gcolortarget').color;
             } else {
-                value = typeof value === 'string' ? GXColor.parseColor(value) : value;
+                value = typeof value === 'string' ? IFColor.parseColor(value) : value;
                 $this.data('gcolortarget').color = value;
                 return this;
             }

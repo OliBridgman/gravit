@@ -10,7 +10,7 @@
         IFPatternAttribute.call(this);
     }
 
-    GXNode.inherit("fillAttr", IFFillAttribute, IFPatternAttribute);
+    IFNode.inherit("fillAttr", IFFillAttribute, IFPatternAttribute);
 
     /** @override */
     IFFillAttribute.prototype.render = function (context, source, bbox) {
@@ -25,8 +25,8 @@
 
     /** @override */
     IFFillAttribute.prototype.hitTest = function (source, location, transform, tolerance) {
-        var vertexHit = new GXVertexInfo.HitResult();
-        if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(source, transform), tolerance, true, vertexHit)) {
+        var vertexHit = new IFVertexInfo.HitResult();
+        if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), tolerance, true, vertexHit)) {
             return new IFAttribute.HitResult(this, vertexHit);
         }
         return null;

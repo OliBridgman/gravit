@@ -1,11 +1,11 @@
 (function() {
     function test(scene, page, view) {
         var anchorCTypes = [
-            GXPathBase.CornerType.Rounded,
-            GXPathBase.CornerType.InverseRounded,
-            GXPathBase.CornerType.Bevel,
-            GXPathBase.CornerType.Inset,
-            GXPathBase.CornerType.Fancy
+            IFPathBase.CornerType.Rounded,
+            IFPathBase.CornerType.InverseRounded,
+            IFPathBase.CornerType.Bevel,
+            IFPathBase.CornerType.Inset,
+            IFPathBase.CornerType.Fancy
         ];
         var pathWidth = 50, pathHeight = 60, pathRadiusX = 10, pathRadiusY = 10;
         var x = 20, y = 20;
@@ -19,20 +19,20 @@
 
                 var anchorCType = anchorCTypes[i];
 
-                var path = new GXPath();
-                var ap = new GXPathBase.AnchorPoint();
+                var path = new IFPath();
+                var ap = new IFPathBase.AnchorPoint();
                 ap.setProperties(['x', 'y', 'tp', 'cl', 'cr'], [0, 0, anchorCType, pathRadiusX, pathRadiusY]);
                 path.getAnchorPoints().appendChild(ap);
 
-                ap = new GXPathBase.AnchorPoint();
+                ap = new IFPathBase.AnchorPoint();
                 ap.setProperties(['x', 'y', 'tp', 'cl', 'cr'], [pathWidth, 0, anchorCType, pathRadiusX, pathRadiusY]);
                 path.getAnchorPoints().appendChild(ap);
 
-                ap = new GXPathBase.AnchorPoint();
+                ap = new IFPathBase.AnchorPoint();
                 ap.setProperties(['x', 'y', 'tp', 'cl', 'cr'], [pathWidth, pathHeight, anchorCType, pathRadiusX, pathRadiusY]);
                 path.getAnchorPoints().appendChild(ap);
 
-                ap = new GXPathBase.AnchorPoint();
+                ap = new IFPathBase.AnchorPoint();
                 ap.setProperties(['x', 'y', 'tp', 'cl', 'cr'], [0, pathHeight, anchorCType, pathRadiusX, pathRadiusY]);
                 path.getAnchorPoints().appendChild(ap);
 
@@ -45,7 +45,7 @@
                     page.getProperty('mt')+ y + pathHeight / 2);
                 path.transform(transform);
 
-                var editor = GXEditor.getEditor(scene);
+                var editor = IFEditor.getEditor(scene);
                 path.getAttributes().appendChild(new IFStrokeAttribute());
                 page.appendChild(path);
 

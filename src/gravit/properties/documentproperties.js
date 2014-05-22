@@ -88,7 +88,7 @@
                     .css('width', '3em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = GXLength.parseEquationValue($(this).val());
+                        var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
                             angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
                             self._assignProperty(property, angle);
@@ -198,7 +198,7 @@
     /** @override */
     GDocumentProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -207,9 +207,9 @@
             return false;
         }
 
-        if (elements.length === 1 && elements[0] instanceof GXScene) {
+        if (elements.length === 1 && elements[0] instanceof IFScene) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -218,7 +218,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GDocumentProperties.prototype._afterPropertiesChange = function (event) {
