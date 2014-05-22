@@ -82,8 +82,8 @@
                     .gAutoBlur()
                     .on('change', function () {
                         var value = $(this).val();
-                        value = !value || value === "" ? null : parseFloat(value);
-                        if (value === null || (!isNaN(value) && value > 0)) {
+                        value = !value || value === "" ? null : GXLength.parseEquationValue(value);
+                        if (value === null || value > 0) {
                             self._assignProperty(property, value);
                         } else {
                             self._updateProperties();

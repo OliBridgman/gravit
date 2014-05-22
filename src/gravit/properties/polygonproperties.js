@@ -91,8 +91,8 @@
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = parseFloat($(this).val());
-                        if (!isNaN(angle)) {
+                        var angle = GXLength.parseEquationValue($(this).val());
+                        if (angle !== null) {
                             angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
                             self._assignProperty(property, gMath.PI2 - angle);
                         } else {

@@ -90,7 +90,7 @@
             return null;
         }
 
-        var number = parseFloat(string.replace(',', '.'));
+        var number = gUtil.parseNumber(string);
         if (typeof number != "number") {
             return null;
         }
@@ -140,6 +140,17 @@
         }
     };
 
+    /**
+     * Equal to parseEquation but ignores any units
+     * and returns a number value instead
+     * @param {string} expression
+     * @returns {Number} null for error in expression or a value number
+     */
+    GXLength.parseEquationValue = function (string) {
+        var length = GXLength.parseEquation(string);
+        return length ? length.getValue() : null;
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // GXLength Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -155,6 +166,20 @@
      * @private
      */
     GXLength.prototype._unit = GXLength.Unit.PT;
+
+    /**
+     * @return {Number}
+     */
+    GXLength.prototype.getValue = function () {
+        return this._value;
+    };
+
+    /**
+     * @return {GXLength.Unit}
+     */
+    GXLength.prototype.getUnit = function () {
+        return this._unit;
+    };
 
     GXLength.prototype.toPoint = function () {
         if (this._unit != GXLength.Unit.PT) {
@@ -183,9 +208,7 @@
     };
 
     GXLength.prototype.toString = function (digits) {
-        var result = digits ? this._value.toFixed(digits) : this._value.toString();
-
-        // TODO : Check for locale for correct decimal separator (result.replace('.', '....'))
+        var result = gUtil.formatNumber(this._value, digits);
 
         switch (this._unit) {
             case GXLength.Unit.PT:
@@ -330,7 +353,8 @@
                 }
             }
 
-            if (ch === '.') {
+            // We support both, dot and comma decimal separators
+            if (ch === '.' || ch === ',') {
                 number += getNextChar();
                 while (true) {
                     ch = peekNextChar();

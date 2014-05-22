@@ -106,7 +106,6 @@
      * if string couldn't be parsed
      */
     GXScene.prototype.stringToLength = function (string) {
-        string = gUtil.replaceAll(string, ',', '.');
         return GXLength.parseEquation(string, this.$unit);
     };
 
@@ -130,9 +129,7 @@
      * @returns {string} the resulting string without unit postfix
      */
     GXScene.prototype.lengthToString = function (length) {
-        var value = length.toUnit(this.$unit);
-        var string = gMath.round(value, 3).toString();
-        return gUtil.replaceAll(string, '.', ',');
+        return gUtil.formatNumber(length.toUnit(this.$unit));
     };
 
     /**
