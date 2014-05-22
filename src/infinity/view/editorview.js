@@ -76,6 +76,12 @@
         this._toolLayer = this._addLayer(new GXToolLayer(this));
     };
 
+    /** @override */
+    GXEditorView.prototype._updateViewTransforms = function () {
+        GXView.prototype._updateViewTransforms.call(this);
+        this._editor.updateInlineEditorForView(this);
+    };
+
     /**
      * Handle a drop on the editor
      * @param {GPoint} position screen coordinates position

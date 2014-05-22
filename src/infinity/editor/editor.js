@@ -1090,15 +1090,6 @@
             state.action();
         }
     };
-
-    /**
-     * Called to close any active inline editor
-     */
-    GXEditor.prototype.closeInlineEditor = function () {
-        if (this._currentInlineEditorNode) {
-            this._finishEditorInlineEdit(this._currentInlineEditorNode);
-        }
-    };
     
     /**
      * Called to open an inline editor for a given node and view
@@ -1128,6 +1119,28 @@
         }
         
         return false;
+    };
+
+    /**
+     * Called to update any active inline editor for a given view
+     * @param {GXEditorView} view
+     */
+    GXEditor.prototype.updateInlineEditorForView = function (view) {
+        if (this._currentInlineEditorNode) {
+            var editor = GXElementEditor.getEditor(this._currentInlineEditorNode);
+            if (editor && editor.isInlineEdit()) {
+                editor.adjustInlineEditForView(view);
+            }
+        }
+    };
+
+    /**
+     * Called to close any active inline editor
+     */
+    GXEditor.prototype.closeInlineEditor = function () {
+        if (this._currentInlineEditorNode) {
+            this._finishEditorInlineEdit(this._currentInlineEditorNode);
+        }
     };
 
     /**
