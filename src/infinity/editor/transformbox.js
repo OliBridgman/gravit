@@ -187,12 +187,12 @@
             context.canvas.strokeVertices(context.selectionOutlineColor, 1);
             for (var side = 0; side < 8 ; ++side) {
                 var pt = this._getPoint(side);
-                gAnnotation.paintAnnotation(context, null, pt, gAnnotation.AnnotType.Rectangle,
+                ifAnnotation.paintAnnotation(context, null, pt, ifAnnotation.AnnotType.Rectangle,
                     true, IFTransformBox.ANNOT_SIZE);
             }
         }
-        gAnnotation.paintAnnotation(context, null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
-            gAnnotation.AnnotType.Circle, true, IFTransformBox.ANNOT_SIZE);
+        ifAnnotation.paintAnnotation(context, null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
+            ifAnnotation.AnnotType.Circle, true, IFTransformBox.ANNOT_SIZE);
         context.canvas.setTransform(canvasTransform);
 
         this._finishPaint(context);
@@ -231,7 +231,7 @@
         // test handles and center
         for (var side = 0; side < 9; ++side) {
             var handle = this._getPoint(side);
-            if (gAnnotation.getAnnotationBBox(null, handle, IFTransformBox.ANNOT_SIZE)
+            if (ifAnnotation.getAnnotationBBox(null, handle, IFTransformBox.ANNOT_SIZE)
                     .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
                 result = new IFElementEditor.PartInfo(null, side, handle);
                 break;

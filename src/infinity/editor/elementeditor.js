@@ -76,9 +76,9 @@
      * @enum
      */
     IFElementEditor.Annotation = {
-        Rectangle: gAnnotation.AnnotType.Rectangle,
-        Circle: gAnnotation.AnnotType.Circle,
-        Diamond: gAnnotation.AnnotType.Diamond
+        Rectangle: ifAnnotation.AnnotType.Rectangle,
+        Circle: ifAnnotation.AnnotType.Circle,
+        Diamond: ifAnnotation.AnnotType.Diamond
     };
 
     /**
@@ -978,7 +978,7 @@
      */
     IFElementEditor.prototype._paintAnnotation = function (context, transform, center, annotation, selected, small) {
         var size = small ? IFElementEditor.OPTIONS.annotationSizeSmall : IFElementEditor.OPTIONS.annotationSizeRegular;
-        gAnnotation.paintAnnotation(context, transform, center, annotation, selected, size);
+        ifAnnotation.paintAnnotation(context, transform, center, annotation, selected, size);
     };
 
     /**
@@ -989,7 +989,7 @@
      */
     IFElementEditor.prototype._getAnnotationBBox = function (transform, center, small) {
         var size = small ? IFElementEditor.OPTIONS.annotationSizeSmall : IFElementEditor.OPTIONS.annotationSizeRegular;
-        return gAnnotation.getAnnotationBBox(transform, center, size);
+        return ifAnnotation.getAnnotationBBox(transform, center, size);
     };
 
     /**

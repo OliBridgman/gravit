@@ -39,7 +39,7 @@
             }
 
             var center = this.getPaintElement().getCenter(true);
-            bbox = gAnnotation.getAnnotationBBox(trf, center, IFElementEditor.OPTIONS.centerCrossSize * 2);
+            bbox = ifAnnotation.getAnnotationBBox(trf, center, IFElementEditor.OPTIONS.centerCrossSize * 2);
         }
         return bbox;
     };

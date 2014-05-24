@@ -1,18 +1,18 @@
 (function (_) {
 
     /**
-     * @class GAnnotation
+     * @class IFAnnotation
      * @constructor
      * @version 1.0
      */
-    function GAnnotation() {
+    function IFAnnotation() {
     };
 
     /**
      * Type of an annotation
      * @enum
      */
-    GAnnotation.prototype.AnnotType = {
+    IFAnnotation.prototype.AnnotType = {
         Rectangle: 0,
         Circle: 1,
         Diamond: 2
@@ -25,12 +25,12 @@
      * @param {IFPaintContext} context the paint context to paint on
      * @param {GTransform} transform the current transformation in use
      * @param {GPoint} center the center point of the annotation
-     * @param {GAnnotation.AnnotType} annotation the annotation to be painted
+     * @param {IFAnnotation.AnnotType} annotation the annotation to be painted
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
      * @param {Number} [size] annotation size
      */
-    GAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size) {
+    IFAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size) {
         var annotationTemplate = this._getAnnotationTemplate(annotation);
 
         // Now paint our annotation
@@ -70,7 +70,7 @@
      * @param {GPoint} center the center point of the annotation
      * @param {Number} [size] the size of an anotation
      */
-    GAnnotation.prototype.getAnnotationBBox = function (transform, center, size) {
+    IFAnnotation.prototype.getAnnotationBBox = function (transform, center, size) {
         if (transform) {
             center = transform.mapPoint(center);
         }
@@ -81,7 +81,7 @@
         return new GRect(cx - size / 2 - 1, cy - size / 2 - 1, size + 2, size + 2);
     };
 
-    GAnnotation.prototype._getAnnotationTemplate = function (annotation) {
+    IFAnnotation.prototype._getAnnotationTemplate = function (annotation) {
         // Prepare vertex cache, first
         var annotationTemplate = _annotationTemplates[annotation];
         if (!annotationTemplate) {
@@ -128,5 +128,5 @@
         return annotationTemplate;
     };
 
-    _.gAnnotation = new GAnnotation();
+    _.ifAnnotation = new IFAnnotation();
 })(this);
