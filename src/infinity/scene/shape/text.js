@@ -8,8 +8,8 @@
     function IFText() {
         IFShape.call(this);
         this._setDefaultProperties(IFText.GeometryProperties);
-        this._vertices = new IFVertexContainer();
-        this._verticesDirty = false;
+        this._runs = [];
+        this._runsDirty = false;
     }
 
     IFNode.inherit("text", IFText, IFShape);
@@ -254,11 +254,11 @@
 
         if (text) {
             if (text._handleGeometryChangeForProperties(change, args, IFText.Block.Properties) && change == IFNode._Change.BeforePropertiesChange) {
-                text._verticesDirty = true;
+                text._runsDirty = true;
             } else if (change == IFNode._Change.BeforeChildInsert || change == IFNode._Change.BeforeChildRemove) {
                 text.beginUpdate();
             } else if (change == IFNode._Change.AfterChildInsert || change == IFNode._Change.AfterChildRemove) {
-                text._verticesDirty = true;
+                text._runsDirty = true;
                 text.endUpdate();
             }
         }
@@ -533,7 +533,7 @@
 
         if (text) {
             if (text._handleGeometryChangeForProperties(change, args, IFText.Paragraph.Properties) && change == IFNode._Change.BeforePropertiesChange) {
-                text._verticesDirty = true;
+                text._runsDirty = true;
             }
         }
 
@@ -618,16 +618,28 @@
     IFText.prototype._size = null;
 
     /**
-     * @type {IFVertexContainer}
+     * @type {Array<{}>}
      * @private
      */
-    IFText.prototype._vertices = null;
+    IFText.prototype._runs = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFText.prototype._verticesDirty = false;
+    IFText.prototype._runsDirty = false;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    IFText.prototype._runItIndex = null;
+
+    /**
+     * @type {IFVertexSource}
+     * @private
+     */
+    IFText.prototype._runItOutline = null;
 
     /**
      * Returns the content container of the text node
@@ -710,7 +722,7 @@
     IFText.prototype.restore = function (blob) {
         if (IFShape.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFText.GeometryProperties);
-            this._verticesDirty = true;
+            this._runsDirty = true;
             return true;
         }
         return false;
@@ -718,10 +730,8 @@
 
     /** @override */
     IFText.prototype.rewindVertices = function (index) {
-        if (this._verticesDirty || this._vertices == null) {
-            this._vertices.clearVertices();
-
-            // TODO : Implement this right and into the subclasses!
+        if (this._runsDirty || this._runs == null) {
+            this._runs = [];
 
             // Calculate our actual text box and line length
             var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
@@ -770,11 +780,15 @@
                 var fontVariant = ifFont.getVariant(fontFamily, IFFont.Style.Italic, IFFont.Weight.Regular);
 
                 var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize, char);
-                var left = textBox.getX() + rect.left;
-                var top = textBox.getY() + rect.top + baseline;
-                var outline = ifFont.getGlyphOutline(fontFamily, fontVariant, fontSize, left, top, char);
 
-                this._vertices.appendVertices(outline);
+                this._runs.push({
+                    x: textBox.getX() + rect.left,
+                    y: textBox.getY() + rect.top + baseline,
+                    char: char,
+                    family: fontFamily,
+                    variant: fontVariant,
+                    size: fontSize
+                });
 
                 // Contribute to size if necessary
                 if (maxWidth === null || rect.right > maxWidth) {
@@ -792,14 +806,39 @@
             this._size = maxWidth && maxHeight ? new GPoint(maxWidth, maxHeight) : null;
 
             // We're done here
-            this._verticesDirty = false;
+            this._runsDirty = false;
         }
-        return this._vertices ? this._vertices.rewindVertices(index) : false;
+
+        if (this._runs && this._runs.length > 0) {
+            this._runItIndex = 0;
+            this._runItOutline = null;
+            return true;
+        }
+
+        return false;
     };
 
     /** @override */
     IFText.prototype.readVertex = function (vertex) {
-        return this._vertices.readVertex(vertex);
+        if (this._runItOutline) {
+            if (this._runItOutline.readVertex(vertex)) {
+                return true;
+            } else {
+                this._runItOutline = null;
+                if (++this._runItIndex >= this._runs.length) {
+                    return false;
+                }
+            }
+        }
+
+        if (!this._runItOutline) {
+            var run = this._runs[this._runItIndex];
+            this._runItOutline = ifFont.getGlyphOutline(run.family, run.variant, run.size, run.x, run.y, run.char);
+            if (!this._runItOutline.rewindVertices(0)) {
+                throw new Error('Unexpected end of outline');
+            }
+            return this._runItOutline.readVertex(vertex);
+        }
     };
 
     /** @override */
@@ -859,12 +898,12 @@
         IFShape.prototype._handleChange.call(this, change, args);
 
         if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {
-            this._verticesDirty = true;
+            this._runsDirty = true;
         }
 
         if (change === IFNode._Change.BeforePropertiesChange) {
             var transformIdx = args.properties.indexOf('trf');
-            if (transformIdx >= 0 && !this._verticesDirty) {
+            if (transformIdx >= 0 && !this._runsDirty) {
                 // TODO : Optimize for cases where no invalidation of vertices is required
                 /*
                  // Check whether only translation was changed and if that's
@@ -879,10 +918,10 @@
                  this._vertices.transformVertices(new GTransform(1, 0, 0, 1, translation.getX(), translation.getY()));
                  }
                  } else {
-                 this._verticesDirty = true;
+                 this._runsDirty = true;
                  }
                  */
-                this._verticesDirty = true;
+                this._runsDirty = true;
             }
         }
     };
