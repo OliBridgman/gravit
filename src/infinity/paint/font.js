@@ -114,6 +114,18 @@
                             'font-style: "' + _styleToCss(style) + '";' +
                             '} ')
                         .appendTo($('body'));
+
+                    // Sucks but inject an invisible span to ensure the font gets loaded
+                    $('<span></span>')
+                        .css({
+                            'position': 'absolute',
+                            'opacity': '0',
+                            'font-family': family,
+                            'font-weight': weight.toString(),
+                            'font-style': _styleToCss(style)
+                        })
+                        .text('.')
+                        .appendTo($('body'));
                 }
             }
         };
@@ -272,19 +284,28 @@
     //
     // TODO : Remove / handle default fonts somewhere else!?
     //
+
+    // Open Sans
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Light, 'font/OpenSans-Light.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Light, 'font/OpenSans-LightItalic.ttf');
-
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/OpenSans-Regular.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Regular, 'font/OpenSans-Italic.ttf');
-
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/OpenSans-Semibold.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.SemiBold, 'font/OpenSans-SemiboldItalic.ttf');
-
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/OpenSans-Bold.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Bold, 'font/OpenSans-BoldItalic.ttf');
-
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.ExtraBold, 'font/OpenSans-ExtraBold.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.ExtraBold, 'font/OpenSans-ExtraBoldItalic.ttf');
+
+    // Source Code Pro
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceCodePro-ExtraLight.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Light, 'font/SourceCodePro-Light.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/SourceCodePro-Regular.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Medium, 'font/SourceCodePro-Medium.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/SourceCodePro-Semibold.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/SourceCodePro-Bold.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Heavy, 'font/SourceCodePro-Black.ttf');
+
+
 
 })(this);

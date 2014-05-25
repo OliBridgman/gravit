@@ -113,17 +113,6 @@
     IFObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store]);
 
     /**
-     * The style of a text
-     * @enum
-     */
-    IFText.Block.TextStyle = {
-        Normal: 'n',
-        Bold: 'b',
-        Italic: 'i',
-        BoldItalic: 'bi'
-    };
-
-    /**
      * The geometry properties of a block with their default values
      */
     IFText.Block.Properties = {
@@ -131,7 +120,9 @@
         ff: null,
         /** The font size */
         fi: null,
-        /** The font style (IFText.Block.TextStyle) */
+        /** The font-weight (IFFont.Weight) */
+        fw: null,
+        /** The font-style (IFFont.Style) */
         fs: null,
         /** The font color */
         fc: null,
@@ -146,23 +137,17 @@
             css['font-family'] = value;
         } else if (property === 'fi') {
             css['font-size'] = value + 'px';
+        } else if (property === 'fw') {
+            css['font-weight'] = value.toString();
         } else if (property === 'fs') {
             switch (value) {
-                case IFText.Block.TextStyle.Normal:
-                    css['font-weight'] = 'normal';
+                case IFFont.Style.Normal:
                     css['font-style'] = 'normal';
                     break;
-                case IFText.Block.TextStyle.Bold:
-                    css['font-weight'] = 'bold';
-                    css['font-style'] = 'normal';
-                    break;
-                case IFText.Block.TextStyle.Italic:
-                    css['font-weight'] = 'normal';
+                case IFFont.Style.Italic:
                     css['font-style'] = 'italic';
                     break;
-                case IFText.Block.TextStyle.BoldItalic:
-                    css['font-weight'] = 'bold';
-                    css['font-style'] = 'italic';
+                default:
                     break;
             }
         } else if (property === 'fc') {
@@ -196,18 +181,16 @@
             if (!isNaN(value)) {
                 return value;
             }
+        } else if (property === 'fw') {
+            var value = parseInt(css['font-weight']);
+            if (!isNaN(value)) {
+                return value;
+            }
         } else if (property === 'fs') {
-            var bold = css['font-weight'] === 'bold';
-            var italic = css['font-style'] === 'italic';
-
-            if (bold && italic) {
-                return IFText.Block.TextStyle.BoldItalic;
-            } else if (bold) {
-                return IFText.Block.TextStyle.Bold;
-            } else if (italic) {
-                IFText.Block.TextStyle.Italic;
-            } else {
-                return IFText.Block.TextStyle.Normal;
+            if (css['font-style'] === 'normal') {
+                return IFFont.Style.Normal;
+            } else if (css['font-style'] === 'italic') {
+                return IFFont.Style.Italic;
             }
         } else if (property === 'fc') {
             var value = IFColor.parseCSSColor(css['color']);
@@ -574,7 +557,8 @@
         // Setup default font stuff
         this.$ff = 'Open Sans';
         this.$fi = 20;
-        this.$fs = IFText.Block.TextStyle.Italic;
+        this.$fw = IFFont.Weight.Regular;
+        this.$fs = IFFont.Style.Normal;
         this.$lh = 1;
         this.$wm = IFText.Paragraph.WrapMode.All;
     };
@@ -1008,9 +992,9 @@
                 parent = span;
 
                 if (nodeName === 'b' || nodeName === 'strong') {
-                    span.setProperty('fs', IFText.Block.TextStyle.Bold);
+                    span.setProperty('fw', IFFont.Weight.Bold);
                 } else if (nodeName === 'i') {
-                    span.setProperty('fs', IFText.Block.TextStyle.Italic);
+                    span.setProperty('fs', IFFont.Style.Italic);
                 }
             } else if (nodeName === 'br') {
                 parent.appendChild(new IFText.Break());

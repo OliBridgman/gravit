@@ -47,25 +47,24 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'etp') {
-                return $('<select></select>')
-                    .attr('data-property', 'etp')
+            if (property === 'ff') {
+                var select = $('<select></select>')
                     .css('width', '100%')
-                    .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Arc)
-                        // TODO : I18N
-                        .text('Arc'))
-                    .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Chord)
-                        // TODO : I18N
-                        .text('Chord'))
-                    .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Pie)
-                        // TODO : I18N
-                        .text('Pie'))
+                    .attr('data-property', property)
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
+
+                // Add typefaces
+                var families = ifFont.getFamilies();
+                for (var i = 0; i < families.length; ++i) {
+                    $('<option></option>')
+                        .attr('value', families[i])
+                        .text(families[i])
+                        .appendTo(select);
+                }
+
+                return select;
             } else if (property === 'fi') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -106,6 +105,14 @@
         $('<table></table>')
             .addClass('g-form')
             .css('margin', '0px auto')
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Face:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('ff'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
