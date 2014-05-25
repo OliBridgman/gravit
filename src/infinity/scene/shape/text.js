@@ -1,24 +1,4 @@
 (function (_) {
-
-    var _fontArray = null;
-    var _font = null;
-
-    var request = new XMLHttpRequest();
-    request.open('get', 'font/Arial.ttf', true);
-    request.responseType = 'arraybuffer';
-    request.onload = function () {
-        if (request.status !== 200) {
-            //return callback('Font could not be loaded: ' + request.statusText);
-        }
-        _fontArray = request.response;
-        _font = opentype.parse(_fontArray);
-        if (!_font.supported) {
-            return callback('Font is not supported (is this a Postscript font?)');
-        }
-    };
-    request.send();
-
-
     /**
      * A text shape
      * @class IFText
@@ -199,7 +179,17 @@
     IFText.Block.cssToProperty = function (property, css) {
         if (property === 'ff') {
             if (css['font-family']) {
-                return css['font-family'];
+                var family = css['font-family'];
+                if (family.length > 0) {
+                    if (family.charAt(0) === '"' || family.charAt(0) === "'") {
+                        family = family.substr(1);
+                    }
+                    if (family.charAt(family.length-1) === '"' || family.charAt(family.length-1) === "'") {
+                        family = family.substr(0, family.length - 1);
+                    }
+
+                    return family;
+                }
             }
         } else if (property === 'fi') {
             var value = parseFloat(css['font-size']);
@@ -582,9 +572,9 @@
         this._flags |= IFNode.Flag.Shadow;
 
         // Setup default font stuff
-        this.$ff = 'Arial';
-        this.$fi = 12;
-        this.$fs = IFText.Block.TextStyle.Normal;
+        this.$ff = 'Open Sans';
+        this.$fi = 20;
+        this.$fs = IFText.Block.TextStyle.Italic;
         this.$lh = 1;
         this.$wm = IFText.Paragraph.WrapMode.All;
     };
@@ -760,46 +750,31 @@
             container.find('span:not(:has(span))').each(function (index, span) {
                 var $span = $(span);
                 var rect = span.getBoundingClientRect();
-                var fontSize = parseInt($span.css('font-size'));
-                var font = _font; // TODO : FIX THIS
-                var char = $span.text()[0];
-                var glyph = font.charToGlyph(char);
-                var scale = 1 / font.unitsPerEm * fontSize;
-                var height = (glyph.yMax - glyph.yMin) * scale;
+                var textContent = $span.text();
+                if (textContent.length === 0) {
+                    return;
+                }
+                var char = textContent[0];
 
                 // Ignore zero height spans and empty spans
                 if (rect.height <= 0 || char === ' ') {
                     return;
                 }
 
-                // Calculate our span's baseline
-                var baseline = rect.top + (height + (((font.ascender) * scale) - height));
-
-                // Calculate our span's real x/y values
-                var x = textBox.getX() + rect.left;
-                var y = textBox.getY() + baseline;
-
-                // Query the path for the glyph
-                var path = glyph.getPath(x, y, fontSize);
-
-                // Add the path to our vertices
-                for (var i = 0; i < path.commands.length; i += 1) {
-                    var cmd = path.commands[i];
-                    if (cmd.type === 'M') {
-                        this._vertices.addVertex(IFVertex.Command.Move, cmd.x, cmd.y);
-                    } else if (cmd.type === 'L') {
-                        this._vertices.addVertex(IFVertex.Command.Line, cmd.x, cmd.y);
-                    } else if (cmd.type === 'C') {
-                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x, cmd.y);
-                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x1, cmd.y1);
-                        this._vertices.addVertex(IFVertex.Command.Curve2, cmd.x2, cmd.y2);
-                    } else if (cmd.type === 'Q') {
-                        this._vertices.addVertex(IFVertex.Command.Curve, cmd.x, cmd.y);
-                        this._vertices.addVertex(IFVertex.Command.Curve, cmd.x1, cmd.y1);
-                    } else if (cmd.type === 'Z') {
-                        this._vertices.addVertex(IFVertex.Command.Close);
-                    }
+                var css = {
+                    'font-family' : $span.css('font-family'),
+                    'font-size' : $span.css('font-size')
                 }
+                var fontFamily = IFText.Block.cssToProperty('ff', css);
+                var fontSize = IFText.Block.cssToProperty('fi', css);
+                var fontVariant = ifFont.getVariant(fontFamily, IFFont.Style.Italic, IFFont.Weight.Regular);
+
+                var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize, char);
+                var left = textBox.getX() + rect.left;
+                var top = textBox.getY() + rect.top + baseline;
+                var outline = ifFont.getGlyphOutline(fontFamily, fontVariant, fontSize, left, top, char);
+
+                this._vertices.appendVertices(outline);
 
                 // Contribute to size if necessary
                 if (maxWidth === null || rect.right > maxWidth) {

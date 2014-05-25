@@ -59,6 +59,7 @@
         var sp1 = new IFText.Span();
         sp1.appendChild(new IFText.Chunk('xWg'));
         sp1.setProperty('fi', '72');
+        sp1.setProperty('fc', IFColor.parseCSSColor('red'));
         var sp2 = new IFText.Span();
         sp2.appendChild(new IFText.Chunk(' Works :) --> In olden times when wishing still helped one, there lived a king whose daughters were all beautiful; and the youngest was so beautiful that the sun itself, which has seen so much, was astonished whenever it shone in her face. Close by the kings castle lay a great dark forest, and under an old lime-tree in the forest was a well, and when the day was very warm, the kings child went out to the forest and sat down by the fountain; and when she was bored she took a golden ball, and threw it up on high and caught it; and this ball was her favorite plaything.'));
         p1.appendChild(sp1);
