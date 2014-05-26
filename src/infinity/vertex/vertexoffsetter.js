@@ -264,8 +264,6 @@
         }
 
         // 1. approximate curve by bi-arc
-        var curves = [];
-        var arcs = {};
         var a = gMath.ptDist(B0.getX(), B0.getY(), B1.getX(), B1.getY());
         var b = gMath.ptDist(B1.getX(), B1.getY(), B2.getX(), B2.getY());
         var d = gMath.ptDist(B0.getX(), B0.getY(), B2.getX(), B2.getY());
@@ -339,8 +337,8 @@
         // By Theorem 2: sigma from (0,1): g(u) = (d - 2a*cos(phi))u^2 + 2a*cos(phi)u - lambda*(1 + cos(phi)) = 0
         tmp1 = 2 * a * TT0;
         roots = [];
-        gMath.getQuadraticRoots(d - tmp1, tmp1, lambda * (1 + TT0), roots);
-        var sigma = null;
+        gMath.getQuadraticRoots(d - tmp1, tmp1, -lambda * (1 + TT0), roots);
+        var sigma = 0.5;
         if (roots[0] != null && roots[0] < 1 && roots[0] > 0) {
             sigma = roots[0];
         } else if (roots[1] != null && roots[1] < 1 && roots[1] > 0) {
@@ -1462,11 +1460,16 @@
         // Define bulge sign
         var sign = 0;
         if (segm1.bulge) {
-            var dx = segm1.point2.getY() - segm1.center.getY();
-            var dy = segm1.center.getX() - segm1.point2.getX();
+            var sb = segm1.bulge > 0 ? 1 : -1;
+            var dx = (segm1.point2.getY() - segm1.center.getY()) * sb;
+            var dy = (segm1.center.getX() - segm1.point2.getX()) * sb;
+            /*if (segm1.bulge < 0) {
+                dx = -dx;
+                dy = -dy;
+            }*/
             sign = -gMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
                 segm1.point2.getX() + dx, segm1.point2.getY() + dy,
-                segm2.point.getX(), segm2.point.getY());
+                segm2.point.getX(), segm2.point.getY()); // * segm1.bulge;
         } else {
             sign = -gMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
                 segm2.point.getX(), segm2.point.getY());
