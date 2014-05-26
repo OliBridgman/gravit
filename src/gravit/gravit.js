@@ -13,10 +13,10 @@
     GravitModule.prototype.init = function () {
         // Register default palettes
         gravit.palettes.push(
+            new GPropertiesPalette(),
             new GColorMixerPalette(),
             new GColorMatcherPalette(),
-            new GColorTrendsPalette(),
-            new GPropertiesPalette()
+            new GColorTrendsPalette()
         );
 
         // Register default tools
