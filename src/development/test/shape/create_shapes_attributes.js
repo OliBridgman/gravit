@@ -73,7 +73,7 @@
         text.getContent().appendChild(p1);
         text.getContent().appendChild(p2);
 
-        text.setProperties(['fw', 'trf'], [true, new GTransform(500, 0, 0, 1, 0, 0)]);
+        text.setProperties(['aw', 'trf'], [false, new GTransform(500, 0, 0, 1, 0, 0)]);
 
         page.appendChild(text);
     }

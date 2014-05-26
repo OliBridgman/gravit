@@ -111,7 +111,7 @@
                             'font-family: "' + family + '";' +
                             'src: url("' + url + '");' +
                             'font-weight: ' + weight.toString() + ';' +
-                            'font-style: "' + _styleToCss(style) + '";' +
+                            'font-style: ' + _styleToCss(style) + ';' +
                             '} ')
                         .appendTo($('body'));
 
@@ -169,8 +169,8 @@
         if (type) {
             var weights = Object.keys(type.weights);
             var result = [];
-            for (var weight in weights) {
-                result.push(parseInt(weight));
+            for (var i = 0; i < weights.length; ++i) {
+                result.push(parseInt(weights[i]));
             }
             result.sort();
             return result;

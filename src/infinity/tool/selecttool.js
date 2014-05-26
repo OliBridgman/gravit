@@ -179,6 +179,12 @@
             return;
         }
 
+        // If we have an inline editor, close it and be done with
+        // it here to keep the original selection
+        if (this._editor.closeInlineEditor()) {
+            return;
+        }
+
         this._elementUnderMouse = null;
 
         // Let editor do some work for mouse position

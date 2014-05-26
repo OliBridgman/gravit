@@ -1136,11 +1136,13 @@
 
     /**
      * Called to close any active inline editor
+     * @return {Boolean} true if an inline editor was closed, false if not
      */
     IFEditor.prototype.closeInlineEditor = function () {
         if (this._currentInlineEditorNode) {
-            this._finishEditorInlineEdit(this._currentInlineEditorNode);
+            return this._finishEditorInlineEdit(this._currentInlineEditorNode);
         }
+        return false;
     };
 
     /**
@@ -1458,7 +1460,10 @@
             if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
                 this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterClose));
             }
+
+            return true;
         }
+        return false;
     };
 
     IFEditor.prototype._closeEditor = function (node) {

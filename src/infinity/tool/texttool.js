@@ -60,7 +60,7 @@
     IFTextTool.prototype._insertShape = function (shape) {
         // Create our text out of our rectangle here
         var text = new IFText();
-        text.setProperties(['fw', 'trf'], [true, shape.getProperty('trf')]);
+        text.setProperties(['aw', 'vb', 'trf'], [false, IFText.VerticalBox.Fixed, shape.getProperty('trf')]);
 
         this._insertText(text);
     };
@@ -86,14 +86,15 @@
         // Insert text, first
         IFShapeTool.prototype._insertShape.call(this, text);
 
-        // Open the inline editor for it now
-        var editor = IFElementEditor.getEditor(text);
+        // Save as this will be lost after switching tool
+        var editor = this._editor;
+        var view = this._view;
 
-        editor.beginInlineEdit(this._view, this._view._htmlElement);
-        editor.adjustInlineEditForView(this._view);
-
-        // Finally switch to select tool
+        // Switch to select tool
         this._manager.activateTool(IFPointerTool);
+
+        // Open inline editor for text
+        editor.openInlineEditor(text, view);
     };
 
     /** override */
