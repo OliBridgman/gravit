@@ -194,7 +194,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.resize = function (width, height) {
-        if (width != this._width || height != this._height) {
+        if (width != this._canvasContext.canvas.width || height != this._canvasContext.canvas.height) {
             this._canvasContext.canvas.width = width;
             this._canvasContext.canvas.height = height;
         }
