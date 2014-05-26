@@ -487,6 +487,8 @@
      */
     IFPaintCanvas.prototype.clipRect = function (x, y, width, height) {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
+        this._canvasContext.save();
+
         this._canvasContext.beginPath();
         this._canvasContext.moveTo(x, y);
         this._canvasContext.lineTo(x + width, y);
