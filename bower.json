@@ -6,7 +6,7 @@
         "mousetrap": "latest",
         "font-awesome": "latest",
         "jqtree": "latest",
-        "opentype.js": "latest",
+        "opentype.js": "git://github.com/quasado/opentype.js.git#2977630f96d1ba346df3016d2db88042077f5f76",
         "rangy": "latest"
     },
     "devDependencies": {},

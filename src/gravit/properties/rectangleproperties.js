@@ -70,7 +70,6 @@
                     });
             } else if (property === 'tl_ct' || property === 'tr_ct' || property === 'bl_ct' || property === 'br_ct') {
                 return $('<select></select>')
-                    .addClass('g-flat')
                     .attr('data-property', property)
                     .css('width', '2em')
                     .gCornerType()

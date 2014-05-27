@@ -54,6 +54,7 @@
     GNewAction.prototype.execute = function () {
         // Create Scene
         var scene = new IFScene();
+        scene.setProperty('unit', IFLength.Unit.PX);
 
         // Execute insert pages action
         gApp.executeAction(GInsertPagesAction.ID, [scene, function () {

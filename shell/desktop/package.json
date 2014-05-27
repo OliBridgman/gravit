@@ -12,5 +12,6 @@
         "show": false
     },
     "no-edit-menu": true,
-    "no-window-menu": true
+    "no-window-menu": true,
+    "chromium-args" : "--disable-web-security"
 }

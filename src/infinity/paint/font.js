@@ -91,10 +91,10 @@
 
         // Start loading of font and add variant when done
         var request = new XMLHttpRequest();
-        request.open('get', url, true);
+        request.open('get', url);
         request.responseType = 'arraybuffer';
         request.onload = function () {
-            if (request.status === 200) {
+            if (request.response && request.response instanceof ArrayBuffer) {
                 var font = opentype.parse(request.response);
                 if (font && font.supported) {
                     // Insert our variant
@@ -111,7 +111,7 @@
                             'font-family: "' + family + '";' +
                             'src: url("' + url + '");' +
                             'font-weight: ' + weight.toString() + ';' +
-                            'font-style: "' + _styleToCss(style) + '";' +
+                            'font-style: ' + _styleToCss(style) + ';' +
                             '} ')
                         .appendTo($('body'));
 
@@ -169,8 +169,8 @@
         if (type) {
             var weights = Object.keys(type.weights);
             var result = [];
-            for (var weight in weights) {
-                result.push(parseInt(weight));
+            for (var i = 0; i < weights.length; ++i) {
+                result.push(parseInt(weights[i]));
             }
             result.sort();
             return result;

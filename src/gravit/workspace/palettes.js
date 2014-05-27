@@ -108,6 +108,7 @@
 
                 // Toggle menu button visibility depending on menu items
                 groupInfo.menuButton._htmlElement.css('visibility', paletteInfo.menu.getItemCount() === 0 ? 'hidden' : 'visible');
+                groupInfo.menuButton._item._htmlElement.addClass('g-flat');
 
                 // Group needs to be visible and expanded
                 this._setGroupVisible(groupInfo, true);

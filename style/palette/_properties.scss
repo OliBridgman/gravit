@@ -1,26 +1,13 @@
 .palette-properties {
-  padding: 2px 5px 5px 5px;
-
-  .object-tree {
-    height: 8em;
-    padding-right: 5px;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
+  padding: 0px;
 
   .properties-panels {
     > .properties-panel-category {
       @include box-sizing(border-box);
       display: table;
       width: 100%;
-      margin: 3px 0px;
-      border: 1px solid $frameBorderColor;
-      border-bottom: none;
-      margin-bottom: 0px;
-      padding: 2px 5px 3px 5px;
+      padding: 4px 5px;
       background: $frameBorderColor;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
 
       > div {
         display: table-cell;
@@ -58,14 +45,7 @@
     }
 
     > .properties-panel-content {
-      margin: 7px 0px 12px 0px;
-      border: 1px solid $frameBorderColor;
-      border-top: none;
-      border-radius: 5px;
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-      margin-top: 0px;
-      padding: 10px 5px;
+      padding: 5px 5px;
 
       &.last-visible {
         margin-bottom: 0px;

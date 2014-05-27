@@ -194,7 +194,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.resize = function (width, height) {
-        if (width != this._width || height != this._height) {
+        if (width != this._canvasContext.canvas.width || height != this._canvasContext.canvas.height) {
             this._canvasContext.canvas.width = width;
             this._canvasContext.canvas.height = height;
         }
@@ -487,6 +487,8 @@
      */
     IFPaintCanvas.prototype.clipRect = function (x, y, width, height) {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
+        this._canvasContext.save();
+
         this._canvasContext.beginPath();
         this._canvasContext.moveTo(x, y);
         this._canvasContext.lineTo(x + width, y);

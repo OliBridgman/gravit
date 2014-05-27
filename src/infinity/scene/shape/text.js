@@ -15,13 +15,42 @@
     IFNode.inherit("text", IFText, IFShape);
 
     /**
+     * Vertical Box type of a text
+     * @enum
+     */
+    IFText.VerticalBox = {
+        /**
+         * Auto sized vertical box
+         */
+        Auto: 'a',
+
+        /**
+         * Fixed sized vertical box,
+         * text is aligned on top
+         */
+        Fixed: 'f',
+
+        /**
+         * Fixed sized vertical box,
+         * text is aligned on center
+         */
+        Center: 'c',
+
+        /**
+         * Fixed sized vertical box,
+         * text is aligned on bottom
+         */
+        Bottom: 'b'
+    };
+
+    /**
      * The geometry properties of text with their default values
      */
     IFText.GeometryProperties = {
-        /** Fixed width or not */
-        fw: false,
-        /** Fixed height or not */
-        fh: false
+        /** Auto-width or not */
+        aw: true,
+        /** Vertical box */
+        vb: IFText.VerticalBox.Auto
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -134,28 +163,32 @@
 
     IFText.Block.propertyToCss = function (property, value, css) {
         if (property === 'ff') {
-            css['font-family'] = value;
+            css['font-family'] = value !== null ? value : '';
         } else if (property === 'fi') {
-            css['font-size'] = value + 'px';
+            css['font-size'] = value !== null ? value + 'px' : '';
         } else if (property === 'fw') {
-            css['font-weight'] = value.toString();
+            css['font-weight'] = value !== null ? value.toString() : '';
         } else if (property === 'fs') {
-            switch (value) {
-                case IFFont.Style.Normal:
-                    css['font-style'] = 'normal';
-                    break;
-                case IFFont.Style.Italic:
-                    css['font-style'] = 'italic';
-                    break;
-                default:
-                    break;
+            if (value === null) {
+                css['font-style'] = '';
+            } else {
+                switch (value) {
+                    case IFFont.Style.Normal:
+                        css['font-style'] = 'normal';
+                        break;
+                    case IFFont.Style.Italic:
+                        css['font-style'] = 'italic';
+                        break;
+                    default:
+                        break;
+                }
             }
         } else if (property === 'fc') {
-            css['color'] = value.asCSSString();
+            css['color'] = value !== null ? value.asCSSString() : '';
         } else if (property === 'cs') {
-            css['letter-spacing'] = value + 'px';
+            css['letter-spacing'] = value !== null ? value + 'px' : '';
         } else if (property === 'ws') {
-            css['word-spacing'] = value + 'px';
+            css['word-spacing'] = value !== null ? value + 'px' : '';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
         }
@@ -169,7 +202,7 @@
                     if (family.charAt(0) === '"' || family.charAt(0) === "'") {
                         family = family.substr(1);
                     }
-                    if (family.charAt(family.length-1) === '"' || family.charAt(family.length-1) === "'") {
+                    if (family.charAt(family.length - 1) === '"' || family.charAt(family.length - 1) === "'") {
                         family = family.substr(0, family.length - 1);
                     }
 
@@ -185,6 +218,13 @@
             var value = parseInt(css['font-weight']);
             if (!isNaN(value)) {
                 return value;
+            } else {
+                value = css['font-weight'];
+                if (value === 'normal') {
+                    return IFFont.Weight.Regular;
+                } else if (value === 'bold') {
+                    return IFFont.Weight.Bold;
+                }
             }
         } else if (property === 'fs') {
             if (css['font-style'] === 'normal') {
@@ -385,54 +425,64 @@
 
     IFText.Paragraph.propertyToCss = function (property, value, css) {
         if (property === 'cc') {
-            value = value || 1;
+            value = value !== null ? value : '';
             css['column-count'] = value;
             css['-webkit-column-count'] = value;
             css['-moz-column-count'] = value;
         } else if (property === 'cg') {
+            value = value !== null ? value : '';
             css['column-gap'] = value;
             css['-webkit-column-gap'] = value;
             css['-moz-column-gap'] = value;
         } else if (property === 'wm') {
-            switch (value) {
-                case IFText.Paragraph.WrapMode.None:
-                    css['white-space'] = 'nowrap';
-                    break;
-                case IFText.Paragraph.WrapMode.Words:
-                    css['white-space'] = 'pre-wrap';
-                    break;
-                case IFText.Paragraph.WrapMode.All:
-                    css['white-space'] = 'pre-wrap';
-                    css['word-break'] = 'break-all';
-                    break;
+            if (value === null) {
+                css['white-space'] = '';
+                css['word-break'] = '';
+            } else {
+                switch (value) {
+                    case IFText.Paragraph.WrapMode.None:
+                        css['white-space'] = 'nowrap';
+                        break;
+                    case IFText.Paragraph.WrapMode.Words:
+                        css['white-space'] = 'pre-wrap';
+                        break;
+                    case IFText.Paragraph.WrapMode.All:
+                        css['white-space'] = 'pre-wrap';
+                        css['word-break'] = 'break-all';
+                        break;
+                }
             }
         } else if (property === 'al') {
-            switch (value) {
-                case IFText.Paragraph.Alignment.Left:
-                    css['text-align'] = 'left';
-                    break;
-                case IFText.Paragraph.Alignment.Center:
-                    css['text-align'] = 'center';
-                    break;
-                case IFText.Paragraph.Alignment.Right:
-                    css['text-align'] = 'right';
-                    break;
-                case IFText.Paragraph.Alignment.Justify:
-                    css['text-align'] = 'justify';
-                    break;
+            if (value === null) {
+                css['text-align'] = '';
+            } else {
+                switch (value) {
+                    case IFText.Paragraph.Alignment.Left:
+                        css['text-align'] = 'left';
+                        break;
+                    case IFText.Paragraph.Alignment.Center:
+                        css['text-align'] = 'center';
+                        break;
+                    case IFText.Paragraph.Alignment.Right:
+                        css['text-align'] = 'right';
+                        break;
+                    case IFText.Paragraph.Alignment.Justify:
+                        css['text-align'] = 'justify';
+                        break;
+                }
             }
         } else if (property === 'in') {
-            css['text-indent'] = value + 'px';
+            css['text-indent'] = value !== null ? value + 'px' : '';
         } else if (property === 'lh') {
-            css['line-height'] = value;
+            css['line-height'] = value !== null ? value : '';
         } else if (property === 'mt') {
-            css['margin-top'] = value + 'px';
+            css['margin-top'] = value !== null ? value + 'px' : '';
         } else if (property === 'mr') {
-            css['margin-right'] = value + 'px';
+            css['margin-right'] = value !== null ? value + 'px' : '';
         } else if (property === 'mb') {
-            css['margin-bottom'] = value + 'px';
+            css['margin-bottom'] = value !== null ? value + 'px' : '';
         } else if (property === 'ml') {
-            css['margin-left'] = value + 'px';
+            css['margin-left'] = value !== null ? value + 'px' : '';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
         }
@@ -655,6 +705,14 @@
     };
 
     /**
+     * Returns the bounding box of the content
+     * @return {GRect} null if there's no bbox or a valid bbox
+     */
+    IFText.prototype.getContentBBox = function () {
+        return this._size ? new GRect(0, 0, this._size.getX(), this._size.getY()) : null;
+    };
+
+    /**
      * Converts the underlying content to a html string
      * @param {Boolean} segments if true, each single character
      * will be enclosed by a span. Defaults to false.
@@ -731,15 +789,46 @@
                     'top': '0px',
                     'left': '0px',
                     'visibility': 'hidden',
-                    'width': textBox.getWidth() > 1 && this.$fw ? textBox.getWidth() + 'px' : '',
-                    'height': textBox.getHeight() > 1 && this.$fh ? textBox.getHeight() + 'px' : ''
+                    'width': textBox.getWidth() > 1 && !this.$aw ? textBox.getWidth() + 'px' : '',
+                    'height': textBox.getHeight() > 1 && this.$vb != IFText.VerticalBox.Auto ? textBox.getHeight() + 'px' : ''
                 })
                 .html(this.asHtml(true))
                 .appendTo($('body'));
 
-            // Prepare size information
+            // Calculate dimensions, first
             var maxWidth = null;
             var maxHeight = null;
+            container.find('p,span').each(function (index, element) {
+                var $element = $(element);
+                var offset = $element.offset();
+                var width = $element.outerWidth();
+                var height = $element.outerHeight();
+
+                if (maxWidth === null || (offset.left + width) > maxWidth) {
+                    maxWidth = offset.left + width;
+                }
+                if (maxHeight === null || (offset.top + height) > maxHeight) {
+                    maxHeight = offset.top + height;
+                }
+            }.bind(this));
+
+            // Assign calculated dimensions
+            this._size = maxWidth !== null && maxHeight !== null ? new GPoint(maxWidth, maxHeight) : null;
+
+            // Calculate vertical shift depending on vbox
+            var verticalShift = 0;
+            if (this.$vb != IFText.VerticalBox.Auto && this._size && this._size.getY() < textBox.getHeight()) {
+
+                switch (this.$vb) {
+                    case IFText.VerticalBox.Center:
+                        verticalShift = (textBox.getHeight() - this._size.getY()) / 2;
+                        break;
+
+                    case IFText.VerticalBox.Bottom:
+                        verticalShift = textBox.getHeight() - this._size.getY();
+                        break;
+                }
+            }
 
             container.find('span:not(:has(span))').each(function (index, span) {
                 var $span = $(span);
@@ -750,44 +839,36 @@
                 }
                 var char = textContent[0];
 
-                // Ignore zero height spans and empty spans
-                if (rect.height <= 0 || char === ' ') {
+                // Ignore zero height/width, spaces and binary chars
+                if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
                     return;
                 }
 
                 var css = {
-                    'font-family' : $span.css('font-family'),
-                    'font-size' : $span.css('font-size')
+                    'font-family': $span.css('font-family'),
+                    'font-size': $span.css('font-size'),
+                    'font-style': $span.css('font-style'),
+                    'font-weight': $span.css('font-weight')
                 }
                 var fontFamily = IFText.Block.cssToProperty('ff', css);
                 var fontSize = IFText.Block.cssToProperty('fi', css);
-                var fontVariant = ifFont.getVariant(fontFamily, IFFont.Style.Italic, IFFont.Weight.Regular);
-
+                var fontStyle = IFText.Block.cssToProperty('fs', css);
+                var fontWeight = IFText.Block.cssToProperty('fw', css);
+                var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
                 var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize, char);
 
                 this._runs.push({
                     x: textBox.getX() + rect.left,
-                    y: textBox.getY() + rect.top + baseline,
+                    y: textBox.getY() + rect.top + verticalShift + baseline,
                     char: char,
                     family: fontFamily,
                     variant: fontVariant,
                     size: fontSize
                 });
-
-                // Contribute to size if necessary
-                if (maxWidth === null || rect.right > maxWidth) {
-                    maxWidth = rect.right;
-                }
-                if (maxHeight === null || rect.bottom > maxHeight) {
-                    maxHeight = rect.bottom;
-                }
             }.bind(this));
 
             // Remove our container now
             container.remove();
-
-            // Assign new size information
-            this._size = maxWidth && maxHeight ? new GPoint(maxWidth, maxHeight) : null;
 
             // We're done here
             this._runsDirty = false;
@@ -840,8 +921,8 @@
             textBox = this.$trf.mapRect(textBox);
         }
 
-        var width = this.$fw ? textBox.getWidth() : this._size.getX();
-        var height = this.$fh ? textBox.getHeight() : this._size.getY();
+        var width = !this.$aw ? textBox.getWidth() : this._size.getX();
+        var height = this.$vb != IFText.VerticalBox.Auto ? textBox.getHeight() : this._size.getY();
 
         return new GRect(textBox.getX(), textBox.getY(), width, height);
     };
@@ -919,12 +1000,12 @@
     IFText.prototype._getClipBox = function (context) {
         var bbox = this.getGeometryBBox();
         if (this._size &&
-            ((this.$fw && this._size.getX() >= bbox.getWidth()) ||
-                (this.$fh && this._size.getY() >= bbox.getHeight()))) {
+            ((!this.$aw && this._size.getX() >= bbox.getWidth()) ||
+                (this.$vb != IFText.VerticalBox.Auto && this._size.getY() >= bbox.getHeight()))) {
 
             return new GRect(bbox.getX(), bbox.getY(),
-                this.$fw ? bbox.getWidth() : context.canvas.getWidth(),
-                this.$fh ? bbox.getHeight() : context.canvas.getHeight());
+                !this.$aw ? bbox.getWidth() : context.canvas.getWidth(),
+                this.$vb != IFText.VerticalBox.Auto ? bbox.getHeight() : context.canvas.getHeight());
         }
         return null;
     };
