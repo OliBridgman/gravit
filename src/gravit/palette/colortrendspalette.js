@@ -2,48 +2,48 @@
 
     /**
      * Color Trends Palette
-     * @class EXColorTrendsPalette
-     * @extends EXPalette
+     * @class GColorTrendsPalette
+     * @extends GPalette
      * @constructor
      */
-    function EXColorTrendsPalette() {
-        EXPalette.call(this);
+    function GColorTrendsPalette() {
+        GPalette.call(this);
     };
-    GObject.inherit(EXColorTrendsPalette, EXPalette);
+    IFObject.inherit(GColorTrendsPalette, GPalette);
 
-    EXColorTrendsPalette.ID = "color-trends";
-    EXColorTrendsPalette.TITLE = new GLocale.Key(EXColorTrendsPalette, "title");
+    GColorTrendsPalette.ID = "color-trends";
+    GColorTrendsPalette.TITLE = new IFLocale.Key(GColorTrendsPalette, "title");
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXColorTrendsPalette.prototype._htmlElement = null;
+    GColorTrendsPalette.prototype._htmlElement = null;
 
     /**
-     * @type {GXColor}
+     * @type {IFColor}
      * @private
      */
-    EXColorTrendsPalette.prototype._currentColor = null;
+    GColorTrendsPalette.prototype._currentColor = null;
 
     /** @override */
-    EXColorTrendsPalette.prototype.getId = function () {
-        return EXColorTrendsPalette.ID;
+    GColorTrendsPalette.prototype.getId = function () {
+        return GColorTrendsPalette.ID;
     };
 
     /** @override */
-    EXColorTrendsPalette.prototype.getTitle = function () {
-        return EXColorTrendsPalette.TITLE;
+    GColorTrendsPalette.prototype.getTitle = function () {
+        return GColorTrendsPalette.TITLE;
     };
 
     /** @override */
-    EXColorTrendsPalette.prototype.getGroup = function () {
-        return EXPalette.GROUP_COLOR;
+    GColorTrendsPalette.prototype.getGroup = function () {
+        return GPalette.GROUP_COLOR;
     };
 
     /** @override */
-    EXColorTrendsPalette.prototype.init = function (htmlElement, menu) {
-        EXPalette.prototype.init.call(this, htmlElement, menu);
+    GColorTrendsPalette.prototype.init = function (htmlElement, menu) {
+        GPalette.prototype.init.call(this, htmlElement, menu);
 
         this._htmlElement = htmlElement;
 
@@ -138,7 +138,7 @@
         this._updateFromGlobalColor();
 
         // Subscribe to global color change event
-        gApp.addEventListener(EXApplication.GlobalColorChangedEvent, function () {
+        gApp.addEventListener(GApplication.GlobalColorChangedEvent, function () {
             this._updateFromGlobalColor();
         }.bind(this));
     };
@@ -147,7 +147,7 @@
      * Update from current global color
      * @private
      */
-    EXColorTrendsPalette.prototype._updateFromGlobalColor = function () {
+    GColorTrendsPalette.prototype._updateFromGlobalColor = function () {
         var sourceColor = gApp.getGlobalColor();
 
         // Update global color preview
@@ -176,10 +176,10 @@
      * Update a trend's current value and returns the new color
      * @param {Number} trend
      * @param {Number|String} value
-     * @return {GXColor}
+     * @return {IFColor}
      * @private
      */
-    EXColorTrendsPalette.prototype._updateTrendValue = function (trend, value) {
+    GColorTrendsPalette.prototype._updateTrendValue = function (trend, value) {
         if (typeof value === 'string') {
             value = parseInt(value);
             if (isNaN(value)) {
@@ -209,10 +209,10 @@
      * Calculate a color for a given trend number and value
      * @param {Number} trend
      * @param {Number} value
-     * @return {GXColor}
+     * @return {IFColor}
      * @private
      */
-    EXColorTrendsPalette.prototype._colorForTrendAndValue = function (trend, value) {
+    GColorTrendsPalette.prototype._colorForTrendAndValue = function (trend, value) {
         var sourceColor = gApp.getGlobalColor();
 
         // Calculate a new color
@@ -238,8 +238,8 @@
      * Update the current color
      * @private
      */
-    EXColorTrendsPalette.prototype._updateCurrentColor = function (color) {
-        if (!GXColor.equals(color, this._currentColor)) {
+    GColorTrendsPalette.prototype._updateCurrentColor = function (color) {
+        if (!IFColor.equals(color, this._currentColor)) {
             this._currentColor = color;
 
             // Update preview
@@ -248,9 +248,9 @@
     };
 
     /** @override */
-    EXColorTrendsPalette.prototype.toString = function () {
-        return "[Object EXColorTrendsPalette]";
+    GColorTrendsPalette.prototype.toString = function () {
+        return "[Object GColorTrendsPalette]";
     };
 
-    _.EXColorTrendsPalette = EXColorTrendsPalette;
+    _.GColorTrendsPalette = GColorTrendsPalette;
 })(this);

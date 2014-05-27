@@ -12,7 +12,7 @@
         IFAttribute.call(this);
     }
 
-    GObject.inheritAndMix(IFPaintAttribute, IFAttribute, [IFAttribute.Render]);
+    IFObject.inheritAndMix(IFPaintAttribute, IFAttribute, [IFAttribute.Render]);
 
     /** @override */
     IFPaintAttribute.prototype.validateInsertion = function (parent, reference) {

@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * The mighty (base) selection tool
-     * @class GXSelectTool
-     * @extends GXTool
+     * @class IFSelectTool
+     * @extends IFTool
      * @constructor
      * @version 1.0
      */
-    function GXSelectTool() {
-        GXTool.call(this);
+    function IFSelectTool() {
+        IFTool.call(this);
     };
 
-    GObject.inherit(GXSelectTool, GXTool);
+    IFObject.inherit(IFSelectTool, IFTool);
 
     /**
      * @enum
      * @private
      */
-    GXSelectTool._Mode = {
+    IFSelectTool._Mode = {
         /** Selecting something */
         Select: 1,
         /** Prepared for moving */
@@ -32,85 +32,85 @@
      * @type {GRect}
      * @private
      */
-    GXSelectTool.prototype._selectArea = null;
+    IFSelectTool.prototype._selectArea = null;
 
     /**
      * The current mode
      * @type {Number}
-     * @see GXSelectTool._Mode
+     * @see IFSelectTool._Mode
      * @private
      */
-    GXSelectTool.prototype._mode = null;
+    IFSelectTool.prototype._mode = null;
 
     /**
      * An element that was hit when the the mouse was down
      * and no editor part has been hit. This will not be cleared
      * before the next mouse down signal.
-     * @type {GXElement}
+     * @type {IFElement}
      * @private
      */
-    GXSelectTool.prototype._elementUnderMouse = null;
+    IFSelectTool.prototype._elementUnderMouse = null;
 
     /**
      * An editor part that is under mouse if not moving / dragging
      * @type {*}
      * @private
      */
-    GXSelectTool.prototype._editorUnderMouseInfo = null;
+    IFSelectTool.prototype._editorUnderMouseInfo = null;
 
     /**
      * An editor part that triggered a move
      * @type {*}
      * @private
      */
-    GXSelectTool.prototype._editorMovePartInfo = null;
+    IFSelectTool.prototype._editorMovePartInfo = null;
 
     /**
      * The current key delta
      * @type {GPoint}
      * @private
      */
-    GXSelectTool.prototype._keyDelta = null;
+    IFSelectTool.prototype._keyDelta = null;
 
     /**
      * The start position of moving
      * @type {GPoint}
      * @private
      */
-    GXSelectTool.prototype._moveStart = null;
-    GXSelectTool.prototype._moveStartTransformed = null;
+    IFSelectTool.prototype._moveStart = null;
+    IFSelectTool.prototype._moveStartTransformed = null;
 
     /**
      * The current position of moving
      * @type {GPoint}
      * @private
      */
-    GXSelectTool.prototype._moveCurrent = null;
+    IFSelectTool.prototype._moveCurrent = null;
 
     /** @override */
-    GXSelectTool.prototype.getHint = function () {
-        return GXTool.prototype.getHint.call(this)
-            .addKey(GUIKey.Constant.SHIFT, new GLocale.Key(GXSelectTool, "shortcut.shift"), true)
-            .addKey(GUIKey.Constant.META, new GLocale.Key(GXSelectTool, "shortcut.meta"), true)
-            .addKey(GUIKey.Constant.OPTION, new GLocale.Key(GXSelectTool, "shortcut.option"), true)
-            .addKey(GUIKey.Constant.UP, new GLocale.Key(GXSelectTool, "shortcut.up"), false)
-            .addKey(GUIKey.Constant.DOWN, new GLocale.Key(GXSelectTool, "shortcut.down"), false)
-            .addKey(GUIKey.Constant.LEFT, new GLocale.Key(GXSelectTool, "shortcut.left"), false)
-            .addKey(GUIKey.Constant.RIGHT, new GLocale.Key(GXSelectTool, "shortcut.right"), false);
+    IFSelectTool.prototype.getHint = function () {
+        return IFTool.prototype.getHint.call(this)
+            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFSelectTool, "shortcut.shift"), true)
+            .addKey(IFKey.Constant.META, new IFLocale.Key(IFSelectTool, "shortcut.meta"), true)
+            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFSelectTool, "shortcut.option"), true)
+            .addKey(IFKey.Constant.UP, new IFLocale.Key(IFSelectTool, "shortcut.up"), false)
+            .addKey(IFKey.Constant.DOWN, new IFLocale.Key(IFSelectTool, "shortcut.down"), false)
+            .addKey(IFKey.Constant.LEFT, new IFLocale.Key(IFSelectTool, "shortcut.left"), false)
+            .addKey(IFKey.Constant.RIGHT, new IFLocale.Key(IFSelectTool, "shortcut.right"), false);
     };
 
     /** @override */
-    GXSelectTool.prototype.getCursor = function () {
+    IFSelectTool.prototype.getCursor = function () {
         if (this._editorUnderMouseInfo) {
-            return GUICursor.SelectDot;
+            return IFCursor.SelectDot;
         } else {
-            return GUICursor.Select;
+            return IFCursor.Select;
         }
     };
 
     /** @override */
-    GXSelectTool.prototype.activate = function (view) {
-        GXTool.prototype.activate.call(this, view);
+    IFSelectTool.prototype.activate = function (view) {
+        IFTool.prototype.activate.call(this, view);
 
         view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
@@ -126,8 +126,8 @@
     };
 
     /** @override */
-    GXSelectTool.prototype.deactivate = function (view) {
-        GXTool.prototype.deactivate.call(this, view);
+    IFSelectTool.prototype.deactivate = function (view) {
+        IFTool.prototype.deactivate.call(this, view);
 
         view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
@@ -143,14 +143,14 @@
     };
 
     /** @override */
-    GXSelectTool.prototype.isDeactivatable = function () {
+    IFSelectTool.prototype.isDeactivatable = function () {
         // cannot deactivate while having any mode set
         return !this._mode;
     };
 
     /** @override */
-    GXSelectTool.prototype.paint = function (context) {
-        if (this._mode == GXSelectTool._Mode.Select && this._hasSelectArea()) {
+    IFSelectTool.prototype.paint = function (context) {
+        if (this._mode == IFSelectTool._Mode.Select && this._hasSelectArea()) {
             var x = Math.floor(this._selectArea.getX()) + 0.5;
             var y = Math.floor(this._selectArea.getY()) + 0.5;
             var w = Math.ceil(this._selectArea.getWidth()) - 1.0;
@@ -165,7 +165,7 @@
      * @param {GUIMouseEvent.Move} event
      * @private
      */
-    GXSelectTool.prototype._mouseMove = function (event) {
+    IFSelectTool.prototype._mouseMove = function (event) {
         this._updateEditorUnderMouse(event.client);
     };
 
@@ -173,7 +173,7 @@
      * @param {GUIMouseEvent.Down} event
      * @private
      */
-    GXSelectTool.prototype._mouseDown = function (event) {
+    IFSelectTool.prototype._mouseDown = function (event) {
         // Quit if not hitting the left-mouse-button
         if (event.button !== GUIMouseEvent.BUTTON_LEFT) {
             return;
@@ -184,7 +184,7 @@
         // Let editor do some work for mouse position
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
-        if (this._mode == GXSelectTool._Mode.Transforming) {
+        if (this._mode == IFSelectTool._Mode.Transforming) {
             if (!this._editor.getTransformBox()) {
                 this._editor.updateSelectionTransformBox();
             }
@@ -195,7 +195,7 @@
             }
         } else {
             // Reset to select mode here
-            this._updateMode(GXSelectTool._Mode.Select);
+            this._updateMode(IFSelectTool._Mode.Select);
 
             // We're doing a stacked hit-test when the meta is key is hold down and
             // when our manager has no temporary tool as in such case, we've been
@@ -206,11 +206,11 @@
 
             if (!stacked) {
                 // Try to get a part of an editor, first
-                var docEditor = GXElementEditor.getEditor(this._scene);
+                var docEditor = IFElementEditor.getEditor(this._scene);
                 if (docEditor) {
                     var partInfo = docEditor.getPartInfoAt(event.client, this._view.getWorldTransform(), function (editor) {
                         // Ensure to allow selected editors for part, only
-                        return editor.hasFlag(GXElementEditor.Flag.Selected);
+                        return editor.hasFlag(IFElementEditor.Flag.Selected);
                     }.bind(this), this._scene.getProperty('pickDist'));
 
                     if (partInfo) {
@@ -230,14 +230,14 @@
                         }
 
                         // Set mode to move
-                        this._updateMode(GXSelectTool._Mode.Move);
+                        this._updateMode(IFSelectTool._Mode.Move);
                     }
                 }
             }
         }
 
         // If we didn't receive an editor part then do our regular stuff here
-        if (this._mode === GXSelectTool._Mode.Select) {
+        if (this._mode === IFSelectTool._Mode.Select) {
             var selectableElements = [];
 
             var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
@@ -263,7 +263,7 @@
                     // than the current selection or start from the beginning
                     var lastSelIndex = null;
                     for (var i = 0; i < selectableElements.length; ++i) {
-                        if (selectableElements[i].element.hasFlag(GXNode.Flag.Selected)) {
+                        if (selectableElements[i].element.hasFlag(IFNode.Flag.Selected)) {
                             lastSelIndex = i;
                         }
                     }
@@ -279,14 +279,14 @@
                 } else {
                     this._elementUnderMouse = selectableElements[0];
 
-                    if (gPlatform.modifiers.shiftKey || !this._elementUnderMouse.hasFlag(GXNode.Flag.Selected)) {
+                    if (gPlatform.modifiers.shiftKey || !this._elementUnderMouse.hasFlag(IFNode.Flag.Selected)) {
                         // Only update selection if we're either holding shift
                         // or when we didn't actually hit an already selected node
                         this._editor.updateSelection(gPlatform.modifiers.shiftKey, [this._elementUnderMouse]);
-                    } else if (this._elementUnderMouse.hasFlag(GXNode.Flag.Selected)) {
+                    } else if (this._elementUnderMouse.hasFlag(IFNode.Flag.Selected)) {
                         // As element is already selected we need to ensure to properly
                         // clear all selected parts as that is the default behavior
-                        var editor = GXElementEditor.getEditor(this._elementUnderMouse);
+                        var editor = IFElementEditor.getEditor(this._elementUnderMouse);
                         if (editor) {
                             editor.updatePartSelection(false, null);
                         }
@@ -295,7 +295,7 @@
                     // Switch to move mode if there's any selection in editor
                     var selection = this._editor.getSelection();
                     if (selection && selection.length > 0) {
-                        this._updateMode(GXSelectTool._Mode.Move);
+                        this._updateMode(IFSelectTool._Mode.Move);
                     }
                 }
             } else {
@@ -309,13 +309,13 @@
      * @param {GUIMouseEvent.Release} event
      * @private
      */
-    GXSelectTool.prototype._mouseRelease = function (event) {
+    IFSelectTool.prototype._mouseRelease = function (event) {
         // Reset some stuff in any case
         this._editorMovePartInfo = null;
         this._moveStart = null;
         this._moveStartTransformed = null;
         this._moveCurrent = null;
-        if (this._mode != GXSelectTool._Mode.Transforming) {
+        if (this._mode != IFSelectTool._Mode.Transforming) {
             this._updateMode(null);
         }
         this._updateEditorUnderMouse(event.client);
@@ -325,15 +325,15 @@
      * @param {GUIMouseEvent.DragStart} event
      * @private
      */
-    GXSelectTool.prototype._mouseDragStart = function (event) {
-        if (this._mode == GXSelectTool._Mode.Move) {
+    IFSelectTool.prototype._mouseDragStart = function (event) {
+        if (this._mode == IFSelectTool._Mode.Move) {
             // Save start
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
 
             // Switch to moving mode
-            this._updateMode(GXSelectTool._Mode.Moving);
-        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+            this._updateMode(IFSelectTool._Mode.Moving);
+        } else if (this._mode == IFSelectTool._Mode.Transforming) {
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
             if (this._editor.getTransformBox()) {
@@ -347,14 +347,14 @@
      * @param {GUIMouseEvent.Drag} event
      * @private
      */
-    GXSelectTool.prototype._mouseDrag = function (event) {
-        if (this._mode == GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming) {
+    IFSelectTool.prototype._mouseDrag = function (event) {
+        if (this._mode == IFSelectTool._Mode.Moving || this._mode == IFSelectTool._Mode.Transforming) {
             // Save current
             this._moveCurrent = event.client;
 
             // Update transform
             this._updateSelectionTransform();
-        } else if (this._mode == GXSelectTool._Mode.Select) {
+        } else if (this._mode == IFSelectTool._Mode.Select) {
             if (this._hasSelectArea()) {
                 this.invalidateArea(this._selectArea);
             }
@@ -371,8 +371,8 @@
      * @param {GUIMouseEvent.DragEnd} event
      * @private
      */
-    GXSelectTool.prototype._mouseDragEnd = function (event) {
-        if (this._mode == GXSelectTool._Mode.Moving) {
+    IFSelectTool.prototype._mouseDragEnd = function (event) {
+        if (this._mode == IFSelectTool._Mode.Moving) {
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
                 this._editor.beginTransaction();
                 try {
@@ -392,20 +392,20 @@
                 // to the new selection so we'll do that here
                 this._editor.applySelectionTransform(gPlatform.modifiers.optionKey);
             }
-        } else if (this._mode == GXSelectTool._Mode.Select) {
+        } else if (this._mode == IFSelectTool._Mode.Select) {
             // Check if we've selected an area
             if (this._hasSelectArea()) {
                 // our area selector selected something
                 var mappedSelectArea = this._view.getViewTransform().mapRect(this._selectArea);
                 var x0 = mappedSelectArea.getX(), y0 = mappedSelectArea.getY();
                 var x2 = x0 + mappedSelectArea.getWidth(), y2 = y0 + mappedSelectArea.getHeight();
-                var collisionArea = new GXVertexContainer();
-                collisionArea.addVertex(GXVertex.Command.Move, x0, y0);
-                collisionArea.addVertex(GXVertex.Command.Line, x2, y0);
-                collisionArea.addVertex(GXVertex.Command.Line, x2, y2);
-                collisionArea.addVertex(GXVertex.Command.Line, x0, y2);
-                collisionArea.addVertex(GXVertex.Command.Close, 0, 0);
-                var collisions = this._scene.getCollisions(collisionArea, GXElement.CollisionFlag.GeometryBBox);
+                var collisionArea = new IFVertexContainer();
+                collisionArea.addVertex(IFVertex.Command.Move, x0, y0);
+                collisionArea.addVertex(IFVertex.Command.Line, x2, y0);
+                collisionArea.addVertex(IFVertex.Command.Line, x2, y2);
+                collisionArea.addVertex(IFVertex.Command.Line, x0, y2);
+                collisionArea.addVertex(IFVertex.Command.Close, 0, 0);
+                var collisions = this._scene.getCollisions(collisionArea, IFElement.CollisionFlag.GeometryBBox);
                 var selectableElements = this._getSelectableElements(collisions);
 
                 this._editor.updateSelection(gPlatform.modifiers.shiftKey, selectableElements);
@@ -417,7 +417,7 @@
             } else {
                 this._selectArea = null;
             }
-        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+        } else if (this._mode == IFSelectTool._Mode.Transforming) {
             if (gPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
 
                 this._editor.applySelectionTransform(true);
@@ -431,7 +431,7 @@
     /**
      * @private
      */
-    GXSelectTool.prototype._mouseDblClick = function () {
+    IFSelectTool.prototype._mouseDblClick = function () {
         var openTransformBox = true;
 
         // Close an existing transform box, first
@@ -444,11 +444,11 @@
 
         // Check whether to start inline editing
         if (this._elementUnderMouse) {
-            var editor = GXElementEditor.getEditor(this._elementUnderMouse);
+            var editor = IFElementEditor.getEditor(this._elementUnderMouse);
             if (editor && editor.canInlineEdit()) {
-                editor.beginInlineEdit(this._view, this._view._htmlElement);
-                editor.adjustInlineEditForView(this._view);
-                openTransformBox = false;
+                if (this._editor.openInlineEditor(this._elementUnderMouse, this._view)) {
+                    openTransformBox = false;
+                }
             }
         }
 
@@ -456,7 +456,7 @@
             this._editor.updateSelectionTransformBox();
             if (this._editor.getTransformBox()) {
                 // Switch to transformation mode
-                this._updateMode(GXSelectTool._Mode.Transforming);
+                this._updateMode(IFSelectTool._Mode.Transforming);
                 this.invalidateArea();
             }
         }
@@ -466,14 +466,14 @@
      * @param {GUIKeyEvent} evt
      * @private
      */
-    GXSelectTool.prototype._keyDown = function (evt) {
-        if (evt.key === GUIKey.Constant.UP || evt.key === GUIKey.Constant.DOWN ||
-            evt.key === GUIKey.Constant.LEFT || evt.key === GUIKey.Constant.RIGHT) {
+    IFSelectTool.prototype._keyDown = function (evt) {
+        if (evt.key === IFKey.Constant.UP || evt.key === IFKey.Constant.DOWN ||
+            evt.key === IFKey.Constant.LEFT || evt.key === IFKey.Constant.RIGHT) {
 
             // Shift selection if any
-            if (this._editor.hasSelection() && (!this._mode || this._mode === GXSelectTool._Mode.Moving)) {
-                if (this._mode !== GXSelectTool._Mode.Moving) {
-                    this._updateMode(GXSelectTool._Mode.Moving);
+            if (this._editor.hasSelection() && (!this._mode || this._mode === IFSelectTool._Mode.Moving)) {
+                if (this._mode !== IFSelectTool._Mode.Moving) {
+                    this._updateMode(IFSelectTool._Mode.Moving);
                 }
 
                 var crDistance = gPlatform.modifiers.shiftKey ?
@@ -482,16 +482,16 @@
                 var dx = 0;
                 var dy = 0;
                 switch (evt.key) {
-                    case GUIKey.Constant.UP:
+                    case IFKey.Constant.UP:
                         dy -= crDistance;
                         break;
-                    case GUIKey.Constant.DOWN:
+                    case IFKey.Constant.DOWN:
                         dy += crDistance;
                         break;
-                    case GUIKey.Constant.LEFT:
+                    case IFKey.Constant.LEFT:
                         dx -= crDistance;
                         break;
-                    case GUIKey.Constant.RIGHT:
+                    case IFKey.Constant.RIGHT:
                         dx += crDistance;
                         break;
                     default:
@@ -508,9 +508,9 @@
      * @param {GUIKeyEvent} evt
      * @private
      */
-    GXSelectTool.prototype._keyRelease = function (evt) {
-        if (evt.key === GUIKey.Constant.UP || evt.key === GUIKey.Constant.DOWN ||
-            evt.key === GUIKey.Constant.LEFT || evt.key === GUIKey.Constant.RIGHT) {
+    IFSelectTool.prototype._keyRelease = function (evt) {
+        if (evt.key === IFKey.Constant.UP || evt.key === IFKey.Constant.DOWN ||
+            evt.key === IFKey.Constant.LEFT || evt.key === IFKey.Constant.RIGHT) {
 
             // Apply transformation applied through keys if any and reset it
             if (this._keyDelta) {
@@ -525,9 +525,9 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    GXSelectTool.prototype._modifiersChanged = function (event) {
+    IFSelectTool.prototype._modifiersChanged = function (event) {
         if ((event.changed.shiftKey || event.changed.optionKey) &&
-            (this._mode === GXSelectTool._Mode.Moving || this._mode == GXSelectTool._Mode.Transforming)) {
+            (this._mode === IFSelectTool._Mode.Moving || this._mode == IFSelectTool._Mode.Transforming)) {
 
             this._updateSelectionTransform();
         }
@@ -536,8 +536,8 @@
     /**
      * @private
      */
-    GXSelectTool.prototype._updateSelectionTransform = function () {
-        if (this._mode == GXSelectTool._Mode.Moving) {
+    IFSelectTool.prototype._updateSelectionTransform = function () {
+        if (this._mode == IFSelectTool._Mode.Moving) {
             var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
                 this._editor.getGuides().beginMap();
@@ -548,20 +548,20 @@
                 if (gPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
                     var crConstraint = this._scene.getProperty('crConstraint');
-                    position = gMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
+                    position = ifMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
                         position.getX(), position.getY(), crConstraint);
                 }
 
                 position = this._view.getViewTransform().mapPoint(position);
                 if (this._editorMovePartInfo && this._editorMovePartInfo.id &&
-                    (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point ||
-                        this._editorMovePartInfo.id.type == GXPathEditor.PartType.Segment)) {
+                    (this._editorMovePartInfo.id.type == IFPathEditor.PartType.Point ||
+                        this._editorMovePartInfo.id.type == IFPathEditor.PartType.Segment)) {
 
                     this._editor.getGuides().beginMap();
                     position = this._editor.getGuides().mapPoint(position);
 
                     var moveDelta = position.subtract(this._moveStartTransformed);
-                    if (this._editorMovePartInfo.id.type == GXPathEditor.PartType.Point) {
+                    if (this._editorMovePartInfo.id.type == IFPathEditor.PartType.Point) {
                         var moveStart = this._editorMovePartInfo.editor.getPointCoord(this._editorMovePartInfo.id.point);
                         moveDelta = position.subtract(moveStart);
                     }
@@ -575,7 +575,7 @@
                         this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
                 }
             }
-        } else if (this._mode == GXSelectTool._Mode.Transforming) {
+        } else if (this._mode == IFSelectTool._Mode.Transforming) {
             if (this._editor.getTransformBox() && this._moveStart) {
                 var moveCurrentTransformed = this._view.getViewTransform().mapPoint(this._moveCurrent);
                 this._editor.getGuides().beginMap();
@@ -593,10 +593,10 @@
 
     /**
      * Called to update the current mode
-     * @param {GXSelectTool._Mode} mode
+     * @param {IFSelectTool._Mode} mode
      * @private
      */
-    GXSelectTool.prototype._updateMode = function (mode) {
+    IFSelectTool.prototype._updateMode = function (mode) {
         if (mode !== this._mode) {
             this._mode = mode;
         }
@@ -607,16 +607,16 @@
      * @param {GPoint} mouse mouse client coordinates
      * @private
      */
-    GXSelectTool.prototype._updateEditorUnderMouse = function (mouse) {
+    IFSelectTool.prototype._updateEditorUnderMouse = function (mouse) {
         var hasEditorInfoUnderMouse = false;
 
         // Hit-Test editor under mouse if not in any mode
         if (!this._mode) {
-            var docEditor = GXElementEditor.getEditor(this._scene);
+            var docEditor = IFElementEditor.getEditor(this._scene);
             if (docEditor) {
                 var partInfo = docEditor.getPartInfoAt(mouse, this._view.getWorldTransform(), function (editor) {
                     // Ensure to allow selected editors for part, only
-                    return editor.hasFlag(GXElementEditor.Flag.Selected);
+                    return editor.hasFlag(IFElementEditor.Flag.Selected);
                 }.bind(this), this._scene.getProperty('pickDist'));
 
                 if (partInfo !== this._editorUnderMouseInfo) {
@@ -636,12 +636,12 @@
     /**
      * Iterate and returns an array of selectable elements from
      * an source array of elements in their original order
-     * @param {Array<GXElement>} elements source array of elements
-     * @returns {Array<GXElement>} array of selectable elements or
+     * @param {Array<IFElement>} elements source array of elements
+     * @returns {Array<IFElement>} array of selectable elements or
      * an empty array for none
      * @private
      */
-    GXSelectTool.prototype._getSelectableElements = function (elements) {
+    IFSelectTool.prototype._getSelectableElements = function (elements) {
         var selectableElements = [];
         for (var i = 0; i < elements.length; ++i) {
             var selectableElement = this._getSelectableElement(elements[i]);
@@ -655,16 +655,16 @@
     /**
      * Returns the selectable element out of an given one or null
      * if the given one is not selectable at all.
-     * @param {GXElement} element
-     * @return {GXElement}
+     * @param {IFElement} element
+     * @return {IFElement}
      * @private
      */
-    GXSelectTool.prototype._getSelectableElement = function (element) {
+    IFSelectTool.prototype._getSelectableElement = function (element) {
         // By default, we allow only items to be selected.
         // Furthermore, we'll iterate up until we'll find the root
         // item residing within anything else than another item
         for (var p = element; p !== null; p = p.getParent()) {
-            if (p instanceof GXItem && (!p.getParent() || !(p.getParent() instanceof GXItem))) {
+            if (p instanceof IFItem && (!p.getParent() || !(p.getParent() instanceof IFItem))) {
                 return p;
             }
         }
@@ -673,14 +673,14 @@
     };
 
     /** @private **/
-    GXSelectTool.prototype._hasSelectArea = function () {
+    IFSelectTool.prototype._hasSelectArea = function () {
         return (this._selectArea && (this._selectArea.getHeight() > 0 || this._selectArea.getWidth() > 0));
     };
 
     /** override */
-    GXSelectTool.prototype.toString = function () {
-        return "[Object GXSelectTool]";
+    IFSelectTool.prototype.toString = function () {
+        return "[Object IFSelectTool]";
     };
 
-    _.GXSelectTool = GXSelectTool;
+    _.IFSelectTool = IFSelectTool;
 })(this);

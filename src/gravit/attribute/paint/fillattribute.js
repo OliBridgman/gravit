@@ -9,7 +9,7 @@
     function GFillAttribute() {
         GPatternAttribute.call(this);
     };
-    GObject.inherit(GFillAttribute, GPatternAttribute);
+    IFObject.inherit(GFillAttribute, GPatternAttribute);
 
     /** @override */
     GFillAttribute.prototype.getAttributeClass = function () {

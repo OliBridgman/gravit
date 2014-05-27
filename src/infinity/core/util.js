@@ -1,11 +1,11 @@
 (function (_) {
 
     /**
-     * @class GUtil
+     * @class IFUtil
      * @constructor
      * @version 1.0
      */
-    function GUtil() {
+    function IFUtil() {
     };
 
     /**
@@ -19,7 +19,7 @@
      * @return {Number} a value less than zero if element is not found or
      * the index of the given element in the given array
      */
-    GUtil.prototype.indexOfEquals = function (array, element, objectByValue) {
+    IFUtil.prototype.indexOfEquals = function (array, element, objectByValue) {
         for (var i = 0; i < array.length; ++i) {
             if (this.equals(array[i], element, objectByValue)) {
                 return i;
@@ -43,7 +43,7 @@
      * not by their reference. Defaults to false if not provided.
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    GUtil.prototype.equals = function (left, right, objectByValue) {
+    IFUtil.prototype.equals = function (left, right, objectByValue) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -84,7 +84,7 @@
                     if (isNaN(left) || isNaN(right)) {
                         return isNaN(left) && isNaN(right);
                     } else {
-                        return gMath.isEqualEps(left, right);
+                        return ifMath.isEqualEps(left, right);
                     }
                 } else if (leftType === 'string') {
                     return left.localeCompare(right) === 0;
@@ -124,33 +124,13 @@
      * @param {Array<*>} array
      * @param {*} object
      */
-    GUtil.prototype.containsObjectKey = function (array, object) {
+    IFUtil.prototype.containsObjectKey = function (array, object) {
         for (var key in object) {
             if (array.indexOf(key) >= 0) {
                 return true;
             }
         }
         return false;
-    };
-
-    /**
-     * Compares a flag subtract in two given bitmasks.
-     * @param {Number} leftMask
-     * @param {Number} rightMask
-     * @param {Number} flag
-     * @returns {Number}
-     * returns 0 if flag is the same on both masks (aka either set or unset),
-     * returns -1 if flag is set in left mask but not in right mask,
-     * returns +1 if flag is set in right mask but not in left mask
-     */
-    GUtil.prototype.flagDelta = function (leftMask, rightMask, flag) {
-        if ((leftMask & flag) == (rightMask & flag)) {
-            return 0;
-        } else if ((leftMask & flag) != 0) {
-            return -1;
-        } else {
-            return 1;
-        }
     };
 
     var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
@@ -160,7 +140,7 @@
      * @param {Number} [len] the desired length of the uid, defaults to 32
      * @returns {String} more or less unique id depending on the desired length
      */
-    GUtil.prototype.uuid = function (len) {
+    IFUtil.prototype.uuid = function (len) {
         var chars = CHARS, uuid = [], i;
         var radix = chars.length;
         var len = len ? len : 32;
@@ -177,7 +157,7 @@
      * @param {String} with_ the string to replace with
      * @returns {String}
      */
-    GUtil.prototype.replaceAll = function (string, what_, with_) {
+    IFUtil.prototype.replaceAll = function (string, what_, with_) {
         var result = string;
         while (result.indexOf(what_) >= 0) {
             result = result.replace(what_, with_);
@@ -187,7 +167,7 @@
 
     // Makes unique sort of array elements, leaving only the elements from [a,b] segment
     // New array is written into newnums
-    GUtil.prototype.uSortSegment = function (a, b, nums, newnums) {
+    IFUtil.prototype.uSortSegment = function (a, b, nums, newnums) {
         var nElms = 0;
         nums.sort(function (s, k) {
             return s - k;
@@ -217,7 +197,7 @@
      * @param {String} html
      * @returns {String}
      */
-    GUtil.prototype.escape = function (html) {
+    IFUtil.prototype.escape = function (html) {
         return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     };
 
@@ -226,7 +206,7 @@
      * @param {String} html
      * @returns {String}
      */
-    GUtil.prototype.unescape = function (html) {
+    IFUtil.prototype.unescape = function (html) {
         var result = gUtil.replaceAll(html, "&lt;", '<');
         result = gUtil.replaceAll(result, "&gt;", '>');
         result = gUtil.replaceAll(result, "&quot;", '"');
@@ -235,28 +215,112 @@
         return result;
     };
 
-    GUtil.prototype._memcpy = function (dst, dstOffset, src, srcOffset, length) {
-        src = src.subarray || src.slice ? src : src.buffer;
-        dst = dst.subarray || dst.slice ? dst : dst.buffer;
+    /**
+     * Checks and returns whether a given string is numeric or not
+     * @param {string} string
+     * @returns {boolean}
+     */
+    IFUtil.prototype.isNumeric = function(string) {
+        // parseFloat NaNs numeric-cast false positives (null|true|false|"")
+        // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+        // subtraction forces infinities to NaN
+        return string - parseFloat(string) >= 0;
+    };
 
-        src = srcOffset ? src.subarray ?
-            src.subarray(srcOffset, length && srcOffset + length) :
-            src.slice(srcOffset, length && srcOffset + length) : src;
+    /**
+     * Format a number into a string
+     * @param {Number} number the number to format
+     * @param {Number} [decimalPlaces] the number of decimal places,
+     * defaults to 3
+     * @param {String} [decimalSeparator] the decimal separator to be used,
+     * defaults to ','
+     * @param {String} [thousandSeparator] the thousands separator, defaults
+     * to empty (= no separator)
+     * @param {Boolean} [includeEndingZeros] if true, ending zeros until the given
+     * number of decimal places is reached will be added, otherwise any ending
+     * decimal places with zero will be ignored. Defaults to false.
+     * @returns {string}
+     */
+    IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator, thousandSeparator, includeEndingZeros) {
+        decimalPlaces = decimalPlaces || 3;
+        decimalSeparator = decimalSeparator || ',';
+        thousandSeparator = thousandSeparator || '';
 
-        if (dst.set) {
-            dst.set(src, dstOffset);
-        } else {
-            for (var i = 0; i < src.length; i++) {
-                dst[i + dstOffset] = src[i];
+        var sinal = 1;
+        if (number < 0) {
+            number = -number;
+            sinal = -1;
+        }
+
+        var resposta = "";
+        var part = "";
+        if (number != Math.floor(number)) {
+            part = Math.round((number - Math.floor(number)) * Math.pow(10, decimalPlaces)).toString();
+
+            while (part.length < decimalPlaces) {
+                part = '0' + part;
+            }
+
+            if (!includeEndingZeros && part.length) {
+                // remove ending zero if any
+                var tmpPart = '';
+                for (var i = part.length - 1; i >= 0; --i) {
+                    var char = part.charAt(i);
+                    if (char === '0' && !tmpPart.length) {
+                        continue;
+                    }
+                    tmpPart = char + tmpPart;
+                }
+                part = tmpPart;
+            }
+
+            if (decimalPlaces > 0 && part.length) {
+                resposta = decimalSeparator + part;
+                number = Math.floor(number);
+            } else {
+                number = Math.round(number);
             }
         }
 
-        return dst;
+        while (number > 0) {
+            part = (number - Math.floor(number / 1000) * 1000).toString();
+            number = Math.floor(number / 1000);
+            if (number > 0) {
+                while (part.length < 3) {
+                    part = '0' + part;
+                }
+            }
+            resposta = part + resposta;
+            if (number > 0) {
+                resposta = thousandSeparator + resposta;
+            }
+        }
+
+        if (sinal < 0) {
+            resposta = '-' + resposta;
+        }
+
+        return resposta;
     };
 
-    GUtil.prototype.memcpy = function (dst, src, length) {
-        return this._memcpy(dst, 0, src, 0, length);
+    /**
+     * Parses a string into a number
+     * @param {string} the string to be parsed as number
+     * @returns {Number}
+     */
+    IFUtil.prototype.parseNumber = function (string) {
+        var parseString = "";
+        var foundDecSep = false;
+        for (var i = string.length; i >= 0; --i) {
+            var char = string.charAt(i);
+            if (char === ',' && !foundDecSep) {
+                parseString = '.' + parseString;
+            } else if (this.isNumeric(char)) {
+                parseString = char + parseString;
+            }
+        }
+        return parseFloat(parseString);
     };
 
-    _.gUtil = new GUtil();
+    _.gUtil = new IFUtil();
 })(this);

@@ -3,13 +3,13 @@
     /**
      * Page properties panel
      * @class GPageProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GPageProperties() {
         this._pages = [];
     };
-    GObject.inherit(GPageProperties, EXProperties);
+    IFObject.inherit(GPageProperties, GProperties);
 
     GPageProperties.SIZE_PRESETS = [
         {
@@ -89,13 +89,13 @@
     GPageProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPageProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXEllipse>}
+     * @type {Array<IFEllipse>}
      * @private
      */
     GPageProperties.prototype._pages = null;
@@ -274,7 +274,7 @@
     /** @override */
     GPageProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -287,14 +287,14 @@
 
         // Special case: if only scene is in node selection,
         // then select the currently active page by default
-        if (elements.length === 1 && elements[0] instanceof GXScene) {
+        if (elements.length === 1 && elements[0] instanceof IFScene) {
             var activePage = elements[0].querySingle('page:active');
             if (activePage) {
                 this._pages.push(activePage);
             }
         } else {
             for (var i = 0; i < elements.length; ++i) {
-                if (elements[i] instanceof GXPage) {
+                if (elements[i] instanceof IFPage) {
                     this._pages.push(elements[i]);
                 }
             }
@@ -302,7 +302,7 @@
 
         if (this._pages.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -311,12 +311,12 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPageProperties.prototype._afterPropertiesChange = function (event) {
         // Update ourself if our first element is changed or the scene's unit
-        if (this._pages.length > 0 && (this._pages[0] === event.node || (event.node instanceof GXScene && event.properties.indexOf('unit') >= 0))) {
+        if (this._pages.length > 0 && (this._pages[0] === event.node || (event.node instanceof IFScene && event.properties.indexOf('unit') >= 0))) {
             this._updateProperties();
         }
     };

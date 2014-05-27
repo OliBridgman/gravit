@@ -2,29 +2,29 @@
 
     /**
      * Action for undo on the current document
-     * @class EXUndoAction
+     * @class GUndoAction
      * @extends GUIAction
      * @constructor
      */
-    function EXUndoAction() {
+    function GUndoAction() {
     };
-    GObject.inherit(EXUndoAction, GUIAction);
+    IFObject.inherit(GUndoAction, GUIAction);
 
-    EXUndoAction.ID = 'edit.undo';
-    EXUndoAction.TITLE = new GLocale.Key(EXUndoAction, "title");
+    GUndoAction.ID = 'edit.undo';
+    GUndoAction.TITLE = new IFLocale.Key(GUndoAction, "title");
 
     /**
      * @override
      */
-    EXUndoAction.prototype.getId = function () {
-        return EXUndoAction.ID;
+    GUndoAction.prototype.getId = function () {
+        return GUndoAction.ID;
     };
 
     /**
      * @override
      */
-    EXUndoAction.prototype.getTitle = function () {
-        var result = gLocale.get(EXUndoAction.TITLE);
+    GUndoAction.prototype.getTitle = function () {
+        var result = ifLocale.get(GUndoAction.TITLE);
         var document = gApp.getActiveDocument();
         if (document && document.getEditor().hasUndoState()) {
             result += " " + document.getEditor().getUndoStateName();
@@ -35,28 +35,28 @@
     /**
      * @override
      */
-    EXUndoAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+    GUndoAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
      * @override
      */
-    EXUndoAction.prototype.getGroup = function () {
+    GUndoAction.prototype.getGroup = function () {
         return "undo_redo";
     };
 
     /**
      * @override
      */
-    EXUndoAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'z'];
+    GUndoAction.prototype.getShortcut = function () {
+        return [IFKey.Constant.META, 'z'];
     };
 
     /**
      * @override
      */
-    EXUndoAction.prototype.isEnabled = function () {
+    GUndoAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         return (document && document.getEditor().hasUndoState());
     };
@@ -64,14 +64,14 @@
     /**
      * @override
      */
-    EXUndoAction.prototype.execute = function () {
+    GUndoAction.prototype.execute = function () {
         gApp.getActiveDocument().getEditor().undoState();
     };
 
     /** @override */
-    EXUndoAction.prototype.toString = function () {
-        return "[Object EXUndoAction]";
+    GUndoAction.prototype.toString = function () {
+        return "[Object GUndoAction]";
     };
 
-    _.EXUndoAction = EXUndoAction;
+    _.GUndoAction = GUndoAction;
 })(this);

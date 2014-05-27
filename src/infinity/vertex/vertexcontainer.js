@@ -2,31 +2,31 @@
 
     /**
      * A container for vertices
-     * @class GXVertexContainer
-     * @mixes GXVertexSource
-     * @mixes GXVertexTarget
+     * @class IFVertexContainer
+     * @mixes IFVertexSource
+     * @mixes IFVertexTarget
      * @constructor
      */
-    function GXVertexContainer() {
+    function IFVertexContainer() {
         this._vertices = [];
     }
 
-    GObject.mix(GXVertexContainer, [GXVertexSource, GXVertexTarget]);
+    IFObject.mix(IFVertexContainer, [IFVertexSource, IFVertexTarget]);
 
     /**
      * @type {number}
      * @private
      */
-    GXVertexContainer.prototype._index = 0;
+    IFVertexContainer.prototype._index = 0;
 
     /**
      * @type {Array{{c:Number, x:Number, y:Nuber}}}
      * @private
      */
-    GXVertexContainer.prototype._vertices = null;
+    IFVertexContainer.prototype._vertices = null;
 
     /** @override */
-    GXVertexContainer.prototype.addVertex = function (command, x, y) {
+    IFVertexContainer.prototype.addVertex = function (command, x, y) {
         this._vertices.push({
             c : command,
             x : x,
@@ -36,7 +36,7 @@
     };
 
     /** @override */
-    GXVertexContainer.prototype.clearVertices = function () {
+    IFVertexContainer.prototype.clearVertices = function () {
         this._vertices = [];
     };
 
@@ -44,7 +44,7 @@
      * Transform all vertices in this container with a given matrix
      * @param {GTransform} transform
      */
-    GXVertexContainer.prototype.transformVertices = function (transform) {
+    IFVertexContainer.prototype.transformVertices = function (transform) {
         for (var i = 0; i < this._vertices.length; ++i) {
             transform.map(this._vertices[i]);
         }
@@ -54,12 +54,12 @@
      * @returns {Number} the total number of vertices in this container
      * @version 1.0
      */
-    GXVertexContainer.prototype.getCount = function () {
+    IFVertexContainer.prototype.getCount = function () {
         return this._vertices.length;
     };
 
     /** @override */
-    GXVertexContainer.prototype.rewindVertices = function (index) {
+    IFVertexContainer.prototype.rewindVertices = function (index) {
         if (index >= 0 && index <= this._vertices.length) {
             this._index = index;
             return true;
@@ -68,7 +68,7 @@
     };
 
     /** @override */
-    GXVertexContainer.prototype.readVertex = function (vertex) {
+    IFVertexContainer.prototype.readVertex = function (vertex) {
         if (this._index >= 0 && this._index < this._vertices.length) {
             var v = this._vertices[this._index];
             vertex.command = v.c;
@@ -81,9 +81,9 @@
     };
 
     /** @override */
-    GXVertexContainer.prototype.toString = function () {
-        return "[Object GXVertexContainer]";
+    IFVertexContainer.prototype.toString = function () {
+        return "[Object IFVertexContainer]";
     };
 
-    _.GXVertexContainer = GXVertexContainer;
+    _.IFVertexContainer = IFVertexContainer;
 })(this);

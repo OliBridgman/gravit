@@ -2,62 +2,62 @@
 
     /**
      * Action for changing paint mode in the current view
-     * @class EXPaintModeAction
+     * @class GPaintModeAction
      * @extends GUIAction
      * @constructor
      */
-    function EXPaintModeAction(paintMode) {
+    function GPaintModeAction(paintMode) {
         this._paintMode = paintMode;
     };
-    GObject.inherit(EXPaintModeAction, GUIAction);
+    IFObject.inherit(GPaintModeAction, GUIAction);
 
-    EXPaintModeAction.ID = 'view.page.decoration';
-    EXPaintModeAction.TITLE = new GLocale.Key(EXPaintModeAction, 'title');
+    GPaintModeAction.ID = 'view.page.decoration';
+    GPaintModeAction.TITLE = new IFLocale.Key(GPaintModeAction, 'title');
 
     /**
-     * @type {GXScenePaintConfiguration.PaintMode}
+     * @type {IFScenePaintConfiguration.PaintMode}
      * @private
      */
-    EXPaintModeAction.prototype._paintMode = null;
+    GPaintModeAction.prototype._paintMode = null;
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.getId = function () {
-        return EXPaintModeAction.ID + '.' + this._paintMode;
+    GPaintModeAction.prototype.getId = function () {
+        return GPaintModeAction.ID + '.' + this._paintMode;
     };
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.getTitle = function () {
-        return gLocale.get(EXPaintModeAction.TITLE).replace('%name%',
-            gLocale.get(GXScenePaintConfiguration.PaintModeName[this._paintMode]));
+    GPaintModeAction.prototype.getTitle = function () {
+        return ifLocale.get(GPaintModeAction.TITLE).replace('%name%',
+            ifLocale.get(IFScenePaintConfiguration.PaintModeName[this._paintMode]));
     };
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GPaintModeAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
     };
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.getGroup = function () {
+    GPaintModeAction.prototype.getGroup = function () {
         return "paint-mode";
     };
 
     /** @override */
-    EXPaintModeAction.prototype.isCheckable = function () {
+    GPaintModeAction.prototype.isCheckable = function () {
         return true;
     };
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.isChecked = function () {
+    GPaintModeAction.prototype.isChecked = function () {
         var window = gApp.getWindows().getActiveWindow();
         if (window) {
             return window.getView().getViewConfiguration().paintMode === this._paintMode;
@@ -68,23 +68,23 @@
     /**
      * @override
      */
-    EXPaintModeAction.prototype.isEnabled = function () {
+    GPaintModeAction.prototype.isEnabled = function () {
         return !!gApp.getWindows().getActiveWindow();
     };
 
     /**
      * @override
      */
-    EXPaintModeAction.prototype.execute = function () {
+    GPaintModeAction.prototype.execute = function () {
         var view = gApp.getWindows().getActiveWindow().getView();
         view.getViewConfiguration().paintMode = this._paintMode;
         view.invalidate();
     };
 
     /** @override */
-    EXPaintModeAction.prototype.toString = function () {
-        return "[Object EXPaintModeAction]";
+    GPaintModeAction.prototype.toString = function () {
+        return "[Object GPaintModeAction]";
     };
 
-    _.EXPaintModeAction = EXPaintModeAction;
+    _.GPaintModeAction = GPaintModeAction;
 })(this);

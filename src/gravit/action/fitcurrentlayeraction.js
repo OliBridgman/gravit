@@ -2,49 +2,49 @@
 
     /**
      * Action for fitting the current layer into the current view
-     * @class EXFitCurrentLayerAction
+     * @class GFitCurrentLayerAction
      * @extends GUIAction
      * @constructor
      */
-    function EXFitCurrentLayerAction() {
+    function GFitCurrentLayerAction() {
     };
-    GObject.inherit(EXFitCurrentLayerAction, GUIAction);
+    IFObject.inherit(GFitCurrentLayerAction, GUIAction);
 
-    EXFitCurrentLayerAction.ID = 'view.zoom.fit-current-layer';
-    EXFitCurrentLayerAction.TITLE = new GLocale.Key(EXFitCurrentLayerAction, "title");
+    GFitCurrentLayerAction.ID = 'view.zoom.fit-current-layer';
+    GFitCurrentLayerAction.TITLE = new IFLocale.Key(GFitCurrentLayerAction, "title");
 
     /**
      * @override
      */
-    EXFitCurrentLayerAction.prototype.getId = function () {
-        return EXFitCurrentLayerAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXFitCurrentLayerAction.prototype.getTitle = function () {
-        return EXFitCurrentLayerAction.TITLE;
+    GFitCurrentLayerAction.prototype.getId = function () {
+        return GFitCurrentLayerAction.ID;
     };
 
     /**
      * @override
      */
-    EXFitCurrentLayerAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GFitCurrentLayerAction.prototype.getTitle = function () {
+        return GFitCurrentLayerAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXFitCurrentLayerAction.prototype.getGroup = function () {
+    GFitCurrentLayerAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GFitCurrentLayerAction.prototype.getGroup = function () {
         return "zoom";
     };
 
     /**
      * @override
      */
-    EXFitCurrentLayerAction.prototype.isEnabled = function () {
+    GFitCurrentLayerAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         var activeLayer = document ? document.getEditor().getCurrentLayer() : null;
 
@@ -54,15 +54,15 @@
     /**
      * @override
      */
-    EXFitCurrentLayerAction.prototype.execute = function () {
+    GFitCurrentLayerAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         document.getActiveWindow().getView().zoomAll(document.getEditor().getCurrentLayer().getPaintBBox(), false);
     };
 
     /** @override */
-    EXFitCurrentLayerAction.prototype.toString = function () {
-        return "[Object EXFitCurrentLayerAction]";
+    GFitCurrentLayerAction.prototype.toString = function () {
+        return "[Object GFitCurrentLayerAction]";
     };
 
-    _.EXFitCurrentLayerAction = EXFitCurrentLayerAction;
+    _.GFitCurrentLayerAction = GFitCurrentLayerAction;
 })(this);

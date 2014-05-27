@@ -8,10 +8,10 @@
      */
     function GGroupAction() {
     };
-    GObject.inherit(GGroupAction, GUIAction);
+    IFObject.inherit(GGroupAction, GUIAction);
 
     GGroupAction.ID = 'modify.group';
-    GGroupAction.TITLE = new GLocale.Key(GGroupAction, "title");
+    GGroupAction.TITLE = new IFLocale.Key(GGroupAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GGroupAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GGroupAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'G'];
+        return [IFKey.Constant.META, 'G'];
     };
 
     /**
@@ -68,7 +68,7 @@
         editor.beginTransaction();
         try {
             // Create our group
-            var group = new GXGroup();
+            var group = new IFGroup();
 
             // Collect all items to be added to the group
             var itemsToGroup = [];

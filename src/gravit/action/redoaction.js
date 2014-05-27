@@ -2,29 +2,29 @@
 
     /**
      * Action for redo on the current document
-     * @class EXRedoAction
+     * @class GRedoAction
      * @extends GUIAction
      * @constructor
      */
-    function EXRedoAction() {
+    function GRedoAction() {
     };
-    GObject.inherit(EXRedoAction, GUIAction);
+    IFObject.inherit(GRedoAction, GUIAction);
 
-    EXRedoAction.ID = 'edit.redo';
-    EXRedoAction.TITLE = new GLocale.Key(EXRedoAction, "title");
+    GRedoAction.ID = 'edit.redo';
+    GRedoAction.TITLE = new IFLocale.Key(GRedoAction, "title");
 
     /**
      * @override
      */
-    EXRedoAction.prototype.getId = function () {
-        return EXRedoAction.ID;
+    GRedoAction.prototype.getId = function () {
+        return GRedoAction.ID;
     };
 
     /**
      * @override
      */
-    EXRedoAction.prototype.getTitle = function () {
-        var result = gLocale.get(EXRedoAction.TITLE);
+    GRedoAction.prototype.getTitle = function () {
+        var result = ifLocale.get(GRedoAction.TITLE);
         var document = gApp.getActiveDocument();
         if (document && document.getEditor().hasRedoState()) {
             result += " " + document.getEditor().getRedoStateName();
@@ -35,28 +35,28 @@
     /**
      * @override
      */
-    EXRedoAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+    GRedoAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
      * @override
      */
-    EXRedoAction.prototype.getGroup = function () {
+    GRedoAction.prototype.getGroup = function () {
         return "undo_redo";
     };
 
     /**
      * @override
      */
-    EXRedoAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'z'];
+    GRedoAction.prototype.getShortcut = function () {
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'z'];
     };
 
     /**
      * @override
      */
-    EXRedoAction.prototype.isEnabled = function () {
+    GRedoAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         return (document && document.getEditor().hasRedoState());
     };
@@ -64,14 +64,14 @@
     /**
      * @override
      */
-    EXRedoAction.prototype.execute = function () {
+    GRedoAction.prototype.execute = function () {
         gApp.getActiveDocument().getEditor().redoState();
     };
 
     /** @override */
-    EXRedoAction.prototype.toString = function () {
-        return "[Object EXRedoAction]";
+    GRedoAction.prototype.toString = function () {
+        return "[Object GRedoAction]";
     };
 
-    _.EXRedoAction = EXRedoAction;
+    _.GRedoAction = GRedoAction;
 })(this);

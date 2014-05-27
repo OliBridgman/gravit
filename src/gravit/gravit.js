@@ -3,52 +3,52 @@
      * Gravit Core Module
      * @class GravitModule
      * @constructor
-     * @extends EXModule
+     * @extends GModule
      */
     function GravitModule() {
     }
-    GObject.inherit(GravitModule, EXModule);
+    IFObject.inherit(GravitModule, GModule);
 
     /** @override */
     GravitModule.prototype.init = function () {
         // Register default palettes
         gravit.palettes.push(
-            new EXColorMixerPalette(),
-            new EXColorMatcherPalette(),
-            new EXColorTrendsPalette(),
-            new EXPropertiesPalette()
+            new GColorMixerPalette(),
+            new GColorMatcherPalette(),
+            new GColorTrendsPalette(),
+            new GPropertiesPalette()
         );
 
         // Register default tools
         gravit.tools.push(
-            new GXPointerTool(),
-            new GXSubSelectTool(),
-            new GXPageTool(),
-            new GXLassoTool(),
-            new GXPenTool(),
-            new GXBezigonTool(),
-            new GXLineTool(),
-            new GXRectangleTool(),
-            new GXEllipseTool(),
-            new GXPolygonTool(),
+            new IFPointerTool(),
+            new IFSubSelectTool(),
+            new IFPageTool(),
+            new IFLassoTool(),
+            new IFPenTool(),
+            new IFBezigonTool(),
+            new IFLineTool(),
+            new IFRectangleTool(),
+            new IFEllipseTool(),
+            new IFPolygonTool(),
             new IFTextTool(),
-            new GXZoomTool(),
-            new GXHandTool()
+            new IFZoomTool(),
+            new IFHandTool()
         );
 
         // Register default color matcher
         gravit.colorMatchers.push(
-            new EXAnalogousMatcher(),
-            new EXComplementaryMatcher(),
-            new EXImagePaletteMatcher()
+            new GAnalogousMatcher(),
+            new GComplementaryMatcher(),
+            new GImagePaletteMatcher()
         );
 
         // Register default properties
         gravit.properties.push(
-            new EXDimensionsProperties(),
+            new GDimensionsProperties(),
             new GAttributeProperties(),
             new GDocumentProperties(),
-            new EXPolygonProperties(),
+            new GPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),
             new GEllipseProperties(),
@@ -83,11 +83,11 @@
         for (var i = 0; i < gravit.storages.length; ++i) {
             var storage = gravit.storages[i];
             if (storage.isAvailable() && storage.isPrompting()) {
-                openActions.push(new EXOpenAction(storage, !hasDefaultOpen));
+                openActions.push(new GOpenAction(storage, !hasDefaultOpen));
                 hasDefaultOpen = true;
 
                 if (storage.isSaving()) {
-                    saveAsActions.push(new EXSaveAsAction(storage, !hasDefaultSave));
+                    saveAsActions.push(new GSaveAsAction(storage, !hasDefaultSave));
                     hasDefaultSave = true;
                 }
             }
@@ -98,16 +98,16 @@
         var exportActions = [];
 
         for (var i = 0; i < gravit.importers.length; ++i) {
-            importActions.push(new EXImportAction(gravit.importers[i]));
+            importActions.push(new GImportAction(gravit.importers[i]));
         }
         for (var i = 0; i < gravit.exporters.length; ++i) {
-            exportActions.push(new EXExportAction(gravit.exporters[i]));
+            exportActions.push(new GExportAction(gravit.exporters[i]));
         }
 
         // Collect all palettes and add actions for 'em
         var paletteShowActions = [];
         for (var i = 0; i < gravit.palettes.length; ++i) {
-            paletteShowActions.push(new EXShowPaletteAction(gravit.palettes[i]));
+            paletteShowActions.push(new GShowPaletteAction(gravit.palettes[i]));
         }
 
         // TODO : If there's only one storage available,
@@ -115,28 +115,28 @@
 
         return [].concat(
             // File
-            new EXNewAction(),
+            new GNewAction(),
             openActions,
 
-            new EXSaveAction(),
+            new GSaveAction(),
             saveAsActions,
-            new EXSaveAllAction(),
+            new GSaveAllAction(),
 
             importActions,
             exportActions,
 
-            new EXCloseAction(),
-            new EXCloseAllAction(),
+            new GCloseAction(),
+            new GCloseAllAction(),
 
             // Edit
-            new EXUndoAction(),
-            new EXRedoAction(),
+            new GUndoAction(),
+            new GRedoAction(),
 
             new GCutAction(),
             new GCopyAction(),
             new GPasteAction(),
             new GPasteInsideAction(),
-            new EXDeleteAction(),
+            new GDeleteAction(),
 
             new GCopyAttributesAction(),
             new GPasteAttributesAction(),
@@ -152,37 +152,37 @@
             new GInsertLayerAction(),
 
             // View
-            new EXOriginalViewAction(),
-            new EXFitSelectionAction(),
-            new EXFitCurrentPageAction(),
-            new EXFitCurrentLayerAction(),
-            new EXFitAllAction(),
-            new EXMagnificationAction(6, null),
-            new EXMagnificationAction(12, null),
-            new EXMagnificationAction(25, null),
-            new EXMagnificationAction(50, [GUIKey.Constant.META, '5']),
-            new EXMagnificationAction(100, [GUIKey.Constant.META, '1']),
-            new EXMagnificationAction(200, [GUIKey.Constant.META, '2']),
-            new EXMagnificationAction(400, [GUIKey.Constant.META, '4']),
-            new EXMagnificationAction(800, [GUIKey.Constant.META, '8']),
-            new EXZoomInAction(),
-            new EXZoomOutAction(),
+            new GOriginalViewAction(),
+            new GFitSelectionAction(),
+            new GFitCurrentPageAction(),
+            new GFitCurrentLayerAction(),
+            new GFitAllAction(),
+            new GMagnificationAction(6, null),
+            new GMagnificationAction(12, null),
+            new GMagnificationAction(25, null),
+            new GMagnificationAction(50, [IFKey.Constant.META, '5']),
+            new GMagnificationAction(100, [IFKey.Constant.META, '1']),
+            new GMagnificationAction(200, [IFKey.Constant.META, '2']),
+            new GMagnificationAction(400, [IFKey.Constant.META, '4']),
+            new GMagnificationAction(800, [IFKey.Constant.META, '8']),
+            new GZoomInAction(),
+            new GZoomOutAction(),
 
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Full),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Fast),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Outline),
-            new EXPaintModeAction(GXScenePaintConfiguration.PaintMode.Output),
+            new GPaintModeAction(IFScenePaintConfiguration.PaintMode.Full),
+            new GPaintModeAction(IFScenePaintConfiguration.PaintMode.Fast),
+            new GPaintModeAction(IFScenePaintConfiguration.PaintMode.Outline),
+            new GPaintModeAction(IFScenePaintConfiguration.PaintMode.Output),
 
-            new EXPixelPreviewAction(),
+            new GPixelPreviewAction(),
 
-            new EXShowRulersAction(),
+            new GShowRulersAction(),
 
             // Window
-            new EXNewWindowAction(),
+            new GNewWindowAction(),
             paletteShowActions,
 
             // Help
-            new EXShortcutMapAction(),
+            new GShortcutMapAction(),
             new GWelcomeAction()
         );
     };

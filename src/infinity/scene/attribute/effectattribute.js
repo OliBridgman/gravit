@@ -10,13 +10,13 @@
         IFDrawAttribute.call(this);
     }
 
-    GObject.inherit(IFEffectAttribute, IFDrawAttribute);
+    IFObject.inherit(IFEffectAttribute, IFDrawAttribute);
 
     /** @override */
     IFEffectAttribute.prototype.render = function (context, source, bbox) {
         // Let the effect take only place in 'Full' or 'Output' mode
         var paintMode = context.configuration.paintMode;
-        if (!context.configuration.isOutline(context) && (paintMode === GXScenePaintConfiguration.PaintMode.Full || paintMode === GXScenePaintConfiguration.PaintMode.Output)) {
+        if (!context.configuration.isOutline(context) && (paintMode === IFScenePaintConfiguration.PaintMode.Full || paintMode === IFScenePaintConfiguration.PaintMode.Output)) {
             // Create a temporary canvas for our contents for our effects
             var oldCanvas = context.canvas;
             context.canvas = oldCanvas.createCanvas(this._getCanvasExtents(context, source, bbox));
@@ -52,9 +52,9 @@
     };
 
     /**
-     * @param {GXPaintContext} context
-     * @param {GXVertexSource} source
-     * @param {GXRect} bbox
+     * @param {IFPaintContext} context
+     * @param {IFVertexSource} source
+     * @param {IFRect} bbox
      * @return {GRect}
      * @private
      */
@@ -63,9 +63,9 @@
     };
 
     /**
-     * @param {GXPaintContext} context
-     * @param {GXVertexSource} source
-     * @param {GXRect} bbox
+     * @param {IFPaintContext} context
+     * @param {IFVertexSource} source
+     * @param {IFRect} bbox
      * @private
      */
     IFEffectAttribute.prototype._renderContents = function (context, source, bbox) {
@@ -73,9 +73,9 @@
     };
 
     /**
-     * @param {GXPaintContext} context
-     * @param {GXVertexSource} source
-     * @param {GXRect} bbox
+     * @param {IFPaintContext} context
+     * @param {IFVertexSource} source
+     * @param {IFRect} bbox
      * @return {GPoint} optional offset in scene coordinates to paint the effect by
      * @private
      */
@@ -85,9 +85,9 @@
     };
 
     /**
-     * @param {GXPaintContext} context
-     * @param {GXVertexSource} source
-     * @param {GXRect} bbox
+     * @param {IFPaintContext} context
+     * @param {IFVertexSource} source
+     * @param {IFRect} bbox
      * @private
      */
     IFEffectAttribute.prototype._renderOverlay = function (context, source, bbox) {

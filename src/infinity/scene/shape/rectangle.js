@@ -2,43 +2,43 @@
 
     /**
      * A rectangle shape
-     * @class GXRectangle
-     * @extends GXPathBase
+     * @class IFRectangle
+     * @extends IFPathBase
      * @constructor
      */
-    function GXRectangle() {
-        GXPathBase.call(this);
+    function IFRectangle() {
+        IFPathBase.call(this);
         this.$closed = true; // rectangles are always closed
-        this._setDefaultProperties(GXRectangle.GeometryProperties);
+        this._setDefaultProperties(IFRectangle.GeometryProperties);
         this._invalidatePath(); // create unit path
     }
 
-    GXNode.inherit("rectangle", GXRectangle, GXPathBase);
+    IFNode.inherit("rectangle", IFRectangle, IFPathBase);
 
     /**
      * The geometry properties of a rectangle with their default values
      */
-    GXRectangle.GeometryProperties = {
+    IFRectangle.GeometryProperties = {
         /** All corners uniform */
         uf: true,
         /** Top-Left uniform, corner-type, x-shoulder-length, y-shoulder-length */
         tl_uf: true,
-        tl_ct: GXPathBase.CornerType.Rounded,
+        tl_ct: IFPathBase.CornerType.Rounded,
         tl_sx: 0,
         tl_sy: 0,
         /** Top-Right uniform, corner-type, x-shoulder-length, y-shoulder-length */
         tr_uf: true,
-        tr_ct: GXPathBase.CornerType.Rounded,
+        tr_ct: IFPathBase.CornerType.Rounded,
         tr_sx: 0,
         tr_sy: 0,
         /** Bottom-Right uniform, corner-type, x-shoulder-length, y-shoulder-length */
         br_uf: true,
-        br_ct: GXPathBase.CornerType.Rounded,
+        br_ct: IFPathBase.CornerType.Rounded,
         br_sx: 0,
         br_sy: 0,
         /** Bottom-Left uniform, corner-type, x-shoulder-length, y-shoulder-length */
         bl_uf: true,
-        bl_ct: GXPathBase.CornerType.Rounded,
+        bl_ct: IFPathBase.CornerType.Rounded,
         bl_sx: 0,
         bl_sy: 0
     };
@@ -48,7 +48,7 @@
      * @param {GRect.Side} side the side to get a prefix for
      * @returns {string} the prefix for the given side
      */
-    GXRectangle.getGeometryPropertiesSidePrefix = function (side) {
+    IFRectangle.getGeometryPropertiesSidePrefix = function (side) {
         switch (side) {
             case GRect.Side.TOP_LEFT:
                 return 'tl';
@@ -67,21 +67,21 @@
      * Rectangle sides in their correct order
      * @type {Array<GRect.Side>}
      */
-    GXRectangle.SIDES = [GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_RIGHT, GRect.Side.BOTTOM_LEFT];
+    IFRectangle.SIDES = [GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_RIGHT, GRect.Side.BOTTOM_LEFT];
 
     /**
      * Iterate all segments of the rectangle
-     * @param {Function(point: GPoint, side: GRect.Side, cornerType: GXPathBase.CornerType, leftShoulderLength: Number, rightShoulderLength: Number, idx: Number)} iterator
+     * @param {Function(point: GPoint, side: GRect.Side, cornerType: IFPathBase.CornerType, leftShoulderLength: Number, rightShoulderLength: Number, idx: Number)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
      * @param {Boolean} [includeTransform] if true, includes the transformation of the rectangle
      * if any in the returned coordinates. Defaults to false.
      */
-    GXRectangle.prototype.iterateSegments = function (iterator, includeTransform) {
+    IFRectangle.prototype.iterateSegments = function (iterator, includeTransform) {
         var transform = includeTransform ? this.$trf : null;
 
-        for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-            var side = GXRectangle.SIDES[i];
-            var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+        for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+            var side = IFRectangle.SIDES[i];
+            var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
             var point = null;
 
             switch (side) {
@@ -110,16 +110,16 @@
     };
 
     /** @override */
-    GXRectangle.prototype.store = function (blob) {
-        if (GXPathBase.prototype.store.call(this, blob)) {
+    IFRectangle.prototype.store = function (blob) {
+        if (IFPathBase.prototype.store.call(this, blob)) {
             if (this.uf) {
                 blob.uf = true; // all uniform
                 blob.ct = this.$tl_ct; // all corner type
                 blob.sl = this.$tl_sx; // all shoulder length
             } else {
-                for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-                    var side = GXRectangle.SIDES[i];
-                    var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+                for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+                    var side = IFRectangle.SIDES[i];
+                    var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
                     blob[prefix + 'uf'] = this['$' + prefix + '_uf'];
                     blob[prefix + 'ct'] = this['$' + prefix + '_ct'];
                     blob[prefix + 'sl'] = [this['$' + prefix + '_sx'], this['$' + prefix + '_sy']];
@@ -131,12 +131,12 @@
     };
 
     /** @override */
-    GXRectangle.prototype.restore = function (blob) {
-        if (GXPathBase.prototype.restore.call(this, blob)) {
+    IFRectangle.prototype.restore = function (blob) {
+        if (IFPathBase.prototype.restore.call(this, blob)) {
             // We'll use our custom restore routine here as we can save optimized
-            for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-                var side = GXRectangle.SIDES[i];
-                var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+            for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+                var side = IFRectangle.SIDES[i];
+                var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
                 this['$' + prefix + '_uf'] = blob.uf ? blob.uf : blob[prefix + 'uf'];
                 this['$' + prefix + '_ct'] = blob.uf ? blob.ct : blob[prefix + 'ct'];
                 this['$' + prefix + '_sx'] = blob.uf ? blob.sl : blob[prefix + 'sl'][0];
@@ -151,15 +151,15 @@
 
     /**
      * Return the anchor points of the rectangle
-     * @returns {GXPathBase.AnchorPoints}
+     * @returns {IFPathBase.AnchorPoints}
      */
-    GXRectangle.prototype.getAnchorPoints = function () {
+    IFRectangle.prototype.getAnchorPoints = function () {
         return this._getAnchorPoints();
     };
 
     /** @override */
-    GXRectangle.prototype._handleChange = function (change, args) {
-        if (this._handleGeometryChangeForProperties(change, args, GXRectangle.GeometryProperties) && change == GXNode._Change.AfterPropertiesChange) {
+    IFRectangle.prototype._handleChange = function (change, args) {
+        if (this._handleGeometryChangeForProperties(change, args, IFRectangle.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             var propertiesToSet = [];
             var valuesToSet = [];
 
@@ -171,9 +171,9 @@
                 var newTVal = null;
                 var sValAssigned = false;
                 var tValAssigned = false;
-                for (var i = 0; i < GXRectangle.SIDES.length && (!sValAssigned || !tValAssigned); ++i) {
-                    var side = GXRectangle.SIDES[i];
-                    var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+                for (var i = 0; i < IFRectangle.SIDES.length && (!sValAssigned || !tValAssigned); ++i) {
+                    var side = IFRectangle.SIDES[i];
+                    var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
                     if (!sValAssigned) {
                         var prop = prefix + '_sx';
                         var idx = props.indexOf(prop);
@@ -214,9 +214,9 @@
                 propertiesToSet.push('tl_ct', 'tr_ct', 'br_ct', 'bl_ct');
                 valuesToSet.push(newTVal, newTVal, newTVal, newTVal);
             } else {
-                for (var i = 0; i < GXRectangle.SIDES.length; ++i) {
-                    var side = GXRectangle.SIDES[i];
-                    var prefix = GXRectangle.getGeometryPropertiesSidePrefix(side);
+                for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+                    var side = IFRectangle.SIDES[i];
+                    var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
                     var newSVal = null;
                     var sValAssigned = false;
 
@@ -250,13 +250,13 @@
                 this._invalidatePath();
             }
         }
-        GXPathBase.prototype._handleChange.call(this, change, args);
+        IFPathBase.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * @private
      */
-    GXRectangle.prototype._invalidatePath = function () {
+    IFRectangle.prototype._invalidatePath = function () {
         var anchorPoints = this._getAnchorPoints();
 
         this.beginUpdate();
@@ -266,7 +266,7 @@
             anchorPoints.clearChildren();
 
             this.iterateSegments(function (point, side, cornerType, xShoulderLength, yShoulderLength) {
-                var anchorPoint = new GXPathBase.AnchorPoint();
+                var anchorPoint = new IFPathBase.AnchorPoint();
                 anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr', 'cu'],
                     [cornerType, point.getX(), point.getY(), xShoulderLength, yShoulderLength, false]);
 
@@ -280,9 +280,9 @@
     };
 
     /** @override */
-    GXRectangle.prototype.toString = function () {
-        return "[GXRectangle]";
+    IFRectangle.prototype.toString = function () {
+        return "[IFRectangle]";
     };
 
-    _.GXRectangle = GXRectangle;
+    _.IFRectangle = IFRectangle;
 })(this);

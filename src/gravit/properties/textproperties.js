@@ -3,13 +3,13 @@
     /**
      * Text properties panel
      * @class GTextProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GTextProperties() {
         this._text = [];
     };
-    GObject.inherit(GTextProperties, EXProperties);
+    IFObject.inherit(GTextProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -18,16 +18,22 @@
     GTextProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GTextProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXText>}
+     * @type {Array<IFText>}
      * @private
      */
     GTextProperties.prototype._text = null;
+
+    /**
+     * @type {IFTextEditor}
+     * @private
+     */
+    GTextProperties.prototype._textEditor = null;
 
     /** @override */
     GTextProperties.prototype.getCategory = function () {
@@ -41,36 +47,49 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'etp') {
-                return $('<select></select>')
-                    .attr('data-property', 'etp')
+            if (property === 'ff') {
+                var select = $('<select></select>')
                     .css('width', '100%')
-                    .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Arc)
-                        // TODO : I18N
-                        .text('Arc'))
-                    .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Chord)
-                        // TODO : I18N
-                        .text('Chord'))
-                    .append($('<option></option>')
-                        .attr('value', GXEllipse.Type.Pie)
-                        // TODO : I18N
-                        .text('Pie'))
+                    .attr('data-property', property)
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
-            } else if (property === 'sa' || property === 'ea') {
+
+                // Add typefaces
+                var families = ifFont.getFamilies();
+                for (var i = 0; i < families.length; ++i) {
+                    $('<option></option>')
+                        .attr('value', families[i])
+                        .text(families[i])
+                        .appendTo(select);
+                }
+
+                return select;
+            } else if (property === 'fi') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = parseFloat($(this).val());
-                        if (!isNaN(angle)) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
-                            self._assignProperty(property, gMath.PI2 - angle);
+                        var value = self._document.getScene().stringToPoint($(this).val());
+                        if (value !== null && typeof value === 'number' && value >= 0) {
+                            self._assignProperty(property, value);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
+            } else if (property === 'lh') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .css('width', '4em')
+                    .gAutoBlur()
+                    .on('change', function () {
+                        var value = $(this).val();
+                        value = !value || value === "" ? null : IFLength.parseEquationValue(value);
+                        if (value === null || value > 0) {
+                            self._assignProperty(property, value);
                         } else {
                             self._updateProperties();
                         }
@@ -83,7 +102,6 @@
         $('<div>Text Properties</div>')
             .appendTo(panel);
 
-        /*
         $('<table></table>')
             .addClass('g-form')
             .css('margin', '0px auto')
@@ -91,30 +109,31 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Style:'))
+                    .text('Face:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createInput('etp'))))
+                    .append(_createInput('ff'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Angle:'))
+                    .text('Size:'))
                 .append($('<td></td>')
-                    .append(_createInput('sa')))
+                    .append(_createInput('fi')))
                 .append($('<td></td>')
                     .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
+                    // TODO : I18N
+                    .text('Line:'))
                 .append($('<td></td>')
-                    .append(_createInput('ea'))))
+                    .append(_createInput('lh'))))
             .appendTo(panel);
-            */
     };
 
     /** @override */
     GTextProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getEditor().removeEventListener(IFEditor.InlineEditorEvent, this._inlineEditorEvent);
             this._document = null;
         }
 
@@ -126,14 +145,15 @@
         // Collect all text elements
         this._text = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXText) {
+            if (elements[i] instanceof IFText) {
                 this._text.push(elements[i]);
             }
         }
 
         if (this._text.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getEditor().addEventListener(IFEditor.InlineEditorEvent, this._inlineEditorEvent, this);
             this._updateProperties();
             return true;
         } else {
@@ -142,7 +162,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GTextProperties.prototype._afterPropertiesChange = function (event) {
@@ -153,19 +173,40 @@
     };
 
     /**
+     * @param {IFEditor.InlineEditorEvent} event
+     * @private
+     */
+    GTextProperties.prototype._inlineEditorEvent = function (event) {
+        switch (event.type) {
+            case IFEditor.InlineEditorEvent.Type.AfterOpen:
+                this._textEditor = event.editor;
+                this._updateProperties();
+                break;
+            case IFEditor.InlineEditorEvent.Type.BeforeClose:
+                this._textEditor = null;
+                this._updateProperties();
+                break;
+            case IFEditor.InlineEditorEvent.Type.SelectionChanged:
+                this._updateProperties();
+                break;
+            default:
+                break;
+        }
+    };
+
+    /**
      * Defaults to false.
      * @private
      */
     GTextProperties.prototype._updateProperties = function () {
-        // We'll always read properties of first text
-        var text = this._text[0];
-        /*
-        this._panel.find('select[data-property="etp"]').val(ellipse.getProperty('etp'));
-        this._panel.find('input[data-property="sa"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('sa')), 2).toString().replace('.', ','));
-        this._panel.find('input[data-property="ea"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - ellipse.getProperty('ea')), 2).toString().replace('.', ','));
-            */
+        // Read properties from active editor or first text' editor
+        var propertySource = this._textEditor ? this._textEditor : IFElementEditor.getEditor(this._text[0]);
+
+        this._panel.find('input[data-property="fi"]').val(
+            this._document.getScene().pointToString(propertySource.getProperty('fi')));
+
+        var lh = propertySource.getProperty('lh');
+        this._panel.find('input[data-property="lh"]').val(lh !== null ? gUtil.formatNumber(lh) : "");
     };
 
     /**
@@ -183,15 +224,20 @@
      * @private
      */
     GTextProperties.prototype._assignProperties = function (properties, values) {
-        var editor = this._document.getEditor();
-        editor.beginTransaction();
-        try {
-            for (var i = 0; i < this._text.length; ++i) {
-                this._text[i].setProperties(properties, values);
+        if (this._textEditor) {
+            this._textEditor.setProperties(properties, values);
+        } else {
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                for (var i = 0; i < this._text.length; ++i) {
+                    var textEditor = IFElementEditor.getEditor(this._text[i]);
+                    textEditor.setProperties(properties, values);
+                }
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Modify Text Properties');
             }
-        } finally {
-            // TODO : I18N
-            editor.commitTransaction('Modify Text Properties');
         }
     };
 

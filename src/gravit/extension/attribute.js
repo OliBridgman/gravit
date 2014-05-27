@@ -8,7 +8,7 @@
      */
     function GAttribute() {
     };
-    GObject.inherit(GAttribute, GEventTarget);
+    IFObject.inherit(GAttribute, GEventTarget);
 
     /**
      * Called to return the attribute class of this
@@ -36,8 +36,8 @@
 
     /**
      * Called to update from a given attribute of this type.
-     * @param {EXDocument} document the document to work on
-     * @param {GXAttribute} attribute the attribute to work on
+     * @param {GDocument} document the document to work on
+     * @param {IFAttribute} attribute the attribute to work on
      * @param {Function(properties: Array<String>, values: Array<*>)} assign the
      * assignment function to be called to assign one or more properties to the attribute
      * @return {Boolean} true if the panel is available for

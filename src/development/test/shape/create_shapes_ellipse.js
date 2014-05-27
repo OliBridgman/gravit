@@ -8,9 +8,9 @@
     }
 
     var ellipseType = [
-        GXEllipse.Type.Pie,
-        GXEllipse.Type.Chord,
-        GXEllipse.Type.Arc
+        IFEllipse.Type.Pie,
+        IFEllipse.Type.Chord,
+        IFEllipse.Type.Arc
     ];
 
     function test(scene, page, view) {
@@ -24,16 +24,16 @@
             var width = getRandomInt(size / 3, size);
             var height = getRandomInt(size / 3, size);
 
-            var ellipse = new GXEllipse();
+            var ellipse = new IFEllipse();
             ellipse.setProperties(['sa', 'ea', 'etp', 'trf'],
-                [gMath.toRadians(getRandomInt(0, 360)), gMath.toRadians(getRandomInt(0, 360)), ellipseType[getRandomInt(0, ellipseType.length-1)],
+                [ifMath.toRadians(getRandomInt(0, 360)), ifMath.toRadians(getRandomInt(0, 360)), ellipseType[getRandomInt(0, ellipseType.length-1)],
                     new GTransform(width/2, 0.0, 0.0, height/2, 0, 0)]);
 
             ellipse.transform(new GTransform(1.0, 0.0, 0.0, 1.0, 0, 0)
-                //.rotated(gMath.toRadians(getRandomInt(0, 360))));
+                //.rotated(ifMath.toRadians(getRandomInt(0, 360))));
                 .translated(x + size/2,  y + size/2));
 
-            var editor = GXEditor.getEditor(scene);
+            var editor = IFEditor.getEditor(scene);
             ellipse.getAttributes().appendChild(new IFStrokeAttribute());
             page.appendChild(ellipse);
 

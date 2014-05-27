@@ -2,14 +2,14 @@
     /**
      * The text tool
      * @class IFTextTool
-     * @extends GXShapeTool
+     * @extends IFShapeTool
      * @constructor
      */
     function IFTextTool() {
-        GXShapeTool.call(this, true, true);
+        IFShapeTool.call(this, true, true);
     }
 
-    GObject.inherit(IFTextTool, GXShapeTool);
+    IFObject.inherit(IFTextTool, IFShapeTool);
 
     /** @override */
     IFTextTool.prototype.getGroup = function () {
@@ -23,7 +23,7 @@
 
     /** @override */
     IFTextTool.prototype.getHint = function () {
-        return GXShapeTool.prototype.getHint.call(this).setTitle(new GLocale.Key(IFTextTool, "title"));
+        return IFShapeTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFTextTool, "title"));
     };
 
     /** @override */
@@ -34,30 +34,33 @@
     /** @override */
     IFTextTool.prototype.getCursor = function () {
         if (!this._shape) {
-            return GUICursor.Text;
+            return IFCursor.Text;
         } else {
-            return GXShapeTool.prototype.getCursor.call(this);
+            return IFShapeTool.prototype.getCursor.call(this);
         }
     };
 
     /** @override */
     IFTextTool.prototype._createShape = function () {
-        return new GXRectangle();
+        return new IFRectangle();
     };
 
     /** @override */
     IFTextTool.prototype._updateShape = function (shape, area, line, scene) {
-        // Original shape is a rectangle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
-        shape.setProperty('trf',
-            new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
-                area.getX() + (scene ? 0 : area.getWidth() / 2), area.getY() + (scene ? 0: area.getHeight() / 2)));
+        if (scene) {
+            shape.setProperty('trf', new GTransform(area.getWidth(), 0, 0, area.getHeight(), area.getX(), area.getY()));
+        } else {
+            shape.setProperty('trf',
+                new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+                    area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
+        }
     };
 
     /** @override */
     IFTextTool.prototype._insertShape = function (shape) {
         // Create our text out of our rectangle here
-        var text = new GXText();
-        text.setProperties(['fw', 'fh', 'trf'], [true, true, shape.getProperty('trf')]);
+        var text = new IFText();
+        text.setProperties(['fw', 'trf'], [true, shape.getProperty('trf')]);
 
         this._insertText(text);
     };
@@ -69,7 +72,7 @@
 
     /** @override */
     IFTextTool.prototype._createShapeManually = function (position) {
-        var text = new GXText();
+        var text = new IFText();
         var transform = this._view.getViewTransform();
         var scenePoint = transform.mapPoint(position);
 
@@ -81,16 +84,16 @@
     /** @private */
     IFTextTool.prototype._insertText = function (text) {
         // Insert text, first
-        GXShapeTool.prototype._insertShape.call(this, text);
+        IFShapeTool.prototype._insertShape.call(this, text);
 
         // Open the inline editor for it now
-        var editor = GXElementEditor.getEditor(text);
+        var editor = IFElementEditor.getEditor(text);
 
         editor.beginInlineEdit(this._view, this._view._htmlElement);
         editor.adjustInlineEditForView(this._view);
 
         // Finally switch to select tool
-        this._manager.activateTool(GXPointerTool);
+        this._manager.activateTool(IFPointerTool);
     };
 
     /** override */

@@ -8,14 +8,14 @@
      * @class IFDrawAttribute
      * @extends IFAttribute
      * @mixes IFAttribute.Render
-     * @mixes GXNode.Container
+     * @mixes IFNode.Container
      * @constructor
      */
     function IFDrawAttribute() {
         IFAttribute.call(this);
     }
 
-    GObject.inheritAndMix(IFDrawAttribute, IFAttribute, [IFAttribute.Render, GXNode.Container]);
+    IFObject.inheritAndMix(IFDrawAttribute, IFAttribute, [IFAttribute.Render, IFNode.Container]);
 
     /** @override */
     IFDrawAttribute.prototype.validateInsertion = function (parent, reference) {

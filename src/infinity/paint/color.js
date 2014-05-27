@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * A class representing a color
-     * @param {GXColor.Type} type
+     * @param {IFColor.Type} type
      * @param {Array<Number>|String> [value]
-     * @class GXColor
+     * @class IFColor
      * @constructor
      */
-    function GXColor(type, value) {
+    function IFColor(type, value) {
         this._type = type;
         this._value = value && value instanceof Array ? value.slice() : value;
     }
@@ -15,28 +15,28 @@
      * Color's mime-type
      * @type {string}
      */
-    GXColor.MIME_TYPE = "application/infinity+color";
+    IFColor.MIME_TYPE = "application/infinity+color";
 
     /**
-     * Parse a string into a GXColor
+     * Parse a string into a IFColor
      * @param {String} string
-     * @return {GXColor}
+     * @return {IFColor}
      */
-    GXColor.parseColor = function (string) {
+    IFColor.parseColor = function (string) {
         if (!string || string === "") {
             return null;
         }
 
-        for (var typeKey in GXColor.Type) {
-            var type = GXColor.Type[typeKey];
+        for (var typeKey in IFColor.Type) {
+            var type = IFColor.Type[typeKey];
             if (string.indexOf(type.key) === 0) {
                 if (type.fromString) {
                     var value = type.fromString(string.substring(type.key.length));
                     if (value) {
-                        return new GXColor(type, value);
+                        return new IFColor(type, value);
                     }
                 } else {
-                    return new GXColor(type);
+                    return new IFColor(type);
                 }
             }
         }
@@ -47,9 +47,9 @@
     /**
      * Parse a CSS Color String
      * @param {String} cssString
-     * @return {GXColor}
+     * @return {IFColor}
      */
-    GXColor.parseCSSColor = function (cssString) {
+    IFColor.parseCSSColor = function (cssString) {
         // http://www.w3.org/TR/css3-color/
         var kCSSColorTable = {
             "transparent": [0, 0, 0, 0], "aliceblue": [240, 248, 255, 100],
@@ -163,21 +163,21 @@
         var str = cssString.replace(/ /g, '').toLowerCase();
 
         // Color keywords (and transparent) lookup.
-        if (str in kCSSColorTable) return new GXColor(GXColor.Type.RGB, kCSSColorTable[str].slice());  // dup.
+        if (str in kCSSColorTable) return new IFColor(IFColor.Type.RGB, kCSSColorTable[str].slice());  // dup.
 
         // #abc and #abc123 syntax.
         if (str[0] === '#') {
             if (str.length === 4) {
                 var iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
                 if (!(iv >= 0 && iv <= 0xfff)) return null;  // Covers NaN.
-                return new GXColor(GXColor.Type.RGB, [((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
+                return new IFColor(IFColor.Type.RGB, [((iv & 0xf00) >> 4) | ((iv & 0xf00) >> 8),
                     (iv & 0xf0) | ((iv & 0xf0) >> 4),
                     (iv & 0xf) | ((iv & 0xf) << 4),
                     100]);
             } else if (str.length === 7) {
                 var iv = parseInt(str.substr(1), 16);  // TODO(deanm): Stricter parsing.
                 if (!(iv >= 0 && iv <= 0xffffff)) return null;  // Covers NaN.
-                return new GXColor(GXColor.Type.RGB, [(iv & 0xff0000) >> 16,
+                return new IFColor(IFColor.Type.RGB, [(iv & 0xff0000) >> 16,
                     (iv & 0xff00) >> 8,
                     iv & 0xff,
                     100]);
@@ -198,7 +198,7 @@
                 // Fall through.
                 case 'rgb':
                     if (params.length !== 3) return null;
-                    return new GXColor(GXColor.Type.RGB, [parse_css_int(params[0]),
+                    return new IFColor(IFColor.Type.RGB, [parse_css_int(params[0]),
                         parse_css_int(params[1]),
                         parse_css_int(params[2]),
                         alpha]);
@@ -215,7 +215,7 @@
                     var l = parse_css_float(params[2]);
                     var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
                     var m1 = l * 2 - m2;
-                    return new GXColor(GXColor.Type.RGB, [clamp_css_byte(css_hue_to_rgb(m1, m2, h + 1 / 3) * 255),
+                    return new IFColor(IFColor.Type.RGB, [clamp_css_byte(css_hue_to_rgb(m1, m2, h + 1 / 3) * 255),
                         clamp_css_byte(css_hue_to_rgb(m1, m2, h) * 255),
                         clamp_css_byte(css_hue_to_rgb(m1, m2, h - 1 / 3) * 255),
                         alpha]);
@@ -229,12 +229,12 @@
 
     /**
      * Compare two colors for equality Also takes care of null parameters
-     * @param {GXColor} left left side color
-     * @param {GXColor} right right side color
+     * @param {IFColor} left left side color
+     * @param {IFColor} right right side color
      * @return {Boolean} true if left and right are equal (also if they're null!)
      * @version 1.0
      */
-    GXColor.equals = function (left, right) {
+    IFColor.equals = function (left, right) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -269,11 +269,11 @@
     /**
      * @enum
      */
-    GXColor.Type = {
+    IFColor.Type = {
         /** RGB Color - "rgb(0..255, 0..255, 0..255, 0..100)" */
         RGB: {
             key: 'rgb',
-            space: GXColorSpace.RGB,
+            space: IFColorSpace.RGB,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -299,7 +299,7 @@
         /** HSL Color - "hsl(0..360, 0..100, 0..100, 0..100)" */
         HSL: {
             key: 'hsl',
-            space: GXColorSpace.RGB,
+            space: IFColorSpace.RGB,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -325,7 +325,7 @@
         /** Tone Color - "tone(0..100, 0..100)" */
         Tone: {
             key: 'tone',
-            space: GXColorSpace.RGB,
+            space: IFColorSpace.RGB,
             fromString: function (string) {
                 var result = [0, 0];
                 var values = string.split(',');
@@ -351,7 +351,7 @@
         /** CMYK Color - "cmyk(0..100, 0..100, 0..100)" */
         CMYK: {
             key: 'cmyk',
-            space: GXColorSpace.CMYK,
+            space: IFColorSpace.CMYK,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -378,7 +378,7 @@
         /** Reference to another color - "#ReferenceId" */
         Reference: {
             key: '#',
-            space: GXColorSpace.None,
+            space: IFColorSpace.None,
             fromString: function (string) {
                 return string;
             },
@@ -390,36 +390,36 @@
         /** Special white point - "white" - value = null */
         White: {
             key: 'white',
-            space: GXColorSpace.None
+            space: IFColorSpace.None
         },
         /** Special black point - "black"- value = null */
         Black: {
             key: 'black',
-            space: GXColorSpace.None
+            space: IFColorSpace.None
         },
         /** Special registration point - "registration" - value = null */
         Registration: {
             key: 'registration',
-            space: GXColorSpace.None
+            space: IFColorSpace.None
         }
     };
 
     /**
-     * @type {GXColor.Type}
+     * @type {IFColor.Type}
      * @private
      */
-    GXColor.prototype._type = null;
+    IFColor.prototype._type = null;
 
     /**
      * @type {Array<Number>|String|null}
      * @private
      */
-    GXColor.prototype._value = null;
+    IFColor.prototype._value = null;
 
     /**
-     * @returns {GXColor.Type}
+     * @returns {IFColor.Type}
      */
-    GXColor.prototype.getType = function () {
+    IFColor.prototype.getType = function () {
         return this._type;
     };
 
@@ -427,47 +427,47 @@
      * DO NOT MODIFY RETURN VALUE!!!
      * @returns {Array<Number>|String|null}
      */
-    GXColor.prototype.getValue = function () {
+    IFColor.prototype.getValue = function () {
         return this._value;
     };
 
     /**
-     * @return {GXColorSpace}
+     * @return {IFColorSpace}
      */
-    GXColor.prototype.getSpace = function () {
+    IFColor.prototype.getSpace = function () {
         return this._type.space;
     };
 
     /**
      * Return new instanceof this color with type RGB
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.toRGB = function () {
-        return new GXColor(GXColor.Type.RGB, this.asRGB());
+    IFColor.prototype.toRGB = function () {
+        return new IFColor(IFColor.Type.RGB, this.asRGB());
     };
 
     /**
      * Return new instanceof this color with type HSL
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.toHSL = function () {
-        return new GXColor(GXColor.Type.HSL, this.asHSL());
+    IFColor.prototype.toHSL = function () {
+        return new IFColor(IFColor.Type.HSL, this.asHSL());
     };
 
     /**
      * Return new instance of this color with type Tone
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.toTone = function () {
-        return new GXColor(GXColor.Type.Tone, this.asTone());
+    IFColor.prototype.toTone = function () {
+        return new IFColor(IFColor.Type.Tone, this.asTone());
     };
 
     /**
      * Return new instanceof this color with type CMYK
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.toCMYK = function () {
-        return new GXColor(GXColor.Type.CMYK, this.asCMYK());
+    IFColor.prototype.toCMYK = function () {
+        return new IFColor(IFColor.Type.CMYK, this.asCMYK());
     };
 
     /**
@@ -476,16 +476,16 @@
      * color space like a reference or white black then
      * this function will return a copy of the same color
      * like this one with type RGB
-     * @param {GXColor.Type} type the target type
-     * @returns {GXColor}
+     * @param {IFColor.Type} type the target type
+     * @returns {IFColor}
      */
-    GXColor.prototype.toType = function (type) {
+    IFColor.prototype.toType = function (type) {
         switch (type) {
-            case GXColor.Type.HSL:
+            case IFColor.Type.HSL:
                 return this.toHSL();
-            case GXColor.Type.CMYK:
+            case IFColor.Type.CMYK:
                 return this.toCMYK();
-            case GXColor.Type.Tone:
+            case IFColor.Type.Tone:
                 return this.toTone();
             default:
                 return this.toRGB();
@@ -496,10 +496,10 @@
      * Return color as RGB-Array
      * @return Array<Number> (0..255, 0..255, 0..255, 0..100)
      */
-    GXColor.prototype.asRGB = function () {
-        if (this._type === GXColor.Type.RGB) {
+    IFColor.prototype.asRGB = function () {
+        if (this._type === IFColor.Type.RGB) {
             return this._value.slice();
-        } else if (this._type === GXColor.Type.HSL) {
+        } else if (this._type === IFColor.Type.HSL) {
             var h = this._value[0] / 360;
             var s = this._value[1] / 100;
             var l = this._value[2] / 100;
@@ -545,10 +545,10 @@
             var B = Math.min(255, Math.max(0, Math.round(b * 255)));
 
             return [R, G, B, this._value[3]];
-        } else if (this._type === GXColor.Type.Tone) {
+        } else if (this._type === IFColor.Type.Tone) {
             var t = 255 - Math.min(255, Math.max(0, Math.round(this._value[0] / 100 * 255)));
             return [t, t, t, this._value[1]];
-        } else if (this._type === GXColor.Type.CMYK) {
+        } else if (this._type === IFColor.Type.CMYK) {
             // CMYK -> CMY
             var c = this._value[0] / 100;
             var m = this._value[1] / 100;
@@ -565,11 +565,11 @@
             var B = Math.min(255, Math.max(0, Math.round((1 - Y) * 255)));
 
             return [R, G, B, 100];
-        } else if (this._type === GXColor.Type.White) {
+        } else if (this._type === IFColor.Type.White) {
             return [255, 255, 255, 100];
-        } else if (this._type === GXColor.Type.Black) {
+        } else if (this._type === IFColor.Type.Black) {
             return [0, 0, 0, 100];
-        } else if (this._type === GXColor.Type.Registration) {
+        } else if (this._type === IFColor.Type.Registration) {
             return [0, 0, 0, 100];
         } else {
             throw new Error('Unable to convert to rgb from color type.');
@@ -580,7 +580,7 @@
      * Return color as 32-Bit integer
      * @return {Number}
      */
-    GXColor.prototype.asRGBInt = function () {
+    IFColor.prototype.asRGBInt = function () {
         var rgb = this.asRGB();
         return gColor.build(rgb[0], rgb[1], rgb[2], rgb[3] * 2.55);
     };
@@ -589,8 +589,8 @@
      * Return color as HSL-Array
      * @return Array<Number> (0..360, 0..100, 0..100, 0..100)
      */
-    GXColor.prototype.asHSL = function () {
-        if (this._type === GXColor.Type.HSL) {
+    IFColor.prototype.asHSL = function () {
+        if (this._type === IFColor.Type.HSL) {
             return this._value.slice();
         } else {
             var rgb = this.asRGB();
@@ -635,8 +635,8 @@
      * Return color as Tone
      * @return {Array<Number>} (0..100, 0..100)
      */
-    GXColor.prototype.asTone = function () {
-        if (this._type === GXColor.Type.Tone) {
+    IFColor.prototype.asTone = function () {
+        if (this._type === IFColor.Type.Tone) {
             return this._value.slice();
         } else {
             var rgb = this.asRGB();
@@ -658,8 +658,8 @@
      * Return color as CMYK-Array
      * @return Array<Number> (0..100, 0..100, 0.100, 0..100)
      */
-    GXColor.prototype.asCMYK = function () {
-        if (this._type === GXColor.Type.CMYK) {
+    IFColor.prototype.asCMYK = function () {
+        if (this._type === IFColor.Type.CMYK) {
             return this._value.slice();
         } else {
             var rgb = this.asRGB();
@@ -687,7 +687,7 @@
      * reference as XYZ (0..1.0, 0..1.0, 0..1.0)
      * @return Array<Number> (0..1.0, 0..1.0, 0..1.0)
      */
-    GXColor.prototype.asXYZ = function (whitePointReference) {
+    IFColor.prototype.asXYZ = function (whitePointReference) {
         var rgb = this.asRGB();
         var whitePointReference = whitePointReference ? whitePointReference : [];
 
@@ -700,7 +700,7 @@
      * reference as XYZ (0..1.0, 0..1.0, 0..1.0)
      * @return Array<Number> TODO : Output description ranges
      */
-    GXColor.prototype.asLAB = function (whitePointReference) {
+    IFColor.prototype.asLAB = function (whitePointReference) {
         var xyz = this.asXYZ(whitePointReference);
 
         var convert = function (channel) {
@@ -720,7 +720,7 @@
      * Return string representation of the underlying color
      * @return {String}
      */
-    GXColor.prototype.asString = function () {
+    IFColor.prototype.asString = function () {
         var result = this._type.key;
         if (this._type.toString) {
             result += this._type.toString(this._value);
@@ -732,7 +732,7 @@
      * Return CSS-Compatible string representation of the underlying color
      * @return {String}
      */
-    GXColor.prototype.asCSSString = function () {
+    IFColor.prototype.asCSSString = function () {
         var rgb = this.asRGB();
         if (rgb[3] === 100) {
             var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
@@ -747,17 +747,17 @@
     /**
      * Return new instanceof of this color with a given tint
      * @param {Number} tint the tint from 0..100
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.withTint = function (tint) {
-        if (this._type === GXColor.Type.CMYK) {
+    IFColor.prototype.withTint = function (tint) {
+        if (this._type === IFColor.Type.CMYK) {
             // Special handling for CMYK
             var factor = tint / 100.0;
             var cmyk = this._value.slice();
             for (var i = 0; i < 4; ++i) {
                 cmyk[i] = Math.round(cmyk[i] * factor);
             }
-            return new GXColor(GXColor.Type.CMYK, cmyk);
+            return new IFColor(IFColor.Type.CMYK, cmyk);
         } else {
             // All others use rgb and try to convert back to source type
             var factor = 1.0 - (tint / 100.0);
@@ -766,21 +766,21 @@
             rgb[1] = Math.round(((255 - rgb[1]) * factor) + rgb[1]);
             rgb[2] = Math.round(((255 - rgb[2]) * factor) + rgb[2]);
 
-            return new GXColor(GXColor.Type.RGB, rgb).toType(this._type);
+            return new IFColor(IFColor.Type.RGB, rgb).toType(this._type);
         }
     };
 
     /**
      * Return new instanceof of this color with a given shade
      * @param {Number} shade the shade from 0..100
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.withShade = function (shade) {
-        if (this._type === GXColor.Type.CMYK) {
+    IFColor.prototype.withShade = function (shade) {
+        if (this._type === IFColor.Type.CMYK) {
             // Special handling for CMYK
             var cmyk = this.asCMYK();
             cmyk[3] = shade;
-            return new GXColor(GXColor.Type.CMYK, cmyk).toType(this._type);
+            return new IFColor(IFColor.Type.CMYK, cmyk).toType(this._type);
         } else {
             // All others use rgb and try to convert back to source tpye
             var factor = 1.0 - (shade / 100.0);
@@ -789,23 +789,23 @@
             rgb[1] = Math.round(rgb[1] * factor);
             rgb[2] = Math.round(rgb[2] * factor);
 
-            return new GXColor(GXColor.Type.RGB, rgb).toType(this._type);
+            return new IFColor(IFColor.Type.RGB, rgb).toType(this._type);
         }
     };
 
     /**
      * Return new instanceof of this color with a given tone
      * @param {Number} tone the tone from 0..100
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
-    GXColor.prototype.withTone = function (tone) {
+    IFColor.prototype.withTone = function (tone) {
         return this.withTint(tone).withShade(tone);
     };
 
     /** @override */
-    GXColor.prototype.toString = function () {
-        return "[Object GXColor]";
+    IFColor.prototype.toString = function () {
+        return "[Object IFColor]";
     };
 
-    _.GXColor = GXColor;
+    _.IFColor = IFColor;
 })(this);

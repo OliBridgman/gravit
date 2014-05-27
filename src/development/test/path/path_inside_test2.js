@@ -23,11 +23,11 @@
             var cx = x + polySize / 2;
             var cy = y + polySize / 2;
 
-            var polygon = new GXPolygon();
+            var polygon = new IFPolygon();
             polygon.setProperties(['pts', 'cx', 'cy', 'ir', 'or', 'ia', 'oa', 'icr', 'ocr'],
                 [segments, cx, cy, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
-            var editor = GXEditor.getEditor(scene);
+            var editor = IFEditor.getEditor(scene);
             polygon.getAttributes().appendChild(new IFStrokeAttribute());
             page.appendChild(polygon);
 
@@ -50,13 +50,13 @@
             for (var j=0; j < num; ++j) {
                 var xPt = Math.random() * width + cx - width/2;
                 var yPt = Math.random() * height + cy - height/2;
-                var hitTestRes = new GXVertexInfo.HitResult();
+                var hitTestRes = new IFVertexInfo.HitResult();
                 var res = gVertexInfo.hitTest(xPt, yPt, polygon, 2, true, hitTestRes);
                 if (res && !hitTestRes.outline) {
-                    var path = new GXPath();
-                    var ap1 = new GXPathBase.AnchorPoint();
+                    var path = new IFPath();
+                    var ap1 = new IFPathBase.AnchorPoint();
                     ap1.setProperties(['x', 'y'], [xPt, yPt]);
-                    var ap2 = new GXPathBase.AnchorPoint();
+                    var ap2 = new IFPathBase.AnchorPoint();
                     ap2.setProperties(['x', 'y'], [xPt, yPt + 1]);
                     path.getAnchorPoints().appendChild(ap1);
                     path.getAnchorPoints().appendChild(ap2);

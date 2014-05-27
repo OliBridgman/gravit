@@ -8,10 +8,10 @@
      */
     function GUngroupAction() {
     };
-    GObject.inherit(GUngroupAction, GUIAction);
+    IFObject.inherit(GUngroupAction, GUIAction);
 
     GUngroupAction.ID = 'modify.ungroup';
-    GUngroupAction.TITLE = new GLocale.Key(GUngroupAction, "title");
+    GUngroupAction.TITLE = new IFLocale.Key(GUngroupAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GUngroupAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GUngroupAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'G'];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'G'];
     };
 
     /**
@@ -57,7 +57,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof GXGroup) {
+                    if (selection[i] instanceof IFGroup) {
                         return true;
                     }
                 }
@@ -77,7 +77,7 @@
 
             for (var i = 0; i < selection.length; ++i) {
                 var item = selection[i];
-                if (item instanceof GXGroup) {
+                if (item instanceof IFGroup) {
                     var groupParent = item.getParent();
 
                     // Move all sub-items of group before the group

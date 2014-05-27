@@ -8,10 +8,10 @@
      */
     function GCutAction() {
     };
-    GObject.inherit(GCutAction, GUIAction);
+    IFObject.inherit(GCutAction, GUIAction);
 
     GCutAction.ID = 'edit.cut';
-    GCutAction.TITLE = new GLocale.Key(GCutAction, "title");
+    GCutAction.TITLE = new IFLocale.Key(GCutAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GCutAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GCutAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'X'];
+        return [IFKey.Constant.META, 'X'];
     };
 
     /**

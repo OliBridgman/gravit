@@ -2,12 +2,12 @@
 
     /**
      * A source of vertices
-     * @class GXVertexSource
+     * @class IFVertexSource
      * @mixin
      * @constructor
      * @version 1.0
      */
-    function GXVertexSource() {
+    function IFVertexSource() {
     }
 
     /**
@@ -17,26 +17,26 @@
      * false otherwise i.e. if index is out of range
      * @version 1.0
      */
-    GXVertexSource.prototype.rewindVertices = function (index) {
+    IFVertexSource.prototype.rewindVertices = function (index) {
         return false;
     }
 
     /**
      * Read a vertex at the current index and increases the current index
      * to go to the next vertex on the next read
-     * @param {GXVertex} vertex the vertex to read into
+     * @param {IFVertex} vertex the vertex to read into
      * @return {Boolean} true if a vertex could be read, false otherwise,
      * i.e. if the end is already reached.
      * @version 1.0
      */
-    GXVertexSource.prototype.readVertex = function (vertex) {
+    IFVertexSource.prototype.readVertex = function (vertex) {
         return false;
     }
 
     /** @override */
-    GXVertexSource.prototype.toString = function () {
-        return "[Object GXVertexSource]";
+    IFVertexSource.prototype.toString = function () {
+        return "[Object IFVertexSource]";
     }
 
-    _.GXVertexSource = GXVertexSource;
+    _.IFVertexSource = IFVertexSource;
 })(this);

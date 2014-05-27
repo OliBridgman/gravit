@@ -5,17 +5,17 @@ var gravit = {
     modules: [],
 
     /**
-     * Array<GStorage>
+     * Array<IFStorage>
      */
     storages: [],
 
     /**
-     * Array<GXImport>
+     * Array<IFImport>
      */
     importers: [],
 
     /**
-     * Array<GXExport>
+     * Array<IFExport>
      */
     exporters: [],
 
@@ -25,22 +25,22 @@ var gravit = {
     actions: [],
 
     /**
-     * Array<EXPalette>
+     * Array<GPalette>
      */
     palettes: [],
 
     /**
-     * Array<GXTool>
+     * Array<IFTool>
      */
     tools: [],
 
     /**
-     * Array<EXColorMatcher>
+     * Array<GColorMatcher>
      */
     colorMatchers: [],
 
     /**
-     * Array<EXProperties>
+     * Array<GProperties>
      */
     properties: [],
 
@@ -56,7 +56,7 @@ var gravit = {
 var gShell = null;
 
 /**
- * @type {EXApplication}
+ * @type {GApplication}
  */
 var gApp = null;
 
@@ -66,13 +66,14 @@ $(document).ready(function () {
         throw new Error("Shell needs to be initialized, first.");
     }
 
-    gApp = new EXApplication();
+    gApp = new GApplication();
     gShell.prepareLoad();
 });
 
 
 // Init when everything is finally loaded
 $(window).load(function () {
+    rangy.init();
     gApp.init();
     gShell.finishLoad();
 });

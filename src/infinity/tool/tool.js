@@ -1,53 +1,53 @@
 (function (_) {
     /**
      * The base for a tool
-     * @class GXTool
-     * @extends GObject
+     * @class IFTool
+     * @extends IFObject
      * @constructor
      * @version 1.0
      */
-    function GXTool() {
+    function IFTool() {
     }
 
-    GObject.inherit(GXTool, GObject);
+    IFObject.inherit(IFTool, IFObject);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXTool Class
+    // IFTool Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The manager creating and owning this tool
-     * @type {GXToolManager}
+     * @type {IFToolManager}
      * @private
      */
-    GXTool.prototype._manager = null;
+    IFTool.prototype._manager = null;
 
     /**
      * The current docuument the tool is activated on, may be null for none
-     * @type {GXScene}
+     * @type {IFScene}
      * @private
      */
-    GXTool.prototype._scene = null;
+    IFTool.prototype._scene = null;
 
     /**
      * The current editor view the tool is activated on, may be null for none
-     * @type {GXEditorView}
+     * @type {IFEditorView}
      * @private
      */
-    GXTool.prototype._view = null;
+    IFTool.prototype._view = null;
 
     /**
      * The current graphic editor the tool is activated on, may be null for none
-     * @type {GXEditor}
+     * @type {IFEditor}
      * @private
      */
-    GXTool.prototype._editor = null;
+    IFTool.prototype._editor = null;
 
     /**
      * Should return a group for the tool (maybe null)
      * @returns {String}
      */
-    GXTool.prototype.getGroup = function () {
+    IFTool.prototype.getGroup = function () {
         return null;
     };
 
@@ -55,7 +55,7 @@
      * Should return a complete svg-based icon including a valid viewBox
      * @returns {String}
      */
-    GXTool.prototype.getIcon = function () {
+    IFTool.prototype.getIcon = function () {
         return null;
     };
 
@@ -64,8 +64,8 @@
      * @returns {GUIHint}
      * @version 1.0
      */
-    GXTool.prototype.getHint = function () {
-        var hint = new GUIHint().addKey(GUIKey.Constant.ESCAPE, new GLocale.Key(GXTool, "shortcut.esc"));
+    IFTool.prototype.getHint = function () {
+        var hint = new GUIHint().addKey(IFKey.Constant.ESCAPE, new IFLocale.Key(IFTool, "shortcut.esc"));
         var activationChars = this.getActivationCharacters();
         if (activationChars) {
             var hintShortcuts = [];
@@ -83,7 +83,7 @@
      * @returns {Array<String>}
      * @version 1.0
      */
-    GXTool.prototype.getActivationCharacters = function () {
+    IFTool.prototype.getActivationCharacters = function () {
         return null;
     };
 
@@ -91,18 +91,18 @@
      * Should return the current cursor for this tool.
      * If you need to update the cursor, simply call updateCursor()
      * @returns {String}
-     * @see GUICursor
+     * @see IFCursor
      * @version 1.0
      */
-    GXTool.prototype.getCursor = function () {
-        return GUICursor.Default;
+    IFTool.prototype.getCursor = function () {
+        return IFCursor.Default;
     };
 
     /**
      * Called when this tool got activated for a given view
-     * @param {GXEditorView} view the editor view the tool got activated for
+     * @param {IFEditorView} view the editor view the tool got activated for
      */
-    GXTool.prototype.activate = function (view) {
+    IFTool.prototype.activate = function (view) {
         this._scene = view ? view.getScene() : null;
         this._view = view;
         this._editor = view.getEditor();
@@ -110,9 +110,9 @@
 
     /**
      * Called when this tool got deactivated for it's current view
-     * @param {GXEditorView} view the editor view the tool got deactivated for
+     * @param {IFEditorView} view the editor view the tool got deactivated for
      */
-    GXTool.prototype.deactivate = function (view) {
+    IFTool.prototype.deactivate = function (view) {
         if (view.getScene() != this._scene || view != this._view) {
             throw new Error("Not supposed to happen");
         }
@@ -128,17 +128,17 @@
      * @return {Boolean}
      * @version 1.0
      */
-    GXTool.prototype.isDeactivatable = function () {
+    IFTool.prototype.isDeactivatable = function () {
         // Always deactivable by default
         return true;
     };
 
     /**
      * Called when this tool should paint itself.
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @version 1.0
      */
-    GXTool.prototype.paint = function (context) {
+    IFTool.prototype.paint = function (context) {
         // NO-OP
     };
 
@@ -146,7 +146,7 @@
      * Descendant classes should call this to update their cursor
      * @version 1.0
      */
-    GXTool.prototype.updateCursor = function () {
+    IFTool.prototype.updateCursor = function () {
         if (this._manager && this == this._manager.getActiveTool()) {
             this._manager._updateActiveToolCursor();
         }
@@ -159,16 +159,16 @@
      * or null, invalidates the whole area
      * @version 1.0
      */
-    GXTool.prototype.invalidateArea = function (area) {
+    IFTool.prototype.invalidateArea = function (area) {
         if (this._manager && this == this._manager.getActiveTool()) {
             this._manager._invalidateActiveToolArea(area);
         }
     };
 
     /** override */
-    GXTool.prototype.toString = function () {
-        return "[Object GXTool]";
+    IFTool.prototype.toString = function () {
+        return "[Object IFTool]";
     };
 
-    _.GXTool = GXTool;
+    _.IFTool = IFTool;
 })(this);

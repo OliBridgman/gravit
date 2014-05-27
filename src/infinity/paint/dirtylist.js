@@ -4,23 +4,23 @@
      * A general-purpose data structure for holding a list of rectangular
      * regions that need to be repainted, with intelligent coalescing.
      *
-     * GXDirtyList will unify two regions A and B if the smallest rectangle
+     * IFDirtyList will unify two regions A and B if the smallest rectangle
      * enclosing both A and B occupies no more than epsilon + Area_A +
      * Area_B. Failing this, if two corners of A fall within B, A will be
      * shrunk to exclude the union of A and B.
      *
-     * @class GXDirtyList
+     * @class IFDirtyList
      * @constructor
      * @version 1.0
      */
-    function GXDirtyList() {
+    function IFDirtyList() {
     }
 
     /**
-     * Global GXDirtyList options
+     * Global IFDirtyList options
      * @type {Object}
      */
-    GXDirtyList.options = {
+    IFDirtyList.options = {
         /**
          * Maximum area to when to merge dirty regions
          * @type {Number}
@@ -37,28 +37,28 @@
     };
 
     //------------------------------------------------------------------------------------------------------------------
-    // GXDirtyList.Matcher Class
+    // IFDirtyList.Matcher Class
     //------------------------------------------------------------------------------------------------------------------
     /**
      * The matcher is a consolidated result from a flushed dirty list
-     * @class GXDirtyList.Matcher
+     * @class IFDirtyList.Matcher
      * @constructor
      * @version 1.0
      */
-    GXDirtyList.Matcher = function () {
+    IFDirtyList.Matcher = function () {
     };
 
     /**
      * @type {GRect}
      * @private
      */
-    GXDirtyList.Matcher.prototype._unitedArea = null;
+    IFDirtyList.Matcher.prototype._unitedArea = null;
 
     /**
      * @type {Array}
      * @private
      */
-    GXDirtyList.Matcher.prototype._rects = null;
+    IFDirtyList.Matcher.prototype._rects = null;
 
     /**
      * Called to test whether a given rectangle is within the dirty area(s)
@@ -66,7 +66,7 @@
      * @return {Boolean} true if rect is within the dirty area(s), false if not
      * @version 1.0
      */
-    GXDirtyList.Matcher.prototype.isDirty = function (test) {
+    IFDirtyList.Matcher.prototype.isDirty = function (test) {
         // Quick check against the overall area
         if (this._unitedArea && !this._unitedArea.intersectsRect(test)) {
             return false;
@@ -90,7 +90,7 @@
      * @param {GTransform} transform
      * @version 1.0
      */
-    GXDirtyList.Matcher.prototype.transform = function (transform) {
+    IFDirtyList.Matcher.prototype.transform = function (transform) {
         if (this._unitedArea) {
             this._unitedArea = transform.mapRect(this._unitedArea);
         }
@@ -108,7 +108,7 @@
      * united dirty area
      * @param {GRect} clipArea
      */
-    GXDirtyList.Matcher.prototype.clip = function (clipArea) {
+    IFDirtyList.Matcher.prototype.clip = function (clipArea) {
         if (this._rects && this._rects.length > 0) {
             if (this._unitedArea) {
                 this._unitedArea = clipArea.intersected(this._unitedArea);
@@ -128,12 +128,12 @@
      * @return {Array} array of dirty rects in this matcher, may be null
      * @version 1.0
      */
-    GXDirtyList.Matcher.prototype.getDirtyRectangles = function () {
+    IFDirtyList.Matcher.prototype.getDirtyRectangles = function () {
         return this._rects;
     };
 
     //------------------------------------------------------------------------------------------------------------------
-    // GXDirtyList Class
+    // IFDirtyList Class
     //------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -142,19 +142,19 @@
      * @type {GRect}
      * @private
      */
-    GXDirtyList.prototype._area = null;
+    IFDirtyList.prototype._area = null;
 
     /**
      * The dirty regions (each one is an int[4])
      * @private
      */
-    GXDirtyList.prototype._dirties = null;
+    IFDirtyList.prototype._dirties = null;
 
     /**
      * The number of dirty regions
      * @private
      */
-    GXDirtyList.prototype._numDirties = 0;
+    IFDirtyList.prototype._numDirties = 0;
 
 
     /**
@@ -166,7 +166,7 @@
      * within the new area.
      * @param {GRect} area
      */
-    GXDirtyList.prototype.setArea = function (area) {
+    IFDirtyList.prototype.setArea = function (area) {
         this._area = area;
     };
 
@@ -175,7 +175,7 @@
      * @return {GRect}
      * @version 1.0
      */
-    GXDirtyList.prototype.getArea = function () {
+    IFDirtyList.prototype.getArea = function () {
         return this._area;
     };
 
@@ -194,7 +194,7 @@
      * @return {Boolean}
      * @version 1.0
      */
-    GXDirtyList.prototype.dirty = function (x, y, w, h) {
+    IFDirtyList.prototype.dirty = function (x, y, w, h) {
 
         // Fix coordinates, first
         var tmp_x = Math.floor(x);
@@ -218,9 +218,9 @@
         }
 
         if (this._dirties == null) {
-            this._dirties = new Array(GXDirtyList.options.bufferSize);
+            this._dirties = new Array(IFDirtyList.options.bufferSize);
         } else if (this._numDirties == this._dirties.length) {
-            this._dirties.length += GXDirtyList.options.bufferSize;
+            this._dirties.length += IFDirtyList.options.bufferSize;
         }
 
         // we attempt the "lossless" combinations first
@@ -299,7 +299,7 @@
             if (w > 0 && h > 0 && cur[2] > 0 && cur[3] > 0 &&
                 ((Math.max(x + w, cur[0] + cur[2]) - Math.min(x, cur[0])) *
                     (Math.max(y + h, cur[1] + cur[3]) - Math.min(y, cur[1])) <
-                    w * h + cur[2] * cur[3] + GXDirtyList.options.epsilon)) {
+                    w * h + cur[2] * cur[3] + IFDirtyList.options.epsilon)) {
                 var a = Math.min(cur[0], x);
                 var b = Math.min(cur[1], y);
                 var c = Math.max(x + w, cur[0] + cur[2]) - Math.min(cur[0], x);
@@ -317,14 +317,14 @@
     /**
      * Flushes this dirty list which means that a matcher with dirty
      * regions gets returned and the dirty list gets cleaned.
-     * @return {GXDirtyList.Matcher} null if there's nothing dirty or a valid matcher
+     * @return {IFDirtyList.Matcher} null if there's nothing dirty or a valid matcher
      * @version 1.0
      */
-    GXDirtyList.prototype.flush = function () {
+    IFDirtyList.prototype.flush = function () {
 
         var matcher = null;
         if (this._numDirties > 0) {
-            matcher = new GXDirtyList.Matcher();
+            matcher = new IFDirtyList.Matcher();
 
             matcher._rects = new Array(this._numDirties);
             var index = 0;
@@ -355,18 +355,18 @@
      * Simply reset this dirty list
      * @version 1.0
      */
-    GXDirtyList.prototype.reset = function () {
+    IFDirtyList.prototype.reset = function () {
         if (this._numDirties > 0) {
             // Clear ourself
-            this._dirties.length = GXDirtyList.options.bufferSize;
+            this._dirties.length = IFDirtyList.options.bufferSize;
             this._numDirties = 0;
         }
     };
 
     /** @override */
-    GXDirtyList.prototype.toString = function () {
-        return "[Object GXDirtyList]";
+    IFDirtyList.prototype.toString = function () {
+        return "[Object IFDirtyList]";
     };
 
-    _.GXDirtyList = GXDirtyList;
+    _.IFDirtyList = IFDirtyList;
 })(this);

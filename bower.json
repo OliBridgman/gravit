@@ -6,7 +6,8 @@
         "mousetrap": "latest",
         "font-awesome": "latest",
         "jqtree": "latest",
-        "opentype.js": "latest"
+        "opentype.js": "latest",
+        "rangy": "latest"
     },
     "devDependencies": {},
     "private": true

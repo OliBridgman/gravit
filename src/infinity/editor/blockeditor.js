@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * A base editor for shapes
-     * @param {GXBlock} block the block this editor works on
-     * @class GXBlockEditor
-     * @extends GXElementEditor
+     * @param {IFBlock} block the block this editor works on
+     * @class IFBlockEditor
+     * @extends IFElementEditor
      * @constructor
      */
-    function GXBlockEditor(block) {
-        GXElementEditor.call(this, block);
+    function IFBlockEditor(block) {
+        IFElementEditor.call(this, block);
     };
-    GObject.inherit(GXBlockEditor, GXElementEditor);
+    IFObject.inherit(IFBlockEditor, IFElementEditor);
 
-    GXBlockEditor.Flag = {
+    IFBlockEditor.Flag = {
         /**
          * The editor supports edge resize handles
          * @type Number
@@ -31,21 +31,21 @@
         ResizeAll: (1 << 10) | (1 << 11)
     };
 
-    GXBlockEditor.RESIZE_HANDLE_PART_ID = gUtil.uuid();
+    IFBlockEditor.RESIZE_HANDLE_PART_ID = gUtil.uuid();
 
     /** @override */
-    GXBlockEditor.prototype.getBBoxMargin = function () {
+    IFBlockEditor.prototype.getBBoxMargin = function () {
         if (this._showResizeHandles()) {
-            return GXElementEditor.OPTIONS.annotationSizeSmall + 1;
+            return IFElementEditor.OPTIONS.annotationSizeSmall + 1;
         }
-        return GXElementEditor.prototype.getBBoxMargin.call(this);
+        return IFElementEditor.prototype.getBBoxMargin.call(this);
     };
 
     /** @override */
-    GXBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
-        GXElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
+    IFBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        IFElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
-        if (partId === GXBlockEditor.RESIZE_HANDLE_PART_ID) {
+        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
             newPos = guides.mapPoint(newPos);
             var sourceBBox = this._element.getGeometryBBox();
@@ -204,16 +204,16 @@
     };
 
     /** @override */
-    GXBlockEditor.prototype.applyPartMove = function (partId, partData) {
-        if (partId === GXBlockEditor.RESIZE_HANDLE_PART_ID) {
+    IFBlockEditor.prototype.applyPartMove = function (partId, partData) {
+        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
             this.applyTransform(this._element);
         }
-        GXElementEditor.prototype.applyPartMove.call(this, partId, partData);
+        IFElementEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */
-    GXBlockEditor.prototype.paint = function (transform, context) {
-        if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+    IFBlockEditor.prototype.paint = function (transform, context) {
+        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             var targetTransform = transform;
 
             // Pre-multiply internal transformation if any
@@ -227,7 +227,7 @@
             // Paint resize handles if desired
             if (this._showResizeHandles()) {
                 this._iterateResizeHandles(function (point, side) {
-                    this._paintAnnotation(context, transform, point, GXElementEditor.Annotation.Rectangle, false, true);
+                    this._paintAnnotation(context, transform, point, IFElementEditor.Annotation.Rectangle, false, true);
                 }.bind(this), true);
             }
 
@@ -240,13 +240,13 @@
     };
 
     /** @override */
-    GXBlockEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    IFBlockEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         // Hit-Test our resize handles if any
         if (this._showResizeHandles()) {
             var result = null;
             this._iterateResizeHandles(function (point, side) {
                 if (this._getAnnotationBBox(transform, point).containsPoint(location)) {
-                    result = new GXElementEditor.PartInfo(this, GXBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
+                    result = new IFElementEditor.PartInfo(this, IFBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
                     return true;
                 }
             }.bind(this), true);
@@ -262,20 +262,20 @@
     /**
      * Called for subclasses to do some custom painting beneath of the outline
      * @param {GTransform} transform the current transformation in use
-     * @param {GXPaintContext} context the paint context to paint on
+     * @param {IFPaintContext} context the paint context to paint on
      * @private
      */
-    GXBlockEditor.prototype._prePaint = function (transform, context) {
+    IFBlockEditor.prototype._prePaint = function (transform, context) {
         // NO-OP
     };
 
     /**
      * Called for subclasses to do some custom painting on top of the outline
      * @param {GTransform} transform the current transformation in use
-     * @param {GXPaintContext} context the paint context to paint on
+     * @param {IFPaintContext} context the paint context to paint on
      * @private
      */
-    GXBlockEditor.prototype._postPaint = function (transform, context) {
+    IFBlockEditor.prototype._postPaint = function (transform, context) {
         // NO-OP
     };
 
@@ -283,8 +283,8 @@
      * @returns {Boolean}
      * @private
      */
-    GXBlockEditor.prototype._showResizeHandles = function () {
-        return this._showAnnotations() && (this.hasFlag(GXBlockEditor.Flag.ResizeEdges) || this.hasFlag(GXBlockEditor.Flag.ResizeCenters));
+    IFBlockEditor.prototype._showResizeHandles = function () {
+        return this._showAnnotations() && (this.hasFlag(IFBlockEditor.Flag.ResizeEdges) || this.hasFlag(IFBlockEditor.Flag.ResizeCenters));
     };
 
     /**
@@ -292,17 +292,17 @@
      * @param {Function(point: GPoint, side: GRect.Side)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
      */
-    GXBlockEditor.prototype._iterateResizeHandles = function (iterator) {
+    IFBlockEditor.prototype._iterateResizeHandles = function (iterator) {
         var bbox = this.getPaintElement().getGeometryBBox();
 
         if (bbox && !bbox.isEmpty()) {
             var sides = [];
 
-            if (this.hasFlag(GXBlockEditor.Flag.ResizeEdges)) {
+            if (this.hasFlag(IFBlockEditor.Flag.ResizeEdges)) {
                 sides = sides.concat([GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_LEFT, GRect.Side.BOTTOM_RIGHT]);
             }
 
-            if (this.hasFlag(GXBlockEditor.Flag.ResizeCenters)) {
+            if (this.hasFlag(IFBlockEditor.Flag.ResizeCenters)) {
                 sides = sides.concat([GRect.Side.TOP_CENTER, GRect.Side.RIGHT_CENTER, GRect.Side.BOTTOM_CENTER, GRect.Side.LEFT_CENTER]);
             }
 
@@ -317,9 +317,9 @@
     };
 
     /** @override */
-    GXBlockEditor.prototype.toString = function () {
-        return "[Object GXBlockEditor]";
+    IFBlockEditor.prototype.toString = function () {
+        return "[Object IFBlockEditor]";
     };
 
-    _.GXBlockEditor = GXBlockEditor;
+    _.IFBlockEditor = IFBlockEditor;
 })(this);

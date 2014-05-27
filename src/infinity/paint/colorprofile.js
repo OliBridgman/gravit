@@ -1,38 +1,38 @@
 (function (_) {
     /**
      * A class representing a color profile
-     * @class GXColorProfile
+     * @class IFColorProfile
      * @constructor
      */
-    function GXColorProfile() {
+    function IFColorProfile() {
     }
 
     /**
-     * @type {GXColorSpace}
+     * @type {IFColorSpace}
      * @private
      */
-    GXColorProfile.prototype._colorSpace = null;
+    IFColorProfile.prototype._colorSpace = null;
 
     /**
-     * @type {GXColorSpace}
+     * @type {IFColorSpace}
      * @private
      */
-    GXColorProfile.prototype._pcsSpace = null;
+    IFColorProfile.prototype._pcsSpace = null;
 
     /**
      * @type {Array<Number>}
      * @private
      */
-    GXColorProfile.prototype._illumination = null;
+    IFColorProfile.prototype._illumination = null;
 
     /**
      * TODO
      */
-    GXColorProfile.convertColor = function (color) {
+    IFColorProfile.convertColor = function (color) {
         // Handle special color types first
-        if (color.getType() === GXColor.Type.White) {
+        if (color.getType() === IFColor.Type.White) {
             // TODO : Convert white reference point
-        } else if (color.getType() === GXColor.Type.Black) {
+        } else if (color.getType() === IFColor.Type.Black) {
             // TODO : Convert black reference point
         } else {
             if (color.getSpace() !== this._colorSpace) {
@@ -42,23 +42,23 @@
             // Convert color into PCS
             var pcs = null;
             switch (this._pcsSpace) {
-                case GXColorProfile.Space.RGB:
+                case IFColorProfile.Space.RGB:
                     pcs = color.asRGB();
                     pcs[0] = pcs[0] / 255.0;
                     pcs[1] = pcs[1] / 255.0;
                     pcs[2] = pcs[2] / 255.0;
                     break;
-                case GXColorProfile.Space.CMYK:
+                case IFColorProfile.Space.CMYK:
                     pcs = color.asCMYK();
                     pcs[0] = pcs[0] / 100.0;
                     pcs[1] = pcs[1] / 100.0;
                     pcs[2] = pcs[2] / 100.0;
                     pcs[3] = pcs[3] / 100.0;
                     break;
-                case GXColorProfile.Space.LAB:
+                case IFColorProfile.Space.LAB:
                     pcs = color.asLAB(this._illumination);
                     break;
-                case GXColorProfile.Space.XYZ:
+                case IFColorProfile.Space.XYZ:
                     pcs = color.asXYZ(this._illumination);
                     break;
                 default:
@@ -72,9 +72,9 @@
     };
 
     /** @override */
-    GXColorProfile.prototype.toString = function () {
-        return "[Object GXColorProfile]";
+    IFColorProfile.prototype.toString = function () {
+        return "[Object IFColorProfile]";
     };
 
-    _.GXColorProfile = GXColorProfile;
+    _.IFColorProfile = IFColorProfile;
 })(this);

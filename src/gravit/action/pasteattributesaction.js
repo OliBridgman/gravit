@@ -8,10 +8,10 @@
      */
     function GPasteAttributesAction() {
     };
-    GObject.inherit(GPasteAttributesAction, GUIAction);
+    IFObject.inherit(GPasteAttributesAction, GUIAction);
 
     GPasteAttributesAction.ID = 'edit.paste-attributes';
-    GPasteAttributesAction.TITLE = new GLocale.Key(GPasteAttributesAction, "title");
+    GPasteAttributesAction.TITLE = new IFLocale.Key(GPasteAttributesAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.F4];
+        return [IFKey.Constant.F4];
     };
 
     /**
@@ -59,7 +59,7 @@
                 var selection = document.getEditor().getSelection();
                 if (selection) {
                     for (var i = 0; i < selection.length; ++i) {
-                        if (selection[i].hasMixin(GXElement.Attributes)) {
+                        if (selection[i].hasMixin(IFElement.Attributes)) {
                             return true;
                         }
                     }
@@ -73,7 +73,7 @@
      * @override
      */
     GPasteAttributesAction.prototype.execute = function () {
-        var attributes = GXNode.deserialize(gShell.getClipboardContent(IFAttribute.MIME_TYPE));
+        var attributes = IFNode.deserialize(gShell.getClipboardContent(IFAttribute.MIME_TYPE));
         if (attributes) {
             var editor = gApp.getActiveDocument().getEditor();
             var selection = editor.getSelection();
@@ -82,7 +82,7 @@
             try {
                 for (var i = 0; i < selection.length; ++i) {
                     var target = selection[i];
-                    if (target.hasMixin(GXElement.Attributes)) {
+                    if (target.hasMixin(IFElement.Attributes)) {
                         target.getAttributes().assignAttributesFrom(attributes);
                     }
                 }

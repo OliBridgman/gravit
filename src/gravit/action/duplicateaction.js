@@ -8,10 +8,10 @@
      */
     function GDuplicateAction() {
     };
-    GObject.inherit(GDuplicateAction, GUIAction);
+    IFObject.inherit(GDuplicateAction, GUIAction);
 
     GDuplicateAction.ID = 'edit.duplicate';
-    GDuplicateAction.TITLE = new GLocale.Key(GDuplicateAction, "title");
+    GDuplicateAction.TITLE = new IFLocale.Key(GDuplicateAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GDuplicateAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GDuplicateAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'D'];
+        return [IFKey.Constant.META, 'D'];
     };
 
     /**

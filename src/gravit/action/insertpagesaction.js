@@ -8,10 +8,10 @@
      */
     function GInsertPagesAction() {
     };
-    GObject.inherit(GInsertPagesAction, GUIAction);
+    IFObject.inherit(GInsertPagesAction, GUIAction);
 
     GInsertPagesAction.ID = 'modify.insert-pages';
-    GInsertPagesAction.TITLE = new GLocale.Key(GInsertPagesAction, "title");
+    GInsertPagesAction.TITLE = new IFLocale.Key(GInsertPagesAction, "title");
 
     GInsertPagesAction.options = {
         sizePresets: [
@@ -104,7 +104,7 @@
      * @override
      */
     GInsertPagesAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**
@@ -115,7 +115,7 @@
     };
 
     /**
-     * @param {GXScene} [scene] specific scene to add pages to,
+     * @param {IFScene} [scene] specific scene to add pages to,
      * if not provided (default), takes the active document
      * @override
      */
@@ -125,7 +125,7 @@
     };
 
     /**
-     * @param {GXScene} [scene] specific scene to add pages to,
+     * @param {IFScene} [scene] specific scene to add pages to,
      * if not provided (default), takes the active document
      * @param {Function} [done] if provided, this callback will be
      * called when the user has setup the page(s)
@@ -136,7 +136,7 @@
         var insertPos = scene.getPageInsertPosition();
 
         // Create page
-        var page = new GXPage();
+        var page = new IFPage();
 
         // Assign page properties
         page.setProperties([
@@ -152,7 +152,7 @@
             insertPos.getY(),
             980,
             1000,
-            GXColor.parseCSSColor('white')
+            IFColor.parseCSSColor('white')
         ]);
 
         // Append child and be done with it

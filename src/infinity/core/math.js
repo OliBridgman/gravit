@@ -1,11 +1,11 @@
 (function (_) {
 
     /**
-     * @class GMath
+     * @class IFMath
      * @constructor
      * @version 1.0
      */
-    function GMath() {
+    function IFMath() {
     };
 
     /**
@@ -13,12 +13,12 @@
      * @type {Number}
      * @version 1.0
      */
-    GMath.prototype.PI2 = 2 * Math.PI;
+    IFMath.prototype.PI2 = 2 * Math.PI;
 
     /**
      * The default epsilon to compare, defaults to 1.0e-14
      */
-    GMath.prototype.defaultEps = 1e-14;
+    IFMath.prototype.defaultEps = 1e-14;
 
     /**
      * Convert an angle in degrees into radians
@@ -26,7 +26,7 @@
      * @return {Number} angle in radians
      * @version 1.0
      */
-    GMath.prototype.toRadians = function (angle) {
+    IFMath.prototype.toRadians = function (angle) {
         return angle * Math.PI / 180;
     };
 
@@ -36,7 +36,7 @@
      * @return {Number} angle in degrees
      * @version 1.0
      */
-    GMath.prototype.toDegrees = function (angle) {
+    IFMath.prototype.toDegrees = function (angle) {
         return angle * 180 / Math.PI;
     };
 
@@ -45,7 +45,7 @@
      * @param {Number} angle the angle to adjust in radians
      * @return {Number} an adjusted angle
      */
-    GMath.prototype.normalizeAngleRadians = function (angle) {
+    IFMath.prototype.normalizeAngleRadians = function (angle) {
         if (angle >= 0) {
             return this.mod(angle, this.PI2);
         } else {
@@ -58,7 +58,7 @@
      * @param {Number} angle the angle to adjust in degrees
      * @return {Number} an adjusted angle
      */
-    GMath.prototype.normalizeAngleDegrees = function (angle) {
+    IFMath.prototype.normalizeAngleDegrees = function (angle) {
         if (angle >= 0) {
             return this.mod(angle, 360);
         } else {
@@ -73,7 +73,7 @@
      * @param {Number} max
      * @return {Number} min <= value >= max
      */
-    GMath.prototype.normalizeValue = function (value, min, max) {
+    IFMath.prototype.normalizeValue = function (value, min, max) {
         return value < min ? min : (value > max ? max : value);
     };
 
@@ -81,11 +81,11 @@
      * Compare two values for equality using an epsilon value
      * @param {Number} v1 value one
      * @param {Number} v2 value two
-     * @param {Number} [epsilon] the epsilon to compare, defaults to GMath.prototype.defaultEps
+     * @param {Number} [epsilon] the epsilon to compare, defaults to IFMath.prototype.defaultEps
      * @return {Boolean} true if v1 == v2 using epsilon, otherwise false
      * @version 1.0
      */
-    GMath.prototype.isEqualEps = function (v1, v2, epsilon) {
+    IFMath.prototype.isEqualEps = function (v1, v2, epsilon) {
         if (!epsilon) epsilon = this.defaultEps;
         return Math.abs(v1 - v2) <= epsilon;
     };
@@ -96,7 +96,7 @@
      * @param {Number} precision the precision to use
      * @returns {Number}
      */
-    GMath.prototype.round = function (value, precision) {
+    IFMath.prototype.round = function (value, precision) {
         precision = Math.abs(parseInt(precision)) || 0;
         var coefficient = Math.pow(10, precision);
         return Math.round(value * coefficient) / coefficient;
@@ -106,7 +106,7 @@
      * @return {Number} x mod y
      * @version 1.0
      */
-    GMath.prototype.mod = function (x, y) {
+    IFMath.prototype.mod = function (x, y) {
         if (x < 0) {
             return -this.mod(-x, y);
         } else {
@@ -118,7 +118,7 @@
      * @return {Number} x div y
      * @version 1.0
      */
-    GMath.prototype.div = function (x, y) {
+    IFMath.prototype.div = function (x, y) {
         if (x < 0) {
             return -Math.floor(-x / y);
         } else {
@@ -135,7 +135,7 @@
      * intersect and parameter values for both segments are written into this array
      * @return {GPoint} an intersection point if the segments intersect, null otherwise
      */
-    GMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
+    IFMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
         // segments intersect when the system below has the only one solution (ta, tb):
         // a1x + ta (a2x - a1x) = a1x + tb (b2x - b1x)
         // a1y + ta (a2y - a1y) = a1y + tb (b2y - b1y)
@@ -176,7 +176,7 @@
      * @param {Number} rC - circle radius
      * @param {Array{Number}} result - array of 0 - 2 line parameter values
      */
-    GMath.prototype.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
+    IFMath.prototype.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
         // (x - xC)^2 + (y - yC)^2 - rC^2 = 0
         // x = xL + dxL * t
         // y = yL + dyL * t
@@ -206,7 +206,7 @@
      * @param {Number} rC2 - the second circle radius
      * @param {Array{GPoint}} result
      */
-    GMath.prototype.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
+    IFMath.prototype.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
         // To find intersection points, the formulas from here are used:
         // http://www.sonoma.edu/users/w/wilsonst/papers/Geometry/circles/default.html
         var dSqr = this.ptSqrDist(xC1, yC1, xC2, yC2);
@@ -238,7 +238,7 @@
      * @return {GPoint} an intersection point if the lines intersection, null otherwise
      * @version 1.0
      */
-    GMath.prototype.getLinesIntersection = function (a1, b1, c1, a2, b2, c2) {
+    IFMath.prototype.getLinesIntersection = function (a1, b1, c1, a2, b2, c2) {
         var d = a1 * b2 - a2 * b1;
         if (this.isEqualEps(d, 0)) {
             return null;
@@ -258,7 +258,7 @@
      * @returns {GPoint} - center coordinates
      * @version 1.0
      */
-    GMath.prototype.getCircumcircleCenter = function (x1, y1, x2, y2, x3, y3) {
+    IFMath.prototype.getCircumcircleCenter = function (x1, y1, x2, y2, x3, y3) {
         // Center of circumcircle of the triangle is an intersection point of perpendicular bisectors
         // Perpendicular bisector (x1,x2)(y1,y2): (x1 - x2)*(x - (x1+x2)/2) + (y1 - y2)*(y - (y1*y2)/2) = 0
         var dx1 = x1 - x2;
@@ -278,7 +278,7 @@
      *  or the nearest to offset end-point otherwise
      * @version 1.0
      */
-    GMath.prototype.getPointAtLength = function (x1, y1, x2, y2, offs) {
+    IFMath.prototype.getPointAtLength = function (x1, y1, x2, y2, offs) {
         var len;
         var t;
 
@@ -303,7 +303,7 @@
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
-    GMath.prototype.getCurveAtT = function (p1, p2, c, t) {
+    IFMath.prototype.getCurveAtT = function (p1, p2, c, t) {
         var a = p1 + t * (c - p1);
         var b = c + t * (p2 - c);
         return a + t * (b - a);
@@ -319,7 +319,7 @@
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
-    GMath.prototype.getCubicCurveAtT = function (p1, p2, c1, c2, t) {
+    IFMath.prototype.getCubicCurveAtT = function (p1, p2, c1, c2, t) {
         var a = p1 + t * (c1 - p1);
         var b = c1 + t * (c2 - c1);
         var c = c2 + t * (p2 - c2);
@@ -337,7 +337,7 @@
      * @return {Number} dot product
      * @version 1.0
      */
-    GMath.prototype.vDotProduct = function (x1, y1, x2, y2) {
+    IFMath.prototype.vDotProduct = function (x1, y1, x2, y2) {
         return (x1 == null || y1 == null || x2 == null || y2 == null)
             ? 0.0
             : (x1 * x2) + (y1 * y2);
@@ -351,7 +351,7 @@
      * @param {Number} y2 y-coordinate of the second point
      * @return {Number} squared distance
      */
-    GMath.prototype.ptSqrDist = function (x1, y1, x2, y2) {
+    IFMath.prototype.ptSqrDist = function (x1, y1, x2, y2) {
         var tmp1, tmp2;
 
         if (x1 == null || y1 == null || x2 == null || y2 == null) {
@@ -371,7 +371,7 @@
      * @param {Number} y2 y-coordinate of the second point
      * @return {Number} distance
      */
-    GMath.prototype.ptDist = function (x1, y1, x2, y2) {
+    IFMath.prototype.ptDist = function (x1, y1, x2, y2) {
         return Math.sqrt(this.ptSqrDist(x1, y1, x2, y2));
     };
 
@@ -379,7 +379,7 @@
      * Finds relative position of a point against a segment
      * Returns 1 for points left (mirrored Y axis is not taken into account) from the segment line
      * when moving from the segment end p1 to the end p2,
-     * 0 - for the points on the segment (with the GMath.defaultEps accuracy)
+     * 0 - for the points on the segment (with the IFMath.defaultEps accuracy)
      * -1 - for the points to the right of the segment
      * @param {Number} px1 x-coordinate of the start segment point
      * @param {Number} py1 y-coordinate of the start segment point
@@ -390,7 +390,7 @@
      * @return {Number} relative position of a point against a segment
      * @version 1.0
      */
-    GMath.prototype.segmentSide = function (px1, py1, px2, py2, x, y) {
+    IFMath.prototype.segmentSide = function (px1, py1, px2, py2, x, y) {
         var val = (y - py1) * (px2 - px1) + (x - px1) * (py1 - py2);
         if (this.isEqualEps(val, 0)) {
             return 0;
@@ -417,7 +417,7 @@
      * @return {Number} squared distance from a point to a segment
      * @version 1.0
      */
-    GMath.prototype.sqrSegmentDist = function (px1, py1, px2, py2, x, y, ptMin, sqrEndAcc) {
+    IFMath.prototype.sqrSegmentDist = function (px1, py1, px2, py2, x, y, ptMin, sqrEndAcc) {
 
         // Calculate distance using this approach:
         // http://msdn.microsoft.com/en-us/library/ms969920.aspx
@@ -495,7 +495,7 @@
      * @param {Boolean} positiveOnly indicates if only positive projection is needed
      * @return (GPoint}
      */
-    GMath.prototype.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
+    IFMath.prototype.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
         var ax = x3 - x1;
         var ay = y3 - y1;
         var bx = x2 - x1;
@@ -521,7 +521,7 @@
         return res;
     };
 
-    GMath.prototype.solveLinear2Pseudo = function (a11, a12, b1, a21, a22, b2) {
+    IFMath.prototype.solveLinear2Pseudo = function (a11, a12, b1, a21, a22, b2) {
         var res = this.getLinesIntersection(a11, a12, -b1, a21, a22, -b2);
         if (res == null) { // try to find pseudo solution
             var r1, r2;
@@ -533,7 +533,7 @@
                 r2 = r1;
             } else if (!this.isEqualEps(a12, 0) || !this.isEqualEps(a22, 0)) {
                 r1 = 0.0;
-                if (!gMath.isEqualEps(a12, 0)) {
+                if (!ifMath.isEqualEps(a12, 0)) {
                     r2 = b1 / a12;
                 } else {
                     r2 = b2 / a22;
@@ -568,7 +568,7 @@
      * @param {Float64Array(3)} ctrls1 - array of the control points of the first part to be passed out
      * @param {Float64Array(3)} ctrls2 - array of the control points of the second part to be passed out
      */
-    GMath.prototype.divideQuadraticCurve = function (p1, c, p2, t, ctrls1, ctrls2) {
+    IFMath.prototype.divideQuadraticCurve = function (p1, c, p2, t, ctrls1, ctrls2) {
         var a = p1 + t * (c - p1);
         var b = c + t * (p2 - c);
         var m = a + t * (b - a);
@@ -591,7 +591,7 @@
      * @return {Number} evaluation result
      * @version 1.0
      */
-    GMath.prototype.evalCubic = function (a, b, c, d, x) {
+    IFMath.prototype.evalCubic = function (a, b, c, d, x) {
         if (x == 0) {
             return d;
         }
@@ -616,7 +616,7 @@
      * @param {Array} sPts - split points (parameter values) plus two end points, sorted in ascending order
      * @returns {Number} nPoints - the number of split points (including two original end points)
      */
-    GMath.prototype.getCubicCurveSplits = function(ax, bx, cx, ay, by, cy, sPts) {
+    IFMath.prototype.getCubicCurveSplits = function(ax, bx, cx, ay, by, cy, sPts) {
         // Find initial interval (curve) splitPoints at [0, 1],
         // which are curve inflate points, or such points,
         // that P'x = 0 or P'y = 0
@@ -637,8 +637,8 @@
         // P'' = 3(2at + b)
 
         // P' = 0;
-        gMath.getQuadraticRoots(ax, bx, cx, splitPoints);
-        gMath.getQuadraticRoots(ay, by, cy, splitPoints);
+        ifMath.getQuadraticRoots(ax, bx, cx, splitPoints);
+        ifMath.getQuadraticRoots(ay, by, cy, splitPoints);
 
         // P'x * P''y - P'y * P''x = 0
         // (2bx*ay -2by*ax + ax*by - ay*bx)t^2 + (2cx*ay - 2cy*ax)t + cx*by - cy*bx = 0
@@ -647,7 +647,7 @@
         var A = bx * ay - by * ax;
         var B = 2 * (cx * ay - cy * ax);
         var C = cx * by - cy * bx;
-        gMath.getQuadraticRoots(A, B, C, splitPoints);
+        ifMath.getQuadraticRoots(A, B, C, splitPoints);
 
         return gUtil.uSortSegment(0, 1, splitPoints, sPts);
     };
@@ -663,7 +663,7 @@
      * @param {Number} part indicates which curve part is further needed: 1 - for the first part, 2 - for the second
      * @param {Float64Array(4)} ctrls - array of the control points of needed part to be passed out
      */
-    GMath.prototype.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls, ctrls2) {
+    IFMath.prototype.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls, ctrls2) {
         var a = p1 + t * (c1 - p1);
         var b = c1 + t * (c2 - c1);
         var c = c2 + t * (p2 - c2);
@@ -701,7 +701,7 @@
      * @param {Float64Array(4)} ctrls - array of the control points of needed part to be passed out
      * @version 1.0
      */
-    GMath.prototype.getCtrlPts = function (p1, p2, c1, c2, t1, t2, ctrls) {
+    IFMath.prototype.getCtrlPts = function (p1, p2, c1, c2, t1, t2, ctrls) {
         var tNew;
 
         if (t1 == 0) {
@@ -725,7 +725,7 @@
      * @return {Number} evaluation result
      * @version 1.0
      */
-    GMath.prototype.evalPoly = function (coeffF, degreeF, x) {
+    IFMath.prototype.evalPoly = function (coeffF, degreeF, x) {
         var i = 0;
         var res = null;
 
@@ -767,7 +767,7 @@
      * @return {Boolean} true if derivative coefficients were successfully calculated
      * @version 1.0
      */
-    GMath.prototype.getCoeffPolyDeriv = function (coeffPoly, degreePoly, coeffPolyDeriv) {
+    IFMath.prototype.getCoeffPolyDeriv = function (coeffPoly, degreePoly, coeffPolyDeriv) {
         var i = 0;
         var res = false;
 
@@ -793,7 +793,7 @@
      * @return {Number} number of found roots
      * @version 1.0
      */
-    GMath.prototype.getCubicRoots = function (coeffG, p0, p1, gRoots, inclEnds, acc) {
+    IFMath.prototype.getCubicRoots = function (coeffG, p0, p1, gRoots, inclEnds, acc) {
         var t1, t2, discr, sqrtD, nRoots;
         var a, b, c, d;
         var g0, g1, gt1, gt2;
@@ -1238,7 +1238,7 @@
      * The maximal number of possible iterations to perform in Newton method (usually 4-10 should be enough)
      * @private
      */
-    GMath.prototype._maxIter = 100;
+    IFMath.prototype._maxIter = 100;
 
     /**
      * Calculates root of a polynomial on a segment using Newton method.
@@ -1260,7 +1260,7 @@
      * @return {Number} root if it was found, or null otherwise
      * @version 1.0
      */
-    GMath.prototype.locateByNewton = function (a, b, fa, fb, coeffF, degreeF, coeffFDeriv, coeffFDeriv2, acc, sturmSeq, nSignVars) {
+    IFMath.prototype.locateByNewton = function (a, b, fa, fb, coeffF, degreeF, coeffFDeriv, coeffFDeriv2, acc, sturmSeq, nSignVars) {
         // TODO: check if the last vars will be set to null, if they are not specified in function call
         var x = null;
         var tmp;
@@ -1598,7 +1598,7 @@
      * @param {Array} roots - array of roots to be passed out
      * @version 1.0
      */
-    GMath.prototype.getQuadraticRoots = function (a, b, c, roots) {
+    IFMath.prototype.getQuadraticRoots = function (a, b, c, roots) {
         // ax^2 + bx + c = 0
         var discr;
         var sd;
@@ -1631,7 +1631,7 @@
      * @private
      * @version 1.0
      */
-    GMath.prototype._pseudoRem = function (coeffP1, coeffP2, prem) {
+    IFMath.prototype._pseudoRem = function (coeffP1, coeffP2, prem) {
         var rem1 = [];
         var j;
         var q;
@@ -1699,7 +1699,7 @@
      * @param {Array} sturmPRS - generalized Sturm sequence (array of polynomial coefficients arrays) to be passed out
      * @version 1.0
      */
-    GMath.prototype.getSturmPRS = function (coeffPoly, degreePoly, coeffPolyDeriv, sturmPRS) {
+    IFMath.prototype.getSturmPRS = function (coeffPoly, degreePoly, coeffPolyDeriv, sturmPRS) {
         var a = [];
         var beta = [];
         var delta = [];
@@ -1782,7 +1782,7 @@
      * @return {Number} number of distinct real roots of a polynomial on an interval
      * @version 1.0
      */
-    GMath.prototype.countRootsNSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nSignVars, fVals) {
+    IFMath.prototype.countRootsNSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nSignVars, fVals) {
         var na = 0;
         var nb = 0;
         var s1;
@@ -1853,7 +1853,7 @@
      * @param {Array} rIntervals - array of root location intervals (interval - array of two numbers, interval ends)
      * @version 1.0
      */
-    GMath.prototype.locRootsSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nRoots, nSignVars, fVals, rIntervals) {
+    IFMath.prototype.locRootsSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nRoots, nSignVars, fVals, rIntervals) {
         var midPt;
         var nSignVars1;
         var fVals1;
@@ -1894,7 +1894,7 @@
      * @param {Array} coeffPolyShifted - coefficients of shifted polynomial to be passed out
      * @version 1.0
      */
-    GMath.prototype.shiftPoly = function (coeffPoly, degreePoly, b, coeffPolyShifted) {
+    IFMath.prototype.shiftPoly = function (coeffPoly, degreePoly, b, coeffPolyShifted) {
         // the binomial theorem:
         // (x + b)^n = SUM{i=0, i=n}(n!/(i!*(n-i)!))*x^(n-i)*b^i
         var i, j;
@@ -1918,31 +1918,31 @@
      * An array with the number combinations from 5
      * @private
      */
-    GMath.prototype._numComb5 = [1, 5, 10, 10, 5, 1];
+    IFMath.prototype._numComb5 = [1, 5, 10, 10, 5, 1];
 
     /**
      * An array with the number combinations from 4
      * @private
      */
-    GMath.prototype._numComb4 = [1, 4, 6, 4, 1];
+    IFMath.prototype._numComb4 = [1, 4, 6, 4, 1];
 
     /**
      * An array with the number combinations from 3
      * @private
      */
-    GMath.prototype._numComb3 = [1, 3, 3, 1];
+    IFMath.prototype._numComb3 = [1, 3, 3, 1];
 
     /**
      * An array with the number combinations from 2
      * @private
      */
-    GMath.prototype._numComb2 = [1, 2, 1];
+    IFMath.prototype._numComb2 = [1, 2, 1];
 
     /**
      * An array with the number combinations from 1
      * @private
      */
-    GMath.prototype._numComb1 = [1, 1];
+    IFMath.prototype._numComb1 = [1, 1];
 
     /**
      * Returns a number of combinations from N by K.
@@ -1952,7 +1952,7 @@
      * @return {Number} number of combinations from N by K
      * @version 1.0
      */
-    GMath.prototype.combNK = function (N, K) {
+    IFMath.prototype.combNK = function (N, K) {
         if (N <= 5 && K <= N) {
             if (N == 5) {
                 return this._numComb5[K];
@@ -1983,7 +1983,7 @@
      * @param {Array} coeffPolyShifted - coefficients of shifted polynomial to be passed out
      * @version 1.0
      */
-    GMath.prototype.shiftPolyOne = function (coeffPoly, degreePoly, coeffPolyShifted) {
+    IFMath.prototype.shiftPolyOne = function (coeffPoly, degreePoly, coeffPolyShifted) {
         // the binomial theorem:
         // (x + 1)^n = SUM{i=0, i=n}(n!/(i!*(n-i)!))*x^(n-i)
 
@@ -2010,7 +2010,7 @@
      * @param {Array} coeffPolyInversed - coefficients of transformed polynomial to be passed out
      * @version 1.0
      */
-    GMath.prototype.inversePolyInterval = function (coeffPoly, degreePoly, a, b, coeffPolyInversed) {
+    IFMath.prototype.inversePolyInterval = function (coeffPoly, degreePoly, a, b, coeffPolyInversed) {
         var i;
         var c;
         var aD;
@@ -2047,7 +2047,7 @@
      * @param {Array} coeffPolyInversed - coefficients of transformed polynomial to be passed out
      * @version 1.0
      */
-    GMath.prototype.inversePolyUnaryInterval = function (coeffPoly, degreePoly, coeffPolyInversed) {
+    IFMath.prototype.inversePolyUnaryInterval = function (coeffPoly, degreePoly, coeffPolyInversed) {
         var i;
         var coeffs = new Float32Array(degreePoly + 1);
         for (i = 0; i <= degreePoly; ++i) {
@@ -2065,7 +2065,7 @@
      * @return {Number} maximal number of positive real roots of a polynomial
      * @version 1.0
      */
-    GMath.prototype.estimPositiveRootsDescartes = function (coeffPoly, degreePoly) {
+    IFMath.prototype.estimPositiveRootsDescartes = function (coeffPoly, degreePoly) {
         var nonZeroCoeff = [];
         var num = 0;
         var nVarSign = 0;
@@ -2101,7 +2101,7 @@
      * @returns {GPoint} new point, making constrain segment with the previous point
      * @version 1.0
      */
-    GMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
+    IFMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
         var dx, dy;
         var tan;
         var tanPIdiv8 = 0.4142;
@@ -2153,5 +2153,5 @@
         return backTransform.mapPoint(new GPoint(newX, newY));
     };
 
-    _.gMath = new GMath();
+    _.ifMath = new IFMath();
 })(this);

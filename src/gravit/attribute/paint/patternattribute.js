@@ -8,7 +8,7 @@
      */
     function GPatternAttribute() {
     };
-    GObject.inherit(GPatternAttribute, GPaintAttribute);
+    IFObject.inherit(GPatternAttribute, GPaintAttribute);
 
     /**
      * @type {boolean}
@@ -46,9 +46,9 @@
 
                             if (IFPatternAttribute.isGradientType(newType)) {
                                 if (!IFPatternAttribute.isGradientType(oldType)) {
-                                    newValue = new GXGradient([
+                                    newValue = new IFGradient([
                                         {position: 0, color: self._attribute.getColor()},
-                                        {position: 100, color: new GXColor(GXColor.Type.Black)}
+                                        {position: 100, color: new IFColor(IFColor.Type.Black)}
                                     ]);
                                 } else {
                                     newValue = self._attribute.getProperty('val');
@@ -192,7 +192,7 @@
 
             this._isGradientUpdate = true;
             try {
-                this._assign(['val'], [new GXGradient($gradient.gGradientEditor('value'))]);
+                this._assign(['val'], [new IFGradient($gradient.gGradientEditor('value'))]);
             } finally {
                 this._isGradientUpdate = false;
             }

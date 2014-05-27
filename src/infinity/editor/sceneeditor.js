@@ -1,21 +1,21 @@
 (function (_) {
     /**
      * The base for a scene editor
-     * @param {GXScene} scene the scene this editor works on
-     * @class GXSceneEditor
-     * @extends GXElementEditor
+     * @param {IFScene} scene the scene this editor works on
+     * @class IFSceneEditor
+     * @extends IFElementEditor
      * @constructor
      */
-    function GXSceneEditor(scene) {
-        GXElementEditor.call(this, scene);
+    function IFSceneEditor(scene) {
+        IFElementEditor.call(this, scene);
     };
-    GObject.inherit(GXSceneEditor, GXElementEditor);
-    GXElementEditor.exports(GXSceneEditor, GXScene);
+    IFObject.inherit(IFSceneEditor, IFElementEditor);
+    IFElementEditor.exports(IFSceneEditor, IFScene);
 
     /** @override */
-    GXSceneEditor.prototype.toString = function () {
-        return "[Object GXSceneEditor]";
+    IFSceneEditor.prototype.toString = function () {
+        return "[Object IFSceneEditor]";
     };
 
-    _.GXSceneEditor = GXSceneEditor;
+    _.IFSceneEditor = IFSceneEditor;
 })(this);

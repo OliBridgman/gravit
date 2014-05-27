@@ -8,20 +8,20 @@
         //var page = resetDocumentWithMainPage();
         //page = null;
 
-        var wrapper = document.getElementById(EXApplication.Part.Windows.id);
+        var wrapper = document.getElementById(GApplication.Part.Windows.id);
         page.setProperties(['w'], [1400]);
         var width = 400;
         var height = 400;
 
         function VertexWidget(container, vertexSource) {
-            var viewN = new GXView(scene, container);
-            GXViewLayer.call(this, viewN); //, container.lastChild.firstChild);
+            var viewN = new IFView(scene, container);
+            IFViewLayer.call(this, viewN); //, container.lastChild.firstChild);
             this._paintContext.canvas._canvasContext = container.lastChild.firstChild.getContext("2d");
 
             this._vertexSource = vertexSource;
         }
 
-        GObject.inherit(VertexWidget, GXViewLayer);
+        IFObject.inherit(VertexWidget, IFViewLayer);
 
         /** override */
         VertexWidget.prototype.paint = function (context) {
@@ -33,12 +33,12 @@
             // Calculate bounds and paint them if any
             var bounds = gVertexInfo.calculateBounds(this._vertexSource, true);
             if (bounds && !bounds.isEmpty()) {
-                var boundsVertices = new GXVertexContainer();
-                boundsVertices.addVertex(GXVertex.Command.Move, bounds.getX(), bounds.getY());
-                boundsVertices.addVertex(GXVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY());
-                boundsVertices.addVertex(GXVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight());
-                boundsVertices.addVertex(GXVertex.Command.Line, bounds.getX(), bounds.getY() + bounds.getHeight());
-                boundsVertices.addVertex(GXVertex.Command.Close);
+                var boundsVertices = new IFVertexContainer();
+                boundsVertices.addVertex(IFVertex.Command.Move, bounds.getX(), bounds.getY());
+                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY());
+                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight());
+                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX(), bounds.getY() + bounds.getHeight());
+                boundsVertices.addVertex(IFVertex.Command.Close);
                 context.canvas.strokeVertices(boundsVertices, gColor.build(255, 0, 0, 128));
             }
             */
@@ -73,19 +73,19 @@
         var res;
 
 
-        var baseVertexContainer = new GXVertexContainer();
-        baseVertexContainer.addVertex(GXVertex.Command.Move, x1, y1);
-        baseVertexContainer.addVertex(GXVertex.Command.Line, x2, y2);
-        baseVertexContainer.addVertex(GXVertex.Command.Line, x3, y3);
-        baseVertexContainer.addVertex(GXVertex.Command.Line, x4, y4);
-        baseVertexContainer.addVertex(GXVertex.Command.Close);
+        var baseVertexContainer = new IFVertexContainer();
+        baseVertexContainer.addVertex(IFVertex.Command.Move, x1, y1);
+        baseVertexContainer.addVertex(IFVertex.Command.Line, x2, y2);
+        baseVertexContainer.addVertex(IFVertex.Command.Line, x3, y3);
+        baseVertexContainer.addVertex(IFVertex.Command.Line, x4, y4);
+        baseVertexContainer.addVertex(IFVertex.Command.Close);
 
         var halfWidth = width / 2;
 
         for (i = 0; i < 7; ++i) {
             container = document.createElement("div");
-            elLeft = gMath.mod(i, 4) * width + 40;
-            elTop = gMath.div(i, 4) * (height + 20) + 40;
+            elLeft = ifMath.mod(i, 4) * width + 40;
+            elTop = ifMath.div(i, 4) * (height + 20) + 40;
             if (i != 3) {
                 container.setAttribute("style", "position: absolute; left: " + elLeft.toString() + "px; top: " + elTop.toString() + "px; width: " + width.toString() + "px; border-right: 1px dotted black; border-bottom: 1px dotted black;");
             } else {
@@ -101,76 +101,76 @@
                 case 0:
                     text.innerHTML = "Maze";
                     nPt = 49;
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, 40, 190);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 398, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 2, -60);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 398, -60);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, 40, 190);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 398, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 2, -60);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 398, -60);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 80, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 398, 450);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 80, 450);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 80, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 398, 450);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 80, 450);
 
-//                    vertexSource.addVertex(GXVertex.Command.Move, 80, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 320, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 80, 20);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 320, 20);
+//                    vertexSource.addVertex(IFVertex.Command.Move, 80, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 320, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 80, 20);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 320, 20);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 175, 165);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 300, 400);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 150, 230);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 175, 165);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 300, 400);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 150, 230);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 235, 170);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 240, 100);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 230, 290);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 235, 170);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 240, 100);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 230, 290);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 160, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 250, 120);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 150, 120);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 160, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 250, 120);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 150, 120);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 335, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 160, 340);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 335, 340);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 335, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 160, 340);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 335, 340);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 10, 190);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 335, 0);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 50, 0);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 10, 190);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 335, 0);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 50, 0);
 
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    vertexSource.addVertex(GXVertex.Command.Move, 2, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 360, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 40, -20);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 360, -20);
+                    vertexSource.addVertex(IFVertex.Command.Move, 2, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 360, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 40, -20);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 360, -20);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 140, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 360, 390);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 140, 390);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 140, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 360, 390);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 140, 390);
 
-//                    vertexSource.addVertex(GXVertex.Command.Move, 140, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 205, 180);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 220, -65);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 310, 360);
+//                    vertexSource.addVertex(IFVertex.Command.Move, 140, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 205, 180);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 220, -65);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 310, 360);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 270, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 190, 170);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 260, 320);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 270, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 190, 170);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 260, 320);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 120, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 270, 50);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 120, 100);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 120, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 270, 50);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 120, 100);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 380, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 120, 400);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 380, 400);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 380, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 120, 400);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 380, 400);
 
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 50, 200);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 380, -40);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, 10, -40);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 50, 200);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 380, -40);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 10, -40);
 
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 2000; ++j) {
                         xPt = Math.random() * width;
@@ -181,12 +181,12 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     }
@@ -194,14 +194,14 @@
                     break;
                 case 1:
                     text.innerHTML = "Square";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x1, y1);
-                    vertexSource.addVertex(GXVertex.Command.Line, x2, y2);
-                    vertexSource.addVertex(GXVertex.Command.Line, x3, y3);
-                    vertexSource.addVertex(GXVertex.Command.Line, x4, y4);
-                    vertexSource.addVertex(GXVertex.Command.Line, x1, y1);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x1, y1);
+                    vertexSource.addVertex(IFVertex.Command.Line, x2, y2);
+                    vertexSource.addVertex(IFVertex.Command.Line, x3, y3);
+                    vertexSource.addVertex(IFVertex.Command.Line, x4, y4);
+                    vertexSource.addVertex(IFVertex.Command.Line, x1, y1);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 1000; ++j) {
                         xPt = Math.random() * width;
@@ -212,26 +212,26 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     }  */
                     break;
                 case 2:
                     text.innerHTML = "Curve3 Vertex";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x1, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x2, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x4, y4);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x3, y3);
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x1, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x2, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x4, y4);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x3, y3);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 1000; ++j) {
                         xPt = Math.random() * width;
@@ -242,26 +242,26 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     }     */
                     break;
                 case 3:
                     text.innerHTML = "Curve3 Vertex";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x2 + 20 - halfWidth, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x2 - halfWidth, y2 / 2);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x4 - halfWidth, y4);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x3 - halfWidth, y3);
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x2 + 20 - halfWidth, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x2 - halfWidth, y2 / 2);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x4 - halfWidth, y4);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x3 - halfWidth, y3);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 10000; ++j) {
                         xPt = Math.random() * halfWidth;
@@ -272,26 +272,26 @@
                         if (res) {
                         cnt = vertexSource.getCount();
                         vertexSource.resize(cnt + 2);
-                        vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                        vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                         if (res && hitTestRes.outline) {
-                            vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                            vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                         }
                         else {
-                            vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                            vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                         }
                         }
                     } */
                     break;
                 case 4:
                     text.innerHTML = "Curve3 Vertex";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x2, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x1, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x4, y4);
-                    vertexSource.addVertex(GXVertex.Command.Curve2, x3, y3);
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x2, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x1, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x4, y4);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x3, y3);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 1000; ++j) {
                         xPt = Math.random() * width;
@@ -302,25 +302,25 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     }    */
                     break;
                 case 5:
                     text.innerHTML = "Curve Vertex";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x1 + 40, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve, cx, cy);
-                    vertexSource.addVertex(GXVertex.Command.Curve, x3, y3);
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x1 + 40, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve, cx, cy);
+                    vertexSource.addVertex(IFVertex.Command.Curve, x3, y3);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 10000; ++j) {
                         xPt = Math.random() * width;
@@ -331,25 +331,25 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     }  */
                     break;
                 case 6:
                     text.innerHTML = "Curve Vertex";
-                    vertexSource = new GXVertexContainer();
-                    vertexSource.addVertex(GXVertex.Command.Move, x1, y1);
-                    vertexSource.addVertex(GXVertex.Command.Curve, x4, y4);
-                    vertexSource.addVertex(GXVertex.Command.Curve, x2, cy);
-                    vertexSource.addVertex(GXVertex.Command.Close);
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x1, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve, x4, y4);
+                    vertexSource.addVertex(IFVertex.Command.Curve, x2, cy);
+                    vertexSource.addVertex(IFVertex.Command.Close);
 
-                    /*hitTestRes = new GXVertexInfo.HitResult();
+                    /*hitTestRes = new IFVertexInfo.HitResult();
 
                     for (j=0; j < 1000; ++j) {
                         xPt = Math.random() * width;
@@ -360,12 +360,12 @@
                         if (res) {
                             cnt = vertexSource.getCount();
                             vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(GXVertex.Command.Move, xPt, yPt);
+                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
                             if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(GXVertex.Command.Line, hitTestRes.x, hitTestRes.y);
+                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
                             }
                             else {
-                                vertexSource.addVertex(GXVertex.Command.Line, xPt, yPt+1);
+                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
                             }
                         }
                     } */
@@ -373,10 +373,10 @@
             }
 
             if (i != 4) {
-                var vertex = new GXVertex();
-                var vOffsetter = new GXVertexOffsetter(vertexSource, 3, true, true, 0.001);
+                var vertex = new IFVertex();
+                var vOffsetter = new IFVertexOffsetter(vertexSource, 3, true, true, 0.001);
                 vertexSource.rewindVertices(0);
-                vertexCurve = new GXVertexContainer();
+                vertexCurve = new IFVertexContainer();
                 while (vertexSource.readVertex(vertex)) {
                     vertexCurve.addVertex(vertex.command, vertex.x, vertex.y);
                 }

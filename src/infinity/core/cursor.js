@@ -3,7 +3,7 @@
     /**
      * @enum
      */
-    var GUICursor = {
+    var IFCursor = {
         /**
          * The default/auto cursor
          */
@@ -129,5 +129,5 @@
         Text: "text"
     };
 
-    _.GUICursor = GUICursor;
+    _.IFCursor = IFCursor;
 })(this);

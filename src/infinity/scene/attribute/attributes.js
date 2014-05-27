@@ -4,13 +4,13 @@
      * A set of attributes
      * @class IFAttributes
      * @extends IFAttribute
-     * @mixes GXNode.Container
+     * @mixes IFNode.Container
      * @constructor
      */
     function IFAttributes() {
     }
 
-    GObject.inheritAndMix(IFAttributes, IFAttribute, [GXNode.Container]);
+    IFObject.inheritAndMix(IFAttributes, IFAttribute, [IFNode.Container]);
 
     /**
      * Attribute's mime-type
@@ -33,7 +33,7 @@
 
     /**
      * Get the color of the first fill pattern if any
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
     IFAttributes.Pattern.prototype.getFillColor = function () {
         return this._getFillColor(IFFillAttribute);
@@ -43,7 +43,7 @@
      * Set the color of the first fill pattern if any,
      * automatically creating a new fill pattern if there's none
      * and automatically removing an fill if color is null
-     * @param {GXColor} color
+     * @param {IFColor} color
      */
     IFAttributes.Pattern.prototype.setFillColor = function (color) {
         this._setFillColor(IFFillAttribute, color);
@@ -51,7 +51,7 @@
 
     /**
      * Get the color of the first stroke pattern if any
-     * @returns {GXColor}
+     * @returns {IFColor}
      */
     IFAttributes.Pattern.prototype.getStrokeColor = function () {
         return this._getFillColor(IFStrokeAttribute);
@@ -61,7 +61,7 @@
      * Set the color of the first stroke pattern if any,
      * automatically creating a new stroke pattern if there's none
      * and automatically removing a stroke if color is null
-     * @param {GXColor} color
+     * @param {IFColor} color
      */
     IFAttributes.Pattern.prototype.setStrokeColor = function (color) {
         return this._setFillColor(IFStrokeAttribute, color);
@@ -69,7 +69,7 @@
 
     /**
      * @param {IFPatternAttribute} patternClass
-     * @returns {GXColor}
+     * @returns {IFColor}
      * @private
      */
     IFAttributes.Pattern.prototype._getFillColor = function (patternClass) {
@@ -86,7 +86,7 @@
 
     /**
      * @param {IFPatternAttribute} patternClass
-     * @param {GXColor} color
+     * @param {IFColor} color
      * @private
      */
     IFAttributes.Pattern.prototype._setFillColor = function (patternClass, color) {

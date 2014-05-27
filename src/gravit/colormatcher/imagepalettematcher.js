@@ -2,41 +2,41 @@
 
     /**
      * Palette Matcher from an Image
-     * @class EXImagePaletteMatcher
-     * @extends EXColorMatcher
+     * @class GImagePaletteMatcher
+     * @extends GColorMatcher
      * @constructor
      */
-    function EXImagePaletteMatcher() {
+    function GImagePaletteMatcher() {
         this._palette = null;
     };
-    GObject.inherit(EXImagePaletteMatcher, EXColorMatcher);
+    IFObject.inherit(GImagePaletteMatcher, GColorMatcher);
 
-    EXImagePaletteMatcher.TITLE = new GLocale.Key(EXImagePaletteMatcher, "title");
+    GImagePaletteMatcher.TITLE = new IFLocale.Key(GImagePaletteMatcher, "title");
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXImagePaletteMatcher.prototype._htmlElement = null;
+    GImagePaletteMatcher.prototype._htmlElement = null;
 
     /**
-     * @type {Array<GXColor>}
+     * @type {Array<IFColor>}
      * @private
      */
-    EXImagePaletteMatcher.prototype._palette = null;
+    GImagePaletteMatcher.prototype._palette = null;
 
     /** @override */
-    EXImagePaletteMatcher.prototype.getTitle = function () {
-        return EXImagePaletteMatcher.TITLE;
+    GImagePaletteMatcher.prototype.getTitle = function () {
+        return GImagePaletteMatcher.TITLE;
     };
 
     /** @override */
-    EXImagePaletteMatcher.prototype.getCategory = function () {
-        return EXColorMatcher.CATEGORY_PALETTE;
+    GImagePaletteMatcher.prototype.getCategory = function () {
+        return GColorMatcher.CATEGORY_PALETTE;
     };
 
     /** @override */
-    EXImagePaletteMatcher.prototype.init = function (htmlElement) {
+    GImagePaletteMatcher.prototype.init = function (htmlElement) {
         this._htmlElement = htmlElement;
 
         $('<div></div>')
@@ -69,14 +69,14 @@
     };
 
     /** @override */
-    EXImagePaletteMatcher.prototype.match = function () {
+    GImagePaletteMatcher.prototype.match = function () {
         return this._palette;
     };
 
     /**
      * @private
      */
-    EXImagePaletteMatcher.prototype._handleImage = function (files) {
+    GImagePaletteMatcher.prototype._handleImage = function (files) {
         var imageType = /image.*/;
         var fileCount = files.length;
 
@@ -98,12 +98,12 @@
                             var convertedColor = this._convertThiefColor(palette[i]);
 
                             // Take care to avoid duplications with dominant color
-                            if (!GXColor.equals(convertedColor, this._palette[0])) {
+                            if (!IFColor.equals(convertedColor, this._palette[0])) {
                                 this._palette.push(convertedColor);
                             }
                         }
-                        if (this.hasEventListeners(EXColorMatcher.MatchUpdateEvent)) {
-                            this.trigger(EXColorMatcher.MATCH_UPDATE_EVENT);
+                        if (this.hasEventListeners(GColorMatcher.MatchUpdateEvent)) {
+                            this.trigger(GColorMatcher.MATCH_UPDATE_EVENT);
                         }
                     }.bind(this);
 
@@ -121,13 +121,13 @@
      * @param color
      * @private
      */
-    EXImagePaletteMatcher.prototype._convertThiefColor = function (color) {
-        return new GXColor(GXColor.Type.RGB, [color[0], color[1], color[2], 100]);
+    GImagePaletteMatcher.prototype._convertThiefColor = function (color) {
+        return new IFColor(IFColor.Type.RGB, [color[0], color[1], color[2], 100]);
     };
 
     /** @override */
-    EXImagePaletteMatcher.prototype.toString = function () {
-        return "[Object EXImagePaletteMatcher]";
+    GImagePaletteMatcher.prototype.toString = function () {
+        return "[Object GImagePaletteMatcher]";
     };
 
     /*
@@ -764,5 +764,5 @@
         }
     })();
 
-    _.EXImagePaletteMatcher = EXImagePaletteMatcher;
+    _.GImagePaletteMatcher = GImagePaletteMatcher;
 })(this);

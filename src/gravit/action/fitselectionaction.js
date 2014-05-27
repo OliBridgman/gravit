@@ -2,56 +2,56 @@
 
     /**
      * Action for fitting the selection into the current view
-     * @class EXFitSelectionAction
+     * @class GFitSelectionAction
      * @extends GUIAction
      * @constructor
      */
-    function EXFitSelectionAction() {
+    function GFitSelectionAction() {
     };
-    GObject.inherit(EXFitSelectionAction, GUIAction);
+    IFObject.inherit(GFitSelectionAction, GUIAction);
 
-    EXFitSelectionAction.ID = 'view.zoom.fit-selection';
-    EXFitSelectionAction.TITLE = new GLocale.Key(EXFitSelectionAction, "title");
+    GFitSelectionAction.ID = 'view.zoom.fit-selection';
+    GFitSelectionAction.TITLE = new IFLocale.Key(GFitSelectionAction, "title");
 
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.getId = function () {
-        return EXFitSelectionAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXFitSelectionAction.prototype.getTitle = function () {
-        return EXFitSelectionAction.TITLE;
+    GFitSelectionAction.prototype.getId = function () {
+        return GFitSelectionAction.ID;
     };
 
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_VIEW;
+    GFitSelectionAction.prototype.getTitle = function () {
+        return GFitSelectionAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.getGroup = function () {
+    GFitSelectionAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_VIEW;
+    };
+
+    /**
+     * @override
+     */
+    GFitSelectionAction.prototype.getGroup = function () {
         return "zoom";
     };
 
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'O'];
+    GFitSelectionAction.prototype.getShortcut = function () {
+        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'O'];
     };
 
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.isEnabled = function () {
+    GFitSelectionAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
         var editor = document ? document.getEditor() : null;
         return editor && editor.hasSelection();
@@ -60,7 +60,7 @@
     /**
      * @override
      */
-    EXFitSelectionAction.prototype.execute = function () {
+    GFitSelectionAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var editor = document ? document.getEditor() : null;
         var selection = editor.getSelection();
@@ -79,9 +79,9 @@
     };
 
     /** @override */
-    EXFitSelectionAction.prototype.toString = function () {
-        return "[Object EXFitSelectionAction]";
+    GFitSelectionAction.prototype.toString = function () {
+        return "[Object GFitSelectionAction]";
     };
 
-    _.EXFitSelectionAction = EXFitSelectionAction;
+    _.GFitSelectionAction = GFitSelectionAction;
 })(this);

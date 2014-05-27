@@ -41,7 +41,7 @@
         this._htmlElement.on("mouseup", this._mouseUp.bind(this));
     }
 
-    GObject.inherit(GUIMenuItem, GEventTarget);
+    IFObject.inherit(GUIMenuItem, GEventTarget);
 
     /**
      * The type of a menu item
@@ -83,7 +83,7 @@
      */
     GUIMenuItem.EnterEvent = function () {
     };
-    GObject.inherit(GUIMenuItem.EnterEvent, GEvent);
+    IFObject.inherit(GUIMenuItem.EnterEvent, GEvent);
 
     /** @override */
     GUIMenuItem.EnterEvent.prototype.toString = function () {
@@ -105,7 +105,7 @@
      */
     GUIMenuItem.LeaveEvent = function () {
     };
-    GObject.inherit(GUIMenuItem.LeaveEvent, GEvent);
+    IFObject.inherit(GUIMenuItem.LeaveEvent, GEvent);
 
     /** @override */
     GUIMenuItem.LeaveEvent.prototype.toString = function () {
@@ -127,7 +127,7 @@
      */
     GUIMenuItem.ActivateEvent = function () {
     };
-    GObject.inherit(GUIMenuItem.ActivateEvent, GEvent);
+    IFObject.inherit(GUIMenuItem.ActivateEvent, GEvent);
 
     /** @override */
     GUIMenuItem.ActivateEvent.prototype.toString = function () {
@@ -149,7 +149,7 @@
      */
     GUIMenuItem.UpdateEvent = function () {
     };
-    GObject.inherit(GUIMenuItem.UpdateEvent, GEvent);
+    IFObject.inherit(GUIMenuItem.UpdateEvent, GEvent);
 
     /** @override */
     GUIMenuItem.UpdateEvent.prototype.toString = function () {
@@ -186,7 +186,7 @@
     GUIMenuItem.prototype._icon = null;
 
     /**
-     * @type {GLocale.Key|String}
+     * @type {IFLocale.Key|String}
      * @private
      */
     GUIMenuItem.prototype._caption = null;
@@ -252,7 +252,7 @@
     };
 
     /**
-     * @returns {GLocale.Key|String} the item's caption
+     * @returns {IFLocale.Key|String} the item's caption
      * @version 1.0
      */
     GUIMenuItem.prototype.getCaption = function () {
@@ -261,7 +261,7 @@
 
     /**
      * Assigns the item's the caption
-     * @param {GLocale.Key|String} caption
+     * @param {IFLocale.Key|String} caption
      * @version 1.0
      */
     GUIMenuItem.prototype.setCaption = function (caption) {
@@ -270,8 +270,8 @@
             var captionElement = this._htmlElement.find('.g-menu-item-caption');
             captionElement.empty();
 
-            if (!this._caption || this._caption instanceof GLocale.Key || typeof this._caption === 'string') {
-                captionElement.text(this._caption ? gLocale.get(this._caption) : "");
+            if (!this._caption || this._caption instanceof IFLocale.Key || typeof this._caption === 'string') {
+                captionElement.text(this._caption ? ifLocale.get(this._caption) : "");
             } else {
                 captionElement.append(this._caption);
             }
@@ -294,7 +294,7 @@
         this._shortcutHint = hint;
         var shortcutElement = this._htmlElement.find('.g-menu-item-shortcut');
         if (this._shortcutHint && this._shortcutHint.length > 0) {
-            shortcutElement.text(guiKey.shortcutToString(hint));
+            shortcutElement.text(ifKey.shortcutToString(hint));
             shortcutElement.css('display', '');
         } else {
             shortcutElement.empty();
@@ -472,7 +472,7 @@
         //      - or -
         //    Are a root item and part of a menu-bar which' menu is opened
         if (this._type == GUIMenuItem.Type.Menu &&
-            gSystem.hardware === GSystem.Hardware.Desktop &&
+            ifSystem.hardware === IFSystem.Hardware.Desktop &&
             (!this.isRootItem() || (this.isRootMenuBarItem() && this.getMenuBar().isActive()))) {
             this._openMenu();
         }
@@ -512,7 +512,7 @@
             evt.preventDefault();
 
             // Open Sub-Menu if we're a Sub-Item and on Root or not on Desktop which doesn't have mouse-over
-            if (this._type === GUIMenuItem.Type.Menu && (this.isRootItem() || gSystem.hardware !== GSystem.Hardware.Desktop)) {
+            if (this._type === GUIMenuItem.Type.Menu && (this.isRootItem() || ifSystem.hardware !== IFSystem.Hardware.Desktop)) {
                 // Toggle our menu
                 if (this._htmlElement.hasClass('g-active')) {
                     this.getMenu().close();

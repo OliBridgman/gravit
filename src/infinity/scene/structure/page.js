@@ -1,21 +1,21 @@
 (function (_) {
     /**
      * An element representing a page
-     * @class GXPage
-     * @extends GXBlock
-     * @mixes GXNode.Container
+     * @class IFPage
+     * @extends IFBlock
+     * @mixes IFNode.Container
      * @constructor
      */
-    function GXPage() {
-        GXBlock.call(this);
-        this._setDefaultProperties(GXPage.GeometryProperties, GXPage.VisualProperties);
+    function IFPage() {
+        IFBlock.call(this);
+        this._setDefaultProperties(IFPage.GeometryProperties, IFPage.VisualProperties);
     };
-    GXNode.inheritAndMix("page", GXPage, GXBlock, [GXNode.Container]);
+    IFNode.inheritAndMix("page", IFPage, IFBlock, [IFNode.Container]);
 
     /**
      * The geometry properties of a page with their default values
      */
-    GXPage.GeometryProperties = {
+    IFPage.GeometryProperties = {
         /** Page position */
         x: 0,
         y: 0,
@@ -34,35 +34,35 @@
     /**
      * The visual properties of a page with their default values
      */
-    GXPage.VisualProperties = {
-        cls: new GXColor(GXColor.Type.RGB, [255, 255, 255, 100])
+    IFPage.VisualProperties = {
+        cls: new IFColor(IFColor.Type.RGB, [255, 255, 255, 100])
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXPage Class
+    // IFPage Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
-    GXPage.prototype.store = function (blob) {
-        if (GXBlock.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXPage.GeometryProperties);
-            this.storeProperties(blob, GXPage.VisualProperties);
+    IFPage.prototype.store = function (blob) {
+        if (IFBlock.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFPage.GeometryProperties);
+            this.storeProperties(blob, IFPage.VisualProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXPage.prototype.restore = function (blob) {
-        if (GXBlock.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXPage.GeometryProperties);
-            this.restoreProperties(blob, GXPage.VisualProperties);
+    IFPage.prototype.restore = function (blob) {
+        if (IFBlock.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFPage.GeometryProperties);
+            this.restoreProperties(blob, IFPage.VisualProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXPage.prototype.paint = function (context) {
+    IFPage.prototype.paint = function (context) {
         if (!this._preparePaint(context)) {
             return;
         }
@@ -73,7 +73,7 @@
         // Figure if we have any contents
         var hasContents = false;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GXElement) {
+            if (child instanceof IFElement) {
                 hasContents = true;
                 break;
             }
@@ -93,7 +93,7 @@
         }
 
         // If we have contents and are in output mode we'll clip to our page extents
-        if (hasContents && context.configuration.paintMode === GXScenePaintConfiguration.PaintMode.Output) {
+        if (hasContents && context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
             context.canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);
@@ -117,30 +117,30 @@
     };
 
     /** @override */
-    GXPage.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXScene;
+    IFPage.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFScene;
     };
 
     /** @override */
-    GXPage.prototype._calculateGeometryBBox = function () {
+    IFPage.prototype._calculateGeometryBBox = function () {
         return new GRect(this.$x, this.$y, this.$w, this.$h);
     };
 
     /** @override */
-    GXPage.prototype._calculatePaintBBox = function () {
+    IFPage.prototype._calculatePaintBBox = function () {
         var bbox = this.getGeometryBBox();
 
         if (this.$bl && this.$bl > 0) {
             bbox = bbox.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
         }
 
-        var superBBox = GXBlock.prototype._calculatePaintBBox.call(this);
+        var superBBox = IFBlock.prototype._calculatePaintBBox.call(this);
 
         return superBBox ? superBBox.united(bbox) : bbox;
     };
 
     /** @override */
-    GXPage.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    IFPage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         var geoBox = this.getGeometryBBox();
 
         if (transform) {
@@ -148,16 +148,16 @@
         }
 
         if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return new GXBlock.HitResult(this);
+            return new IFBlock.HitResult(this);
         }
 
-        return GXBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);;
+        return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);;
     };
 
     /** @override */
-    GXPage.prototype._handleChange = function (change, args) {
-        if (this._handleGeometryChangeForProperties(change, args, GXPage.GeometryProperties)) {
-            if (change === GXNode._Change.BeforePropertiesChange) {
+    IFPage.prototype._handleChange = function (change, args) {
+        if (this._handleGeometryChangeForProperties(change, args, IFPage.GeometryProperties)) {
+            if (change === IFNode._Change.BeforePropertiesChange) {
                 // Check for position change in page
                 var xIndex = args.properties.indexOf('x');
                 var yIndex = args.properties.indexOf('y');
@@ -169,7 +169,7 @@
                     if (dx !== 0 || dy !== 0) {
                         var transform = new GTransform(1, 0, 0, 1, dx, dy);
                         for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
-                            if (child instanceof GXElement && child.hasMixin(GXElement.Transform)) {
+                            if (child instanceof IFElement && child.hasMixin(IFElement.Transform)) {
                                 child.transform(transform);
                             }
                         }
@@ -178,9 +178,9 @@
             }
         }
 
-        this._handleVisualChangeForProperties(change, args, GXPage.VisualProperties);
-        GXBlock.prototype._handleChange.call(this, change, args);
+        this._handleVisualChangeForProperties(change, args, IFPage.VisualProperties);
+        IFBlock.prototype._handleChange.call(this, change, args);
     };
 
-    _.GXPage = GXPage;
+    _.IFPage = IFPage;
 })(this);

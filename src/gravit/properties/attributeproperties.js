@@ -3,7 +3,7 @@
     /**
      * Attribute properties panel
      * @class GAttributeProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GAttributeProperties() {
@@ -11,7 +11,7 @@
         this._attributesInfo = [];
         this._assignAttributePropertiesHandler = this._assignAttributeProperties.bind(this);
     };
-    GObject.inherit(GAttributeProperties, EXProperties);
+    IFObject.inherit(GAttributeProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -20,13 +20,13 @@
     GAttributeProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GAttributeProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXElement>}
+     * @type {Array<IFElement>}
      * @private
      */
     GAttributeProperties.prototype._elements = null;
@@ -64,7 +64,7 @@
             var addItem = new GUIMenuItem();
             menu.addItem(addItem);
             // TODO : I18N
-            var addLabel = 'Add ' + gLocale.getValue(attribute.getAttributeClass(), 'name');
+            var addLabel = 'Add ' + ifLocale.getValue(attribute.getAttributeClass(), 'name');
             addItem.setCaption(addLabel);
             addItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
                 addItem.setEnabled(attribute.isCreateable(this._elements, this._attribute));
@@ -95,7 +95,7 @@
     /** @override */
     GAttributeProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._attribute) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
             this._attribute = null;
         }
@@ -103,7 +103,7 @@
         // Collect all attribute elements
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(GXElement.Attributes)) {
+            if (elements[i].hasMixin(IFElement.Attributes)) {
                 this._elements.push(elements[i]);
             }
         }
@@ -123,7 +123,7 @@
                 return false;
             }
 
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._attribute = node;
             return true;
         } else {
@@ -132,7 +132,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GAttributeProperties.prototype._afterPropertiesChange = function (event) {

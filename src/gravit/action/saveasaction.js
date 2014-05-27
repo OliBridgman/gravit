@@ -2,67 +2,67 @@
 
     /**
      * Action saving a document filed under a name
-     * @param {GStorage} storage
+     * @param {IFStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
-     * @class EXSaveAsAction
+     * @class GSaveAsAction
      * @extends GUIAction
      * @constructor
      */
-    function EXSaveAsAction(storage, isDefault) {
+    function GSaveAsAction(storage, isDefault) {
         this._storage = storage;
         this._default = isDefault;
     };
-    GObject.inherit(EXSaveAsAction, GUIAction);
+    IFObject.inherit(GSaveAsAction, GUIAction);
 
-    EXSaveAsAction.ID = 'file.save-as';
-    EXSaveAsAction.TITLE = new GLocale.Key(EXSaveAsAction, "title");
+    GSaveAsAction.ID = 'file.save-as';
+    GSaveAsAction.TITLE = new IFLocale.Key(GSaveAsAction, "title");
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.getId = function () {
-        return EXSaveAsAction.ID + '.' + this._storage.getProtocol();
+    GSaveAsAction.prototype.getId = function () {
+        return GSaveAsAction.ID + '.' + this._storage.getProtocol();
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.getTitle = function () {
-        return gLocale.get(EXSaveAsAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
+    GSaveAsAction.prototype.getTitle = function () {
+        return ifLocale.get(GSaveAsAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE_SAVEAS;
+    GSaveAsAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE_SAVEAS;
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.getGroup = function () {
+    GSaveAsAction.prototype.getGroup = function () {
         return "file/saveas_storage";
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.getShortcut = function () {
-        return this._default ? [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'S'] : null;
+    GSaveAsAction.prototype.getShortcut = function () {
+        return this._default ? [IFKey.Constant.SHIFT, IFKey.Constant.META, 'S'] : null;
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.isEnabled = function () {
+    GSaveAsAction.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
-    EXSaveAsAction.prototype.execute = function () {
+    GSaveAsAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
 
         // TODO : Set first parameter 'reference'
@@ -73,9 +73,9 @@
     };
 
     /** @override */
-    EXSaveAsAction.prototype.toString = function () {
-        return "[Object EXSaveAsAction]";
+    GSaveAsAction.prototype.toString = function () {
+        return "[Object GSaveAsAction]";
     };
 
-    _.EXSaveAsAction = EXSaveAsAction;
+    _.GSaveAsAction = GSaveAsAction;
 })(this);

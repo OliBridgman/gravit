@@ -2,20 +2,20 @@
     /**
      * An element represent an elementary node within a scene, something like a layer,
      * a shape, a group of shapes and more
-     * @class GXElement
-     * @extends GXNode
+     * @class IFElement
+     * @extends IFNode
      * @constructor
      */
-    function GXElement() {
+    function IFElement() {
     }
 
-    GObject.inherit(GXElement, GXNode);
+    IFObject.inherit(IFElement, IFNode);
 
     /**
      * Known flags for a geometry
      * @version 1.0
      */
-    GXElement.Flag = {
+    IFElement.Flag = {
         /**
          * Defines a flag for being hidden
          * @type {Number}
@@ -41,7 +41,7 @@
      * Known flags for a collision check
      * @version 1.0
      */
-    GXElement.CollisionFlag = {
+    IFElement.CollisionFlag = {
         /**
          * Flag that specifies partial collision matching, means
          * that elements that are not fully enclosed by a collision
@@ -72,7 +72,7 @@
      * @enum
      * @private
      */
-    GXElement._Change = {
+    IFElement._Change = {
         /**
          * A child's geometry has been updated
          * args = the child which' geometry has been updated
@@ -103,26 +103,26 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.GeometryChangeEvent Event
+    // IFElement.GeometryChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event on geometrical changes of an element sent via a scene
-     * @param {GXElement} element the affected element
-     * @param {GXElement.GeometryChangeEvent.Type} type the geometrical change type
-     * @class GXElement.GeometryChangeEvent
+     * @param {IFElement} element the affected element
+     * @param {IFElement.GeometryChangeEvent.Type} type the geometrical change type
+     * @class IFElement.GeometryChangeEvent
      * @extends GEvent
      * @constructor
      */
-    GXElement.GeometryChangeEvent = function (element, type) {
+    IFElement.GeometryChangeEvent = function (element, type) {
         this.element = element;
         this.type = type;
     };
-    GObject.inherit(GXElement.GeometryChangeEvent, GEvent);
+    IFObject.inherit(IFElement.GeometryChangeEvent, GEvent);
 
     /**
      * The type of a geometrical change
      */
-    GXElement.GeometryChangeEvent.Type = {
+    IFElement.GeometryChangeEvent.Type = {
         /** Before the element's geometry gets changed */
         Before: 0,
         /** After the element's geometry has been changed */
@@ -133,73 +133,73 @@
 
     /**
      * The affected element
-     * @type GXElement
+     * @type IFElement
      */
-    GXElement.GeometryChangeEvent.prototype.element = null;
+    IFElement.GeometryChangeEvent.prototype.element = null;
 
     /**
      * The type of the geometrical change
-     * @type {GXElement.GeometryChangeEvent.Type}
+     * @type {IFElement.GeometryChangeEvent.Type}
      */
-    GXElement.GeometryChangeEvent.prototype.type = null;
+    IFElement.GeometryChangeEvent.prototype.type = null;
 
     /** @override */
-    GXElement.GeometryChangeEvent.prototype.toString = function () {
-        return "[Event GXElement.GeometryChangeEvent]";
+    IFElement.GeometryChangeEvent.prototype.toString = function () {
+        return "[Event IFElement.GeometryChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.HitResult Class
+    // IFElement.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A hit result on an element
-     * @param {GXElement} element the element that was hit
+     * @param {IFElement} element the element that was hit
      * @param {*} args - other hit-test data
      * @constructor
-     * @class GXElement.HitResult
+     * @class IFElement.HitResult
      */
-    GXElement.HitResult = function (element, args) {
+    IFElement.HitResult = function (element, args) {
         this.element = element;
         this.data = args;
     };
 
     /**
      * The element that was hit
-     * @type {GXElement}
+     * @type {IFElement}
      * @version 1.0
      */
-    GXElement.HitResult.prototype.element = null;
+    IFElement.HitResult.prototype.element = null;
 
     /**
      * Additional hit-test data
      * @type {*}
      */
-    GXElement.HitResult.prototype.data = null;
+    IFElement.HitResult.prototype.data = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.Pivot Mixin
+    // IFElement.Pivot Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Marks an element to contain a pivot point
-     * @class GXElement.Pivot
+     * @class IFElement.Pivot
      * @constructor
      * @mixin
      * @version 1.0
      */
-    GXElement.Pivot = function () {
+    IFElement.Pivot = function () {
     };
 
     /**
      * @type {Object|GPoint}
      * @private
      */
-    GXElement.Pivot.prototype._pivot = GRect.Side.CENTER;
+    IFElement.Pivot.prototype._pivot = GRect.Side.CENTER;
 
     /**
      * @return {GPoint} the (absolute) pivot point
      * @version 1.0
      */
-    GXElement.Pivot.prototype.getPivotPoint = function () {
+    IFElement.Pivot.prototype.getPivotPoint = function () {
         var bbox = this.getGeometryBBox();
         if (bbox == null) {
             bbox = new GRect(0, 0, 0, 0);
@@ -214,27 +214,27 @@
     };
 
     /** @override */
-    GXElement.Pivot.prototype.toString = function () {
-        return "[Mixin GXElement.Pivot]";
+    IFElement.Pivot.prototype.toString = function () {
+        return "[Mixin IFElement.Pivot]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.Transform Mixin
+    // IFElement.Transform Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Marks an element to be transformable
-     * @class GXElement.Transform
+     * @class IFElement.Transform
      * @constructor
      * @mixin
      */
-    GXElement.Transform = function () {
+    IFElement.Transform = function () {
     };
 
     /**
      * Returns the actual transformation the element has
      * @return {GTransform}
      */
-    GXElement.Transform.prototype.getTransform = function () {
+    IFElement.Transform.prototype.getTransform = function () {
         return null;
     };
 
@@ -242,7 +242,7 @@
      * Assigns the actual transformation the element has
      * @return {GTransform}
      */
-    GXElement.Transform.prototype.setTransform = function (transform) {
+    IFElement.Transform.prototype.setTransform = function (transform) {
         throw new Error("Not Supported.");
     };
 
@@ -253,7 +253,7 @@
      * apply the transformation to all direct children of the element if any
      * @param {GTransform} transform the transformation to be applied
      */
-    GXElement.Transform.prototype.transform = function (transform) {
+    IFElement.Transform.prototype.transform = function (transform) {
         this._transformChildren(transform);
     };
 
@@ -261,10 +261,10 @@
      * @param {GTransform} transform the transformation to be applied
      * @private
      */
-    GXElement.Transform.prototype._transformChildren = function (transform) {
-        if (this.hasMixin(GXNode.Container)) {
+    IFElement.Transform.prototype._transformChildren = function (transform) {
+        if (this.hasMixin(IFNode.Container)) {
             for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
-                if (child instanceof GXElement && child.hasMixin(GXElement.Transform)) {
+                if (child instanceof IFElement && child.hasMixin(IFElement.Transform)) {
                     child.transform(transform);
                 }
             }
@@ -272,33 +272,33 @@
     };
 
     /** @override */
-    GXElement.Transform.prototype.toString = function () {
-        return "[Mixin GXElement.Transform]";
+    IFElement.Transform.prototype.toString = function () {
+        return "[Mixin IFElement.Transform]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement.Attributes Mixin
+    // IFElement.Attributes Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Marks an element to contain attributes
-     * @class GXElement.Attributes
+     * @class IFElement.Attributes
      * @constructor
      * @mixin
      */
-    GXElement.Attributes = function () {
+    IFElement.Attributes = function () {
     };
 
     /**
      * @type {IFAttributes}
      * @private
      */
-    GXElement.Attributes._attributes = null;
+    IFElement.Attributes._attributes = null;
 
     /**
      * Returns the attributes for this element
      * @returns {IFAttributes}
      */
-    GXElement.Attributes.prototype.getAttributes = function () {
+    IFElement.Attributes.prototype.getAttributes = function () {
         // If we have a _attributes reference and it not
         // has ourself as a parent, then clear it, first
         if (this._attributes && this._attributes.getParent() !== this) {
@@ -318,31 +318,31 @@
     };
 
     /** @override */
-    GXElement.Attributes.prototype.toString = function () {
-        return "[Mixin GXElement.Attributes]";
+    IFElement.Attributes.prototype.toString = function () {
+        return "[Mixin IFElement.Attributes]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElement
+    // IFElement
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @type GRect
      * @private
      */
-    GXElement.prototype._geometryBBbox = null;
+    IFElement.prototype._geometryBBbox = null;
 
     /**
      * @type GRect
      * @private
      */
-    GXElement.prototype._paintBBox = null;
+    IFElement.prototype._paintBBox = null;
 
     /**
      * Called to get the geometry bbox which usually is the bbox of the underlying shape
      * @return {GRect} the geometry bbox, may never be null
      * @version 1.0
      */
-    GXElement.prototype.getGeometryBBox = function () {
+    IFElement.prototype.getGeometryBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
@@ -360,16 +360,16 @@
      * any children with valid geometry bboxes
      * @version 1.0
      */
-    GXElement.prototype.getChildrenGeometryBBox = function () {
+    IFElement.prototype.getChildrenGeometryBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
         }
 
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             var result = null;
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof GXElement) {
+                if (node instanceof IFElement) {
                     var childBBox = node.getGeometryBBox();
                     if (childBBox && !childBBox.isEmpty()) {
                         result = result ? result.united(childBBox) : childBBox;
@@ -387,7 +387,7 @@
      * @return {GRect} the paint bbox, may never be null
      * @version 1.0
      */
-    GXElement.prototype.getPaintBBox = function () {
+    IFElement.prototype.getPaintBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
@@ -405,16 +405,16 @@
      * any children with valid paint bboxes
      * @version 1.0
      */
-    GXElement.prototype.getChildrenPaintBBox = function () {
+    IFElement.prototype.getChildrenPaintBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
         }
 
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             var result = null;
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof GXElement) {
+                if (node instanceof IFElement) {
                     var childBBox = node.getPaintBBox();
                     if (childBBox && !childBBox.isEmpty()) {
                         result = result ? result.united(childBBox) : childBBox;
@@ -436,8 +436,8 @@
      * @see isPaintable
      * @version 1.0
      */
-    GXElement.prototype.isVisible = function () {
-        return (this._flags & GXElement.Flag.Hidden) == 0;
+    IFElement.prototype.isVisible = function () {
+        return (this._flags & IFElement.Flag.Hidden) == 0;
     };
 
     /**
@@ -458,10 +458,10 @@
      * defaults to zero if not provided.
      * @param {Boolean} [force] if true, enforce hitting even if something is not visible
      * or has no area etc. Defaults to false.
-     * @returns {Array<GXElement.HitResult>} either null for no hit or
+     * @returns {Array<IFElement.HitResult>} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
+    IFElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
         tolerance = tolerance || 0;
 
@@ -484,9 +484,9 @@
         var result = null;
 
         // We might have a possible hit so iterate our children if any
-        if (level !== 0 && this.hasMixin(GXNode.Container)) {
+        if (level !== 0 && this.hasMixin(IFNode.Container)) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
-                if (child instanceof GXElement) {
+                if (child instanceof IFElement) {
                     var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force);
                     if (subResult) {
                         if (stacked) {
@@ -521,15 +521,15 @@
     /**
      * Gets a list of all coliiding elements including this element and
      * all potential children if it if any
-     * @param {GXVertexSource} area the area to get colissions within
+     * @param {IFVertexSource} area the area to get colissions within
      * @param {Number} flags one or more flags to use for collision testing
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
-     * @return {Array<GXElement>} an array including all coliding elements or
+     * @return {Array<IFElement>} an array including all coliding elements or
      * an empty array for no collisions
-     * @see GXElement.CollisionFlag
+     * @see IFElement.CollisionFlag
      */
-    GXElement.prototype.getCollisions = function (area, flags, acceptor) {
+    IFElement.prototype.getCollisions = function (area, flags, acceptor) {
         var result = [];
 
         var _addToResult = function (element) {
@@ -539,7 +539,7 @@
         };
 
         // Handle the basic collision modes here
-        if ((flags & GXElement.CollisionFlag.GeometryBBox) != 0 || (flags & GXElement.CollisionFlag.PaintBBox) != 0) {
+        if ((flags & IFElement.CollisionFlag.GeometryBBox) != 0 || (flags & IFElement.CollisionFlag.PaintBBox) != 0) {
 
             // Test ourself, first
             var bbox = this.getPaintBBox();
@@ -549,7 +549,7 @@
 
                 var areaBounds = gVertexInfo.calculateBounds(area, true);
 
-                if ((flags & GXElement.CollisionFlag.Partial) != 0) {
+                if ((flags & IFElement.CollisionFlag.Partial) != 0) {
                     if (areaBounds.intersectsRect(bbox)) {
                         _addToResult(this);
                     }
@@ -562,9 +562,9 @@
         }
 
         // Test children now
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
-                if (child instanceof GXElement) {
+                if (child instanceof IFElement) {
                     var subResult = child.getCollisions(area, flags);
                     if (subResult && subResult.length) {
                         for (var i = 0; i < subResult.length; ++i) {
@@ -585,10 +585,10 @@
      * is recursive, i.e. multiple calls to this functions need to be finished
      * with the corresponding numbers of endUpdate calls.
      */
-    GXElement.prototype.beginUpdate = function () {
+    IFElement.prototype.beginUpdate = function () {
         if (!this._updateCounter) {
             this._updateCounter = 1;
-            this._notifyChange(GXElement._Change.PrepareGeometryUpdate);
+            this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
             this._blockUpdateChanges();
         } else {
             this._updateCounter++;
@@ -602,20 +602,20 @@
      * @param {Boolean} [noGeometryInvalidation] if set then does not invalidate the geometry,
      * otherwise this will ensure to invalidate the geometry. Defaults to false.
      */
-    GXElement.prototype.endUpdate = function (noGeometryInvalidation) {
+    IFElement.prototype.endUpdate = function (noGeometryInvalidation) {
         if (this._updateCounter != null && --this._updateCounter == 0) {
             this._releaseUpdateChanges();
-            this._notifyChange(GXElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? false : true);
+            this._notifyChange(IFElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? false : true);
             delete this._updateCounter;
         }
     };
 
     /**
      * Called whenever this should paint itself
-     * @param {GXPaintContext} context the context to be used for drawing
+     * @param {IFPaintContext} context the context to be used for drawing
      * @version 1.0
      */
-    GXElement.prototype.paint = function (context) {
+    IFElement.prototype.paint = function (context) {
         if (!this._preparePaint(context)) {
             return;
         }
@@ -629,12 +629,12 @@
      * Function to check whether a node is actually paintable, this includes
      * for example checking for display flag, checking for dirty regions,
      * empty bounding box, visibility and more.
-     * @param {GXPaintContext} [context] the current paint context, if null,
+     * @param {IFPaintContext} [context] the current paint context, if null,
      * no check against a context will be made
      * @return {Boolean} true if the node is paintable, false if not
      * @private
      */
-    GXElement.prototype.isPaintable = function (context) {
+    IFElement.prototype.isPaintable = function (context) {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return false;
@@ -643,7 +643,7 @@
         // If there's no parent and we're not the document then
         // we're not paintable at all except if we've been provided
         // an explicit context which enforces us to paint
-        if (!context && !this.getParent() && !(this instanceof GXScene)) {
+        if (!context && !this.getParent() && !(this instanceof IFScene)) {
             return false;
         }
 
@@ -659,12 +659,12 @@
 
     /**
      * Called for preparing a paint
-     * @param {GXPaintContext} context the current paint context
+     * @param {IFPaintContext} context the current paint context
      * @return {Boolean} false if painting should be canceled, true otherwise
      * @private
      */
-    GXElement.prototype._preparePaint = function (context) {
-        if (this.hasFlag(GXElement.Flag.NoPaint)) {
+    IFElement.prototype._preparePaint = function (context) {
+        if (this.hasFlag(IFElement.Flag.NoPaint)) {
             return false;
         }
 
@@ -673,10 +673,10 @@
 
     /**
      * Called for finishing a paint
-     * @param {GXPaintContext} context the current paint context
+     * @param {IFPaintContext} context the current paint context
      * @private
      */
-    GXElement.prototype._finishPaint = function (context) {
+    IFElement.prototype._finishPaint = function (context) {
         // NO-OP
 
         // TODO : If print mode then remove clipping to page
@@ -684,14 +684,14 @@
 
     /**
      * Called for painting all children if this element is a container
-     * @param {GXPaintContext} context the current paint context
+     * @param {IFPaintContext} context the current paint context
      * @private
      */
-    GXElement.prototype._paintChildren = function (context) {
+    IFElement.prototype._paintChildren = function (context) {
         // default paint handling if node is a container
-        if (this.hasMixin(GXNode.Container)) {
+        if (this.hasMixin(IFNode.Container)) {
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof GXElement) {
+                if (node instanceof IFElement) {
                     node.paint(context);
                 }
             }
@@ -703,7 +703,7 @@
      * @return {GRect} the calculated geometry bbox, may never be null
      * @private
      */
-    GXElement.prototype._calculateGeometryBBox = function () {
+    IFElement.prototype._calculateGeometryBBox = function () {
         // Default action unites all children geometry bboxes if this is a container
         return this.getChildrenGeometryBBox();
     };
@@ -713,7 +713,7 @@
      * @return {GRect} the calculated paint bbox, may never be null
      * @private
      */
-    GXElement.prototype._calculatePaintBBox = function () {
+    IFElement.prototype._calculatePaintBBox = function () {
         // Default action unites all children paint bboxes if this is a container
         return this.getChildrenPaintBBox();
     };
@@ -730,10 +730,10 @@
      * @param {Number} tolerance a tolerance used for hit-testing
      * @param {Boolean} force if true, enforce hitting even if something is not visible
      * or has no area etc.
-     * @returns {GXElement.HitResult} either null for no hit or
+     * @returns {IFElement.HitResult} either null for no hit or
      * a certain hit result depending on the element type
      */
-    GXElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    IFElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
         return null;
     };
 
@@ -741,12 +741,12 @@
      * Blocks all update changes like geometry update, invalidation etc.
      * @private
      */
-    GXElement.prototype._blockUpdateChanges = function () {
+    IFElement.prototype._blockUpdateChanges = function () {
         this._beginBlockChanges([
-            GXElement._Change.InvalidationRequest,
-            GXElement._Change.PrepareGeometryUpdate,
-            GXElement._Change.FinishGeometryUpdate,
-            GXElement._Change.ChildGeometryUpdate
+            IFElement._Change.InvalidationRequest,
+            IFElement._Change.PrepareGeometryUpdate,
+            IFElement._Change.FinishGeometryUpdate,
+            IFElement._Change.ChildGeometryUpdate
         ]);
     };
 
@@ -754,21 +754,21 @@
      * Releases all update changes like geometry update, invalidation etc.
      * @private
      */
-    GXElement.prototype._releaseUpdateChanges = function () {
+    IFElement.prototype._releaseUpdateChanges = function () {
         this._endBlockChanges([
-            GXElement._Change.InvalidationRequest,
-            GXElement._Change.PrepareGeometryUpdate,
-            GXElement._Change.FinishGeometryUpdate,
-            GXElement._Change.ChildGeometryUpdate
+            IFElement._Change.InvalidationRequest,
+            IFElement._Change.PrepareGeometryUpdate,
+            IFElement._Change.FinishGeometryUpdate,
+            IFElement._Change.ChildGeometryUpdate
         ]);
     };
 
     /**
      * Called to to request a invalidation for a given node
-     * @param {GXElement} node the node to request an invalidation for
+     * @param {IFElement} node the node to request an invalidation for
      * @private
      */
-    GXElement.prototype._requestInvalidateNode = function (node) {
+    IFElement.prototype._requestInvalidateNode = function (node) {
         if (this.isAttached() && node.isPaintable()) {
             var repaintArea = node.getPaintBBox();
             if (repaintArea) {
@@ -783,7 +783,7 @@
      * @param {GRect} area the area of invalidation
      * @private
      */
-    GXElement.prototype._requestInvalidationArea = function (area) {
+    IFElement.prototype._requestInvalidationArea = function (area) {
         if (this.isAttached()) {
             this._scene._invalidateArea(area);
         }
@@ -793,7 +793,7 @@
      * Called to request an invalidation for this node
      * @private
      */
-    GXElement.prototype._requestInvalidation = function () {
+    IFElement.prototype._requestInvalidation = function () {
         this._requestInvalidateNode(this);
     };
 
@@ -801,18 +801,18 @@
      * Invalidate the geometry to enforce a re-calculation
      * @private
      */
-    GXElement.prototype._invalidateGeometry = function () {
+    IFElement.prototype._invalidateGeometry = function () {
         this._geometryBBbox = null;
         this._paintBBox = null;
     };
 
     /** @override */
-    GXElement.prototype._handleChange = function (change, args) {
-        if (change == GXElement._Change.InvalidationRequest) {
+    IFElement.prototype._handleChange = function (change, args) {
+        if (change == IFElement._Change.InvalidationRequest) {
             if (this.isPaintable()) {
                 this._requestInvalidation();
             }
-        } else if (change == GXElement._Change.PrepareGeometryUpdate) {
+        } else if (change == IFElement._Change.PrepareGeometryUpdate) {
             if (this.isPaintable()) {
                 var paintBBox = this.getPaintBBox();
                 if (paintBBox && !paintBBox.isEmpty()) {
@@ -821,11 +821,11 @@
             }
 
             if (this.isVisible()) {
-                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.Before));
+                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Before));
                 }
             }
-        } else if (change == GXElement._Change.FinishGeometryUpdate) {
+        } else if (change == IFElement._Change.FinishGeometryUpdate) {
             if (this.isVisible()) {
                 // Avoid invalidation only of args is explicitely set to false
                 if (!(false === args)) {
@@ -838,7 +838,7 @@
 
                         // Deliver child geometry update to parent
                         if (this.getParent()) {
-                            this.getParent()._notifyChange(GXElement._Change.ChildGeometryUpdate, this);
+                            this.getParent()._notifyChange(IFElement._Change.ChildGeometryUpdate, this);
                         }
 
                         // Request repaint of old paint bbox if there was any
@@ -847,27 +847,27 @@
                         }
 
                         // Request a repaint of our new geometry
-                        this._handleChange(GXElement._Change.InvalidationRequest);
+                        this._handleChange(IFElement._Change.InvalidationRequest);
                     } else {
                         // Paintboxes are equal then do a simple invalidation request
                         this._requestInvalidation();
                     }
                 }
 
-                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.After));
+                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.After));
                 }
 
                 if (this._savedPaintBBox) {
                     delete this._savedPaintBBox;
                 }
             }
-        } else if (change == GXElement._Change.ChildGeometryUpdate) {
+        } else if (change == IFElement._Change.ChildGeometryUpdate) {
             if (this.isVisible()) {
                 this._invalidateGeometry();
 
-                if (this._canEventBeSend(GXElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GXElement.GeometryChangeEvent(this, GXElement.GeometryChangeEvent.Type.Child));
+                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Child));
                 }
 
                 // Forward to parent
@@ -875,36 +875,36 @@
                     this.getParent()._notifyChange(change, args);
                 }
             }
-        } else if (change == GXNode._Change.AfterChildInsert) {
+        } else if (change == IFNode._Change.AfterChildInsert) {
             // If child is an element, notify about the change
-            if (args instanceof GXElement) {
-                this._notifyChange(GXElement._Change.ChildGeometryUpdate, args);
-                args._handleChange(GXElement._Change.InvalidationRequest);
+            if (args instanceof IFElement) {
+                this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
+                args._handleChange(IFElement._Change.InvalidationRequest);
             }
 
             // Call super and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else if (change == GXNode._Change.BeforeChildRemove) {
+            IFNode.prototype._handleChange.call(this, change, args);
+        } else if (change == IFNode._Change.BeforeChildRemove) {
 
             // If child is an element, request repaint for it's area
-            if (args instanceof GXElement) {
+            if (args instanceof IFElement) {
                 this._requestInvalidateNode(args);
             }
 
             // Call super and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else if (change == GXNode._Change.AfterChildRemove) {
+            IFNode.prototype._handleChange.call(this, change, args);
+        } else if (change == IFNode._Change.AfterChildRemove) {
 
             // If child is an element, notify about the change
-            if (args instanceof GXElement) {
-                this._notifyChange(GXElement._Change.ChildGeometryUpdate, args);
+            if (args instanceof IFElement) {
+                this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
             }
 
             // Call super and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
-        } else if (change == GXNode._Change.AfterFlagChange) {
+            IFNode.prototype._handleChange.call(this, change, args);
+        } else if (change == IFNode._Change.AfterFlagChange) {
             switch (args.flag) {
-                case GXElement.Flag.NoPaint:
+                case IFElement.Flag.NoPaint:
                     this._requestInvalidation();
                     break;
                 default:
@@ -912,10 +912,10 @@
             }
 
             // Call super and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
+            IFNode.prototype._handleChange.call(this, change, args);
         } else {
             // Call super by default and be done with it
-            GXNode.prototype._handleChange.call(this, change, args);
+            IFNode.prototype._handleChange.call(this, change, args);
         }
     };
 
@@ -931,15 +931,15 @@
      * change of the geometry
      * @private
      */
-    GXElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
-        if (change == GXNode._Change.BeforePropertiesChange || change == GXNode._Change.AfterPropertiesChange) {
+    IFElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
             if (gUtil.containsObjectKey(args.properties, properties)) {
                 switch (change) {
-                    case GXNode._Change.BeforePropertiesChange:
-                        this._notifyChange(GXElement._Change.PrepareGeometryUpdate);
+                    case IFNode._Change.BeforePropertiesChange:
+                        this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
                         break;
-                    case GXNode._Change.AfterPropertiesChange:
-                        this._notifyChange(GXElement._Change.FinishGeometryUpdate);
+                    case IFNode._Change.AfterPropertiesChange:
+                        this._notifyChange(IFElement._Change.FinishGeometryUpdate);
                         break;
                 }
                 return true;
@@ -960,16 +960,16 @@
      * visual change
      * @private
      */
-    GXElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
-        if (change == GXNode._Change.AfterPropertiesChange) {
+    IFElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
             if (gUtil.containsObjectKey(args.properties, properties)) {
-                this._notifyChange(GXElement._Change.InvalidationRequest);
+                this._notifyChange(IFElement._Change.InvalidationRequest);
                 return true;
             }
         }
         return false;
     };
 
-    _.GXElement = GXElement;
+    _.IFElement = IFElement;
 })
     (this);

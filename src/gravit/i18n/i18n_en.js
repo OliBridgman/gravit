@@ -1,56 +1,56 @@
 // Extensions
-gLocale.setValues(EXColorMatcher, GLocale.Language.English, ["category.harmony", "category.palette"], ["Harmony", "Palette"]);
+ifLocale.setValues(GColorMatcher, IFLocale.Language.English, ["category.harmony", "category.palette"], ["Harmony", "Palette"]);
 
 // Root
-gLocale.setValues(EXApplication, GLocale.Language.English, ["category.window", "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export", "category.edit", "category.modify", "category.view", "category.view.magnification", "category.help"],
+ifLocale.setValues(GApplication, IFLocale.Language.English, ["category.window", "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export", "category.edit", "category.modify", "category.view", "category.view.magnification", "category.help"],
     ["Window", "File", "File/Open", "File/Save As", "File/Import", "File/Export", "Edit", "Modify", "View", "View/Magnification", "Help"]);
 
 // Action
-gLocale.setValues(GCloneAction, GLocale.Language.English, ["title"], ["Clone"]);
-gLocale.setValues(EXCloseAction, GLocale.Language.English, ["title"], ["Close"]);
-gLocale.setValues(EXCloseAllAction, GLocale.Language.English, ["title"], ["Close All"]);
-gLocale.setValues(GCopyAction, GLocale.Language.English, ["title"], ["Copy"]);
-gLocale.setValues(GCopyAttributesAction, GLocale.Language.English, ["title"], ["Copy Attributes"]);
-gLocale.setValues(GCutAction, GLocale.Language.English, ["title"], ["Cut"]);
-gLocale.setValues(EXDeleteAction, GLocale.Language.English, ["title"], ["Delete"]);
-gLocale.setValues(GDuplicateAction, GLocale.Language.English, ["title"], ["Duplicate"]);
-gLocale.setValues(EXExportAction, GLocale.Language.English, ["title"], ["%name%..."]);
-gLocale.setValues(EXFitAllAction, GLocale.Language.English, ["title"], ["Fit All"]);
-gLocale.setValues(EXFitCurrentLayerAction, GLocale.Language.English, ["title"], ["Fit Layer"]);
-gLocale.setValues(EXFitCurrentPageAction, GLocale.Language.English, ["title"], ["Fit Page"]);
-gLocale.setValues(EXFitSelectionAction, GLocale.Language.English, ["title"], ["Fit Selection"]);
-gLocale.setValues(GGroupAction, GLocale.Language.English, ["title"], ["Group Selection"]);
-gLocale.setValues(EXImportAction, GLocale.Language.English, ["title"], ["%name%..."]);
-gLocale.setValues(GInsertLayerAction, GLocale.Language.English, ["title"], ["Insert Layer"]);
-gLocale.setValues(GInsertPagesAction, GLocale.Language.English, ["title"], ["Insert Page(s)..."]);
-gLocale.setValues(EXNewAction, GLocale.Language.English, ["title"], ["New..."]);
-gLocale.setValues(EXNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
-gLocale.setValues(EXOpenAction, GLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
-gLocale.setValues(EXOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);
-gLocale.setValues(EXPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);
-gLocale.setValues(GPasteAction, GLocale.Language.English, ["title"], ["Paste"]);
-gLocale.setValues(GPasteInsideAction, GLocale.Language.English, ["title"], ["Paste Inside Selection"]);
-gLocale.setValues(GPasteAttributesAction, GLocale.Language.English, ["title"], ["Paste Attributes"]);
-gLocale.setValues(EXPixelPreviewAction, GLocale.Language.English, ["title"], ["Pixel Preview"]);
-gLocale.setValues(EXRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
-gLocale.setValues(EXSaveAction, GLocale.Language.English, ["title"], ["Save"]);
-gLocale.setValues(EXSaveAllAction, GLocale.Language.English, ["title"], ["Save All"]);
-gLocale.setValues(EXSaveAsAction, GLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
-gLocale.setValues(EXShortcutMapAction, GLocale.Language.English, ["title"], ["Shortcut Map..."]);
-gLocale.setValues(EXShowRulersAction, GLocale.Language.English, ["title"], ["Rulers"]);
-gLocale.setValues(EXUndoAction, GLocale.Language.English, ["title"], ["Undo"]);
-gLocale.setValues(GUngroupAction, GLocale.Language.English, ["title"], ["Ungroup Selection"]);
-gLocale.setValues(GWelcomeAction, GLocale.Language.English, ["title"], ["Welcome Panel..."]);
-gLocale.setValues(EXZoomInAction, GLocale.Language.English, ["title"], ["Zoom in"]);
-gLocale.setValues(EXZoomOutAction, GLocale.Language.English, ["title"], ["Zoom out"]);
+ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
+ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
+ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
+ifLocale.setValues(GCopyAction, IFLocale.Language.English, ["title"], ["Copy"]);
+ifLocale.setValues(GCopyAttributesAction, IFLocale.Language.English, ["title"], ["Copy Attributes"]);
+ifLocale.setValues(GCutAction, IFLocale.Language.English, ["title"], ["Cut"]);
+ifLocale.setValues(GDeleteAction, IFLocale.Language.English, ["title"], ["Delete"]);
+ifLocale.setValues(GDuplicateAction, IFLocale.Language.English, ["title"], ["Duplicate"]);
+ifLocale.setValues(GExportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
+ifLocale.setValues(GFitAllAction, IFLocale.Language.English, ["title"], ["Fit All"]);
+ifLocale.setValues(GFitCurrentLayerAction, IFLocale.Language.English, ["title"], ["Fit Layer"]);
+ifLocale.setValues(GFitCurrentPageAction, IFLocale.Language.English, ["title"], ["Fit Page"]);
+ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["Fit Selection"]);
+ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
+ifLocale.setValues(GImportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
+ifLocale.setValues(GInsertLayerAction, IFLocale.Language.English, ["title"], ["Insert Layer"]);
+ifLocale.setValues(GInsertPagesAction, IFLocale.Language.English, ["title"], ["Insert Page(s)..."]);
+ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
+ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
+ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
+ifLocale.setValues(GOriginalViewAction, IFLocale.Language.English, ["title"], ["Original-View"]);
+ifLocale.setValues(GPaintModeAction, IFLocale.Language.English, ["title"], ["%name% View"]);
+ifLocale.setValues(GPasteAction, IFLocale.Language.English, ["title"], ["Paste"]);
+ifLocale.setValues(GPasteInsideAction, IFLocale.Language.English, ["title"], ["Paste Inside Selection"]);
+ifLocale.setValues(GPasteAttributesAction, IFLocale.Language.English, ["title"], ["Paste Attributes"]);
+ifLocale.setValues(GPixelPreviewAction, IFLocale.Language.English, ["title"], ["Pixel Preview"]);
+ifLocale.setValues(GRedoAction, IFLocale.Language.English, ["title"], ["Redo"]);
+ifLocale.setValues(GSaveAction, IFLocale.Language.English, ["title"], ["Save"]);
+ifLocale.setValues(GSaveAllAction, IFLocale.Language.English, ["title"], ["Save All"]);
+ifLocale.setValues(GSaveAsAction, IFLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
+ifLocale.setValues(GShortcutMapAction, IFLocale.Language.English, ["title"], ["Shortcut Map..."]);
+ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Rulers"]);
+ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);
+ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungroup Selection"]);
+ifLocale.setValues(GWelcomeAction, IFLocale.Language.English, ["title"], ["Welcome Panel..."]);
+ifLocale.setValues(GZoomInAction, IFLocale.Language.English, ["title"], ["Zoom in"]);
+ifLocale.setValues(GZoomOutAction, IFLocale.Language.English, ["title"], ["Zoom out"]);
 
 // Color
-gLocale.setValues(EXAnalogousMatcher, GLocale.Language.English, ["title"], ["Analogous"]);
-gLocale.setValues(EXComplementaryMatcher, GLocale.Language.English, ["title"], ["Complementary"]);
-gLocale.setValues(EXImagePaletteMatcher, GLocale.Language.English, ["title"], ["From Image"]);
+ifLocale.setValues(GAnalogousMatcher, IFLocale.Language.English, ["title"], ["Analogous"]);
+ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], ["Complementary"]);
+ifLocale.setValues(GImagePaletteMatcher, IFLocale.Language.English, ["title"], ["From Image"]);
 
 // Palette
-gLocale.setValues(EXColorMatcherPalette, GLocale.Language.English, ["title"], ["Matcher"]);
-gLocale.setValues(EXColorMixerPalette, GLocale.Language.English, ["title"], ["Mixer"]);
-gLocale.setValues(EXColorTrendsPalette, GLocale.Language.English, ["title"], ["Trends"]);
-gLocale.setValues(EXPropertiesPalette, GLocale.Language.English, ["title"], ["Properties"]);
+ifLocale.setValues(GColorMatcherPalette, IFLocale.Language.English, ["title"], ["Matcher"]);
+ifLocale.setValues(GColorMixerPalette, IFLocale.Language.English, ["title"], ["Mixer"]);
+ifLocale.setValues(GColorTrendsPalette, IFLocale.Language.English, ["title"], ["Trends"]);
+ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);

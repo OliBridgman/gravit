@@ -3,93 +3,93 @@
     /**
      * A base geometry based on vertices which is transformable and styleable
      * and may contain other elements as sub-contents
-     * @class GXShape
-     * @extends GXItem
-     * @mixes GXNode.Container
-     * @mixes GXElement.Transform
-     * @mixes GXElement.Pivot
-     * @mixes GXElement.Attributes
-     * @mixes GXVertexSource
+     * @class IFShape
+     * @extends IFItem
+     * @mixes IFNode.Container
+     * @mixes IFElement.Transform
+     * @mixes IFElement.Pivot
+     * @mixes IFElement.Attributes
+     * @mixes IFVertexSource
      * @constructor
      */
-    function GXShape() {
-        GXItem.call(this);
+    function IFShape() {
+        IFItem.call(this);
 
         // Assign default properties
-        this._setDefaultProperties(GXShape.GeometryProperties);
+        this._setDefaultProperties(IFShape.GeometryProperties);
     }
 
-    GObject.inheritAndMix(GXShape, GXItem, [GXNode.Container, GXElement.Transform, GXElement.Pivot, GXElement.Attributes, GXVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
      */
-    GXShape.GeometryProperties = {
+    IFShape.GeometryProperties = {
         trf: null
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXShape._Attributes Class
+    // IFShape._Attributes Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GXShape._Attributes
+     * @class IFShape._Attributes
      * @extends IFAttributes
-     * @mixes GXNode.Container
+     * @mixes IFNode.Container
      * @mixes IFAttribute.Render
      * @mixes IFAttributes.Pattern
      * @private
      */
-    GXShape._Attributes = function () {
-        this._flags |= GXNode.Flag.Shadow;
+    IFShape._Attributes = function () {
+        this._flags |= IFNode.Flag.Shadow;
     }
 
-    GXNode.inheritAndMix("shapeAttrs", GXShape._Attributes, IFAttributes, [IFAttribute.Render, IFAttributes.Pattern]);
+    IFNode.inheritAndMix("shapeAttrs", IFShape._Attributes, IFAttributes, [IFAttribute.Render, IFAttributes.Pattern]);
 
     /** @override */
-    GXShape._Attributes.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXShape;
+    IFShape._Attributes.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFShape;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXShape Class
+    // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
-    GXShape.prototype.getAttributes = function () {
-        var attributes = GXElement.Attributes.prototype.getAttributes.call(this);
+    IFShape.prototype.getAttributes = function () {
+        var attributes = IFElement.Attributes.prototype.getAttributes.call(this);
         if (!attributes) {
-            attributes = new GXShape._Attributes();
+            attributes = new IFShape._Attributes();
             this.appendChild(attributes);
         }
         return attributes;
     };
 
     /** @override */
-    GXShape.prototype.getTransform = function () {
+    IFShape.prototype.getTransform = function () {
         return this.$trf;
     };
 
     /** @override */
-    GXShape.prototype.setTransform = function (transform) {
+    IFShape.prototype.setTransform = function (transform) {
         this.setProperty('trf', transform);
     };
 
     /** @override */
-    GXShape.prototype.transform = function (transform) {
+    IFShape.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
             this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
         }
-        GXElement.Transform.prototype._transformChildren.call(this, transform);
+        IFElement.Transform.prototype._transformChildren.call(this, transform);
     };
 
     /** @override */
-    GXShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXBlock;
+    IFShape.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFBlock;
     };
 
     /** @override */
-    GXShape.prototype.store = function (blob) {
-        if (GXItem.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXShape.GeometryProperties, function (property, value) {
+    IFShape.prototype.store = function (blob) {
+        if (IFItem.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
                     return GTransform.serialize(value);
                 }
@@ -101,9 +101,9 @@
     };
 
     /** @override */
-    GXShape.prototype.restore = function (blob) {
-        if (GXItem.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXShape.GeometryProperties, function (property, value) {
+    IFShape.prototype.restore = function (blob) {
+        if (IFItem.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
                     return GTransform.deserialize(value);
                 }
@@ -115,7 +115,7 @@
     };
 
     /** @override */
-    GXShape.prototype.paint = function (context) {
+    IFShape.prototype.paint = function (context) {
         if (!this.rewindVertices(0)) {
             return;
         }
@@ -132,7 +132,7 @@
             // so we reset transform, transform the vertices
             // ourself and then re-apply the transformation
             var transform = context.canvas.resetTransform();
-            var transformedVertices = new GXVertexTransformer(this, transform);
+            var transformedVertices = new IFVertexTransformer(this, transform);
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
@@ -150,29 +150,29 @@
     /**
      * Called to paint any backgrounds painted at
      * first before any styling and contents
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @private
      */
-    GXShape.prototype._paintBackground = function (context) {
+    IFShape.prototype._paintBackground = function (context) {
         // NO-OP
     };
 
     /**
      * Called to paint the foreground painted after
      * any styling and everything else
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @private
      */
-    GXShape.prototype._paintForeground = function (context) {
+    IFShape.prototype._paintForeground = function (context) {
     };
 
     /** @override */
-    GXShape.prototype._calculateGeometryBBox = function () {
+    IFShape.prototype._calculateGeometryBBox = function () {
         return gVertexInfo.calculateBounds(this, true);
     };
 
     /** @override */
-    GXShape.prototype._calculatePaintBBox = function () {
+    IFShape.prototype._calculatePaintBBox = function () {
         var source = this.getGeometryBBox();
         if (!source) {
             return null;
@@ -188,30 +188,30 @@
     };
 
     /** @override */
-    GXShape.prototype._handleChange = function (change, args) {
-        this._handleGeometryChangeForProperties(change, args, GXShape.GeometryProperties);
-        GXItem.prototype._handleChange.call(this, change, args);
+    IFShape.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, IFShape.GeometryProperties);
+        IFItem.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    GXShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // Hit-Test attributes, first
         var attrHit = this.getAttributes().hitTest(this, location, transform, tolerance);
 
         if (attrHit) {
-            return new GXElement.HitResult(this, attrHit);
+            return new IFElement.HitResult(this, attrHit);
         } else if (force) {
             // When forced we'll always hit-test our whole "invisible" outline / fill area
-            var vertexHit = new GXVertexInfo.HitResult();
-            if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), tolerance, true, vertexHit)) {
-                return new GXElement.HitResult(this, vertexHit);
+            var vertexHit = new IFVertexInfo.HitResult();
+            if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
+                return new IFElement.HitResult(this, vertexHit);
             }
         } else {
             // If we didn't hit an attributes, then hit-test our "invisible" tolerance outline area if any
             if (tolerance) {
-                var vertexHit = new GXVertexInfo.HitResult();
-                if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(this, transform), tolerance, false, vertexHit)) {
-                    return new GXElement.HitResult(this, vertexHit);
+                var vertexHit = new IFVertexInfo.HitResult();
+                if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {
+                    return new IFElement.HitResult(this, vertexHit);
                 }
             }
         }
@@ -223,7 +223,7 @@
      * @param {Boolean} includeTransform - whether to apply shape's internal transformation
      * @returns {GPoint}
      */
-    GXShape.prototype.getCenter = function (includeTransform) {
+    IFShape.prototype.getCenter = function (includeTransform) {
         var center = new GPoint(0, 0);
         if (includeTransform && this.$trf) {
             center = this.$trf.mapPoint(center);
@@ -235,7 +235,7 @@
      * Returns shape's internal half width before applying any transformations
      * @returns {Number}
      */
-    GXShape.prototype.getOrigHalfWidth = function () {
+    IFShape.prototype.getOrigHalfWidth = function () {
         return 1.0;
     };
 
@@ -243,14 +243,14 @@
      * Returns shape's internal half width before applying any transformations
      * @returns {Number}
      */
-    GXShape.prototype.getOrigHalfHeight = function () {
+    IFShape.prototype.getOrigHalfHeight = function () {
         return 1.0;
     };
 
     /** @override */
-    GXShape.prototype.toString = function () {
-        return "[GXShape]";
+    IFShape.prototype.toString = function () {
+        return "[IFShape]";
     };
 
-    _.GXShape = GXShape;
+    _.IFShape = IFShape;
 })(this);

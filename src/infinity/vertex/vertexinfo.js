@@ -2,23 +2,23 @@
 
     /**
      * Static vertex information collector used for bbox calc, hit-test etc.
-     * @class GXVertexInfo
+     * @class IFVertexInfo
      * @version 1.0
      * @constructor
      */
-    function GXVertexInfo() {
+    function IFVertexInfo() {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertexInfo.HitResult Class
+    // IFVertexInfo.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A class to keep the result of a hit test
-     * @class GXVertexInfo.HitResult
+     * @class IFVertexInfo.HitResult
      * @constructor
      * @version 1.0
      */
-    GXVertexInfo.HitResult = function () {
+    IFVertexInfo.HitResult = function () {
     };
 
     /**
@@ -27,7 +27,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.segment = null;
+    IFVertexInfo.HitResult.prototype.segment = null;
 
     /**
      * Defines the exact x-coordinate of the
@@ -38,7 +38,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.x = null;
+    IFVertexInfo.HitResult.prototype.x = null;
 
     /**
      * Defines the exact y-coordinate of the
@@ -49,7 +49,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.y = null;
+    IFVertexInfo.HitResult.prototype.y = null;
 
     /**
      * Defines the slope of the hit within
@@ -57,7 +57,7 @@
      * @type {Number}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.slope = null;
+    IFVertexInfo.HitResult.prototype.slope = null;
 
     /**
      * Defines whether the hit is on the outline
@@ -65,10 +65,10 @@
      * @type {Boolean}
      * @version 1.0
      */
-    GXVertexInfo.HitResult.prototype.outline = null;
+    IFVertexInfo.HitResult.prototype.outline = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertexInfo Class
+    // IFVertexInfo Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
@@ -83,7 +83,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the segment in the path to be written into result, when segment is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -91,10 +91,10 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestSegment = function (px1, py1, px2, py2, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestSegment = function (px1, py1, px2, py2, x, y, sqrOutline, chainIdx, result) {
         // ptMin[0] for [a, b]: 0 - min dist in a; 1 - min dist in b; 0 < t < 1- min dist in a+t*(b-a) ==
         var ptMin = [];
-        var sqrDst = gMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
+        var sqrDst = ifMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
 
         if (sqrDst <= sqrOutline) {
             // Fill result
@@ -124,7 +124,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the curve in the path to be written into result, when curve is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -132,7 +132,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestCurve = function (px1, py1, px2, py2, cx, cy, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestCurve = function (px1, py1, px2, py2, cx, cy, x, y, sqrOutline, chainIdx, result) {
         // The first and the second quadratic curve coefficients for P(t)x and P(t)y
         var ax, ay, bx, by;
 
@@ -176,12 +176,12 @@
         middlePtx = (px1 + px2 + cx) / 3;
         middlePty = (py1 + py2 + cy) / 3;
 
-        d1 = gMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
+        d1 = ifMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
         if (d1 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (gMath.segmentSide(px1, py1, px2, py2, x, y) *
-            gMath.segmentSide(px1, py1, px2, py2, middlePtx, middlePty) < 0) {
+        else if (ifMath.segmentSide(px1, py1, px2, py2, x, y) *
+            ifMath.segmentSide(px1, py1, px2, py2, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
@@ -204,21 +204,21 @@
             return true;
         }
 
-        d2 = gMath.sqrSegmentDist(px1, py1, cx, cy, x, y);
+        d2 = ifMath.sqrSegmentDist(px1, py1, cx, cy, x, y);
         if (d2 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (gMath.segmentSide(px1, py1, cx, cy, x, y) *
-            gMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) < 0) {
+        else if (ifMath.segmentSide(px1, py1, cx, cy, x, y) *
+            ifMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
-        d3 = gMath.sqrSegmentDist(cx, cy, px2, py2, x, y);
+        d3 = ifMath.sqrSegmentDist(cx, cy, px2, py2, x, y);
         if (d3 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (gMath.segmentSide(cx, cy, px2, py2, x, y) *
-            gMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) < 0) {
+        else if (ifMath.segmentSide(cx, cy, px2, py2, x, y) *
+            ifMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
@@ -279,7 +279,7 @@
         coeffG[3] = d;
 
         inclEnds = false;
-        gRootsN = gMath.getCubicRoots(coeffG, 0.0, 1.0, gRoots, inclEnds, acc);
+        gRootsN = ifMath.getCubicRoots(coeffG, 0.0, 1.0, gRoots, inclEnds, acc);
 
         if (gRootsN == 0) {
             // ends are already checked
@@ -290,7 +290,7 @@
         hitPtIdx = gRootsN + 1;
         // calculate F(t) in g(t) roots, find min
         for (i = 0; i < gRootsN; ++i) {
-            tmp1 = gMath.evalPoly(coeffF, 4, gRoots[i]);
+            tmp1 = ifMath.evalPoly(coeffF, 4, gRoots[i]);
             if (min > tmp1) {
                 min = tmp1;
                 hitPtIdx = i;
@@ -330,7 +330,7 @@
      * @param {Number} y the y-position of the point to test
      * @param {Number} sqrOutline squared half-width of stroke
      * @param {Number} chainIdx an index of the curve in the path to be written into result, when curve is hit
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
 
@@ -338,7 +338,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitTestCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y, sqrOutline, chainIdx, result) {
+    IFVertexInfo.prototype._hitTestCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y, sqrOutline, chainIdx, result) {
         // There is a hit if the shortest squared distance from point to curve is less than sqrOutline.
         // An exact distance from a point to a point on curve is a polynomial of 6 degree.
         // To find a distance minimization point, we need to check curve ends and find and check roots
@@ -475,13 +475,13 @@
         coeffF[5] = (c1x * d1 + c1y * d2) * 2;
         coeffF[6] = d1 * d1 + d2 * d2;
 
-        gMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
+        ifMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
 
-        gMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
+        ifMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
 
-        if (gMath.estimPositiveRootsDescartes(coeffInversed, 5) == 0) {
-            sqrDst1 = gMath.ptSqrDist(px1, py1, x, y);
-            sqrDst2 = gMath.ptSqrDist(px2, py2, x, y);
+        if (ifMath.estimPositiveRootsDescartes(coeffInversed, 5) == 0) {
+            sqrDst1 = ifMath.ptSqrDist(px1, py1, x, y);
+            sqrDst2 = ifMath.ptSqrDist(px2, py2, x, y);
 
             if (sqrDst1 <= sqrOutline || sqrDst2 <= sqrOutline) {
                 if (result) {
@@ -506,7 +506,7 @@
         // 2. Find initial interval (curve) splitPoints at [0, 1],
         // which are curve inflate points, or such points,
         // that P'x = 0 or P'y = 0
-        nPoints = gMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPtsNew);
+        nPoints = ifMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPtsNew);
 
         // 3. Based on splitPoints iterate through intervals,
         // and for each interval perform the following steps:
@@ -521,9 +521,9 @@
 
             if (i == 0) {
                 A1 = sPtsNew[i];
-                pA1x = gMath.evalCubic(ax, b1x, c1x, px1, A1);
-                pA1y = gMath.evalCubic(ay, b1y, c1y, py1, A1);
-                dA1 = gMath.ptSqrDist(pA1x, pA1y, x, y);
+                pA1x = ifMath.evalCubic(ax, b1x, c1x, px1, A1);
+                pA1y = ifMath.evalCubic(ay, b1y, c1y, py1, A1);
+                dA1 = ifMath.ptSqrDist(pA1x, pA1y, x, y);
                 if (dA1 <= sqrOutline) {
                     if (result) {
                         result.segment = chainIdx;
@@ -542,9 +542,9 @@
                 dA1 = dA2;
             }
             A2 = sPtsNew[i + 1];
-            pA2x = gMath.evalCubic(ax, b1x, c1x, px1, A2);
-            pA2y = gMath.evalCubic(ay, b1y, c1y, py1, A2);
-            dA2 = gMath.ptSqrDist(pA2x, pA2y, x, y);
+            pA2x = ifMath.evalCubic(ax, b1x, c1x, px1, A2);
+            pA2y = ifMath.evalCubic(ay, b1y, c1y, py1, A2);
+            dA2 = ifMath.ptSqrDist(pA2x, pA2y, x, y);
             if (dA2 <= sqrOutline) {
                 if (result) {
                     result.segment = chainIdx;
@@ -556,8 +556,8 @@
                 return true;
             }
 
-            gMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
-            gMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
+            ifMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
+            ifMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
 
             // splitPoints were received such a way, that curve parts don't change curvature direction,
             // and winding angle from one end to the other is not more than 90 degrees.
@@ -576,12 +576,12 @@
                 else {
                     k = j + 1;
                 }
-                if (gMath.sqrSegmentDist(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) <= sqrOutline) {
+                if (ifMath.sqrSegmentDist(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) <= sqrOutline) {
                     hitPossible = true;
                     break;
                 }
-                if (gMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) *
-                    gMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
+                if (ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) *
+                    ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
                     insideFlag = false;
                 }
             }
@@ -595,16 +595,16 @@
             // If f5(Ai) = 0, set Ai = Ai + eps
             // If f5(Ai+1) = 0, set Ai+1 = Ai+1 - eps
 
-            v51 = gMath.evalPoly(coeffFDeriv, 5, A1);
+            v51 = ifMath.evalPoly(coeffFDeriv, 5, A1);
             // TODO: change 0.005 with the correct value, which guarantees accuracy
-            if (gMath.isEqualEps(v51, 0)) {
+            if (ifMath.isEqualEps(v51, 0)) {
                 A1 += 0.005;
-                v51 = gMath.evalPoly(coeffFDeriv, 5, A1);
+                v51 = ifMath.evalPoly(coeffFDeriv, 5, A1);
             }
-            v52 = gMath.evalPoly(coeffFDeriv, 5, A2);
-            if (gMath.isEqualEps(v52, 0)) {
+            v52 = ifMath.evalPoly(coeffFDeriv, 5, A2);
+            if (ifMath.isEqualEps(v52, 0)) {
                 A2 -= 0.005;
-                v52 = gMath.evalPoly(coeffFDeriv, 5, A2);
+                v52 = ifMath.evalPoly(coeffFDeriv, 5, A2);
             }
 
             // 6. Inverse interval [Ai, Ai+1] to [0, inf) and estimate by Descartes rule of sign
@@ -613,9 +613,9 @@
             // Actually, no such check is needed due to step 4.
             // If N = 1 , proceed to step 7.
             // If N > 1, proceed to step 8.
-            gMath.inversePolyInterval(coeffFDeriv, 5, A1, A2, coeffInversed);
+            ifMath.inversePolyInterval(coeffFDeriv, 5, A1, A2, coeffInversed);
 
-            nRoots = gMath.estimPositiveRootsDescartes(coeffInversed, 5);
+            nRoots = ifMath.estimPositiveRootsDescartes(coeffInversed, 5);
             if (nRoots == 0) {
                 continue;
             }
@@ -625,22 +625,22 @@
             // calculate distance for this root, return true if <= sqrOutline
             if (!coeffFDeriv2) {
                 coeffFDeriv2 = new Float64Array(5);
-                gMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
+                ifMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
             }
 
             if (!coeffFDeriv3) {
                 coeffFDeriv3 = new Float64Array(4);
-                gMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
+                ifMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
             }
 
             if (nRoots == 1) {
-                r1 = gMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
+                r1 = ifMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
                 if (r1 == null) {
                     r1 = (A1 + A2) / 2;
                 }
-                r1x = gMath.evalCubic(ax, b1x, c1x, px1, r1);
-                r1y = gMath.evalCubic(ay, b1y, c1y, py1, r1);
-                sqrDst = gMath.ptSqrDist(r1x, r1y, x, y);
+                r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
+                r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
+                sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
                 if (sqrDst <= sqrOutline) {
                     if (result) {
                         result.segment = chainIdx;
@@ -661,12 +661,12 @@
 
             if (nRoots > 1) {
                 if (sturmSeq.length == 0) {
-                    gMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
+                    ifMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
                 }
 
                 nSignVars = [];
                 fVals = [v51, v52];
-                nRootsNew = gMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2,
+                nRootsNew = ifMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2,
                     sturmSeq, nSignVars, fVals);
 
                 if (nRootsNew == 0) {
@@ -674,14 +674,14 @@
                 }
 
                 if (nRootsNew == 1) {
-                    r1 = gMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
+                    r1 = ifMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                         sturmSeq, nSignVars);
                     if (r1 == null) {
                         r1 = (A1 + A2) / 2;
                     }
-                    r1x = gMath.evalCubic(ax, b1x, c1x, px1, r1);
-                    r1y = gMath.evalCubic(ay, b1y, c1y, py1, r1);
-                    sqrDst = gMath.ptSqrDist(r1x, r1y, x, y);
+                    r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
+                    r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
+                    sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
                     if (sqrDst <= sqrOutline) {
                         if (result) {
                             result.segment = chainIdx;
@@ -696,19 +696,19 @@
 
                 if (nRootsNew > 1) {
                     var rIntervals = [];
-                    gMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2, sturmSeq, nRootsNew,
+                    ifMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2, sturmSeq, nRootsNew,
                         nSignVars, fVals, rIntervals);
 
                     for (var s = 0; s < rIntervals.length; ++s) {
-                        r1 = gMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
+                        r1 = ifMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
                             rIntervals[s][2], rIntervals[s][3], coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                             sturmSeq);
                         if (r1 == null) {
                             r1 = (rIntervals[s][0] + rIntervals[s][1]) / 2;
                         }
-                        r1x = gMath.evalCubic(ax, b1x, c1x, px1, r1);
-                        r1y = gMath.evalCubic(ay, b1y, c1y, py1, r1);
-                        sqrDst = gMath.ptSqrDist(r1x, r1y, x, y);
+                        r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
+                        r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
+                        sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
                         if (sqrDst <= sqrOutline) {
                             if (result) {
                                 result.segment = chainIdx;
@@ -743,12 +743,12 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderSegment = function (px1, py1, px2, py2, x, y, countSegm) {
+    IFVertexInfo.prototype._hitUnderSegment = function (px1, py1, px2, py2, x, y, countSegm) {
         var s1, s2, s3;
 
-        s1 = gMath.segmentSide(0, 0, px1, py1, x, y);
-        s2 = gMath.segmentSide(px1, py1, px2, py2, x, y);
-        s3 = gMath.segmentSide(px2, py2, 0, 0, x, y);
+        s1 = ifMath.segmentSide(0, 0, px1, py1, x, y);
+        s2 = ifMath.segmentSide(px1, py1, px2, py2, x, y);
+        s3 = ifMath.segmentSide(px2, py2, 0, 0, x, y);
 
         if (s1 > 0 && s2 > 0 && s3 > 0) {
             return 2;
@@ -809,12 +809,12 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._evalConicReg = function (px1, py1, px2, py2, cx, cy, cHullCheck, curvFunc, x, y) {
+    IFVertexInfo.prototype._evalConicReg = function (px1, py1, px2, py2, cx, cy, cHullCheck, curvFunc, x, y) {
         var alpha;
         var chullres; // result of checking against controls convex hull
         var sideC; // value of curve function in the control point
         var sidePt; // value of curve function in the point to test
-        var signReg = -gMath.segmentSide(px1, py1, px2, py2, cx, cy); // the region sign
+        var signReg = -ifMath.segmentSide(px1, py1, px2, py2, cx, cy); // the region sign
 
         if (signReg == 0) {
             // mirrored Y is noticed
@@ -865,7 +865,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderCurve = function (px1, py1, px2, py2, cx, cy, x, y) {
+    IFVertexInfo.prototype._hitUnderCurve = function (px1, py1, px2, py2, cx, cy, x, y) {
         // Here is used formulas for curve implicitization from the document of
         // Alois Zingl "A Rasterizing Algorithm for Drawing Curves"
 
@@ -886,17 +886,17 @@
             var middlePtx = (px1 + cx + px2) / 3;
             var middlePty = (py1 + cy + py2) / 3;
 
-            s3 = gMath.segmentSide(px2, py2, px1, py1, x, y);
+            s3 = ifMath.segmentSide(px2, py2, px1, py1, x, y);
             if (s3 == 0) {
                 return 0;
             }
 
-            s1 = gMath.segmentSide(px1, py1, cx, cy, x, y);
-            s2 = gMath.segmentSide(cx, cy, px2, py2, x, y);
+            s1 = ifMath.segmentSide(px1, py1, cx, cy, x, y);
+            s2 = ifMath.segmentSide(cx, cy, px2, py2, x, y);
 
-            if (s1 != gMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) ||
-                s2 != gMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) ||
-                s3 != gMath.segmentSide(px2, py2, px1, py1, middlePtx, middlePty)) {
+            if (s1 != ifMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) ||
+                s2 != ifMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) ||
+                s3 != ifMath.segmentSide(px2, py2, px1, py1, middlePtx, middlePty)) {
 
                 return -1;
             }
@@ -927,7 +927,7 @@
      * @private
      * @version 1.0
      */
-    GXVertexInfo.prototype._hitUnderCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y) {
+    IFVertexInfo.prototype._hitUnderCurve2 = function (px1, py1, px2, py2, cx1, cy1, cx2, cy2, x, y) {
         // Here is used formulas for curve implicitization and self-intersection point from the document of
         // Alois Zingl "A Rasterizing Algorithm for Drawing Curves"
 
@@ -993,7 +993,7 @@
         A = bx * ay - by * ax;
         B = 2 * (cx * ay - cy * ax);
         C = cx * by - cy * bx;
-        gMath.getQuadraticRoots(A, B, C, splitPoints);
+        ifMath.getQuadraticRoots(A, B, C, splitPoints);
 
         // a curve may have a self-intersection point only if it doesn't have inflate points
         if (splitPoints.length == 0) {
@@ -1014,8 +1014,8 @@
             coeffPY[2] = c1y;
             coeffPY[3] = py1;
 
-            gMath.shiftPoly(coeffPX, 3, 0.5, coeffPShiftedX);
-            gMath.shiftPoly(coeffPY, 3, 0.5, coeffPShiftedY);
+            ifMath.shiftPoly(coeffPX, 3, 0.5, coeffPShiftedX);
+            ifMath.shiftPoly(coeffPY, 3, 0.5, coeffPShiftedY);
 
             // ^t1,2 = (Cac +- sqrt(12Cab*Cbc - 3Cac^2)) / 2Cab
             Xa = -coeffPShiftedX[0];
@@ -1081,8 +1081,8 @@
                 ctrlsy[3] = py2;
             }
             else {
-                gMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
-                gMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
+                ifMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
+                ifMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
             }
 
             // splitPoints were received such a way, that curve parts don't change curvature direction,
@@ -1160,11 +1160,11 @@
                         k = j + 1;
                     }
 
-                    s1 = gMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y);
+                    s1 = ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y);
                     if (j == 3 && s1 == 0) {
                         return 0;
                     }
-                    if (s1 * gMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
+                    if (s1 * ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
                         return -1;
                     }
                 }
@@ -1172,7 +1172,7 @@
                 return 1;
             }
 
-            if (gMath.isEqualEps(ctrlsx[0], ctrlsx[1]) && gMath.isEqualEps(ctrlsy[0], ctrlsy[1])) {
+            if (ifMath.isEqualEps(ctrlsx[0], ctrlsx[1]) && ifMath.isEqualEps(ctrlsy[0], ctrlsy[1])) {
                 tot += this._evalConicReg(ctrlsx[0], ctrlsy[0], ctrlsx[3], ctrlsy[3], ctrlsx[2], ctrlsy[2],
                     cHullCheck, curvFunc, x, y);
             }
@@ -1191,12 +1191,12 @@
      * If orientation is not provided, inside will be defined automatically for even/odd fill of the shape
      * @param {Number} x the x-position of the point to hit-test against
      * @param {Number} y the y-position of the point to hit-test against
-     * @param {GXVertexSource} source the vertex source used for hit-testing
+     * @param {IFVertexSource} source the vertex source used for hit-testing
      * @param {Number} outlineWidth the width of the outline. If this is
-     * zero, it is assumed that it is sqrt(gMath.defaultEps)
+     * zero, it is assumed that it is sqrt(ifMath.defaultEps)
      * @param {Boolean} area if true, the fill area will be tested as well,
      * otherwise only the outline will be considered
-     * @param {GXVertexInfo.HitResult} result if the function returns true, means
+     * @param {IFVertexInfo.HitResult} result if the function returns true, means
      * a hit was found then this is the result structure that will be filled
      * with the hit information
      * @param {Boolean} orientationCW - true means that clock-wise orientation should be used,
@@ -1205,12 +1205,12 @@
      * @return {Boolean} true if a hit was made, false if not
      * @version 1.0
      */
-    GXVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result, orientationCW) {
+    IFVertexInfo.prototype.hitTest = function (x, y, source, outlineWidth, area, result, orientationCW) {
         var px1, py1, px2, py2, cx1, cy1, pStartX, pStartY;
         var chainIdx = 0;
         var res = false;
-        var vertex = new GXVertex();
-        var sqrOutline = outlineWidth ? (outlineWidth / 2) * (outlineWidth / 2) : gMath.defaultEps;
+        var vertex = new IFVertex();
+        var sqrOutline = outlineWidth ? (outlineWidth / 2) * (outlineWidth / 2) : ifMath.defaultEps;
         var tot = 0;
         var xshift = 0;
 
@@ -1222,7 +1222,7 @@
         // With the change while counting result: [-1, -1/2, 0, 1/2, 1] -> [-2, -1, 0, 1, 2]
 
         // if x == 0 and y == 0, everything must be shifted for inside testing
-        if (gMath.isEqualEps(x, 0.0) && gMath.isEqualEps(y, 0.0)) {
+        if (ifMath.isEqualEps(x, 0.0) && ifMath.isEqualEps(y, 0.0)) {
             xshift = 1;
         }
 
@@ -1230,14 +1230,14 @@
             // iterate through curves
             while (source.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case GXVertex.Command.Move:
+                    case IFVertex.Command.Move:
                         px1 = vertex.x;
                         py1 = vertex.y;
                         pStartX = px1;
                         pStartY = py1;
                         break;
 
-                    case GXVertex.Command.Line:
+                    case IFVertex.Command.Line:
                         ++chainIdx;
                         res = this._hitTestSegment(px1, py1, vertex.x, vertex.y, x, y, sqrOutline, chainIdx, result);
                         if (res) {
@@ -1251,7 +1251,7 @@
                         py1 = vertex.y;
                         break;
 
-                    case GXVertex.Command.Curve:
+                    case IFVertex.Command.Curve:
                         ++chainIdx;
                         px2 = vertex.x;
                         py2 = vertex.y;
@@ -1270,7 +1270,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Curve2:
+                    case IFVertex.Command.Curve2:
                         ++chainIdx;
                         px2 = vertex.x;
                         py2 = vertex.y;
@@ -1294,7 +1294,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Close:
+                    case IFVertex.Command.Close:
                         if (pStartX != px1 || pStartY != py1) {
                             ++chainIdx;
                             res = this._hitTestSegment(px1, py1, pStartX, pStartY, x, y, sqrOutline, chainIdx, result);
@@ -1333,7 +1333,7 @@
     /**
      * Calculate bounding box for a vertex source. The vertex source will
      * be automatically rewinded to the beginning.
-     * @param {GXVertexSource} source the vertex source used for calculation
+     * @param {IFVertexSource} source the vertex source used for calculation
      * @param {Boolean} exact if true, the bounding box will include exact
      * curve calculation, otherwise if false, the bounding box will include
      * the max. bbox also surrounding any curve control points
@@ -1342,7 +1342,7 @@
      * empty rectangle if segments are at the same position or too less.
      * @version 1.0
      */
-    GXVertexInfo.prototype.calculateBounds = function (source, exact) {
+    IFVertexInfo.prototype.calculateBounds = function (source, exact) {
         if (source.rewindVertices(0)) {
             var minX = null;
             var minY = null;
@@ -1386,7 +1386,7 @@
                     t = (px1 - cx) / s;
                     if (t > 0 && t < 1) {
                         px = (px1 * px2 - cx * cx) / (px2 - 2 * cx + px1);
-                        py = gMath.getCurveAtT(py1, py2, cy, t);
+                        py = ifMath.getCurveAtT(py1, py2, cy, t);
                         measurePoint(px, py);
                     }
                 }
@@ -1399,7 +1399,7 @@
                     t = (py1 - cy) / s;
                     if (t > 0 && t < 1) {
                         py = (py1 * py2 - cy * cy) / (py2 - 2 * cy + py1);
-                        px = gMath.getCurveAtT(px1, px2, cx, t);
+                        px = ifMath.getCurveAtT(px1, px2, cx, t);
                         measurePoint(px, py);
                     }
                 }
@@ -1431,8 +1431,8 @@
                     var py = 0;
 
                     if (t > 0 && t < 1) {
-                        px = gMath.getCubicCurveAtT(px1, px2, cx1, cx2, t);
-                        py = gMath.getCubicCurveAtT(py1, py2, cy1, cy2, t);
+                        px = ifMath.getCubicCurveAtT(px1, px2, cx1, cx2, t);
+                        py = ifMath.getCubicCurveAtT(py1, py2, cy1, cy2, t);
                         measurePoint(px, py);
                     }
                 };
@@ -1468,20 +1468,20 @@
                 measureAtRoot(ay, by, cy);
             }
 
-            var vertex = new GXVertex();
+            var vertex = new IFVertex();
 
             var px1, py1, px2, py2, cx1, cy1;
 
             while (source.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case GXVertex.Command.Move:
-                    case GXVertex.Command.Line:
+                    case IFVertex.Command.Move:
+                    case IFVertex.Command.Line:
                         measurePoint(vertex.x, vertex.y);
                         px1 = vertex.x;
                         py1 = vertex.y;
                         break;
 
-                    case GXVertex.Command.Curve:
+                    case IFVertex.Command.Curve:
                         px2 = vertex.x;
                         py2 = vertex.y;
                         if (source.readVertex(vertex)) {
@@ -1496,7 +1496,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Curve2:
+                    case IFVertex.Command.Curve2:
                         px2 = vertex.x;
                         py2 = vertex.y;
                         if (source.readVertex(vertex)) {
@@ -1517,7 +1517,7 @@
                         }
                         break;
 
-                    case GXVertex.Command.Close:
+                    case IFVertex.Command.Close:
                         break;
 
                     default:
@@ -1533,10 +1533,10 @@
     };
 
     /** @override */
-    GXVertexInfo.prototype.toString = function () {
-        return "[Object GXVertexInfo]";
+    IFVertexInfo.prototype.toString = function () {
+        return "[Object IFVertexInfo]";
     };
 
-    _.GXVertexInfo = GXVertexInfo;
-    _.gVertexInfo = new GXVertexInfo();
+    _.IFVertexInfo = IFVertexInfo;
+    _.gVertexInfo = new IFVertexInfo();
 })(this);

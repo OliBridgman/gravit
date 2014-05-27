@@ -2,58 +2,58 @@
 
     /**
      * Action creating a new document
-     * @class EXNewAction
+     * @class GNewAction
      * @extends GUIAction
      * @constructor
      */
-    function EXNewAction() {
+    function GNewAction() {
     };
-    GObject.inherit(EXNewAction, GUIAction);
+    IFObject.inherit(GNewAction, GUIAction);
 
-    EXNewAction.ID = 'file.new';
-    EXNewAction.TITLE = new GLocale.Key(EXNewAction, "title");
+    GNewAction.ID = 'file.new';
+    GNewAction.TITLE = new IFLocale.Key(GNewAction, "title");
 
     /**
      * @override
      */
-    EXNewAction.prototype.getId = function () {
-        return EXNewAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXNewAction.prototype.getTitle = function () {
-        return EXNewAction.TITLE;
+    GNewAction.prototype.getId = function () {
+        return GNewAction.ID;
     };
 
     /**
      * @override
      */
-    EXNewAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE;
+    GNewAction.prototype.getTitle = function () {
+        return GNewAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXNewAction.prototype.getGroup = function () {
+    GNewAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE;
+    };
+
+    /**
+     * @override
+     */
+    GNewAction.prototype.getGroup = function () {
         return "file";
     };
 
     /**
      * @override
      */
-    EXNewAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'N'];
+    GNewAction.prototype.getShortcut = function () {
+        return [IFKey.Constant.META, 'N'];
     };
 
     /**
      * @override
      */
-    EXNewAction.prototype.execute = function () {
+    GNewAction.prototype.execute = function () {
         // Create Scene
-        var scene = new GXScene();
+        var scene = new IFScene();
 
         // Execute insert pages action
         gApp.executeAction(GInsertPagesAction.ID, [scene, function () {
@@ -63,16 +63,16 @@
 
             // TODO
             // Center page
-            gApp.executeAction(EXOriginalViewAction.ID);
+            gApp.executeAction(GOriginalViewAction.ID);
             //var view = document.getActiveWindow();
             //view.zoomAtCenter(page.getPaintBBox().getSide(GRect.Side.CENTER));
         }]);
     };
 
     /** @override */
-    EXNewAction.prototype.toString = function () {
-        return "[Object EXNewAction]";
+    GNewAction.prototype.toString = function () {
+        return "[Object GNewAction]";
     };
 
-    _.EXNewAction = EXNewAction;
+    _.GNewAction = GNewAction;
 })(this);

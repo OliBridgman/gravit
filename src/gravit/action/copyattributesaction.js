@@ -8,10 +8,10 @@
      */
     function GCopyAttributesAction() {
     };
-    GObject.inherit(GCopyAttributesAction, GUIAction);
+    IFObject.inherit(GCopyAttributesAction, GUIAction);
 
     GCopyAttributesAction.ID = 'edit.copy-attributes';
-    GCopyAttributesAction.TITLE = new GLocale.Key(GCopyAttributesAction, "title");
+    GCopyAttributesAction.TITLE = new IFLocale.Key(GCopyAttributesAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GCopyAttributesAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GCopyAttributesAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.F4];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.F4];
     };
 
     /**
@@ -57,7 +57,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i].hasMixin(GXElement.Attributes)) {
+                    if (selection[i].hasMixin(IFElement.Attributes)) {
                         return true;
                     }
                 }
@@ -72,10 +72,10 @@
     GCopyAttributesAction.prototype.execute = function () {
         var selection = gApp.getActiveDocument().getEditor().getSelection();
         for (var i = 0; i < selection.length; ++i) {
-            if (selection[i].hasMixin(GXElement.Attributes)) {
+            if (selection[i].hasMixin(IFElement.Attributes)) {
                 var attributes = selection[i].getAttributes();
-                if (attributes && attributes.hasMixin(GXNode.Container) && attributes.getFirstChild()) {
-                    var serializedAttributes = GXNode.serialize(attributes);
+                if (attributes && attributes.hasMixin(IFNode.Container) && attributes.getFirstChild()) {
+                    var serializedAttributes = IFNode.serialize(attributes);
                     gShell.setClipboardContent(IFAttribute.MIME_TYPE, serializedAttributes);
                     break;
                 }

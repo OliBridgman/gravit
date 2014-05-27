@@ -1,26 +1,26 @@
 (function (_) {
     /**
      * A layer for rendering a scene
-     * @param {GXView} view
-     * @class GXSceneLayer
-     * @extends GXViewLayer
+     * @param {IFView} view
+     * @class IFSceneLayer
+     * @extends IFViewLayer
      * @constructor
      */
-    function GXSceneLayer(view) {
-        GXViewLayer.call(this, view);
-        view.getScene().addEventListener(GXScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    function IFSceneLayer(view) {
+        IFViewLayer.call(this, view);
+        view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
-    GObject.inherit(GXSceneLayer, GXViewLayer);
+    IFObject.inherit(IFSceneLayer, IFViewLayer);
 
     /**
-     * @type {GXPaintCanvas}
+     * @type {IFPaintCanvas}
      * @private
      */
-    GXSceneLayer.prototype._pixelContentCanvas = null;
+    IFSceneLayer.prototype._pixelContentCanvas = null;
 
     /** @override */
-    GXSceneLayer.prototype.resize = function (width, height) {
-        GXViewLayer.prototype.resize.call(this, width, height);
+    IFSceneLayer.prototype.resize = function (width, height) {
+        IFViewLayer.prototype.resize.call(this, width, height);
 
         // Resize pixel content canvas if any
         if (this._pixelContentCanvas) {
@@ -29,7 +29,7 @@
     };
 
     /** @override */
-    GXSceneLayer.prototype.paint = function (context) {
+    IFSceneLayer.prototype.paint = function (context) {
         var scene = this._view.getScene();
         // Before any painting we need to convert our dirty matcher's
         // dirty regions back into scene coordinates in any case
@@ -38,7 +38,7 @@
         }
 
         // Fill Canvas with pasteboard color in either single page mode or output paint mode
-        //if (this._viewConfiguration.paintMode === GXScenePaintConfiguration.PaintMode.Output || targetPage) {
+        //if (this._viewConfiguration.paintMode === IFScenePaintConfiguration.PaintMode.Output || targetPage) {
         //    context.canvas.fillRect(0, 0, context.canvas.getWidth(), context.canvas.getHeight(), this._viewConfiguration.pasteboardColor);
         //}
 
@@ -48,10 +48,10 @@
         //context.canvas.setTransform(oldCanvasTransform);
 
         // Handle rendering in pixel mode but only if we're not at 100%
-        if (this._view.getViewConfiguration().pixelMode && !gMath.isEqualEps(this._view.getZoom(), 1.0)) {
+        if (this._view.getViewConfiguration().pixelMode && !ifMath.isEqualEps(this._view.getZoom(), 1.0)) {
             // Create and size our pixel content canvas
             if (!this._pixelContentCanvas) {
-                this._pixelContentCanvas = new GXPaintCanvas();
+                this._pixelContentCanvas = new IFPaintCanvas();
                 this._pixelContentCanvas.resize(context.canvas.getWidth(), context.canvas.getHeight());
             }
 
@@ -89,10 +89,10 @@
 
     /**
      * Event listener for scene's repaintRequest
-     * @param {GXScene.InvalidationRequestEvent} event the invalidation request event
+     * @param {IFScene.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    GXSceneLayer.prototype._sceneInvalidationRequest = function (event) {
+    IFSceneLayer.prototype._sceneInvalidationRequest = function (event) {
         var area = event.area;
         if (area) {
             // Ensure to map the scene area into view coordinates, first
@@ -103,9 +103,9 @@
     };
 
     /** @override */
-    GXSceneLayer.prototype.toString = function () {
-        return "[Object GXSceneLayer]";
+    IFSceneLayer.prototype.toString = function () {
+        return "[Object IFSceneLayer]";
     };
 
-    _.GXSceneLayer = GXSceneLayer;
+    _.IFSceneLayer = IFSceneLayer;
 })(this);

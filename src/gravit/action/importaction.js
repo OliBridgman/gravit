@@ -2,44 +2,44 @@
 
     /**
      * Action importing a document
-     * @param {GXImport} import_
-     * @class EXImportAction
+     * @param {IFImport} import_
+     * @class GImportAction
      * @extends GUIAction
      * @constructor
      */
-    function EXImportAction(import_) {
+    function GImportAction(import_) {
         this._import = import_;
     };
-    GObject.inherit(EXImportAction, GUIAction);
+    IFObject.inherit(GImportAction, GUIAction);
 
-    EXImportAction.ID = 'file.import';
-    EXImportAction.TITLE = new GLocale.Key(EXImportAction, "title");
+    GImportAction.ID = 'file.import';
+    GImportAction.TITLE = new IFLocale.Key(GImportAction, "title");
 
     /**
      * @override
      */
-    EXImportAction.prototype.getId = function () {
-        return EXImportAction.ID + '.' + this._import.getExtensions().join('-');
+    GImportAction.prototype.getId = function () {
+        return GImportAction.ID + '.' + this._import.getExtensions().join('-');
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.getTitle = function () {
-        return gLocale.get(EXImportAction.TITLE).replace('%name%', gLocale.get(this._import.getName()));
+    GImportAction.prototype.getTitle = function () {
+        return ifLocale.get(GImportAction.TITLE).replace('%name%', ifLocale.get(this._import.getName()));
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE_IMPORT;
+    GImportAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE_IMPORT;
     };
 
     /**
      * @override
      */
-    EXImportAction.prototype.execute = function () {
+    GImportAction.prototype.execute = function () {
         // TODO : Handle progress dialog & failure
 
         gApp.openFile(function (file) {
@@ -49,7 +49,7 @@
             for (var i = 0; i < this._import.getExtensions().length; ++i) {
                 if (this._import.getExtensions()[i].toLowerCase() === ext) {
                     foundExt = true;
-                    var scene = new GXScene();
+                    var scene = new IFScene();
                     this._import.import(file, scene, function (result) {
                         if (result) {
                             gApp.addDocument(scene, name);
@@ -66,9 +66,9 @@
     };
 
     /** @override */
-    EXImportAction.prototype.toString = function () {
-        return "[Object EXImportAction]";
+    GImportAction.prototype.toString = function () {
+        return "[Object GImportAction]";
     };
 
-    _.EXImportAction = EXImportAction;
+    _.GImportAction = GImportAction;
 })(this);

@@ -1,26 +1,26 @@
 (function (_) {
     /**
      * The base for an element editor
-     * @param {GXElement} element the element this editor works on
-     * @class GXElementEditor
-     * @extends GObject
+     * @param {IFElement} element the element this editor works on
+     * @class IFElementEditor
+     * @extends IFObject
      * @constructor
      */
-    function GXElementEditor(element) {
+    function IFElementEditor(element) {
         this._element = element;
     };
-    GObject.inherit(GXElementEditor, GObject);
+    IFObject.inherit(IFElementEditor, IFObject);
 
-    GXElementEditor._Editors = {};
+    IFElementEditor._Editors = {};
 
-    GXElementEditor.exports = function (editorClass, nodeClass) {
-        GXElementEditor._Editors[GObject.getTypeId(nodeClass)] = editorClass;
+    IFElementEditor.exports = function (editorClass, nodeClass) {
+        IFElementEditor._Editors[IFObject.getTypeId(nodeClass)] = editorClass;
     };
 
     /**
      * Options for element editor
      */
-    GXElementEditor.OPTIONS = {
+    IFElementEditor.OPTIONS = {
         /**
          * The regular size of an annotation
          * @type Number
@@ -40,7 +40,7 @@
         centerCrossSize: 4
     };
 
-    GXElementEditor.Flag = {
+    IFElementEditor.Flag = {
         /**
          * The editor is in selected status
          * @type Number
@@ -75,19 +75,19 @@
      * TODO: remove this extra enum
      * @enum
      */
-    GXElementEditor.Annotation = {
-        Rectangle: gAnnotation.AnnotType.Rectangle,
-        Circle: gAnnotation.AnnotType.Circle,
-        Diamond: gAnnotation.AnnotType.Diamond
+    IFElementEditor.Annotation = {
+        Rectangle: ifAnnotation.AnnotType.Rectangle,
+        Circle: ifAnnotation.AnnotType.Circle,
+        Diamond: ifAnnotation.AnnotType.Diamond
     };
 
     /**
      * Type of a drop
      * @enum
      */
-    GXElementEditor.DropType = {
+    IFElementEditor.DropType = {
         /**
-         * A color is dropped, the type is GXColor
+         * A color is dropped, the type is IFColor
          */
         Color: 0,
 
@@ -97,29 +97,29 @@
         Text: 1,
 
         /**
-         * A node is dropped, the type is GXNode
+         * A node is dropped, the type is IFNode
          */
         Node: 2
     };
 
     /**
      * Returns any opened/attached editor on a element if it has any
-     * @param {GXElement} element the element to get an open editor for
-     * @returns {GXElementEditor} the editor opened on the element or null for none
+     * @param {IFElement} element the element to get an open editor for
+     * @returns {IFElementEditor} the editor opened on the element or null for none
      * @version 1.0
      */
-    GXElementEditor.getEditor = function (element) {
+    IFElementEditor.getEditor = function (element) {
         return element.__editor__ ? element.__editor__ : null;
     };
 
     /**
      * Create and returns a new editor instance for a given element
-     * @param {GXElement} element the element to create an editor for
-     * @return {GXElementEditor} a newly created element editor or null for none
+     * @param {IFElement} element the element to create an editor for
+     * @return {IFElementEditor} a newly created element editor or null for none
      * @version 1.0
      */
-    GXElementEditor.createEditor = function (element) {
-        var editorClass = GXElementEditor._Editors[GObject.getTypeId(element)];
+    IFElementEditor.createEditor = function (element) {
+        var editorClass = IFElementEditor._Editors[IFObject.getTypeId(element)];
         if (editorClass) {
             return new editorClass(element);
         }
@@ -131,19 +131,19 @@
      * also iterate up all parents and create their editors as well. Note
      * that only registered editors are opened. If the element already has
      * an editor, this call will be a NO-OP
-     * @param {GXElement} element the element to open an editor on
-     * @returns {GXElementEditor} the opened editor instance or null for none
+     * @param {IFElement} element the element to open an editor on
+     * @returns {IFElementEditor} the opened editor instance or null for none
      * @version 1.0
      */
-    GXElementEditor.openEditor = function (element) {
+    IFElementEditor.openEditor = function (element) {
         if (!element.isAttached()) {
             throw new Error("Node is not attached to create an editor for.");
         }
-        if (GXElementEditor.getEditor(element) != null) {
+        if (IFElementEditor.getEditor(element) != null) {
             // editor already attached
-            return GXElementEditor.getEditor(element);
+            return IFElementEditor.getEditor(element);
         }
-        var editor = GXElementEditor.createEditor(element);
+        var editor = IFElementEditor.createEditor(element);
         if (!editor) {
             return null;
         }
@@ -153,15 +153,15 @@
         // hierarchy up until we've found a valid editor parent. This
         // might overjump nodes in tree that do not have an editor.
         for (var parentNode = element.getParent(); parentNode !== null; parentNode = parentNode.getParent()) {
-            var parentEditor = GXElementEditor.getEditor(parentNode);
+            var parentEditor = IFElementEditor.getEditor(parentNode);
             if (!parentEditor) {
-                parentEditor = GXElementEditor.openEditor(parentNode);
+                parentEditor = IFElementEditor.openEditor(parentNode);
             }
             if (parentEditor) {
                 // Figure the right insertion point using element comparison
                 var referenceEditor = null;
                 for (var nextNode = element.getNext(); nextNode != null; nextNode = nextNode.getNext()) {
-                    var nextEditor = GXElementEditor.getEditor(nextNode);
+                    var nextEditor = IFElementEditor.getEditor(nextNode);
                     if (nextEditor) {
                         referenceEditor = nextEditor;
                         break;
@@ -189,14 +189,14 @@
      * close all sub editors of the element. Note that only registered
      * editors will be closed, others will be kept intact and require
      * a manual close / removal.
-     * @param {GXElement} element the element to close the editor on
+     * @param {IFElement} element the element to close the editor on
      * @version 1.0
      */
-    GXElementEditor.closeEditor = function (element) {
-        var elementEditor = GXElementEditor.getEditor(element);
+    IFElementEditor.closeEditor = function (element) {
+        var elementEditor = IFElementEditor.getEditor(element);
         if (elementEditor) {
             // Return if editor is not registered
-            var editorClass = GXElementEditor._Editors[GObject.getTypeId(element)];
+            var editorClass = IFElementEditor._Editors[IFObject.getTypeId(element)];
             if (!editorClass) {
                 return;
             }
@@ -205,7 +205,7 @@
             var editors = elementEditor.getEditors();
             if (editors) {
                 for (var i = 0; i < editors.length; ++i) {
-                    GXElementEditor.closeEditor(editors[i].getElement());
+                    IFElementEditor.closeEditor(editors[i].getElement());
                 }
             }
 
@@ -223,20 +223,20 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElementEditor.PartInfo Class
+    // IFElementEditor.PartInfo Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Part of an editor
-     * @param {GXElementEditor} editor the owning editor of the part
+     * @param {IFElementEditor} editor the owning editor of the part
      * @param {*} id id of the part, specific to editor
      * @param {*} [data] data of the part, specific to editor
      * @param {Boolean} isolated whether the part is isolated or not
      * @param {Boolean} selectable whether the part is selectable or not
      * @constructor
-     * @class GXElementEditor.PartInfo
+     * @class IFElementEditor.PartInfo
      */
-    GXElementEditor.PartInfo = function (editor, id, data, isolated, selectable) {
+    IFElementEditor.PartInfo = function (editor, id, data, isolated, selectable) {
         this.editor = editor;
         this.id = id;
         this.data = data;
@@ -248,96 +248,96 @@
      * The id of the part, specific to editor
      * @type {*}
      */
-    GXElementEditor.PartInfo.prototype.id = null;
+    IFElementEditor.PartInfo.prototype.id = null;
 
     /**
      * The data of the part, specific to editor
      * @type {*}
      */
-    GXElementEditor.PartInfo.prototype.data = null;
+    IFElementEditor.PartInfo.prototype.data = null;
 
     /**
      * The owning editor of the part
-     * @type {GXElementEditor}
+     * @type {IFElementEditor}
      */
-    GXElementEditor.PartInfo.prototype.editor = null;
+    IFElementEditor.PartInfo.prototype.editor = null;
 
     /**
      * Whether the part is isolated or not
      * @type {Boolean}
      */
-    GXElementEditor.PartInfo.prototype.isolated = null;
+    IFElementEditor.PartInfo.prototype.isolated = null;
 
     /**
      * Whether the part is selectable or not
      * @type {Boolean}
      */
-    GXElementEditor.PartInfo.prototype.selectable = null;
+    IFElementEditor.PartInfo.prototype.selectable = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXElementEditor Class
+    // IFElementEditor Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @type {Number}
      * @private
      */
-    GXElementEditor.prototype._flags = 0;
+    IFElementEditor.prototype._flags = 0;
 
     /**
-     * @type {GXElement}
+     * @type {IFElement}
      * @private
      */
-    GXElementEditor.prototype._element = null;
+    IFElementEditor.prototype._element = null;
 
     /**
-     * @type {GXElement}
+     * @type {IFElement}
      * @private
      */
-    GXElementEditor.prototype._elementPreview = null;
+    IFElementEditor.prototype._elementPreview = null;
 
     /**
      * Current transformation to be applied to the element in world coordinates
      * @type {GTransform}
      * @private
      */
-    GXElementEditor.prototype._transform = null;
+    IFElementEditor.prototype._transform = null;
 
     /**
-     * @type {GXElementEditor}
+     * @type {IFElementEditor}
      * @private
      */
-    GXElementEditor.prototype._parentEditor = null;
+    IFElementEditor.prototype._parentEditor = null;
 
     /**
-     * @type {Array<GXElementEditor>}
+     * @type {Array<IFElementEditor>}
      * @private
      */
-    GXElementEditor.prototype._editors = null;
+    IFElementEditor.prototype._editors = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    GXElementEditor.prototype._partSelection = null;
+    IFElementEditor.prototype._partSelection = null;
 
     /**
      * Checks whether this node editor has a certain flag setup
      * @param {Number} flag
      * @returns {Boolean}
-     * @see GXElementEditor.Flag
+     * @see IFElementEditor.Flag
      * @version 1.0
      */
-    GXElementEditor.prototype.hasFlag = function (flag) {
+    IFElementEditor.prototype.hasFlag = function (flag) {
         return (this._flags & flag) != 0;
     };
 
     /**
      * Set a flag on this node editor
      * @param {Number} flag the flag to set
-     * @see GXElementEditor.Flag
+     * @see IFElementEditor.Flag
      * @version 1.0
      */
-    GXElementEditor.prototype.setFlag = function (flag) {
+    IFElementEditor.prototype.setFlag = function (flag) {
         if ((this._flags & flag) == 0) {
             this.requestInvalidation();
             this._flags = this._flags | flag;
@@ -348,10 +348,10 @@
     /**
      * Remove a flag from this node editor
      * @param {Number} flag the flag to remove
-     * @see GXElementEditor.Flag
+     * @see IFElementEditor.Flag
      * @version 1.0
      */
-    GXElementEditor.prototype.removeFlag = function (flag) {
+    IFElementEditor.prototype.removeFlag = function (flag) {
         if ((this._flags & flag) != 0) {
             this.requestInvalidation();
             this._flags = this._flags & ~flag;
@@ -361,55 +361,55 @@
 
     /**
      * Return the underlying element this editor is working on
-     * @returns {GXElement}
+     * @returns {IFElement}
      */
-    GXElementEditor.prototype.getElement = function () {
+    IFElementEditor.prototype.getElement = function () {
         return this._element;
     };
 
     /**
      * Return the underlying element this editor is painting
-     * @returns {GXElement}
+     * @returns {IFElement}
      */
-    GXElementEditor.prototype.getPaintElement = function () {
+    IFElementEditor.prototype.getPaintElement = function () {
         return this._elementPreview ? this._elementPreview : this._element;
     };
 
     /**
      * Return the parent editor for this editor if any
-     * @returns {GXElementEditor}
+     * @returns {IFElementEditor}
      * @version 1.0
      */
-    GXElementEditor.prototype.getParentEditor = function () {
+    IFElementEditor.prototype.getParentEditor = function () {
         return this._parentEditor;
     };
 
     /**
      * Return the sub editors if any
-     * @returns {Array<GXElementEditor>} the sub editors array or null for none
+     * @returns {Array<IFElementEditor>} the sub editors array or null for none
      * @version 1.0
      */
-    GXElementEditor.prototype.getEditors = function () {
+    IFElementEditor.prototype.getEditors = function () {
         return this._editors;
     };
 
     /**
      * Called to append a sub editor to this one
-     * @param {GXElementEditor} editor the editor to append
+     * @param {IFElementEditor} editor the editor to append
      * @version 1.0
      */
-    GXElementEditor.prototype.appendEditor = function (editor) {
+    IFElementEditor.prototype.appendEditor = function (editor) {
         this.insertEditor(editor, null);
     };
 
     /**
      * Called to insert a sub editor to this one
-     * @param {GXElementEditor} editor the editor to insert
-     * @param {GXElementEditor} referenceEditor the editor to insert before or
+     * @param {IFElementEditor} editor the editor to insert
+     * @param {IFElementEditor} referenceEditor the editor to insert before or
      * null to append at the end
      * @version 1.0
      */
-    GXElementEditor.prototype.insertEditor = function (editor, referenceEditor) {
+    IFElementEditor.prototype.insertEditor = function (editor, referenceEditor) {
         var index = this._editors ? this._editors.length : 0;
         if (referenceEditor) {
             index = this._editors.indexOf(referenceEditor);
@@ -437,10 +437,10 @@
 
     /**
      * Called to remove a sub editor from this one
-     * @param {GXElementEditor} editor the editor to remove
+     * @param {IFElementEditor} editor the editor to remove
      * @version 1.0
      */
-    GXElementEditor.prototype.removeEditor = function (editor) {
+    IFElementEditor.prototype.removeEditor = function (editor) {
         var index = this._editors.indexOf(editor);
         if (index < 0) {
             throw new Error("Unknown editor.");
@@ -460,7 +460,7 @@
      * @return {Boolean} result of visiting (false = canceled, true = went through)
      * @version 1.0
      */
-    GXElementEditor.prototype.accept = function (visitor) {
+    IFElementEditor.prototype.accept = function (visitor) {
         if (visitor.call(null, this) === false) {
             return false;
         }
@@ -481,7 +481,7 @@
      * @param {*} partId
      * @return {Boolean}
      */
-    GXElementEditor.prototype.isPartSelected = function (partId) {
+    IFElementEditor.prototype.isPartSelected = function (partId) {
         return this._indexOfPartId(this._partSelection, partId) >= 0;
     };
 
@@ -489,7 +489,7 @@
      * Get all selected parts
      * @returns {Array<*>}
      */
-    GXElementEditor.prototype.getPartSelection = function () {
+    IFElementEditor.prototype.getPartSelection = function () {
         return this._partSelection;
     };
 
@@ -498,8 +498,8 @@
      * @param {Boolean} toggle whether to toggle selection (true) or overwrite it (false)
      * @param {Array<*>} selection the new part selection to be assigned
      */
-    GXElementEditor.prototype.updatePartSelection = function (toggle, selection) {
-        if (this.hasFlag(GXElementEditor.Flag.Selected)) {
+    IFElementEditor.prototype.updatePartSelection = function (toggle, selection) {
+        if (this.hasFlag(IFElementEditor.Flag.Selected)) {
             var newSelection = null;
 
             if (!toggle || !this._partSelection) {
@@ -543,9 +543,9 @@
      * The function should return true to accept the editor or false for not.
      * @param {Number} [tolerance] optional tolerance for testing the location.
      * If not provided defaults to zero.
-     * @returns {GXElementEditor.PartInfo} null if no part is available or a valid part info
+     * @returns {IFElementEditor.PartInfo} null if no part is available or a valid part info
      */
-    GXElementEditor.prototype.getPartInfoAt = function (location, transform, acceptor, tolerance) {
+    IFElementEditor.prototype.getPartInfoAt = function (location, transform, acceptor, tolerance) {
         tolerance = tolerance || 0;
 
         // Iterate sub editors, first
@@ -579,9 +579,9 @@
     /**
      * Called whenever this editor should paint itself
      * @param {GTransform} transform the transformation of the scene
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      */
-    GXElementEditor.prototype.paint = function (transform, context) {
+    IFElementEditor.prototype.paint = function (transform, context) {
         // Paint children editors if any
         this._paintChildren(transform, context);
     };
@@ -596,8 +596,8 @@
      * @param {GTransform} transform the transformation of the scene
      * @return {GRect} the bbox in view coordinates
      */
-    GXElementEditor.prototype.getBBox = function (transform) {
-        if (this.hasFlag(GXElementEditor.Flag.Selected) || this.hasFlag(GXElementEditor.Flag.Highlighted)) {
+    IFElementEditor.prototype.getBBox = function (transform) {
+        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             var targetTransform = transform;
 
             // Pre-multiply internal transformation if any
@@ -611,7 +611,7 @@
                 bbox = targetTransform.mapRect(bbox)
                     .expanded(expand, expand, expand, expand);
 
-                if (this.hasFlag(GXElementEditor.Flag.Detail)) {
+                if (this.hasFlag(IFElementEditor.Flag.Detail)) {
                     var customBBox = this.getCustomBBox(targetTransform, false);
                     if (customBBox) {
                         bbox = bbox.united(customBBox);
@@ -631,7 +631,7 @@
      * accuracy covering
      * @return {Number}
      */
-    GXElementEditor.prototype.getBBoxMargin = function () {
+    IFElementEditor.prototype.getBBoxMargin = function () {
         return 1;
     };
 
@@ -642,7 +642,7 @@
      * @param {Boolean} includeEditorTransform - shows if editor internal transformation should be applied
      * @return {GRect} the bbox in view coordinates
      */
-    GXElementEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
+    IFElementEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
         return null;
     };
 
@@ -657,8 +657,8 @@
      * return the bounding box of itself if it has any
      * @see invalidate
      */
-    GXElementEditor.prototype.requestInvalidation = function (args) {
-        GXEditor.getEditor(this._element.getScene()).requestInvalidation(this, args);
+    IFElementEditor.prototype.requestInvalidation = function (args) {
+        IFEditor.getEditor(this._element.getScene()).requestInvalidation(this, args);
     };
 
     /**
@@ -668,7 +668,7 @@
      * call. Maybe null which indicates to return this editor's bbox if any
      * @return {GRect} the transformed area to be invalidated or null for none
      */
-    GXElementEditor.prototype.invalidate = function (transform, args) {
+    IFElementEditor.prototype.invalidate = function (transform, args) {
         // Default handling for no arguments
         if (!args) {
             return this.getBBox(transform);
@@ -683,14 +683,14 @@
      * @param {GPoint} position the new position in view coordinates
      * the part should be moved to
      * @param {GTransform} viewToWorldTransform - the transformation to apply to position
-     * @param {GXGuides} guides to snap is needed
+     * @param {IFGuides} guides to snap is needed
      * @param {Boolean} shift whether shift key is hold or not
      * @param {Boolean} option whether option key is hold or not
      */
-    GXElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+    IFElementEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
         // Set outline flag and/or invalidate by default for each move
-        if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-            this.setFlag(GXElementEditor.Flag.Outline);
+        if (!this.hasFlag(IFElementEditor.Flag.Outline)) {
+            this.setFlag(IFElementEditor.Flag.Outline);
         } else {
             this.requestInvalidation();
         }
@@ -700,10 +700,10 @@
      * @param {*} partId the id of the editor part that was moved
      * @param {*} partData the data of the editor part that was moved
      */
-    GXElementEditor.prototype.resetPartMove = function (partId, partData) {
+    IFElementEditor.prototype.resetPartMove = function (partId, partData) {
         // Some resets by default
         this._elementPreview = null;
-        this.removeFlag(GXElementEditor.Flag.Outline);
+        this.removeFlag(IFElementEditor.Flag.Outline);
     };
 
     /**
@@ -711,10 +711,10 @@
      * @param {*} partId the id of the editor part that was moved
      * @param {*} partData the data of the editor part that was moved
      */
-    GXElementEditor.prototype.applyPartMove = function (partId, partData) {
+    IFElementEditor.prototype.applyPartMove = function (partId, partData) {
         // Some resets by default
         this._elementPreview = null;
-        this.removeFlag(GXElementEditor.Flag.Outline);
+        this.removeFlag(IFElementEditor.Flag.Outline);
     };
 
     /**
@@ -723,14 +723,14 @@
      * @param {*} [partId] optional id of part that initiated the transform
      * @param {*} [partData] optional data of part that initialized the transform
      */
-    GXElementEditor.prototype.transform = function (transform, partId, partData) {
+    IFElementEditor.prototype.transform = function (transform, partId, partData) {
         this._setTransform(transform);
     };
 
     /**
      * Called whenever the transformation of the editor shell be reset
      */
-    GXElementEditor.prototype.resetTransform = function () {
+    IFElementEditor.prototype.resetTransform = function () {
         this._elementPreview = null;
 
         // Invalidate on reset no matter what
@@ -739,7 +739,7 @@
         this._transform = null;
 
         // Remove outline
-        this.removeFlag(GXElementEditor.Flag.Outline);
+        this.removeFlag(IFElementEditor.Flag.Outline);
     };
 
     /**
@@ -748,13 +748,13 @@
      * @return {Boolean} true if the transformation can be applied,
      * false if not
      */
-    GXElementEditor.prototype.canApplyTransform = function () {
+    IFElementEditor.prototype.canApplyTransform = function () {
         var element = this.getElement();
 
         // By default, transformation can only be applied if it is valid,
         // the element supports transforming and the element is not locked
         return this._transform && !this._transform.isIdentity() &&
-            element.hasMixin(GXElement.Transform) && !element.hasFlag(GXElement.Flag.Locked);
+            element.hasMixin(IFElement.Transform) && !element.hasFlag(IFElement.Flag.Locked);
     };
 
     /**
@@ -764,11 +764,11 @@
      * working on. However, it is guaranteed that in this case, the element
      * to apply the transformation instead is an exact clone of the element
      * this editor is currently working on.
-     * @param {GXElement} element the element to apply the transformation
+     * @param {IFElement} element the element to apply the transformation
      * to which might be different than the one this editor works on. This
      * will be never null.
      */
-    GXElementEditor.prototype.applyTransform = function (element) {
+    IFElementEditor.prototype.applyTransform = function (element) {
         if (!this._transform.isIdentity()) {
             // By default we'll simply transfer the transformation to the element
             element.transform(this._transform);
@@ -781,12 +781,12 @@
      * If the editor is able to handle it, it should return true
      * to prevent any further handling.
      * @param {GPoint} position the drop position in scene coordinates
-     * @param {GXElementEditor.DropType} type
+     * @param {IFElementEditor.DropType} type
      * @param {*} source the drop source, the type depends on type
-     * @param {*} hitData the GXElement.HitResult.data that was gathered
+     * @param {*} hitData the IFElement.HitResult.data that was gathered
      * when hitting the element for this editor, might be null
      */
-    GXElementEditor.prototype.acceptDrop = function (position, type, source, hitData) {
+    IFElementEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         // By default, we'll ask all children editors, first
         if (this._editors) {
             for (var i = 0; i < this._editors.length; ++i) {
@@ -802,10 +802,10 @@
     /**
      * Called whenever a newly inserted element should become
      * some default setup
-     * @param {GXColor} fillColor the current default fill color
-     * @param {GXColor} strokeColor the current default stroke color
+     * @param {IFColor} fillColor the current default fill color
+     * @param {IFColor} strokeColor the current default stroke color
      */
-    GXElementEditor.prototype.initialSetup = function (fillColor, strokeColor) {
+    IFElementEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // NO-OP
     };
 
@@ -813,7 +813,7 @@
      * Called to check whether this editor can do some inline editing
      * @returns {boolean}
      */
-    GXElementEditor.prototype.canInlineEdit = function () {
+    IFElementEditor.prototype.canInlineEdit = function () {
         return false;
     };
 
@@ -821,18 +821,18 @@
      * Called to check whether this editor currently is in inline edit mode
      * @returns {boolean}
      */
-    GXElementEditor.prototype.isInlineEdit = function () {
+    IFElementEditor.prototype.isInlineEdit = function () {
         return false;
     };
 
     /**
      * Called to let the editor do some inline editing
-     * @param {GXEditorView} view the view the inline editing should
+     * @param {IFEditorView} view the view the inline editing should
      * take place within
      * @param {HTMLElement} container the container any editor element
      * should be attached to relative to the view
      */
-    GXElementEditor.prototype.beginInlineEdit = function (view, container) {
+    IFElementEditor.prototype.beginInlineEdit = function (view, container) {
         throw new Error('Not Supported.');
     };
 
@@ -840,9 +840,9 @@
      * Called whenever something in the view has changed and the inline
      * editor should adjust itself. This will also called immediately
      * after the beginInlineEdit call.
-     * @param {GXEditorView} view the view the inline editing takes place
+     * @param {IFEditorView} view the view the inline editing takes place
      */
-    GXElementEditor.prototype.adjustInlineEditForView = function (view) {
+    IFElementEditor.prototype.adjustInlineEditForView = function (view) {
         throw new Error('Not Supported.');
     };
 
@@ -851,16 +851,16 @@
      * and should not only close any inline editor but also apply any changes.
      * @return {String} optional human readable text of the editing action description
      */
-    GXElementEditor.prototype.finishInlineEdit = function () {
+    IFElementEditor.prototype.finishInlineEdit = function () {
         throw new Error('Not Supported.');
     };
 
     /**
      * Allow each editor to perform the needed actions when drag is started in SubSelect Tool
-     * @param {GXElementEditor.PartInfo} partInfo - the part info under mouse
-     * @returns {GXElementEditor.PartInfo} - updated part info under mouse
+     * @param {IFElementEditor.PartInfo} partInfo - the part info under mouse
+     * @returns {IFElementEditor.PartInfo} - updated part info under mouse
      */
-    GXElementEditor.prototype.subSelectDragStartAction = function (partInfo) {
+    IFElementEditor.prototype.subSelectDragStartAction = function (partInfo) {
         var newPartInfo = null;
 
         // By default, we'll ask all children editors, first
@@ -883,27 +883,27 @@
     /**
      * Called when this editor is attached to the node
      */
-    GXElementEditor.prototype._attach = function () {
+    IFElementEditor.prototype._attach = function () {
         // NO-OP
     };
 
     /**
      * Called when this editor is detached from the node
      */
-    GXElementEditor.prototype._detach = function () {
+    IFElementEditor.prototype._detach = function () {
         // NO-OP
     };
 
     /**
      * Paint all sub editors if any
-     * @param {GXPaintContext} context
+     * @param {IFPaintContext} context
      * @private
      */
-    GXElementEditor.prototype._paintChildren = function (transform, context) {
+    IFElementEditor.prototype._paintChildren = function (transform, context) {
         if (this._editors) {
             for (var i = 0; i < this._editors.length; ++i) {
                 var editor = this._editors[i];
-                if (editor instanceof GXElementEditor) {
+                if (editor instanceof IFElementEditor) {
                     editor.paint(transform, context);
                 }
             }
@@ -920,7 +920,7 @@
      * @param {Number} tolerance tolerance for testing the location
      * @returns {*} null if no part is available or an editor-specific part
      */
-    GXElementEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    IFElementEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         return null;
     };
 
@@ -932,7 +932,7 @@
      * @returns {boolean}
      * @private
      */
-    GXElementEditor.prototype._partIdAreEqual = function (a, b) {
+    IFElementEditor.prototype._partIdAreEqual = function (a, b) {
         return a === b;
     };
 
@@ -943,7 +943,7 @@
      * @returns {Number}
      * @private
      */
-    GXElementEditor.prototype._indexOfPartId = function (array, partId) {
+    IFElementEditor.prototype._indexOfPartId = function (array, partId) {
         if (array && array.length > 0) {
             for (var i = 0; i < array.length; ++i) {
                 if (this._partIdAreEqual(array[i], partId)) {
@@ -959,7 +959,7 @@
      * @param {Array<*>} selection the new part selection
      * @private
      */
-    GXElementEditor.prototype._updatePartSelection = function (selection) {
+    IFElementEditor.prototype._updatePartSelection = function (selection) {
         this.requestInvalidation();
         this._partSelection = selection;
         this.requestInvalidation();
@@ -967,18 +967,18 @@
 
     /**
      * Paint an annotation
-     * @param {GXPaintContext} context the paint context to paint on
+     * @param {IFPaintContext} context the paint context to paint on
      * @param {GTransform} transform the current transformation in use
      * @param {GPoint} center the center point of the annotation
-     * @param {GXElementEditor.Annotation} annotation the annotation to be painted
+     * @param {IFElementEditor.Annotation} annotation the annotation to be painted
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
      * @param {Boolean} [small] if true, paints the annotation in small size,
      * otherwise in default size
      */
-    GXElementEditor.prototype._paintAnnotation = function (context, transform, center, annotation, selected, small) {
-        var size = small ? GXElementEditor.OPTIONS.annotationSizeSmall : GXElementEditor.OPTIONS.annotationSizeRegular;
-        gAnnotation.paintAnnotation(context, transform, center, annotation, selected, size);
+    IFElementEditor.prototype._paintAnnotation = function (context, transform, center, annotation, selected, small) {
+        var size = small ? IFElementEditor.OPTIONS.annotationSizeSmall : IFElementEditor.OPTIONS.annotationSizeRegular;
+        ifAnnotation.paintAnnotation(context, transform, center, annotation, selected, size);
     };
 
     /**
@@ -987,17 +987,17 @@
      * @param {GPoint} center the center point of the annotation
      * @param {Boolean} [small] whether to paint small annotation or not
      */
-    GXElementEditor.prototype._getAnnotationBBox = function (transform, center, small) {
-        var size = small ? GXElementEditor.OPTIONS.annotationSizeSmall : GXElementEditor.OPTIONS.annotationSizeRegular;
-        return gAnnotation.getAnnotationBBox(transform, center, size);
+    IFElementEditor.prototype._getAnnotationBBox = function (transform, center, small) {
+        var size = small ? IFElementEditor.OPTIONS.annotationSizeSmall : IFElementEditor.OPTIONS.annotationSizeRegular;
+        return ifAnnotation.getAnnotationBBox(transform, center, size);
     };
 
     /**
      * @returns {Boolean}
      * @private
      */
-    GXElementEditor.prototype._showAnnotations = function () {
-        return this.hasFlag(GXElementEditor.Flag.Selected) && !this.hasFlag(GXElementEditor.Flag.Outline);
+    IFElementEditor.prototype._showAnnotations = function () {
+        return this.hasFlag(IFElementEditor.Flag.Selected) && !this.hasFlag(IFElementEditor.Flag.Outline);
     };
 
     /**
@@ -1005,11 +1005,11 @@
      * @param {GTransform} transform
      * @private
      */
-    GXElementEditor.prototype._setTransform = function (transform) {
+    IFElementEditor.prototype._setTransform = function (transform) {
         // By default we'll simply assign the transformation
         if (!GTransform.equals(this._transform, transform)) {
-            if (!this.hasFlag(GXElementEditor.Flag.Outline)) {
-                this.setFlag(GXElementEditor.Flag.Outline);
+            if (!this.hasFlag(IFElementEditor.Flag.Outline)) {
+                this.setFlag(IFElementEditor.Flag.Outline);
             } else {
                 this.requestInvalidation();
             }
@@ -1020,9 +1020,9 @@
     };
 
     /** @override */
-    GXElementEditor.prototype.toString = function () {
-        return "[Object GXElementEditor]";
+    IFElementEditor.prototype.toString = function () {
+        return "[Object IFElementEditor]";
     };
 
-    _.GXElementEditor = GXElementEditor;
+    _.IFElementEditor = IFElementEditor;
 })(this);

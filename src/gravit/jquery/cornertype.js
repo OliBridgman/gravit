@@ -2,27 +2,27 @@
 
     var cornerTypes = [
         {
-            type: GXPathBase.CornerType.Rounded,
+            type: IFPathBase.CornerType.Rounded,
             // TODO : I18N
             name: 'Rounded'
         },
         {
-            type: GXPathBase.CornerType.InverseRounded,
+            type: IFPathBase.CornerType.InverseRounded,
             // TODO : I18N
             name: 'Inverse Rounded'
         },
         {
-            type: GXPathBase.CornerType.Bevel,
+            type: IFPathBase.CornerType.Bevel,
             // TODO : I18N
             name: 'Beveled'
         },
         {
-            type: GXPathBase.CornerType.Inset,
+            type: IFPathBase.CornerType.Inset,
             // TODO : I18N
             name: 'Inset'
         },
         {
-            type: GXPathBase.CornerType.Fancy,
+            type: IFPathBase.CornerType.Fancy,
             // TODO : I18N
             name: 'Fancy'
         }
@@ -56,7 +56,7 @@
 
     /**
      * Adds a translated list of options to a selection that
-     * represents the GXBasePath.CornerType choices
+     * represents the IFBasePath.CornerType choices
      * TODO : Replace select with visual selector with icons
      */
     $.fn.gCornerType = function (method) {

@@ -2,56 +2,56 @@
 
     /**
      * Analogous Color Matcher
-     * @class EXAnalogousMatcher
-     * @extends EXColorMatcher
+     * @class GAnalogousMatcher
+     * @extends GColorMatcher
      * @constructor
      */
-    function EXAnalogousMatcher() {
+    function GAnalogousMatcher() {
     };
-    GObject.inherit(EXAnalogousMatcher, EXColorMatcher);
+    IFObject.inherit(GAnalogousMatcher, GColorMatcher);
 
-    EXAnalogousMatcher.TITLE = new GLocale.Key(EXAnalogousMatcher, "title");
+    GAnalogousMatcher.TITLE = new IFLocale.Key(GAnalogousMatcher, "title");
 
     /** @override */
-    EXAnalogousMatcher.prototype.getTitle = function () {
-        return EXAnalogousMatcher.TITLE;
-    };
-
-    /** @override */
-    EXAnalogousMatcher.prototype.getCategory = function () {
-        return EXColorMatcher.CATEGORY_HARMONY;
+    GAnalogousMatcher.prototype.getTitle = function () {
+        return GAnalogousMatcher.TITLE;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.init = function (htmlElement) {
+    GAnalogousMatcher.prototype.getCategory = function () {
+        return GColorMatcher.CATEGORY_HARMONY;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.isReferenceColorBased = function () {
+    GAnalogousMatcher.prototype.init = function (htmlElement) {
+    };
+
+    /** @override */
+    GAnalogousMatcher.prototype.isReferenceColorBased = function () {
         return true;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.match = function (referenceColor) {
+    GAnalogousMatcher.prototype.match = function (referenceColor) {
         var result = [];
         var hslLeft = referenceColor.asHSL();
         var hslRight = hslLeft.slice();
         var step = 180.0 / 8;
         for (var i = 3; i >= 0; --i) {
-            hslRight[0] = gMath.normalizeAngleDegrees(hslRight[0] + step);
-            result[i] = (new GXColor(GXColor.Type.HSL, hslRight));
+            hslRight[0] = ifMath.normalizeAngleDegrees(hslRight[0] + step);
+            result[i] = (new IFColor(IFColor.Type.HSL, hslRight));
         }
         for (var i = 0; i < 4; ++i) {
-            hslLeft[0] = gMath.normalizeAngleDegrees(hslLeft[0] - step);
-            result.push(new GXColor(GXColor.Type.HSL, hslLeft));
+            hslLeft[0] = ifMath.normalizeAngleDegrees(hslLeft[0] - step);
+            result.push(new IFColor(IFColor.Type.HSL, hslLeft));
         }
         return result;
     };
 
     /** @override */
-    EXAnalogousMatcher.prototype.toString = function () {
-        return "[Object EXAnalogousMatcher]";
+    GAnalogousMatcher.prototype.toString = function () {
+        return "[Object GAnalogousMatcher]";
     };
 
-    _.EXAnalogousMatcher = EXAnalogousMatcher;
+    _.GAnalogousMatcher = GAnalogousMatcher;
 })(this);

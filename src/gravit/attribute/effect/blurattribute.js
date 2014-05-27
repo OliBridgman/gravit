@@ -9,7 +9,7 @@
     function GBlurAttribute() {
         GDrawAttribute.call(this);
     };
-    GObject.inherit(GBlurAttribute, GDrawAttribute);
+    IFObject.inherit(GBlurAttribute, GDrawAttribute);
 
     /** @override */
     GBlurAttribute.prototype.getAttributeClass = function () {

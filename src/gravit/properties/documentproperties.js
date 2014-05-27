@@ -3,12 +3,12 @@
     /**
      * Document properties panel
      * @class GDocumentProperties
-     * @extends EXProperties
+     * @extends GProperties
      * @constructor
      */
     function GDocumentProperties() {
     };
-    GObject.inherit(GDocumentProperties, EXProperties);
+    IFObject.inherit(GDocumentProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -17,7 +17,7 @@
     GDocumentProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GDocumentProperties.prototype._document = null;
@@ -88,9 +88,9 @@
                     .css('width', '3em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = parseFloat($(this).val());
-                        if (!isNaN(angle)) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
+                        var angle = IFLength.parseEquationValue($(this).val());
+                        if (angle !== null) {
+                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
                             self._assignProperty(property, angle);
                         } else {
                             self._updateProperties();
@@ -198,7 +198,7 @@
     /** @override */
     GDocumentProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -207,9 +207,9 @@
             return false;
         }
 
-        if (elements.length === 1 && elements[0] instanceof GXScene) {
+        if (elements.length === 1 && elements[0] instanceof IFScene) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -218,7 +218,7 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GDocumentProperties.prototype._afterPropertiesChange = function (event) {
@@ -239,7 +239,7 @@
         this._panel.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
         this._panel.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
         this._panel.find('input[data-property="crConstraint"]').val(
-            gMath.round(gMath.toDegrees(scene.getProperty('crConstraint')), 2).toString().replace('.', ','));
+            gUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
     };

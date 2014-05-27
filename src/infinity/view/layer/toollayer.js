@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A layer for tools
-     * @param {GXEditorView} view
-     * @class GXToolLayer
-     * @extends GXViewLayer
+     * @param {IFEditorView} view
+     * @class IFToolLayer
+     * @extends IFViewLayer
      * @constructor
      */
-    function GXToolLayer(view) {
-        GXViewLayer.call(this, view);
+    function IFToolLayer(view) {
+        IFViewLayer.call(this, view);
     }
-    GObject.inherit(GXToolLayer, GXViewLayer);
+    IFObject.inherit(IFToolLayer, IFViewLayer);
 
     /** @override */
-    GXToolLayer.prototype.toString = function () {
-        return "[Object GXToolLayer]";
+    IFToolLayer.prototype.toString = function () {
+        return "[Object IFToolLayer]";
     };
 
-    _.GXToolLayer = GXToolLayer;
+    _.IFToolLayer = IFToolLayer;
 })(this);

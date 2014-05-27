@@ -8,7 +8,7 @@
      */
     function GDrawAttribute() {
     };
-    GObject.inherit(GDrawAttribute, GAttribute);
+    IFObject.inherit(GDrawAttribute, GAttribute);
 
     /**
      * @type {JQuery}
@@ -17,7 +17,7 @@
     GDrawAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GDrawAttribute.prototype._document = null;

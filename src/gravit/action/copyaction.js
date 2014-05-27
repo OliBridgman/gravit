@@ -8,10 +8,10 @@
      */
     function GCopyAction() {
     };
-    GObject.inherit(GCopyAction, GUIAction);
+    IFObject.inherit(GCopyAction, GUIAction);
 
     GCopyAction.ID = 'edit.copy';
-    GCopyAction.TITLE = new GLocale.Key(GCopyAction, "title");
+    GCopyAction.TITLE = new IFLocale.Key(GCopyAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GCopyAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GCopyAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, 'C'];
+        return [IFKey.Constant.META, 'C'];
     };
 
     /**
@@ -65,9 +65,9 @@
         // intern format, rasterized and as svg format
 
         // Make sure to serialize ordered
-        var selection = GXNode.order(gApp.getActiveDocument().getEditor().getSelection());
-        var serializedSelection = GXNode.serialize(selection);
-        gShell.setClipboardContent(GXNode.MIME_TYPE, serializedSelection);
+        var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelection());
+        var serializedSelection = IFNode.serialize(selection);
+        gShell.setClipboardContent(IFNode.MIME_TYPE, serializedSelection);
     };
 
     /** @override */

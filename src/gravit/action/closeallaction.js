@@ -2,65 +2,65 @@
 
     /**
      * Action closing all documents
-     * @class EXCloseAllAction
+     * @class GCloseAllAction
      * @extends GUIAction
      * @constructor
      */
-    function EXCloseAllAction() {
+    function GCloseAllAction() {
     };
-    GObject.inherit(EXCloseAllAction, GUIAction);
+    IFObject.inherit(GCloseAllAction, GUIAction);
 
-    EXCloseAllAction.ID = 'file.close-all';
-    EXCloseAllAction.TITLE = new GLocale.Key(EXCloseAllAction, "title");
+    GCloseAllAction.ID = 'file.close-all';
+    GCloseAllAction.TITLE = new IFLocale.Key(GCloseAllAction, "title");
 
     /**
      * @override
      */
-    EXCloseAllAction.prototype.getId = function () {
-        return EXCloseAllAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXCloseAllAction.prototype.getTitle = function () {
-        return EXCloseAllAction.TITLE;
+    GCloseAllAction.prototype.getId = function () {
+        return GCloseAllAction.ID;
     };
 
     /**
      * @override
      */
-    EXCloseAllAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_FILE;
+    GCloseAllAction.prototype.getTitle = function () {
+        return GCloseAllAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXCloseAllAction.prototype.getGroup = function () {
+    GCloseAllAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_FILE;
+    };
+
+    /**
+     * @override
+     */
+    GCloseAllAction.prototype.getGroup = function () {
         return "close";
     };
 
     /**
      * @override
      */
-    EXCloseAllAction.prototype.isEnabled = function () {
+    GCloseAllAction.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
-    EXCloseAllAction.prototype.execute = function () {
+    GCloseAllAction.prototype.execute = function () {
         while (!!gApp.getActiveDocument()) {
             gApp.closeDocument(gApp.getActiveDocument());
         }
     };
 
     /** @override */
-    EXCloseAllAction.prototype.toString = function () {
-        return "[Object EXCloseAllAction]";
+    GCloseAllAction.prototype.toString = function () {
+        return "[Object GCloseAllAction]";
     };
 
-    _.EXCloseAllAction = EXCloseAllAction;
+    _.GCloseAllAction = GCloseAllAction;
 })(this);

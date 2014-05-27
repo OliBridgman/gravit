@@ -8,10 +8,10 @@
      */
     function GWelcomeAction() {
     };
-    GObject.inherit(GWelcomeAction, GUIAction);
+    IFObject.inherit(GWelcomeAction, GUIAction);
 
     GWelcomeAction.ID = 'help.welcome';
-    GWelcomeAction.TITLE = new GLocale.Key(GWelcomeAction, "title");
+    GWelcomeAction.TITLE = new IFLocale.Key(GWelcomeAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GWelcomeAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_HELP;
+        return GApplication.CATEGORY_HELP;
     };
 
     /**
@@ -56,7 +56,7 @@
                     .css('background', 'yellow')
                     .text('New Document')
                     .on('click', function () {
-                        gApp.executeAction(EXNewAction.ID);
+                        gApp.executeAction(GNewAction.ID);
                         welcome.gDialog('close');
                     }))
                 /** TODO : Open Document

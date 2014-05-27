@@ -2,70 +2,70 @@
 
     /**
      * Action for cloning the current view
-     * @class EXNewWindowAction
+     * @class GNewWindowAction
      * @extends GUIAction
      * @constructor
      */
-    function EXNewWindowAction() {
+    function GNewWindowAction() {
     };
-    GObject.inherit(EXNewWindowAction, GUIAction);
+    IFObject.inherit(GNewWindowAction, GUIAction);
 
-    EXNewWindowAction.ID = 'view.clone';
-    EXNewWindowAction.TITLE = new GLocale.Key(EXNewWindowAction, "title");
+    GNewWindowAction.ID = 'view.clone';
+    GNewWindowAction.TITLE = new IFLocale.Key(GNewWindowAction, "title");
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.getId = function () {
-        return EXNewWindowAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    EXNewWindowAction.prototype.getTitle = function () {
-        return EXNewWindowAction.TITLE;
+    GNewWindowAction.prototype.getId = function () {
+        return GNewWindowAction.ID;
     };
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_WINDOW;
+    GNewWindowAction.prototype.getTitle = function () {
+        return GNewWindowAction.TITLE;
     };
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.getGroup = function () {
+    GNewWindowAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_WINDOW;
+    };
+
+    /**
+     * @override
+     */
+    GNewWindowAction.prototype.getGroup = function () {
         return "view";
     };
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.META, GUIKey.Constant.OPTION, 'N'];
+    GNewWindowAction.prototype.getShortcut = function () {
+        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'N'];
     };
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.isEnabled = function () {
+    GNewWindowAction.prototype.isEnabled = function () {
         return !!gApp.getWindows().getActiveWindow();
     };
 
     /**
      * @override
      */
-    EXNewWindowAction.prototype.execute = function () {
+    GNewWindowAction.prototype.execute = function () {
         gApp.getWindows().addWindow(gApp.getWindows().getActiveWindow());
     };
 
     /** @override */
-    EXNewWindowAction.prototype.toString = function () {
-        return "[Object EXNewWindowAction]";
+    GNewWindowAction.prototype.toString = function () {
+        return "[Object GNewWindowAction]";
     };
 
-    _.EXNewWindowAction = EXNewWindowAction;
+    _.GNewWindowAction = GNewWindowAction;
 })(this);

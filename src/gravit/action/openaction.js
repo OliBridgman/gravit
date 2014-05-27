@@ -2,63 +2,63 @@
 
     /**
      * Action opening a document on a specific storage
-     * @param {GStorage} storage
+     * @param {IFStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
-     * @class EXOpenAction
+     * @class GOpenAction
      * @extends GUIAction
      * @constructor
      */
-    function EXOpenAction(storage, isDefault) {
+    function GOpenAction(storage, isDefault) {
         this._storage = storage;
         this._default = isDefault;
     };
-    GObject.inherit(EXOpenAction, GUIAction);
+    IFObject.inherit(GOpenAction, GUIAction);
 
-    EXOpenAction.ID = 'file.open';
-    EXOpenAction.TITLE = new GLocale.Key(EXOpenAction, "title");
-    EXOpenAction.TITLE_DEFAULT = new GLocale.Key(EXOpenAction, "title-default");
+    GOpenAction.ID = 'file.open';
+    GOpenAction.TITLE = new IFLocale.Key(GOpenAction, "title");
+    GOpenAction.TITLE_DEFAULT = new IFLocale.Key(GOpenAction, "title-default");
 
     /**
      * @override
      */
-    EXOpenAction.prototype.getId = function () {
-        return EXOpenAction.ID + '.' + this._storage.getProtocol();
+    GOpenAction.prototype.getId = function () {
+        return GOpenAction.ID + '.' + this._storage.getProtocol();
     };
 
     /**
      * @override
      */
-    EXOpenAction.prototype.getTitle = function () {
+    GOpenAction.prototype.getTitle = function () {
         return this._default ?
-            gLocale.get(EXOpenAction.TITLE_DEFAULT) :
-        gLocale.get(EXOpenAction.TITLE).replace('%name%', gLocale.get(this._storage.getName()));
+            ifLocale.get(GOpenAction.TITLE_DEFAULT) :
+        ifLocale.get(GOpenAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
     };
 
     /**
      * @override
      */
-    EXOpenAction.prototype.getCategory = function () {
-        return this._default ? EXApplication.CATEGORY_FILE : EXApplication.CATEGORY_FILE_OPEN;
+    GOpenAction.prototype.getCategory = function () {
+        return this._default ? GApplication.CATEGORY_FILE : GApplication.CATEGORY_FILE_OPEN;
     };
 
     /**
      * @override
      */
-    EXOpenAction.prototype.getGroup = function () {
+    GOpenAction.prototype.getGroup = function () {
         return this._default ? "file" : "file/open_storage";
     };
 
     /**
      * @override
      */
-    EXOpenAction.prototype.getShortcut = function () {
-        return this._default ? [GUIKey.Constant.META, 'O'] : null;
+    GOpenAction.prototype.getShortcut = function () {
+        return this._default ? [IFKey.Constant.META, 'O'] : null;
     };
 
     /**
      * @override
      */
-    EXOpenAction.prototype.execute = function () {
+    GOpenAction.prototype.execute = function () {
         // TODO : Set first parameter 'reference'
         this._storage.openBlobPrompt(null, ['gravit'], function (blob) {
             gApp.addDocument(blob);
@@ -66,9 +66,9 @@
     };
 
     /** @override */
-    EXOpenAction.prototype.toString = function () {
-        return "[Object EXOpenAction]";
+    GOpenAction.prototype.toString = function () {
+        return "[Object GOpenAction]";
     };
 
-    _.EXOpenAction = EXOpenAction;
+    _.GOpenAction = GOpenAction;
 })(this);

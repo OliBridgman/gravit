@@ -9,7 +9,7 @@
     function GUIMouseEvent() {
     }
 
-    GObject.inherit(GUIMouseEvent, GUIInputEvent);
+    IFObject.inherit(GUIMouseEvent, GUIInputEvent);
 
     /**
      * Constant defining the left mouse button
@@ -88,7 +88,7 @@
      */
     GUIMouseEvent.Move = function () {
     }
-    GObject.inherit(GUIMouseEvent.Move, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Move, GUIMouseEvent);
 
 
     /** @override */
@@ -109,7 +109,7 @@
      */
     GUIMouseEvent.Enter = function () {
     }
-    GObject.inherit(GUIMouseEvent.Enter, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Enter, GUIMouseEvent);
 
 
     /** @override */
@@ -130,7 +130,7 @@
      */
     GUIMouseEvent.Leave = function () {
     }
-    GObject.inherit(GUIMouseEvent.Leave, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Leave, GUIMouseEvent);
 
 
     /** @override */
@@ -152,7 +152,7 @@
      */
     GUIMouseEvent.Down = function () {
     }
-    GObject.inherit(GUIMouseEvent.Down, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Down, GUIMouseEvent);
 
 
     /** @override */
@@ -174,7 +174,7 @@
      */
     GUIMouseEvent.Release = function () {
     }
-    GObject.inherit(GUIMouseEvent.Release, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Release, GUIMouseEvent);
 
 
     /** @override */
@@ -195,7 +195,7 @@
      */
     GUIMouseEvent.Click = function () {
     }
-    GObject.inherit(GUIMouseEvent.Click, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Click, GUIMouseEvent);
 
 
     /** @override */
@@ -216,7 +216,7 @@
      */
     GUIMouseEvent.DblClick = function () {
     }
-    GObject.inherit(GUIMouseEvent.DblClick, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.DblClick, GUIMouseEvent);
 
     /** @override */
     GUIMouseEvent.DblClick.prototype.toString = function () {
@@ -237,7 +237,7 @@
      */
     GUIMouseEvent.DragStart = function () {
     }
-    GObject.inherit(GUIMouseEvent.DragStart, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.DragStart, GUIMouseEvent);
 
     /** @override */
     GUIMouseEvent.DragStart.prototype.toString = function () {
@@ -258,7 +258,7 @@
      */
     GUIMouseEvent.Drag = function () {
     }
-    GObject.inherit(GUIMouseEvent.Drag, GUIMouseEvent);
+    IFObject.inherit(GUIMouseEvent.Drag, GUIMouseEvent);
 
     /**
      * The drag start position in client (widget) -coordinates
@@ -293,7 +293,7 @@
      */
     GUIMouseEvent.DragEnd = function () {
     }
-    GObject.inherit(GUIMouseEvent.DragEnd, GUIMouseEvent.Drag);
+    IFObject.inherit(GUIMouseEvent.DragEnd, GUIMouseEvent.Drag);
 
     /** @override */
     GUIMouseEvent.DragEnd.prototype.toString = function () {

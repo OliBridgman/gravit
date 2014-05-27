@@ -1,6 +1,6 @@
 (function() {
     function test(scene, page, view) {
-        var wrapper = document.getElementById(EXApplication.Part.Windows.id);
+        var wrapper = document.getElementById(GApplication.Part.Windows.id);
         while (wrapper.hasChildNodes()) {
             wrapper.removeChild(wrapper.lastChild);
         }

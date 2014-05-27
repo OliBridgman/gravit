@@ -1,18 +1,18 @@
 (function (_) {
     /**
-     * @class GXVertexOffsetter
-     * @extends GXVertexSource
-     * @param {GXVertexSource} source the underyling vertex source to work on
+     * @class IFVertexOffsetter
+     * @extends IFVertexSource
+     * @param {IFVertexSource} source the underyling vertex source to work on
      * @param {Number} offset
      * @param {Boolean} inset
      * @param {Boolean} outset
      * @param {Number} tol - tolerance value
      * @constructor
      */
-    function GXVertexOffsetter(source, offset, inset, outset, tol) {
+    function IFVertexOffsetter(source, offset, inset, outset, tol) {
         var tolerance = tol ? tol / 3 : 0.0001;
         this._source = source;
-        this._polyline = new GXVertexOffsetter.PolySegmentContainer();
+        this._polyline = new IFVertexOffsetter.PolySegmentContainer();
         this._polyoutset = [];
         this._polyinset = [];
         this._outset = [];
@@ -22,9 +22,9 @@
         this.generateOffset(inset, outset, tolerance);
     }
 
-    GObject.inherit(GXVertexOffsetter, GXVertexSource);
+    IFObject.inherit(IFVertexOffsetter, IFVertexSource);
 
-    GXVertexOffsetter.MAX_RECURS = 100;
+    IFVertexOffsetter.MAX_RECURS = 100;
 
     /**
      *
@@ -34,7 +34,7 @@
      * @param {Number} radius
      * @constructor
      */
-    GXVertexOffsetter.PolySegment = function (point, bulge, center, radius) {
+    IFVertexOffsetter.PolySegment = function (point, bulge, center, radius) {
         this.point = point;
 
         if (bulge != null) {
@@ -49,70 +49,70 @@
         }
     };
 
-    GXVertexOffsetter.PolySegment.prototype.point = null;
+    IFVertexOffsetter.PolySegment.prototype.point = null;
 
-    GXVertexOffsetter.PolySegment.prototype.bulge = null;
+    IFVertexOffsetter.PolySegment.prototype.bulge = null;
 
-    GXVertexOffsetter.PolySegment.prototype.center = null;
+    IFVertexOffsetter.PolySegment.prototype.center = null;
 
-    GXVertexOffsetter.PolySegment.prototype.radius = null;
+    IFVertexOffsetter.PolySegment.prototype.radius = null;
 
-    GXVertexOffsetter.PolySegment.prototype.next = null;
+    IFVertexOffsetter.PolySegment.prototype.next = null;
 
-    GXVertexOffsetter.PolySegment.prototype.previous = null;
+    IFVertexOffsetter.PolySegment.prototype.previous = null;
 
-    GXVertexOffsetter.PolyOffsetSegment = function (basepoint, point1, point2, bulge, center, radius) {
-        GXVertexOffsetter.PolySegment.call(this, point1, bulge, center, radius);
+    IFVertexOffsetter.PolyOffsetSegment = function (basepoint, point1, point2, bulge, center, radius) {
+        IFVertexOffsetter.PolySegment.call(this, point1, bulge, center, radius);
         this.basepoint = basepoint;
         if (point2) {
             this.point2 = point2;
         }
     };
-    GObject.inherit(GXVertexOffsetter.PolyOffsetSegment, GXVertexOffsetter.PolySegment);
+    IFObject.inherit(IFVertexOffsetter.PolyOffsetSegment, IFVertexOffsetter.PolySegment);
 
-    GXVertexOffsetter.PolyOffsetSegment.prototype.basepoint = null;
+    IFVertexOffsetter.PolyOffsetSegment.prototype.basepoint = null;
 
-    GXVertexOffsetter.PolyOffsetSegment.prototype.point2 = null;
+    IFVertexOffsetter.PolyOffsetSegment.prototype.point2 = null;
 
-    GXVertexOffsetter.IntersectionType = function () {
+    IFVertexOffsetter.IntersectionType = function () {
     };
 
     /**
      * If intersection point is a True Intersection Point
      * @type {boolean}
      */
-    GXVertexOffsetter.IntersectionType.prototype.TIP = false;
+    IFVertexOffsetter.IntersectionType.prototype.TIP = false;
 
     /**
      * If intersection point is a False Intersection Point
      * @type {boolean}
      */
-    GXVertexOffsetter.IntersectionType.prototype.FIP = false;
+    IFVertexOffsetter.IntersectionType.prototype.FIP = false;
 
     /**
      * If intersection point is a Positive False Intersection Point
      * Otherwise if point FIP and not PFIP, it is considered NFIP (Negative False Intersection Point)
      * @type {boolean}
      */
-    GXVertexOffsetter.IntersectionType.prototype.PFIP = false;
+    IFVertexOffsetter.IntersectionType.prototype.PFIP = false;
 
-    GXVertexOffsetter.IntersectionResult = function () {
-        this.intTypes = [new GXVertexOffsetter.IntersectionType(), new GXVertexOffsetter.IntersectionType()];
+    IFVertexOffsetter.IntersectionResult = function () {
+        this.intTypes = [new IFVertexOffsetter.IntersectionType(), new IFVertexOffsetter.IntersectionType()];
     };
 
     /**
      * Intersection point
      * @type {GPoint}
      */
-    GXVertexOffsetter.IntersectionResult.prototype.point = null;
+    IFVertexOffsetter.IntersectionResult.prototype.point = null;
 
     /**
-     * Intersection types (GXVertexOffsetter.IntersectionType) of both segments
+     * Intersection types (IFVertexOffsetter.IntersectionType) of both segments
      * @type {Array}
      */
-    GXVertexOffsetter.IntersectionResult.prototype.intTypes = null;
+    IFVertexOffsetter.IntersectionResult.prototype.intTypes = null;
 
-    GXVertexOffsetter.IntersectionResult.prototype.clear = function () {
+    IFVertexOffsetter.IntersectionResult.prototype.clear = function () {
         this.point = null;
         this.intTypes[0].TIP = false;
         this.intTypes[0].FIP = false;
@@ -122,19 +122,19 @@
         this.intTypes[1].PFIP = false;
     };
 
-    GXVertexOffsetter.PolySegmentContainer = function () {
+    IFVertexOffsetter.PolySegmentContainer = function () {
         this.count = 0;
     };
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.head = null;
+    IFVertexOffsetter.PolySegmentContainer.prototype.head = null;
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.end = null;
+    IFVertexOffsetter.PolySegmentContainer.prototype.end = null;
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.closed = null;
+    IFVertexOffsetter.PolySegmentContainer.prototype.closed = null;
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.count = 0;
+    IFVertexOffsetter.PolySegmentContainer.prototype.count = 0;
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.insertSegment = function (polySegment, next) {
+    IFVertexOffsetter.PolySegmentContainer.prototype.insertSegment = function (polySegment, next) {
         polySegment.next = null;
         polySegment.previous = null;
         if (!this.head) {
@@ -157,7 +157,7 @@
         ++this.count;
     };
 
-    GXVertexOffsetter.PolySegmentContainer.prototype.deleteSegment = function (polySegment) {
+    IFVertexOffsetter.PolySegmentContainer.prototype.deleteSegment = function (polySegment) {
         if (polySegment.previous) {
             polySegment.previous.next = polySegment.next;
         }
@@ -173,7 +173,7 @@
         --this.count;
     };
 
-    GXVertexOffsetter.IntersectionPt = function (x, y, slope, segment, idx) {
+    IFVertexOffsetter.IntersectionPt = function (x, y, slope, segment, idx) {
         this.x = x;
         this.y = y;
         this.slope = slope;
@@ -181,39 +181,39 @@
         this.segmIdx = idx;
     };
 
-    GXVertexOffsetter.IntersectionPt.prototype.x = null;
-    GXVertexOffsetter.IntersectionPt.prototype.y = null;
-    GXVertexOffsetter.IntersectionPt.prototype.slope = null;
-    GXVertexOffsetter.IntersectionPt.prototype.segm = null;
-    GXVertexOffsetter.IntersectionPt.prototype.segmIdx = null;
+    IFVertexOffsetter.IntersectionPt.prototype.x = null;
+    IFVertexOffsetter.IntersectionPt.prototype.y = null;
+    IFVertexOffsetter.IntersectionPt.prototype.slope = null;
+    IFVertexOffsetter.IntersectionPt.prototype.segm = null;
+    IFVertexOffsetter.IntersectionPt.prototype.segmIdx = null;
 
     /**
-     * @type {GXVertexSource}
+     * @type {IFVertexSource}
      * @private
      */
-    GXVertexOffsetter.prototype._source = null;
+    IFVertexOffsetter.prototype._source = null;
 
     /**
      *
-     * @type {GXVertexOffsetter.PolySegmentContainer}
+     * @type {IFVertexOffsetter.PolySegmentContainer}
      * @private
      */
-    GXVertexOffsetter.prototype._polyline = null;
+    IFVertexOffsetter.prototype._polyline = null;
 
-    GXVertexOffsetter.prototype._polyinset = null;
+    IFVertexOffsetter.prototype._polyinset = null;
 
-    GXVertexOffsetter.prototype._polyoutset = null;
+    IFVertexOffsetter.prototype._polyoutset = null;
 
-    GXVertexOffsetter.prototype._inset = null;
+    IFVertexOffsetter.prototype._inset = null;
 
-    GXVertexOffsetter.prototype._insetIdx = 0;
+    IFVertexOffsetter.prototype._insetIdx = 0;
 
-    GXVertexOffsetter.prototype._outset = null;
+    IFVertexOffsetter.prototype._outset = null;
 
-    GXVertexOffsetter.prototype._outsetIdx = 0;
+    IFVertexOffsetter.prototype._outsetIdx = 0;
 
     /** @override */
-    GXVertexOffsetter.prototype.rewindVertices = function (index) {
+    IFVertexOffsetter.prototype.rewindVertices = function (index) {
         if (index != 0) {
             return false;
         }
@@ -229,7 +229,7 @@
     };
 
     /** override */
-    GXVertexOffsetter.prototype.readVertex = function (vertex) {
+    IFVertexOffsetter.prototype.readVertex = function (vertex) {
         if (this._outset.length && this._readVertex(vertex, true)) {
             return true;
         }
@@ -244,7 +244,7 @@
      * @param {Number} tolerance
      * @param {Number} counter
      */
-    GXVertexOffsetter.prototype.addCurveToPolyline = function (B0, B1, B2, tolerance, counter) {
+    IFVertexOffsetter.prototype.addCurveToPolyline = function (B0, B1, B2, tolerance, counter) {
         ++counter;
 
         // 1. Approximation of quadratic Bezier curves by arc splines
@@ -258,20 +258,20 @@
 
         // 0. Try segment approximation
         if (this._isQudraticCurveFlat(B0, B1, B2, tolerance)) {
-            var segm = new GXVertexOffsetter.PolySegment(B0, 0);
+            var segm = new IFVertexOffsetter.PolySegment(B0, 0);
             this._polyline.insertSegment(segm);
             return;
         }
 
         // 1. approximate curve by bi-arc
-        var a = gMath.ptDist(B0.getX(), B0.getY(), B1.getX(), B1.getY());
-        var b = gMath.ptDist(B1.getX(), B1.getY(), B2.getX(), B2.getY());
-        var d = gMath.ptDist(B0.getX(), B0.getY(), B2.getX(), B2.getY());
+        var a = ifMath.ptDist(B0.getX(), B0.getY(), B1.getX(), B1.getY());
+        var b = ifMath.ptDist(B1.getX(), B1.getY(), B2.getX(), B2.getY());
+        var d = ifMath.ptDist(B0.getX(), B0.getY(), B2.getX(), B2.getY());
         // TODO: check for zeros
         var T0 = new GPoint((B1.getX() - B0.getX()) / a, (B1.getY() - B0.getY()) / a);
         var T1 = new GPoint((B2.getX() - B1.getX()) / b, (B2.getY() - B1.getY()) / b);
         var T = new GPoint((B2.getX() - B0.getX()) / d, (B2.getY() - B0.getY()) / d);
-        var cosEtha = gMath.vDotProduct(T0.getX(), T0.getY(), T1.getX(), T1.getY());
+        var cosEtha = ifMath.vDotProduct(T0.getX(), T0.getY(), T1.getX(), T1.getY());
 
         // D(u) = a*(T1 - T0*cosEtha) + ((a*cosEtha - b)T0 + (b*cosEtha - a)T1)*u
         // N(u) = D(u) / ||D(u)||
@@ -281,8 +281,8 @@
         var D1 = new GPoint(
             D0.getX() + tmp1 * T0.getX() + tmp2 * T1.getX(), D0.getY() + tmp1 * T0.getY() + tmp2 * T1.getY());
 
-        tmp1 = Math.sqrt(gMath.vDotProduct(D0.getX(), D0.getY(), D0.getX(), D0.getY()));
-        tmp2 = Math.sqrt(gMath.vDotProduct(D1.getX(), D1.getY(), D1.getX(), D1.getY()));
+        tmp1 = Math.sqrt(ifMath.vDotProduct(D0.getX(), D0.getY(), D0.getX(), D0.getY()));
+        tmp2 = Math.sqrt(ifMath.vDotProduct(D1.getX(), D1.getY(), D1.getX(), D1.getY()));
         // TODO: check for zeros
         var N0 = new GPoint(D0.getX() / tmp1, D0.getY() / tmp1);
         var N1 = new GPoint(D1.getX() / tmp2, D1.getY() / tmp2);
@@ -293,16 +293,16 @@
         // lambda*T0N1 = s*d*TN1
         // myu*T1N0 = s*d*TN0
         var a1 = 1 - cosEtha;
-        var T1N0 = gMath.vDotProduct(T1.getX(), T1.getY(), N0.getX(), N0.getY());
-        var TT0 = gMath.vDotProduct(T.getX(), T.getY(), T0.getX(), T0.getY());
-        var TN0 = gMath.vDotProduct(T.getX(), T.getY(), N0.getX(), N0.getY());
-        var T0N1 = gMath.vDotProduct(T0.getX(), T0.getY(), N1.getX(), N1.getY());
-        var TT1 = gMath.vDotProduct(T.getX(), T.getY(), T1.getX(), T1.getY());
-        var TN1 = gMath.vDotProduct(T.getX(), T.getY(), N1.getX(), N1.getY());
+        var T1N0 = ifMath.vDotProduct(T1.getX(), T1.getY(), N0.getX(), N0.getY());
+        var TT0 = ifMath.vDotProduct(T.getX(), T.getY(), T0.getX(), T0.getY());
+        var TN0 = ifMath.vDotProduct(T.getX(), T.getY(), N0.getX(), N0.getY());
+        var T0N1 = ifMath.vDotProduct(T0.getX(), T0.getY(), N1.getX(), N1.getY());
+        var TT1 = ifMath.vDotProduct(T.getX(), T.getY(), T1.getX(), T1.getY());
+        var TN1 = ifMath.vDotProduct(T.getX(), T.getY(), N1.getX(), N1.getY());
         var b1 = T1N0 * TT0 / TN0 + T0N1 * TT1 / TN1;
         var c1 = -(T1N0 * T0N1) / (TN0 * TN1 * 2);
         var roots = [];
-        gMath.getQuadraticRoots(a1, b1, c1, roots);
+        ifMath.getQuadraticRoots(a1, b1, c1, roots);
         var s = null;
         if (roots[0] != null && roots[0] < 1 && roots[0] > 0) {
             s = roots[0];
@@ -337,7 +337,7 @@
         // By Theorem 2: sigma from (0,1): g(u) = (d - 2a*cos(phi))u^2 + 2a*cos(phi)u - lambda*(1 + cos(phi)) = 0
         tmp1 = 2 * a * TT0;
         roots = [];
-        gMath.getQuadraticRoots(d - tmp1, tmp1, -lambda * (1 + TT0), roots);
+        ifMath.getQuadraticRoots(d - tmp1, tmp1, -lambda * (1 + TT0), roots);
         var sigma = 0.5;
         if (roots[0] != null && roots[0] < 1 && roots[0] > 0) {
             sigma = roots[0];
@@ -365,20 +365,20 @@
         var delta = kSigma;
         var tMax = sigma;
         roots = [];
-        gMath.getQuadraticRoots(tmp1, 3 * (abcosEtha - aSqr), 2 * aSqr - Rb0 * b * sinEtha, roots);
+        ifMath.getQuadraticRoots(tmp1, 3 * (abcosEtha - aSqr), 2 * aSqr - Rb0 * b * sinEtha, roots);
         if (roots[0] != null && roots[0] < sigma && roots[0] > 0) {
-            var Qt01 = new GPoint(gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
-                gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
-            var pho01 = Math.abs(Rb0 - gMath.ptDist(Qt01.getX(), Qt01.getY(), C0.getX(), C0.getY()));
+            var Qt01 = new GPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
+                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
+            var pho01 = Math.abs(Rb0 - ifMath.ptDist(Qt01.getX(), Qt01.getY(), C0.getX(), C0.getY()));
             if (delta < pho01) {
                 delta = pho01;
                 tMax = roots[0];
             }
         }
         if (roots[1] != null && roots[1] < sigma && roots[1] > 0) {
-            var Qt02 = new GPoint(gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
-                gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
-            var pho02 = Math.abs(Rb0 - gMath.ptDist(Qt02.getX(), Qt02.getY(), C0.getX(), C0.getY()));
+            var Qt02 = new GPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
+                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
+            var pho02 = Math.abs(Rb0 - ifMath.ptDist(Qt02.getX(), Qt02.getY(), C0.getX(), C0.getY()));
             if (delta < pho02) {
                 delta = pho02;
                 tMax = roots[1];
@@ -386,20 +386,20 @@
         }
 
         roots = [];
-        gMath.getQuadraticRoots(tmp1, -2 * aSqr + bSqr + abcosEtha, aSqr + abcosEtha - Rb2 * a * sinEtha, roots);
+        ifMath.getQuadraticRoots(tmp1, -2 * aSqr + bSqr + abcosEtha, aSqr + abcosEtha - Rb2 * a * sinEtha, roots);
         if (roots[0] != null && roots[0] < 1 && roots[0] > sigma) {
-            var Qt11 = new GPoint(gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
-                gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
-            var pho11 = Math.abs(Rb2 - gMath.ptDist(Qt11.getX(), Qt11.getY(), C1.getX(), C1.getY()));
+            var Qt11 = new GPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
+                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
+            var pho11 = Math.abs(Rb2 - ifMath.ptDist(Qt11.getX(), Qt11.getY(), C1.getX(), C1.getY()));
             if (delta < pho11) {
                 delta = pho11;
                 tMax = roots[0];
             }
         }
         if (roots[1] != null && roots[1] < 1 && roots[1] > sigma) {
-            var Qt12 = new GPoint(gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
-                gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
-            var pho12 = Math.abs(Rb2 - gMath.ptDist(Qt12.getX(), Qt12.getY(), C1.getX(), C1.getY()));
+            var Qt12 = new GPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
+                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
+            var pho12 = Math.abs(Rb2 - ifMath.ptDist(Qt12.getX(), Qt12.getY(), C1.getX(), C1.getY()));
             if (delta < pho12) {
                 delta = pho12;
                 tMax = roots[1];
@@ -408,13 +408,13 @@
 
         // 3. if delta > tolerance => divide && repeat;
         // else => add bi-arc to polyline
-        if (delta > tolerance && counter < GXVertexOffsetter.MAX_RECURS) {
+        if (delta > tolerance && counter < IFVertexOffsetter.MAX_RECURS) {
             var ctrls1X = new Float64Array(3);
             var ctrls1Y = new Float64Array(3);
             var ctrls2X = new Float64Array(3);
             var ctrls2Y = new Float64Array(3);
-            gMath.divideQuadraticCurve(B0.getX(), B1.getX(), B2.getX(), tMax, ctrls1X, ctrls2X);
-            gMath.divideQuadraticCurve(B0.getY(), B1.getY(), B2.getY(), tMax, ctrls1Y, ctrls2Y);
+            ifMath.divideQuadraticCurve(B0.getX(), B1.getX(), B2.getX(), tMax, ctrls1X, ctrls2X);
+            ifMath.divideQuadraticCurve(B0.getY(), B1.getY(), B2.getY(), tMax, ctrls1Y, ctrls2Y);
             this.addCurveToPolyline(B0, new GPoint(ctrls1X[1], ctrls1Y[1]), new GPoint(ctrls1X[2], ctrls1Y[2]), tolerance, counter);
             this.addCurveToPolyline(new GPoint(ctrls2X[0], ctrls2Y[0]), new GPoint(ctrls2X[1], ctrls2Y[1]), B2, tolerance, counter);
         } else {
@@ -425,16 +425,16 @@
             // Define curve orientation
             // We can check arc center location against B0G
             var tgHalfGamma = sinGamma / (cosGamma + 1);
-            if (gMath.segmentSide(B0.getX(), B0.getY(), G.getX(), G.getY(), C0.getX(), C0.getY()) > 0) {
+            if (ifMath.segmentSide(B0.getX(), B0.getY(), G.getX(), G.getY(), C0.getX(), C0.getY()) > 0) {
                 tgHalfGamma = -tgHalfGamma;
             }
-            var segm = new GXVertexOffsetter.PolySegment(B0, tgHalfGamma, C0, Rb0);
+            var segm = new IFVertexOffsetter.PolySegment(B0, tgHalfGamma, C0, Rb0);
             this._polyline.insertSegment(segm);
             var tgHalfPsi = sinPsi / (cosPsi + 1);
             if (tgHalfGamma < 0) {
                 tgHalfPsi = -tgHalfPsi;
             }
-            segm = new GXVertexOffsetter.PolySegment(G, tgHalfPsi, C1, Rb2);
+            segm = new IFVertexOffsetter.PolySegment(G, tgHalfPsi, C1, Rb2);
             this._polyline.insertSegment(segm);
         }
     };
@@ -447,7 +447,7 @@
      * @param {GPoint} B3 - an end point of cubic Bezier curve
      * @param {Number} tolerance
      */
-    GXVertexOffsetter.prototype.addCubicCurveToPolyline = function (B0, B1, B2, B3, tolerance) {
+    IFVertexOffsetter.prototype.addCubicCurveToPolyline = function (B0, B1, B2, B3, tolerance) {
         // 1. Approximation of a planar cubic Bezier spiral by circular arcs
         // D.J. Walton, D.S. Meek, 1996
         //
@@ -473,7 +473,7 @@
         var ax = B3.getX() - B2.getX() - cx - bx;
         var ay = B3.getY() - B2.getY() - cy - by;
         var sPts = [];
-        var nPoints = gMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPts);
+        var nPoints = ifMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPts);
 
         // 2. Based on splitPoints iterate through intervals,
         // and for each interval perform the curve approximation with a biArc:
@@ -483,21 +483,21 @@
         for (var i = 0; i < nPoints - 1; ++i) {
             t1 = sPts[i];
             t2 = sPts[i + 1];
-            gMath.getCtrlPts(B0.getX(), B3.getX(), B1.getX(), B2.getX(), t1, t2, ctrlsx);
-            gMath.getCtrlPts(B0.getY(), B3.getY(), B1.getY(), B2.getY(), t1, t2, ctrlsy);
+            ifMath.getCtrlPts(B0.getX(), B3.getX(), B1.getX(), B2.getX(), t1, t2, ctrlsx);
+            ifMath.getCtrlPts(B0.getY(), B3.getY(), B1.getY(), B2.getY(), t1, t2, ctrlsy);
             var counter = 0;
             this._addCubicSegmToPolyline(ctrlsx, ctrlsy, tolerance, counter);
         }
     };
 
-    GXVertexOffsetter.prototype._isQudraticCurveFlat = function (B0, B1, B2, tolerance) {
-        var xB = gMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), 0.5);
-        var yB = gMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), 0.5);
-        var dst = gMath.ptSqrDist(xB, yB, (B0.getX() + B2.getX()) / 2, (B0.getY() + B2.getY()) / 2);
+    IFVertexOffsetter.prototype._isQudraticCurveFlat = function (B0, B1, B2, tolerance) {
+        var xB = ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), 0.5);
+        var yB = ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), 0.5);
+        var dst = ifMath.ptSqrDist(xB, yB, (B0.getX() + B2.getX()) / 2, (B0.getY() + B2.getY()) / 2);
         return (dst <= tolerance * tolerance);
     };
 
-    GXVertexOffsetter.prototype._isCubicCurveFlat = function (ctrlsx, ctrlsy, tolerance) {
+    IFVertexOffsetter.prototype._isCubicCurveFlat = function (ctrlsx, ctrlsy, tolerance) {
         // Piecewise Linear Approximation of Bezier Curves
         // Kaspar Fischer, 2000
         // (approved for publication part of algorithm with copyright by Roger Willcocks)
@@ -525,7 +525,7 @@
      * @param {Number} tolerance
      * @param {Number} counter
      */
-    GXVertexOffsetter.prototype._addCubicSegmToPolyline = function (ctrlsx, ctrlsy, tolerance, counter) {
+    IFVertexOffsetter.prototype._addCubicSegmToPolyline = function (ctrlsx, ctrlsy, tolerance, counter) {
         ++counter;
 
         // 1. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
@@ -537,35 +537,35 @@
 
         // 0. try line approximation
         if (this._isCubicCurveFlat(ctrlsx, ctrlsy, tolerance)) {
-            var segm = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
+            var segm = new IFVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
             this._polyline.insertSegment(segm);
             return;
         }
 
         // 1. Construct approximating arc
         var result = [];
-        var C = gMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
-        var ab = gMath.ptDist(xA, yA, xB, yB);
+        var C = ifMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
+        var ab = ifMath.ptDist(xA, yA, xB, yB);
         if (!C) {
             return;
         }
-        var ac = gMath.ptDist(xA, yA, C.getX(), C.getY());
-        var bc = gMath.ptDist(xB, yB, C.getX(), C.getY());
+        var ac = ifMath.ptDist(xA, yA, C.getX(), C.getY());
+        var bc = ifMath.ptDist(xB, yB, C.getX(), C.getY());
         var p = ab + ac + bc;
         var xG = (xA * bc + xB * ac + C.getX() * ab) / p;
         var yG = (yA * bc + yB * ac + C.getY() * ab) / p;
-        if (gMath.isEqualEps(xA, xG) || gMath.isEqualEps(yA, yG) ||
-            gMath.isEqualEps(xB, xG) || gMath.isEqualEps(yB, yG)) {
+        if (ifMath.isEqualEps(xA, xG) || ifMath.isEqualEps(yA, yG) ||
+            ifMath.isEqualEps(xB, xG) || ifMath.isEqualEps(yB, yG)) {
             // Might be some error, as the original cubic curve has been split to not contain parts,
             // where tangent line is parallel to X axis or Y axis.
-            var segm = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
+            var segm = new IFVertexOffsetter.PolySegment(new GPoint(xA, yA), 0);
             this._polyline.insertSegment(segm);
         } else {
             var mA = (yA - yG) / (xA - xG);
             var mB = (yB - yG) / (xB - xG);
             var xO = (mA * mB * (yA - yB) + mB * (xA + xG) - mA * (xG + xB)) / 2 / (mB - mA);
             var yO = -1 / mA * (xO - (xA + xG) / 2) + (yA + yG) / 2;
-            var R = gMath.ptDist(xA, yA, xO, yO);
+            var R = ifMath.ptDist(xA, yA, xO, yO);
 
             // 2. Evaluate error by measuring minimal and maximal distance from curve to point O
             // P(t) = P1 + 3t(C1 - P1) + 3t^2*(C2 - 2C1 + P1) + t^3*(P2 - 3C2 + 3C1 - P1)
@@ -607,17 +607,17 @@
 
             // Coefficients of 5 degree derivative polynomial
             var coeffFDeriv = new Float64Array(6);
-            gMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
+            ifMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
             // Coeffitients of the second and third derivative polynomials
             var coeffFDeriv2 = new Float64Array(5);
-            gMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
+            ifMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
             var coeffFDeriv3 = new Float64Array(4);
-            gMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
+            ifMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
 
             // Coefficients of 5 degree polynomial, calculated from derivative polynomial and interval transformation
             var coeffInversed = new Float64Array(6);
-            gMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
-            var nRoots = gMath.estimPositiveRootsDescartes(coeffInversed, 5);
+            ifMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
+            var nRoots = ifMath.estimPositiveRootsDescartes(coeffInversed, 5);
             var maxDst = 0;
             var v51, v52;
             // generalized Sturm sequence (array of polynomial coefficients arrays)
@@ -629,50 +629,50 @@
             if (nRoots > 0) {
                 var t1 = 0.0;
                 var t2 = 1.0;
-                v51 = gMath.evalPoly(coeffFDeriv, 5, t1);
-                if (gMath.isEqualEps(v51, 0)) {
+                v51 = ifMath.evalPoly(coeffFDeriv, 5, t1);
+                if (ifMath.isEqualEps(v51, 0)) {
                     t1 += 0.005;
-                    v51 = gMath.evalPoly(coeffFDeriv, 5, t1);
+                    v51 = ifMath.evalPoly(coeffFDeriv, 5, t1);
                 }
-                v52 = gMath.evalPoly(coeffFDeriv, 5, t2);
-                if (gMath.isEqualEps(v52, 0)) {
+                v52 = ifMath.evalPoly(coeffFDeriv, 5, t2);
+                if (ifMath.isEqualEps(v52, 0)) {
                     t2 -= 0.005;
-                    v52 = gMath.evalPoly(coeffFDeriv, 5, t2);
+                    v52 = ifMath.evalPoly(coeffFDeriv, 5, t2);
                 }
 
                 if (nRoots > 1) {
-                    gMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
+                    ifMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
                     nSignVars = [];
                     fVals = [v51, v52];
-                    nRoots = gMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2,
+                    nRoots = ifMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2,
                         sturmSeq, nSignVars, fVals);
                 }
             }
             if (nRoots == 0) {
                 // Might be some error, return the arc
             } else if (nRoots == 1) {
-                var r1 = gMath.locateByNewton(t1, t2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
+                var r1 = ifMath.locateByNewton(t1, t2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
                 if (r1 == null) {
                     r1 = (t1 + t2) / 2;
                 }
-                var r1x = gMath.evalCubic(a1x, b1x, c1x, xA, r1);
-                var r1y = gMath.evalCubic(a1y, b1y, c1y, yA, r1);
-                maxDst = Math.abs(gMath.ptDist(r1x, r1y, xO, yO) - R);
+                var r1x = ifMath.evalCubic(a1x, b1x, c1x, xA, r1);
+                var r1y = ifMath.evalCubic(a1y, b1y, c1y, yA, r1);
+                maxDst = Math.abs(ifMath.ptDist(r1x, r1y, xO, yO) - R);
             } else {
                 var rIntervals = [];
-                gMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2, sturmSeq, nRoots,
+                ifMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2, sturmSeq, nRoots,
                     nSignVars, fVals, rIntervals);
 
                 for (var s = 0; s < rIntervals.length; ++s) {
-                    r1 = gMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
+                    r1 = ifMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
                         rIntervals[s][2], rIntervals[s][3], coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                         sturmSeq);
                     if (r1 == null) {
                         r1 = (rIntervals[s][0] + rIntervals[s][1]) / 2;
                     }
-                    r1x = gMath.evalCubic(a1x, b1x, c1x, xA, r1);
-                    r1y = gMath.evalCubic(a1y, b1y, c1y, yA, r1);
-                    var dst = Math.abs(gMath.ptDist(r1x, r1y, xO, yO) - R);
+                    r1x = ifMath.evalCubic(a1x, b1x, c1x, xA, r1);
+                    r1y = ifMath.evalCubic(a1y, b1y, c1y, yA, r1);
+                    var dst = Math.abs(ifMath.ptDist(r1x, r1y, xO, yO) - R);
                     if (dst > maxDst) {
                         maxDst = dst;
                     }
@@ -681,13 +681,13 @@
 
             // 3. if distance > tolerance => divide && repeat;
             // else => add arc to polyline
-            if (maxDst > tolerance && counter < GXVertexOffsetter.MAX_RECURS) {
+            if (maxDst > tolerance && counter < IFVertexOffsetter.MAX_RECURS) {
                 var ctrlsNew1X = new Float64Array(4);
                 var ctrlsNew1Y = new Float64Array(4);
                 var ctrlsNew2X = new Float64Array(4);
                 var ctrlsNew2Y = new Float64Array(4);
-                gMath.getCtrlPtsCasteljau(ctrlsx[0], ctrlsx[1], ctrlsx[2], ctrlsx[3], 0.5, null, ctrlsNew1X, ctrlsNew2X);
-                gMath.getCtrlPtsCasteljau(ctrlsy[0], ctrlsy[1], ctrlsy[2], ctrlsy[3], 0.5, null, ctrlsNew1Y, ctrlsNew2Y);
+                ifMath.getCtrlPtsCasteljau(ctrlsx[0], ctrlsx[1], ctrlsx[2], ctrlsx[3], 0.5, null, ctrlsNew1X, ctrlsNew2X);
+                ifMath.getCtrlPtsCasteljau(ctrlsy[0], ctrlsy[1], ctrlsy[2], ctrlsy[3], 0.5, null, ctrlsNew1Y, ctrlsNew2Y);
                 this._addCubicSegmToPolyline(ctrlsNew1X, ctrlsNew1Y, tolerance, counter);
                 this._addCubicSegmToPolyline(ctrlsNew2X, ctrlsNew2Y, tolerance, counter);
             } else {
@@ -696,17 +696,17 @@
                 var tgHalfGamma = sinGamma / (Math.sqrt(1 - sinGamma * sinGamma) + 1);
                 // Define curve orientation
                 // We can check arc center location against AB
-                if (gMath.segmentSide(xA, yA, xB, yB, xO, yO) > 0) {
+                if (ifMath.segmentSide(xA, yA, xB, yB, xO, yO) > 0) {
                     tgHalfGamma = -tgHalfGamma;
                 }
                 //tgHalfGamma = this._calculateBulge(xA, yA, xB, yB, xO, yO);
-                var arc = new GXVertexOffsetter.PolySegment(new GPoint(xA, yA), tgHalfGamma, new GPoint(xO, yO), R);
+                var arc = new IFVertexOffsetter.PolySegment(new GPoint(xA, yA), tgHalfGamma, new GPoint(xO, yO), R);
                 this._polyline.insertSegment(arc);
             }
         }
     };
 
-    GXVertexOffsetter.prototype.generatePolyLine = function (tolerance) {
+    IFVertexOffsetter.prototype.generatePolyLine = function (tolerance) {
         if (!this._source.rewindVertices(0)) {
             return;
         }
@@ -727,65 +727,65 @@
         // 5. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
         var vertex1;
-        var vertex2 = new GXVertex();
+        var vertex2 = new IFVertex();
         var polySegm;
 
         while (this._source.readVertex(vertex2)) {
             switch (vertex2.command) {
-                case GXVertex.Command.Move:
+                case IFVertex.Command.Move:
                     vertex1 = vertex2;
-                    vertex2 = new GXVertex();
+                    vertex2 = new IFVertex();
                     break;
-                case GXVertex.Command.Line:
+                case IFVertex.Command.Line:
                     if (!vertex1) {
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
+                        vertex2 = new IFVertex();
                     } else {
-                        polySegm = new GXVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
+                        polySegm = new IFVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
                         this._polyline.insertSegment(polySegm);
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
+                        vertex2 = new IFVertex();
                     }
                     break;
 
-                case GXVertex.Command.Curve:
+                case IFVertex.Command.Curve:
                     if (!vertex1) {
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
+                        vertex2 = new IFVertex();
                     } else {
                         var B0 = new GPoint(vertex1.x, vertex1.y);
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
+                        vertex2 = new IFVertex();
                         if (this._source.readVertex(vertex2)) {
                             var counter = 0;
                             this.addCurveToPolyline(B0, new GPoint(vertex2.x, vertex2.y),
                                 new GPoint(vertex1.x, vertex1.y), tolerance, counter);
 
-                            vertex2 = new GXVertex();
+                            vertex2 = new IFVertex();
                         }
                     }
                     break;
 
-                case GXVertex.Command.Curve2:
+                case IFVertex.Command.Curve2:
                     if (!vertex1) {
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
+                        vertex2 = new IFVertex();
                     } else {
                         var B0 = new GPoint(vertex1.x, vertex1.y);
                         var B3 = new GPoint(vertex2.x, vertex2.y);
                         vertex1 = vertex2;
-                        vertex2 = new GXVertex();
-                        var vertex3 = new GXVertex();
+                        vertex2 = new IFVertex();
+                        var vertex3 = new IFVertex();
                         if (this._source.readVertex(vertex2) && this._source.readVertex(vertex3)) {
                             this.addCubicCurveToPolyline(B0, new GPoint(vertex2.x, vertex2.y),
                                 new GPoint(vertex3.x, vertex3.y), B3, tolerance);
 
-                            vertex2 = new GXVertex();
+                            vertex2 = new IFVertex();
                         }
                     }
                     break;
 
-                case GXVertex.Command.Close:
+                case IFVertex.Command.Close:
                     if (this._polyline) {
                         this._polyline.closed = true;
                     }
@@ -796,17 +796,17 @@
             }
         }
         if (vertex1) {
-            polySegm = new GXVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
+            polySegm = new IFVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
             this._polyline.insertSegment(polySegm);
-            if (gMath.isEqualEps(vertex1.x, this._polyline.head.point.getX()) &&
-                    gMath.isEqualEps(vertex1.y, this._polyline.head.point.getY())) {
+            if (ifMath.isEqualEps(vertex1.x, this._polyline.head.point.getX()) &&
+                    ifMath.isEqualEps(vertex1.y, this._polyline.head.point.getY())) {
 
                 this._polyline.closed = true;
             }
         }
     };
 
-    GXVertexOffsetter.prototype.generatePolyOffset = function (offset, inset, outset, tolerance) {
+    IFVertexOffsetter.prototype.generatePolyOffset = function (offset, inset, outset, tolerance) {
         // An offset algorithm for polyline curves
         // Xu-Zheng Liu, Jun-Hai Yong, Guo-Qin Zheng, Jia-Guang Sun, 2006
 
@@ -814,10 +814,10 @@
         var polyOffsetOut = null;
         var polyOffsetIn = null;
         if (outset) {
-            polyOffsetOut = new GXVertexOffsetter.PolySegmentContainer();
+            polyOffsetOut = new IFVertexOffsetter.PolySegmentContainer();
         }
         if (inset) {
-            polyOffsetIn = new GXVertexOffsetter.PolySegmentContainer();
+            polyOffsetIn = new IFVertexOffsetter.PolySegmentContainer();
         }
         var offsSegm;
         for (var i = 0, curSegm = this._polyline.head; i < this._polyline.count; ++i) {
@@ -840,18 +840,18 @@
             if (outset) {
                 var firstSegm = polyOffsetOut.head;
                 polyOffsetOut.insertSegment(
-                    new GXVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
+                    new IFVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
             }
             if (inset) {
                 var firstSegm = polyOffsetIn.head;
                 polyOffsetIn.insertSegment(
-                    new GXVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
+                    new IFVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
             }
         }*/
 
         // 2. intersect untrimmed
-        var polyOutNew = new GXVertexOffsetter.PolySegmentContainer();
-        var polyInNew = new GXVertexOffsetter.PolySegmentContainer();
+        var polyOutNew = new IFVertexOffsetter.PolySegmentContainer();
+        var polyInNew = new IFVertexOffsetter.PolySegmentContainer();
         if (outset) {
             this._trimOffsetPoly(polyOffsetOut, offset, polyOutNew);
         }
@@ -942,7 +942,7 @@
         this._gcppClipping(tmpArray1In, this._polyline, offset, this._polyinset);
     };
 
-    GXVertexOffsetter.prototype.generateOffset = function (inset, outset, tolerance) {
+    IFVertexOffsetter.prototype.generateOffset = function (inset, outset, tolerance) {
         // 1. Drawing an elliptical arc using polylines, quadratic or cubic Bezier curves
         // L. Maisonobe, 2003
 
@@ -971,7 +971,7 @@
      * @returns {null}
      * @private
      */
-    GXVertexOffsetter.prototype._offsetPolySegment = function(segm, offset, tolerance) {
+    IFVertexOffsetter.prototype._offsetPolySegment = function(segm, offset, tolerance) {
         var newSegm = null;
         var absOffs = Math.abs(offset);
         var x1 = segm.point.getX();
@@ -987,12 +987,12 @@
                     x2 = this._polyline.head.point.getX();
                     y2 = this._polyline.head.point.getY();
                 }
-                var dist = gMath.ptDist(x1, y1, x2, y2);
-                if (!gMath.isEqualEps(dist, 0)) {
+                var dist = ifMath.ptDist(x1, y1, x2, y2);
+                if (!ifMath.isEqualEps(dist, 0)) {
                     var delta = new GPoint(-offset * (y2 - y1) / dist, -offset * (x1 - x2) / dist);
                     var newPt1 = new GPoint(x1 + delta.getX(), y1 + delta.getY());
                     var newPt2 = new GPoint(x2 + delta.getX(), y2 + delta.getY());
-                    newSegm = new GXVertexOffsetter.PolyOffsetSegment(segm.point, newPt1, newPt2, 0);
+                    newSegm = new IFVertexOffsetter.PolyOffsetSegment(segm.point, newPt1, newPt2, 0);
                 } // else do nothing
             } // else do nothing
         } else if (segm.radius) {
@@ -1001,7 +1001,7 @@
             if (offset * segm.bulge > 0) {
                 radius += absOffs;
                 k = radius / segm.radius;
-            } else if (!gMath.isEqualEps(segm.radius, absOffs, tolerance)) {
+            } else if (!ifMath.isEqualEps(segm.radius, absOffs, tolerance)) {
                 if (segm.radius > absOffs) {
                     radius -= absOffs;
                     k = radius / segm.radius;
@@ -1024,7 +1024,7 @@
                 }
                 var newPt1 = new GPoint(xO + k * (x1 - xO), yO + k * (y1 - yO));
                 var newPt2 = new GPoint(xO + k * (x2 - xO), yO + k * (y2 - yO));
-                newSegm = new GXVertexOffsetter.PolyOffsetSegment(
+                newSegm = new IFVertexOffsetter.PolyOffsetSegment(
                     segm.point, newPt1, newPt2, segm.bulge, segm.center, radius);
             }
         }
@@ -1033,15 +1033,15 @@
 
     /**
      *
-     * @param {GXVertexOffsetter.PolyOffsetSegment} psegm1
-     * @param {GXVertexOffsetter.PolyOffsetSegment} psegm2
-     * @param {GXVertexOffsetter.IntersectionResult} intResult
+     * @param {IFVertexOffsetter.PolyOffsetSegment} psegm1
+     * @param {IFVertexOffsetter.PolyOffsetSegment} psegm2
+     * @param {IFVertexOffsetter.IntersectionResult} intResult
      * @private
      */
-    GXVertexOffsetter.prototype._insersectOffsetSegments = function (psegm1, psegm2, intResult) {
+    IFVertexOffsetter.prototype._insersectOffsetSegments = function (psegm1, psegm2, intResult) {
         if (psegm1.bulge == 0 && psegm2.bulge == 0) { // line segments
             var res = [null, null];
-            var pt = gMath.getIntersectionPoint(
+            var pt = ifMath.getIntersectionPoint(
                 psegm1.point.getX(), psegm1.point.getY(), psegm1.point2.getX(), psegm1.point2.getY(),
                 psegm2.point.getX(), psegm2.point.getY(), psegm2.point2.getX(), psegm2.point2.getY(), res);
 
@@ -1061,7 +1061,7 @@
                 var yL = psegm1.point.getY();
                 var dxL = psegm1.point2.getX() - psegm1.point.getX();
                 var dyL = psegm1.point2.getY() - psegm1.point.getY();
-                gMath.circleLineIntersection(xL, yL, dxL, dyL,
+                ifMath.circleLineIntersection(xL, yL, dxL, dyL,
                     psegm2.center.getX(), psegm2.center.getY(), psegm2.radius, res);
 
                 if (res[0] != null) {
@@ -1072,8 +1072,8 @@
                 if (res[0] != null && res[1] != null) {
                     var x2 = xL + dxL * res[1];
                     var y2 = yL + dyL * res[1];
-                    var sDst1 = gMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
-                    var sDst2 = gMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst1 = ifMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst2 = ifMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
                     if (sDst2 < sDst1) {
                         x = x2;
                         y = y2;
@@ -1091,7 +1091,7 @@
                 var yL = psegm2.point.getY();
                 var dxL = psegm2.point2.getX() - psegm2.point.getX();
                 var dyL = psegm2.point2.getY() - psegm2.point.getY();
-                gMath.circleLineIntersection(xL, yL, dxL, dyL,
+                ifMath.circleLineIntersection(xL, yL, dxL, dyL,
                     psegm1.center.getX(), psegm1.center.getY(), psegm1.radius, res);
 
                 if (res[0] != null) {
@@ -1102,8 +1102,8 @@
                 if (res[0] != null && res[1] != null) {
                     var x2 = xL + dxL * res[1];
                     var y2 = yL + dyL * res[1];
-                    var sDst1 = gMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
-                    var sDst2 = gMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst1 = ifMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst2 = ifMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
                     if (sDst2 < sDst1) {
                         x = x2;
                         y = y2;
@@ -1119,7 +1119,7 @@
             }
         } else { // two arcs
             var res = [null, null];
-            gMath.circleCircleIntersection(psegm1.center.getX(), psegm1.center.getY(), psegm1.radius,
+            ifMath.circleCircleIntersection(psegm1.center.getX(), psegm1.center.getY(), psegm1.radius,
                 psegm2.center.getX(), psegm2.center.getY(), psegm2.radius, res);
 
             var ptIdx = null;
@@ -1127,10 +1127,10 @@
                 ptIdx = 0;
             }
             if (res[0] != null && res[1] != null) {
-                var sDst1 = gMath.ptSqrDist(res[0].getX(), res[0].getY(),
+                var sDst1 = ifMath.ptSqrDist(res[0].getX(), res[0].getY(),
                     psegm2.basepoint.getX(), psegm2.basepoint.getY());
 
-                var sDst2 = gMath.ptSqrDist(res[1].getX(), res[1].getY(),
+                var sDst2 = ifMath.ptSqrDist(res[1].getX(), res[1].getY(),
                     psegm2.basepoint.getX(), psegm2.basepoint.getY());
 
                 if (sDst2 < sDst1) {
@@ -1148,13 +1148,13 @@
 
     /**
      * Fills arc intersection type based on the arc segment parameters and intersection point's coordinates
-     * @param {GXVertexOffsetter.PolyOffsetSegment} psegm
+     * @param {IFVertexOffsetter.PolyOffsetSegment} psegm
      * @param {Number} x
      * @param {Number} y
-     * @param {GXVertexOffsetter.IntersectionType} intType
+     * @param {IFVertexOffsetter.IntersectionType} intType
      * @private
      */
-    GXVertexOffsetter.prototype._fillArcIntType = function (psegm, x, y, intType) {
+    IFVertexOffsetter.prototype._fillArcIntType = function (psegm, x, y, intType) {
         // For an arc, if a point not on the arc, let's find arc's central point on the circle, and consider
         // an opposite circle point as a measure for defining a PFIP or NFIP
         var sp1x = psegm.point.getX();
@@ -1164,16 +1164,16 @@
         var cX = psegm.center.getX();
         var cY = psegm.center.getY();
         // TODO: process accurately, when segment side is not evident
-        if (gMath.segmentSide(sp1x, sp1y, sp2x, sp2y, x, y) ==
-            gMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
+        if (ifMath.segmentSide(sp1x, sp1y, sp2x, sp2y, x, y) ==
+            ifMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
 
             var pMx = (sp1x + sp2x) / 2;
             var pMy = (sp1y + sp2y) / 2;
-            var tmp = psegm.radius / gMath.ptDist(pMx, pMy, cX, cY);
+            var tmp = psegm.radius / ifMath.ptDist(pMx, pMy, cX, cY);
             var pOppX = cX + (cX - pMx) * tmp;
             var pOppY = cY + (cY - pMy) * tmp;
-            if (gMath.segmentSide(sp1x, sp1y, pOppX, pOppY, x, y) ==
-                gMath.segmentSide(sp1x, sp1y, pOppX, pOppY, cX, cY)) {
+            if (ifMath.segmentSide(sp1x, sp1y, pOppX, pOppY, x, y) ==
+                ifMath.segmentSide(sp1x, sp1y, pOppX, pOppY, cX, cY)) {
                 intType.FIP = true;
                 intType.PFIP = true;
             } else {
@@ -1184,7 +1184,7 @@
         }
     };
 
-    GXVertexOffsetter.prototype._fillLineIntType = function (param, intType) {
+    IFVertexOffsetter.prototype._fillLineIntType = function (param, intType) {
         if (param < 0.0) {
             intType.FIP = true;
         } else if (param > 1.0) {
@@ -1197,24 +1197,24 @@
 
     /**
      *
-     * @param {GXVertexOffsetter.PolySegmentContainer} polyOffset
+     * @param {IFVertexOffsetter.PolySegmentContainer} polyOffset
      * @param {Number} offset
      * @private
      */
-    GXVertexOffsetter.prototype._trimOffsetPoly = function (polyOffset, offset, polyONew) {
+    IFVertexOffsetter.prototype._trimOffsetPoly = function (polyOffset, offset, polyONew) {
         // An offset algorithm for polyline curves
         // Xu-Zheng Liu, Jun-Hai Yong, Guo-Qin Zheng, Jia-Guang Sun, 2006
 
         var segm1 = null;
         var segm2 = polyOffset.head;
         if (segm2) {
-            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
 
-            var iRes = new GXVertexOffsetter.IntersectionResult();
+            var iRes = new IFVertexOffsetter.IntersectionResult();
             for (var i = 0; i < polyOffset.count - 1; ++i) {
                 // TODO: recalculate basepoint here
-                segm1 = new GXVertexOffsetter.PolyOffsetSegment(segm2.basepoint, polyONew.end.point, segm2.point2,
+                segm1 = new IFVertexOffsetter.PolyOffsetSegment(segm2.basepoint, polyONew.end.point, segm2.point2,
                     polyONew.end.bulge, segm2.center, segm2.radius);
                 segm2 = segm2.next;
                 iRes.clear();
@@ -1222,13 +1222,13 @@
 
                 if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
                     if (!iRes.point) { // case 1
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
                     } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
                             iRes.intTypes[0].FIP && iRes.intTypes[1].FIP && iRes.intTypes[0].PFIP) { // case 2b part1
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
                     } else { // case 2b part2 || case 2c
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
                     if (iRes.point) { // case 1
@@ -1244,26 +1244,26 @@
                                 segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
                                 segm2.bulge);
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, bulge,
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, bulge,
                                 segm2.center, segm2.radius));
                         } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
                             // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
 
                             // construct new line segment
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         }
                     } else { // case 2, construct arc
                         var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
                     if (iRes.point) { // case 1
@@ -1272,24 +1272,24 @@
                                 iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
                                 segm1.bulge);
                             polyONew.end.bulge = newBulge;
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
                         } else if (iRes.intTypes[0].FIP &&
                                 iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
 
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                                 //segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         } else { // case 1c, 1d
                             // construct new line segment
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else {
                         var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else { // two arc segments: use Algorithm 4
                     if (iRes.point) { // case 1
@@ -1305,13 +1305,13 @@
                                 segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
                                 segm2.bulge);
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                                 iRes.point, newBulge, segm2.center, segm2.radius));
                         } else { // case 1b, construct arc
                             var arc = this._constructJoinArc(segm1, segm2, false);
                             polyONew.insertSegment(arc);
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         }
                     } else { // case 2
@@ -1325,7 +1325,7 @@
                         }
                         polyONew.insertSegment(arc);
 
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                             segm2.point, segm2.bulge, segm2.center, segm2.radius));
                     }
                 }
@@ -1338,14 +1338,14 @@
 
                 if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
                     if (!iRes.point) { // case 1
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
                     } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
                         iRes.intTypes[0].FIP && iRes.intTypes[1].FIP && iRes.intTypes[0].PFIP) { // case 2b part1
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
                         polyONew.head.point = iRes.point;
                     } else { // case 2b part2 || case 2c
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
                     if (iRes.point) { // case 1
@@ -1359,25 +1359,25 @@
                                 segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
                                 segm2.bulge);
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
 
                             polyONew.head.point = iRes.point;
                             polyONew.head.bulge = bulge;
                         } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
                             // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
 
                             // construct new line segment
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else { // case 2, construct arc
                         var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
                     if (iRes.point) { // case 1
@@ -1386,24 +1386,24 @@
                                 iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
                                 segm1.bulge);
                             polyONew.end.bulge = newBulge;
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
                             polyONew.head.point = iRes.point;
                         } else if (iRes.intTypes[0].FIP &&
                                 iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
 
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         } else { // case 1c, 1d
                             // construct new line segment
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm1.point2, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else {
                         var arc = this._constructJoinArc(segm1, segm2, true);
                         polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 } else { // two arc segments: use Algorithm 4
                     if (iRes.point) { // case 1
@@ -1415,7 +1415,7 @@
                                 segm1.bulge);
                             polyONew.end.bulge = newBulge;
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(iRes.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
 
                             newBulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
                                 segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
@@ -1427,7 +1427,7 @@
                             var arc = this._constructJoinArc(segm1, segm2, false);
                             polyONew.insertSegment(arc);
 
-                            polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
                     } else { // case 2
                         var arc = null;
@@ -1440,23 +1440,23 @@
                         }
                         polyONew.insertSegment(arc);
 
-                        polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point, 0));
+                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                     }
                 }
             } else {
-                polyONew.insertSegment(new GXVertexOffsetter.PolySegment(segm2.point2, 0));
+                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point2, 0));
             }
         }
     };
 
     /**
      * Construct arc segment from segm1.point2 to segm2.point with center at segm2.basepoint
-     * @param {GXVertexOffsetter.PolyOffsetSegment} [segm1]
-     * @param {GXVertexOffsetter.PolyOffsetSegment} [segm2]
-     * @return {GXVertexOffsetter.PolySegment} [arc] - constructed arc segment
+     * @param {IFVertexOffsetter.PolyOffsetSegment} [segm1]
+     * @param {IFVertexOffsetter.PolyOffsetSegment} [segm2]
+     * @return {IFVertexOffsetter.PolySegment} [arc] - constructed arc segment
      * @private
      */
-    GXVertexOffsetter.prototype._constructJoinArc = function (segm1, segm2, collinear) {
+    IFVertexOffsetter.prototype._constructJoinArc = function (segm1, segm2, collinear) {
         // Define bulge sign
         var sign = 0;
         if (segm1.bulge) {
@@ -1467,11 +1467,11 @@
                 dx = -dx;
                 dy = -dy;
             }*/
-            sign = -gMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
+            sign = -ifMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
                 segm1.point2.getX() + dx, segm1.point2.getY() + dy,
                 segm2.point.getX(), segm2.point.getY()); // * segm1.bulge;
         } else {
-            sign = -gMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
+            sign = -ifMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
                 segm2.point.getX(), segm2.point.getY());
         }
 
@@ -1486,22 +1486,22 @@
                 segm2.point.getX(), segm2.point.getY(), segm2.basepoint.getX(), segm2.basepoint.getY(), sign);
         }
         if (bulge) {
-            arc = new GXVertexOffsetter.PolySegment(segm1.point2, bulge, segm2.basepoint,
-                gMath.ptDist(segm1.point2.getX(), segm1.point2.getY(), segm2.basepoint.getX(), segm2.basepoint.getY()));
+            arc = new IFVertexOffsetter.PolySegment(segm1.point2, bulge, segm2.basepoint,
+                ifMath.ptDist(segm1.point2.getX(), segm1.point2.getY(), segm2.basepoint.getX(), segm2.basepoint.getY()));
         } else {
-            arc = new GXVertexOffsetter.PolySegment(segm1.point2, 0);
+            arc = new IFVertexOffsetter.PolySegment(segm1.point2, 0);
         }
         return arc;
     };
 
-    GXVertexOffsetter.prototype._calculateBulge = function (p1x, p1y, p2x, p2y, cx, cy, exampBulge) {
-        var d1 = gMath.ptSqrDist(p1x, p1y, cx, cy);
-        var d2 = gMath.ptSqrDist(p2x, p2y, cx, cy);
+    IFVertexOffsetter.prototype._calculateBulge = function (p1x, p1y, p2x, p2y, cx, cy, exampBulge) {
+        var d1 = ifMath.ptSqrDist(p1x, p1y, cx, cy);
+        var d2 = ifMath.ptSqrDist(p2x, p2y, cx, cy);
         var bulge = 0;
-        if (gMath.isEqualEps(d1, d2, 0.00000001)) {
+        if (ifMath.isEqualEps(d1, d2, 0.00000001)) {
             // bulge = tg(alpha / 4): dividing 4 is necessary here, because angles > 180 degrees are possible
-            var a = gMath.ptSqrDist((p1x + p2x) / 2, (p1y + p2y) / 2, cx, cy);
-            if (gMath.isEqualEps(a, 0, 0.00000001)) {
+            var a = ifMath.ptSqrDist((p1x + p2x) / 2, (p1y + p2y) / 2, cx, cy);
+            if (ifMath.isEqualEps(a, 0, 0.00000001)) {
                 bulge = 1;
             } else {
                 var cos2alpha = Math.sqrt(a / d1);
@@ -1523,13 +1523,13 @@
 
     /**
      *
-     * @param {GXVertexOffsetter.PolySegmentContainer} [polyLn1]
-     * @param {GXVertexOffsetter.PolySegmentContainer} [polyLn2]
+     * @param {IFVertexOffsetter.PolySegmentContainer} [polyLn1]
+     * @param {IFVertexOffsetter.PolySegmentContainer} [polyLn2]
      * @param {Array} [intPts1]
      * @param {Array} [intPts2]
      * @private
      */
-    GXVertexOffsetter.prototype._calcIntersectionPoints = function (polyLn1, polyLn2, intPts1, intPts2) {
+    IFVertexOffsetter.prototype._calcIntersectionPoints = function (polyLn1, polyLn2, intPts1, intPts2) {
         var s1 = polyLn1.head;
         var s2;
         for (var i = 0; i < polyLn1.count - 1; ++i) {
@@ -1544,11 +1544,11 @@
 
     /**
      *
-     * @param {GXVertexOffsetter.PolySegmentContainer} [polyLn]
+     * @param {IFVertexOffsetter.PolySegmentContainer} [polyLn]
      * @param {Array} [intPts]
      * @private
      */
-    GXVertexOffsetter.prototype._calcSelfIntersectionPoints = function (polyLn, intPts) {
+    IFVertexOffsetter.prototype._calcSelfIntersectionPoints = function (polyLn, intPts) {
         var s1 = polyLn.head;
         var s2;
         for (var i = 0; i < polyLn.count - 2; ++i) {
@@ -1561,29 +1561,29 @@
         }
     };
 
-    GXVertexOffsetter.prototype._calcSegmIntersectionPoints = function (
+    IFVertexOffsetter.prototype._calcSegmIntersectionPoints = function (
             s1, s2, idx1, idx2, intPts1, intPts2, ignoreCommonEnd) {
         // TODO: fix this ugly tol usage
         var tol = 0.00001;
         if (!s1.bulge && !s2.bulge) {
             if (!ignoreCommonEnd) {
                 var res = [null, null];
-                var iPt = gMath.getIntersectionPoint(s1.point.getX(), s1.point.getY(),
+                var iPt = ifMath.getIntersectionPoint(s1.point.getX(), s1.point.getY(),
                     s1.next.point.getX(), s1.next.point.getY(), s2.point.getX(), s2.point.getY(),
                     s2.next.point.getX(), s2.next.point.getY(), res);
                 if (iPt && (0 + tol < res[0]) && (res[0] < 1 - tol) && (0 + tol< res[1]) && (res[1] < 1 - tol)) {
-                    intPts1.push(new GXVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[0], s1, idx1));
-                    intPts2.push(new GXVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[1], s2, idx2));
+                    intPts1.push(new IFVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[0], s1, idx1));
+                    intPts2.push(new IFVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[1], s2, idx2));
                 }
             }
         } else if (!s1.bulge && s2.bulge) {
             var res = [null, null];
             var dLx = s1.next.point.getX() - s1.point.getX();
             var dLy = s1.next.point.getY() - s1.point.getY();
-            gMath.circleLineIntersection(s1.point.getX(), s1.point.getY(), dLx, dLy,
+            ifMath.circleLineIntersection(s1.point.getX(), s1.point.getY(), dLx, dLy,
                 s2.center.getX(), s2.center.getY(), s2.radius, res);
 
-            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !gMath.isEqualEps(res[0], 1))) {
+            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[0], 1))) {
                 var x = s1.point.getX() + dLx * res[0];
                 var y = s1.point.getY() + dLy * res[0];
 
@@ -1591,12 +1591,12 @@
                     s2.center.getX(), s2.center.getY(), s2.bulge);
 
                 if (bulge < 0 && bulge >= s2.bulge || bulge > 0 && bulge <= s2.bulge) {
-                    intPts1.push(new GXVertexOffsetter.IntersectionPt(x, y, res[0], s1, idx1));
-                    intPts2.push(new GXVertexOffsetter.IntersectionPt(x, y, bulge, s2, idx2));
+                    intPts1.push(new IFVertexOffsetter.IntersectionPt(x, y, res[0], s1, idx1));
+                    intPts2.push(new IFVertexOffsetter.IntersectionPt(x, y, bulge, s2, idx2));
                 }
             }
 
-            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !gMath.isEqualEps(res[1], 1))) {
+            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[1], 1))) {
                 var x = s1.point.getX() + dLx * res[1];
                 var y = s1.point.getY() + dLy * res[1];
 
@@ -1604,48 +1604,48 @@
                 s2.center.getX(), s2.center.getY(), s2.bulge);
 
                 if (bulge < 0 && bulge >= s2.bulge || bulge > 0 && bulge <= s2.bulge) {
-                    intPts1.push(new GXVertexOffsetter.IntersectionPt(x, y, res[1], s1, idx1));
-                    intPts2.push(new GXVertexOffsetter.IntersectionPt(x, y, bulge, s2, idx2));
+                    intPts1.push(new IFVertexOffsetter.IntersectionPt(x, y, res[1], s1, idx1));
+                    intPts2.push(new IFVertexOffsetter.IntersectionPt(x, y, bulge, s2, idx2));
                 }
             }
         } else if (s1.bulge && !s2.bulge) {
             var res = [null, null];
             var dLx = s2.next.point.getX() - s2.point.getX();
             var dLy = s2.next.point.getY() - s2.point.getY();
-            gMath.circleLineIntersection(s2.point.getX(), s2.point.getY(), dLx, dLy,
+            ifMath.circleLineIntersection(s2.point.getX(), s2.point.getY(), dLx, dLy,
                 s1.center.getX(), s1.center.getY(), s1.radius, res);
 
-            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !gMath.isEqualEps(res[0], 0))) {
+            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[0], 0))) {
                 var x = s2.point.getX() + dLx * res[0];
                 var y = s2.point.getY() + dLy * res[0];
                 var bulge = this. _calculateBulge(s1.point.getX(), s1.point.getY(), x, y,
                     s1.center.getX(), s1.center.getY(), s1.bulge);
 
                 if (bulge < 0 && bulge >= s1.bulge || bulge > 0 && bulge <= s1.bulge) {
-                    intPts1.push(new GXVertexOffsetter.IntersectionPt(x, y, bulge, s1, idx1));
-                    intPts2.push(new GXVertexOffsetter.IntersectionPt(x, y, res[0], s2, idx2));
+                    intPts1.push(new IFVertexOffsetter.IntersectionPt(x, y, bulge, s1, idx1));
+                    intPts2.push(new IFVertexOffsetter.IntersectionPt(x, y, res[0], s2, idx2));
                 }
             }
 
-            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !gMath.isEqualEps(res[1], 0))) {
+            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[1], 0))) {
                 var x = s2.point.getX() + dLx * res[1];
                 var y = s2.point.getY() + dLy * res[1];
                 var bulge = this. _calculateBulge(s1.point.getX(), s1.point.getY(), x, y,
                     s1.center.getX(), s1.center.getY(), s1.bulge);
 
                 if (bulge < 0 && bulge >= s1.bulge || bulge > 0 && bulge <= s1.bulge) {
-                    intPts1.push(new GXVertexOffsetter.IntersectionPt(x, y, bulge, s1, idx1));
-                    intPts2.push(new GXVertexOffsetter.IntersectionPt(x, y, res[1], s2, idx2));
+                    intPts1.push(new IFVertexOffsetter.IntersectionPt(x, y, bulge, s1, idx1));
+                    intPts2.push(new IFVertexOffsetter.IntersectionPt(x, y, res[1], s2, idx2));
                 }
             }
         } else { // s1.bulge && s2.bulge
             var res = [null, null];
-            gMath.circleCircleIntersection(s1.center.getX(), s1.center.getY(), s1.radius,
+            ifMath.circleCircleIntersection(s1.center.getX(), s1.center.getY(), s1.radius,
                 s2.center.getX(), s2.center.getY(), s2.radius, res);
 
             if (res[0] && (!ignoreCommonEnd ||
-                    !gMath.isEqualEps(res[0].getX(), s2.point.getX()) &&
-                    !gMath.isEqualEps(res[0].getY(), s2.point.getY()))) {
+                    !ifMath.isEqualEps(res[0].getX(), s2.point.getX()) &&
+                    !ifMath.isEqualEps(res[0].getY(), s2.point.getY()))) {
 
                 var bulge01 = this. _calculateBulge(s1.point.getX(), s1.point.getY(),
                     res[0].getX(), res[0].getY(), s1.center.getX(), s1.center.getY(), s1.bulge);
@@ -1655,18 +1655,18 @@
                         res[0].getX(), res[0].getY(), s2.center.getX(), s2.center.getY(), s2.bulge);
 
                     if (bulge02 < 0 && bulge02 >= s2.bulge || bulge02 > 0 && bulge02 <= s2.bulge) {
-                        intPts1.push(new GXVertexOffsetter.IntersectionPt(res[0].getX(), res[0].getY(),
+                        intPts1.push(new IFVertexOffsetter.IntersectionPt(res[0].getX(), res[0].getY(),
                             bulge01, s1, idx1));
 
-                        intPts2.push(new GXVertexOffsetter.IntersectionPt(res[0].getX(), res[0].getY(),
+                        intPts2.push(new IFVertexOffsetter.IntersectionPt(res[0].getX(), res[0].getY(),
                             bulge02, s2, idx2));
                     }
                 }
             }
 
             if (res[1] && (!ignoreCommonEnd ||
-                    !gMath.isEqualEps(res[1].getX(), s2.point.getX()) &&
-                    !gMath.isEqualEps(res[1].getY(), s2.point.getY()))) {
+                    !ifMath.isEqualEps(res[1].getX(), s2.point.getX()) &&
+                    !ifMath.isEqualEps(res[1].getY(), s2.point.getY()))) {
 
                 var bulge11 = this. _calculateBulge(s1.point.getX(), s1.point.getY(),
                     res[1].getX(), res[1].getY(), s1.center.getX(), s1.center.getY(), s1.bulge);
@@ -1676,10 +1676,10 @@
                         res[1].getX(), res[1].getY(), s2.center.getX(), s2.center.getY(), s2.bulge);
 
                     if (bulge12 < 0 && bulge12 >= s2.bulge || bulge12 > 0 && bulge12 <= s2.bulge) {
-                        intPts1.push(new GXVertexOffsetter.IntersectionPt(res[1].getX(), res[1].getY(),
+                        intPts1.push(new IFVertexOffsetter.IntersectionPt(res[1].getX(), res[1].getY(),
                             bulge11, s1, idx1));
 
-                        intPts2.push(new GXVertexOffsetter.IntersectionPt(res[1].getX(), res[1].getY(),
+                        intPts2.push(new IFVertexOffsetter.IntersectionPt(res[1].getX(), res[1].getY(),
                             bulge12, s2, idx2));
                     }
                 }
@@ -1687,7 +1687,7 @@
         }
     };
 
-    GXVertexOffsetter.prototype._sortInsertsectionPoints = function (intPts) {
+    IFVertexOffsetter.prototype._sortInsertsectionPoints = function (intPts) {
         intPts.sort(function (p1, p2) {
             return (p1.segmIdx != p2.segmIdx ? p1.segmIdx - p2.segmIdx :
                 (p1.slope > 0) ? p1.slope - p2.slope : p2.slope - p1.slope);
@@ -1696,12 +1696,12 @@
 
     /**
      *
-     * @param {GXVertexOffsetter.PolySegmentContainer} polyLn
-     * @param {Array{GXVertexOffsetter.IntersectionPt}} intPts
+     * @param {IFVertexOffsetter.PolySegmentContainer} polyLn
+     * @param {Array{IFVertexOffsetter.IntersectionPt}} intPts
      * @param {Array} split
      * @private
      */
-    GXVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts, split) {
+    IFVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts, split) {
         // TODO: make accurate splitting, when intersection point is the segment end point
         var startSegm = polyLn.head;
         var startIdx = 0;
@@ -1709,41 +1709,41 @@
         var segmOrig = segm;
         var bulge;
         for (var i = 0; i < intPts.length; ++i) {
-            split[i] = new GXVertexOffsetter.PolySegmentContainer();
+            split[i] = new IFVertexOffsetter.PolySegmentContainer();
             for (var j = startIdx; j < intPts[i].segmIdx; ++j) {
-                split[i].insertSegment(new GXVertexOffsetter.PolySegment(
+                split[i].insertSegment(new IFVertexOffsetter.PolySegment(
                     segm.point, segm.bulge, segm.center, segm.radius));
 
                 segm = segmOrig.next;
                 segmOrig = segm;
             }
             if (!segm.bulge) {
-                split[i].insertSegment(new GXVertexOffsetter.PolySegment(segm.point, 0));
-                segm = new GXVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0);
+                split[i].insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
+                segm = new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0);
                 split[i].insertSegment(segm);
             } else {
                 if (segm == segmOrig) {
-                    split[i].insertSegment(new GXVertexOffsetter.PolySegment(
+                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(
                         segm.point, intPts[i].slope, segm.center, segm.radius));
                 } else {
                     // TODO: check formula here
                     bulge = (intPts[i].slope - intPts[i-1].slope) / (1 + intPts[i].slope * intPts[i-1].slope);
-                    split[i].insertSegment(new GXVertexOffsetter.PolySegment(
+                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(
                         segm.point, bulge, segm.center, segm.radius));
                 }
 
-                split[i].insertSegment(new GXVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0));
+                split[i].insertSegment(new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0));
 
                 // TODO: check formula here
                 bulge = (segmOrig.bulge - intPts[i].slope) / (1 + segmOrig.bulge * intPts[i].slope);
-                segm = new GXVertexOffsetter.PolySegment(
+                segm = new IFVertexOffsetter.PolySegment(
                     new GPoint(intPts[i].x, intPts[i].y), bulge, segm.center, segm.radius);
             }
             startIdx = j;
         }
-        split[i] = new GXVertexOffsetter.PolySegmentContainer();
+        split[i] = new IFVertexOffsetter.PolySegmentContainer();
         for (var j = startIdx; j < polyLn.count; ++j) {
-            split[i].insertSegment(new GXVertexOffsetter.PolySegment(
+            split[i].insertSegment(new IFVertexOffsetter.PolySegment(
                 segm.point, segm.bulge, segm.center, segm.radius));
 
             segm = segmOrig.next;
@@ -1751,55 +1751,55 @@
         }
     };
 
-    GXVertexOffsetter.prototype._excludeCircleInside = function (polyLn, intPts, intPtsMain, offset, resArray) {
+    IFVertexOffsetter.prototype._excludeCircleInside = function (polyLn, intPts, intPtsMain, offset, resArray) {
         // TODO: process cases, when several segments appears inside of the circle
         var segmIdx = 0;
-        var segm = new GXVertexOffsetter.PolySegment(polyLn.head.point, polyLn.head.bulge,
+        var segm = new IFVertexOffsetter.PolySegment(polyLn.head.point, polyLn.head.bulge,
             polyLn.head.center, polyLn.head.radius);
 
         var s = polyLn.head;
-        var tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+        var tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
         for (var i = 0; i < intPts.length; ++i) {
             for (var j = segmIdx; j < intPts[i].segmIdx - 1; ++j) {
                 tmpPoly.insertSegment(segm);
                 s = s.next;
-                segm = new GXVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius);
+                segm = new IFVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius);
             }
 
             if (!segm.bulge) {
                 var res = [null, null];
                 var dLx = s.next.point.getX() - segm.point.getX();
                 var dLy = s.next.point.getY() - segm.point.getY();
-                gMath.circleLineIntersection(segm.point.getX(), segm.point.getY(), dLx, dLy,
+                ifMath.circleLineIntersection(segm.point.getX(), segm.point.getY(), dLx, dLy,
                     intPtsMain[i].x, intPtsMain[i].y, offset, res);
 
                 if (res[0] != null) {
                     if (res[0] <= 0) {
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(segm.point, 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
                         resArray.push(tmpPoly);
                     } else if (res[0] > 0 && res[0] < 1) {
                         var x = segm.point.getX() + dLx * res[0];
                         var y = segm.point.getY() + dLy * res[0];
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(segm.point, 0));
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(new GPoint(x, y), 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(new GPoint(x, y), 0));
                         resArray.push(tmpPoly);
                     } else {
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(segm.point, 0));
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(s.next.point, 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(s.next.point, 0));
                         resArray.push(tmpPoly);
                     }
                 }
                 if (res[1] != null && res[1] > res[0] && res[1] < 1) {
-                    tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+                    tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
                     x = segm.point.getX() + dLx * res[1];
                     y = segm.point.getY() + dLy * res[1];
-                    segm = new GXVertexOffsetter.PolySegment(new GPoint(x, y), 0);
+                    segm = new IFVertexOffsetter.PolySegment(new GPoint(x, y), 0);
                 } else {
-                    tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+                    tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
                 }
             } else {
                 var res = [null, null];
-                gMath.circleCircleIntersection(s.center.getX(), s.center.getY(), s.radius,
+                ifMath.circleCircleIntersection(s.center.getX(), s.center.getY(), s.radius,
                     intPtsMain[i].x, intPtsMain[i].y, offset, res);
 
                 if (res[0] != null) {
@@ -1807,11 +1807,11 @@
                         res[0].getX(), res[0].getY(), s.center.getX(), s.center.getY(), segm.bulge);
 
                     if (bulge0 < 0 && bulge0 > segm.bulge || bulge0 > 0 && bulge0 < segm.bulge) {
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(segm.point, bulge0, s.center, s.radius));
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(res[0], 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(segm.point, bulge0, s.center, s.radius));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(res[0], 0));
                         resArray.push(tmpPoly);
                     } else {
-                        tmpPoly.insertSegment(new GXVertexOffsetter.PolySegment(segm.point, 0));
+                        tmpPoly.insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
                         resArray.push(tmpPoly);
                     }
                 }
@@ -1823,15 +1823,15 @@
                     if (bulge1 < 0 && bulge1 > segm.bulge && bulge1 < bulge0 ||
                             bulge1 > 0 && bulge1 < segm.bulge && bulge1 > bulge0) {
 
-                        tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+                        tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
                         // TODO: check formula here
                         var bulge = (segm.bulge - bulge1) / (1 + segm.bulge * bulge1);
-                        segm = new GXVertexOffsetter.PolySegment(new GPoint(x, y), bulge, s.center, s.radius);
+                        segm = new IFVertexOffsetter.PolySegment(new GPoint(x, y), bulge, s.center, s.radius);
                     } else {
-                        tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+                        tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
                     }
                 } else {
-                    tmpPoly = new GXVertexOffsetter.PolySegmentContainer();
+                    tmpPoly = new IFVertexOffsetter.PolySegmentContainer();
                 }
             }
             segmIdx = intPts[i].segmIdx;
@@ -1840,20 +1840,20 @@
             if (segm) {
                 tmpPoly.insertSegment(segm);
                 s = s.next;
-                segm = s ? new GXVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius) : null;
+                segm = s ? new IFVertexOffsetter.PolySegment(s.point, s.bulge, s.center, s.radius) : null;
             }
         }
     };
 
     /**
      *
-     * @param {Array{GXVertexOffsetter.PolySegmentContainer}} [polyLns]
-     * @param {GXVertexOffsetter.PolySegmentContainer} [basePolyLn]
+     * @param {Array{IFVertexOffsetter.PolySegmentContainer}} [polyLns]
+     * @param {IFVertexOffsetter.PolySegmentContainer} [basePolyLn]
      * @param {Number} offset
-     * @param {Array{GXVertexOffsetter.PolySegmentContainer}} [resPolyLns]
+     * @param {Array{IFVertexOffsetter.PolySegmentContainer}} [resPolyLns]
      * @private
      */
-    GXVertexOffsetter.prototype._gcppClipping = function (polyLns, basePolyLn, offset, resPolyLns) {
+    IFVertexOffsetter.prototype._gcppClipping = function (polyLns, basePolyLn, offset, resPolyLns) {
         var poln;
         for (var i = 0; i < polyLns.length; ++i) {
             poln = polyLns[i];
@@ -1872,16 +1872,16 @@
         }
     };
 
-    GXVertexOffsetter.prototype._genCurves = function (polyLns, outset, tolerance) {
+    IFVertexOffsetter.prototype._genCurves = function (polyLns, outset, tolerance) {
         var poln;
         for (var i = 0; i < polyLns.length; ++i) {
             poln = polyLns[i];
             var segm = poln.head;
-            var part = new GXVertexContainer();
-            part.addVertex(GXVertex.Command.Move, segm.point.getX(), segm.point.getY());
+            var part = new IFVertexContainer();
+            part.addVertex(IFVertex.Command.Move, segm.point.getX(), segm.point.getY());
             for (var j = 0; j < poln.count - 1; ++j) {
                 if (!segm.bulge) {
-                    part.addVertex(GXVertex.Command.Line, segm.next.point.getX(), segm.next.point.getY());
+                    part.addVertex(IFVertex.Command.Line, segm.next.point.getX(), segm.next.point.getY());
                 } else {
                     // Construct Bezier curves
                     this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center, segm.radius, tolerance, part);
@@ -1892,7 +1892,7 @@
         }
     };
 
-    GXVertexOffsetter.prototype._genBeziers = function (
+    IFVertexOffsetter.prototype._genBeziers = function (
             p1, p2, bulge, cntr, radius, tolerance, target) {
 
         // Drawing an elliptical arc using polylines, quadratic or cubic Bezier curves
@@ -1944,13 +1944,13 @@
             x2 = x3 + k * sinPhi2;
             y2 = y3 - k * cosPhi2;
 
-            target.addVertex(GXVertex.Command.Curve2, x3, y3);
-            target.addVertex(GXVertex.Command.Curve2, x1, y1);
-            target.addVertex(GXVertex.Command.Curve2, x2, y2);
+            target.addVertex(IFVertex.Command.Curve2, x3, y3);
+            target.addVertex(IFVertex.Command.Curve2, x1, y1);
+            target.addVertex(IFVertex.Command.Curve2, x2, y2);
         }
     };
 
-    GXVertexOffsetter.prototype._getCubicBezierArcError = function (alpha, radius) {
+    IFVertexOffsetter.prototype._getCubicBezierArcError = function (alpha, radius) {
         var k = 5.15347174 * radius;
         var cosAlpha = Math.cos(alpha);
         var cosAlphaSqr = cosAlpha * cosAlpha;
@@ -1961,7 +1961,7 @@
         return k * Math.exp(c0 + c1 * alpha);
     };
 
-    GXVertexOffsetter.prototype._rewindVertices = function (outset) {
+    IFVertexOffsetter.prototype._rewindVertices = function (outset) {
         var polyLns = outset ? this._outset : this._inset;
 
         for (var i = 0; i < polyLns.length; ++i) {
@@ -1969,7 +1969,7 @@
         }
     };
 
-    GXVertexOffsetter.prototype._readVertex = function (vertex, outset) {
+    IFVertexOffsetter.prototype._readVertex = function (vertex, outset) {
         if (outset) {
             if (this._outset[this._outsetIdx] && this._outset[this._outsetIdx].readVertex(vertex)) {
                 return true;
@@ -1988,9 +1988,9 @@
     };
 
     /** @override */
-    GXVertexOffsetter.prototype.toString = function () {
-        return "[Object GXVertexOffsetter]";
+    IFVertexOffsetter.prototype.toString = function () {
+        return "[Object IFVertexOffsetter]";
     };
 
-    _.GXVertexOffsetter = GXVertexOffsetter;
+    _.IFVertexOffsetter = IFVertexOffsetter;
 })(this);

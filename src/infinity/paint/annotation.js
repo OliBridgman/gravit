@@ -1,18 +1,18 @@
 (function (_) {
 
     /**
-     * @class GAnnotation
+     * @class IFAnnotation
      * @constructor
      * @version 1.0
      */
-    function GAnnotation() {
+    function IFAnnotation() {
     };
 
     /**
      * Type of an annotation
      * @enum
      */
-    GAnnotation.prototype.AnnotType = {
+    IFAnnotation.prototype.AnnotType = {
         Rectangle: 0,
         Circle: 1,
         Diamond: 2
@@ -22,15 +22,15 @@
 
     /**
      * Paint an annotation
-     * @param {GXPaintContext} context the paint context to paint on
+     * @param {IFPaintContext} context the paint context to paint on
      * @param {GTransform} transform the current transformation in use
      * @param {GPoint} center the center point of the annotation
-     * @param {GAnnotation.AnnotType} annotation the annotation to be painted
+     * @param {IFAnnotation.AnnotType} annotation the annotation to be painted
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
      * @param {Number} [size] annotation size
      */
-    GAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size) {
+    IFAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size) {
         var annotationTemplate = this._getAnnotationTemplate(annotation);
 
         // Now paint our annotation
@@ -51,9 +51,9 @@
         var sy = size / 2 / annotationTemplate.scaleFactor;
         var canvas = context.canvas;
 
-        var vertices = new GXVertexTransformer(annotationTemplate.vertices, new GTransform(sx, 0, 0, sy, cx, cy));
+        var vertices = new IFVertexTransformer(annotationTemplate.vertices, new GTransform(sx, 0, 0, sy, cx, cy));
         //if (annotation != this.AnnotType.Circle) {
-        //    vertices = new GXVertexPixelAligner(vertices);
+        //    vertices = new IFVertexPixelAligner(vertices);
         //}
         canvas.putVertices(vertices);
         canvas.fillVertices(fillColor);
@@ -70,7 +70,7 @@
      * @param {GPoint} center the center point of the annotation
      * @param {Number} [size] the size of an anotation
      */
-    GAnnotation.prototype.getAnnotationBBox = function (transform, center, size) {
+    IFAnnotation.prototype.getAnnotationBBox = function (transform, center, size) {
         if (transform) {
             center = transform.mapPoint(center);
         }
@@ -81,40 +81,40 @@
         return new GRect(cx - size / 2 - 1, cy - size / 2 - 1, size + 2, size + 2);
     };
 
-    GAnnotation.prototype._getAnnotationTemplate = function (annotation) {
+    IFAnnotation.prototype._getAnnotationTemplate = function (annotation) {
         // Prepare vertex cache, first
         var annotationTemplate = _annotationTemplates[annotation];
         if (!annotationTemplate) {
-            var vertices = new GXVertexContainer();
+            var vertices = new IFVertexContainer();
             var scaleFactor = 1;
 
             switch (annotation) {
                 case this.AnnotType.Rectangle:
-                    vertices.addVertex(GXVertex.Command.Move, -1, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, 1);
-                    vertices.addVertex(GXVertex.Command.Line, -1, 1);
-                    vertices.addVertex(GXVertex.Command.Close);
+                    vertices.addVertex(IFVertex.Command.Move, -1, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, 1);
+                    vertices.addVertex(IFVertex.Command.Line, -1, 1);
+                    vertices.addVertex(IFVertex.Command.Close);
                     break;
 
                 case this.AnnotType.Circle:
-                    vertices.addVertex(GXVertex.Command.Move, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, 0, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, -1);
-                    vertices.addVertex(GXVertex.Command.Curve, 0, 1);
-                    vertices.addVertex(GXVertex.Command.Curve, 1, 1);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Curve, -1, 1);
+                    vertices.addVertex(IFVertex.Command.Move, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, 0, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, -1);
+                    vertices.addVertex(IFVertex.Command.Curve, 0, 1);
+                    vertices.addVertex(IFVertex.Command.Curve, 1, 1);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Curve, -1, 1);
                     break;
 
                 case this.AnnotType.Diamond:
-                    vertices.addVertex(GXVertex.Command.Move, -1, 0);
-                    vertices.addVertex(GXVertex.Command.Line, 0, -1);
-                    vertices.addVertex(GXVertex.Command.Line, 1, 0);
-                    vertices.addVertex(GXVertex.Command.Line, 0, 1);
-                    vertices.addVertex(GXVertex.Command.Close);
+                    vertices.addVertex(IFVertex.Command.Move, -1, 0);
+                    vertices.addVertex(IFVertex.Command.Line, 0, -1);
+                    vertices.addVertex(IFVertex.Command.Line, 1, 0);
+                    vertices.addVertex(IFVertex.Command.Line, 0, 1);
+                    vertices.addVertex(IFVertex.Command.Close);
                     scaleFactor = Math.cos(Math.PI / 4);
                     break;
             }
@@ -128,5 +128,5 @@
         return annotationTemplate;
     };
 
-    _.gAnnotation = new GAnnotation();
+    _.ifAnnotation = new IFAnnotation();
 })(this);

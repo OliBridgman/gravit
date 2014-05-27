@@ -2,21 +2,21 @@
 
     /**
      * A vertex class
-     * @class GXVertex
+     * @class IFVertex
      * @constructor
      * @version 1.0
      */
-    function GXVertex() {
+    function IFVertex() {
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertex.Command
+    // IFVertex.Command
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A list of vertex commands
-     * @see GXVertex.verticeCount
+     * @see IFVertex.verticeCount
      */
-    GXVertex.Command = {
+    IFVertex.Command = {
         /**
          * A move command
          * Vertices: [x,y=point]
@@ -54,26 +54,26 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXVertex Class
+    // IFVertex Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The command of the vertex
      * @type {Number}
      */
-    GXVertex.prototype.command = null;
+    IFVertex.prototype.command = null;
 
     /**
      * The x-coordinate of the vertex
      * @type {Number}
      */
-    GXVertex.prototype.x = null;
+    IFVertex.prototype.x = null;
 
     /**
      * The y-coordinate of the vertex
      * @type {Number}
      */
-    GXVertex.prototype.y = null;
+    IFVertex.prototype.y = null;
 
-    _.GXVertex = GXVertex;
+    _.IFVertex = IFVertex;
 })(this);

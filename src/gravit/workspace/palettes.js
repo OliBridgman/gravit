@@ -229,7 +229,7 @@
          var groupWithItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
          menu.addItem(groupWithItem);
          // TODO : I18N
-         groupWithItem.setCaption('Group ' + gLocale.get(palette.getTitle()) + ' with');
+         groupWithItem.setCaption('Group ' + ifLocale.get(palette.getTitle()) + ' with');
          groupWithItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
          // Clear all sub-items and re-add possible palettes to group with
          });
@@ -281,7 +281,7 @@
         this._palettesInfo.push(paletteInfo);
 
         // Add update listener to palette
-        palette.addEventListener(EXPalette.UpdateEvent, function () {
+        palette.addEventListener(GPalette.UpdateEvent, function () {
             this.setPaletteEnabled(palette.getId(), palette.isEnabled());
             // TODO : Update title, shortcut, etc.
         }.bind(this));
@@ -324,7 +324,7 @@
             // Add Tab & Panel
             tabsContainer.append($('<button></button>')
                 .attr('data-palette-id', paletteInfo.palette.getId())
-                .text(gLocale.get(paletteInfo.palette.getTitle()))
+                .text(ifLocale.get(paletteInfo.palette.getTitle()))
                 .on('click', function () {
                     // If palette already is active, change collapse state instead
                     if (this.isPaletteActive(paletteInfo.palette.getId())) {

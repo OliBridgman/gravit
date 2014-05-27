@@ -1,50 +1,50 @@
 (function (_) {
     /**
      * A layer within a scene view
-     * @param {GXView} view
-     * @class GXViewLayer
+     * @param {IFView} view
+     * @class IFViewLayer
      * @constructor
      */
-    function GXViewLayer(view) {
+    function IFViewLayer(view) {
         this._view = view;
-        this._canvas = new GXPaintCanvas();
-        this._paintContext = new GXPaintContext();
+        this._canvas = new IFPaintCanvas();
+        this._paintContext = new IFPaintContext();
         this._paintContext.configuration = view.getViewConfiguration() ?
-            view.getViewConfiguration() : new GXPaintConfiguration();
+            view.getViewConfiguration() : new IFPaintConfiguration();
         this._paintContext.canvas = this._canvas;
-        this._dirtyList = new GXDirtyList();
+        this._dirtyList = new IFDirtyList();
     }
 
     /**
-     * @type {GXView}
+     * @type {IFView}
      * @private
      */
-    GXViewLayer.prototype._view = null;
+    IFViewLayer.prototype._view = null;
 
     /**
-     * @type {GXPaintCanvas}
+     * @type {IFPaintCanvas}
      * @private
      */
-    GXViewLayer.prototype._canvas = null;
+    IFViewLayer.prototype._canvas = null;
 
     /**
-     * @type {GXPaintContext}
+     * @type {IFPaintContext}
      * @private
      */
-    GXViewLayer.prototype._paintContext = null;
+    IFViewLayer.prototype._paintContext = null;
 
     /**
-     * @type GXDirtyList
+     * @type IFDirtyList
      * @private
      */
-    GXViewLayer.prototype._dirtyList = null;
+    IFViewLayer.prototype._dirtyList = null;
 
     /**
      * Id of next frame for repainting
      * @type {Number}
      * @private
      */
-    GXViewLayer.prototype._repaintRequestFrameId = null;
+    IFViewLayer.prototype._repaintRequestFrameId = null;
 
     /**
      * Called to invalidate this paint widget or only a part of it
@@ -53,7 +53,7 @@
      * @return {Boolean} true if an invalidation ocurred, false if not
      * @version 1.0
      */
-    GXViewLayer.prototype.invalidate = function (area) {
+    IFViewLayer.prototype.invalidate = function (area) {
         if (!area || area.isEmpty()) {
             // reset any previous dirty areas and add the whole view area
             this._dirtyList.reset();
@@ -76,10 +76,10 @@
      * Called whenever this widget should paint itself. Note that the canvas'
      * prepare / finish methods are automatically called and the clipping
      * region of the canvas is already set correctly.
-     * @param {GXPaintContext} context the paint context to paint into
+     * @param {IFPaintContext} context the paint context to paint into
      * @private
      */
-    GXViewLayer.prototype.paint = function (context) {
+    IFViewLayer.prototype.paint = function (context) {
         // NO-OP by default
     };
 
@@ -88,7 +88,7 @@
      * @param {Number} width
      * @param {Number} height
      */
-    GXViewLayer.prototype.resize = function (width, height) {
+    IFViewLayer.prototype.resize = function (width, height) {
         this._canvas.resize(width, height);
         this.updateViewArea();
     };
@@ -96,7 +96,7 @@
     /**
      * Called to update the view area
      */
-    GXViewLayer.prototype.updateViewArea = function () {
+    IFViewLayer.prototype.updateViewArea = function () {
         var viewArea = this._view.getViewBox(true);
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
@@ -108,7 +108,7 @@
      * Called to repaint all dirty regions
      * @private
      */
-    GXViewLayer.prototype._repaint = function () {
+    IFViewLayer.prototype._repaint = function () {
         // Get and flush existing dirty areas
         var dirtyListMatcher = this._dirtyList.flush();
         if (dirtyListMatcher != null) {
@@ -132,9 +132,9 @@
     };
 
     /** @override */
-    GXViewLayer.prototype.toString = function () {
-        return "[Object GXViewLayer]";
+    IFViewLayer.prototype.toString = function () {
+        return "[Object IFViewLayer]";
     };
 
-    _.GXViewLayer = GXViewLayer;
+    _.IFViewLayer = IFViewLayer;
 })(this);

@@ -1,42 +1,42 @@
 (function (_) {
     /**
      * A scene covers all graphical resources
-     * @class GXScene
-     * @extends GXElement
-     * @mixes GXNode.Container
-     * @mixes GXNode.Properties
-     * @mixes GXNode.Store
+     * @class IFScene
+     * @extends IFElement
+     * @mixes IFNode.Container
+     * @mixes IFNode.Properties
+     * @mixes IFNode.Store
      * @mixes GEventTarget
      * @constructor
      */
-    function GXScene() {
-        GXElement.call(this);
+    function IFScene() {
+        IFElement.call(this);
         this._scene = this;
-        this._setDefaultProperties(GXScene.MetaProperties);
+        this._setDefaultProperties(IFScene.MetaProperties);
     }
 
-    GXNode.inheritAndMix("scene", GXScene, GXElement, [GXNode.Container, GXNode.Properties, GXNode.Store, GEventTarget]);
+    IFNode.inheritAndMix("scene", IFScene, IFElement, [IFNode.Container, IFNode.Properties, IFNode.Store, GEventTarget]);
 
     /**
      * The padding between pages
      * @type {number}
      */
-    GXScene.PAGE_SPACING = 10;
+    IFScene.PAGE_SPACING = 10;
 
     /**
      * The current version of scenes
      * @type {Number}
      */
-    GXScene.VERSION = 1;
+    IFScene.VERSION = 1;
 
     /**
      * The meta properties of a scene and their defaults
      */
-    GXScene.MetaProperties = {
+    IFScene.MetaProperties = {
         /** Version of the scene */
-        version: GXScene.VERSION,
+        version: IFScene.VERSION,
         /** The unit used externally */
-        unit: GXLength.Unit.PT,
+        unit: IFLength.Unit.PT,
         /** The snap distance */
         snapDist: 3,
         /** The pick distance */
@@ -55,45 +55,45 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXScene.InvalidationRequestEvent Event
+    // IFScene.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for an invalidation request event
      * @param {GRect} [area] a repaint area, defaults to null means to repaint all
-     * @class GXScene.InvalidationRequestEvent
+     * @class IFScene.InvalidationRequestEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GXScene.InvalidationRequestEvent = function (area) {
+    IFScene.InvalidationRequestEvent = function (area) {
         this.area = area ? area : null;
     };
-    GObject.inherit(GXScene.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFScene.InvalidationRequestEvent, GEvent);
 
     /** @type GRect */
-    GXScene.InvalidationRequestEvent.prototype.area = null;
+    IFScene.InvalidationRequestEvent.prototype.area = null;
 
     /** @override */
-    GXScene.InvalidationRequestEvent.prototype.toString = function () {
-        return "[Event GXScene.InvalidationRequestEvent]";
+    IFScene.InvalidationRequestEvent.prototype.toString = function () {
+        return "[Event IFScene.InvalidationRequestEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXScene Class
+    // IFScene Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
-    GXScene.prototype.store = function (blob) {
-        if (GXNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXScene.MetaProperties);
+    IFScene.prototype.store = function (blob) {
+        if (IFNode.Store.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFScene.MetaProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXScene.prototype.restore = function (blob) {
-        if (GXNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXScene.MetaProperties);
+    IFScene.prototype.restore = function (blob) {
+        if (IFNode.Store.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFScene.MetaProperties);
             return true;
         }
         return false;
@@ -102,12 +102,11 @@
     /**
      * Converts a string into a length with the document's unit.
      * @param {string} string a number, a length or an equation
-     * @returns {GXLength} a length in document units or null
+     * @returns {IFLength} a length in document units or null
      * if string couldn't be parsed
      */
-    GXScene.prototype.stringToLength = function (string) {
-        string = gUtil.replaceAll(string, ',', '.');
-        return GXLength.parseEquation(string, this.$unit);
+    IFScene.prototype.stringToLength = function (string) {
+        return IFLength.parseEquation(string, this.$unit);
     };
 
     /**
@@ -116,7 +115,7 @@
      * @returns {Number} a length in points or null
      * if string couldn't be parsed
      */
-    GXScene.prototype.stringToPoint = function (string) {
+    IFScene.prototype.stringToPoint = function (string) {
         var length = this.stringToLength(string);
         if (length) {
             return length.toPoint();
@@ -126,13 +125,11 @@
 
     /**
      * Converts a length into a string with the document's unit.
-     * @param {GXLength} length the length to convert
+     * @param {IFLength} length the length to convert
      * @returns {string} the resulting string without unit postfix
      */
-    GXScene.prototype.lengthToString = function (length) {
-        var value = length.toUnit(this.$unit);
-        var string = gMath.round(value, 3).toString();
-        return gUtil.replaceAll(string, '.', ',');
+    IFScene.prototype.lengthToString = function (length) {
+        return gUtil.formatNumber(length.toUnit(this.$unit));
     };
 
     /**
@@ -140,8 +137,8 @@
      * @param {Number} value the value in points to convert
      * @returns {string} the resulting string without unit postfix
      */
-    GXScene.prototype.pointToString = function (value) {
-        return this.lengthToString(new GXLength(value));
+    IFScene.prototype.pointToString = function (value) {
+        return this.lengthToString(new IFLength(value));
     };
 
     /**
@@ -152,14 +149,14 @@
      * @param {Boolean} inside if true, matches need to be fully
      * enclosed by the rect to be returned, otherwise it is enough
      * when they're intersecting with rect. Defaults to false.
-     * @return {Array<GXElement>} an array of elements that are part
+     * @return {Array<IFElement>} an array of elements that are part
      * of a given rectangle in their natural order. May return an empty array.
      */
-    GXScene.prototype.getElementsByBBox = function (rect, inside) {
+    IFScene.prototype.getElementsByBBox = function (rect, inside) {
         // TODO: Optimize this by using spatial map
         var result = [];
         this.acceptChildren(function (node) {
-                if (node instanceof GXElement) {
+                if (node instanceof IFElement) {
                     var paintBBox = node.getPaintBBox();
 
                     if (paintBBox && !paintBBox.isEmpty()) {
@@ -178,12 +175,12 @@
      * Returns a point for a new page to be inserted
      * @returns {GPoint}
      */
-    GXScene.prototype.getPageInsertPosition = function () {
+    IFScene.prototype.getPageInsertPosition = function () {
         // TODO : Figure better way to avoid any potential intersection of the page with others
         for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
-            if (child instanceof GXPage) {
+            if (child instanceof IFPage) {
                 return new GPoint(
-                    child.getProperty('x') + child.getProperty('w') + GXScene.PAGE_SPACING,
+                    child.getProperty('x') + child.getProperty('w') + IFScene.PAGE_SPACING,
                     child.getProperty('y')
                 );
             }
@@ -194,13 +191,13 @@
     /**
      * Checks and returns wether a given page will intersect with
      * any other page(s) with a given pageRect
-     * @param {GXPage} page the page to test for intersection w/ others
+     * @param {IFPage} page the page to test for intersection w/ others
      * @param {GRect} pageRect the new page rect to test for intersection w/ others
      */
-    GXScene.prototype.willPageIntersectWithOthers = function (page, pageRect) {
-        pageRect = pageRect.expanded(GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING, GXScene.PAGE_SPACING);
+    IFScene.prototype.willPageIntersectWithOthers = function (page, pageRect) {
+        pageRect = pageRect.expanded(IFScene.PAGE_SPACING, IFScene.PAGE_SPACING, IFScene.PAGE_SPACING, IFScene.PAGE_SPACING);
         for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
-            if (child instanceof GXPage && child !== page) {
+            if (child instanceof IFPage && child !== page) {
                 var currentPageRect = child.getGeometryBBox();
                 if (currentPageRect && currentPageRect.intersectsRect(pageRect)) {
                     return true;
@@ -215,23 +212,23 @@
      * @param {GRect} [area] optional dirty area, if null marks the whole scene as being dirty
      * @private
      */
-    GXScene.prototype._invalidateArea = function (area) {
-        if (this.hasEventListeners(GXScene.InvalidationRequestEvent)) {
-            this.trigger(new GXScene.InvalidationRequestEvent(area));
+    IFScene.prototype._invalidateArea = function (area) {
+        if (this.hasEventListeners(IFScene.InvalidationRequestEvent)) {
+            this.trigger(new IFScene.InvalidationRequestEvent(area));
         }
     };
 
     /** @override */
-    GXScene.prototype._handleChange = function (change, args) {
+    IFScene.prototype._handleChange = function (change, args) {
         // Handle some properties that require an invalidation of the scene
-        if (change == GXNode._Change.AfterPropertiesChange) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
             if (args.properties.indexOf('unit') >= 0) {
                 this._invalidateArea();
             }
         }
 
-        GXElement.prototype._handleChange.call(this, change, args);
+        IFElement.prototype._handleChange.call(this, change, args);
     };
 
-    _.GXScene = GXScene;
+    _.IFScene = IFScene;
 })(this);

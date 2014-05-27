@@ -11,7 +11,7 @@
         this._setDefaultProperties(IFStrokeAttribute.GeometryProperties);
     }
 
-    GXNode.inherit("strokeAttr", IFStrokeAttribute, IFPatternAttribute);
+    IFNode.inherit("strokeAttr", IFStrokeAttribute, IFPatternAttribute);
 
     /**
      * Alignment of a stroke
@@ -43,9 +43,9 @@
         // Stroke alignment
         sa: IFStrokeAttribute.Alignment.Center,
         // Stroke Line-Caption
-        slc: GXPaintCanvas.LineCap.Square,
+        slc: IFPaintCanvas.LineCap.Square,
         // Stroke Line-Join
-        slj: GXPaintCanvas.LineJoin.Miter,
+        slj: IFPaintCanvas.LineJoin.Miter,
         // Stroke Line-Miter-Limit
         slm: 10
     };
@@ -68,7 +68,7 @@
 
                         // Clip our contents and swap canvas back
                         context.canvas.fillVertices(gColor.build(0, 0, 0), 1,
-                            this.$sa === IFStrokeAttribute.Alignment.Inside ? GXPaintCanvas.CompositeOperator.DestinationIn : GXPaintCanvas.CompositeOperator.DestinationOut);
+                            this.$sa === IFStrokeAttribute.Alignment.Inside ? IFPaintCanvas.CompositeOperator.DestinationIn : IFPaintCanvas.CompositeOperator.DestinationOut);
                         oldCanvas.drawCanvas(context.canvas);
                     } finally {
                         context.canvas = oldCanvas;
@@ -84,8 +84,8 @@
     /** @override */
     IFStrokeAttribute.prototype.hitTest = function (source, location, transform, tolerance) {
         var outlineWidth = this.$sw * transform.getScaleFactor() + tolerance * 2;
-        var vertexHit = new GXVertexInfo.HitResult();
-        if (gVertexInfo.hitTest(location.getX(), location.getY(), new GXVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
+        var vertexHit = new IFVertexInfo.HitResult();
+        if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
             return new IFAttribute.HitResult(this, vertexHit);
         }
         return null;

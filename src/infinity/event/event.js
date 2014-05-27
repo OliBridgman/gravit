@@ -2,14 +2,14 @@
     /**
      * An object representing an event.
      * @class GEvent
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      * @version 1.0
      */
     function GEvent() {
     }
 
-    GObject.inherit(GEvent, GObject);
+    IFObject.inherit(GEvent, IFObject);
 
     /** @private */
     GEvent.prototype._paramsToString = function () {

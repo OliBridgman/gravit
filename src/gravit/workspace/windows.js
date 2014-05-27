@@ -1,37 +1,37 @@
 (function (_) {
     /**
      * The global window container class
-     * @class EXWindows
+     * @class GWindows
      * @extends GEventTarget
      * @constructor
      */
-    function EXWindows(htmlElement) {
+    function GWindows(htmlElement) {
         this._htmlElement = htmlElement;
         this._windows = [];
     };
-    GObject.inherit(EXWindows, GEventTarget);
+    IFObject.inherit(GWindows, GEventTarget);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXWindows.WindowEvent Event
+    // GWindows.WindowEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever a window event occurrs
-     * @class EXWindows.WindowEvent
+     * @class GWindows.WindowEvent
      * @extends GEvent
      * @constructor
      */
-    EXWindows.WindowEvent = function (type, window) {
+    GWindows.WindowEvent = function (type, window) {
         this.type = type;
         this.window = window;
     };
-    GObject.inherit(EXWindows.WindowEvent, GEvent);
+    IFObject.inherit(GWindows.WindowEvent, GEvent);
 
     /**
      * Enumeration of window event types
      * @enum
      */
-    EXWindows.WindowEvent.Type = {
+    GWindows.WindowEvent.Type = {
         Added: 0,
         Removed: 1,
         Deactivated: 10,
@@ -39,74 +39,77 @@
     };
 
     /**
-     * @type {EXWindows.WindowEvent.Type}
+     * @type {GWindows.WindowEvent.Type}
      */
-    EXWindows.WindowEvent.prototype.type = null;
+    GWindows.WindowEvent.prototype.type = null;
 
     /**
      * The affected window
-     * @type {EXWindow}
+     * @type {GWindow}
      */
-    EXWindows.WindowEvent.prototype.window = null;
+    GWindows.WindowEvent.prototype.window = null;
 
     /** @override */
-    EXWindows.WindowEvent.prototype.toString = function () {
-        return "[Object EXWindows.WindowEvent]";
+    GWindows.WindowEvent.prototype.toString = function () {
+        return "[Object GWindows.WindowEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // EXWindows Class
+    // GWindows Class
     // -----------------------------------------------------------------------------------------------------------------      
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXWindows.prototype._htmlElement = null;
+    GWindows.prototype._htmlElement = null;
 
     /**
-     * @type {Array<EXWindow>}
+     * @type {Array<GWindow>}
      * @private
      */
-    EXWindows.prototype._windows = null;
+    GWindows.prototype._windows = null;
 
     /**
-     * @type {EXWindow}
+     * @type {GWindow}
      * @private
      */
-    EXWindows.prototype._activeWindow = null;
+    GWindows.prototype._activeWindow = null;
 
     /**
      * @type {Array<Number>}
      * @private
      */
-    EXWindows.prototype._viewOffset = null;
+    GWindows.prototype._viewOffset = null;
 
     /**
      * Returns a list of all opened windows
-     * @return {Array<EXWindow>}
+     * @return {Array<GWindow>}
      */
-    EXWindows.prototype.getWindows = function () {
+    GWindows.prototype.getWindows = function () {
         return this._windows;
     };
 
     /**
      * Returns the currently active window
-     * @return {EXWindow}
+     * @return {GWindow}
      */
-    EXWindows.prototype.getActiveWindow = function () {
+    GWindows.prototype.getActiveWindow = function () {
         return this._activeWindow;
     };
 
     /**
      * Mark a given window as being the active one
-     * @param {EXWindow} window may be null to only deactivate the current one
+     * @param {GWindow} window may be null to only deactivate the current one
      */
-    EXWindows.prototype.activateWindow = function (window) {
+    GWindows.prototype.activateWindow = function (window) {
         if (window != this._activeWindow) {
 
             // If we have an active window, clear that one out, first
             if (this._activeWindow) {
+                // Notify the window
+                this._activeWindow.deactivate();
+
                 // Mark deactivated on document
                 this._activeWindow.getDocument()._activeWindow = null;
 
@@ -125,12 +128,15 @@
             this._activeWindow = window;
 
             // Send deactivation event after document change if we had an active window
-            if (this._activeWindow && this.hasEventListeners(EXWindows.WindowEvent)) {
-                this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Deactivated, previousActiveWindow));
+            if (this._activeWindow && this.hasEventListeners(GWindows.WindowEvent)) {
+                this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Deactivated, previousActiveWindow));
             }
 
             // Activate the new window if we have any
             if (window) {
+                // Notify the window
+                this._activeWindow.activate();
+
                 // Mark as active on document
                 window.getDocument()._activeWindow = window;
 
@@ -140,8 +146,8 @@
                 window.getView().focus();
 
                 // Send out an event
-                if (this.hasEventListeners(EXWindows.WindowEvent)) {
-                    this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Activated, window));
+                if (this.hasEventListeners(GWindows.WindowEvent)) {
+                    this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Activated, window));
                 }
             }
         }
@@ -149,17 +155,17 @@
 
     /**
      * Add a new window for a given document
-     * @param {EXDocument|EXWindow} source the source to add a window from
+     * @param {GDocument|GWindow} source the source to add a window from
      * which can either be a document or a window. If it is a window, the
      * newly added window will be an exact clone of the source
-     * @return {EXWindow}
+     * @return {GWindow}
      */
-    EXWindows.prototype.addWindow = function (source) {
-        var document = source instanceof EXWindow ? source.getDocument() : source;
+    GWindows.prototype.addWindow = function (source) {
+        var document = source instanceof GWindow ? source.getDocument() : source;
         var window = this._addWindow(document);
 
         // If we have a source, copy it's settings
-        if (source instanceof EXWindow) {
+        if (source instanceof GWindow) {
             var sourceView = source.getView();
             // TODO : Serialize/deserialize window settings instead
             window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom(), sourceView.getOrientation());
@@ -172,9 +178,9 @@
      * Closes and removes a window. If the window to be closed
      * is the last window available for a document, then the
      * document will be closed as well
-     * @param {EXWindow} window
+     * @param {GWindow} window
      */
-    EXWindows.prototype.closeWindow = function (window) {
+    GWindows.prototype.closeWindow = function (window) {
         var document = window.getDocument();
 
         // If window is the active one, try to activate a previous one, first
@@ -200,8 +206,8 @@
         window._container.remove();
 
         // Send out an event
-        if (this.hasEventListeners(EXWindows.WindowEvent)) {
-            this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Removed, window));
+        if (this.hasEventListeners(GWindows.WindowEvent)) {
+            this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Removed, window));
         }
 
         // If this was the only window for the document left,
@@ -214,14 +220,14 @@
     /**
      * Called from the workspace to initialize
      */
-    EXWindows.prototype.init = function () {
+    GWindows.prototype.init = function () {
         // TODO
     };
 
     /**
      * Called from the workspace to relayout
      */
-    EXWindows.prototype.relayout = function (viewOffset) {
+    GWindows.prototype.relayout = function (viewOffset) {
         this._viewOffset = viewOffset;
         if (this._activeWindow) {
             this._relayoutWindow(this._activeWindow);
@@ -230,10 +236,10 @@
 
     /**
      * Relayouts a given window to the current settings
-     * @param {EXWindow} window
+     * @param {GWindow} window
      * @private
      */
-    EXWindows.prototype._relayoutWindow = function (window) {
+    GWindows.prototype._relayoutWindow = function (window) {
         // TODO : Take care on ruler spacing
         var myWidth = this._htmlElement.width();
         var myHeight = this._htmlElement.height();
@@ -245,20 +251,20 @@
 
     /**
      * Internal adding of a new window
-     * @param {EXDocument} document
-     * @returns {EXWindow}
+     * @param {GDocument} document
+     * @returns {GWindow}
      * @private
      */
-    EXWindows.prototype._addWindow = function (document) {
-        var window = new EXWindow(document);
+    GWindows.prototype._addWindow = function (document) {
+        var window = new GWindow(document);
 
         // Add and trigger
         document._windows.push(window);
         this._windows.push(window);
 
         // Send out an event
-        if (this.hasEventListeners(EXWindows.WindowEvent)) {
-            this.trigger(new EXWindows.WindowEvent(EXWindows.WindowEvent.Type.Added, window));
+        if (this.hasEventListeners(GWindows.WindowEvent)) {
+            this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Added, window));
         }
 
         // Mark the window being active
@@ -268,5 +274,5 @@
         return window;
     };
 
-    _.EXWindows = EXWindows;
+    _.GWindows = GWindows;
 })(this);

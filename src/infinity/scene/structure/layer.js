@@ -1,26 +1,26 @@
 (function (_) {
     /**
      * An element representing a layer
-     * @class GXLayer
-     * @extends GXBlock
-     * @mixes GXNode.Container
-     * @mixes GXElement.Transform
+     * @class IFLayer
+     * @extends IFBlock
+     * @mixes IFNode.Container
+     * @mixes IFElement.Transform
      * @constructor
      */
-    function GXLayer() {
-        GXBlock.call(this);
-        this._setDefaultProperties(GXLayer.VisualProperties, GXLayer.MetaProperties);
+    function IFLayer() {
+        IFBlock.call(this);
+        this._setDefaultProperties(IFLayer.VisualProperties, IFLayer.MetaProperties);
     }
 
-    GXNode.inheritAndMix("layer", GXLayer, GXBlock, [GXNode.Container, GXElement.Transform]);
+    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform]);
 
-    GXLayer.GUIDE_COLOR_DEFAULT = new GXColor(GXColor.Type.RGB, [0, 255, 255, 100]);
+    IFLayer.GUIDE_COLOR_DEFAULT = new IFColor(IFColor.Type.RGB, [0, 255, 255, 100]);
 
     /**
      * The tp of a layer
      * @enum
      */
-    GXLayer.Type = {
+    IFLayer.Type = {
         /**
          * An output layer, will make it into
          * the actual output
@@ -44,75 +44,75 @@
     /**
      * The visual properties of a layer with their default values
      */
-    GXLayer.VisualProperties = {
+    IFLayer.VisualProperties = {
         otl: false,
-        cls: new GXColor(GXColor.Type.RGB, [0, 168, 255, 100])
+        cls: new IFColor(IFColor.Type.RGB, [0, 168, 255, 100])
     };
 
     /**
      * The meta properties of a layer with their default values
      */
-    GXLayer.MetaProperties = {
-        tp: GXLayer.Type.Output
+    IFLayer.MetaProperties = {
+        tp: IFLayer.Type.Output
     };
 
     /**
-     * Localized names for GXLayer.Type
+     * Localized names for IFLayer.Type
      */
-    GXLayer.TypeName = {
-        'O': new GLocale.Key(GXLayer, 'tp.output'),
-        'D': new GLocale.Key(GXLayer, 'tp.draft'),
-        'G': new GLocale.Key(GXLayer, 'tp.guide')
+    IFLayer.TypeName = {
+        'O': new IFLocale.Key(IFLayer, 'tp.output'),
+        'D': new IFLocale.Key(IFLayer, 'tp.draft'),
+        'G': new IFLocale.Key(IFLayer, 'tp.guide')
     };
 
     /** @override */
-    GXLayer.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GXLayer || parent instanceof GXPage || parent instanceof GXScene;
+    IFLayer.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFLayer || parent instanceof IFPage || parent instanceof IFScene;
     };
 
     /** @override */
-    GXLayer.prototype.store = function (blob) {
-        if (GXBlock.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXLayer.VisualProperties, function (property, value) {
+    IFLayer.prototype.store = function (blob) {
+        if (IFBlock.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
                     return value.asString();
                 }
                 return value;
             });
             
-            this.storeProperties(blob, GXLayer.MetaProperties);
+            this.storeProperties(blob, IFLayer.MetaProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXLayer.prototype.restore = function (blob) {
-        if (GXBlock.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXLayer.VisualProperties, function (property, value) {
+    IFLayer.prototype.restore = function (blob) {
+        if (IFBlock.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return GXColor.parseColor(value);
+                    return IFColor.parseColor(value);
                 }
                 return value;
             });
 
-            this.restoreProperties(blob, GXLayer.MetaProperties);
+            this.restoreProperties(blob, IFLayer.MetaProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXLayer.prototype._preparePaint = function (context) {
-        if (GXBlock.prototype._preparePaint.call(this, context)) {
-            if (this.$tp === GXLayer.Type.Guide) {
+    IFLayer.prototype._preparePaint = function (context) {
+        if (IFBlock.prototype._preparePaint.call(this, context)) {
+            if (this.$tp === IFLayer.Type.Guide) {
                 if (!context.configuration.isGuidesVisible(context)) {
                     return false;
-                } else if (context.configuration.paintMode !== GXScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
+                } else if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
                     // Add otl cls of ourself if not outlined
-                    context.outlineColors.push(GXColor.parseColor(this.$cls).asRGBInt());
+                    context.outlineColors.push(IFColor.parseColor(this.$cls).asRGBInt());
                 }
-            } else if (this.$tp === GXLayer.Type.Draft) {
+            } else if (this.$tp === IFLayer.Type.Draft) {
                 if (!context.configuration.isAnnotationsVisible(context)) {
                     return false;
                 }
@@ -126,43 +126,43 @@
     };
 
     /** @override */
-    GXLayer.prototype._finishPaint = function (context) {
-        if (this.$tp === GXLayer.Type.Guide && context.configuration.paintMode !== GXScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
+    IFLayer.prototype._finishPaint = function (context) {
+        if (this.$tp === IFLayer.Type.Guide && context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
             // Remove otl cls of ourself if not outlined
             context.outlineColors.pop();
-        } else if (this.$tp === GXLayer.Type.Draft) {
+        } else if (this.$tp === IFLayer.Type.Draft) {
             // TODO : Reset marked draft layers like changed opacity etc.
         }
 
-        GXBlock.prototype._finishPaint.call(this, context);
+        IFBlock.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
-    GXLayer.prototype._handleChange = function (change, args) {
-        if (change == GXNode._Change.AfterPropertiesChange) {
+    IFLayer.prototype._handleChange = function (change, args) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
             var typeIndex = args.properties.indexOf('tp');
             if (typeIndex >= 0) {
                 var oldTypeValue = args.values[typeIndex];
 
                 // Switch tp from guide <-> * must reset colors if defaults are set
-                if (oldTypeValue === GXLayer.Type.Guide && this.$cls === GXLayer.GUIDE_COLOR_DEFAULT) {
-                    this.$cls = GXLayer.VisualProperties.cls;
-                } else if (this.$tp === GXLayer.Type.Guide && this.$cls === GXLayer.VisualProperties.cls) {
-                    this.$cls = GXLayer.GUIDE_COLOR_DEFAULT;
+                if (oldTypeValue === IFLayer.Type.Guide && this.$cls === IFLayer.GUIDE_COLOR_DEFAULT) {
+                    this.$cls = IFLayer.VisualProperties.cls;
+                } else if (this.$tp === IFLayer.Type.Guide && this.$cls === IFLayer.VisualProperties.cls) {
+                    this.$cls = IFLayer.GUIDE_COLOR_DEFAULT;
                 }
-                this._notifyChange(GXElement._Change.InvalidationRequest);
+                this._notifyChange(IFElement._Change.InvalidationRequest);
             }
 
             if (args.properties.indexOf('value') >= 0) {
                 // If we're a guide layer and not outlined then we need a repaint
-                if (this.$tp === GXLayer.Type.Guide && !this.$otl) {
-                    this._notifyChange(GXElement._Change.InvalidationRequest);
+                if (this.$tp === IFLayer.Type.Guide && !this.$otl) {
+                    this._notifyChange(IFElement._Change.InvalidationRequest);
                 }
             }
         }
 
-        GXBlock.prototype._handleChange.call(this, change, args);
+        IFBlock.prototype._handleChange.call(this, change, args);
     };
 
-    _.GXLayer = GXLayer;
+    _.IFLayer = IFLayer;
 })(this);

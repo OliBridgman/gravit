@@ -3,11 +3,11 @@
      * Gravit Development Module
      * @class GDevelopmentModule
      * @constructor
-     * @extends EXModule
+     * @extends GModule
      */
     function GDevelopmentModule() {
     }
-    GObject.inherit(GDevelopmentModule, EXModule);
+    IFObject.inherit(GDevelopmentModule, GModule);
 
     /** @override */
     GDevelopmentModule.prototype.init = function () {

@@ -1,55 +1,55 @@
 /**
- * GXSelector - Selector Engine for GNodes
+ * IFSelector - Selector Engine for GNodes
  * Based on
  * Sly v1.0rc2 <http://sly.digitarald.com> - (C) 2009 Harald Kirschner <http://digitarald.de> - Open source under MIT License
  */
 
 
-var GXSelector = (function () {
+var IFSelector = (function () {
 
     var cache = {};
 
     /**
-     * GXSelector::constructor
+     * IFSelector::constructor
      *
-     * Acts also as shortcut for GXSelector::search if context argument is given.
+     * Acts also as shortcut for IFSelector::search if context argument is given.
      */
-    var GXSelector = function (text, context, results, options) {
+    var IFSelector = function (text, context, results, options) {
         // normalise
         text = (typeof(text) == 'string') ? text.replace(/^\s+|\s+$/g, '') : '';
 
-        var cls = cache[text] || (cache[text] = new GXSelector.initialize(text));
+        var cls = cache[text] || (cache[text] = new IFSelector.initialize(text));
         return (context == null) ? cls : cls.search(context, results, options);
     };
 
-    GXSelector.initialize = function (text) {
+    IFSelector.initialize = function (text) {
         this.text = text;
     };
 
-    var proto = GXSelector.initialize.prototype = GXSelector.prototype;
+    var proto = IFSelector.initialize.prototype = IFSelector.prototype;
 
     var locateFast = function () {
         return true;
     };
 
     /**
-     * GXSelector::queryAll
+     * IFSelector::queryAll
      */
     proto.queryAll = function (context, results, options) {
         options = options || {};
 
         var iterate, i, item;
 
-        if (!context || !(context instanceof GXNode)) {
+        if (!context || !(context instanceof IFNode)) {
             throw new Error("Missing context or invalid context");
-        } else if (!(context instanceof GXNode)) {
+        } else if (!(context instanceof IFNode)) {
             if (typeof(context) == 'string') {
-                context = GXSelector.queryAll(context);
+                context = IFSelector.queryAll(context);
                 iterate = true;
             } else if (Object.prototype.toString.call(context) == '[object Array]' || (typeof(context.length) == 'number' && context.item)) { // simple isArray
                 var filtered = [];
                 for (i = 0; (item = context[i]); i++) {
-                    if (item instanceof GXNode) filtered.push(item);
+                    if (item instanceof IFNode) filtered.push(item);
                 }
                 iterate = (filtered.length > 1);
                 context = (iterate) ? filtered : filtered[0];
@@ -64,7 +64,7 @@ var GXSelector = (function () {
         var current = all; // unique ids for one iteration process
 
         // unifiers
-        var getUid = GXSelector.getUid;
+        var getUid = IFSelector.getUid;
         var locateCurrent = function (node) {
             var uid = getUid(node);
             return (current[uid]) ? null : (current[uid] = true);
@@ -118,7 +118,7 @@ var GXSelector = (function () {
     };
 
     /**
-     * GXSelector::querySingle
+     * IFSelector::querySingle
      */
     proto.querySingle = function (context, results, options) {
         return this.queryAll(context, results, options)[0];
@@ -126,7 +126,7 @@ var GXSelector = (function () {
 
 
     /**
-     * GXSelector::match
+     * IFSelector::match
      */
     proto.match = function (node, parent) {
         var parsed = this.parse();
@@ -146,7 +146,7 @@ var GXSelector = (function () {
 
 
     /**
-     * GXSelector::filter
+     * IFSelector::filter
      */
     proto.filter = function (nodes) {
         var results = [], parsed = this.parse();
@@ -161,17 +161,17 @@ var GXSelector = (function () {
 
 
     /**
-     * GXSelector.recompile()
+     * IFSelector.recompile()
      */
     var pattern;
 
-    GXSelector.recompile = function () {
+    IFSelector.recompile = function () {
 
         var key, combList = [','], operList = ['!'];
 
         for (key in combinators) {
             if (key != ' ') {
-                combList[(key.length > 1) ? 'unshift' : 'push'](GXSelector.escapeRegExp(key));
+                combList[(key.length > 1) ? 'unshift' : 'push'](IFSelector.escapeRegExp(key));
             }
         }
         for (key in propertyOperators) operList.push(key);
@@ -230,7 +230,7 @@ var GXSelector = (function () {
     };
 
     /**
-     * GXSelector::parse
+     * IFSelector::parse
      *
      * Returns an array with one object for every selector:
      *
@@ -267,7 +267,7 @@ var GXSelector = (function () {
         while ((match = pattern.exec(text))) {
 
             if (match[11]) {
-                if (GXSelector.verbose) throw SyntaxError('Syntax error, "' + $0 + '" unexpected at #' + pattern.lastIndex + ' in "' + text + '"');
+                if (IFSelector.verbose) throw SyntaxError('Syntax error, "' + $0 + '" unexpected at #' + pattern.lastIndex + ' in "' + text + '"');
                 return (this[save] = []);
             }
 
@@ -344,7 +344,7 @@ var GXSelector = (function () {
     };
 
     var matchId = function (node, id) {
-        if (node.hasMixin(GXNode.Identity)) {
+        if (node.hasMixin(IFNode.Identity)) {
             return (id === node.getId());
         }
         return false;
@@ -359,7 +359,7 @@ var GXSelector = (function () {
     };
 
     var matchTag = function (node, expr) {
-        if (node.hasMixin(GXNode.Tag)) {
+        if (node.hasMixin(IFNode.Tag)) {
             var tags = node.getTags();
             return tags && expr.test(tags);
         }
@@ -370,7 +370,7 @@ var GXSelector = (function () {
         if (!prop.operator || !prop.value) return prop;
         var parser = propertyOperators[prop.operator];
         if (parser) { // @todo: Allow functions, not only regex
-            prop.escaped = GXSelector.escapeRegExp(prop.value);
+            prop.escaped = IFSelector.escapeRegExp(prop.value);
             prop.pattern = new RegExp(parser(prop.value, prop.escaped, prop));
         }
         return prop;
@@ -378,7 +378,7 @@ var GXSelector = (function () {
 
     var matchProperty = function (node, prop) {
         // TODO : Support user properties as well
-        var read = node.hasMixin(GXNode.Properties) ? node.getProperty(prop.name) : null;
+        var read = node.hasMixin(IFNode.Properties) ? node.getProperty(prop.name) : null;
         switch (prop.operator) {
             case null:
                 return read;
@@ -393,7 +393,7 @@ var GXSelector = (function () {
 
 
     /**
-     * GXSelector::compute
+     * IFSelector::compute
      *
      * Attaches the following methods to the selector object:
      *
@@ -472,7 +472,7 @@ var GXSelector = (function () {
         for (i = 0; (item = selector.pseudos[i]); i++) {
 
             if (item.name == 'not') { // optimised :not(), fast as possible
-                var not = GXSelector(item.value);
+                var not = IFSelector(item.value);
                 match = chain(match, function (node, not) {
                     return !not.match(node);
                 }, (not.parse().length == 1) ? not.parsed[0] : not);
@@ -496,7 +496,7 @@ var GXSelector = (function () {
 
         selector.match = matchSearch || empty;
 
-        selector.combine = GXSelector.combinators[selector.combinator || ' '];
+        selector.combine = IFSelector.combinators[selector.combinator || ' '];
 
         selector.search = search;
 
@@ -508,11 +508,11 @@ var GXSelector = (function () {
     /**
      * Combinators
      */
-    var combinators = GXSelector.combinators = {
+    var combinators = IFSelector.combinators = {
 
         ' ': function (combined, context, selector, state, locate, fast) {
             var nodes = selector.search(context);
-            if (fast && selector.simple) return GXSelector.toArray(nodes);
+            if (fast && selector.simple) return IFSelector.toArray(nodes);
             for (var i = 0, node, aux = selector.matchAux; (node = nodes[i]); i++) {
                 if (locate(node) && aux(node, state)) combined.push(node);
             }
@@ -545,7 +545,7 @@ var GXSelector = (function () {
 
         // Returns all matched parent nodes
         '<': function (combined, context, selector, state, locate) {
-            while ((context = context.getParent()) && !(context instanceof GXScene)) {
+            while ((context = context.getParent()) && !(context instanceof IFScene)) {
                 if (locate(context) && selector.match(context, state)) combined.push(context);
             }
             return combined;
@@ -555,7 +555,7 @@ var GXSelector = (function () {
         '^': function (combined, context, selector, state, locate) {
             if ((context = context.getFirstChild())) {
                 if (locate(context) && selector.match(context, state)) combined.push(context);
-                else combined = GXSelector.combinators['+'](combined, context, selector, context, state);
+                else combined = IFSelector.combinators['+'](combined, context, selector, context, state);
             }
             return combined;
         },
@@ -582,7 +582,7 @@ var GXSelector = (function () {
     /**
      * Pseudo-Classes
      */
-    var pseudos = GXSelector.pseudos = {
+    var pseudos = IFSelector.pseudos = {
 
         // w3c pseudo classes
 
@@ -599,16 +599,16 @@ var GXSelector = (function () {
         },
 
         'nth-child': function (node, value, state) {
-            var parsed = GXSelector.parseNth(value || 'n');
+            var parsed = IFSelector.parseNth(value || 'n');
             if (parsed.special != 'n') return pseudos[parsed.special](node, parsed.a, state);
             state = state || {}; // just to be sure
             state.positions = state.positions || {};
-            var uid = GXSelector.getUid(node);
+            var uid = IFSelector.getUid(node);
             if (!state.positions[uid]) {
                 var count = 0;
                 while ((node = node.getPrevious())) {
                     count++;
-                    var position = state.positions[GXSelector.getUid(node)];
+                    var position = state.positions[IFSelector.getUid(node)];
                     if (position != undefined) {
                         count = position + count;
                         break;
@@ -651,29 +651,29 @@ var GXSelector = (function () {
 
         // Matches elements which contain at least one element that matches the specified selector.
         'has': function (node, argument) {
-            return GXSelector.querySingle(argument, node);
+            return IFSelector.querySingle(argument, node);
         },
 
         // Flag selectors
 
         // Matches all nodes that are selected.
         'active': function (node) {
-            return (node.hasFlag(GXNode.Flag.Active));
+            return (node.hasFlag(IFNode.Flag.Active));
         },
 
         // Matches all nodes that are selected.
         'selected': function (node) {
-            return (node.hasFlag(GXNode.Flag.Selected));
+            return (node.hasFlag(IFNode.Flag.Selected));
         },
 
         // Matches all elements that are hidden.
         'hidden': function (node) {
-            return (node instanceof GXElement && node.hasFlag(GXElement.Flag.Hidden));
+            return (node instanceof IFElement && node.hasFlag(IFElement.Flag.Hidden));
         },
 
         // Matches all elements that are visible.
         'visible': function (node) {
-            return (node instanceof GXElement && !node.hasFlag(GXElement.Flag.Hidden));
+            return (node instanceof IFElement && !node.hasFlag(IFElement.Flag.Hidden));
         }
     };
 
@@ -686,7 +686,7 @@ var GXSelector = (function () {
     /**
      * Property operators
      */
-    var propertyOperators = GXSelector.propertyOperators = {
+    var propertyOperators = IFSelector.propertyOperators = {
 
         '*=': function (value, escaped) {
             return escaped;
@@ -716,7 +716,7 @@ var GXSelector = (function () {
     };
 
     /**
-     * GXSelector.toArray
+     * IFSelector.toArray
      */
     var toArray = Array.slice || function (nodes) {
         return Array.prototype.slice.call(nodes);
@@ -733,14 +733,14 @@ var GXSelector = (function () {
         };
     }
 
-    GXSelector.toArray = toArray;
+    IFSelector.toArray = toArray;
 
     /**
-     * GXSelector.getUid
+     * IFSelector.getUid
      */
     var nextUid = 1;
 
-    GXSelector.getUid = (window.ActiveXObject) ? function (node) {
+    IFSelector.getUid = (window.ActiveXObject) ? function (node) {
         return (node.__slyUid || (node.__slyUid = {id: nextUid++})).id;
     } : function (node) {
         return node.__slyUid || (node.__slyUid = nextUid++);
@@ -749,7 +749,7 @@ var GXSelector = (function () {
 
     var nthCache = {};
 
-    GXSelector.parseNth = function (value) {
+    IFSelector.parseNth = function (value) {
         if (nthCache[value]) return nthCache[value];
 
         var parsed = value.match(/^([+-]?\d*)?([a-z]+)?([+-]?\d*)?$/);
@@ -788,29 +788,29 @@ var GXSelector = (function () {
     };
 
 
-    GXSelector.escapeRegExp = function (text) {
+    IFSelector.escapeRegExp = function (text) {
         return text.replace(/[-.*+?^${}()|[\]\/\\]/g, '\\$&');
     };
 
 
 // generic accessors
 
-    GXSelector.generise = function (name) {
-        GXSelector[name] = function (text) {
-            var cls = GXSelector(text);
+    IFSelector.generise = function (name) {
+        IFSelector[name] = function (text) {
+            var cls = IFSelector(text);
             return cls[name].apply(cls, Array.prototype.slice.call(arguments, 1));
         }
     };
 
     var generics = ['parse', 'queryAll', 'querySingle', 'match', 'filter'];
-    for (var i = 0; generics[i]; i++) GXSelector.generise(generics[i]);
+    for (var i = 0; generics[i]; i++) IFSelector.generise(generics[i]);
 
 
 // compile pattern for the first time
 
-    GXSelector.recompile();
+    IFSelector.recompile();
 
 // FIN
 
-    return GXSelector;
+    return IFSelector;
 })();

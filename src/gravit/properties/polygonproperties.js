@@ -2,41 +2,41 @@
 
     /**
      * Polygon properties panel
-     * @class EXPolygonProperties
-     * @extends EXProperties
+     * @class GPolygonProperties
+     * @extends GProperties
      * @constructor
      */
-    function EXPolygonProperties() {
+    function GPolygonProperties() {
         this._polygons = [];
     };
-    GObject.inherit(EXPolygonProperties, EXProperties);
+    IFObject.inherit(GPolygonProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    EXPolygonProperties.prototype._panel = null;
+    GPolygonProperties.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
-    EXPolygonProperties.prototype._document = null;
+    GPolygonProperties.prototype._document = null;
 
     /**
-     * @type {Array<GXPolygon>}
+     * @type {Array<IFPolygon>}
      * @private
      */
-    EXPolygonProperties.prototype._polygons = null;
+    GPolygonProperties.prototype._polygons = null;
 
     /** @override */
-    EXPolygonProperties.prototype.getCategory = function () {
+    GPolygonProperties.prototype.getCategory = function () {
         // TODO : I18N
         return 'Polygon';
     };
 
     /** @override */
-    EXPolygonProperties.prototype.init = function (panel, controls) {
+    GPolygonProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -50,11 +50,11 @@
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
-                            var innerAngle = gMath.normalizeAngleRadians(
+                            var innerAngle = ifMath.normalizeAngleRadians(
                                 self._polygons[0].getProperty('oa') + Math.PI / points);
 
                             self._assignProperties([property, 'ia'],
-                                [gMath.normalizeValue(points, 2, 360), innerAngle]);
+                                [ifMath.normalizeValue(points, 2, 360), innerAngle]);
                         } else {
                             self._updateProperties();
                         }
@@ -91,10 +91,10 @@
                     .css('width', '4em')
                     .gAutoBlur()
                     .on('change', function () {
-                        var angle = parseFloat($(this).val());
-                        if (!isNaN(angle)) {
-                            angle = gMath.normalizeAngleRadians(gMath.toRadians(angle));
-                            self._assignProperty(property, gMath.PI2 - angle);
+                        var angle = IFLength.parseEquationValue($(this).val());
+                        if (angle !== null) {
+                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
+                            self._assignProperty(property, ifMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -219,9 +219,9 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
+    GPolygonProperties.prototype.updateFromNode = function (document, elements, node) {
         if (this._document) {
-            this._document.getScene().removeEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -233,14 +233,14 @@
         // Collect all polygon elements
         this._polygons = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof GXPolygon) {
+            if (elements[i] instanceof IFPolygon) {
                 this._polygons.push(elements[i]);
             }
         }
 
         if (this._polygons.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -249,10 +249,10 @@
     };
 
     /**
-     * @param {GXNode.AfterPropertiesChangeEvent} event
+     * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    EXPolygonProperties.prototype._afterPropertiesChange = function (event) {
+    GPolygonProperties.prototype._afterPropertiesChange = function (event) {
         // If properties of first polygon has changed then update ourself
         if (this._polygons.length > 0 && this._polygons[0] === event.node) {
             this._updateProperties();
@@ -262,7 +262,7 @@
     /**
      * @private
      */
-    EXPolygonProperties.prototype._updateProperties = function () {
+    GPolygonProperties.prototype._updateProperties = function () {
         // We'll always read properties of first polygon
         var polygon = this._polygons[0];
         this._panel.find('input[data-property="pts"]').val(polygon.getProperty('pts'));
@@ -272,9 +272,9 @@
         this._panel.find('input[data-property="ir"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ir')));
         this._panel.find('input[data-property="oa"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - polygon.getProperty('oa')), 2).toString().replace('.', ','));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
-            gMath.round(gMath.toDegrees(gMath.PI2 - polygon.getProperty('ia')), 2).toString().replace('.', ','));
+            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
         this._panel.find('select[data-property="oct"]').val(polygon.getProperty('oct'));
         this._panel.find('select[data-property="ict"]').val(polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(
@@ -288,7 +288,7 @@
      * @param {*} value
      * @private
      */
-    EXPolygonProperties.prototype._assignProperty = function (property, value) {
+    GPolygonProperties.prototype._assignProperty = function (property, value) {
         this._assignProperties([property], [value]);
     };
 
@@ -297,7 +297,7 @@
      * @param {Array<*>} values
      * @private
      */
-    EXPolygonProperties.prototype._assignProperties = function (properties, values) {
+    GPolygonProperties.prototype._assignProperties = function (properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
@@ -311,9 +311,9 @@
     };
 
     /** @override */
-    EXPolygonProperties.prototype.toString = function () {
-        return "[Object EXPolygonProperties]";
+    GPolygonProperties.prototype.toString = function () {
+        return "[Object GPolygonProperties]";
     };
 
-    _.EXPolygonProperties = EXPolygonProperties;
+    _.GPolygonProperties = GPolygonProperties;
 })(this);

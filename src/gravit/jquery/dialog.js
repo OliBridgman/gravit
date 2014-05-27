@@ -51,7 +51,7 @@
                 if (options.title) {
                     container.prepend($('<div></div>')
                         .addClass('header')
-                        .text(gLocale.get(options.title)));
+                        .text(ifLocale.get(options.title)));
                 }
 
                 if (options.buttons) {
@@ -98,7 +98,7 @@
             buttons.find('button').each(function () {
                 var $this = $(this);
                 var button = $this.data('g-button');
-                $this.text(button.title ? gLocale.get(button.title) : "");
+                $this.text(button.title ? ifLocale.get(button.title) : "");
                 $this.attr('disabled', !button.enabled || (button.enabled && button.enabled()) ? null : 'disabled');
                 $this.css('display', !button.visible || (button.visible && button.visible()) ? null : 'none');
             });

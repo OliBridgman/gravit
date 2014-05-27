@@ -8,10 +8,10 @@
      */
     function GPasteInsideAction() {
     };
-    GObject.inherit(GPasteInsideAction, GUIAction);
+    IFObject.inherit(GPasteInsideAction, GUIAction);
 
     GPasteInsideAction.ID = 'edit.paste-inside';
-    GPasteInsideAction.TITLE = new GLocale.Key(GPasteInsideAction, "title");
+    GPasteInsideAction.TITLE = new IFLocale.Key(GPasteInsideAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GPasteInsideAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_EDIT;
     };
 
     /**
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteInsideAction.prototype.getShortcut = function () {
-        return [GUIKey.Constant.SHIFT, GUIKey.Constant.META, 'V'];
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'V'];
     };
 
     /**
@@ -53,13 +53,13 @@
      */
     GPasteInsideAction.prototype.isEnabled = function () {
         var cpMimeTypes = gShell.getClipboardMimeTypes();
-        if (cpMimeTypes && cpMimeTypes.indexOf(GXNode.MIME_TYPE) >= 0) {
+        if (cpMimeTypes && cpMimeTypes.indexOf(IFNode.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
             if (document) {
                 var selection = document.getEditor().getSelection();
                 if (selection) {
                     for (var i = 0; i < selection.length; ++i) {
-                        if (selection[i].hasMixin(GXNode.Container)) {
+                        if (selection[i].hasMixin(IFNode.Container)) {
                             return true;
                         }
                     }
@@ -73,11 +73,11 @@
      * @override
      */
     GPasteInsideAction.prototype.execute = function () {
-        var nodes = GXNode.deserialize(gShell.getClipboardContent(GXNode.MIME_TYPE));
+        var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
         if (nodes && nodes.length > 0) {
             var elements = [];
             for (var i = 0; i < nodes.length; ++i) {
-                if (nodes[i] instanceof GXElement) {
+                if (nodes[i] instanceof IFElement) {
                     elements.push(nodes[i]);
                 }
             }
@@ -91,7 +91,7 @@
                 try {
                     for (var i = 0; i < selection.length; ++i) {
                         var target = selection[i];
-                        if (!target.hasMixin(GXNode.Container)) {
+                        if (!target.hasMixin(IFNode.Container)) {
                             continue;
                         }
 

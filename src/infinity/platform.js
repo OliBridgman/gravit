@@ -2,7 +2,7 @@
     /**
      * Instance of a platform implementation
      * @class GUIPlatform
-     * @extends GObject
+     * @extends IFObject
      * @mixes GEventTarget
      * @constructor
      * @version 1.0
@@ -18,7 +18,7 @@
         }.bind(this), true);
     }
 
-    GObject.inheritAndMix(GUIPlatform, GObject, [GEventTarget]);
+    IFObject.inheritAndMix(GUIPlatform, IFObject, [GEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GUIPlatform.Modifiers Class
@@ -74,7 +74,7 @@
     GUIPlatform.ModifiersChangedEvent = function () {
         this.changed = new GUIPlatform.Modifiers();
     }
-    GObject.inherit(GUIPlatform.ModifiersChangedEvent, GEvent);
+    IFObject.inherit(GUIPlatform.ModifiersChangedEvent, GEvent);
 
     /**
      * The modifiers that have been changed
@@ -134,7 +134,7 @@
         var metaKey = false;
         var spaceKey = false;
 
-        var _evMetaKey  = (gSystem.operatingSystem !== GSystem.OperatingSystem.OSX_IOS || gSystem.hardware !== GSystem.Hardware.Desktop) ? event.ctrlKey : event.metaKey;
+        var _evMetaKey  = (ifSystem.operatingSystem !== IFSystem.OperatingSystem.OSX_IOS || ifSystem.hardware !== IFSystem.Hardware.Desktop) ? event.ctrlKey : event.metaKey;
 
         // Update global modifiers
         if (_evMetaKey != this.modifiers.metaKey) {

@@ -8,7 +8,7 @@
      */
     function GPaintAttribute() {
     };
-    GObject.inherit(GPaintAttribute, GAttribute);
+    IFObject.inherit(GPaintAttribute, GAttribute);
 
     /**
      * @type {JQuery}
@@ -17,7 +17,7 @@
     GPaintAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPaintAttribute.prototype._document = null;

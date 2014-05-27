@@ -2,24 +2,24 @@
 
     /**
      * An ellipse shape
-     * @class GXEllipse
-     * @extends GXPathBase
+     * @class IFEllipse
+     * @extends IFPathBase
      * @constructor
      */
-    function GXEllipse() {
-        GXPathBase.call(this);
-        this._setDefaultProperties(GXEllipse.GeometryProperties);
+    function IFEllipse() {
+        IFPathBase.call(this);
+        this._setDefaultProperties(IFEllipse.GeometryProperties);
         this._invalidatePath(); // create unit path
     }
 
-    GXNode.inherit("ellipse", GXEllipse, GXPathBase);
+    IFNode.inherit("ellipse", IFEllipse, IFPathBase);
 
     /**
      * Various types for an ellipse
      * @enum
      * @version 1.0
      */
-    GXEllipse.Type = {
+    IFEllipse.Type = {
         /**
          * Pie (center-closed ellipse) type
          * @type {Number}
@@ -45,28 +45,28 @@
     /**
      * The geometry properties of an ellipse with their default values
      */
-    GXEllipse.GeometryProperties = {
+    IFEllipse.GeometryProperties = {
         /** The start angle */
         sa: Math.PI,
         /** The end angle */
         ea: Math.PI,
         /** The ellipse-type */
-        etp: GXEllipse.Type.Pie
+        etp: IFEllipse.Type.Pie
     };
 
     /** @override */
-    GXEllipse.prototype.store = function (blob) {
-        if (GXPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, GXEllipse.GeometryProperties);
+    IFEllipse.prototype.store = function (blob) {
+        if (IFPathBase.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFEllipse.GeometryProperties);
             return true;
         }
         return false;
     };
 
     /** @override */
-    GXEllipse.prototype.restore = function (blob) {
-        if (GXPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, GXEllipse.GeometryProperties);
+    IFEllipse.prototype.restore = function (blob) {
+        if (IFPathBase.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFEllipse.GeometryProperties);
 
             this._invalidatePath();
 
@@ -76,17 +76,17 @@
     };
 
     /** @override */
-    GXEllipse.prototype._handleChange = function (change, args) {
-        if (this._handleGeometryChangeForProperties(change, args, GXEllipse.GeometryProperties) && change == GXNode._Change.AfterPropertiesChange) {
+    IFEllipse.prototype._handleChange = function (change, args) {
+        if (this._handleGeometryChangeForProperties(change, args, IFEllipse.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             this._invalidatePath();
         }
-        GXPathBase.prototype._handleChange.call(this, change, args);
+        IFPathBase.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * @private
      */
-    GXEllipse.prototype._invalidatePath = function () {
+    IFEllipse.prototype._invalidatePath = function () {
         var anchorPoints = this._getAnchorPoints();
 
         this.beginUpdate();
@@ -96,27 +96,27 @@
             anchorPoints.clearChildren();
 
             var an;
-            for (an = Math.PI / 2; an <= this.$sa || gMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {
+            for (an = Math.PI / 2; an <= this.$sa || ifMath.isEqualEps(an, this.$sa); an += Math.PI / 2) {
             }
 
-            var anchorPoint = new GXPathBase.AnchorPoint();
-            anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), GXPathBase.AnchorPoint.Type.Symmetric, true]);
+            var anchorPoint = new IFPathBase.AnchorPoint();
+            anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(this.$sa), Math.sin(this.$sa), IFPathBase.AnchorPoint.Type.Symmetric, true]);
             anchorPoints.appendChild(anchorPoint);
 
-            var ea = gMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + gMath.PI2 : this.$ea;
+            var ea = ifMath.isEqualEps(this.$sa, this.$ea) ? this.$sa + ifMath.PI2 : this.$ea;
             if (ea < this.$sa) {
-                ea += gMath.PI2;
+                ea += ifMath.PI2;
             }
 
-            for (an; an < ea && !gMath.isEqualEps(an, ea); an += Math.PI / 2) {
-                anchorPoint = new GXPathBase.AnchorPoint();
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), GXPathBase.AnchorPoint.Type.Symmetric, true]);
+            for (an; an < ea && !ifMath.isEqualEps(an, ea); an += Math.PI / 2) {
+                anchorPoint = new IFPathBase.AnchorPoint();
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), IFPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
             }
 
-            if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
-                anchorPoint = new GXPathBase.AnchorPoint();
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), GXPathBase.AnchorPoint.Type.Symmetric, true]);
+            if (!ifMath.isEqualEps(this.$sa + ifMath.PI2, ea)) {
+                anchorPoint = new IFPathBase.AnchorPoint();
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(ea), Math.sin(ea), IFPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
             }
 
@@ -124,11 +124,11 @@
             if (anchorPoints.getFirstChild().getNext() == anchorPoints.getLastChild()) {
                 // We have only two anchor points, so add one for proper auto-handles, making rounded shape,
                 // and then switch off auto-handles and remove that extra point
-                anchorPoint = new GXPathBase.AnchorPoint();
-                if (gMath.isEqualEps(an, ea)) {
+                anchorPoint = new IFPathBase.AnchorPoint();
+                if (ifMath.isEqualEps(an, ea)) {
                     an += Math.PI / 2;
                 }
-                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), GXPathBase.AnchorPoint.Type.Symmetric, true]);
+                anchorPoint.setProperties(['x', 'y', 'tp', 'ah'], [Math.cos(an), Math.sin(an), IFPathBase.AnchorPoint.Type.Symmetric, true]);
                 anchorPoints.appendChild(anchorPoint);
                 extraPoint = anchorPoint;
             }
@@ -145,14 +145,14 @@
                 anchorPoints.removeChild(extraPoint);
             }
 
-            if (!gMath.isEqualEps(this.$sa + gMath.PI2, ea)) {
-                anchorPoints.getFirstChild().setProperties(['tp', 'hlx', 'hly'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
-                anchorPoints.getLastChild().setProperties(['tp', 'hrx', 'hry'], [GXPathBase.AnchorPoint.Type.Asymmetric, null, null]);
+            if (!ifMath.isEqualEps(this.$sa + ifMath.PI2, ea)) {
+                anchorPoints.getFirstChild().setProperties(['tp', 'hlx', 'hly'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null]);
+                anchorPoints.getLastChild().setProperties(['tp', 'hrx', 'hry'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null]);
 
-                if (this.$etp == GXEllipse.Type.Pie) {
-                    anchorPoint = new GXPathBase.AnchorPoint();
+                if (this.$etp == IFEllipse.Type.Pie) {
+                    anchorPoint = new IFPathBase.AnchorPoint();
                     anchorPoints.appendChild(anchorPoint);
-                } else if (this.$etp == GXEllipse.Type.Arc) {
+                } else if (this.$etp == IFEllipse.Type.Arc) {
                     this.setProperty('closed', false);
                 }
             }
@@ -163,9 +163,9 @@
     };
 
     /** @override */
-    GXEllipse.prototype.toString = function () {
-        return "[GXEllipse]";
+    IFEllipse.prototype.toString = function () {
+        return "[IFEllipse]";
     };
 
-    _.GXEllipse = GXEllipse;
+    _.IFEllipse = IFEllipse;
 })(this);

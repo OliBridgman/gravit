@@ -8,7 +8,7 @@
      */
     function GShadowAttribute() {
     };
-    GObject.inherit(GShadowAttribute, GDrawAttribute);
+    IFObject.inherit(GShadowAttribute, GDrawAttribute);
 
     /**
      * @type {JQuery}
@@ -17,7 +17,7 @@
     GShadowAttribute.prototype._panel = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GShadowAttribute.prototype._document = null;

@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A paint configuration for model painting
-     * @class GXScenePaintConfiguration
+     * @class IFScenePaintConfiguration
      * @constructor
-     * @extends GXPaintConfiguration
+     * @extends IFPaintConfiguration
      */
-    function GXScenePaintConfiguration() {
+    function IFScenePaintConfiguration() {
     }
 
-    GObject.inherit(GXScenePaintConfiguration, GXPaintConfiguration);
+    IFObject.inherit(IFScenePaintConfiguration, IFPaintConfiguration);
 
     /**
      * The paint mode of painting
      * @enum
      */
-    GXScenePaintConfiguration.PaintMode = {
+    IFScenePaintConfiguration.PaintMode = {
         /**
          * Full painting in highest quality
          * including annotations
@@ -42,47 +42,47 @@
     };
 
     /**
-     * Localized names for GXScenePaintConfiguration.PaintMode
+     * Localized names for IFScenePaintConfiguration.PaintMode
      */
-    GXScenePaintConfiguration.PaintModeName = {
-        'F': new GLocale.Key(GXScenePaintConfiguration, 'paint.full'),
-        'S': new GLocale.Key(GXScenePaintConfiguration, 'paint.fast'),
-        'L': new GLocale.Key(GXScenePaintConfiguration, 'paint.outline'),
-        'O': new GLocale.Key(GXScenePaintConfiguration, 'paint.output')
+    IFScenePaintConfiguration.PaintModeName = {
+        'F': new IFLocale.Key(IFScenePaintConfiguration, 'paint.full'),
+        'S': new IFLocale.Key(IFScenePaintConfiguration, 'paint.fast'),
+        'L': new IFLocale.Key(IFScenePaintConfiguration, 'paint.outline'),
+        'O': new IFLocale.Key(IFScenePaintConfiguration, 'paint.output')
     };
 
     /**
      * The current paint mode
-     * @type {GXScenePaintConfiguration.PaintMode}
+     * @type {IFScenePaintConfiguration.PaintMode}
      */
-    GXScenePaintConfiguration.prototype.paintMode = GXScenePaintConfiguration.PaintMode.Full;
+    IFScenePaintConfiguration.prototype.paintMode = IFScenePaintConfiguration.PaintMode.Full;
 
     /**
      * Whether to render in pixel mode or not
      * @type {Boolean}
      */
-    GXScenePaintConfiguration.prototype.pixelMode = false;
+    IFScenePaintConfiguration.prototype.pixelMode = false;
 
     /**
      * Whether to show guides or not
      * @type {Boolean}
      */
-    GXScenePaintConfiguration.prototype.guides = true;
+    IFScenePaintConfiguration.prototype.guides = true;
 
     /**
      * Whether to show annotations or not (guides, margins, etc.)
      * @type {Boolean}
      */
-    GXScenePaintConfiguration.prototype.annotations = true;
+    IFScenePaintConfiguration.prototype.annotations = true;
 
     /**
      * Checks and returns whether to paint outlined or not
-     * @param {GXPaintContext} [context] optional context
+     * @param {IFPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    GXScenePaintConfiguration.prototype.isOutline = function (context) {
-        if (this.paintMode === GXScenePaintConfiguration.PaintMode.Outline) {
+    IFScenePaintConfiguration.prototype.isOutline = function (context) {
+        if (this.paintMode === IFScenePaintConfiguration.PaintMode.Outline) {
             return true;
         }
         if (context && context.isOutline()) {
@@ -93,12 +93,12 @@
 
     /**
      * Checks and returns whether to paint annotations or not
-     * @param {GXPaintContext} [context] optional context
+     * @param {IFPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    GXScenePaintConfiguration.prototype.isAnnotationsVisible = function (context) {
-        if (!this.annotations || this.paintMode === GXScenePaintConfiguration.PaintMode.Output) {
+    IFScenePaintConfiguration.prototype.isAnnotationsVisible = function (context) {
+        if (!this.annotations || this.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
             return false;
         }
         return true;
@@ -106,11 +106,11 @@
 
     /**
      * Checks and returns whether to paint guides or not
-     * @param {GXPaintContext} [context] optional context
+     * @param {IFPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    GXScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
+    IFScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
         if (!this.guides || !this.isAnnotationsVisible()) {
             return false;
         }
@@ -118,9 +118,9 @@
     };
 
     /** @override */
-    GXScenePaintConfiguration.prototype.toString = function () {
-        return "[Object GXScenePaintConfiguration]";
+    IFScenePaintConfiguration.prototype.toString = function () {
+        return "[Object IFScenePaintConfiguration]";
     };
 
-    _.GXScenePaintConfiguration = GXScenePaintConfiguration;
+    _.IFScenePaintConfiguration = IFScenePaintConfiguration;
 })(this);

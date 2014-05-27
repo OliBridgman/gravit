@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * The base for a module
-     * @class EXModule
+     * @class GModule
      * @constructor
      * @version 1.0
      */
-    function EXModule() {
+    function GModule() {
     };
 
     /**
      * Called whenever the module should initialize itself now
      */
-    EXModule.prototype.init = function () {
+    GModule.prototype.init = function () {
         // NO-OP
     };
 
-    _.EXModule = EXModule;
+    _.GModule = GModule;
 })(this);

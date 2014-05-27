@@ -1,28 +1,28 @@
 (function (_) {
     /**
-     * The base tool for simple shapes based on GXShape
+     * The base tool for simple shapes based on IFShape
      * @param {Boolean} keepRatio if true, the ratio
      * on width/height will be kept if user holds shift-modifier key
      * @param {Boolean} allowFromCenter if true, the drag
      * area will be calculated from center and goes into each
      * direction if user holds option-modifier key
-     * @class GXShapeTool
-     * @extends GXTool
+     * @class IFShapeTool
+     * @extends IFTool
      * @constructor
      */
-    function GXShapeTool(keepRatio, fromCenter) {
-        GXTool.call(this);
+    function IFShapeTool(keepRatio, fromCenter) {
+        IFTool.call(this);
         this._keepRatio = keepRatio;
         this._fromCenter = fromCenter;
     }
 
-    GObject.inherit(GXShapeTool, GXTool);
+    IFObject.inherit(IFShapeTool, IFTool);
 
     /**
      * Options for shape tools
      * @version 1.0
      */
-    GXShapeTool.options = {
+    IFShapeTool.options = {
         /**
          * The size of the center cross if any,
          * should be an even number
@@ -36,72 +36,72 @@
      * @type {GPoint}
      * @private
      */
-    GXShapeTool.prototype._dragStart = null;
+    IFShapeTool.prototype._dragStart = null;
 
     /**
      * @type {GPoint}
      * @private
      */
-    GXShapeTool.prototype._dragCurrent = null;
+    IFShapeTool.prototype._dragCurrent = null;
 
     /**
      * @type {Boolean}
      * @private
      */
-    GXShapeTool.prototype._keepRatio = false;
+    IFShapeTool.prototype._keepRatio = false;
 
     /**
      * @type {Boolean}
      * @private
      */
-    GXShapeTool.prototype._fromCenter = false;
+    IFShapeTool.prototype._fromCenter = false;
 
     /**
-     * @type {GXShape}
+     * @type {IFShape}
      * @private
      */
-    GXShapeTool.prototype._shape = null;
+    IFShapeTool.prototype._shape = null;
 
     /**
      * @type {GRect}
      * @private
      */
-    GXShapeTool.prototype._dragArea = null;
+    IFShapeTool.prototype._dragArea = null;
 
     /**
      * @type {Array<GPoint>}
      * @private
      */
-    GXShapeTool.prototype._dragLine = null;
+    IFShapeTool.prototype._dragLine = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    GXShapeTool.prototype._hasCreatedShape = false;
+    IFShapeTool.prototype._hasCreatedShape = false;
 
     /** @override */
-    GXShapeTool.prototype.getHint = function () {
-        var hint = GXTool.prototype.getHint.call(this);
+    IFShapeTool.prototype.getHint = function () {
+        var hint = IFTool.prototype.getHint.call(this);
 
         if (this._keepRatio) {
-            hint.addKey(GUIKey.Constant.SHIFT, new GLocale.Key(GXShapeTool, "shortcut.shift"), true);
+            hint.addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFShapeTool, "shortcut.shift"), true);
         }
         if (this._fromCenter) {
-            hint.addKey(GUIKey.Constant.OPTION, new GLocale.Key(GXShapeTool, "shortcut.option"), true);
+            hint.addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFShapeTool, "shortcut.option"), true);
         }
 
         return hint;
     };
 
     /** @override */
-    GXShapeTool.prototype.getCursor = function () {
-        return GUICursor.Cross;
+    IFShapeTool.prototype.getCursor = function () {
+        return IFCursor.Cross;
     };
 
     /** @override */
-    GXShapeTool.prototype.activate = function (view) {
-        GXTool.prototype.activate.call(this, view);
+    IFShapeTool.prototype.activate = function (view) {
+        IFTool.prototype.activate.call(this, view);
 
         view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
@@ -113,8 +113,8 @@
     };
 
     /** @override */
-    GXShapeTool.prototype.deactivate = function (view) {
-        GXTool.prototype.deactivate.call(this, view);
+    IFShapeTool.prototype.deactivate = function (view) {
+        IFTool.prototype.deactivate.call(this, view);
 
         view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
@@ -126,13 +126,13 @@
     };
 
     /** @override */
-    GXShapeTool.prototype.isDeactivatable = function () {
+    IFShapeTool.prototype.isDeactivatable = function () {
         // cannot deactivate while dragging
         return this._dragStart ? false : true;
     };
 
     /** @override */
-    GXShapeTool.prototype.paint = function (context) {
+    IFShapeTool.prototype.paint = function (context) {
         if (this._shape) {
             // Alignment here affects ellipses and handles of curves contained in ellipses,
             // but this is not noticeable, as it is a shape creation and line is just 1 pt width at any zoom
@@ -141,11 +141,11 @@
             // Paint center cross if desired
             if (this._hasCenterCross()) {
                 var geometryBBox = this._shape.getGeometryBBox();
-                var crossSizeMax = GXShapeTool.options.centerCrossSize * 4;
+                var crossSizeMax = IFShapeTool.options.centerCrossSize * 4;
 
                 if (geometryBBox && !geometryBBox.isEmpty() &&
                     geometryBBox.getWidth() > crossSizeMax && geometryBBox.getHeight() > crossSizeMax) {
-                    var cs = GXShapeTool.options.centerCrossSize / 2 + 0.5;
+                    var cs = IFShapeTool.options.centerCrossSize / 2 + 0.5;
                     var cp = geometryBBox.getSide(GRect.Side.CENTER);
                     var cx = Math.floor(cp.getX()) + 0.5;
                     var cy = Math.floor(cp.getY()) + 0.5;
@@ -158,8 +158,8 @@
     };
 
     /** @private */
-    GXShapeTool.prototype._paintOutline = function (context) {
-        context.canvas.putVertices(new GXVertexPixelAligner(this._shape));
+    IFShapeTool.prototype._paintOutline = function (context) {
+        context.canvas.putVertices(new IFVertexPixelAligner(this._shape));
         context.canvas.strokeVertices(context.selectionOutlineColor);
     };
 
@@ -167,7 +167,7 @@
      * @param {GUIMouseEvent.Down} event
      * @private
      */
-    GXShapeTool.prototype._mouseDown = function (event) {
+    IFShapeTool.prototype._mouseDown = function (event) {
         // Quit if not hitting the left-mouse-button
         if (event.button !== GUIMouseEvent.BUTTON_LEFT) {
             return;
@@ -181,7 +181,7 @@
      * @param {GUIMouseEvent.Release} event
      * @private
      */
-    GXShapeTool.prototype._mouseRelease = function (event) {
+    IFShapeTool.prototype._mouseRelease = function (event) {
         if (!this._hasCreatedShape) {
             this._editor.getGuides().beginMap();
             var position = this._view.getWorldTransform().mapPoint(
@@ -197,7 +197,7 @@
      * @param {GUIMouseEvent.DragStart} event
      * @private
      */
-    GXShapeTool.prototype._mouseDragStart = function (event) {
+    IFShapeTool.prototype._mouseDragStart = function (event) {
         this._hasCreatedShape = false;
         this._dragStart = event.client;
         this._editor.getGuides().beginMap();
@@ -217,7 +217,7 @@
      * @param {GUIMouseEvent.Drag} event
      * @private
      */
-    GXShapeTool.prototype._mouseDrag = function (event) {
+    IFShapeTool.prototype._mouseDrag = function (event) {
         this._dragCurrent = event.client;
         this._editor.getGuides().beginMap();
         this._dragCurrent = this._view.getWorldTransform().mapPoint(
@@ -231,7 +231,7 @@
      * @param {GUIMouseEvent.DragEnd} event
      * @private
      */
-    GXShapeTool.prototype._mouseDragEnd = function (event) {
+    IFShapeTool.prototype._mouseDragEnd = function (event) {
         // Reset shape and repaint
         var shape = this._shape;
         this._shape = null;
@@ -258,7 +258,7 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    GXShapeTool.prototype._modifiersChanged = function (event) {
+    IFShapeTool.prototype._modifiersChanged = function (event) {
         if ((this._keepRatio && event.changed.shiftKey) ||
             (this._fromCenter && event.changed.optionKey)) {
             //(this._fromCenter && event.changed.shiftKey)) {
@@ -269,7 +269,7 @@
     /**
      * @private
      */
-    GXShapeTool.prototype._invalidateShape = function () {
+    IFShapeTool.prototype._invalidateShape = function () {
         if (this._dragStart && this._dragCurrent) {
             if (GPoint.equals(this._dragStart, this._dragCurrent)) {
                 this._invalidateShapeArea();
@@ -325,10 +325,10 @@
 
     /**
      * Called to prepare a shape for appending
-     * @param {GXShape} shape
+     * @param {IFShape} shape
      * @private
      */
-    GXShapeTool.prototype._prepareShapeForAppend = function (shape) {
+    IFShapeTool.prototype._prepareShapeForAppend = function (shape) {
         // Let the tool calculate the parameters in scene coordinates
         var transform = this._view.getViewTransform();
         var dragArea = transform.mapRect(this._dragArea);
@@ -340,20 +340,20 @@
 
     /**
      * Called to insert a given shape
-     * @param {GXShape} shape
+     * @param {IFShape} shape
      * @private
      */
-    GXShapeTool.prototype._insertShape = function (shape) {
+    IFShapeTool.prototype._insertShape = function (shape) {
         // Call editor for new insertion
         this._editor.insertElements([shape]);
     };
 
     /**
-     * @param {GXShape} [shape] the shape to invalidate,
+     * @param {IFShape} [shape] the shape to invalidate,
      * if not provided defaults to current shape if any
      * @private
      */
-    GXShapeTool.prototype._invalidateShapeArea = function (shape) {
+    IFShapeTool.prototype._invalidateShapeArea = function (shape) {
         shape = shape || this._shape;
         if (shape) {
             var geometryBBox = shape.getGeometryBBox();
@@ -368,29 +368,29 @@
      * @param {GPoint} position the position to create the shape at
      * @private
      */
-    GXShapeTool.prototype._createShapeManually = function (position) {
+    IFShapeTool.prototype._createShapeManually = function (position) {
         // NO-OP
     };
 
     /**
      * Called to create an instance of the shape for this tool
-     * @return {GXShape}
+     * @return {IFShape}
      * @private
      */
-    GXShapeTool.prototype._createShape = function () {
+    IFShapeTool.prototype._createShape = function () {
         throw new Error("Not Supported.");
     };
 
     /**
      * Called to update the shape of this tool
-     * @param {GXShape} shape the shape to update
+     * @param {IFShape} shape the shape to update
      * @param {GRect} area the shape area
      * @param {Array<GPoint>} line the shape line
      * @param {Boolean} scene true if coordinates are in scene coordinates,
      * this usually is only the case before the shape gets appended
      * @private
      */
-    GXShapeTool.prototype._updateShape = function (shape, area, line, scene) {
+    IFShapeTool.prototype._updateShape = function (shape, area, line, scene) {
         throw new Error("Not Supported.");
     };
 
@@ -399,14 +399,14 @@
      * @return {Boolean} true if a center cross should be painted, false if not (default)
      * @private
      */
-    GXShapeTool.prototype._hasCenterCross = function () {
+    IFShapeTool.prototype._hasCenterCross = function () {
         return false;
     };
 
     /** override */
-    GXShapeTool.prototype.toString = function () {
-        return "[Object GXShapeTool]";
+    IFShapeTool.prototype.toString = function () {
+        return "[Object IFShapeTool]";
     };
 
-    _.GXShapeTool = GXShapeTool;
+    _.IFShapeTool = IFShapeTool;
 })(this);

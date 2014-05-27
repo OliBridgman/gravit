@@ -7,7 +7,7 @@
      */
     function GShell() {
     };
-    GObject.inherit(GShell, GEventTarget);
+    IFObject.inherit(GShell, GEventTarget);
 
     /**
      * Called to prepare loading of the shell

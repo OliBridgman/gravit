@@ -8,11 +8,11 @@
     }
 
     var anchorCTypes = [
-        GXPathBase.CornerType.Rounded,
-        GXPathBase.CornerType.InverseRounded,
-        GXPathBase.CornerType.Bevel,
-        GXPathBase.CornerType.Inset,
-        GXPathBase.CornerType.Fancy
+        IFPathBase.CornerType.Rounded,
+        IFPathBase.CornerType.InverseRounded,
+        IFPathBase.CornerType.Bevel,
+        IFPathBase.CornerType.Inset,
+        IFPathBase.CornerType.Fancy
     ];
 
     function test(scene, page, layer, view) {
@@ -28,15 +28,15 @@
 
             var cornerRadius = getRandomInt(0, rectSize / 3);
 
-            var rect = new GXRectangle();
+            var rect = new IFRectangle();
             rect.setProperties(['tl_ct', 'tl_sx', 'trf'],
                 [anchorCTypes[getRandomInt(0, anchorCTypes.length-1)], cornerRadius, new GTransform(rectSize, 0.0, 0.0, rectSize, x, y)]);
 
             rect.transform(new GTransform(1.0, 0.0, 0.0, 1.0, -(x + rectSize/2), -(y + rectSize/2))
-                .rotated(gMath.toRadians(getRandomInt(0, 360)))
+                .rotated(ifMath.toRadians(getRandomInt(0, 360)))
                 .translated(+(x + rectSize/2), + (y + rectSize/2)));
 
-            var editor = GXEditor.getEditor(scene);
+            var editor = IFEditor.getEditor(scene);
 
             rect.getAttributes().appendChild(new IFStrokeAttribute());
 

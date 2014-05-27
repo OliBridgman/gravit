@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * A base editor for an image
-     * @param {GXImage} image the image this editor works on
-     * @class GXImageEditor
-     * @extends GXShapeEditor
+     * @param {IFImage} image the image this editor works on
+     * @class IFImageEditor
+     * @extends IFShapeEditor
      * @constructor
      */
-    function GXImageEditor(image) {
-        GXShapeEditor.call(this, image);
-        this._flags |= GXBlockEditor.Flag.ResizeAll;
+    function IFImageEditor(image) {
+        IFShapeEditor.call(this, image);
+        this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    GObject.inherit(GXImageEditor, GXShapeEditor);
-    GXElementEditor.exports(GXImageEditor, GXImage);
+    IFObject.inherit(IFImageEditor, IFShapeEditor);
+    IFElementEditor.exports(IFImageEditor, IFImage);
 
     /** @override */
-    GXImageEditor.prototype.toString = function () {
-        return "[Object GXImageEditor]";
+    IFImageEditor.prototype.toString = function () {
+        return "[Object IFImageEditor]";
     };
 
-    _.GXImageEditor = GXImageEditor;
+    _.IFImageEditor = IFImageEditor;
 })(this);

@@ -9,7 +9,7 @@
     function GUIInputEvent() {
     }
 
-    GObject.inherit(GUIInputEvent, GEvent);
+    IFObject.inherit(GUIInputEvent, GEvent);
 
     /** @override */
     GUIInputEvent.prototype.toString = function () {

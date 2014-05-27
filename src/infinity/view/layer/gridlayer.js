@@ -1,24 +1,24 @@
 (function (_) {
     /**
      * A layer for rendering a grid if any
-     * @param {GXView} view
-     * @class GXGridLayer
-     * @extends GXViewLayer
+     * @param {IFView} view
+     * @class IFGridLayer
+     * @extends IFViewLayer
      * @constructor
      */
-    function GXGridLayer(view) {
-        GXViewLayer.call(this, view);
-        view.getScene().addEventListener(GXNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+    function IFGridLayer(view) {
+        IFViewLayer.call(this, view);
+        view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
     }
-    GObject.inherit(GXGridLayer, GXViewLayer);
+    IFObject.inherit(IFGridLayer, IFViewLayer);
 
-    GXGridLayer.MIN_CELL_SPACE = 10;
+    IFGridLayer.MIN_CELL_SPACE = 10;
 
     /** @override */
-    GXGridLayer.prototype.paint = function (context) {
+    IFGridLayer.prototype.paint = function (context) {
         var scene = this._view.getScene();
         if (scene.getProperty('gridActive')) {
-            var cl = GXColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
+            var cl = IFColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
 
             // Calculate optical cell-size
             var scale  = this._view.getZoom();
@@ -28,11 +28,11 @@
             var szH = szHScene * scale;
 
             // Limit mininum. grid size to be optically comfortable.
-            if (szW < GXGridLayer.MIN_CELL_SPACE) {
-                szW *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szW);
+            if (szW < IFGridLayer.MIN_CELL_SPACE) {
+                szW *= 1. + Math.floor(IFGridLayer.MIN_CELL_SPACE / szW);
             }
-            if (szH < GXGridLayer.MIN_CELL_SPACE){
-                szH *= 1. + Math.floor(GXGridLayer.MIN_CELL_SPACE / szH);
+            if (szH < IFGridLayer.MIN_CELL_SPACE){
+                szH *= 1. + Math.floor(IFGridLayer.MIN_CELL_SPACE / szH);
             }
 
             szWScene = szW / scale;
@@ -53,7 +53,7 @@
         }
     };
 
-    GXGridLayer.prototype._sceneAfterPropertiesChanged = function (event) {
+    IFGridLayer.prototype._sceneAfterPropertiesChanged = function (event) {
         if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
             event.properties.indexOf('gridActive') >= 0) {
             this.invalidate();
@@ -61,9 +61,9 @@
     };
 
     /** @override */
-    GXGridLayer.prototype.toString = function () {
-        return "[Object GXGridLayer]";
+    IFGridLayer.prototype.toString = function () {
+        return "[Object IFGridLayer]";
     };
 
-    _.GXGridLayer = GXGridLayer;
+    _.IFGridLayer = IFGridLayer;
 })(this);

@@ -3,12 +3,12 @@
     /**
      * Base class for an action
      * @class GUIAction
-     * @extends GObject
+     * @extends IFObject
      * @constructor
      */
     function GUIAction() {
     };
-    GObject.inherit(GUIAction, GObject);
+    IFObject.inherit(GUIAction, IFObject);
 
     /**
      * Get the id of the action
@@ -21,7 +21,7 @@
 
     /**
      * Get the title of the action
-     * @return {GLocale.Key|String}
+     * @return {IFLocale.Key|String}
      * @version 1.0
      */
     GUIAction.prototype.getTitle = function () {
@@ -31,7 +31,7 @@
     /**
      * Get the category of the action,
      * returns null by default
-     * @return {GLocale.Key|String}
+     * @return {IFLocale.Key|String}
      * @version 1.0
      */
     GUIAction.prototype.getCategory = function () {

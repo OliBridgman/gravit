@@ -1,30 +1,30 @@
 (function (_) {
     /**
      * A canvas wrapper to paint onto
-     * @class GXPaintCanvas
-     * @extends GObject
+     * @class IFPaintCanvas
+     * @extends IFObject
      * @constructor
      */
-    function GXPaintCanvas() {
+    function IFPaintCanvas() {
         var canvasElement = document.createElement("canvas");
         this._canvasContext = canvasElement.getContext("2d");
     }
 
-    GObject.inherit(GXPaintCanvas, GObject);
+    IFObject.inherit(IFPaintCanvas, IFObject);
 
-    GXPaintCanvas.LineCap = {
+    IFPaintCanvas.LineCap = {
         Butt: 0,
         Round: 1,
         Square: 2
     };
 
-    GXPaintCanvas.LineJoin = {
+    IFPaintCanvas.LineJoin = {
         Miter: 0,
         Bevel: 1,
         Round: 2
     };
 
-    GXPaintCanvas.CompositeOperator = {
+    IFPaintCanvas.CompositeOperator = {
         /**
          * Displays the source image over the destination image
          * @type {Number}
@@ -120,7 +120,7 @@
      * A repeat mode of patterns and gradients
      * @enum
      */
-    GXPaintCanvas.RepeatMode = {
+    IFPaintCanvas.RepeatMode = {
         /** Horizontal and vertical repeat */
         Both: 0,
         /** Horizontal repeat */
@@ -132,50 +132,50 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GXPaintCanvas Class
+    // IFPaintCanvas Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type CanvasRenderingContext2D
      * @private
      */
-    GXPaintCanvas.prototype._canvasContext = null;
+    IFPaintCanvas.prototype._canvasContext = null;
 
     /**
      * @type GTransform
      * @private
      */
-    GXPaintCanvas.prototype._transform = null;
+    IFPaintCanvas.prototype._transform = null;
 
     /**
      * @type GPoint
      * @private
      */
-    GXPaintCanvas.prototype._offset = null;
+    IFPaintCanvas.prototype._offset = null;
 
     /**
      * @type GPoint
      * @private
      */
-    GXPaintCanvas.prototype._origin = null;
+    IFPaintCanvas.prototype._origin = null;
 
     /**
      * @type Number
      * @private
      */
-    GXPaintCanvas.prototype._scale = null;
+    IFPaintCanvas.prototype._scale = null;
 
     /**
      * @type Array<GRect>
      * @private
      */
-    GXPaintCanvas.prototype._areas = null;
+    IFPaintCanvas.prototype._areas = null;
 
     /**
      * @return {Number} the width of the canvas
      * @version 1.0
      */
-    GXPaintCanvas.prototype.getWidth = function () {
+    IFPaintCanvas.prototype.getWidth = function () {
         return this._canvasContext.canvas.width;
     };
 
@@ -183,7 +183,7 @@
      * @return {Number} the height of the canvas
      * @version 1.0
      */
-    GXPaintCanvas.prototype.getHeight = function () {
+    IFPaintCanvas.prototype.getHeight = function () {
         return this._canvasContext.canvas.height;
     };
 
@@ -193,7 +193,7 @@
      * @param {Number} height the new height for the canvas
      * @version 1.0
      */
-    GXPaintCanvas.prototype.resize = function (width, height) {
+    IFPaintCanvas.prototype.resize = function (width, height) {
         if (width != this._width || height != this._height) {
             this._canvasContext.canvas.width = width;
             this._canvasContext.canvas.height = height;
@@ -204,7 +204,7 @@
      * Returns the offset of this canvas
      * @returns {GPoint}
      */
-    GXPaintCanvas.prototype.getOffset = function () {
+    IFPaintCanvas.prototype.getOffset = function () {
         return this._offset;
     };
 
@@ -212,7 +212,7 @@
      * Assigns the offset of this canvas
      * @param {GPoint} origin
      */
-    GXPaintCanvas.prototype.setOffset = function (offset) {
+    IFPaintCanvas.prototype.setOffset = function (offset) {
         this._offset = offset;
     };
 
@@ -220,7 +220,7 @@
      * Returns the origin of this canvas
      * @returns {GPoint}
      */
-    GXPaintCanvas.prototype.getOrigin = function () {
+    IFPaintCanvas.prototype.getOrigin = function () {
         return this._origin;
     };
 
@@ -229,7 +229,7 @@
      * will always be premultiplied with any transformation.
      * @param {GPoint} origin
      */
-    GXPaintCanvas.prototype.setOrigin = function (origin) {
+    IFPaintCanvas.prototype.setOrigin = function (origin) {
         if (!GPoint.equals(origin, this._origin)) {
             this._origin = origin;
             this._updateTransform();
@@ -240,7 +240,7 @@
      * Returns the scalation of this canvas
      * @returns {Number}
      */
-    GXPaintCanvas.prototype.getScale = function () {
+    IFPaintCanvas.prototype.getScale = function () {
         return this._scale;
     };
 
@@ -249,7 +249,7 @@
      * will always be premultiplied with any transformation.
      * @param {GPoint} origin
      */
-    GXPaintCanvas.prototype.setScale = function (scale) {
+    IFPaintCanvas.prototype.setScale = function (scale) {
         if (scale !== this._scale) {
             this._scale = scale;
             this._updateTransform();
@@ -263,7 +263,7 @@
      * This parameter defaults to false, thus returns the global transform.
      * @return {GTransform} current transform
      */
-    GXPaintCanvas.prototype.getTransform = function (local) {
+    IFPaintCanvas.prototype.getTransform = function (local) {
         var transform = this._transform;
         if (!local && (this._origin || this._scale)) {
             var tx = this._origin ? this._origin.getX() : 0;
@@ -281,7 +281,7 @@
      * @return {GTransform} the old transform before assignment
      * @version 1.0
      */
-    GXPaintCanvas.prototype.setTransform = function (transform) {
+    IFPaintCanvas.prototype.setTransform = function (transform) {
         if (transform == null) {
             // Use identity transform
             transform = new GTransform();
@@ -298,7 +298,7 @@
      * @return {GTransform} the old transform before reset
      * @version 1.0
      */
-    GXPaintCanvas.prototype.resetTransform = function () {
+    IFPaintCanvas.prototype.resetTransform = function () {
         return this.setTransform(null);
     };
 
@@ -313,7 +313,7 @@
      * result in rounding errors otherwise
      * @version 1.0
      */
-    GXPaintCanvas.prototype.prepare = function (areas) {
+    IFPaintCanvas.prototype.prepare = function (areas) {
         // save context before anything else
         this._canvasContext.save();
 
@@ -353,7 +353,7 @@
      * and should restore.
      * @version 1.0
      */
-    GXPaintCanvas.prototype.finish = function () {
+    IFPaintCanvas.prototype.finish = function () {
         this._canvasContext.restore();
         this._transform = null;
         this._origin = null;
@@ -373,8 +373,8 @@
      * @param {GRect} extents the extents for the requested
      * canvas
      */
-    GXPaintCanvas.prototype.createCanvas = function (extents) {
-        var result = new GXPaintCanvas();
+    IFPaintCanvas.prototype.createCanvas = function (extents) {
+        var result = new IFPaintCanvas();
 
         // Resize canvas including our scalation plus a small tolerance factor
         result.resize(
@@ -413,9 +413,9 @@
     /**
      * Draw a canvas previously gathered via createCanvas.
      * Note that the canvas will be painted at it's origin.
-     * @param {GXPaintCanvas} canvas
+     * @param {IFPaintCanvas} canvas
      */
-    GXPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, composite) {
+    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, composite) {
         if (typeof opacity == "number") {
             this._canvasContext.globalAlpha = opacity;
         } else {
@@ -451,9 +451,9 @@
 
     /**
      * Releases a previously requested canvas
-     * @param {GXPaintCanvas} canvas
+     * @param {IFPaintCanvas} canvas
      */
-    GXPaintCanvas.prototype.releaseCanvas = function (canvas) {
+    IFPaintCanvas.prototype.releaseCanvas = function (canvas) {
         canvas.finish();
     };
 
@@ -463,10 +463,10 @@
      * @param {Number} y1 vertical start position
      * @param {Number} x2 horizontal end position
      * @param {Number} y2 vertical end position
-     * @param {GXGradient} gradient the gradient to be used
+     * @param {IFGradient} gradient the gradient to be used
      * @return {*} a pattern specific to this canvas-type
      */
-    GXPaintCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
+    IFPaintCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
         var result = this._canvasContext.createLinearGradient(x1, y1, x2, y2);
         var stops = gradient.getStops();
 
@@ -485,7 +485,7 @@
      * @param {Number} height height of rectangle
      * @version 1.0
      */
-    GXPaintCanvas.prototype.clipRect = function (x, y, width, height) {
+    IFPaintCanvas.prototype.clipRect = function (x, y, width, height) {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
         this._canvasContext.beginPath();
         this._canvasContext.moveTo(x, y);
@@ -500,7 +500,7 @@
      * Reset the last assigned clipping region
      * @version 1.0
      */
-    GXPaintCanvas.prototype.resetClip = function () {
+    IFPaintCanvas.prototype.resetClip = function () {
         this._canvasContext.restore();
     };
 
@@ -508,22 +508,22 @@
      * Pushes a vertex source into this canvas overwriting any
      * previously added vertices. This will act as source for different
      * functions like clipVertices, strokeVertices and fillVertices
-     * @param {GXVertexSource} vertexSource the vertex source to use for clipping
+     * @param {IFVertexSource} vertexSource the vertex source to use for clipping
      */
-    GXPaintCanvas.prototype.putVertices = function (vertexSource) {
+    IFPaintCanvas.prototype.putVertices = function (vertexSource) {
         if (vertexSource.rewindVertices(0)) {
             this._canvasContext.beginPath();
 
-            var vertex = new GXVertex();
+            var vertex = new IFVertex();
             while (vertexSource.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case GXVertex.Command.Move:
+                    case IFVertex.Command.Move:
                         this._canvasContext.moveTo(vertex.x, vertex.y);
                         break;
-                    case GXVertex.Command.Line:
+                    case IFVertex.Command.Line:
                         this._canvasContext.lineTo(vertex.x, vertex.y);
                         break;
-                    case GXVertex.Command.Curve:
+                    case IFVertex.Command.Curve:
                     {
                         var xTo = vertex.x;
                         var yTo = vertex.y;
@@ -532,7 +532,7 @@
                         }
                     }
                         break;
-                    case GXVertex.Command.Curve2:
+                    case IFVertex.Command.Curve2:
                     {
                         var xTo = vertex.x;
                         var yTo = vertex.y;
@@ -545,7 +545,7 @@
                         }
                     }
                         break;
-                    case GXVertex.Command.Close:
+                    case IFVertex.Command.Close:
                         this._canvasContext.closePath();
                         break;
                     default:
@@ -560,17 +560,17 @@
      * @param {*} stroke the stroke to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [width] the width of the stroke in pixelMode. If not provided, defaults to 1.0 pixelMode
-     * @param {Number} [cap] the line cap used for stroking, defaults to GXPaintCanvas.LineCap.Butt
+     * @param {Number} [cap] the line cap used for stroking, defaults to IFPaintCanvas.LineCap.Butt
      * @param {Number} [join] the line join used for stroking
      * @param {Number} [miterLimit] the miter limit used for stroking
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to GXPaintCanvas.CompositeOperator.SourceOver
-     * @see GXPaintCanvas.LineCap
-     * @see GXPaintCanvas.LineJoin
-     * @see GXPaintCanvas.StrokeAlignment
-     * @see GXPaintCanvas.CompositeOperator
+     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @see IFPaintCanvas.LineCap
+     * @see IFPaintCanvas.LineJoin
+     * @see IFPaintCanvas.StrokeAlignment
+     * @see IFPaintCanvas.CompositeOperator
      */
-    GXPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
+    IFPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -581,13 +581,13 @@
 
         if (typeof cap == "number") {
             switch (cap) {
-                case GXPaintCanvas.LineCap.Butt:
+                case IFPaintCanvas.LineCap.Butt:
                     this._canvasContext.lineCap = "butt";
                     break;
-                case GXPaintCanvas.LineCap.Round:
+                case IFPaintCanvas.LineCap.Round:
                     this._canvasContext.lineCap = "round";
                     break;
-                case GXPaintCanvas.LineCap.Square:
+                case IFPaintCanvas.LineCap.Square:
                     this._canvasContext.lineCap = "square";
                     break;
             }
@@ -597,10 +597,10 @@
 
         if (typeof join == "number") {
             switch (join) {
-                case GXPaintCanvas.LineJoin.Bevel:
+                case IFPaintCanvas.LineJoin.Bevel:
                     this._canvasContext.lineJoin = "bevel";
                     break;
-                case GXPaintCanvas.LineJoin.Round:
+                case IFPaintCanvas.LineJoin.Round:
                     this._canvasContext.lineJoin = "round";
                     break;
                 default:
@@ -633,10 +633,10 @@
      * @param {*} [fill] the fill to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to GXPaintCanvas.CompositeOperator.SourceOver
-     * @see GXPaintCanvas.CompositeOperator
+     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @see IFPaintCanvas.CompositeOperator
      */
-    GXPaintCanvas.prototype.fillVertices = function (fill, opacity, composite) {
+    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, composite) {
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
@@ -667,7 +667,7 @@
      * @param {*} [fill] the fill, defaults to full opaque black
      * @version 1.0
      */
-    GXPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
+    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
         fill = this._convertStyle(fill ? fill : gColor.build(0, 0, 0));
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
@@ -686,7 +686,7 @@
      * @param {Number} [fill] the stroke, defaults to full opaque black
      * @version 1.0
      */
-    GXPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
+    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
@@ -707,7 +707,7 @@
      * @param {Number} [stroke] the stroke, defaults to full opaque black
      * @version 1.0
      */
-    GXPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
+    IFPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
@@ -720,16 +720,16 @@
 
     /**
      * Draw an image or canvas
-     * @param {Image|GXPaintCanvas} image the image or canvas to be drawn
+     * @param {Image|IFPaintCanvas} image the image or canvas to be drawn
      * @param {Number} [x] the x-position of the image, defaults to zero
      * @param {Number} [y] the y-position of the image, defaults to zero
      * @param {Boolean} [noSmooth] if set to true, will render pixelated without smoothing. Defaults to false.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to GXPaintCanvas.CompositeOperator.SourceOver
-     * @see GXPaintCanvas.CompositeOperator
+     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @see IFPaintCanvas.CompositeOperator
      * @version 1.0
      */
-    GXPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
+    IFPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
         x = x || 0;
         y = y || 0;
 
@@ -762,7 +762,7 @@
      * @param {GRect} [extents] for the filter, if null, takes the whole canvas
      * @param {Array<*>} [args] optional arguments passed to the filter
      */
-    GXPaintCanvas.prototype.runFilter = function (filterName, extents, args) {
+    IFPaintCanvas.prototype.runFilter = function (filterName, extents, args) {
         var filter = _.ifFilter[filterName];
         if (filter) {
             extents = extents || new GRect(0, 0, this.getWidth(), this.getHeight());
@@ -788,7 +788,7 @@
     };
 
     /** @private */
-    GXPaintCanvas.prototype._updateTransform = function () {
+    IFPaintCanvas.prototype._updateTransform = function () {
         // make sure to assign global transform matrix to canvas
         var matrix = this.getTransform(false).getMatrix();
         this._canvasContext.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
@@ -800,32 +800,32 @@
      * @returns {String}
      * @private
      */
-    GXPaintCanvas.prototype._convertComposite = function (composite, defaultReturn) {
+    IFPaintCanvas.prototype._convertComposite = function (composite, defaultReturn) {
         if (typeof composite == "number") {
             switch (composite) {
-                case GXPaintCanvas.CompositeOperator.SourceOver:
+                case IFPaintCanvas.CompositeOperator.SourceOver:
                     return "source-over";
-                case GXPaintCanvas.CompositeOperator.SourceAtTop:
+                case IFPaintCanvas.CompositeOperator.SourceAtTop:
                     return "source-atop";
-                case GXPaintCanvas.CompositeOperator.SourceIn:
+                case IFPaintCanvas.CompositeOperator.SourceIn:
                     return "source-in";
-                case GXPaintCanvas.CompositeOperator.SourceOut:
+                case IFPaintCanvas.CompositeOperator.SourceOut:
                     return "source-out";
-                case GXPaintCanvas.CompositeOperator.DestinationOver:
+                case IFPaintCanvas.CompositeOperator.DestinationOver:
                     return "destination-over";
-                case GXPaintCanvas.CompositeOperator.DestinationAtTop:
+                case IFPaintCanvas.CompositeOperator.DestinationAtTop:
                     return "destination-atop";
-                case GXPaintCanvas.CompositeOperator.DestinationIn:
+                case IFPaintCanvas.CompositeOperator.DestinationIn:
                     return "destination-in";
-                case GXPaintCanvas.CompositeOperator.DestinationOut:
+                case IFPaintCanvas.CompositeOperator.DestinationOut:
                     return "destination-out";
-                case GXPaintCanvas.CompositeOperator.Lighter:
+                case IFPaintCanvas.CompositeOperator.Lighter:
                     return "lighter";
-                case GXPaintCanvas.CompositeOperator.Darker:
+                case IFPaintCanvas.CompositeOperator.Darker:
                     return "darker";
-                case GXPaintCanvas.CompositeOperator.Copy:
+                case IFPaintCanvas.CompositeOperator.Copy:
                     return "copy";
-                case GXPaintCanvas.CompositeOperator.Xor:
+                case IFPaintCanvas.CompositeOperator.Xor:
                     return "xor";
                 default:
                     break;
@@ -840,12 +840,12 @@
      * @returns {*}
      * @private
      */
-    GXPaintCanvas.prototype._convertStyle = function (style) {
+    IFPaintCanvas.prototype._convertStyle = function (style) {
         // TODO : Support color conversion using paint configuration color profiles
 
         if (style instanceof CanvasPattern || style instanceof CanvasGradient) {
             return style;
-        } else if (style instanceof GXColor) {
+        } else if (style instanceof IFColor) {
             return style.asCSSString();
         } else if (typeof style === 'number') {
             return gColor.toCSS(style);
@@ -855,10 +855,10 @@
     };
 
     /** @private */
-    GXPaintCanvas.prototype._convertImage = function (image) {
+    IFPaintCanvas.prototype._convertImage = function (image) {
         if (image instanceof Image) {
             return image;
-        } else if (image instanceof GXPaintCanvas) {
+        } else if (image instanceof IFPaintCanvas) {
             return image._canvasContext.canvas;
         } else {
             throw new Error('Not Supported.');
@@ -866,15 +866,15 @@
     };
 
     /** @private */
-    GXPaintCanvas.prototype._convertRepeat = function (repeat) {
+    IFPaintCanvas.prototype._convertRepeat = function (repeat) {
         switch (repeat) {
-            case GXPaintCanvas.RepeatMode.Both:
+            case IFPaintCanvas.RepeatMode.Both:
                 return "repeat";
-            case GXPaintCanvas.RepeatMode.Horizontal:
+            case IFPaintCanvas.RepeatMode.Horizontal:
                 return "repeat-x";
-            case GXPaintCanvas.RepeatMode.Vertical:
+            case IFPaintCanvas.RepeatMode.Vertical:
                 return "repeat-y";
-            case GXPaintCanvas.RepeatMode.None:
+            case IFPaintCanvas.RepeatMode.None:
                 return "no-repeat";
         }
     };
@@ -882,7 +882,7 @@
     var _imageSmoothingProperties = ['imageSmoothingEnabled', 'webkitImageSmoothingEnabled', 'mozImageSmoothingEnabled'];
 
     /** @private */
-    GXPaintCanvas.prototype._getImageSmoothingEnabled = function () {
+    IFPaintCanvas.prototype._getImageSmoothingEnabled = function () {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 return this._canvasContext[_imageSmoothingProperties[i]];
@@ -892,7 +892,7 @@
     };
 
     /** @private */
-    GXPaintCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
+    IFPaintCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 this._canvasContext[_imageSmoothingProperties[i]] = smoothingEnabled;
@@ -902,5 +902,5 @@
         //throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
-    _.GXPaintCanvas = GXPaintCanvas;
+    _.IFPaintCanvas = IFPaintCanvas;
 })(this);

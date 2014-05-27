@@ -8,10 +8,10 @@
      */
     function GInsertLayerAction() {
     };
-    GObject.inherit(GInsertLayerAction, GUIAction);
+    IFObject.inherit(GInsertLayerAction, GUIAction);
 
     GInsertLayerAction.ID = 'modify.insert-layer';
-    GInsertLayerAction.TITLE = new GLocale.Key(GInsertLayerAction, "title");
+    GInsertLayerAction.TITLE = new IFLocale.Key(GInsertLayerAction, "title");
 
     /**
      * @override
@@ -31,7 +31,7 @@
      * @override
      */
     GInsertLayerAction.prototype.getCategory = function () {
-        return EXApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**
@@ -55,7 +55,7 @@
         var editor = gApp.getActiveDocument().getEditor();
         var scene = editor.getScene();
         var target = editor.getCurrentLayer() || editor.getCurrentLayer() || editor.getScene();
-        var layer = new GXLayer();
+        var layer = new IFLayer();
         layer.setProperties([
             'name'
         ], [
