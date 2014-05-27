@@ -128,100 +128,100 @@
 
             if (typeof key == 'number') {
                 // we want a system-translated key here
-                var key = guiKey.transformKey(key);
+                var key = ifKey.transformKey(key);
 
                 switch (key) {
-                    case GUIKey.Constant.SPACE:
+                    case IFKey.Constant.SPACE:
                         result += "space";
                         break;
-                    case GUIKey.Constant.ENTER:
+                    case IFKey.Constant.ENTER:
                         result += "enter";
                         break;
-                    case GUIKey.Constant.TAB:
+                    case IFKey.Constant.TAB:
                         result += "tab";
                         break;
-                    case GUIKey.Constant.BACKSPACE:
+                    case IFKey.Constant.BACKSPACE:
                         result += "backspace";
                         break;
-                    case GUIKey.Constant.CONTROL:
+                    case IFKey.Constant.CONTROL:
                         result += "ctrl";
                         break;
-                    case GUIKey.Constant.SHIFT:
+                    case IFKey.Constant.SHIFT:
                         result += "shift";
                         break;
-                    case GUIKey.Constant.ALT:
+                    case IFKey.Constant.ALT:
                         result += "alt";
                         break;
-                    case GUIKey.Constant.LEFT:
+                    case IFKey.Constant.LEFT:
                         result += "left";
                         break;
-                    case GUIKey.Constant.UP:
+                    case IFKey.Constant.UP:
                         result += "up";
                         break;
-                    case GUIKey.Constant.RIGHT:
+                    case IFKey.Constant.RIGHT:
                         result += "right";
                         break;
-                    case GUIKey.Constant.DOWN:
+                    case IFKey.Constant.DOWN:
                         result += "down";
                         break;
-                    case GUIKey.Constant.PAGE_UP:
+                    case IFKey.Constant.PAGE_UP:
                         result += "pageup";
                         break;
-                    case GUIKey.Constant.PAGE_DOWN:
+                    case IFKey.Constant.PAGE_DOWN:
                         result += "pagedown";
                         break;
-                    case GUIKey.Constant.HOME:
+                    case IFKey.Constant.HOME:
                         result += "home";
                         break;
-                    case GUIKey.Constant.END:
+                    case IFKey.Constant.END:
                         result += "end";
                         break;
-                    case GUIKey.Constant.INSERT:
+                    case IFKey.Constant.INSERT:
                         result += "ins";
                         break;
-                    case GUIKey.Constant.DELETE:
+                    case IFKey.Constant.DELETE:
                         result += "del";
                         break;
-                    case GUIKey.Constant.ESCAPE:
+                    case IFKey.Constant.ESCAPE:
                         result += "esc";
                         break;
-                    case GUIKey.Constant.COMMAND:
+                    case IFKey.Constant.COMMAND:
                         result += "cmd";
                         break;
-                    case GUIKey.Constant.F1:
+                    case IFKey.Constant.F1:
                         result += "f1";
                         break;
-                    case GUIKey.Constant.F2:
+                    case IFKey.Constant.F2:
                         result += "f2";
                         break;
-                    case GUIKey.Constant.F3:
+                    case IFKey.Constant.F3:
                         result += "f3";
                         break;
-                    case GUIKey.Constant.F4:
+                    case IFKey.Constant.F4:
                         result += "f4";
                         break;
-                    case GUIKey.Constant.F5:
+                    case IFKey.Constant.F5:
                         result += "f5";
                         break;
-                    case GUIKey.Constant.F6:
+                    case IFKey.Constant.F6:
                         result += "f6";
                         break;
-                    case GUIKey.Constant.F7:
+                    case IFKey.Constant.F7:
                         result += "f7";
                         break;
-                    case GUIKey.Constant.F8:
+                    case IFKey.Constant.F8:
                         result += "f8";
                         break;
-                    case GUIKey.Constant.F9:
+                    case IFKey.Constant.F9:
                         result += "f9";
                         break;
-                    case GUIKey.Constant.F10:
+                    case IFKey.Constant.F10:
                         result += "f10";
                         break;
-                    case GUIKey.Constant.F11:
+                    case IFKey.Constant.F11:
                         result += "f11";
                         break;
-                    case GUIKey.Constant.F12:
+                    case IFKey.Constant.F12:
                         result += "f12";
                         break;
                     default:
