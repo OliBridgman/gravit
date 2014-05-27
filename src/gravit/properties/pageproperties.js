@@ -212,13 +212,6 @@
                     .append(_createInput('cls'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<h1></h1>')
-                        .addClass('g-divider')
-                        // TODO : I18N
-                        .text('Size'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
                     .html('&nbsp;'))
