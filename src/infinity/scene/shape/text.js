@@ -272,6 +272,24 @@
     };
 
     /** @override */
+    IFText.Block.prototype.store = function (blob) {
+        if (IFNode.Store.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFText.Block.Properties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @Block */
+    IFText.Paragraph.prototype.restore = function (blob) {
+        if (IFNode.Store.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFText.Block.Properties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     IFText.Block.prototype._handleChange = function (change, args) {
         var text = this.getText();
 
@@ -576,6 +594,24 @@
     /** @override */
     IFText.Paragraph.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFText.Content;
+    };
+
+    /** @override */
+    IFText.Paragraph.prototype.store = function (blob) {
+        if (IFShape.Block.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFText.Paragraph.Properties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFText.Paragraph.prototype.restore = function (blob) {
+        if (IFShape.Block.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFText.Paragraph.Properties);
+            return true;
+        }
+        return false;
     };
 
     /** @override */
