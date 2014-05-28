@@ -26,7 +26,7 @@
 
     /**
      * The underlying blob, may be null
-     * @type {IFBlob}
+     * @type {GBlob}
      * @private
      */
     GDocument.prototype._blob = null;
@@ -69,7 +69,7 @@
 
     /**
      * Returns the blob this document is working on if any
-     * @returns {IFBlob}
+     * @returns {GBlob}
      */
     GDocument.prototype.getBlob = function () {
         return this._blob;
@@ -77,13 +77,11 @@
 
     /**
      * Assigns a blob this document is working on
-     * @param {IFBlob} blob
+     * @param {GBlob} blob
      */
     GDocument.prototype.setBlob = function (blob) {
         if (blob && blob !== this.blob) {
             this._blob = blob;
-
-            // TODO : Trigger update event here
         }
     };
 
@@ -140,7 +138,9 @@
     GDocument.prototype.save = function () {
         // TODO : Reset undo list/set save point
         if (this._blob) {
-            this._blob.store(IFNode.serialize(this._scene), false, 'binary', function () {
+            var input = IFNode.serialize(this._scene);
+            var output = pako.deflate(input);
+            this._blob.store(output.buffer, true, function () {
                 // NO-OP
             });
         }

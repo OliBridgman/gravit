@@ -159,6 +159,8 @@
             .gDialog({
                 // TODO : I18N
                 title: 'Shortcuts',
+                width: 650,
+                height: 500,
                 buttons: [
                     {
                         title: IFLocale.Constant.Close,

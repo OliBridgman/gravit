@@ -379,88 +379,84 @@
     };
 
     /**
-     * Show a file chooser dialog and call the done function
-     * when the call was successfull and a file was chosen
-     * @param {Function} done the callback called when one or
-     * more files have been chosen. If multiple is not true,
-     * a File reference will be send, otherwise an Array of files
-     * @param {Boolean} multiple whether to allow multiple file
-     * selection, defaults to false
-     */
-    GApplication.prototype.openFile = function (done, multiple) {
-        var fileChooserInput = $('#appFileChooser');
-
-        if (fileChooserInput.length === 0) {
-            // Add a hidden file input for quick file choosing
-            fileChooserInput = $('<input>')
-                .attr('type', 'file')
-                .attr('id', 'appFileChooser')
-                .css({
-                    'display': 'block',
-                    'position': 'absolute',
-                    'top': '0px',
-                    'left': '0px',
-                    'visibility': 'hidden',
-                    'width': '0',
-                    'height': '0'
-                })
-                .appendTo($("body"));
-        }
-
-        fileChooserInput.off();
-
-        fileChooserInput.attr('multiple', multiple ? 'true' : null);
-
-        fileChooserInput.on('change', function (evt) {
-            done(multiple ? evt.target.files : evt.target.files[0]);
-        });
-
-        fileChooserInput.click();
-    };
-
-    /**
      * Add a new document and open up a window for it
      * and mark the view as being active
-     * @param {IFScene|IFBlob} source the source to be added, either a scene
-     * or a blob to read the document from
+     * @param {IFScene} scene the scene to add the document from it
      * @param {String} [temporaryTitle] optional temporary title to be used
      * for the document if no blob is assigned, defaults to null to use
      * the default naming scheme
      */
-    GApplication.prototype.addDocument = function (source, temporaryTitle) {
-        if (source instanceof IFBlob) {
-            // Iterate all documents first and look if the given
-            // blob is already opened and if so, activate the
-            // document's last view
-            var documentAlreadyOpened = false;
-            for (var i = 0; i < this._documents.length; ++i) {
-                var document = this._documents[i];
-                if (document.blob === source) {
-                    this.activateDocument(document);
-                    documentAlreadyOpened = true;
+    GApplication.prototype.addDocument = function (scene, temporaryTitle) {
+        this._addDocument(scene, null, temporaryTitle);
+    };
+
+    /**
+     * Open a document and open up a window for it
+     * and mark the view as being active
+     * @param {GBlob} blob the blob to open the document from
+     */
+    GApplication.prototype.openDocument = function (blob) {
+        // Iterate all documents first and look if the given
+        // blob is already opened and if so, activate the
+        // document's last view
+        var documentAlreadyOpened = false;
+        for (var i = 0; i < this._documents.length; ++i) {
+            var document = this._documents[i];
+            if (document.getBlob() === blob) {
+                this.activateDocument(document);
+                documentAlreadyOpened = true;
+            }
+        }
+
+        if (!documentAlreadyOpened) {
+            blob.restore(true, function (data) {
+                var scene = null;
+                try {
+                    data = pako.inflate(new Uint8Array(data), { to: 'string' });
+
+                    scene = IFNode.deserialize(data);
+
+                    if (!scene) {
+                        throw new Error('Failure.');
+                    }
+                } catch (e) {
+                    console.log(e);
+                    alert('An error has ocurred while trying to open the document.');
                 }
-            }
 
-            if (!documentAlreadyOpened) {
-                source.restore(false, 'binary', function (data) {
-                    var scene = null;
-                    try {
-                        scene = IFNode.deserialize(data);
+                if (scene) {
+                    this._addDocument(scene, blob);
+                }
+            }.bind(this));
+        }
+    };
 
-                        if (!scene) {
-                            throw new Error('Failure.');
-                        }
-                    } catch (e) {
-                        alert('An error has ocurred while trying to open the document.');
-                    }
+    /**
+     * Prompt to save a document under a new target
+     * @param {GStorage} storage
+     * @param {GDocument} [document] the document to save as, if
+     * not provided takes the currently active one
+     */
+    GApplication.prototype.saveDocumentAs = function (storage, document) {
+        var document = document || this.getActiveDocument();
 
-                    if (scene) {
-                        this._addDocument(scene, source);
-                    }
-                }.bind(this));
-            }
-        } else {
-            this._addDocument(source, null, temporaryTitle);
+        if (document) {
+            // TODO : Set first parameter 'reference'
+            storage.saveBlobPrompt(null, document.getTitle(), 'gravit', function (blob) {
+                document.setBlob(blob);
+                document.save();
+
+                // Update all view window menu items
+                var windows = document.getWindows();
+                for (var i = 0; i < windows.length; ++i) {
+                    this._updateWindowMenuItem(windows[i]);
+                }
+
+                // Trigger event
+                if (this.hasEventListeners(GApplication.DocumentEvent)) {
+                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.BlobUpdated, this));
+                }
+            }.bind(this));
         }
     };
 
@@ -530,11 +526,6 @@
 
             if (this.hasEventListeners(GApplication.DocumentEvent)) {
                 this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Removed, document));
-            }
-
-            // Execute welcome dialog if there're no documents available
-            if (this._documents.length === 0) {
-                this.executeAction(GWelcomeAction.ID);
             }
         }
     };
@@ -688,12 +679,6 @@
 
         // Subscribe to window events
         this._windows.addEventListener(GWindows.WindowEvent, this._windowEvent, this);
-
-        // Execute welcome dialog if there're no documents available but
-        // provide a slight timeout to ensure our window is properly resized
-        if (this._documents.length === 0) {
-            this.executeAction(GWelcomeAction.ID);
-        }
     };
 
     /**
@@ -754,7 +739,7 @@
     /**
      * Add a new document
      * @param {IFScene} scene
-     * @param {IFBlob} blob
+     * @param {GBlob} blob
      * @param {String} [temporaryTitle]
      * @private
      */
@@ -844,7 +829,7 @@
                             type: 'menu',
                             caption: category,
                             items: [],
-                            windowMenu : GApplication.CATEGORY_WINDOW === action.getCategory() &&
+                            windowMenu: GApplication.CATEGORY_WINDOW === action.getCategory() &&
                                 currentTree === treeRoot
                         };
                         _addItemGroupAndDivider(currentTree, item, group);
@@ -872,9 +857,9 @@
                 item.separator = gShell.addMenuSeparator(parentMenu);
             } else if (item.type === 'item') {
                 item.item = gShell.addMenuItem(parentMenu, ifLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
-                function () {
-                    this.executeAction(item.action.getId());
-                }.bind(this));
+                    function () {
+                        this.executeAction(item.action.getId());
+                    }.bind(this));
             }
         }.bind(this);
 
@@ -942,8 +927,8 @@
      */
     GApplication.prototype._addWindowMenuItem = function (window) {
         this._windowMenuMap.push({
-            window : window,
-            item : gShell.addMenuItem(this._windowMenu, window.getTitle(), true, null, function () {
+            window: window,
+            item: gShell.addMenuItem(this._windowMenu, window.getTitle(), true, null, function () {
                 this._windows.activateWindow(window);
             }.bind(this))
         });
@@ -1026,7 +1011,7 @@
      * @param {Array<*>} shortcut
      * @returns {String}
      */
-    GApplication.prototype._shortcutToMouseTrapShortcut = function(shortcut) {
+    GApplication.prototype._shortcutToMouseTrapShortcut = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {

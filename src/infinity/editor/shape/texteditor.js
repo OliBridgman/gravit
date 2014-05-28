@@ -152,7 +152,6 @@
                 // Create / Remove block style if selection is not collapsed
                 if (!sel.isCollapsed) {
                     // TODO !!!!
-                    console.log('PHEW');
                 }
 
                 //var cssApplier = rangy.createCssClassApplier("dummy", {normalize: true}, ['span', 'p']);

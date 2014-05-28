@@ -2,7 +2,7 @@
 
     /**
      * Action opening a document on a specific storage
-     * @param {IFStorage} storage
+     * @param {GStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class GOpenAction
      * @extends GUIAction
@@ -61,7 +61,10 @@
     GOpenAction.prototype.execute = function () {
         // TODO : Set first parameter 'reference'
         this._storage.openBlobPrompt(null, ['gravit'], function (blob) {
-            gApp.addDocument(blob);
+            gApp.openDocument(blob);
+
+            // Center page
+            gApp.executeAction(GOriginalViewAction.ID);
         });
     };
 

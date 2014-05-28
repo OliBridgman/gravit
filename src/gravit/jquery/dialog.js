@@ -33,7 +33,8 @@
                 var $this = $(this);
 
                 $this.wrap($('<div></div>')
-                    .addClass('content'));
+                    .addClass('content')
+                    .css('overflow', 'auto'));
 
                 var content = $this.parent('.content');
 
@@ -41,10 +42,15 @@
                     content.addClass('padding');
                 }
 
+                if (options.height) {
+                    content.css({
+                        'height': options.height + 'px'
+                    })
+                }
+
                 content.wrap($('<div></div>')
                     .addClass('g-dialog g-regular container')
-                    .css('width', options.width ? options.width.toString() + 'px' : 'auto')
-                    .css('height', options.height ? options.height + 'px' : 'auto'));
+                    .css('width', options.width ? options.width.toString() + 'px' : 'auto'));
 
                 var container = content.parent('.container');
 
@@ -71,9 +77,13 @@
                     .addClass('g-modal-background')
                     .on('click', function (evt) {
                         if ($(evt.target).hasClass('g-modal-background')) {
-                            $(evt.target).fadeIn(100).fadeOut(100).fadeIn(100);
+                            if (options.closeable) {
+                                methods.close.call(this);
+                            } else {
+                                $(evt.target).fadeIn(100).fadeOut(100).fadeIn(100);
+                            }
                         }
-                    }));
+                    }.bind(this)));
             });
         },
 

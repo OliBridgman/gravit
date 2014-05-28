@@ -2,7 +2,7 @@
 
     /**
      * Action saving a document filed under a name
-     * @param {IFStorage} storage
+     * @param {GStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class GSaveAsAction
      * @extends GUIAction
@@ -16,6 +16,7 @@
 
     GSaveAsAction.ID = 'file.save-as';
     GSaveAsAction.TITLE = new IFLocale.Key(GSaveAsAction, "title");
+    GSaveAsAction.TITLE_DEFAULT = new IFLocale.Key(GSaveAsAction, "title-default");
 
     /**
      * @override
@@ -28,21 +29,23 @@
      * @override
      */
     GSaveAsAction.prototype.getTitle = function () {
-        return ifLocale.get(GSaveAsAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
+        return this._default ?
+            ifLocale.get(GSaveAsAction.TITLE_DEFAULT) :
+            ifLocale.get(GSaveAsAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_FILE_SAVEAS;
+        return this._default ? GApplication.CATEGORY_FILE : GApplication.CATEGORY_FILE_SAVEAS;
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getGroup = function () {
-        return "file/saveas_storage";
+        return this._default ? "file" : "file/saveas_storage";
     };
 
     /**
@@ -63,13 +66,7 @@
      * @override
      */
     GSaveAsAction.prototype.execute = function () {
-        var document = gApp.getActiveDocument();
-
-        // TODO : Set first parameter 'reference'
-        this._storage.saveBlobPrompt(null, document.getTitle(), 'gravit', function (blob) {
-            document.setBlob(blob);
-            document.save();
-        });
+        gApp.saveDocumentAs(this._storage);
     };
 
     /** @override */
