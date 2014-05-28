@@ -6,7 +6,8 @@
         "mousetrap": "latest",
         "font-awesome": "latest",
         "jqtree": "latest",
-        "opentype.js": "git://github.com/quasado/opentype.js.git#2977630f96d1ba346df3016d2db88042077f5f76",
+        "opentype.js": "git://github.com/nodebox/opentype.js.git#9eba421aa20fbcf1da2940783624e839073e32b0",
+        "zlib.js": "git://github.com/imaya/zlib.js#latest",
         "rangy": "latest"
     },
     "devDependencies": {},
