@@ -281,7 +281,7 @@
     };
 
     /** @Block */
-    IFText.Paragraph.prototype.restore = function (blob) {
+    IFText.Block.prototype.restore = function (blob) {
         if (IFNode.Store.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFText.Block.Properties);
             return true;
@@ -598,7 +598,7 @@
 
     /** @override */
     IFText.Paragraph.prototype.store = function (blob) {
-        if (IFShape.Block.prototype.store.call(this, blob)) {
+        if (IFText.Block.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFText.Paragraph.Properties);
             return true;
         }
@@ -607,7 +607,7 @@
 
     /** @override */
     IFText.Paragraph.prototype.restore = function (blob) {
-        if (IFShape.Block.prototype.restore.call(this, blob)) {
+        if (IFText.Block.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFText.Paragraph.Properties);
             return true;
         }
