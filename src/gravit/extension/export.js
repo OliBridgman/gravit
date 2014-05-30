@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * The base for an export filter
-     * @class IFExport
+     * @class GExport
      * @constructor
      */
-    function IFExport() {
+    function GExport() {
     };
 
     /**
      * The name of the export-filter
      */
-    IFExport.prototype.getName = function () {
+    GExport.prototype.getName = function () {
         throw new Error('Not Supported.');
     };
 
@@ -18,7 +18,7 @@
      * The extension this export filter produces like 'pdf'
      * @return {String} the extension
      */
-    IFExport.prototype.getExtension = function () {
+    GExport.prototype.getExtension = function () {
         throw new Error('Not Supported.');
     };
 
@@ -28,9 +28,9 @@
      * @param {Function} done the callback to be called for
      * success or failure with the blob (for success) as parameter
      */
-    IFExport.prototype.export = function (scene, done) {
+    GExport.prototype.export = function (scene, done) {
         throw new Error('Not Supported.');
     };
 
-    _.IFExport = IFExport;
+    _.GExport = GExport;
 })(this);

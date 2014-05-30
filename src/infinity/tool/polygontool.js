@@ -25,29 +25,6 @@
     IFPolygonTool.prototype._innerRadiusFactor = 0.5;
 
     /** @override */
-    IFPolygonTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFPolygonTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M13.4,20.5l3.9,7l-3.9,7H5.6l-3.9-7l3.9-7H13.4 M14,19.5H5l-4.5,8l4.5,8h9l4.5-8L14,19.5L14,19.5z"/>\n</svg>\n';
-    };
-
-    /** @override */
-    IFPolygonTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this)
-            .addKey(IFKey.Constant.UP, new IFLocale.Key(IFPolygonTool, "shortcut.shift"))
-            .addKey(IFKey.Constant.DOWN, new IFLocale.Key(IFPolygonTool, "shortcut.option"))
-            .setTitle(new IFLocale.Key(IFPolygonTool, "title"));
-    };
-
-    /** @override */
-    IFPolygonTool.prototype.getActivationCharacters = function () {
-        return ['G'];
-    };
-
-    /** @override */
     IFPolygonTool.prototype._modifiersChanged = function (event) {
         if (event.changed.shiftKey || event.changed.optionKey) {
             this._invalidateShape();

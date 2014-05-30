@@ -44,50 +44,6 @@
     IFTool.prototype._editor = null;
 
     /**
-     * Should return a group for the tool (maybe null)
-     * @returns {String}
-     */
-    IFTool.prototype.getGroup = function () {
-        return null;
-    };
-
-    /**
-     * Should return a complete svg-based icon including a valid viewBox
-     * @returns {String}
-     */
-    IFTool.prototype.getIcon = function () {
-        return null;
-    };
-
-    /**
-     * Should return a hint for this tool (maybe null)
-     * @returns {GUIHint}
-     * @version 1.0
-     */
-    IFTool.prototype.getHint = function () {
-        var hint = new GUIHint().addKey(IFKey.Constant.ESCAPE, new IFLocale.Key(IFTool, "shortcut.esc"));
-        var activationChars = this.getActivationCharacters();
-        if (activationChars) {
-            var hintShortcuts = [];
-            for (var i = 0; i < activationChars.length; ++i) {
-                hintShortcuts.push([activationChars[i]]);
-            }
-            hint.setShortcuts(hintShortcuts);
-        }
-        return hint;
-    };
-
-    /**
-     * Should return the shortcut character code(s)
-     * to activate this tool or null for none
-     * @returns {Array<String>}
-     * @version 1.0
-     */
-    IFTool.prototype.getActivationCharacters = function () {
-        return null;
-    };
-
-    /**
      * Should return the current cursor for this tool.
      * If you need to update the cursor, simply call updateCursor()
      * @returns {String}

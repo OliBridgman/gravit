@@ -46,26 +46,6 @@
     IFZoomTool.prototype._dragArea = null;
 
     /** @override */
-    IFZoomTool.prototype.getGroup = function () {
-        return 'view';
-    };
-
-    /** @override */
-    IFZoomTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M17.9,34L15,31.2c1-1.3,1.5-2.9,1.5-4.7c0-4.4-3.6-8.1-8-8.1c-4.4,0-8.1,3.6-8.1,8.1c0,4.4,3.6,8,8.1,8\n\tc1.8,0,3.4-0.6,4.7-1.5l2.8,2.8c0.7,0.7,1.7,0.8,2.2,0.3C18.7,35.7,18.6,34.7,17.9,34z M1.6,26.5c0-3.8,3.1-6.9,6.9-6.9s7,3.1,7,6.9\n\ts-3.1,7-7,7S1.6,30.3,1.6,26.5z"/>\n</svg>\n';
-    };
-
-    /** @override */
-    IFZoomTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFZoomTool, "title"));
-    };
-
-    /** @override */
-    IFZoomTool.prototype.getActivationCharacters = function () {
-        return ['Z'];
-    };
-
-    /** @override */
     IFZoomTool.prototype.getCursor = function () {
         switch (this._zoomMode) {
             case -2:

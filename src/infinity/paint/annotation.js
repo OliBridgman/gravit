@@ -39,7 +39,7 @@
         }
 
         var fillColor = context.selectionOutlineColor;
-        var strokeColor = gColor.build(255, 255, 255);
+        var strokeColor = IFColor.WHITE;
         if (selected) {
             fillColor = strokeColor;
             strokeColor = context.selectionOutlineColor;

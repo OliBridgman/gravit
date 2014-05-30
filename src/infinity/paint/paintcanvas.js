@@ -670,7 +670,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
-        fill = this._convertStyle(fill ? fill : gColor.build(0, 0, 0));
+        fill = this._convertStyle(fill ? fill : IFColor.BLACK);
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
     };
@@ -689,7 +689,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
-        stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
+        stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
@@ -710,7 +710,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
-        stroke = this._convertStyle(stroke ? stroke : gColor.build(0, 0, 0));
+        stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
@@ -849,8 +849,6 @@
             return style;
         } else if (style instanceof IFColor) {
             return style.asCSSString();
-        } else if (typeof style === 'number') {
-            return gColor.toCSS(style);
         } else {
             throw new Error('Not Supported.');
         }

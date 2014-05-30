@@ -12,26 +12,6 @@
     IFObject.inherit(IFTextTool, IFShapeTool);
 
     /** @override */
-    IFTextTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFTextTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg">\n<text style="stroke:none; fill: inherit; font-family: Arial; font-size: 18px; text-anchor: middle" x="9" y="15">T</text>\n</svg>\n';
-    };
-
-    /** @override */
-    IFTextTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFTextTool, "title"));
-    };
-
-    /** @override */
-    IFTextTool.prototype.getActivationCharacters = function () {
-        return ['T'];
-    };
-
-    /** @override */
     IFTextTool.prototype.getCursor = function () {
         if (!this._shape) {
             return IFCursor.Text;

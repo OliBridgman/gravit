@@ -100,27 +100,7 @@
             throw new Error('Tool is already registered');
         }
 
-        var group = tool.getGroup();
-
-        // Find the right insertion position if we have a group
-        var hasInsertedTool = false;
-        if (group) {
-            for (var i = this._tools.length - 1; i >= 0; --i) {
-                if (group === this._tools[i].getGroup()) {
-                    if (i + 1 == this._tools.length) {
-                        this._tools.push(tool);
-                    } else {
-                        this._tools.splice(i, 0, tool);
-                    }
-                    hasInsertedTool = true;
-                    break;
-                }
-            }
-        }
-
-        if (!hasInsertedTool) {
-            this._tools.push(tool);
-        }
+        this._tools.push(tool);
 
         tool._manager = this;
 

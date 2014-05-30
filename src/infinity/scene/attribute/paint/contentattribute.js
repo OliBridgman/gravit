@@ -33,7 +33,7 @@
 
             // Clip our contents and swap canvas back
             context.canvas.putVertices(source);
-            context.canvas.fillVertices(gColor.build(0, 0, 0), 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
             oldCanvas.drawCanvas(context.canvas);
         } finally {
             context.canvas = oldCanvas;

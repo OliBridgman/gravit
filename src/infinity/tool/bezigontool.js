@@ -13,29 +13,6 @@
     IFObject.inherit(IFBezigonTool, IFPathTool);
 
     /** @override */
-    IFBezigonTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFBezigonTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path d="M7.8,29.3c-1.8-1.7,4.4-10.8,4.4-10.8l1.3,1.2c-1.3,1.5-2.5,3.6-3.1,4.7c-1,1.8-1.1,2.7-1.1,2.7l6-5.7l3.1,3\n\tC18.5,24.5,9.5,30.7,7.8,29.3z M18.5,33c0,0.8-0.7,1.5-1.5,1.5c-0.7,0-1.2-0.4-1.4-1H7.5v3h-7v-7h3v-8.1c-0.6-0.2-1-0.8-1-1.4\n\tc0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5c0,0.7-0.4,1.2-1,1.4v8.1h3v3h8.1c0.2-0.6,0.8-1,1.4-1C17.8,31.5,18.5,32.2,18.5,33z\n\t M6.5,30.5h-5v5h5V30.5z" stroke="none"/>\n</svg>';
-    };
-
-    /** @override */
-    IFBezigonTool.prototype.getHint = function () {
-        return IFPathTool.prototype.getHint.call(this)
-            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFBezigonTool, "shortcut.option"), true)
-            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFBezigonTool, "shortcut.shift"), true)
-            .setTitle(new IFLocale.Key(IFBezigonTool, "title"));
-    };
-
-    /** @override */
-    IFBezigonTool.prototype.getActivationCharacters = function () {
-        return ['B', '8'];
-    };
-
-    /** @override */
     IFBezigonTool.prototype.activate = function (view) {
         IFPathTool.prototype.activate.call(this, view);
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);

@@ -2,7 +2,7 @@
 
     /**
      * Action importing a document
-     * @param {IFImport} import_
+     * @param {GImport} import_
      * @class GImportAction
      * @extends GUIAction
      * @constructor

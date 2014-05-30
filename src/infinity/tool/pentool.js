@@ -13,29 +13,6 @@
     IFObject.inherit(IFPenTool, IFPathTool);
 
     /** @override */
-    IFPenTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFPenTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M9.2,21.3l0.7,0.7l-6.5,3.6c0,0-0.5,3.1-1.4,5.7c-0.8,2.2-2.1,3.6-1.4,4.3c0,0,0,0,0.7,0.7\n\tc0.7,0.7,2.1-0.6,4.3-1.4c2.5-0.9,5.6-1.4,5.6-1.4l3.7-6.4l0.7,0.7l2.9-2.1l-7.1-7.1L9.2,21.3z M4.2,26.4l6.5-3.6l3.6,3.6l-3.7,6.4\n\tc-4.8,0.5-8.5,2.8-8.5,2.8l3.2-3.2c0.8,0.5,1.8,0.3,2.4-0.3c0.8-0.8,0.8-2,0-2.8c-0.8-0.8-2-0.8-2.8,0c-0.7,0.7-0.8,1.7-0.4,2.5\n\tl-3.2,3.2C1.4,34.9,3.7,31.2,4.2,26.4z"/>\n</svg>\n';
-    };
-
-    /** @override */
-    IFPenTool.prototype.getHint = function () {
-        return IFPathTool.prototype.getHint.call(this)
-            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFPenTool, "shortcut.option"), true)
-            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFPenTool, "shortcut.shift"), true)
-            .setTitle(new IFLocale.Key(IFPenTool, "title"));
-    };
-
-    /** @override */
-    IFPenTool.prototype.getActivationCharacters = function () {
-        return ['P'];
-    };
-
-    /** @override */
     IFPenTool.prototype.activate = function (view) {
         IFPathTool.prototype.activate.call(this, view);
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);

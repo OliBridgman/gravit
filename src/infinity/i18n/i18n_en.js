@@ -43,24 +43,5 @@ ifLocale.setValues(IFContentAttribute, IFLocale.Language.English, ["name"], ["Co
 ifLocale.setValues(IFBlurAttribute, IFLocale.Language.English, ["name"], ["Blur"]);
 ifLocale.setValues(IFShadowAttribute, IFLocale.Language.English, ["name"], ["Shadow"]);
 
-// Tools
-ifLocale.setValues(IFTool, IFLocale.Language.English, ["shortcut.esc"], ["Cancels the current tool operation"]);
-ifLocale.setValues(IFShapeTool, IFLocale.Language.English, ["shortcut.shift", "shortcut.option"], ["Equal sizing of each side", "Draw from the center side"]);
-ifLocale.setValues(IFEllipseTool, IFLocale.Language.English, ["title"], ["Ellipse"]);
-ifLocale.setValues(IFLineTool, IFLocale.Language.English, ["title"], ["Line"]);
-ifLocale.setValues(IFPathTool, IFLocale.Language.English, ["shortcut.tab"], ["Finish editing and deselect path"]);
-ifLocale.setValues(IFHandTool, IFLocale.Language.English, ["title"], ["Hand"]);
-ifLocale.setValues(IFPenTool, IFLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Pen", "%TODO%", "%TODO%"]);
-ifLocale.setValues(IFBezigonTool, IFLocale.Language.English, ["title", "shortcut.option", "shortcut.shift"], ["Bezigon", "%TODO%", "%TODO%"]);
-ifLocale.setValues(IFPolygonTool, IFLocale.Language.English, ["title", "shortcut.shift", "shortcut.option"], ["Polygon", "Lock angle to 15° degree steps", "Switch between Polygon and Star"]);
-ifLocale.setValues(IFRectangleTool, IFLocale.Language.English, ["title"], ["Rectangle"]);
-ifLocale.setValues(IFTextTool, IFLocale.Language.English, ["title"], ["Text"]);
-ifLocale.setValues(IFZoomTool, IFLocale.Language.English, ["title"], ["Zoom"]);
-ifLocale.setValues(IFSelectTool, IFLocale.Language.English, ["shortcut.shift", "shortcut.meta", "shortcut.option", "shortcut.up", "shortcut.down", "shortcut.left", "shortcut.right"], ["Add/Remove to/from current selection. When duplicating will create a template instead of a copy, for arrow keys will increase the shift amount", "Select next object underneath", "Duplicate when dragging selection", "Move selection up", "Move selection down", "Move selection left", "Move selection right"]);
-ifLocale.setValues(IFPointerTool, IFLocale.Language.English, ["title"], ["Pointer"]);
-ifLocale.setValues(IFSubSelectTool, IFLocale.Language.English, ["title"], ["Subselect"]);
-ifLocale.setValues(IFPageTool, IFLocale.Language.English, ["title"], ["Page"]);
-ifLocale.setValues(IFLassoTool, IFLocale.Language.English, ["title"], ["Lasso"]);
-
 // Editor
 ifLocale.setValues(IFSceneEditor, IFLocale.Language.English, ["action.insert", "action.remove", "action.properties"], ["Insert", "Remove", "Change Properties"]);

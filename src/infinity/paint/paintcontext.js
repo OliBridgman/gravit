@@ -33,23 +33,21 @@
      * entries, then painting should take place
      * as wireframe only and taking the last
      * outline color entry of this array
-     * @type {null}
+     * @type {Array<IFColor>}
      */
     IFPaintContext.prototype.outlineColors = null;
 
     /**
      * The current outline color for the selection
-     * @type Number
-     * @version 1.0
+     * @type IFColor
      */
-    IFPaintContext.prototype.selectionOutlineColor = gColor.selectionOutline;
+    IFPaintContext.prototype.selectionOutlineColor = IFColor.SELECTION_OUTLINE;
 
     /**
      * The current outline color for the highlight
-     * @type Number
-     * @version 1.0
+     * @type IFColor
      */
-    IFPaintContext.prototype.highlightOutlineColor = gColor.highlightOutline;
+    IFPaintContext.prototype.highlightOutlineColor = IFColor.HIGHLIGHT_OUTLINE;
 
     /**
      * Returns whether the paint context is in outline/wireframe mode or not
@@ -61,14 +59,14 @@
 
     /**
      * Returns the current outline/wireframe color defaulting to black
-     * @returns {Number}
+     * @returns {IFColor}
      */
     IFPaintContext.prototype.getOutlineColor = function () {
         if (this.outlineColors && this.outlineColors.length > 0) {
             return this.outlineColors[this.outlineColors.length - 1];
         } else {
             // TODO : Take this from configuration, instead?
-            return gColor.build(0, 0, 0);
+            return IFColor.BLACK;
         }
     };
 

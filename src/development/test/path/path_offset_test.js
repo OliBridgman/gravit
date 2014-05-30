@@ -26,22 +26,8 @@
         /** override */
         VertexWidget.prototype.paint = function (context) {
             context.canvas.putVertices(this._vertexSource);
-            context.canvas.fillVertices(gColor.build(255, 255, 0));
-            context.canvas.strokeVertices(gColor.build(0, 0, 0));
-
-            /*
-            // Calculate bounds and paint them if any
-            var bounds = gVertexInfo.calculateBounds(this._vertexSource, true);
-            if (bounds && !bounds.isEmpty()) {
-                var boundsVertices = new IFVertexContainer();
-                boundsVertices.addVertex(IFVertex.Command.Move, bounds.getX(), bounds.getY());
-                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY());
-                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight());
-                boundsVertices.addVertex(IFVertex.Command.Line, bounds.getX(), bounds.getY() + bounds.getHeight());
-                boundsVertices.addVertex(IFVertex.Command.Close);
-                context.canvas.strokeVertices(boundsVertices, gColor.build(255, 0, 0, 128));
-            }
-            */
+            context.canvas.fillVertices(IFColor.parseCSSColor('rgb(255, 255, 0)'));
+            context.canvas.strokeVertices(IFColor.BLACK);
         };
 
         var vwidth = 200;

@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * The base for an import filter
-     * @class IFImport
+     * @class GImport
      * @constructor
      */
-    function IFImport() {
+    function GImport() {
     };
 
     /**
      * The name of the import-filter
      * @return {String|IFLocale.Key}
      */
-    IFImport.prototype.getName = function () {
+    GImport.prototype.getName = function () {
         throw new Error('Not Supported.');
     };
 
@@ -19,7 +19,7 @@
      * The extensions this filter supports like ['pdf', 'ps']
      * @return {Array<String>} array of extensions
      */
-    IFImport.prototype.getExtensions = function () {
+    GImport.prototype.getExtensions = function () {
         throw new Error('Not Supported.');
     };
 
@@ -30,9 +30,9 @@
      * @param {Function} done the callback function called with the
      * boolean result of the import (true/false)
      */
-    IFImport.prototype.import = function (blob, scene, done) {
+    GImport.prototype.import = function (blob, scene, done) {
         throw new Error('Not Supported.');
     };
 
-    _.IFImport = IFImport;
+    _.GImport = GImport;
 })(this);

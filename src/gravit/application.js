@@ -644,22 +644,23 @@
         // Add all available tools to toolmanager and register
         // their activation character(s) if any as shortcuts
         if (gravit.tools) {
-            var _createToolActivateAction = function (tool) {
+            var _createToolActivateAction = function (instance) {
                 return function () {
-                    this._toolManager.activateTool(tool);
+                    this._toolManager.activateTool(instance);
                 }.bind(this);
             }.bind(this);
 
             for (var i = 0; i < gravit.tools.length; ++i) {
                 var tool = gravit.tools[i];
 
-                this._toolManager.addTool(tool);
+                // Register tool instance
+                this._toolManager.addTool(tool.instance);
 
-                var chars = tool.getActivationCharacters();
-                if (chars && chars.length > 0) {
-                    var action = _createToolActivateAction(tool);
-                    for (var c = 0; c < chars.length; ++c) {
-                        this.registerShortcut([chars[c]], action);
+                // Register activation characters
+                if (tool.keys && tool.keys.length > 0) {
+                    var action = _createToolActivateAction(tool.instance);
+                    for (var c = 0; c < tool.keys.length; ++c) {
+                        this.registerShortcut([tool.keys[c]], action);
                     }
                 }
             }
@@ -948,6 +949,7 @@
                 break;
             }
         }
+        this._updateTitle();
     };
 
     /**
@@ -962,7 +964,17 @@
                 break;
             }
         }
+        this._updateTitle();
     };
+
+    GApplication.prototype._updateTitle = function () {
+        var title = 'Gravit';
+        var window = this.getWindows().getActiveWindow();
+        if (window) {
+            title += ' - ' + window.getTitle();
+        }
+        document.title = title;
+    }
 
     /**
      * Handle touch events by converting them into mouse events and stopping

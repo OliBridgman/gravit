@@ -12,27 +12,6 @@
     IFObject.inherit(IFEllipseTool, IFShapeTool);
 
     /** @override */
-    IFEllipseTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFEllipseTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<ellipse style="fill:none; stroke: inherit" cx="9.5" cy="27.5" rx="8.5" ry="7.5"/>\n</svg>\n';
-    };
-
-    /** @override */
-    IFEllipseTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this)
-            .setTitle(new IFLocale.Key(IFEllipseTool, "title"));
-    };
-
-    /** @override */
-    IFEllipseTool.prototype.getActivationCharacters = function () {
-        return ['E', '3'];
-    };
-
-    /** @override */
     IFEllipseTool.prototype._createShape = function () {
         return new IFEllipse();
     };

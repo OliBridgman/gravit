@@ -12,26 +12,6 @@
     IFObject.inherit(IFRectangleTool, IFShapeTool);
 
     /** @override */
-    IFRectangleTool.prototype.getGroup = function () {
-        return 'draw';
-    };
-
-    /** @override */
-    IFRectangleTool.prototype.getIcon = function () {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M17.5,20.5v14h-16v-14H17.5 M18.5,19.5h-18v16h18v-15V19.5L18.5,19.5z"/>\n</svg>\n';
-    };
-
-    /** @override */
-    IFRectangleTool.prototype.getHint = function () {
-        return IFShapeTool.prototype.getHint.call(this).setTitle(new IFLocale.Key(IFRectangleTool, "title"));
-    };
-
-    /** @override */
-    IFRectangleTool.prototype.getActivationCharacters = function () {
-        return ['R'];
-    };
-
-    /** @override */
     IFRectangleTool.prototype._createShape = function () {
         return new IFRectangle();
     };

@@ -67,7 +67,7 @@
                         context.canvas.strokeVertices(pattern, this.$sw * 2, this.$slc, this.$slj, this.$slm, this.$opc, this.$cmp);
 
                         // Clip our contents and swap canvas back
-                        context.canvas.fillVertices(gColor.build(0, 0, 0), 1,
+                        context.canvas.fillVertices(IFColor.BLACK, 1,
                             this.$sa === IFStrokeAttribute.Alignment.Inside ? IFPaintCanvas.CompositeOperator.DestinationIn : IFPaintCanvas.CompositeOperator.DestinationOut);
                         oldCanvas.drawCanvas(context.canvas);
                     } finally {

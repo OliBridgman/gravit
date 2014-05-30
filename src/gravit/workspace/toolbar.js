@@ -83,57 +83,47 @@
     GToolbar.prototype.init = function () {
         // Init and add tools
         var toolpanel = this._htmlElement.find('.toolpanel');
-        var _addToolButton = function (toolInstance) {
+        var _addToolButton = function (tool) {
             var button = $("<button></button>")
-                .attr('class', toolInstance == gApp.getToolManager().getActiveTool() ? 'g-active' : '')
-                .append($(toolInstance.getIcon()).attr('width', '18px').attr('height', '18px'))
+                .attr('class', tool.instance == gApp.getToolManager().getActiveTool() ? 'g-active' : '')
+                .append($(tool.icon).attr('width', '18px').attr('height', '18px'))
                 .appendTo(toolpanel)
                 .on('click', function () {
-                    gApp.getToolManager().activateTool(toolInstance);
+                    gApp.getToolManager().activateTool(tool.instance);
                 }.bind(this));
 
             // Concat/read the tool's title
-            var hint = toolInstance.getHint();
-            if (hint) {
-                var title = ifLocale.get(hint.getTitle());
-                if (!title || title === "") {
-                    return null;
-                }
-
-                var shortcuts = hint.getShortcuts();
-                if (shortcuts) {
-                    for (var i = 0; i < shortcuts.length; ++i) {
-                        if (i == 0) {
-                            title += " (";
-                        } else {
-                            title += ", ";
-                        }
-                        title += ifKey.shortcutToString(shortcuts[i]);
+            var title = tool.title;
+            if (tool.keys && tool.keys.length > 0) {
+                for (var i = 0; i < tool.keys.length; ++i) {
+                    if (i == 0) {
+                        title += " (";
+                    } else {
+                        title += ", ";
                     }
-                    title += ")";
+                    title += tool.keys[i];
                 }
-
-                button.attr('title', title);
+                title += ")";
             }
+            button.attr('title', title);
 
-            this._toolTypeToButtonMap[IFObject.getTypeId(toolInstance)] = button;
+            this._toolTypeToButtonMap[IFObject.getTypeId(tool.instance)] = button;
         }.bind(this);
 
         // Append all tools now
         var lastGroup = null;
-        for (var i = 0; i < gApp.getToolManager().getToolCount(); ++i) {
-            var toolInstance = gApp.getToolManager().getTool(i);
-            var group = toolInstance.getGroup();
-            if (group != lastGroup) {
+        for (var i = 0; i < gravit.tools.length; ++i) {
+            var tool = gravit.tools[i];
+            if (tool.group != lastGroup) {
                 if (i > 0) {
                     // Add a divider, first
                     toolpanel.append(
                         $("<div></div>")
                             .addClass('divider'));
                 }
-                lastGroup = group;
+                lastGroup = tool.group;
             }
-            _addToolButton(toolInstance);
+            _addToolButton(tool);
         }
 
         // Subscribe to some events

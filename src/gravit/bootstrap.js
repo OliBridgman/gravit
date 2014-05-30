@@ -10,12 +10,12 @@ var gravit = {
     storages: [],
 
     /**
-     * Array<IFImport>
+     * Array<GImport>
      */
     importers: [],
 
     /**
-     * Array<IFExport>
+     * Array<GExport>
      */
     exporters: [],
 
@@ -30,7 +30,7 @@ var gravit = {
     palettes: [],
 
     /**
-     * Array<IFTool>
+     * Array<{{instance: IFTool, title: String, group: String, keys: Array<String>}, icon: String}>
      */
     tools: [],
 
@@ -59,6 +59,14 @@ var gShell = null;
  * @type {GApplication}
  */
 var gApp = null;
+
+// This function needs to be called by the shell when it is finished
+function gShellFinished() {
+    // TODO : FIX THIS, FOR NEW WE ALWAYS CREATE NEW DOC ON EACH RUN
+    setTimeout(function () {
+        gApp.executeAction(GNewAction.ID);
+    }, 0);
+}
 
 // Bootstrapping when the DOM is ready
 $(document).ready(function () {

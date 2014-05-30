@@ -110,7 +110,7 @@
                     return false;
                 } else if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
                     // Add otl cls of ourself if not outlined
-                    context.outlineColors.push(IFColor.parseColor(this.$cls).asRGBInt());
+                    context.outlineColors.push(this.$cls);
                 }
             } else if (this.$tp === IFLayer.Type.Draft) {
                 if (!context.configuration.isAnnotationsVisible(context)) {

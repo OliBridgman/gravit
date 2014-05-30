@@ -33,7 +33,7 @@ var deltaHeight = (function () {
 })();
 
 
-function initWindowState() {
+function initWindowState(callback) {
     winState = JSON.parse(localStorage.windowState || 'null');
 
     if (winState) {
@@ -48,8 +48,6 @@ function initWindowState() {
         if (deltaHeight !== 'disabled') deltaHeight = 0;
         dumpWindowState();
     }
-
-    win.show();
 }
 
 function dumpWindowState() {
@@ -113,7 +111,15 @@ win.on('restore', function () {
     currWinMode = 'normal';
 });
 
+var isFirstTimeResize = false;
+
 win.window.addEventListener('resize', function () {
+    if (!isFirstTimeResize) {
+        isFirstTimeResize = true;
+        win.show();
+        gShellFinished();
+    }
+
     // resize event is fired many times on one resize action,
     // this hack with setTiemout forces it to fire only once
     clearTimeout(resizeTimeout);

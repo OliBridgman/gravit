@@ -36,11 +36,9 @@ ifLocale.setValues(GRedoAction, IFLocale.Language.English, ["title"], ["Redo"]);
 ifLocale.setValues(GSaveAction, IFLocale.Language.English, ["title"], ["Save"]);
 ifLocale.setValues(GSaveAllAction, IFLocale.Language.English, ["title"], ["Save All"]);
 ifLocale.setValues(GSaveAsAction, IFLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
-ifLocale.setValues(GShortcutMapAction, IFLocale.Language.English, ["title"], ["Shortcut Map..."]);
 ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Rulers"]);
 ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungroup Selection"]);
-ifLocale.setValues(GWelcomeAction, IFLocale.Language.English, ["title"], ["Welcome Panel..."]);
 ifLocale.setValues(GZoomInAction, IFLocale.Language.English, ["title"], ["Zoom in"]);
 ifLocale.setValues(GZoomOutAction, IFLocale.Language.English, ["title"], ["Zoom out"]);
 

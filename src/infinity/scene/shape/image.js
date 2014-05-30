@@ -47,12 +47,12 @@
     /**
      * @type {Number}
      */
-    IFImage.NO_IMAGE_BACKGROUND = gColor.build(240, 240, 240, 255);
+    IFImage.NO_IMAGE_BACKGROUND = new IFColor(IFColor.Type.RGB, [240, 240, 240, 100]);
 
     /**
      * @type {Number}
      */
-    IFImage.NO_IMAGE_ERROR_STROKE = gColor.build(255, 0, 0, 255);
+    IFImage.NO_IMAGE_ERROR_STROKE = new IFColor(IFColor.Type.RGB, [255, 0, 0, 100]);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFImage.StatusEvent Event

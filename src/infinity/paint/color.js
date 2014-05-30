@@ -17,6 +17,153 @@
      */
     IFColor.MIME_TYPE = "application/infinity+color";
 
+
+
+    /**
+     * @enum
+     */
+    IFColor.Type = {
+        /** RGB Color - "rgb(0..255, 0..255, 0..255, 0..100)" */
+        RGB: {
+            key: 'rgb',
+            space: IFColorSpace.RGB,
+            fromString: function (string) {
+                var result = [0, 0, 0, 0];
+                var values = string.split(',');
+                if (values.length !== 4) {
+                    result = null;
+                } else {
+                    for (var i = 0; i < 4; ++i) {
+                        var val = parseInt(values[i]);
+                        if (isNaN(val) || val < 0 || (i === 3 && val > 100) || (i < 3 && val > 255)) {
+                            result = null;
+                            break;
+                        } else {
+                            result[i] = val;
+                        }
+                    }
+                }
+                return result;
+            },
+            toString: function (value) {
+                return value.join(',');
+            }
+        },
+        /** HSL Color - "hsl(0..360, 0..100, 0..100, 0..100)" */
+        HSL: {
+            key: 'hsl',
+            space: IFColorSpace.RGB,
+            fromString: function (string) {
+                var result = [0, 0, 0, 0];
+                var values = string.split(',');
+                if (values.length !== 4) {
+                    result = null;
+                } else {
+                    for (var i = 0; i < 4; ++i) {
+                        var val = parseInt(values[i]);
+                        if (isNaN(val) || val < 0 || (i === 0 && val > 360) || (i > 0 && val > 100)) {
+                            result = null;
+                            break;
+                        } else {
+                            result[i] = val;
+                        }
+                    }
+                }
+                return result;
+            },
+            toString: function (value) {
+                return value.join(',');
+            }
+        },
+        /** Tone Color - "tone(0..100, 0..100)" */
+        Tone: {
+            key: 'tone',
+            space: IFColorSpace.RGB,
+            fromString: function (string) {
+                var result = [0, 0];
+                var values = string.split(',');
+                if (values.length !== 2) {
+                    result = null;
+                } else {
+                    for (var i = 0; i < 2; ++i) {
+                        var val = parseInt(values[i]);
+                        if (isNaN(val) || val < 0 || val > 100) {
+                            result = null;
+                            break;
+                        } else {
+                            result[i] = val;
+                        }
+                    }
+                }
+                return result;
+            },
+            toString: function (value) {
+                return value.join(',');
+            }
+        },
+        /** CMYK Color - "cmyk(0..100, 0..100, 0..100)" */
+        CMYK: {
+            key: 'cmyk',
+            space: IFColorSpace.CMYK,
+            fromString: function (string) {
+                var result = [0, 0, 0, 0];
+                var values = string.split(',');
+                if (values.length !== 4) {
+                    result = null;
+                } else {
+                    for (var i = 0; i < 4; ++i) {
+                        var val = parseInt(values[i]);
+                        if (isNaN(val) || val < 0 || val > 100) {
+                            result = null;
+                            break;
+                        } else {
+                            result[i] = val;
+                        }
+                    }
+                }
+                return result;
+            },
+            toString: function (value) {
+                return value.join(',');
+            }
+        },
+
+        /** Reference to another color - "#ReferenceId" */
+        Reference: {
+            key: '#',
+            space: IFColorSpace.None,
+            fromString: function (string) {
+                return string;
+            },
+            toString: function (value) {
+                return value;
+            }
+        },
+
+        /** Special white point - "white" - value = null */
+        White: {
+            key: 'white',
+            space: IFColorSpace.None
+        },
+        /** Special black point - "black"- value = null */
+        Black: {
+            key: 'black',
+            space: IFColorSpace.None
+        },
+        /** Special registration point - "registration" - value = null */
+        Registration: {
+            key: 'registration',
+            space: IFColorSpace.None
+        }
+    };
+
+    // Pre-defined color constants
+    IFColor.BLACK = new IFColor(IFColor.Type.Black);
+    IFColor.WHITE = new IFColor(IFColor.Type.White);
+
+    IFColor.SELECTION_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
+    IFColor.HIGHLIGHT_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
+
     /**
      * Parse a string into a IFColor
      * @param {String} string
@@ -267,144 +414,6 @@
     };
 
     /**
-     * @enum
-     */
-    IFColor.Type = {
-        /** RGB Color - "rgb(0..255, 0..255, 0..255, 0..100)" */
-        RGB: {
-            key: 'rgb',
-            space: IFColorSpace.RGB,
-            fromString: function (string) {
-                var result = [0, 0, 0, 0];
-                var values = string.split(',');
-                if (values.length !== 4) {
-                    result = null;
-                } else {
-                    for (var i = 0; i < 4; ++i) {
-                        var val = parseInt(values[i]);
-                        if (isNaN(val) || val < 0 || (i === 3 && val > 100) || (i < 3 && val > 255)) {
-                            result = null;
-                            break;
-                        } else {
-                            result[i] = val;
-                        }
-                    }
-                }
-                return result;
-            },
-            toString: function (value) {
-                return value.join(',');
-            }
-        },
-        /** HSL Color - "hsl(0..360, 0..100, 0..100, 0..100)" */
-        HSL: {
-            key: 'hsl',
-            space: IFColorSpace.RGB,
-            fromString: function (string) {
-                var result = [0, 0, 0, 0];
-                var values = string.split(',');
-                if (values.length !== 4) {
-                    result = null;
-                } else {
-                    for (var i = 0; i < 4; ++i) {
-                        var val = parseInt(values[i]);
-                        if (isNaN(val) || val < 0 || (i === 0 && val > 360) || (i > 0 && val > 100)) {
-                            result = null;
-                            break;
-                        } else {
-                            result[i] = val;
-                        }
-                    }
-                }
-                return result;
-            },
-            toString: function (value) {
-                return value.join(',');
-            }
-        },
-        /** Tone Color - "tone(0..100, 0..100)" */
-        Tone: {
-            key: 'tone',
-            space: IFColorSpace.RGB,
-            fromString: function (string) {
-                var result = [0, 0];
-                var values = string.split(',');
-                if (values.length !== 2) {
-                    result = null;
-                } else {
-                    for (var i = 0; i < 2; ++i) {
-                        var val = parseInt(values[i]);
-                        if (isNaN(val) || val < 0 || val > 100) {
-                            result = null;
-                            break;
-                        } else {
-                            result[i] = val;
-                        }
-                    }
-                }
-                return result;
-            },
-            toString: function (value) {
-                return value.join(',');
-            }
-        },
-        /** CMYK Color - "cmyk(0..100, 0..100, 0..100)" */
-        CMYK: {
-            key: 'cmyk',
-            space: IFColorSpace.CMYK,
-            fromString: function (string) {
-                var result = [0, 0, 0, 0];
-                var values = string.split(',');
-                if (values.length !== 4) {
-                    result = null;
-                } else {
-                    for (var i = 0; i < 4; ++i) {
-                        var val = parseInt(values[i]);
-                        if (isNaN(val) || val < 0 || val > 100) {
-                            result = null;
-                            break;
-                        } else {
-                            result[i] = val;
-                        }
-                    }
-                }
-                return result;
-            },
-            toString: function (value) {
-                return value.join(',');
-            }
-        },
-
-        /** Reference to another color - "#ReferenceId" */
-        Reference: {
-            key: '#',
-            space: IFColorSpace.None,
-            fromString: function (string) {
-                return string;
-            },
-            toString: function (value) {
-                return value;
-            }
-        },
-
-        /** Special white point - "white" - value = null */
-        White: {
-            key: 'white',
-            space: IFColorSpace.None
-        },
-        /** Special black point - "black"- value = null */
-        Black: {
-            key: 'black',
-            space: IFColorSpace.None
-        },
-        /** Special registration point - "registration" - value = null */
-        Registration: {
-            key: 'registration',
-            space: IFColorSpace.None
-        }
-    };
-
-    /**
      * @type {IFColor.Type}
      * @private
      */
@@ -582,7 +591,16 @@
      */
     IFColor.prototype.asRGBInt = function () {
         var rgb = this.asRGB();
-        return gColor.build(rgb[0], rgb[1], rgb[2], rgb[3] * 2.55);
+        var r = rgb[0];
+        var g = rgb[1];
+        var b = rgb[2];
+        var a = Math.round(rgb[3] * 2.55);
+
+        if (ifSystem.littleEndian) {
+            return (a << 24) | (b << 16) | (g << 8) | r;
+        } else {
+            return (r << 24) | (g << 16) | (b << 8) | a;
+        }
     };
 
     /**

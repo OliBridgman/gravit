@@ -34,10 +34,9 @@
 
     /** @override */
     GDesktopShell.prototype.finishLoad = function () {
-        initWindowState();
         var win = gui.Window.get();
         win.menu = this._menuBar;
-        win.focus();
+        initWindowState();
     };
 
     /** @override */

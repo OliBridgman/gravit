@@ -59,6 +59,9 @@
 
         // Remove loader
         $("#gravit-loader").remove();
+
+        // Callback
+        gShellFinished();
     };
 
     /** @override */
