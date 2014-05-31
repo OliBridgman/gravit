@@ -45,7 +45,8 @@
         win.menu = this._menuBar;
 
         // Open dev console if desired
-        if (this.isDevelopment()) {
+        var argv = gui.App.argv;
+        if (this.isDevelopment() || argv.indexOf('-console') >= 0) {
             win.showDevTools();
         }
     };

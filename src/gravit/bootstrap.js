@@ -97,7 +97,7 @@ $(document).ready(function () {
         gAPIUrl = 'http://api.gravit.io/';
     }
     $('<script></script>')
-        .attr('src', gAPIUrl + 'gAPI.js')
+        .attr('src', gAPIUrl + 'gapi.js')
         .appendTo($('body'));
 
     // Initialize ourself now
