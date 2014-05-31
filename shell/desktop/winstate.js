@@ -34,12 +34,14 @@ var deltaHeight = (function () {
 
 
 function initWindowState(callback) {
-    winState = JSON.parse(localStorage.windowState || 'null');
+    winState = localStorage.getItem('windowState');
+    winState = JSON.parse(winState && winState !== "" ? winState : 'null');
 
     if (winState) {
         currWinMode = winState.mode;
         if (currWinMode === 'maximized') {
             win.maximize();
+            _check_win_first_time_resize();
         } else {
             restoreWindowState();
         }
@@ -47,6 +49,7 @@ function initWindowState(callback) {
         currWinMode = 'normal';
         if (deltaHeight !== 'disabled') deltaHeight = 0;
         dumpWindowState();
+        _check_win_first_time_resize();
     }
 }
 
@@ -90,35 +93,43 @@ function restoreWindowState() {
 
 function saveWindowState() {
     dumpWindowState();
-    localStorage.windowState = JSON.stringify(winState);
+    localStorage.setItem('windowState', JSON.stringify(winState));
 }
 
 win.on('maximize', function () {
     isMaximizationEvent = true;
     currWinMode = 'maximized';
+    saveWindowState();
 });
 
 win.on('unmaximize', function () {
     currWinMode = 'normal';
     restoreWindowState();
+    saveWindowState();
 });
 
 win.on('minimize', function () {
     currWinMode = 'minimized';
+    saveWindowState();
 });
 
 win.on('restore', function () {
     currWinMode = 'normal';
+    saveWindowState();
 });
 
 var isFirstTimeResize = false;
 
-win.window.addEventListener('resize', function () {
+function _check_win_first_time_resize() {
     if (!isFirstTimeResize) {
         isFirstTimeResize = true;
         win.show();
         gShellFinished();
     }
+}
+
+win.window.addEventListener('resize', function () {
+    _check_win_first_time_resize();
 
     // resize event is fired many times on one resize action,
     // this hack with setTiemout forces it to fire only once
@@ -145,12 +156,10 @@ win.window.addEventListener('resize', function () {
             }
         }
 
-        dumpWindowState();
-
+        saveWindowState();
     }, 500);
 }, false);
 
-win.on('close', function () {
+win.on('move', function () {
     saveWindowState();
-    this.close(true);
 });

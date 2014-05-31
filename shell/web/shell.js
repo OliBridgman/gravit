@@ -24,6 +24,11 @@
     GWebShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
+    GWebShell.prototype.isDevelopment = function () {
+        return document.location.hostname === 'localhost' || document.location.hostname === '127.0.0.1';
+    };
+
+    /** @override */
     GWebShell.prototype.prepareLoad = function () {
         // Add Gravit Loader
         $('<div></div>')

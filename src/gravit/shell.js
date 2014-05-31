@@ -10,6 +10,14 @@
     IFObject.inherit(GShell, GEventTarget);
 
     /**
+     * Called to check whether shell is in development mode or not
+     * @return {Boolean}
+     */
+    GShell.prototype.isDevelopment = function () {
+        throw new Error("Not Supported.");
+    };
+
+    /**
      * Called to prepare loading of the shell
      */
     GShell.prototype.prepareLoad = function () {

@@ -31,10 +31,7 @@
 
                 var colorpanel = $('<div></div>')
                     .gColorPanel(options)
-                    .gOverlay({
-                        vertical: 'end',
-                        horizontal: 'start'
-                    })
+                    .gOverlay()
                     .on('change', function (evt, color) {
                         methods.close.call(self);
                         methods.value.call(self, color);

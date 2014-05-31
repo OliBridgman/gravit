@@ -1,4 +1,4 @@
-gravit
-======
+### Test Standalone / Desktop Shell
 
-Gravit Infinity and Application
+run grunt pck to build the app within package/desktop folder
+run node-webkit executable with -dev argument to use development environment

@@ -27,6 +27,12 @@
     GDesktopShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
+    GDesktopShell.prototype.isDevelopment = function () {
+        var argv = gui.App.argv;
+        return argv.indexOf('-dev') >= 0;
+    };
+
+    /** @override */
     GDesktopShell.prototype.prepareLoad = function () {
         // Init shell-specific stuff here
         gravit.storages.push(new GNativeStorage());
@@ -34,9 +40,14 @@
 
     /** @override */
     GDesktopShell.prototype.finishLoad = function () {
+        initWindowState();
         var win = gui.Window.get();
         win.menu = this._menuBar;
-        initWindowState();
+
+        // Open dev console if desired
+        if (this.isDevelopment()) {
+            win.showDevTools();
+        }
     };
 
     /** @override */

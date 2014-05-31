@@ -37,9 +37,6 @@
             var $this = $(this);
             var data = $this.data('goverlay');
 
-            vertical = vertical || data.vertical;
-            horizontal = horizontal || data.horizontal;
-
             $this.parents('.g-modal-background').appendTo($('body'));
 
             var $window = $(window);

@@ -1,5 +1,5 @@
 {
-    "name": "gravit",
+    "name": "Gravit",
     "version": "0",
     "main": "index.html",
     "window": {
@@ -12,6 +12,5 @@
         "show": false
     },
     "no-edit-menu": true,
-    "no-window-menu": true,
-    "chromium-args" : "--disable-web-security"
+    "no-window-menu": true
 }
