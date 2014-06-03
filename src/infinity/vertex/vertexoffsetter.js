@@ -168,7 +168,7 @@
             this.head = polySegment.next;
         }
         if (this.end == polySegment) {
-            this.end = polySegment.end;
+            this.end = polySegment.previous;
         }
         --this.count;
     };
@@ -893,7 +893,7 @@
                     this._calcIntersectionPoints(outSplit[i], this._polyline, intPts, intPtsMain);
                     if (intPts.length == 0) {
                         tmpArray1Out.push(outSplit[i]);
-                    } else {
+                    } else if (!this._polyline.closed){
                         var endSegm = false;
                         for (var j = 0; j < intPtsMain.length; ++j) {
                             if (intPtsMain[j].segmIdx == 0 || intPtsMain[j].segmIdx == this._polyline.count - 1) {
@@ -919,7 +919,7 @@
                     this._calcIntersectionPoints(inSplit[i], this._polyline, intPts, intPtsMain);
                     if (intPts.length == 0) {
                         tmpArray1In.push(inSplit[i]);
-                    } else {
+                    } else if (!this._polyline.closed) {
                         var endSegm = false;
                         for (var j = 0; j < intPtsMain.count; ++j) {
                             if (intPtsMain[j].segmIdx == 0 || intPtsMain[j].segmIdx == this._polyline.count - 1) {
@@ -1205,6 +1205,7 @@
         // An offset algorithm for polyline curves
         // Xu-Zheng Liu, Jun-Hai Yong, Guo-Qin Zheng, Jia-Guang Sun, 2006
 
+        var eps = 0.000001; // eps = 10-7 is already too small, as tangence calculation is not so accurate in our case
         var segm1 = null;
         var segm2 = polyOffset.head;
         if (segm2) {
@@ -1213,235 +1214,254 @@
 
             var iRes = new IFVertexOffsetter.IntersectionResult();
             for (var i = 0; i < polyOffset.count - 1; ++i) {
-                // TODO: recalculate basepoint here
+                // it is not necessary to recalculate basepoint here,
+                // as segm1.basepoint is not needed for further calculations
                 segm1 = new IFVertexOffsetter.PolyOffsetSegment(segm2.basepoint, polyONew.end.point, segm2.point2,
                     polyONew.end.bulge, segm2.center, segm2.radius);
                 segm2 = segm2.next;
-                iRes.clear();
-                this._insersectOffsetSegments(segm1, segm2, iRes);
 
-                if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
-                    if (!iRes.point) { // case 1
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-                    } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
+                if (!ifMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
+                        !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
+
+                    iRes.clear();
+                    this._insersectOffsetSegments(segm1, segm2, iRes);
+
+                    if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
+                        if (!iRes.point) { // case 1
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                        } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
                             iRes.intTypes[0].FIP && iRes.intTypes[1].FIP && iRes.intTypes[0].PFIP) { // case 2b part1
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-                    } else { // case 2b part2 || case 2c
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 1a
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
+                        } else { // case 2b part2 || case 2c
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                        }
+                    } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 1a
                                 // TIP && NFIP || PFIP && TIP -> should not be possible, might be some error,
                                 // behave the same as when TIP for both
                                 iRes.intTypes[0].TIP && iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP ||
                                 iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP) {
 
-                            var ptMx = (iRes.point.getX() + segm2.point2.getX()) / 2;
-                            var ptMy = (iRes.point.getY() + segm2.point2.getY()) / 2;
-                            var bulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
-                                segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
-                                segm2.bulge);
+                                var ptMx = (iRes.point.getX() + segm2.point2.getX()) / 2;
+                                var ptMy = (iRes.point.getY() + segm2.point2.getY()) / 2;
+                                var bulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
+                                    segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
+                                    segm2.bulge);
 
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, bulge,
-                                segm2.center, segm2.radius));
-                        } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, bulge,
+                                    segm2.center, segm2.radius));
+                            } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
+                                var arc = this._constructJoinArc(segm1, segm2, true);
+                                polyONew.insertSegment(arc);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                                    segm2.point, segm2.bulge, segm2.center, segm2.radius));
+                            } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
+                                // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
+
+                                // construct new line segment
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                                    segm2.point, segm2.bulge, segm2.center, segm2.radius));
+                            }
+                        } else { // case 2, construct arc
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
-                                segm2.point, segm2.bulge, segm2.center, segm2.radius));
-                        } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
-                            // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
-
-                            // construct new line segment
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
-                                segm2.point, segm2.bulge, segm2.center, segm2.radius));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
-                    } else { // case 2, construct arc
-                        var arc = this._constructJoinArc(segm1, segm2, true);
-                        polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP) { // case 1a
-                            var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
-                                iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
-                                segm1.bulge);
-                            polyONew.end.bulge = newBulge;
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-                        } else if (iRes.intTypes[0].FIP &&
+                    } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP) { // case 1a
+                                var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
+                                    iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
+                                    segm1.bulge);
+                                polyONew.end.bulge = newBulge;
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
+                            } else if (iRes.intTypes[0].FIP &&
                                 iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
 
+                                var arc = this._constructJoinArc(segm1, segm2, true);
+                                polyONew.insertSegment(arc);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                                //segm2.point, segm2.bulge, segm2.center, segm2.radius));
+                            } else { // case 1c, 1d
+                                // construct new line segment
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            }
+                        } else {
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                                //segm2.point, segm2.bulge, segm2.center, segm2.radius));
-                        } else { // case 1c, 1d
-                            // construct new line segment
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
-                    } else {
-                        var arc = this._constructJoinArc(segm1, segm2, true);
-                        polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else { // two arc segments: use Algorithm 4
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
+                    } else { // two arc segments: use Algorithm 4
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
                                 iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1a
 
-                            var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
-                                iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
-                                segm1.bulge);
-                            polyONew.end.bulge = newBulge;
+                                var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
+                                    iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
+                                    segm1.bulge);
+                                polyONew.end.bulge = newBulge;
 
-                            newBulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
-                                segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
-                                segm2.bulge);
+                                newBulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
+                                    segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
+                                    segm2.bulge);
 
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
-                                iRes.point, newBulge, segm2.center, segm2.radius));
-                        } else { // case 1b, construct arc
-                            var arc = this._constructJoinArc(segm1, segm2, false);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                                    iRes.point, newBulge, segm2.center, segm2.radius));
+                            } else { // case 1b, construct arc
+                                var arc = this._constructJoinArc(segm1, segm2, false);
+                                polyONew.insertSegment(arc);
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                                    segm2.point, segm2.bulge, segm2.center, segm2.radius));
+                            }
+                        } else { // case 2
+                            var arc = null;
+                            if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
+                                arc = this._constructJoinArc(segm1, segm2, false);
+                            } else if (segm1.radius > segm2.radius){
+                                arc = this._constructJoinArc(segm1, segm2, true);
+                            } else {
+                                arc = this._constructJoinArc(segm1, segm2, true);
+                            }
                             polyONew.insertSegment(arc);
 
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
                                 segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         }
-                    } else { // case 2
-                        var arc = null;
-                        if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                            arc = this._constructJoinArc(segm1, segm2, false);
-                        } else if (segm1.radius > segm2.radius){
-                            arc = this._constructJoinArc(segm1, segm2, true);
-                        } else {
-                            arc = this._constructJoinArc(segm1, segm2, true);
-                        }
-                        polyONew.insertSegment(arc);
-
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
-                            segm2.point, segm2.bulge, segm2.center, segm2.radius));
                     }
+                } else {
+                    polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                        segm2.point, segm2.bulge, segm2.center, segm2.radius));
                 }
             }
             if (this._polyline.closed) {
-                segm1 = segm2;
+                // it is not necessary to recalculate basepoint here,
+                // as segm1.basepoint is not needed for further calculations
+                segm1 = new IFVertexOffsetter.PolyOffsetSegment(segm2.basepoint, polyONew.end.point, segm2.point2,
+                    polyONew.end.bulge, segm2.center, segm2.radius);
+
                 segm2 = polyOffset.head;
-                iRes.clear();
-                this._insersectOffsetSegments(segm1, segm2, iRes);
+                if (!ifMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
+                    !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
 
-                if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
-                    if (!iRes.point) { // case 1
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-                    } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
-                        iRes.intTypes[0].FIP && iRes.intTypes[1].FIP && iRes.intTypes[0].PFIP) { // case 2b part1
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-                        polyONew.head.point = iRes.point;
-                    } else { // case 2b part2 || case 2c
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 1a
-                                // TIP && NFIP || PFIP && TIP -> should not be possible, might be some error,
-                                // behave the same as when TIP for both
-                                iRes.intTypes[0].TIP && iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP ||
-                                iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP) {
+                    iRes.clear();
+                    this._insersectOffsetSegments(segm1, segm2, iRes);
 
-                            var bulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
-                                segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
-                                segm2.bulge);
-
+                    if (segm1.bulge == 0 && segm2.bulge == 0) { // Two line segments: use Algorithm 1
+                        if (!iRes.point) { // case 1
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                        } else if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 2a
+                            iRes.intTypes[0].FIP && iRes.intTypes[1].FIP && iRes.intTypes[0].PFIP) { // case 2b part1
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-
                             polyONew.head.point = iRes.point;
-                            polyONew.head.bulge = bulge;
-                        } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
-                            var arc = this._constructJoinArc(segm1, segm2, true);
-                            polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                        } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
-                            // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
-
-                            // construct new line segment
+                        } else { // case 2b part2 || case 2c
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
-                    } else { // case 2, construct arc
-                        var arc = this._constructJoinArc(segm1, segm2, true);
-                        polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP) { // case 1a
-                            var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
-                                iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
-                                segm1.bulge);
-                            polyONew.end.bulge = newBulge;
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-                            polyONew.head.point = iRes.point;
-                        } else if (iRes.intTypes[0].FIP &&
-                                iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
+                    } else if (segm1.bulge == 0 && segm2.bulge != 0) { // Line segment and arc segment: use Algorithm 2
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP || // case 1a
+                                    // TIP && NFIP || PFIP && TIP -> should not be possible, might be some error,
+                                    // behave the same as when TIP for both
+                                    iRes.intTypes[0].TIP && iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP ||
+                                    iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP) {
 
+                                var bulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
+                                    segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
+                                    segm2.bulge);
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
+
+                                polyONew.head.point = iRes.point;
+                                polyONew.head.bulge = bulge;
+                            } else if (iRes.intTypes[0].PFIP && iRes.intTypes[1].FIP) { // case 1b
+                                var arc = this._constructJoinArc(segm1, segm2, true);
+                                polyONew.insertSegment(arc);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            } else { //iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP && iRes.intTypes[1].TIP ||  case 1c
+                                // iRes.intTypes[0].TIP && iRes.intTypes[1].PFIP)  case 1d
+
+                                // construct new line segment
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            }
+                        } else { // case 2, construct arc
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                        } else { // case 1c, 1d
-                            // construct new line segment
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
-
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
-                    } else {
-                        var arc = this._constructJoinArc(segm1, segm2, true);
-                        polyONew.insertSegment(arc);
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                    }
-                } else { // two arc segments: use Algorithm 4
-                    if (iRes.point) { // case 1
-                        if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
-                            iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1a
+                    } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP) { // case 1a
+                                var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
+                                    iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
+                                    segm1.bulge);
+                                polyONew.end.bulge = newBulge;
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
+                                polyONew.head.point = iRes.point;
+                            } else if (iRes.intTypes[0].FIP &&
+                                    iRes.intTypes[1].FIP && !iRes.intTypes[1].PFIP) { // case 1b
 
-                            var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
-                                iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
-                                segm1.bulge);
-                            polyONew.end.bulge = newBulge;
+                                var arc = this._constructJoinArc(segm1, segm2, true);
+                                polyONew.insertSegment(arc);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            } else { // case 1c, 1d
+                                // construct new line segment
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm1.point2, 0));
 
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
-
-                            newBulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
-                                segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
-                                segm2.bulge);
-
-                            polyONew.head.point = iRes.point;
-                            polyONew.head.bulge = newBulge;
-                        } else { // case 1b, construct arc
-                            var arc = this._constructJoinArc(segm1, segm2, false);
-                            polyONew.insertSegment(arc);
-
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
-                        }
-                    } else { // case 2
-                        var arc = null;
-                        if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                            arc = this._constructJoinArc(segm1, segm2, false);
-                        } else if (segm1.radius > segm2.radius){
-                            arc = this._constructJoinArc(segm1, segm2, true);
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            }
                         } else {
-                            arc = this._constructJoinArc(segm1, segm2, true);
+                            var arc = this._constructJoinArc(segm1, segm2, true);
+                            polyONew.insertSegment(arc);
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                         }
-                        polyONew.insertSegment(arc);
+                    } else { // two arc segments: use Algorithm 4
+                        if (iRes.point) { // case 1
+                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
+                                iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1a
 
-                        polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                                var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
+                                    iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
+                                    segm1.bulge);
+                                polyONew.end.bulge = newBulge;
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(iRes.point, 0));
+
+                                newBulge = this._calculateBulge(iRes.point.getX(), iRes.point.getY(),
+                                    segm2.point2.getX(), segm2.point2.getY(), segm2.center.getX(), segm2.center.getY(),
+                                    segm2.bulge);
+
+                                polyONew.head.point = iRes.point;
+                                polyONew.head.bulge = newBulge;
+                            } else { // case 1b, construct arc
+                                var arc = this._constructJoinArc(segm1, segm2, false);
+                                polyONew.insertSegment(arc);
+
+                                polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            }
+                        } else { // case 2
+                            var arc = null;
+                            if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
+                                arc = this._constructJoinArc(segm1, segm2, false);
+                            } else if (segm1.radius > segm2.radius){
+                                arc = this._constructJoinArc(segm1, segm2, true);
+                            } else {
+                                arc = this._constructJoinArc(segm1, segm2, true);
+                            }
+                            polyONew.insertSegment(arc);
+
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                        }
                     }
+                } else {
+                    polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                 }
             } else {
                 polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point2, 0));
@@ -1702,7 +1722,7 @@
      * @private
      */
     IFVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts, split) {
-        // TODO: make accurate splitting, when intersection point is the segment end point
+        var eps = 0.000001;
         var startSegm = polyLn.head;
         var startIdx = 0;
         var segm = startSegm;
@@ -1710,6 +1730,7 @@
         var bulge;
         for (var i = 0; i < intPts.length; ++i) {
             split[i] = new IFVertexOffsetter.PolySegmentContainer();
+
             for (var j = startIdx; j < intPts[i].segmIdx; ++j) {
                 split[i].insertSegment(new IFVertexOffsetter.PolySegment(
                     segm.point, segm.bulge, segm.center, segm.radius));
@@ -1719,35 +1740,83 @@
             }
             if (!segm.bulge) {
                 split[i].insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
-                segm = new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0);
-                split[i].insertSegment(segm);
-            } else {
-                if (segm == segmOrig) {
-                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(
-                        segm.point, intPts[i].slope, segm.center, segm.radius));
-                } else {
-                    // TODO: check formula here
-                    bulge = (intPts[i].slope - intPts[i-1].slope) / (1 + intPts[i].slope * intPts[i-1].slope);
-                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(
-                        segm.point, bulge, segm.center, segm.radius));
+                if (!ifMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
+                        !ifMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
+
+                    segm = new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0);
+                    split[i].insertSegment(segm);
                 }
+            } else {
+                if (!ifMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
+                    !ifMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
 
-                split[i].insertSegment(new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0));
+                    if (segm == segmOrig) {
+                        split[i].insertSegment(new IFVertexOffsetter.PolySegment(
+                            segm.point, intPts[i].slope, segm.center, segm.radius));
+                    } else {
+                        // TODO: check formula here
+                        bulge = (intPts[i].slope - intPts[i-1].slope) / (1 + intPts[i].slope * intPts[i-1].slope);
+                        split[i].insertSegment(new IFVertexOffsetter.PolySegment(
+                            segm.point, bulge, segm.center, segm.radius));
+                    }
 
-                // TODO: check formula here
-                bulge = (segmOrig.bulge - intPts[i].slope) / (1 + segmOrig.bulge * intPts[i].slope);
-                segm = new IFVertexOffsetter.PolySegment(
-                    new GPoint(intPts[i].x, intPts[i].y), bulge, segm.center, segm.radius);
+                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(new GPoint(intPts[i].x, intPts[i].y), 0));
+
+                    // TODO: check formula here
+                    bulge = (segmOrig.bulge - intPts[i].slope) / (1 + segmOrig.bulge * intPts[i].slope);
+                    segm = new IFVertexOffsetter.PolySegment(
+                        new GPoint(intPts[i].x, intPts[i].y), bulge, segm.center, segm.radius);
+                } else {
+                    split[i].insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
+                }
             }
             startIdx = j;
-        }
-        split[i] = new IFVertexOffsetter.PolySegmentContainer();
-        for (var j = startIdx; j < polyLn.count; ++j) {
-            split[i].insertSegment(new IFVertexOffsetter.PolySegment(
-                segm.point, segm.bulge, segm.center, segm.radius));
+            if (ifMath.isEqualEps(intPts[i].x, segmOrig.next.point.getX(), eps) &&
+                    ifMath.isEqualEps(intPts[i].y, segmOrig.next.point.getY(), eps)) {
 
-            segm = segmOrig.next;
-            segmOrig = segm;
+                ++startIdx;
+                segm = segmOrig.next;
+                segmOrig = segm;
+            }
+        }
+        var joinends = this._polyline.closed;
+        if (startIdx != polyLn.count - 1) {
+            split[i] = new IFVertexOffsetter.PolySegmentContainer();
+            for (var j = startIdx; j < polyLn.count; ++j) {
+                split[i].insertSegment(new IFVertexOffsetter.PolySegment(
+                    segm.point, segm.bulge, segm.center, segm.radius));
+
+                segm = segmOrig.next;
+                segmOrig = segm;
+            }
+        } else {
+            joinends = false;
+        }
+        if (split[0].count == 1) {
+            split = split.slice(1);
+            joinends = false;
+        }
+        if (joinends) {
+            var len = split.length;
+            var lastPLn = split[len-1];
+            var endPt = lastPLn.end.point;
+            var startPt = split[0].head.point;
+            if (len > 1 && ifMath.isEqualEps(endPt.getX(), startPt.getX(), eps) &&
+                    ifMath.isEqualEps(endPt.getY(), startPt.getY(), eps)) {
+
+                lastPLn.deleteSegment(lastPLn.end);
+                segm = split[0].head;
+                for (var i = 0; i < split[0].count; ++i) {
+                    lastPLn.insertSegment(new IFVertexOffsetter.PolySegment(
+                        segm.point, segm.bulge, segm.center, segm.radius));
+
+                    segm = segm.next;
+                }
+                split = split.slice(1);
+            } else {
+                split[0].closed = true;
+            }
+
         }
     };
 

@@ -122,9 +122,9 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, 335, 0);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 50, 0);
 
-                    vertexSource.addVertex(IFVertex.Command.Close);
+                    //vertexSource.addVertex(IFVertex.Command.Close);
 
-                    vertexSource.addVertex(IFVertex.Command.Move, 2, 200);
+                    vertexSource.addVertex(IFVertex.Command.Line, 2, 200);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 360, 200);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 40, -20);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 360, -20);
