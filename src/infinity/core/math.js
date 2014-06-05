@@ -484,6 +484,40 @@
     };
 
     /**
+     * Calculates and returns squared distance between two line segments
+     * @param {GPoint} pt11 - a start point of the first segment
+     * @param {GPoint} pt12 - an end point of the first segment
+     * @param {GPoint} pt21 - a start point of the second segment
+     * @param {GPoint} pt22 - an end point of the second segment
+     * @return {Number} squared distance between two line segments
+     */
+    IFMath.prototype.getSegmToSegmSqrDist = function (pt11, pt12, pt21, pt22) {
+        var dst = this.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt21.getX(), pt21.getY());
+        var res = dst;
+        if (res > 0) {
+            dst = this.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt22.getX(), pt22.getY());
+            if (dst < res) {
+                res = dst;
+            }
+            if (res > 0) {
+                dst = this.sqrSegmentDist(pt21.getX(), pt21.getY(), pt22.getX(), pt22.getY(), pt11.getX(), pt11.getY());
+                if (dst < res) {
+                    res = dst;
+                }
+                if (res > 0) {
+                    dst = this.sqrSegmentDist(
+                        pt21.getX(), pt21.getY(), pt22.getX(), pt22.getY(), pt12.getX(), pt12.getY());
+
+                    if (dst < res) {
+                        res = dst;
+                    }
+                }
+            }
+        }
+        return res;
+    };
+
+    /**
      * For points A(x1, y1), B(x2, y2), C(x3, y3) calculates and returns point C', so that AC' makes
      * a collinear projection of the AC vector to the direction of vector AB.
      * @param {Number} x1 - x-coordinate of the point A

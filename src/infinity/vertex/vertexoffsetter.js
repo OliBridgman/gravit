@@ -543,12 +543,21 @@
         }
 
         // 1. Construct approximating arc
-        var result = [];
-        var C = ifMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
-        var ab = ifMath.ptDist(xA, yA, xB, yB);
-        if (!C) {
+        var C;
+        var hndl1 = !ifMath.isEqualEps(xA, ctrlsx[1]) || !ifMath.isEqualEps(yA, ctrlsy[1]);
+        var hndl2 = !ifMath.isEqualEps(xB, ctrlsx[2]) || !ifMath.isEqualEps(yB, ctrlsy[2]);
+        if (hndl1 && hndl2) {
+            var result = [];
+            C = ifMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
+        } else if (hndl1) {
+            C = new GPoint(ctrlsx[1], ctrlsy[1]);
+        } else if (hndl2) {
+            C = new GPoint(ctrlsx[2], ctrlsy[2]);
+        } else {
+            this._polyline.insertSegment(new IFVertexOffsetter.PolySegment(new GPoint(xA, yA), 0));
             return;
         }
+        var ab = ifMath.ptDist(xA, yA, xB, yB);
         var ac = ifMath.ptDist(xA, yA, C.getX(), C.getY());
         var bc = ifMath.ptDist(xB, yB, C.getX(), C.getY());
         var p = ab + ac + bc;
@@ -726,7 +735,7 @@
         //
         // 5. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
-        var vertex1;
+        var vertex1 = null;
         var vertex2 = new IFVertex();
         var polySegm;
 
@@ -787,7 +796,14 @@
 
                 case IFVertex.Command.Close:
                     if (this._polyline) {
+                        if (vertex1) {
+                            polySegm = new IFVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
+                            this._polyline.insertSegment(polySegm);
+                            vertex1 = null;
+                        }
                         this._polyline.closed = true;
+                        polySegm = new IFVertexOffsetter.PolySegment(this._polyline.head.point, 0);
+                        this._polyline.insertSegment(polySegm);
                     }
                     break;
 
@@ -835,19 +851,6 @@
             }
             curSegm = curSegm.next;
         }
-        /*if (this._polyline.closed) {
-            curSegm = this._polyline.head;
-            if (outset) {
-                var firstSegm = polyOffsetOut.head;
-                polyOffsetOut.insertSegment(
-                    new IFVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
-            }
-            if (inset) {
-                var firstSegm = polyOffsetIn.head;
-                polyOffsetIn.insertSegment(
-                    new IFVertexOffsetter.PolyOffsetSegment(curSegm.point, firstSegm.point, null, 0));
-            }
-        }*/
 
         // 2. intersect untrimmed
         var polyOutNew = new IFVertexOffsetter.PolySegmentContainer();
@@ -886,7 +889,7 @@
         var inSplit = [];
         if (outset) {
             if (intPtsOut.length > 0) {
-                this._splitForClipping(polyOutNew, intPtsOut, outSplit);
+                outSplit = this._splitForClipping(polyOutNew, intPtsOut);
                 for (var i = 0; i < outSplit.length; ++i) {
                     var intPts = [];
                     var intPtsMain = [];
@@ -912,7 +915,7 @@
         }
         if (inset) {
             if (intPtsIn.length > 0) {
-                this._splitForClipping(polyInNew, intPtsIn, inSplit);
+                inSplit = this._splitForClipping(polyInNew, intPtsIn);
                 for (var i = 0; i < inSplit.length; ++i) {
                     var intPts = [];
                     var intPtsMain = [];
@@ -937,9 +940,17 @@
             }
         }
 
-        // Step 2. General closest point pair (GCPP) clipping
-        this._gcppClipping(tmpArray1Out, this._polyline, offset, this._polyoutset);
-        this._gcppClipping(tmpArray1In, this._polyline, offset, this._polyinset);
+        if (!(inset && outset)) {
+            // Step 2. General closest point pair (GCPP) clipping
+            this._gcppClipping(tmpArray1Out, this._polyline, offset, this._polyoutset);
+            this._gcppClipping(tmpArray1In, this._polyline, offset, this._polyinset);
+        } else {
+            // For each part from tmpArray if we have a point closer to main polyline than offset, discard the whole
+            // part
+            // TODO: change 3 with permanent coefficient
+            this._gcppFilter(tmpArray1Out, this._polyline, offset, tolerance * 3, this._polyoutset);
+            this._gcppFilter(tmpArray1In, this._polyline, offset, tolerance * 3, this._polyinset);
+        }
     };
 
     IFVertexOffsetter.prototype.generateOffset = function (inset, outset, tolerance) {
@@ -1299,8 +1310,8 @@
                         }
                     } else { // two arc segments: use Algorithm 4
                         if (iRes.point) { // case 1
-                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
-                                iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1a
+                            if (!(iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP) &&
+                                !iRes.intTypes[1].PFIP) { // case 1a
 
                                 var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
                                     iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
@@ -1321,14 +1332,7 @@
                                     segm2.point, segm2.bulge, segm2.center, segm2.radius));
                             }
                         } else { // case 2
-                            var arc = null;
-                            if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                                arc = this._constructJoinArc(segm1, segm2, false);
-                            } else if (segm1.radius > segm2.radius){
-                                arc = this._constructJoinArc(segm1, segm2, true);
-                            } else {
-                                arc = this._constructJoinArc(segm1, segm2, true);
-                            }
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
 
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
@@ -1348,7 +1352,7 @@
 
                 segm2 = polyOffset.head;
                 if (!ifMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
-                    !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
+                        !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
 
                     iRes.clear();
                     this._insersectOffsetSegments(segm1, segm2, iRes);
@@ -1424,8 +1428,8 @@
                         }
                     } else { // two arc segments: use Algorithm 4
                         if (iRes.point) { // case 1
-                            if (iRes.intTypes[0].TIP && iRes.intTypes[1].TIP ||
-                                iRes.intTypes[0].FIP && iRes.intTypes[1].FIP) { // case 1a
+                            if (!(iRes.intTypes[0].FIP && !iRes.intTypes[0].PFIP) &&
+                                !iRes.intTypes[1].PFIP) { // case 1a
 
                                 var newBulge = this._calculateBulge(segm1.point.getX(), segm1.point.getY(),
                                     iRes.point.getX(), iRes.point.getY(), segm1.center.getX(), segm1.center.getY(),
@@ -1447,14 +1451,7 @@
                                 polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
                             }
                         } else { // case 2
-                            var arc = null;
-                            if (segm1.bulge > 0 && segm2.bulge > 0 || segm1.bulge < 0 && segm2.bulge < 0) {
-                                arc = this._constructJoinArc(segm1, segm2, false);
-                            } else if (segm1.radius > segm2.radius){
-                                arc = this._constructJoinArc(segm1, segm2, true);
-                            } else {
-                                arc = this._constructJoinArc(segm1, segm2, true);
-                            }
+                            var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
 
                             polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
@@ -1583,15 +1580,14 @@
 
     IFVertexOffsetter.prototype._calcSegmIntersectionPoints = function (
             s1, s2, idx1, idx2, intPts1, intPts2, ignoreCommonEnd) {
-        // TODO: fix this ugly tol usage
-        var tol = 0.00001;
+
         if (!s1.bulge && !s2.bulge) {
             if (!ignoreCommonEnd) {
                 var res = [null, null];
                 var iPt = ifMath.getIntersectionPoint(s1.point.getX(), s1.point.getY(),
                     s1.next.point.getX(), s1.next.point.getY(), s2.point.getX(), s2.point.getY(),
                     s2.next.point.getX(), s2.next.point.getY(), res);
-                if (iPt && (0 + tol < res[0]) && (res[0] < 1 - tol) && (0 + tol< res[1]) && (res[1] < 1 - tol)) {
+                if (iPt && (0 <= res[0]) && (res[0] <= 1) && (0 <= res[1]) && (res[1] <= 1)) {
                     intPts1.push(new IFVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[0], s1, idx1));
                     intPts2.push(new IFVertexOffsetter.IntersectionPt(iPt.getX(), iPt.getY(), res[1], s2, idx2));
                 }
@@ -1718,16 +1714,17 @@
      *
      * @param {IFVertexOffsetter.PolySegmentContainer} polyLn
      * @param {Array{IFVertexOffsetter.IntersectionPt}} intPts
-     * @param {Array} split
+     * @return {Array} split
      * @private
      */
-    IFVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts, split) {
+    IFVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts) {
         var eps = 0.000001;
         var startSegm = polyLn.head;
         var startIdx = 0;
         var segm = startSegm;
         var segmOrig = segm;
         var bulge;
+        var split = [];
         for (var i = 0; i < intPts.length; ++i) {
             split[i] = new IFVertexOffsetter.PolySegmentContainer();
 
@@ -1816,8 +1813,17 @@
             } else {
                 split[0].closed = true;
             }
-
         }
+        // TODO: fix here to be more accurate originally !!! instead
+
+        var splitLast = [];
+        for (var i = 0; i < split.length; ++i) {
+            if (split[i].count != 1) {
+                splitLast.push(split[i]);
+            }
+        }
+
+        return splitLast;
     };
 
     IFVertexOffsetter.prototype._excludeCircleInside = function (polyLn, intPts, intPtsMain, offset, resArray) {
@@ -1939,6 +1945,271 @@
             }
             resPolyLns.push(poln);
         }
+    };
+
+    /**
+     *
+     * @param {Array{IFVertexOffsetter.PolySegmentContainer}} [polyLns]
+     * @param {IFVertexOffsetter.PolySegmentContainer} [basePolyLn]
+     * @param {Number} offset
+     * @param {Array{IFVertexOffsetter.PolySegmentContainer}} [resPolyLns]
+     * @private
+     */
+    IFVertexOffsetter.prototype._gcppFilter = function (polyLns, basePolyLn, offset, tolerance, resPolyLns) {
+        var poln;
+        var sqrOffset = (offset - tolerance) * (offset - tolerance);
+        var sqrDst;
+        var dst;
+        var threshold = offset + tolerance;
+        var sqrTrsh = threshold * threshold;
+        for (var i = 0; i < polyLns.length; ++i) {
+            poln = polyLns[i];
+
+            // Find GCPPs from each segment of basePolyLn to poln
+            var s1 = basePolyLn.head;
+            sqrDst = sqrTrsh;
+            for (var j = 0; j < basePolyLn.count - 1 && sqrDst >= sqrOffset; ++j) {
+                var s2 = poln.head;
+                for (var k = 0; k < poln.count - 1 && sqrDst >= sqrOffset; ++k) {
+                    sqrDst = this._getPlSegmSqrDist(s1, s1.next.point, s2, s2.next.point, threshold);
+                    s2 = s2.next;
+                }
+                s1 = s1.next;
+            }
+            if (sqrDst >= sqrOffset) {
+                resPolyLns.push(poln);
+            }
+        }
+    };
+
+    IFVertexOffsetter.prototype._getPlSegmSqrDist = function (s1, pt12, s2, pt22, threshold) {
+        var res;
+        if (!s1.bulge && !s2.bulge) {
+            res = ifMath.getSegmToSegmSqrDist(s1.point, pt12, s2.point, pt22);
+        } else if (!s2.bulge) {
+            res = this._getSegmToArcSqrDist(s1.point, s1.bulge, s1.center, s1.radius, pt12, s2.point, pt22, threshold * threshold);
+        } else if (!s1.bulge) {
+            res = this._getSegmToArcSqrDist(s2.point, s2.bulge, s2.center, s2.radius, pt22, s1.point, pt12, threshold * threshold);
+        } else {
+            res = this._getArcToArcSqrDist(s1, pt12, s2, pt22, threshold);
+        }
+        return res;
+    };
+
+    IFVertexOffsetter.prototype._getSegmToArcSqrDist = function (apt1, bulge, cntr, rd, apt2, spt1, spt2, threshold) {
+        var res = threshold;
+        var dst;
+        var intRes = [null, null];
+        var dxL = spt2.getX() - spt1.getX();
+        var dyL = spt2.getY() - spt1.getY();
+        ifMath.circleLineIntersection(spt1.getX(), spt1.getY(), dxL, dyL, cntr.getX(), cntr.getY(), rd, intRes);
+        if (intRes[0] != null && intRes[1] == null) {
+            // Check if distance is 0
+            var ptBulge = this._calculateBulge(apt1.getX(), apt1.getY(), intRes[0].getX(), intRes[0].getY(),
+                cntr.getX(), cntr.getY(), bulge);
+
+            var dxL1 = intRes[1].getX() - spt1.getX();
+            var dyL1 = intRes[1].getY() - spt1.getY();
+            if ((dxL1 < 0 && dxL <= dxL1 || dxL1 >= 0 && dxL >= dxL1) &&
+                    (dyL1 < 0 && dyL <= dyL1 || dyL1 >= 0 && dyL >= dyL1)) {
+
+                // tangential point at segment => min dist 0 or at arc end
+                if (ptBulge < 0 && bulge <= ptBulge || ptBulge >= 0 && bulge >= ptBulge) {
+                    res = 0;
+                } else {
+                    res = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                        apt1.getX(), apt1.getY());
+
+                    dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                        apt2.getX(), apt2.getY());
+
+                    if (dst < res) {
+                        res = dst;
+                    }
+                }
+            } else {
+                // min dist at segment end
+                res = this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt1);
+                dst = this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt2);
+                if (dst < res) {
+                    res = dst;
+                }
+            }
+        } else {
+            if (intRes[0] == null) {
+                // Find a circle point at which tangential line is parallel to segment
+                var ptMin = [null];
+                dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                    cntr.getX(), cntr.getY(), ptMin);
+
+                if (ptMin[0] > 0 && ptMin < 1) {
+                    var mptX = spt1.getX() + ptMin[0] * (spt2.getX() - spt1.getX());
+                    var mptY = spt1.getY() + ptMin[0] * (spt2.getY() - spt1.getY());
+                    var tmp = rd / Math.sqrt(dst);
+                    var tptX = cntr.getX() + tmp * (mptX - cntr.getX());
+                    var tptY = cntr.getY() + tmp * (mptY - cntr.getY());
+                    var tptBulge = this._calculateBulge(apt1.getX(), apt1.getY(), tptX, tptY,
+                        cntr.getX(), cntr.getY(), bulge);
+
+                    if (tptBulge < 0 && bulge <= tptBulge || tptBulge >= 0 && bulge >= tptBulge) {
+                        res = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                            tptX, tptY);
+                    }
+                }
+            }
+            dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                apt1.getX(), apt1.getY());
+
+            if (dst < res) {
+                res = dst;
+            }
+
+            if (res > 0) {
+                dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                    apt2.getX(), apt2.getY());
+
+                if (dst < res) {
+                    res = dst;
+                }
+
+                if (res > 0) {
+                    dst = this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt1);
+                    if (dst < res) {
+                        res = dst;
+                    }
+
+                    if (res > 0) {
+                        dst = this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt2);
+                        if (dst < res) {
+                            res = dst;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    };
+
+    IFVertexOffsetter.prototype._getPtToArcSqrDist = function (apt1, bulge, cntr, rd, apt2, pt) {
+        var res;
+        var sqrDst = ifMath.ptSqrDist(pt.getX(), pt.getY(), cntr.getX(), cntr.getY());
+        if (ifMath.isEqualEps(sqrDst, 0)) {
+            res = rd * rd;
+        } else {
+            var tmp = rd / Math.sqrt(sqrDst);
+            var tptX = cntr.getX() + tmp * (pt.getX() - cntr.getX());
+            var tptY = cntr.getY() + tmp * (pt.getY() - cntr.getY());
+            var tptBulge = this._calculateBulge(apt1.getX(), apt1.getY(), tptX, tptY,
+                cntr.getX(), cntr.getY(), bulge);
+
+            if (tptBulge < 0 && bulge <= tptBulge || tptBulge >= 0 && bulge >= tptBulge) {
+                res = ifMath.ptSqrDist(pt.getX(), pt.getY(), tptX, tptY);
+            } else {
+                res = ifMath.ptSqrDist(pt.getX(), pt.getY(), apt1.getX(), apt1.getY());
+                sqrDst = ifMath.ptSqrDist(pt.getX(), pt.getY(), apt2.getX(), apt2.getY());
+                if (sqrDst < res) {
+                    res = sqrDst;
+                }
+            }
+        }
+        return res;
+    };
+
+    IFVertexOffsetter.prototype._getArcToArcSqrDist = function (s1, pt12, s2, pt22, threshold) {
+        var c1x = s1.center.getX();
+        var c1y = s1.center.getY();
+        var c2x = s2.center.getX();
+        var c2y = s2.center.getY();
+        var tmp = s1.radius + s2.radius + threshold;
+        var sqrTrsh = threshold * threshold;
+
+        if (ifMath.ptSqrDist(c1x, c1y, c2x, c2y) > tmp * tmp) {
+            return sqrTrsh;
+        }
+
+        var res = null;
+        var pts1 = [s1.point, pt12];
+        var pts2 = [s2.point, pt22];
+        var intRes = [null, null];
+        ifMath.circleCircleIntersection(c1x, c1y, s1.radius, c2x, c2y, s2.radius, intRes);
+
+        var ptBulge;
+        var ata1;
+        var ata2;
+        for (var i = 0; i < 2 && intRes[i] != null && res === null; ++i) {
+            ptBulge = this._calculateBulge(s1.point.getX(), s1.point.getY(), intRes[i].getX(), intRes[i].getY(),
+                s1.center.getX(), s1.center.getY(), s1.bulge);
+
+            ata1 = ptBulge < 0 && s1.bulge <= ptBulge || ptBulge >= 0 && s1.bulge >= ptBulge;
+
+            ptBulge = this._calculateBulge(s2.point.getX(), s2.point.getY(), intRes[i].getX(), intRes[i].getY(),
+                s2.center.getX(), s2.center.getY(), s2.bulge);
+
+            ata2 = ptBulge < 0 && s2.bulge <= ptBulge || ptBulge >= 0 && s2.bulge >= ptBulge;
+
+            if (ata1 && ata2) {
+                res = 0;
+            } else if (ata1) {
+                pts1.push(intRes[i]);
+            } else if (ata2) {
+                pts2.push(intRes[i]);
+            }
+        }
+        if (!intRes[0] && (!ifMath.isEqualEps(c1x, c2x) || !ifMath.isEqualEps(c1y, c2y))){
+            var dxL = c2x - c1x;
+            var dyL = c2y - c1y;
+            var intLRes = [null, null];
+            ifMath.circleLineIntersection(c1x, c1y, dxL, dyL, c2x, c2y, s2.radius, intLRes);
+            var ptx;
+            var pty;
+            for (var i = 0; i < 2 && intLRes[i] != null; ++i) {
+                ptx = c1x + dxL * intLRes[i];
+                pty = c1y + dyL * intLRes[i];
+
+                ptBulge = this._calculateBulge(s2.point.getX(), s2.point.getY(), ptx, pty,
+                    s2.center.getX(), s2.center.getY(), s2.bulge);
+
+                ata2 = ptBulge < 0 && s2.bulge <= ptBulge || ptBulge >= 0 && s2.bulge >= ptBulge;
+
+                if (ata2) {
+                    pts2.push(new GPoint(ptx, pty));
+                }
+            }
+            dxL = -dxL;
+            dyL = -dyL;
+            intLRes = [null, null];
+            ifMath.circleLineIntersection(c2x, c2y, dxL, dyL, c1x, c1y, s1.radius, intLRes);
+            for (var i = 0; i < 2 && intLRes[i] != null; ++i) {
+                ptx = c2x + dxL * intLRes[i];
+                pty = c2y + dyL * intLRes[i];
+
+                ptBulge = this._calculateBulge(s1.point.getX(), s1.point.getY(), ptx, pty,
+                    s1.center.getX(), s1.center.getY(), s1.bulge);
+
+                ata1 = ptBulge < 0 && s1.bulge <= ptBulge || ptBulge >= 0 && s1.bulge >= ptBulge;
+
+                if (ata1) {
+                    pts1.push(new GPoint(ptx, pty));
+                }
+            }
+        }
+        if (res !== 0) {
+            res = sqrTrsh;
+            var dst;
+            for (var i = 0; i < pts1.length && res > 0; ++i) {
+                dst = this._getPtToArcSqrDist(s2.point, s2.bulge, s2.center, s2.radius, pt22, pts1[i]);
+                if (dst < res) {
+                    res = dst;
+                }
+            }
+            for (var i = 0; i < pts2.length && res > 0; ++i) {
+                dst = this._getPtToArcSqrDist(s1.point, s1.bulge, s1.center, s1.radius, pt12, pts2[i]);
+                if (dst < res) {
+                    res = dst;
+                }
+            }
+        }
+        return res;
     };
 
     IFVertexOffsetter.prototype._genCurves = function (polyLns, outset, tolerance) {

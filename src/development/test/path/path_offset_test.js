@@ -9,9 +9,9 @@
         //page = null;
 
         var wrapper = document.getElementById(GApplication.Part.Windows.id);
-        page.setProperties(['w'], [1400]);
-        var width = 400;
-        var height = 400;
+        page.setProperties(['w'], [1600]);
+        var width = 440;
+        var height = 420;
 
         function VertexWidget(container, vertexSource) {
             var viewN = new IFView(scene, container);
@@ -118,13 +118,13 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, 160, 340);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 335, 340);
 
-                    vertexSource.addVertex(IFVertex.Command.Curve2, 10, 190);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, 20, 190);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 335, 0);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 50, 0);
 
                     //vertexSource.addVertex(IFVertex.Command.Close);
 
-                    vertexSource.addVertex(IFVertex.Command.Line, 2, 200);
+                    vertexSource.addVertex(IFVertex.Command.Line, 10, 200);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 360, 200);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 40, -20);
                     vertexSource.addVertex(IFVertex.Command.Curve2, 360, -20);
@@ -155,28 +155,6 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, 10, -40);
 
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 2000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-//                        xPt = 110;
-//                        yPt = 190;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 2, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    }
-                        */
                     break;
                 case 1:
                     text.innerHTML = "Square";
@@ -186,27 +164,6 @@
                     vertexSource.addVertex(IFVertex.Command.Line, x3, y3);
                     vertexSource.addVertex(IFVertex.Command.Line, x4, y4);
                     vertexSource.addVertex(IFVertex.Command.Line, x1, y1);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 1000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-                        //xPt = 200;
-                        //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    }  */
                     break;
                 case 2:
                     text.innerHTML = "Curve3 Vertex";
@@ -216,27 +173,6 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, x4, y4);
                     vertexSource.addVertex(IFVertex.Command.Curve2, x3, y3);
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 1000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-                        //xPt = 200;
-                        //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    }     */
                     break;
                 case 3:
                     text.innerHTML = "Curve3 Vertex";
@@ -246,27 +182,6 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, x4 - halfWidth, y4);
                     vertexSource.addVertex(IFVertex.Command.Curve2, x3 - halfWidth, y3);
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 10000; ++j) {
-                        xPt = Math.random() * halfWidth;
-                        yPt = Math.random() * height;
-//                        xPt = 260;
-//                        yPt = 150;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
-                        if (res) {
-                        cnt = vertexSource.getCount();
-                        vertexSource.resize(cnt + 2);
-                        vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                        if (res && hitTestRes.outline) {
-                            vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                        }
-                        else {
-                            vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                        }
-                        }
-                    } */
                     break;
                 case 4:
                     text.innerHTML = "Curve3 Vertex";
@@ -276,27 +191,6 @@
                     vertexSource.addVertex(IFVertex.Command.Curve2, x4, y4);
                     vertexSource.addVertex(IFVertex.Command.Curve2, x3, y3);
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 1000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-//                        xPt = 253;
-//                        yPt = 143;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    }    */
                     break;
                 case 5:
                     text.innerHTML = "Curve Vertex";
@@ -305,27 +199,6 @@
                     vertexSource.addVertex(IFVertex.Command.Curve, cx, cy);
                     vertexSource.addVertex(IFVertex.Command.Curve, x3, y3);
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 10000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-                        //xPt = cx+5;
-                        //yPt = cy;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    }  */
                     break;
                 case 6:
                     text.innerHTML = "Curve Vertex";
@@ -334,33 +207,12 @@
                     vertexSource.addVertex(IFVertex.Command.Curve, x4, y4);
                     vertexSource.addVertex(IFVertex.Command.Curve, x2, cy);
                     vertexSource.addVertex(IFVertex.Command.Close);
-
-                    /*hitTestRes = new IFVertexInfo.HitResult();
-
-                    for (j=0; j < 1000; ++j) {
-                        xPt = Math.random() * width;
-                        yPt = Math.random() * height;
-                        //xPt = 250;
-                        //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
-                        if (res) {
-                            cnt = vertexSource.getCount();
-                            vertexSource.resize(cnt + 2);
-                            vertexSource.addVertex(IFVertex.Command.Move, xPt, yPt);
-                            if (res && hitTestRes.outline) {
-                                vertexSource.addVertex(IFVertex.Command.Line, hitTestRes.x, hitTestRes.y);
-                            }
-                            else {
-                                vertexSource.addVertex(IFVertex.Command.Line, xPt, yPt+1);
-                            }
-                        }
-                    } */
                     break;
             }
 
-            if (i != 4) {
+            //if (i == 4) {
                 var vertex = new IFVertex();
-                var vOffsetter = new IFVertexOffsetter(vertexSource, 3, true, true, 0.001);
+                var vOffsetter = new IFVertexOffsetter(vertexSource, 5, true, true, 0.1);
                 vertexSource.rewindVertices(0);
                 vertexCurve = new IFVertexContainer();
                 while (vertexSource.readVertex(vertex)) {
@@ -372,9 +224,9 @@
                 }
                 vertexCurve.rewindVertices(0);
                 var widget = new VertexWidget(container, vertexCurve);
-            } else {
-                var widget = new VertexWidget(container, vertexSource);
-            }
+            //} else {
+            //    var widget = new VertexWidget(container, vertexSource);
+            //}
             widget.resize(width, height);
             widget.paint(widget._paintContext);
         }
