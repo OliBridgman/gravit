@@ -8,18 +8,84 @@
      */
     function IFStrokePaint() {
         IFPatternPaint.call(this);
+        this._setDefaultProperties(IFStrokeAttribute.GeometryProperties);
     }
 
     IFNode.inherit('fillPaint', IFStrokePaint, IFPatternPaint);
 
+    /**
+     * Alignment of a stroke
+     * @enum
+     */
+    IFStrokePaint.Alignment = {
+        /**
+         * Center alignment
+         */
+        Center : 'C',
+
+        /**
+         * Outside alignment
+         */
+        Outside: 'O',
+
+        /**
+         * Inside alignment
+         */
+        Inside: 'I'
+    };
+
+    /**
+     * Geometry properties
+     */
+    IFStrokePaint.GeometryProperties = {
+        // Stroke width
+        sw: 1,
+        // Stroke alignment
+        sa: IFStrokePaint.Alignment.Center,
+        // Stroke Line-Caption
+        slc: IFPaintCanvas.LineCap.Square,
+        // Stroke Line-Join
+        slj: IFPaintCanvas.LineJoin.Miter,
+        // Stroke Line-Miter-Limit
+        slm: 10
+    };
+
+    /** @override */
+    IFStrokePaint.prototype.isSeparate = function () {
+        return this.$sa !== IFStrokePaint.Alignment.Center;
+    };
+
     /** @override */
     IFStrokePaint.prototype.getPadding = function () {
-        return [2, 2, 2, 2];
+        // Padding depends on stroke-width and alignment
+        if (this.$sa === IFStrokePaint.Alignment.Center) {
+            var val = this.$sw / 2;
+            return [val, val, val, val];
+        } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
+            return [this.$sw, this.$sw, this.$sw, this.$sw];
+        }
+        return null;
     };
 
     /** @override */
     IFStrokePaint.prototype.paint = function (canvas, source) {
-        canvas.strokeVertices(IFColor.BLACK, 2);
+        var strokeWidth = this.$sw;
+
+        // Except center alignment we need to double the stroke width
+        // as we're gonna clip half away
+        if (this.$sa !== IFStrokePaint.Alignment.Center) {
+            strokeWidth *= 2;
+        }
+
+        // Stroke vertices now
+        canvas.strokeVertices(IFColor.BLACK, strokeWidth, this.$slc, this.$slj, this.$slm);
+
+        // Depending on the stroke alignment we might need to clip now
+        if (this.$sa === IFStrokePaint.Alignment.Inside) {
+            canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+        } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
+            canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+        }
     };
 
     /** @override */
