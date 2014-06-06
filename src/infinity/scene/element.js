@@ -722,10 +722,10 @@
                         var effects = [];
                         var filters = [];
                         for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
-                            if (child instanceof IFEffect) {
+                            if (child instanceof IFEffectEntry) {
                                 effects.push(child);
                                 needContentsCanvas = true;
-                            } else if (child instanceof IFFilter) {
+                            } else if (child instanceof IFFilterEntry) {
                                 filters.push(child);
                                 needContentsCanvas = true;
                             }

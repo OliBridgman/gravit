@@ -3,16 +3,16 @@
     /**
      * A blur filter
      * @class IFBlurFilter
-     * @extends IFFilter
+     * @extends IFFilterEntry
      * @mixes IFNode.Properties
      * @constructor
      */
     function IFBlurFilter() {
-        IFFilter.call(this);
+        IFFilterEntry.call(this);
         this._setDefaultProperties(IFBlurFilter.GeometryProperties);
     }
 
-    IFNode.inheritAndMix('blurFilter', IFBlurFilter, IFFilter, [IFNode.Properties]);
+    IFNode.inheritAndMix('blurFilter', IFBlurFilter, IFFilterEntry, [IFNode.Properties]);
 
     /**
      * Geometry properties

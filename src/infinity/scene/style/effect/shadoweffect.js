@@ -3,16 +3,16 @@
     /**
      * A shadow effect
      * @class IFShadowEffect
-     * @extends IFEffect
+     * @extends IFEffectEntry
      * @mixes IFNode.Properties
      * @constructor
      */
     function IFShadowEffect() {
-        IFEffect.call(this);
+        IFEffectEntry.call(this);
         this._setDefaultProperties(IFShadowEffect.GeometryProperties, IFShadowEffect.VisualProperties);
     }
 
-    IFNode.inheritAndMix('shadowEffect', IFShadowEffect, IFEffect, [IFNode.Properties]);
+    IFNode.inheritAndMix('shadowEffect', IFShadowEffect, IFEffectEntry, [IFNode.Properties]);
 
     /**
      * Geometry properties
