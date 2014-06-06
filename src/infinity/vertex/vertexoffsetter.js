@@ -3,14 +3,14 @@
      * @class IFVertexOffsetter
      * @extends IFVertexSource
      * @param {IFVertexSource} source the underyling vertex source to work on
-     * @param {Number} offset
-     * @param {Boolean} inset
-     * @param {Boolean} outset
-     * @param {Number} tol - tolerance value
+     * @param {Number} offset - the distance at which offset should be calculated
+     * @param {Boolean} inset - indicates if an inset is required
+     * @param {Boolean} outset - indicates if an outset is required
+     * @param {Number} tol - offset approximation tolerance value (preciseness)
      * @constructor
      */
     function IFVertexOffsetter(source, offset, inset, outset, tol) {
-        var tolerance = tol ? tol / 3 : 0.0001;
+        var tolerance = tol ? tol / 3 : 0.03;
         this._source = source;
         this._polyline = new IFVertexOffsetter.PolySegmentContainer();
         this._polyoutset = [];
@@ -18,7 +18,7 @@
         this._outset = [];
         this._inset = [];
         this.generatePolyLine(tolerance);
-        this.generatePolyOffset(offset, inset, outset, tolerance);
+        this.generatePolyOffset(Math.abs(offset), inset, outset, tolerance);
         this.generateOffset(inset, outset, tolerance);
     }
 
@@ -838,13 +838,13 @@
         var offsSegm;
         for (var i = 0, curSegm = this._polyline.head; i < this._polyline.count; ++i) {
             if (outset) {
-                offsSegm = this._offsetPolySegment(curSegm, offset, tolerance);
+                offsSegm = this._offsetPolySegment(curSegm, -offset, tolerance);
                 if (offsSegm) {
                     polyOffsetOut.insertSegment(offsSegm);
                 }
             }
             if (inset) {
-                offsSegm = this._offsetPolySegment(curSegm, -offset, tolerance);
+                offsSegm = this._offsetPolySegment(curSegm, offset, tolerance);
                 if (offsSegm) {
                     polyOffsetIn.insertSegment(offsSegm);
                 }
@@ -856,10 +856,10 @@
         var polyOutNew = new IFVertexOffsetter.PolySegmentContainer();
         var polyInNew = new IFVertexOffsetter.PolySegmentContainer();
         if (outset) {
-            this._trimOffsetPoly(polyOffsetOut, offset, polyOutNew);
+            this._trimOffsetPoly(polyOffsetOut, -offset, polyOutNew);
         }
         if (inset) {
-            this._trimOffsetPoly(polyOffsetIn, -offset, polyInNew);
+            this._trimOffsetPoly(polyOffsetIn, offset, polyInNew);
         }
 
         // 3. clipping algorithm
@@ -1997,6 +1997,10 @@
     };
 
     IFVertexOffsetter.prototype._getSegmToArcSqrDist = function (apt1, bulge, cntr, rd, apt2, spt1, spt2, threshold) {
+        if (ifMath.isEqualEps(spt1.getX(), spt2.getX()) && ifMath.isEqualEps(spt1.getY(), spt2.getY())) {
+            return this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt1);
+        }
+
         var res = threshold;
         var dst;
         var intRes = [null, null];

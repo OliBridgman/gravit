@@ -184,15 +184,20 @@
         var rSqr = rC * rC;
         var dxLSqr = dxL * dxL;
         var dyLSqr = dyL * dyL;
+        var dev = dxLSqr + dyLSqr;
+        if (this.isEqualEps(dev, 0)) {
+            return;
+        }
+
         var tmp = dxL * (yC - yL) - dyL * (xC - xL);
-        var discr = rSqr * (dxLSqr + dyLSqr) - (tmp * tmp);
+        var discr = rSqr * dev - (tmp * tmp);
 
         if (this.isEqualEps(discr, 0)) { // line is tangent to circle
-            result[0] = (dxL * (xC - xL) + dyL * (yC - yL)) / (dxLSqr + dyLSqr);
+            result[0] = (dxL * (xC - xL) + dyL * (yC - yL)) / dev;
         } else if (discr > 0) { // line intersects circle in two points
             tmp = dxL * (xC - xL) + dyL * (yC - yL);
-            result[0] = (tmp - Math.sqrt(discr)) / (dxLSqr + dyLSqr);
-            result[1] = (tmp + Math.sqrt(discr)) / (dxLSqr + dyLSqr);
+            result[0] = (tmp - Math.sqrt(discr)) / dev;
+            result[1] = (tmp + Math.sqrt(discr)) / dev;
         }
     };
 
@@ -418,6 +423,9 @@
      * @version 1.0
      */
     IFMath.prototype.sqrSegmentDist = function (px1, py1, px2, py2, x, y, ptMin, sqrEndAcc) {
+        if (this.isEqualEps(px1, px2) && this.isEqualEps(py1, py2)) {
+            return this.ptSqrDist(px1, py1, x, y);
+        }
 
         // Calculate distance using this approach:
         // http://msdn.microsoft.com/en-us/library/ms969920.aspx
