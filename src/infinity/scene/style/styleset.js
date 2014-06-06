@@ -3,20 +3,33 @@
     /**
      * A set of styles
      * @class IFStyleSet
-     * @extends IFStyle
+     * @extends IFNode
+     * @mixes IFNode.Container
+     * @mixes IFNode.Store
      * @constructor
      */
     function IFStyleSet() {
-        IFStyle.call(this);
+        IFNode.call(this);
     }
 
-    IFNode.inheritAndMix('styleSet', IFStyleSet, IFStyle);
+    IFObject.inheritAndMix(IFStyleSet, IFNode, [IFNode.Container, IFNode.Store]);
 
-    /** @override */
+    /**
+     * StyleSet's mime-type
+     * @type {string}
+     */
+    IFStyleSet.MIME_TYPE = "application/infinity+styleSet";
+
+    /**
+     * Returns the bounding box of the styleSet which is
+     * the union of all visible style's bboxes
+     * @param {GRect} source the source bbox
+     * @returns {GRect}
+     */
     IFStyleSet.prototype.getBBox = function (source) {
         var result = source;
         for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-            if (node instanceof IFStyle) {
+            if (node instanceof IFStyle && node.getProperty('vs') === true) {
                 var childBBox = node.getBBox(source);
                 if (childBBox && !childBBox.isEmpty()) {
                     result = result.united(childBBox);
@@ -24,6 +37,28 @@
             }
         }
         return result;
+    };
+
+    /**
+     * Makes a hit-test on each visible style until a hit was found.
+     * Goes from top-to-bottom.
+     * @parma {IFVertexSource} source
+     * @param {GPoint} location
+     * @param {GTransform} transform
+     * @param {Number} tolerance
+     * @returns {IFStyle.HitResult}
+     * @see IFStyle.hitTest
+     */
+    IFStyleSet.prototype.hitTest = function (source, location, transform, tolerance) {
+        for (var node = this.getLastChild(); node !== null; node = node.getPrevious()) {
+            if (node instanceof IFStyle && node.getProperty('vs') === true) {
+                var result = node.hitTest(source, location, transform, tolerance);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     };
 
     /** @override */

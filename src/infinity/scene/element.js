@@ -702,7 +702,7 @@
         if (this.hasMixin(IFElement.Style)) {
             var styleSet = this.getStyleSet();
             for (var style = styleSet.getFirstChild(); style !== null; style = style.getNext()) {
-                if (style instanceof IFStyle) {
+                if (style instanceof IFStyle && style.getProperty('vs') === true) {
                     paintRegular = false;
 
                     // Fast lane for no raster effects

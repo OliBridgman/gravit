@@ -25,11 +25,44 @@
      * Visual properties
      */
     IFStyle.VisualProperties = {
+        // Whether the style is visible or not
+        vs: true,
         // The composite of the style
         cmp: IFPaintCanvas.CompositeOperator.SourceOver,
         // The opacity of the style
         opc: 1.0
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFStyle.HitResult Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * A hit result on a style
+     * @param {IFStyleEntry} entry the style entry that had been hit
+     * @param {*} args - other hit-test data
+     * @constructor
+     * @class IFStyle.HitResult
+     */
+    IFStyle.HitResult = function (entry, args) {
+        this.entry = entry;
+        this.data = args;
+    };
+
+    /**
+     * The style entry that had been hit
+     * @type {IFStyleEntry}
+     */
+    IFStyle.HitResult.prototype.entry = null;
+
+    /**
+     * Additional hit-test data
+     * @type {*}
+     */
+    IFStyle.HitResult.prototype.data = null;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFStyle Class
+    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns the bounding box of the style
@@ -106,6 +139,35 @@
             }
         }
         return source;
+    };
+
+    /**
+     * Called whenever a hit-test should be made on this style. Only
+     * paint style entries can be hit. Note that if there're any vector
+     * effects in this style, they're applied to the source before hit-
+     * testing takes place. Goes from top-to-bottom.
+     * @parma {IFVertexSource} source the vertice source
+     * @param {GPoint} location the position to trigger the hit test at
+     * in transformed view coordinates (see transform parameter)
+     * @param {GTransform} transform the transformation of the scene
+     * or null if there's none
+     * @param {Number} tolerance a tolerance value for hit testing in view coordinates
+     * @returns {IFStyle.HitResult} the hit result or null for none
+     */
+    IFStyle.prototype.hitTest = function (source, location, transform, tolerance) {
+        // Make sure to get a transformed / effected source
+        source = this.createVertexSource(source);
+
+        // Hit test our children now
+        for (var entry = this.getLastChild(); entry !== null; entry = entry.getPrevious()) {
+            if (entry instanceof IFPaintEntry) {
+                var result = entry.hitTest(source, location, transform, tolerance);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     };
 
     /** @override */

@@ -22,6 +22,20 @@
     };
 
     /**
+     * Called whenever a hit-test should be made on this paint entry.
+     * @parma {IFVertexSource} source the vertice source
+     * @param {GPoint} location the position to trigger the hit test at
+     * in transformed view coordinates (see transform parameter)
+     * @param {GTransform} transform the transformation of the scene
+     * or null if there's none
+     * @param {Number} tolerance a tolerance value for hit testing in view coordinates
+     * @returns {IFStyle.HitResult} the hit result or null for none
+     */
+    IFPaintEntry.prototype.hitTest = function (source, location, transform, tolerance) {
+        return null;
+    };
+
+    /**
      * Called to paint. Note that the given canvas is already
      * pre-filled with the given vertex source.
      * @param {IFPaintCanvas} canvas the canvas used for painting

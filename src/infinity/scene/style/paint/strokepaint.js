@@ -56,6 +56,16 @@
     };
 
     /** @override */
+    IFStrokePaint.prototype.hitTest = function (source, location, transform, tolerance) {
+        var outlineWidth = this.$sw * transform.getScaleFactor() + tolerance * 2;
+        var vertexHit = new IFVertexInfo.HitResult();
+        if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
+            return new IFStyle.HitResult(this, vertexHit);
+        }
+        return null;
+    };
+
+    /** @override */
     IFStrokePaint.prototype.getPadding = function () {
         // Padding depends on stroke-width and alignment
         if (this.$sa === IFStrokePaint.Alignment.Center) {

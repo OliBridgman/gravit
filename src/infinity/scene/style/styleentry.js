@@ -4,12 +4,13 @@
      * A base style entry class
      * @class IFStyleEntry
      * @extends IFNode
+     * @mixes IFNode.Store
      * @constructor
      */
     function IFStyleEntry() {
     }
 
-    IFObject.inherit(IFStyleEntry, IFNode);
+    IFObject.inheritAndMix(IFStyleEntry, IFNode, [IFNode.Store]);
 
     /**
      * If the style extends the paint area it should

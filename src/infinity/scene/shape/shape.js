@@ -247,11 +247,11 @@
 
     /** @override */
     IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        // Hit-Test attributes, first
-        var attrHit = this.getAttributes().hitTest(this, location, transform, tolerance);
+        // Hit-Test styles, first
+        var styleHit = this.getStyleSet().hitTest(this, location, transform, tolerance);
 
-        if (attrHit) {
-            return new IFElement.HitResult(this, attrHit);
+        if (styleHit) {
+            return new IFElement.HitResult(this, styleHit);
         } else if (force) {
             // When forced we'll always hit-test our whole "invisible" outline / fill area
             var vertexHit = new IFVertexInfo.HitResult();
