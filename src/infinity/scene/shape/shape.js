@@ -8,7 +8,6 @@
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
      * @mixes IFElement.Pivot
-     * @mixes IFElement.Attributes
      * @mixes IFElement.Style
      * @mixes IFVertexSource
      * @constructor
@@ -20,7 +19,7 @@
         this._setDefaultProperties(IFShape.GeometryProperties);
     }
 
-    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFElement.Style, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Style, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -49,28 +48,6 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFShape._Attributes Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @class IFShape._Attributes
-     * @extends IFAttributes
-     * @mixes IFNode.Container
-     * @mixes IFAttribute.Render
-     * @mixes IFAttributes.Pattern
-     * @private
-     */
-    IFShape._Attributes = function () {
-        this._flags |= IFNode.Flag.Shadow;
-    }
-
-    IFNode.inheritAndMix("shapeAttrs", IFShape._Attributes, IFAttributes, [IFAttribute.Render, IFAttributes.Pattern]);
-
-    /** @override */
-    IFShape._Attributes.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFShape;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
@@ -81,16 +58,6 @@
             this.appendChild(styleSet);
         }
         return styleSet;
-    };
-
-    /** @override */
-    IFShape.prototype.getAttributes = function () {
-        var attributes = IFElement.Attributes.prototype.getAttributes.call(this);
-        if (!attributes) {
-            attributes = new IFShape._Attributes();
-            this.appendChild(attributes);
-        }
-        return attributes;
     };
 
     /** @override */
@@ -259,7 +226,7 @@
                 return new IFElement.HitResult(this, vertexHit);
             }
         } else {
-            // If we didn't hit an attributes, then hit-test our "invisible" tolerance outline area if any
+            // If we didn't hit a style entry, then hit-test our "invisible" tolerance outline area if any
             if (tolerance) {
                 var vertexHit = new IFVertexInfo.HitResult();
                 if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {

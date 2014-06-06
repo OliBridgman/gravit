@@ -37,11 +37,6 @@ ifLocale.setValues(IFPage, IFLocale.Language.English, ["name"], ["Page"]);
 ifLocale.setValues(IFPath, IFLocale.Language.English, ["name"], ["Path"]);
 ifLocale.setValues(IFText, IFLocale.Language.English, ["name"], ["Text"]);
 ifLocale.setValues(IFScenePaintConfiguration, IFLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
-ifLocale.setValues(IFFillAttribute, IFLocale.Language.English, ["name"], ["Fill"]);
-ifLocale.setValues(IFStrokeAttribute, IFLocale.Language.English, ["name"], ["Stroke"]);
-ifLocale.setValues(IFContentAttribute, IFLocale.Language.English, ["name"], ["Contents"]);
-ifLocale.setValues(IFBlurAttribute, IFLocale.Language.English, ["name"], ["Blur"]);
-ifLocale.setValues(IFShadowAttribute, IFLocale.Language.English, ["name"], ["Shadow"]);
 
 // Editor
 ifLocale.setValues(IFSceneEditor, IFLocale.Language.English, ["action.insert", "action.remove", "action.properties"], ["Insert", "Remove", "Change Properties"]);

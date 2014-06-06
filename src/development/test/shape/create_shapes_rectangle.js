@@ -38,7 +38,7 @@
 
             var editor = IFEditor.getEditor(scene);
 
-            rect.getAttributes().appendChild(new IFStrokeAttribute());
+            rect.getStyleSet().appendChild(new IFStrokePaint());
 
             page.appendChild(rect);
 

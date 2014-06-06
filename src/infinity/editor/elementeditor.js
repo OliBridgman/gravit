@@ -805,7 +805,7 @@
      * @param {IFColor} fillColor the current default fill color
      * @param {IFColor} strokeColor the current default stroke color
      */
-    IFElementEditor.prototype.initialSetup = function (fillColor, strokeColor) {
+    IFElementEditor.prototype.initialSetup = function () {
         // NO-OP
     };
 

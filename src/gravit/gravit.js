@@ -125,7 +125,6 @@
         // Register default properties
         gravit.properties.push(
             new GDimensionsProperties(),
-            new GAttributeProperties(),
             new GDocumentProperties(),
             new GPolygonProperties(),
             new GPathProperties(),
@@ -133,14 +132,6 @@
             new GEllipseProperties(),
             new GTextProperties(),
             new GPageProperties()
-        );
-
-        // Register default attributes
-        gravit.attributes.push(
-            new GStrokeAttribute(),
-            new GFillAttribute(),
-            new GShadowAttribute(),
-            new GBlurAttribute()
         );
 
         // Register default actions

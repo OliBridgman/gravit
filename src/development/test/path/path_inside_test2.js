@@ -28,7 +28,7 @@
                 [segments, cx, cy, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
             var editor = IFEditor.getEditor(scene);
-            polygon.getAttributes().appendChild(new IFStrokeAttribute());
+            polygon.getStyleSet().appendChild(new IFStrokePaint());
             page.appendChild(polygon);
 
             var bbox = null;
@@ -60,7 +60,7 @@
                     ap2.setProperties(['x', 'y'], [xPt, yPt + 1]);
                     path.getAnchorPoints().appendChild(ap1);
                     path.getAnchorPoints().appendChild(ap2);
-                    path.getAttributes().appendChild(new IFStrokeAttribute());
+                    path.getStyleSet().appendChild(new IFStrokePaint());
                     page.appendChild(path);
                 }
             }

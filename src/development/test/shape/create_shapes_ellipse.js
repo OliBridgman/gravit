@@ -34,7 +34,7 @@
                 .translated(x + size/2,  y + size/2));
 
             var editor = IFEditor.getEditor(scene);
-            ellipse.getAttributes().appendChild(new IFStrokeAttribute());
+            ellipse.getStyleSet().appendChild(new IFStrokePaint());
             page.appendChild(ellipse);
 
             x += size + spaceX;

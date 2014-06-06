@@ -35,23 +35,12 @@
         if (firstPage) {
             this.setCurrentPage(firstPage);
         }
-
-        this._currentColor = [new IFColor(IFColor.Type.Black), null];
     };
     IFObject.inherit(IFEditor, GEventTarget);
 
     IFEditor.options = {
         /** Maximum number of undo-steps */
         maxUndoSteps: 10
-    };
-
-    /**
-     * Current Color Type
-     * @enum
-     */
-    IFEditor.CurrentColorType = {
-        Stroke: 0,
-        Fill: 1
     };
 
     /**
@@ -108,33 +97,6 @@
     /** @override */
     IFEditor.CurrentPageChangedEvent.prototype.toString = function () {
         return "[Event IFEditor.CurrentPageChangedEvent]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.CurrentColorChangedEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever a current color has been changed
-     * @class IFEditor.CurrentColorChangedEvent
-     * @extends GEvent
-     * @constructor
-     * @version 1.0
-     */
-    IFEditor.CurrentColorChangedEvent = function (type, previousColor) {
-        this.type = type;
-        this.previousColor = previousColor;
-    };
-    IFObject.inherit(IFEditor.CurrentColorChangedEvent, GEvent);
-
-    /** @type {IFEditor.CurrentColorType} */
-    IFEditor.CurrentColorChangedEvent.prototype.type = null;
-
-    /** @type {IFColor} */
-    IFEditor.CurrentColorChangedEvent.prototype.previousColor = null;
-
-    /** @override */
-    IFEditor.CurrentColorChangedEvent.prototype.toString = function () {
-        return "[Event IFEditor.CurrentColorChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -308,13 +270,6 @@
      * @private
      */
     IFEditor.prototype._currentLayer = null;
-
-    /**
-     * @type {Array<IFColor>}
-     * @private
-     */
-    IFEditor.prototype._currentColor = null;
-
     /**
      * @returns {IFScene}
      */
@@ -455,33 +410,6 @@
 
             if (this.hasEventListeners(IFEditor.CurrentLayerChangedEvent)) {
                 this.trigger(new IFEditor.CurrentLayerChangedEvent(previousLayer));
-            }
-        }
-    };
-
-    /**
-     * Get a current color for a given type
-     * @param {IFEditor.CurrentColorType} type
-     */
-    IFEditor.prototype.getCurrentColor = function (type) {
-        return this._currentColor[type];
-    };
-
-    /**
-     * Set a current color for a given type
-     * @param {IFEditor.CurrentColorType} type
-     * @param {IFColor} color
-     */
-    IFEditor.prototype.setCurrentColor = function (type, color) {
-        if (!IFColor.equals(color, this._currentColor[type])) {
-            var oldColor = this._currentColor[type];
-
-            // Assign new color
-            this._currentColor[type] = color;
-
-            // Trigger event
-            if (this.hasEventListeners(IFEditor.CurrentColorChangedEvent)) {
-                this.trigger(new IFEditor.CurrentColorChangedEvent(type, oldColor));
             }
         }
     };
@@ -879,9 +807,6 @@
             this.beginTransaction();
         }
 
-        var fillColor = this._currentColor[IFEditor.CurrentColorType.Fill];
-        var strokeColor = this._currentColor[IFEditor.CurrentColorType.Stroke];
-
         try {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
@@ -893,7 +818,7 @@
                     // Create a temporary editor for the element to handle it's insertion
                     var editor = IFElementEditor.createEditor(element);
                     if (editor) {
-                        editor.initialSetup(fillColor, strokeColor);
+                        editor.initialSetup();
                     }
                 }
             }

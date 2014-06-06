@@ -658,14 +658,11 @@
 
     /** @override */
     IFText.Content.prototype.propertiesToCss = function (css) {
-        // Setup default color taking care of attributes if any
+        // Setup default color taking care of style if any
         var color = 'black';
         var text = this._parent;
         if (text) {
-            var fillColor = text.getAttributes().getFillColor();
-            if (fillColor) {
-                color = fillColor.asCSSString();
-            }
+            // TODO : Figure color of topmost visible styleSet and assign it to color
         }
         css['color'] = color;
 

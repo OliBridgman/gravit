@@ -323,52 +323,6 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.Attributes Mixin
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * Marks an element to contain attributes
-     * @class IFElement.Attributes
-     * @constructor
-     * @mixin
-     */
-    IFElement.Attributes = function () {
-    };
-
-    /**
-     * @type {IFAttributes}
-     * @private
-     */
-    IFElement.Attributes._attributes = null;
-
-    /**
-     * Returns the attributes for this element
-     * @returns {IFAttributes}
-     */
-    IFElement.Attributes.prototype.getAttributes = function () {
-        // If we have a _attributes reference and it not
-        // has ourself as a parent, then clear it, first
-        if (this._attributes && this._attributes.getParent() !== this) {
-            this._attributes = null;
-        }
-
-        if (!this._attributes) {
-            // Find our attributes and save reference for faster access
-            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof IFAttributes) {
-                    this._attributes = child;
-                    break;
-                }
-            }
-        }
-        return this._attributes;
-    };
-
-    /** @override */
-    IFElement.Attributes.prototype.toString = function () {
-        return "[Mixin IFElement.Attributes]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
     // IFElement
     // -----------------------------------------------------------------------------------------------------------------
     /**

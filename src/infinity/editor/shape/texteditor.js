@@ -208,8 +208,10 @@
 
     /** @override */
     IFTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
-        // Text will always retrieve a black fill if there's no other fill
-        IFShapeEditor.prototype.initialSetup.call(this, fillColor ? fillColor : new IFColor(IFColor.Type.Black), null);
+        // Add a default style with a default fill
+        var style = new IFStyle();
+        style.appendChild(new IFFillPaint());
+        this.getElement().getStyleSet().appendChild(style);
     };
 
     /** @override */

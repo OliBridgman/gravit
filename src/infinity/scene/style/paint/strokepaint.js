@@ -8,7 +8,7 @@
      */
     function IFStrokePaint() {
         IFPatternPaint.call(this);
-        this._setDefaultProperties(IFStrokeAttribute.GeometryProperties);
+        this._setDefaultProperties(IFStrokePaint.GeometryProperties);
     }
 
     IFNode.inherit('fillPaint', IFStrokePaint, IFPatternPaint);

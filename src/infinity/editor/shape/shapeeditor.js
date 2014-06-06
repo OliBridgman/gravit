@@ -13,42 +13,18 @@
     /** @override */
     IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         if (IFElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
-            // TODO : Attributes are supposed to gain their own editors so this should become obsolete
-            // TODO : Also support dropping IFSwatch
-            if (type === IFElementEditor.DropType.Color) {
-                var editor = IFEditor.getEditor(this.getElement().getScene());
-
-                // Either drop on an existing style that was hit if it is a fill style or set the fill on the root styleset of the shape
-                editor.beginTransaction();
-                try {
-                    if (hitData && hitData instanceof IFAttribute.HitResult && hitData.attribute instanceof IFPatternAttribute) {
-                        hitData.attribute.setColor(source);
-                    } else {
-                        this.getElement().getAttributes().setFillColor(source);
-                    }
-                } finally {
-                    // TODO : I18N
-                    editor.commitTransaction('Drop Color');
-                }
-                return true;
-            }
+            // NO-OP
+            return false;
         }
         return true;
     };
 
     /** @override */
-    IFShapeEditor.prototype.initialSetup = function (fillColor, strokeColor) {
-        // Assign default fill and stroke attributes for shapes
-        if (fillColor || strokeColor) {
-            var attributes = this.getElement().getAttributes();
-
-            if (fillColor) {
-                attributes.setFillColor(fillColor);
-            }
-            if (strokeColor) {
-                attributes.setStrokeColor(strokeColor);
-            }
-        }
+    IFShapeEditor.prototype.initialSetup = function () {
+        // Add a default style with a default stroke
+        var style = new IFStyle();
+        style.appendChild(new IFStrokePaint());
+        this.getElement().getStyleSet().appendChild(style);
     };
 
     /**

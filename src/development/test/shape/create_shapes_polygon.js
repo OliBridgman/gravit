@@ -31,7 +31,7 @@
                 [segments, x + polySize / 2, y + polySize / 2, innerRadius, outerRadius, startAngle, endAngle, innerRoundness, outerRoundness]);
 
             var editor = IFEditor.getEditor(scene);
-            polygon.getAttributes().appendChild(new IFStrokeAttribute());
+            polygon.getStyleSet().appendChild(new IFStrokePaint());
             page.appendChild(polygon);
 
             x += polySize + spaceX;

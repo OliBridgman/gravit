@@ -42,12 +42,7 @@ var gravit = {
     /**
      * Array<GProperties>
      */
-    properties: [],
-
-    /**
-     * Array<GAttribute>
-     */
-    attributes: []
+    properties: []
 };
 
 /**

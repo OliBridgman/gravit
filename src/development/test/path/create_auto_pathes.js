@@ -53,7 +53,7 @@
                 path.transform(transform);
 
                 var editor = IFEditor.getEditor(scene);
-                path.getAttributes().appendChild(new IFStrokeAttribute());
+                path.getStyleSet().appendChild(new IFStrokePaint());
                 page.appendChild(path);
 
                 x += boxWidth + 20;

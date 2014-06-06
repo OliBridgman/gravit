@@ -23,7 +23,7 @@
                 .translated(+(x + rectWidth/2), + (y + rectHeight/2)));
 
             var editor = IFEditor.getEditor(scene);
-            rect.getAttributes().appendChild(new IFStrokeAttribute());
+            rect.getStyleSet().appendChild(new IFStrokePaint());
             page.appendChild(rect);
 
             x += rectWidth + spaceX;
