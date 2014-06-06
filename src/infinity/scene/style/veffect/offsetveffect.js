@@ -29,7 +29,7 @@
      */
     IFOffsetVEffect.GeometryProperties = {
         // Offset-Type
-        tp: IFOffsetVEffect.OffsetType.Both,
+        tp: IFOffsetVEffect.OffsetType.Outset,
         // The offset amount
         off: 5
     };
@@ -49,8 +49,8 @@
             return new IFVertexOffsetter(
                 source,
                 this.$off,
-                this.$tp === IFOffsetVEffect.OffsetType.Inset || this.$tp === IFOffsetVEffect.OffsetType.Both,
-                this.$tp === IFOffsetVEffect.OffsetType.Outset || this.$tp === IFOffsetVEffect.OffsetType.Both
+                this.$tp === IFOffsetVEffect.OffsetType.Outset || this.$tp === IFOffsetVEffect.OffsetType.Both,
+                this.$tp === IFOffsetVEffect.OffsetType.Inset || this.$tp === IFOffsetVEffect.OffsetType.Both
             );
         }
         return source;
