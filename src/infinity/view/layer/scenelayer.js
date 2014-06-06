@@ -83,7 +83,7 @@
             context.canvas.setOrigin(new GPoint(Math.round(this._view._scrollX), Math.round(this._view._scrollY)));
             context.canvas.setScale(this._view._zoom);
             //context.canvas.setTransform(this._view.getWorldTransform());
-            this._view.getScene().paint(context);
+            this._view.getScene().render(context);
         }
     };
 

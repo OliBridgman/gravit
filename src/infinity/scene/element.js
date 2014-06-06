@@ -277,6 +277,52 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFElement.Style Mixin
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * Marks an element to be stylable
+     * @class IFElement.Style
+     * @constructor
+     * @mixin
+     */
+    IFElement.Style = function () {
+    };
+
+    /**
+     * @type {IFStyleSet}
+     * @private
+     */
+    IFElement.Style._styleSet = null;
+
+    /**
+     * Returns the style-set for this element
+     * @returns {IFStyleSet}
+     */
+    IFElement.Style.prototype.getStyleSet = function () {
+        // If we have a _styleSet reference and it not
+        // has ourself as a parent, then clear it, first
+        if (this._styleSet && this._styleSet.getParent() !== this) {
+            this._styleSet = null;
+        }
+
+        if (!this._styleSet) {
+            // Find our style-set and save reference for faster access
+            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
+                if (child instanceof IFStyleSet) {
+                    this._styleSet = child;
+                    break;
+                }
+            }
+        }
+        return this._styleSet;
+    };
+
+    /** @override */
+    IFElement.Style.prototype.toString = function () {
+        return "[Mixin IFElement.Style]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFElement.Attributes Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -430,10 +476,10 @@
      * Returns whether this geometry is actually visible. Note that even if this
      * function returns true, it does not mean that the node is paintable after all
      * as this doesn't include any specific checking for visibility.
-     * To check whether this geometry is really paintable, use the isPaintable function.
+     * To check whether this geometry is really paintable, use the isRenderable function.
      * Note that this will also return false even this geometry would be visible
      * but one of it's parents is hidden.
-     * @see isPaintable
+     * @see isRenderable
      * @version 1.0
      */
     IFElement.prototype.isVisible = function () {
@@ -611,22 +657,7 @@
     };
 
     /**
-     * Called whenever this should paint itself
-     * @param {IFPaintContext} context the context to be used for drawing
-     * @version 1.0
-     */
-    IFElement.prototype.paint = function (context) {
-        if (!this._preparePaint(context)) {
-            return;
-        }
-
-        this._paintChildren(context);
-
-        this._finishPaint(context);
-    };
-
-    /**
-     * Function to check whether a node is actually paintable, this includes
+     * Function to check whether a node is actually rednerable, this includes
      * for example checking for display flag, checking for dirty regions,
      * empty bounding box, visibility and more.
      * @param {IFPaintContext} [context] the current paint context, if null,
@@ -634,7 +665,7 @@
      * @return {Boolean} true if the node is paintable, false if not
      * @private
      */
-    IFElement.prototype.isPaintable = function (context) {
+    IFElement.prototype.isRenderable = function (context) {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return false;
@@ -658,6 +689,124 @@
     };
 
     /**
+     * Called to render this element
+     * @param {IFPaintContext} context the context to be used for drawing
+     */
+    IFElement.prototype.render = function (context) {
+        // Prepare paint
+        if (!this._preparePaint(context)) {
+            return;
+        }
+
+        var paintRegular = true;
+        if (this.hasMixin(IFElement.Style)) {
+            var styleSet = this.getStyleSet();
+            for (var style = styleSet.getFirstChild(); style !== null; style = style.getNext()) {
+                if (style instanceof IFStyle) {
+                    paintRegular = false;
+
+                    // Fast lane for no raster effects
+                    if (!context.configuration.isRasterEffects(context)) {
+                        this._paint(context, style);
+                    } else {
+                        var styleOpacity = style.getProperty('opc');
+                        var styleCmpOp = style.getProperty('cmp');
+
+                        // If style has other than default cmp operator or opacity we need a separate canvas
+                        var needContentsCanvas = styleOpacity !== IFStyle.VisualProperties.cmp ||
+                            styleCmpOp !== IFStyle.VisualProperties.opc;
+
+                        var hasRenderedContents = false;
+
+                        // Collect filter and effects
+                        var effects = [];
+                        var filters = [];
+                        for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
+                            if (child instanceof IFEffect) {
+                                effects.push(child);
+                                needContentsCanvas = true;
+                            } else if (child instanceof IFFilter) {
+                                filters.push(child);
+                                needContentsCanvas = true;
+                            }
+                        }
+
+                        if (needContentsCanvas) {
+                            // Create a temporary canvas for our actual contents
+                            var paintBBox = style.getBBox(this.getGeometryBBox());
+                            var sourceCanvas = context.canvas;
+                            var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
+                            context.canvas = contentsCanvas;
+                            try {
+                                this._paint(context, style);
+                            } finally {
+                                context.canvas = sourceCanvas;
+                            }
+
+                            // Apply filters on contents
+                            for (var i = 0; i < filters.length; ++i) {
+                                filters[i].apply(contentsCanvas);
+                            }
+
+                            // Apply effects if desired...
+                            if (effects.length > 0) {
+                                // Order effects whether they're pre- or post-effects
+                                effects.sort(function (a, b) {
+                                    return (a.isPost() === b.isPost()) ? 0 : b.isPost() ? -1 : 1;
+                                });
+
+                                // Initiate a temporary effect canvas
+                                var effectCanvas = sourceCanvas.createCanvas(paintBBox);
+                                for (var i = 0; i < effects.length; ++i) {
+                                    var effect = effects[i];
+
+                                    if (i > 0) {
+                                        // Clear previous effect contents
+                                        effectCanvas.fillRect(0, 0, paintBBox.getWidth(), paintBBox.getHeight());
+                                    }
+
+                                    // Paint contents before first post filter
+                                    if (!hasRenderedContents && effect.isPost()) {
+                                        hasRenderedContents = true;
+                                        sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+                                    }
+
+                                    // Render effect and paint the effect canvas
+                                    effect.render(effectCanvas, contentsCanvas);
+                                    sourceCanvas.drawCanvas(effectCanvas, 0, 0);
+                                }
+                            }
+
+                            if (!hasRenderedContents) {
+                                sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+                            }
+                        } else {
+                            this._paint(context, style);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (paintRegular) {
+            this._paint(context, null);
+        }
+
+        this._finishPaint(context);
+    };
+
+    /**
+     * Called whenever this should paint itself
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFStyle} [style] the current style used for painting, only
+     * provided if this element has the IFElement.Style mixin
+     */
+    IFElement.prototype._paint = function (context, style) {
+        // Render children by default
+        this._renderChildren(context);
+    };
+
+    /**
      * Called for preparing a paint
      * @param {IFPaintContext} context the current paint context
      * @return {Boolean} false if painting should be canceled, true otherwise
@@ -668,7 +817,7 @@
             return false;
         }
 
-        return this.isPaintable(context);
+        return this.isRenderable(context);
     };
 
     /**
@@ -678,8 +827,6 @@
      */
     IFElement.prototype._finishPaint = function (context) {
         // NO-OP
-
-        // TODO : If print mode then remove clipping to page
     };
 
     /**
@@ -687,12 +834,12 @@
      * @param {IFPaintContext} context the current paint context
      * @private
      */
-    IFElement.prototype._paintChildren = function (context) {
+    IFElement.prototype._renderChildren = function (context) {
         // default paint handling if node is a container
         if (this.hasMixin(IFNode.Container)) {
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
                 if (node instanceof IFElement) {
-                    node.paint(context);
+                    node.render(context);
                 }
             }
         }
@@ -714,8 +861,13 @@
      * @private
      */
     IFElement.prototype._calculatePaintBBox = function () {
-        // Default action unites all children paint bboxes if this is a container
-        return this.getChildrenPaintBBox();
+        var result = this.getChildrenGeometryBBox();
+
+        if (result && this.hasMixin(IFElement.Style)) {
+            result = this.getStyleSet().getBBox(result);
+        }
+
+        return result;
     };
 
     /**
@@ -769,7 +921,7 @@
      * @private
      */
     IFElement.prototype._requestInvalidateNode = function (node) {
-        if (this.isAttached() && node.isPaintable()) {
+        if (this.isAttached() && node.isRenderable()) {
             var repaintArea = node.getPaintBBox();
             if (repaintArea) {
                 // Expand repaint area a bit to accreditate for any aa-pixels
@@ -809,11 +961,11 @@
     /** @override */
     IFElement.prototype._handleChange = function (change, args) {
         if (change == IFElement._Change.InvalidationRequest) {
-            if (this.isPaintable()) {
+            if (this.isRenderable()) {
                 this._requestInvalidation();
             }
         } else if (change == IFElement._Change.PrepareGeometryUpdate) {
-            if (this.isPaintable()) {
+            if (this.isRenderable()) {
                 var paintBBox = this.getPaintBBox();
                 if (paintBBox && !paintBBox.isEmpty()) {
                     this._savedPaintBBox = paintBBox;
@@ -832,7 +984,7 @@
                     this._invalidateGeometry();
                 }
 
-                if (this.isPaintable()) {
+                if (this.isRenderable()) {
                     var newPaintBBox = this.getPaintBBox();
                     if (!GRect.equals(newPaintBBox, this._savedPaintBBox)) {
 

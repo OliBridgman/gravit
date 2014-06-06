@@ -1,5 +1,19 @@
 (function () {
     function test(scene, page, layer, view) {
+        var rect = new IFRectangle();
+        rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(100, 0, 0, 50, 110, 180)]);
+
+        var style = new IFStyle();
+        //style.appendChild(new IFStrokeStyle());
+        style.appendChild(new IFBlurFilter());
+        //style.appendChild(new IFDropShadowEffect());
+
+        rect.getStyleSet().appendChild(style);
+
+        page.appendChild(rect);
+
+
+        /*
 
         //
         // Round rectangle with contents
@@ -76,6 +90,8 @@
         text.setProperties(['aw', 'trf'], [false, new GTransform(500, 0, 0, 1, 0, 0)]);
 
         page.appendChild(text);
+
+        */
     }
 
     gDevelopment.tests.push({

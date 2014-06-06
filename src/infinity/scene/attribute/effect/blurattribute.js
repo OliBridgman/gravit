@@ -24,7 +24,7 @@
 
     /** @override */
     IFBlurAttribute.prototype._renderEffect = function (context, source, bbox) {
-        context.canvas.runFilter('stackBlur', null, [this.$r]);
+        //context.canvas.runFilter('stackBlur', null, [this.$r]);
         return null;
     };
 

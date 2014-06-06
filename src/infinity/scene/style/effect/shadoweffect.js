@@ -1,0 +1,76 @@
+(function (_) {
+
+    /**
+     * A shadow effect
+     * @class IFShadowEffect
+     * @extends IFEffect
+     * @mixes IFNode.Properties
+     * @constructor
+     */
+    function IFShadowEffect() {
+        IFEffect.call(this);
+        this._setDefaultProperties(IFShadowEffect.GeometryProperties, IFShadowEffect.VisualProperties);
+    }
+
+    IFNode.inheritAndMix('shadowEffect', IFShadowEffect, IFEffect, [IFNode.Properties]);
+
+    /**
+     * Geometry properties
+     */
+    IFShadowEffect.GeometryProperties = {
+        // Inner shadow or not (drop shadow)
+        in: false,
+        // The radius of the shadow
+        r: 5,
+        // The horizontal shift of the shadow
+        x: 0,
+        // The vertical shift of the shadow
+        y: 0
+    };
+
+    /**
+     * Visual properties
+     */
+    IFShadowEffect.VisualProperties = {
+        // The color of the shadow
+        cls: IFColor.parseCSSColor('rgba(0,0,0,0.5)')
+    };
+
+    /** @override */
+    IFShadowEffect.prototype.getPadding = function () {
+        if (!this.$in) {
+            return [this.$r - this.$x, this.$r - this.$y, this.$r + this.$x, this.$r + this.$y];
+        }
+        return null;
+    };
+
+    /** @override */
+    IFShadowEffect.prototype.isPost = function () {
+        return this.$in ? true : false;
+    };
+
+    /** @override */
+    IFShadowEffect.prototype.render = function (canvas, contents) {
+        // Fill our whole canvas with the shadow color
+        canvas.fillRect(canvas.getOrigin().getX(), canvas.getOrigin().getY(), canvas.getWidth(), canvas.getHeight(), this.$cls);
+
+        // Paint shadow now
+        if (this.$in) {
+            // Inset shadow
+            canvas.drawCanvas(contents, this.$x, this.$y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+            canvas.blur(this.$r);
+            canvas.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+        } else {
+            // Drop shadow
+            canvas.drawCanvas(contents, this.$x, this.$y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            canvas.blur(this.$r);
+        }
+    };
+
+    /** @override */
+    IFShadowEffect.prototype.toString = function () {
+        return "[IFShadowEffect]";
+    };
+
+    _.IFShadowEffect = IFShadowEffect;
+})(this);

@@ -62,11 +62,7 @@
     };
 
     /** @override */
-    IFPage.prototype.paint = function (context) {
-        if (!this._preparePaint(context)) {
-            return;
-        }
-
+    IFPage.prototype._paint = function (context) {
         // Indicates whether page clipped it's contents
         var hasClipped = false;
 
@@ -103,17 +99,15 @@
         // Assign original transform again
         context.canvas.setTransform(canvasTransform);
 
-        // Paint contents if any
+        // Render contents if any
         if (hasContents) {
-            this._paintChildren(context);
+            this._renderChildren(context);
         }
 
         // Reset clipping if we've clipped
         if (hasClipped) {
             context.canvas.resetClip();
         }
-
-        this._finishPaint(context);
     };
 
     /** @override */

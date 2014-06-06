@@ -92,6 +92,19 @@
     };
 
     /**
+     * Checks and returns whether to paint raster effects or not
+     * @param {IFPaintContext} [context] optional context
+     * to include when checking
+     * @returns {boolean}
+     */
+    IFScenePaintConfiguration.prototype.isRasterEffects = function (context) {
+        if (!this.isOutline(context)) {
+            return this.paintMode !== IFScenePaintConfiguration.PaintMode.Fast;
+        }
+        return false;
+    };
+
+    /**
      * Checks and returns whether to paint annotations or not
      * @param {IFPaintContext} [context] optional context
      * to include when checking

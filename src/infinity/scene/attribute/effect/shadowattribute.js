@@ -48,7 +48,7 @@
         if (tint) {
             tint[3] = tint[3] / 100.0;
         }
-        context.canvas.runFilter('stackBlur', null, [this.$r, tint]);
+        //context.canvas.runFilter('stackBlur', null, [this.$r, tint]);
 
         return new GPoint(this.$x, this.$y);
     };

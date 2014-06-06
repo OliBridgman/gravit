@@ -9,6 +9,7 @@
      * @mixes IFElement.Transform
      * @mixes IFElement.Pivot
      * @mixes IFElement.Attributes
+     * @mixes IFElement.Style
      * @mixes IFVertexSource
      * @constructor
      */
@@ -19,13 +20,32 @@
         this._setDefaultProperties(IFShape.GeometryProperties);
     }
 
-    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Pivot, IFElement.Attributes, IFElement.Style, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
      */
     IFShape.GeometryProperties = {
         trf: null
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFShape._StyleSet Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class IFShape._StyleSet
+     * @extends IFStyleSet
+     * @private
+     */
+    IFShape._StyleSet = function () {
+        this._flags |= IFNode.Flag.Shadow;
+    }
+
+    IFNode.inherit("shpStylSet", IFShape._StyleSet, IFStyleSet);
+
+    /** @override */
+    IFShape._StyleSet.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFShape;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -53,6 +73,16 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
+    /** @override */
+    IFShape.prototype.getStyleSet = function () {
+        var styleSet = IFElement.Style.prototype.getStyleSet.call(this);
+        if (!styleSet) {
+            styleSet = new IFShape._StyleSet();
+            this.appendChild(styleSet);
+        }
+        return styleSet;
+    };
+
     /** @override */
     IFShape.prototype.getAttributes = function () {
         var attributes = IFElement.Attributes.prototype.getAttributes.call(this);
@@ -115,12 +145,8 @@
     };
 
     /** @override */
-    IFShape.prototype.paint = function (context) {
+    IFShape.prototype._paint = function (context) {
         if (!this.rewindVertices(0)) {
-            return;
-        }
-
-        if (!this._preparePaint(context)) {
             return;
         }
 
@@ -136,15 +162,25 @@
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
+        } else {
+            context.canvas.putVertices(this);
+            //context.canvas.fillVertices(IFColor.parseCSSColor('yellow'));
+            context.canvas.strokeVertices(IFColor.parseCSSColor('red'), 2);
+            /*
+            var style = this.getStyle();
+            for (var c = style.getFirstChild(); c !== null; c = c.getNext()) {
+                if (c instanceof IFPaintStyle) {
+                    c.paint(context);
+                }
+            }
+            */
         }
 
         // Paint our attributes
-        this.getAttributes().render(context, this, this.getGeometryBBox());
+        //this.getAttributes().render(context, this, this.getGeometryBBox());
 
         // Paint our foreground
         this._paintForeground(context);
-
-        this._finishPaint(context);
     };
 
     /**
@@ -178,13 +214,7 @@
             return null;
         }
 
-        var result = source;
-        var attributesBBox = this.getAttributes().getBBox(source);
-        if (attributesBBox && !attributesBBox.isEmpty()) {
-            result = result.united(attributesBBox);
-        }
-
-        return result;
+        return this.getStyleSet().getBBox(source);
     };
 
     /** @override */
