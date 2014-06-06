@@ -4,7 +4,6 @@
      * A shadow effect
      * @class IFShadowEffect
      * @extends IFEffectEntry
-     * @mixes IFNode.Properties
      * @constructor
      */
     function IFShadowEffect() {
@@ -12,7 +11,7 @@
         this._setDefaultProperties(IFShadowEffect.GeometryProperties, IFShadowEffect.VisualProperties);
     }
 
-    IFNode.inheritAndMix('shadowEffect', IFShadowEffect, IFEffectEntry, [IFNode.Properties]);
+    IFNode.inherit('shadowEffect', IFShadowEffect, IFEffectEntry);
 
     /**
      * Geometry properties

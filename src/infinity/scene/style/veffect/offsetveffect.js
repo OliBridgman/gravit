@@ -4,7 +4,6 @@
      * A vector effect for offsetting
      * @class IFOffsetVEffect
      * @extends IFVEffectEntry
-     * @mixes IFNode.Properties
      * @constructor
      */
     function IFOffsetVEffect() {
@@ -12,7 +11,7 @@
         this._setDefaultProperties(IFOffsetVEffect.GeometryProperties);
     }
 
-    IFNode.inheritAndMix('offsetVEffect', IFOffsetVEffect, IFVEffectEntry, [IFNode.Properties]);
+    IFNode.inheritAndMix('offsetVEffect', IFOffsetVEffect, IFVEffectEntry);
 
     /**
      * Type of offset

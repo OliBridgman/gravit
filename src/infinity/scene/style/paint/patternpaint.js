@@ -4,14 +4,13 @@
      * A base for pattern painting
      * @class IFPatternPaint
      * @extends IFPaintEntry
-     * @mixes IFNode.Properties
      * @constructor
      */
     function IFPatternPaint() {
         IFPaintEntry.call(this);
     }
 
-    IFObject.inheritAndMix(IFPatternPaint, IFPaintEntry, [IFNode.Properties]);
+    IFObject.inherit(IFPatternPaint, IFPaintEntry);
 
     /** @override */
     IFPatternPaint.prototype.toString = function () {

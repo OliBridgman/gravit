@@ -3,17 +3,16 @@
     /**
      * A base style class
      * @class IFStyle
-     * @extends IFNode
-     * @mixes IFNode.Store
-     * @mixes IFNode.Properties
+     * @extends IFStyleBase
      * @mixes IFNode.Container
      * @constructor
      */
     function IFStyle() {
+        IFStyleBase.call(this);
         this._setDefaultProperties(IFStyle.VisualProperties);
     }
 
-    IFObject.inheritAndMix(IFStyle, IFNode, [IFNode.Store, IFNode.Properties, IFNode.Container]);
+    IFObject.inheritAndMix(IFStyle, IFStyleBase, [IFNode.Container]);
 
     /**
      * Style's mime-type
@@ -65,7 +64,8 @@
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * Returns the bounding box of the style
+     * Returns the bounding box of the style. This includes only
+     * visible style entries
      * @param {GRect} source the source bbox
      * @returns {GRect}
      */
@@ -76,7 +76,7 @@
         var paintPadding = [0, 0, 0, 0];
 
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFStyleEntry) {
+            if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
                 var padding = child.getPadding();
                 if (padding) {
                     if (child instanceof IFVEffectEntry) {
@@ -128,13 +128,13 @@
 
     /**
      * Creates a vertex source based on a source and any potential
-     * vector effects within this style
+     * (visible) vector effects within this style
      * @param {IFVertexSource} source
      * @return {IFVertexSource}
      */
     IFStyle.prototype.createVertexSource = function (source) {
         for (var entry = this.getFirstChild(); entry !== null; entry = entry.getNext()) {
-            if (entry instanceof IFVEffectEntry) {
+            if (entry instanceof IFVEffectEntry && entry.getProperty('vs') === true) {
                 source = entry.createEffect(source);
             }
         }
@@ -160,7 +160,7 @@
 
         // Hit test our children now
         for (var entry = this.getLastChild(); entry !== null; entry = entry.getPrevious()) {
-            if (entry instanceof IFPaintEntry) {
+            if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
                 var result = entry.hitTest(source, location, transform, tolerance);
                 if (result) {
                     return result;

@@ -170,7 +170,7 @@
             var vertexSource = null;
 
             for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
-                if (entry instanceof IFPaintEntry) {
+                if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
                     // Check whether to create a separate canvas
                     if (entry.isSeparate()) {
                         // Create temporary canvas

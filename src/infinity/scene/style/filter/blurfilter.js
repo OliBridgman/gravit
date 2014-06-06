@@ -4,7 +4,6 @@
      * A blur filter
      * @class IFBlurFilter
      * @extends IFFilterEntry
-     * @mixes IFNode.Properties
      * @constructor
      */
     function IFBlurFilter() {
@@ -12,7 +11,7 @@
         this._setDefaultProperties(IFBlurFilter.GeometryProperties);
     }
 
-    IFNode.inheritAndMix('blurFilter', IFBlurFilter, IFFilterEntry, [IFNode.Properties]);
+    IFNode.inherit('blurFilter', IFBlurFilter, IFFilterEntry);
 
     /**
      * Geometry properties
