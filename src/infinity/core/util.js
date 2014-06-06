@@ -220,7 +220,7 @@
      * @param {string} string
      * @returns {boolean}
      */
-    IFUtil.prototype.isNumeric = function(string) {
+    IFUtil.prototype.isNumeric = function (string) {
         // parseFloat NaNs numeric-cast false positives (null|true|false|"")
         // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
         // subtraction forces infinities to NaN
@@ -242,6 +242,11 @@
      * @returns {string}
      */
     IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator, thousandSeparator, includeEndingZeros) {
+        // zero is a special case
+        if (number === 0) {
+            return '0';
+        }
+
         decimalPlaces = decimalPlaces || 3;
         decimalSeparator = decimalSeparator || ',';
         thousandSeparator = thousandSeparator || '';
@@ -255,6 +260,7 @@
         var resposta = "";
         var part = "";
         if (number != Math.floor(number)) {
+            console.log('NUM: ' + number + ' != FLOOR: ' + Math.floor(number));
             part = Math.round((number - Math.floor(number)) * Math.pow(10, decimalPlaces)).toString();
 
             while (part.length < decimalPlaces) {
@@ -282,19 +288,23 @@
             }
         }
 
-        while (number > 0) {
-            part = (number - Math.floor(number / 1000) * 1000).toString();
-            number = Math.floor(number / 1000);
-            if (number > 0) {
-                while (part.length < 3) {
-                    part = '0' + part;
+        // take care - zero is a special case
+        if (number === 0) {
+            resposta = '0' + resposta;
+        } else
+            while (number > 0) {
+                part = (number - Math.floor(number / 1000) * 1000).toString();
+                number = Math.floor(number / 1000);
+                if (number > 0) {
+                    while (part.length < 3) {
+                        part = '0' + part;
+                    }
+                }
+                resposta = part + resposta;
+                if (number > 0) {
+                    resposta = thousandSeparator + resposta;
                 }
             }
-            resposta = part + resposta;
-            if (number > 0) {
-                resposta = thousandSeparator + resposta;
-            }
-        }
 
         if (sinal < 0) {
             resposta = '-' + resposta;
