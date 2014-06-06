@@ -260,7 +260,6 @@
         var resposta = "";
         var part = "";
         if (number != Math.floor(number)) {
-            console.log('NUM: ' + number + ' != FLOOR: ' + Math.floor(number));
             part = Math.round((number - Math.floor(number)) * Math.pow(10, decimalPlaces)).toString();
 
             while (part.length < decimalPlaces) {
