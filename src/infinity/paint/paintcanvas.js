@@ -433,6 +433,10 @@
      * Draw a canvas previously gathered via createCanvas.
      * Note that the canvas will be painted at it's origin.
      * @param {IFPaintCanvas} canvas
+     * @param {Number} [dx]
+     * @param {Number} [dy]
+     * @param {Number} [opacity]
+     * @param {IFPaintCanvas.CompositeOperator} [composite]
      */
     IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, composite) {
         if (typeof opacity == "number") {
