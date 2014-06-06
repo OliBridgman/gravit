@@ -68,11 +68,11 @@
 
         var halfWidth = width / 2;
 
-        for (i = 0; i < 7; ++i) {
+        for (i = 0; i < 8; ++i) {
             container = document.createElement("div");
             elLeft = ifMath.mod(i, 4) * width + 40;
             elTop = ifMath.div(i, 4) * (height + 20) + 40;
-            if (i != 3) {
+            if (i != 3 && i != 7) {
                 container.setAttribute("style", "position: absolute; left: " + elLeft.toString() + "px; top: " + elTop.toString() + "px; width: " + width.toString() + "px; border-right: 1px dotted black; border-bottom: 1px dotted black;");
             } else {
                 container.setAttribute("style", "position: absolute; left: " + elLeft.toString() + "px; top: " + elTop.toString() + "px; width: " + halfWidth.toString() + "px; border-right: 1px dotted black; border-bottom: 1px dotted black;");
@@ -207,6 +207,14 @@
                     vertexSource.addVertex(IFVertex.Command.Curve, x4, y4);
                     vertexSource.addVertex(IFVertex.Command.Curve, x2, cy);
                     vertexSource.addVertex(IFVertex.Command.Close);
+                    break;
+                case 7:
+                    text.innerHTML = "Open path";
+                    vertexSource = new IFVertexContainer();
+                    vertexSource.addVertex(IFVertex.Command.Move, x2 + 20 - halfWidth, y1);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x2 - halfWidth, y2 / 2);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x4 - halfWidth, y4);
+                    vertexSource.addVertex(IFVertex.Command.Curve2, x3 - halfWidth, y3);
                     break;
             }
 
