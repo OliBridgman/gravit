@@ -24,6 +24,24 @@
     };
 
     /** @override */
+    IFStyleBase.prototype.store = function (blob) {
+        if (IFNode.Store.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFStyleBase.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFStyleBase.prototype.restore = function (blob) {
+        if (IFNode.Store.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFStyleBase.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     IFStyleBase.prototype.toString = function () {
         return "[IFStyleBase]";
     };

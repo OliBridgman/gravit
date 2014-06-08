@@ -19,7 +19,6 @@
       background: #CED7E0 linear-gradient(to top, $frameDarkColor, $frameColor);
       border-top: 1px solid $frame3DLightColor;
       border-bottom: 1px solid $frame3DShadowColor;
-      padding-bottom: 2px;
 
       > * {
         display: table-cell;

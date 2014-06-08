@@ -13,6 +13,14 @@
     IFObject.inherit(IFPaintEntry, IFStyleEntry);
 
     /**
+     * Called gather the paint's stack index for painting
+     * @returns {Number}
+     */
+    IFPaintEntry.prototype.getStackIndex = function () {
+        throw new Error("Not Supported.");
+    };
+
+    /**
      * Called to test on whether this paint requires to paint
      * itself on a separate canvas or not
      * @returns {boolean}

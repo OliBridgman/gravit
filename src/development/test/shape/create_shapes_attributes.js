@@ -4,6 +4,7 @@
         rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(100, 0, 0, 50, 110, 180)]);
 
         var style = new IFStyle();
+        style.setProperty('opc', 0.25);
         //style.appendChild(new IFStrokeStyle());
         //style.appendChild(new IFBlurFilter());
         var stroke = new IFStrokePaint();

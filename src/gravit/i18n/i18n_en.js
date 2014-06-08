@@ -52,3 +52,4 @@ ifLocale.setValues(GColorMatcherPalette, IFLocale.Language.English, ["title"], [
 ifLocale.setValues(GColorMixerPalette, IFLocale.Language.English, ["title"], ["Mixer"]);
 ifLocale.setValues(GColorTrendsPalette, IFLocale.Language.English, ["title"], ["Trends"]);
 ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);
+ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);

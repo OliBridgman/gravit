@@ -52,6 +52,8 @@
      * @override
      */
     GCopyAttributesAction.prototype.isEnabled = function () {
+        return false;
+        /*
         var document = gApp.getActiveDocument();
         if (document) {
             var selection = document.getEditor().getSelection();
@@ -63,7 +65,7 @@
                 }
             }
         }
-        return false;
+        return false;*/
     };
 
     /**

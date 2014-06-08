@@ -11,7 +11,7 @@
         this._setDefaultProperties(IFStrokePaint.GeometryProperties);
     }
 
-    IFNode.inherit('fillPaint', IFStrokePaint, IFPatternPaint);
+    IFNode.inherit('strokePaint', IFStrokePaint, IFPatternPaint);
 
     /**
      * Alignment of a stroke
@@ -48,6 +48,11 @@
         slj: IFPaintCanvas.LineJoin.Miter,
         // Stroke Line-Miter-Limit
         slm: 10
+    };
+
+    /** @override */
+    IFStrokePaint.prototype.getStackIndex = function () {
+        return 1;
     };
 
     /** @override */
@@ -96,6 +101,24 @@
         } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
             canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
         }
+    };
+
+    /** @override */
+    IFStrokePaint.prototype.store = function (blob) {
+        if (IFPatternPaint.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFStrokePaint.GeometryProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFStrokePaint.prototype.restore = function (blob) {
+        if (IFPatternPaint.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFStrokePaint.GeometryProperties);
+            return true;
+        }
+        return false;
     };
 
     /** @override */

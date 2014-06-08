@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFStyle.VisualProperties);
     }
 
-    IFObject.inheritAndMix(IFStyle, IFStyleBase, [IFNode.Container]);
+    IFNode.inheritAndMix('style', IFStyle, IFStyleBase, [IFNode.Container]);
 
     /**
      * Style's mime-type
@@ -24,8 +24,6 @@
      * Visual properties
      */
     IFStyle.VisualProperties = {
-        // Whether the style is visible or not
-        vs: true,
         // The composite of the style
         cmp: IFPaintCanvas.CompositeOperator.SourceOver,
         // The opacity of the style
@@ -62,6 +60,44 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFStyle Class
     // -----------------------------------------------------------------------------------------------------------------
+
+    /** @override */
+    IFStyle.prototype.store = function (blob) {
+        if (IFStyleBase.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFStyle.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFStyle.prototype.restore = function (blob) {
+        if (IFStyleBase.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFStyle.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * Creates a preview image of this canvas
+     * @param {Number} width the width of the preview
+     * @param {Number} height the height of the preview
+     * @return {String} a base64-encoded image data url with the preview
+     */
+    IFStyle.prototype.createPreviewImage = function (width, height) {
+        var previewRect = new GRect(0.5, 0.5, width - 1, height - 1);
+        var bbox = this.getBBox(previewRect);
+        var scale = new GPoint(previewRect.getWidth() / bbox.getWidth(), previewRect.getHeight() / bbox.getHeight());
+
+        var canvas = new IFPaintCanvas();
+        canvas.resize(width, height);
+        canvas.prepare(null);
+        canvas.setTransform(new GTransform(scale.getX(), 0, 0, scale.getY(), 0, 0));
+        canvas.strokeRect(0.5, 0.5, width - 1, height - 1, 1, IFColor.parseCSSColor('black'));
+        canvas.finish();
+        return canvas.asPNGImage();
+    };
 
     /**
      * Returns the bounding box of the style. This includes only

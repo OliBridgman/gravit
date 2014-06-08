@@ -67,6 +67,26 @@
     };
 
     /** @override */
+    IFShadowEffect.prototype.store = function (blob) {
+        if (IFEffectEntry.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFShadowEffect.GeometryProperties);
+            this.storeProperties(blob, IFShadowEffect.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFShadowEffect.prototype.restore = function (blob) {
+        if (IFEffectEntry.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFShadowEffect.GeometryProperties);
+            this.restoreProperties(blob, IFShadowEffect.VisualProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     IFShadowEffect.prototype.toString = function () {
         return "[IFShadowEffect]";
     };

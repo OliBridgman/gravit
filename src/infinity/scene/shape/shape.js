@@ -111,8 +111,6 @@
         return false;
     };
 
-    IFShape.prototype._createVertex
-
     /** @override */
     IFShape.prototype._paint = function (context, style) {
         if (!this.rewindVertices(0)) {
@@ -128,41 +126,61 @@
             // so we reset transform, transform the vertices
             // ourself and then re-apply the transformation
             var transform = context.canvas.resetTransform();
-            var transformedVertices = new IFVertexTransformer(style.createVertexSource(this), transform);
+            var transformedVertices = new IFVertexTransformer(style ? style.createVertexSource(this) : this, transform);
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
-        } else {
-            // Iterate all paint entries and let them paint
-            var vertexSource = null;
-
+        } else if (style) {
+            // Iterate all (visible) paints
+            var paints = null;
             for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
                 if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
-                    // Check whether to create a separate canvas
-                    if (entry.isSeparate()) {
-                        // Create temporary canvas
-                        var paintCanvas = context.canvas.createCanvas(this.getPaintBBox());
+                    if (!paints) {
+                        paints = [];
+                    }
+                    paints.push(entry);
+                }
+            }
 
-                        // Put our vertex source onto it
-                        if (!vertexSource) {
-                            vertexSource = style.createVertexSource(this);
+            if (paints) {
+                // Create vertex source and put 'em onto canvas
+                var vertexSource = style.createVertexSource(this);
+                context.canvas.putVertices(vertexSource);
+
+                // Paint all paints with order-index zero
+                for (var i = 0; i < paints.length; ++i) {
+                    if (paints[i].getStackIndex() === 0) {
+                        this._paintPaintEntry(context, vertexSource, paints[i]);
+                    }
+                }
+
+                // Paint our contents if any and clip 'em to ourself
+                var oldContentsCanvas = null;
+                for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFElement) {
+                        // Create temporary canvas if none yet
+                        if (!oldContentsCanvas) {
+                            oldContentsCanvas = context.canvas;
+                            context.canvas = oldContentsCanvas.createCanvas(this.getPaintBBox());
                         }
 
-                        paintCanvas.putVertices(vertexSource);
+                        child.render(context);
+                        break;
+                    }
+                }
 
-                        // Paint
-                        entry.paint(paintCanvas, vertexSource);
+                // If we have a old contents canvas, clip our contents and swap canvas back
+                if (oldContentsCanvas) {
+                    context.canvas.putVertices(vertexSource);
+                    context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                    oldContentsCanvas.drawCanvas(context.canvas);
+                    context.canvas = oldContentsCanvas;
+                }
 
-                        // Draw the temporary canvas back
-                        context.canvas.drawCanvas(paintCanvas);
-                    } else {
-                        // Regular painting on main canvas
-                        if (!vertexSource) {
-                            vertexSource = style.createVertexSource(this);
-                            context.canvas.putVertices(vertexSource);
-                        }
-
-                        entry.paint(context.canvas, vertexSource);
+                // Paint all paints with order-index greater than zero
+                for (var i = 0; i < paints.length; ++i) {
+                    if (paints[i].getStackIndex() > 0) {
+                        this._paintPaintEntry(context, vertexSource, paints[i]);
                     }
                 }
             }
@@ -170,6 +188,27 @@
 
         // Paint our foreground
         this._paintForeground(context);
+    };
+
+    /** @override */
+    IFShape.prototype._paintPaintEntry = function (context, vertexSource, paint) {
+        // Check whether to create a separate canvas
+        if (paint.isSeparate()) {
+            // Create temporary canvas
+            var paintCanvas = context.canvas.createCanvas(this.getPaintBBox());
+
+            // Put our vertex source onto it
+            paintCanvas.putVertices(vertexSource);
+
+            // Paint
+            paint.paint(paintCanvas, vertexSource);
+
+            // Draw the temporary canvas back
+            context.canvas.drawCanvas(paintCanvas);
+        } else {
+            // Regular painting on main canvas
+            paint.paint(context.canvas, vertexSource);
+        }
     };
 
     /**

@@ -12,12 +12,18 @@
 
     IFObject.inherit(IFPaintCanvas, IFObject);
 
+    /**
+     * @enum
+     */
     IFPaintCanvas.LineCap = {
         Butt: 0,
         Round: 1,
         Square: 2
     };
 
+    /**
+     * @enum
+     */
     IFPaintCanvas.LineJoin = {
         Miter: 0,
         Bevel: 1,
@@ -206,6 +212,29 @@
      */
     IFPaintCanvas.prototype.getHeight = function () {
         return this._canvasContext.canvas.height;
+    };
+
+    /**
+     * Returns the contents of the canvas as a png image
+     * with a resolution of 96dpi as a base64
+     * encoded data url
+     * @return {String}
+     */
+    IFPaintCanvas.prototype.asPNGImage = function () {
+        return this._canvasContext.canvas.toDataURL('image/png');
+    };
+
+    /**
+     * Returns the contents of the canvas as a jpeg image
+     * with a resolution of 96dpi as a base64
+     * encoded data url
+     * @param {Number} [quality] the quality of the image from
+     * 0.0 to 1.0, defaults to 1.0
+     * @return {String}
+     */
+    IFPaintCanvas.prototype.asJPEGImage = function (quality) {
+        quality = quality || 1.0;
+        return this._canvasContext.canvas.toDataURL('image/jpeg', quality);
     };
 
     /**
@@ -650,8 +679,7 @@
      * @param {*} [fill] the fill to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
-     * @see IFPaintCanvas.CompositeOperator
+     * @param {IFPaintCanvas.CompositeOperator} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
      */
     IFPaintCanvas.prototype.fillVertices = function (fill, opacity, composite) {
         // save fill to avoid expensive recalculation

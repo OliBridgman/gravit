@@ -1,0 +1,90 @@
+.palette-style {
+  padding: 0px;
+
+  .style-selector {
+    background: white;
+    border-bottom: 1px solid $frameBorderColor;
+    padding: 2px 2px 0px 2px;
+
+    .style-block {
+      display: inline-block;
+      position: relative;
+      margin: 0px 4px 0px 0px;
+      width: 40px;
+      height: 40px;
+      border: 2px solid white;
+      border-radius: 5px;
+
+      &.selected {
+        border: 2px solid $selectedColor;
+      }
+
+      .style-preview {
+        position: absolute;
+        display: block;
+        top: 2px;
+        left: 2px;
+        width: 36px;
+        height: 36px;
+      }
+
+      .style-visible {
+        position: absolute;
+        left: 0px;
+        bottom: 1px;
+      }
+    }
+  }
+
+  .properties-panels {
+    > .properties-panel-category {
+      @include box-sizing(border-box);
+      display: table;
+      width: 100%;
+      padding: 4px 5px;
+      background: $frameBorderColor;
+
+      > div {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      > .title {
+        width: 100%;
+
+        > i.fa:first-child {
+          padding-right: 3px;
+        }
+      }
+
+      > .controls {
+        text-align: right;
+        white-space: nowrap;
+
+        input, button, .g-button, select {
+          border: none;
+          padding-top: 0px;
+          padding-bottom: 0px;
+          background: transparent !important;
+          box-shadow: none;
+        }
+
+        button, .g-button {
+          &.g-active {
+            &, * {
+              color: $selectedColor;
+            }
+          }
+        }
+      }
+    }
+
+    > .properties-panel-content {
+      padding: 5px 5px;
+
+      &.last-visible {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}

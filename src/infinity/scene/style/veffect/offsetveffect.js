@@ -56,6 +56,24 @@
     };
 
     /** @override */
+    IFOffsetVEffect.prototype.store = function (blob) {
+        if (IFVEffectEntry.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFOffsetVEffect.GeometryProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFOffsetVEffect.prototype.restore = function (blob) {
+        if (IFVEffectEntry.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFOffsetVEffect.GeometryProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     IFOffsetVEffect.prototype.toString = function () {
         return "[IFOffsetVEffect]";
     };

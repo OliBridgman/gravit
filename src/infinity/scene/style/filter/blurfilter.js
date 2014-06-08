@@ -32,6 +32,24 @@
     };
 
     /** @override */
+    IFBlurFilter.prototype.store = function (blob) {
+        if (IFFilterEntry.prototype.store.call(this, blob)) {
+            this.storeProperties(blob, IFBlurFilter.GeometryProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
+    IFBlurFilter.prototype.restore = function (blob) {
+        if (IFFilterEntry.prototype.restore.call(this, blob)) {
+            this.restoreProperties(blob, IFBlurFilter.GeometryProperties);
+            return true;
+        }
+        return false;
+    };
+
+    /** @override */
     IFBlurFilter.prototype.toString = function () {
         return "[IFBlurFilter]";
     };

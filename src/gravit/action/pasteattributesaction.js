@@ -52,6 +52,8 @@
      * @override
      */
     GPasteAttributesAction.prototype.isEnabled = function () {
+        return false;
+        /*
         var cpMimeTypes = gShell.getClipboardMimeTypes();
         if (cpMimeTypes && cpMimeTypes.indexOf(IFAttribute.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
@@ -67,6 +69,7 @@
             }
         }
         return false;
+        */
     };
 
     /**
