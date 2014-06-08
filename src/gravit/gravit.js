@@ -15,9 +15,12 @@
         // Register default palettes
         gravit.palettes.push(
             new GPropertiesPalette(),
+            new GStylePalette()
+            /*
             new GColorMixerPalette(),
             new GColorMatcherPalette(),
             new GColorTrendsPalette()
+            */
         );
 
         // Register default tools
@@ -174,12 +177,6 @@
             exportActions.push(new GExportAction(gravit.exporters[i]));
         }
 
-        // Collect all palettes and add actions for 'em
-        var paletteShowActions = [];
-        for (var i = 0; i < gravit.palettes.length; ++i) {
-            paletteShowActions.push(new GShowPaletteAction(gravit.palettes[i]));
-        }
-
         // TODO : If there's only one storage available,
         // don't put open/saveAs actions in sub-categories file.open/file.saveAs
 
@@ -248,8 +245,7 @@
             new GShowRulersAction(),
 
             // Window
-            new GNewWindowAction(),
-            paletteShowActions
+            new GNewWindowAction()
         );
     };
 

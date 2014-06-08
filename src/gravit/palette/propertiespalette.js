@@ -156,7 +156,7 @@
 
     /** @override */
     GPropertiesPalette.prototype.getGroup = function () {
-        return GPalette.GROUP_PROPERTIES;
+        return "properties";
     };
 
     /**
