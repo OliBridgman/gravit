@@ -362,7 +362,7 @@
                     .addClass('palette-group-collapse')
                     .append($('<button></button>')
                         .append($('<span></span>')
-                            .addClass('fa fa-angle-double-down'))
+                            .addClass('fa fa-angle-double-down fa-fw'))
                         .on('click', function () {
                             this._setGroupExpanded(groupInfo, !groupInfo.expanded);
                         }.bind(this))))
@@ -396,12 +396,12 @@
             if (groupInfo.expanded) {
                 groupInfo.container.css('height', '');
                 groupInfo.container.removeClass('collapsed-palette');
-                buttonSpan.attr('class', 'fa  fa-angle-double-down');
+                buttonSpan.attr('class', 'fa  fa-angle-double-down fa-fw');
             } else {
                 var header = groupInfo.container.find('.palette-group-header');
                 groupInfo.container.height(header.outerHeight());
                 groupInfo.container.addClass('collapsed-palette');
-                buttonSpan.attr('class', 'fa  fa-angle-double-right');
+                buttonSpan.attr('class', 'fa  fa-angle-double-right fa-fw');
             }
         }
     };
