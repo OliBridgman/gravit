@@ -143,9 +143,7 @@
             // Subscribe to the editor's events
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
-            // Update property panels
             this._updateFromSelection();
-            this._updatePropertyPanels();
 
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
@@ -154,15 +152,11 @@
             // Unsubscribe from the editor's events
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
-            // Remove all property panels
-            for (var i = 0; i < this._propertyPanels.length; ++i) {
-                var propertyPanel = this._propertyPanels[i];
-                propertyPanel.category.css('display', 'none');
-                propertyPanel.panel.css('display', 'none');
-                propertyPanel.panel.attr('data-available', 'false');
-            }
-
             this._document = null;
+            this._elements = null;
+
+            this._updatePropertyPanels();
+
             this.trigger(GPalette.UPDATE_EVENT);
         }
     };
