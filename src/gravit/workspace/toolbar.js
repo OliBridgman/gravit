@@ -9,6 +9,7 @@
         htmlElement
             .append($('<div></div>')
                 .addClass('section sidebars')
+                /*
                 .append($('<button></button>')
                     //.prop('disabled', true)
                     .addClass('g-active')
@@ -27,7 +28,7 @@
                     .append($('<span></span>')
                         .addClass('fa fa-sitemap')
                         // TODO : I18N
-                        .attr('title', 'Structure'))))
+                        .attr('title', 'Structure')))*/)
             .append($('<div></div>')
                 .addClass('section toolpanel'));
 
