@@ -16,121 +16,6 @@
     GPropertiesPalette.ID = "properties";
     GPropertiesPalette.TITLE = new IFLocale.Key(GPropertiesPalette, "title");
 
-    // -----------------------------------------------------------------------------------------------------------------
-    // GPropertiesPalette.DocumentState Class
-    // -----------------------------------------------------------------------------------------------------------------
-
-    /**
-     * @class GPropertiesPalette.DocumentState
-     * @extends GPalette.DocumentState
-     * @constructor
-     */
-    GPropertiesPalette.DocumentState = function (document, propertyPanels) {
-        GPalette.DocumentState.call(this, document);
-        this._propertyPanels = propertyPanels;
-    };
-    IFObject.inherit(GPropertiesPalette.DocumentState, GPalette.DocumentState);
-
-    /**
-     * The property panels
-     * @type {Array<{{category: JQuery, panel: JQuery, properties: GProperties}}>}
-     * @private
-     */
-    GPropertiesPalette.DocumentState.prototype._propertyPanels = null;
-
-    /**
-     * @type {Array<IFElement>}
-     * @private
-     */
-    GPropertiesPalette.DocumentState.prototype._elements = null;
-
-    /** @override */
-    GPropertiesPalette.DocumentState.prototype.init = function () {
-        // NO-OP
-    };
-
-    /** @override */
-    GPropertiesPalette.DocumentState.prototype.release = function () {
-        // NO-OP
-    };
-
-    /** @override */
-    GPropertiesPalette.DocumentState.prototype.activate = function () {
-            var editor = this.document.getEditor();
-
-        // Subscribe to the editor's events
-        editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
-
-        // Update property panels
-        this._updateFromSelection();
-        this._updatePropertyPanels();
-    };
-
-    /** @override */
-    GPropertiesPalette.DocumentState.prototype.deactivate = function () {
-        var editor = this.document.getEditor();
-
-        // Unsubscribe from the editor's events
-        editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
-
-        // Remove all property panels
-        for (var i = 0; i < this._propertyPanels.length; ++i) {
-            var propertyPanel = this._propertyPanels[i];
-            propertyPanel.category.css('display', 'none');
-            propertyPanel.panel.css('display', 'none');
-            propertyPanel.panel.attr('data-available', 'false');
-        }
-    };
-
-    /**
-     * @private
-     */
-    GPropertiesPalette.DocumentState.prototype._updateFromSelection = function () {
-        this._elements = this.document.getEditor().getSelection();
-
-        // If there's no selection, select the scene
-        if (!this._elements || this._elements.length === 0) {
-            this._elements = [this.document.getScene()];
-        }
-
-        this._updatePropertyPanels();
-    };
-
-    /** @private */
-    GPropertiesPalette.DocumentState.prototype._updatePropertyPanels = function () {
-        var lastVisiblePropertyPanel = null;
-        for (var i = 0; i < this._propertyPanels.length; ++i) {
-            var propertyPanel = this._propertyPanels[i];
-            var available = !this._elements || this._elements.length === 0 ?
-                false : propertyPanel.properties.updateFromNode(this.document, this._elements);
-
-            propertyPanel.panel.removeClass('last-visible');
-            if (available) {
-                propertyPanel.category.css('display', '');
-
-                if (propertyPanel.category.attr('data-expanded') == 'true') {
-                    propertyPanel.panel.css('display', '');
-                }
-
-                propertyPanel.panel.attr('data-available', 'true');
-
-                lastVisiblePropertyPanel = propertyPanel;
-            } else {
-                propertyPanel.category.css('display', 'none');
-                propertyPanel.panel.css('display', 'none');
-                propertyPanel.panel.attr('data-available', 'false');
-            }
-        }
-
-        if (lastVisiblePropertyPanel) {
-            lastVisiblePropertyPanel.panel.addClass('last-visible');
-        }
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GPropertiesPalette Class
-    // -----------------------------------------------------------------------------------------------------------------    
-
     /**
      * @type {JQuery}
      * @private
@@ -143,6 +28,18 @@
      * @private
      */
     GPropertiesPalette.prototype._propertyPanels = null;
+
+    /**
+     * @type {EXDocument}
+     * @private
+     */
+    GPropertiesPalette.prototype._document = null;
+
+    /**
+     * @type {Array<IFElement>}
+     * @private
+     */
+    GPropertiesPalette.prototype._elements = null;
 
     /** @override */
     GPropertiesPalette.prototype.getId = function () {
@@ -238,8 +135,81 @@
     };
 
     /** @override */
-    GPropertiesPalette.prototype._createDocumentState = function (document) {
-        return new GPropertiesPalette.DocumentState(document, this._propertyPanels);
+    GPropertiesPalette.prototype._documentEvent = function (event) {
+        if (event.type === GApplication.DocumentEvent.Type.Activated) {
+            this._document = event.document;
+            var editor = this._document.getEditor();
+
+            // Subscribe to the editor's events
+            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+
+            // Update property panels
+            this._updateFromSelection();
+            this._updatePropertyPanels();
+
+            this.trigger(GPalette.UPDATE_EVENT);
+        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var editor = this._document.getEditor();
+
+            // Unsubscribe from the editor's events
+            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+
+            // Remove all property panels
+            for (var i = 0; i < this._propertyPanels.length; ++i) {
+                var propertyPanel = this._propertyPanels[i];
+                propertyPanel.category.css('display', 'none');
+                propertyPanel.panel.css('display', 'none');
+                propertyPanel.panel.attr('data-available', 'false');
+            }
+
+            this._document = null;
+            this.trigger(GPalette.UPDATE_EVENT);
+        }
+    };
+
+    /**
+     * @private
+     */
+    GPropertiesPalette.prototype._updateFromSelection = function () {
+        this._elements = this._document.getEditor().getSelection();
+
+        // If there's no selection, select the scene
+        if (!this._elements || this._elements.length === 0) {
+            this._elements = [this._document.getScene()];
+        }
+
+        this._updatePropertyPanels();
+    };
+
+    /** @private */
+    GPropertiesPalette.prototype._updatePropertyPanels = function () {
+        var lastVisiblePropertyPanel = null;
+        for (var i = 0; i < this._propertyPanels.length; ++i) {
+            var propertyPanel = this._propertyPanels[i];
+            var available = !this._elements || this._elements.length === 0 ?
+                false : propertyPanel.properties.updateFromNode(this._document, this._elements);
+
+            propertyPanel.panel.removeClass('last-visible');
+            if (available) {
+                propertyPanel.category.css('display', '');
+
+                if (propertyPanel.category.attr('data-expanded') == 'true') {
+                    propertyPanel.panel.css('display', '');
+                }
+
+                propertyPanel.panel.attr('data-available', 'true');
+
+                lastVisiblePropertyPanel = propertyPanel;
+            } else {
+                propertyPanel.category.css('display', 'none');
+                propertyPanel.panel.css('display', 'none');
+                propertyPanel.panel.attr('data-available', 'false');
+            }
+        }
+
+        if (lastVisiblePropertyPanel) {
+            lastVisiblePropertyPanel.panel.addClass('last-visible');
+        }
     };
 
     /** @override */
