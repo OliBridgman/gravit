@@ -147,10 +147,12 @@
                 var vertexSource = style.createVertexSource(this);
                 context.canvas.putVertices(vertexSource);
 
+                var paintBBox = style.getBBox(this.getGeometryBBox());
+
                 // Paint all paints with order-index zero
                 for (var i = 0; i < paints.length; ++i) {
                     if (paints[i].getStackIndex() === 0) {
-                        this._paintPaintEntry(context, vertexSource, paints[i]);
+                        this._paintPaintEntry(context, vertexSource, paintBBox, paints[i]);
                     }
                 }
 
@@ -161,7 +163,7 @@
                         // Create temporary canvas if none yet
                         if (!oldContentsCanvas) {
                             oldContentsCanvas = context.canvas;
-                            context.canvas = oldContentsCanvas.createCanvas(this.getPaintBBox());
+                            context.canvas = oldContentsCanvas.createCanvas(paintBBox);
                         }
 
                         child.render(context);
@@ -180,7 +182,7 @@
                 // Paint all paints with order-index greater than zero
                 for (var i = 0; i < paints.length; ++i) {
                     if (paints[i].getStackIndex() > 0) {
-                        this._paintPaintEntry(context, vertexSource, paints[i]);
+                        this._paintPaintEntry(context, vertexSource, paintBBox, paints[i]);
                     }
                 }
             }
@@ -191,11 +193,11 @@
     };
 
     /** @override */
-    IFShape.prototype._paintPaintEntry = function (context, vertexSource, paint) {
+    IFShape.prototype._paintPaintEntry = function (context, vertexSource, paintBBox, paint) {
         // Check whether to create a separate canvas
         if (paint.isSeparate()) {
             // Create temporary canvas
-            var paintCanvas = context.canvas.createCanvas(this.getPaintBBox());
+            var paintCanvas = context.canvas.createCanvas(paintBBox);
 
             // Put our vertex source onto it
             paintCanvas.putVertices(vertexSource);

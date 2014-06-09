@@ -86,15 +86,38 @@
      * @return {String} a base64-encoded image data url with the preview
      */
     IFStyle.prototype.createPreviewImage = function (width, height) {
-        var previewRect = new GRect(0.5, 0.5, width - 1, height - 1);
-        var bbox = this.getBBox(previewRect);
-        var scale = new GPoint(previewRect.getWidth() / bbox.getWidth(), previewRect.getHeight() / bbox.getHeight());
+        // Create a temporary rectangle shape for preview painting
+        var previewRect = new IFRectangle();
+        previewRect.setProperty('trf', new GTransform(width / 2, 0, 0, height / 2, width / 2, height / 2));
 
+        // Setup canvas and context for painting
         var canvas = new IFPaintCanvas();
         canvas.resize(width, height);
         canvas.prepare(null);
-        canvas.setTransform(new GTransform(scale.getX(), 0, 0, scale.getY(), 0, 0));
-        canvas.strokeRect(0.5, 0.5, width - 1, height - 1, 1, IFColor.parseCSSColor('black'));
+        var context = new IFPaintContext();
+        context.canvas = canvas;
+        context.configuration = new IFScenePaintConfiguration();
+
+        // Calculate real bounding box
+        var bbox = this.getBBox(new GRect(0, 0, width, height));
+
+        // Transform canvas to fit bounding box exactly
+        var bboxCenter = bbox.getSide(GRect.Side.CENTER);
+        var realCenter = new GPoint(width / 2, height / 2);
+        var scaleX = 1.0 / (bbox.getWidth() / width);
+        var scaleY = 1.0 / (bbox.getHeight() / height);
+        var matrix = new GTransform()
+            .translated(-bboxCenter.getX(), -bboxCenter.getY())
+            .scaled(scaleX, scaleY)
+            .translated(realCenter.getX(), realCenter.getY())
+            .getMatrix();
+
+        canvas.setOrigin(new GPoint(-matrix[4], -matrix[5]));
+        canvas.setScale(scaleX);
+
+        // Paint rectangle with this style
+        previewRect.render2(context, this);
+
         canvas.finish();
         return canvas.asPNGImage();
     };
