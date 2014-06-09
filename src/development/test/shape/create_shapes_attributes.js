@@ -20,6 +20,7 @@
         stroke.setProperties(['sw', 'sa'], [10, IFStrokePaint.Alignment.Outside]);
         style.appendChild(stroke);
         style.appendChild(new IFOffsetVEffect());
+        style.appendChild(new IFShadowEffect());
         rect.getStyleSet().appendChild(style);
 
         var rect2 = new IFRectangle();
