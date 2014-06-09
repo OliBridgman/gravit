@@ -28,7 +28,7 @@
 
     /** @override */
     IFFillPaint.prototype.paint = function (canvas, source) {
-        canvas.fillVertices(IFColor.parseCSSColor('silver'));
+        canvas.fillVertices(IFColor.parseCSSColor('red'));
     };
 
     /** @override */

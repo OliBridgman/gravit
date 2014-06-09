@@ -62,7 +62,7 @@
     };
 
     /** @override */
-    IFPage.prototype._paint = function (context) {
+    IFPage.prototype._paint = function (context, style, styleIndex) {
         // Indicates whether page clipped it's contents
         var hasClipped = false;
 

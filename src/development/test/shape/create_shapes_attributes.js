@@ -22,6 +22,13 @@
         style.appendChild(new IFOffsetVEffect());
         rect.getStyleSet().appendChild(style);
 
+        var rect2 = new IFRectangle();
+        rect2.setProperties(['trf'], [new GTransform(100, 0, 0, 100, 110, 180)]);
+        var style = new IFStyle();
+        style.appendChild(new IFFillPaint());
+        rect2.getStyleSet().appendChild(style);
+        rect.appendChild(rect2);
+
         page.appendChild(rect);
     }
 

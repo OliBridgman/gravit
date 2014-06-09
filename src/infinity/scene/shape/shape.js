@@ -112,7 +112,7 @@
     };
 
     /** @override */
-    IFShape.prototype._paint = function (context, style) {
+    IFShape.prototype._paint = function (context, style, styleIndex) {
         if (!this.rewindVertices(0)) {
             return;
         }
@@ -130,6 +130,9 @@
             context.canvas.putVertices(transformedVertices);
             context.canvas.strokeVertices(context.getOutlineColor());
             context.canvas.setTransform(transform);
+
+            // Paint contents
+            this._paintContents(context);
         } else if (style) {
             // Iterate all (visible) paints
             var paints = null;
@@ -143,74 +146,49 @@
             }
 
             if (paints) {
+                // Order paints by their stack index, lowest to highest
+                paints.sort(function (a, b) {
+                    return a.getStackIndex() < b.getStackIndex();
+                });
+
                 // Create vertex source and put 'em onto canvas
                 var vertexSource = style.createVertexSource(this);
                 context.canvas.putVertices(vertexSource);
 
                 var paintBBox = style.getBBox(this.getGeometryBBox());
 
-                // Paint all paints with order-index zero
+                // Paint all paints npw
                 for (var i = 0; i < paints.length; ++i) {
-                    if (paints[i].getStackIndex() === 0) {
-                        this._paintPaintEntry(context, vertexSource, paintBBox, paints[i]);
+                    var paint = paints[i];
+
+                    // Check whether to create a separate canvas
+                    if (paint.isSeparate()) {
+                        // Create temporary canvas
+                        var paintCanvas = context.canvas.createCanvas(paintBBox);
+
+                        // Put our vertex source onto it
+                        paintCanvas.putVertices(vertexSource);
+
+                        // Paint
+                        paint.paint(paintCanvas, vertexSource);
+
+                        // Draw the temporary canvas back
+                        context.canvas.drawCanvas(paintCanvas);
+                    } else {
+                        // Regular painting on main canvas
+                        paint.paint(context.canvas, vertexSource);
                     }
                 }
+            }
 
-                // Paint our contents if any and clip 'em to ourself
-                var oldContentsCanvas = null;
-                for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFElement) {
-                        // Create temporary canvas if none yet
-                        if (!oldContentsCanvas) {
-                            oldContentsCanvas = context.canvas;
-                            context.canvas = oldContentsCanvas.createCanvas(paintBBox);
-                        }
-
-                        child.render(context);
-                        break;
-                    }
-                }
-
-                // If we have a old contents canvas, clip our contents and swap canvas back
-                if (oldContentsCanvas) {
-                    context.canvas.putVertices(vertexSource);
-                    context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    oldContentsCanvas.drawCanvas(context.canvas);
-                    context.canvas = oldContentsCanvas;
-                }
-
-                // Paint all paints with order-index greater than zero
-                for (var i = 0; i < paints.length; ++i) {
-                    if (paints[i].getStackIndex() > 0) {
-                        this._paintPaintEntry(context, vertexSource, paintBBox, paints[i]);
-                    }
-                }
+            // Paint contents after first style
+            if (styleIndex === 0) {
+                this._paintContents(context);
             }
         }
 
         // Paint our foreground
         this._paintForeground(context);
-    };
-
-    /** @override */
-    IFShape.prototype._paintPaintEntry = function (context, vertexSource, paintBBox, paint) {
-        // Check whether to create a separate canvas
-        if (paint.isSeparate()) {
-            // Create temporary canvas
-            var paintCanvas = context.canvas.createCanvas(paintBBox);
-
-            // Put our vertex source onto it
-            paintCanvas.putVertices(vertexSource);
-
-            // Paint
-            paint.paint(paintCanvas, vertexSource);
-
-            // Draw the temporary canvas back
-            context.canvas.drawCanvas(paintCanvas);
-        } else {
-            // Regular painting on main canvas
-            paint.paint(context.canvas, vertexSource);
-        }
     };
 
     /**
@@ -230,6 +208,36 @@
      * @private
      */
     IFShape.prototype._paintForeground = function (context) {
+    };
+
+    /**
+     * Paint and clip any contents of this shape
+     * @param {IFPaintContext} context
+     * @private
+     */
+    IFShape.prototype._paintContents = function (context) {
+        // Paint our contents if any and clip 'em to ourself
+        var oldContentsCanvas = null;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFElement) {
+                // Create temporary canvas if none yet
+                if (!oldContentsCanvas) {
+                    oldContentsCanvas = context.canvas;
+                    context.canvas = oldContentsCanvas.createCanvas(this.getGeometryBBox());
+                }
+
+                child.render(context);
+                break;
+            }
+        }
+
+        // If we have a old contents canvas, clip our contents and swap canvas back
+        if (oldContentsCanvas) {
+            context.canvas.putVertices(this);
+            context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            oldContentsCanvas.drawCanvas(context.canvas);
+            context.canvas = oldContentsCanvas;
+        }
     };
 
     /** @override */

@@ -655,22 +655,25 @@
         var paintRegular = true;
         if (this.hasMixin(IFElement.Style)) {
             var styleSet = this.getStyleSet();
+            var styleIndex = 0;
             for (var style = styleSet.getFirstChild(); style !== null; style = style.getNext()) {
                 if (style instanceof IFStyle && style.getProperty('vs') === true) {
                     paintRegular = false;
 
                     // Fast lane for no raster effects
                     if (!context.configuration.isRasterEffects(context)) {
-                        this._paint(context, style);
+                        this._paint(context, style, styleIndex);
                     } else {
-                        this.render2(context, style);
+                        this.render2(context, style, styleIndex);
                     }
+
+                    styleIndex++;
                 }
             }
         }
 
         if (paintRegular) {
-            this._paint(context, null);
+            this._paint(context, null, null);
         }
 
         this._finishPaint(context);
@@ -681,8 +684,9 @@
      * Usually you'd call render() and never this one directly.
      * @param {IFPaintContext} context
      * @param {IFStyle} style
+     * @param {Number} [styleIndex] the style's index
      */
-    IFElement.prototype.render2 = function (context, style) {
+    IFElement.prototype.render2 = function (context, style, styleIndex) {
         var styleOpacity = style.getProperty('opc');
         var styleCmpOp = style.getProperty('cmp');
 
@@ -714,7 +718,7 @@
             var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
             context.canvas = contentsCanvas;
             try {
-                this._paint(context, style);
+                this._paint(context, style, styleIndex);
             } finally {
                 context.canvas = sourceCanvas;
             }
@@ -757,7 +761,7 @@
                 sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
             }
         } else {
-            this._paint(context, style);
+            this._paint(context, style, styleIndex);
         }
     };
 
@@ -766,8 +770,10 @@
      * @param {IFPaintContext} context the context to be used for drawing
      * @param {IFStyle} [style] the current style used for painting, only
      * provided if this element has the IFElement.Style mixin
+     * @param {Number} [styleIndex] the current style's index, only provided
+     * if this element has the IFElement.Style mixin
      */
-    IFElement.prototype._paint = function (context, style) {
+    IFElement.prototype._paint = function (context, style, styleIndex) {
         // Render children by default
         this._renderChildren(context);
     };
