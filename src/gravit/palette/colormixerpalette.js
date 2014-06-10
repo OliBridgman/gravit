@@ -364,7 +364,6 @@
                     .addClass('color-value')
                     .append($('<input>')
                         .attr('type', 'text')
-                        .gAutoBlur()
                         .on('input', this._updateToGlobalColor.bind(this))))
                 .append($('<span></span>')
                     .addClass('color-unit'))

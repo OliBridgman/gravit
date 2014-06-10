@@ -37,6 +37,12 @@
      * @type {JQuery}
      * @private
      */
+    GStylePalette.prototype._styleSettings = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
     GStylePalette.prototype._patternsPanel = null;
 
     /**
@@ -107,13 +113,75 @@
             .addClass('style-selector')
             .appendTo(this._htmlElement);
 
+        // Style settings
+        this._styleSettings = $('<table></table>')
+            .addClass('g-form style-settings')
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Blend:'))
+                .append($('<td></td>')
+                    .append($('<select></select>')
+                        .attr('data-property', 'blm')
+                        .gBlendMode()
+                        .on('change', function (evt) {
+                            var val = $(evt.target).val();
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.setProperty('blm', val);
+                            });
+                        }.bind(this))))
+                .append($('<td></td>')
+                    .addClass('label')
+                    .text('Opacity:'))
+                .append($('<td></td>')
+                    .append($('<input>')
+                        .attr('data-property', 'opc')
+                        .css('width', '3em')
+                        .on('change', function (evt) {
+                            var opacity = IFLength.parseEquationValue($(evt.target).val());
+                            if (opacity !== null) {
+                                opacity = opacity < 0 ? 0 : opacity > 100 ? 100 : opacity;
+                                opacity /= 100.0;
+                                this._modifyEachSelectedStyle(function (style) {
+                                    style.setProperty('opc', opacity);
+                                });
+                            } else {
+                                this._updateStyleSettings();
+                            }
+                        }.bind(this)))))
+            .appendTo(this._htmlElement);
+
         // Patterns section
         this._patternsPanel = $('<div></div>')
-            .addClass('patterns-panel')
-            .append($('<h1></h1>')
-                .addClass('g-divider')
-                // TODO : I18N
-                .text('Fills & Borders'))
+            .addClass('style-entries-panel')
+            .append($('<div></div>')
+                .addClass('style-entries-panel-header')
+                .append($('<div></div>')
+                    .addClass('title')
+                    .text('Fills & Borders'))
+                .append($('<div></div>')
+                    .addClass('controls')
+                    .append($('<button></button>')
+                        .addClass('fa fa-fw fa-circle-o')
+                        // TODO : I18N
+                        .attr('title', 'Add Stroke')
+                        .on('click', function () {
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.getActualStyle().appendChild(new IFStrokePaint());
+                            });
+                        }.bind(this)))
+                    .append($('<button></button>')
+                        .addClass('fa fa-fw fa-circle')
+                        // TODO : I18N
+                        .attr('title', 'Add Fill')
+                        .on('click', function () {
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.getActualStyle().appendChild(new IFFillPaint());
+                            });
+                        }.bind(this)))))
+            .append($('<div></div>')
+                .addClass('style-entries-panel-content'))
             .appendTo(this._htmlElement);
 
         // Filter section
@@ -187,8 +255,6 @@
             }
         }
         if (this._styleElements) {
-            // Iterate available styles. If there's a multi-element selection, we'll
-            // only add the first, non-linked style of each element
             if (this._styleElements.length === 1) {
                 // Easy-peacy, add all styles from element
                 var styleSet = this._styleElements[0].getStyleSet();
@@ -201,20 +267,62 @@
                     }
                 }
             } else {
-                // TODO : Add support for common referenced styles
+                // Iterate and add the first, non-linked style as default one
+                // as well as add all linked styles that are common to _all_ elements
+                var linkedStyles = [];
+                var defaultStyle = {
+                    style: null,
+                    usage: 0
+                };
+
                 for (var i = 0; i < this._styleElements.length; ++i) {
                     var styleSet = this._styleElements[i].getStyleSet();
+                    var hasDefaultStyle = false;
                     for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
-                        if (node instanceof IFStyle) {
-                            // TODO : Check if style is not linked
-                            if (!this._styles) {
-                                this._styles = [];
+                        if (node instanceof IFLinkedStyle) {
+                            var hasLinkedStyle = false;
+                            for (var j = 0; j < linkedStyles.length; ++j) {
+                                if (linkedStyles[j].style.getProperty('ref') === node.getProperty('ref')) {
+                                    linkedStyles[j].usage += 1;
+                                    hasLinkedStyle = true;
+                                    break;
+                                }
                             }
-                            this._styles.push(node);
 
-                            // break here as we add only default style
-                            break;
+                            if (!hasLinkedStyle) {
+                                linkedStyles.push({
+                                    style: node,
+                                    usage: 1
+                                });
+                            }
                         }
+                        else if (node instanceof IFInlineStyle) {
+                            if (!hasDefaultStyle) {
+                                if (!defaultStyle.style) {
+                                    defaultStyle.style = node;
+                                }
+                                defaultStyle.usage++;
+                            }
+                            hasDefaultStyle = true;
+                        }
+                    }
+                }
+
+                // Add default style if common to all elements
+                if (defaultStyle.style && defaultStyle.usage === this._styleElements.length) {
+                    if (!this._styles) {
+                        this._styles = [];
+                    }
+                    this._styles.push(defaultStyle.style);
+                }
+
+                // Add all linked styles if they're common to all elements
+                for (var i = 0; i < linkedStyles.length; ++i) {
+                    if (linkedStyles[i].usage === this._styleElements.length) {
+                        if (!this._styles) {
+                            this._styles = [];
+                        }
+                        this._styles.push(linkedStyles[i].style);
                     }
                 }
             }
@@ -244,18 +352,24 @@
                         .append($('<span></span>')
                             .addClass('fa fa-fw ' + (style.getProperty('vs') ? 'fa-circle' : 'fa-circle-o'))
                             .on('click', function (evt) {
-                                var $this = $(this);
+                                var $this = $(evt.target);
                                 evt.stopPropagation();
                                 if (style.getProperty('vs') === true) {
-                                    style.setProperty('vs', false);
+                                    this._modifyEachSelectedStyle(function (style) {
+                                        style.setProperty('vs', false);
+                                    });
+
                                     $this.removeClass('fa-circle');
                                     $this.addClass('fa-circle-o');
                                 } else {
-                                    style.setProperty('vs', true);
+                                    this._modifyEachSelectedStyle(function (style) {
+                                        style.setProperty('vs', true);
+                                    });
+
                                     $this.removeClass('fa-circle-o');
                                     $this.addClass('fa-circle');
                                 }
-                            })))
+                            }.bind(this))))
                     /*TODO
                      .append($('<div></div>')
                      .addClass('style-link')
@@ -284,11 +398,77 @@
         }
     };
 
+    GStylePalette.prototype._setSelectedStyleProperties = function (properties, values, styleRef) {
+        if (styleRef || this._selectedStyleIndex >= 0) {
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                this._visitEachSelectedStyle(function (style) {
+                    style.setProperties(properties, values);
+                }, styleRef);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Modify Style Properties');
+            }
+        }
+    };
+
+    GStylePalette.prototype._modifyEachSelectedStyle = function (modifier, styleRef) {
+        if (styleRef || this._selectedStyleIndex >= 0) {
+            var editor = this._document.getEditor();
+            editor.beginTransaction();
+            try {
+                this._visitEachSelectedStyle(modifier, styleRef);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Modify Style(s)');
+            }
+        }
+    };
+
+    GStylePalette.prototype._visitEachSelectedStyle = function (visitor, styleRef) {
+        if (styleRef || this._selectedStyleIndex >= 0) {
+            styleRef = styleRef || this._styles[this._selectedStyleIndex];
+
+            if (this._styleElements.length > 1) {
+                for (var i = 0; i < this._styleElements.length; ++i) {
+                    var styleSet = this._styleElements[i].getStyleSet();
+                    for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
+                        if (styleRef instanceof IFLinkedStyle && node instanceof IFLinkedStyle && styleRef.getProperty('ref') === node.getProperty('ref')) {
+                            visitor(node);
+                            break;
+                        }
+                        else if (styleRef instanceof IFInlineStyle && node instanceof IFInlineStyle) {
+                            visitor(node);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                visitor(styleRef);
+            }
+        }
+    };
+
     GStylePalette.prototype._updateSelectedStyle = function () {
+        this._updateStyleSettings();
         this._updatePatterns();
     };
 
+    GStylePalette.prototype._updateStyleSettings = function () {
+        this._styleSettings.css('display', 'none');
+
+        if (this._selectedStyleIndex >= 0) {
+            this._styleSettings.css('display', '');
+            var style = this._styles[this._selectedStyleIndex];
+            this._styleSettings.find('[data-property="blm"]').val(style.getProperty('blm'));
+            this._styleSettings.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100));
+        }
+    };
+
     GStylePalette.prototype._updatePatterns = function () {
+        var content = this._patternsPanel.find('.style-entries-panel-content');
+
         var _createFillRow = function (fill) {
             $('<div></div>')
                 .addClass('pattern-row')
@@ -304,11 +484,11 @@
                     }))
                 .append($('<select></select>'))
                 .append($('<input>'))
-                .appendTo(this._patternsPanel);
+                .appendTo(content);
         }.bind(this);
 
-        this._patternsPanel.empty();
         this._patternsPanel.css('display', 'none');
+        content.empty();
 
         if (this._selectedStyleIndex >= 0) {
             this._patternsPanel.css('display', '');

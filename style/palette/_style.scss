@@ -4,7 +4,7 @@
   .style-selector {
     background: white;
     border-bottom: 1px solid $frameBorderColor;
-    padding: 2px 2px 0px 2px;
+    padding: 2px 5px 0px 5px;
 
     .style-block {
       display: inline-block;
@@ -13,7 +13,6 @@
       width: 40px;
       height: 40px;
       border: 2px solid white;
-      border-radius: 5px;
 
       &.selected {
         border: 2px solid $selectedColor;
@@ -37,8 +36,12 @@
     }
   }
 
-  .properties-panels {
-    > .properties-panel-category {
+  .style-settings {
+    margin: 5px 5px;
+  }
+
+  .style-entries-panel {
+    > .style-entries-panel-header {
       @include box-sizing(border-box);
       display: table;
       width: 100%;
@@ -68,6 +71,7 @@
           padding-bottom: 0px;
           background: transparent !important;
           box-shadow: none;
+          margin: 0px;
         }
 
         button, .g-button {
@@ -80,7 +84,7 @@
       }
     }
 
-    > .properties-panel-content {
+    > .style-entries-panel-content {
       padding: 5px 5px;
 
       &.last-visible {

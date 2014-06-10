@@ -188,7 +188,6 @@
                     .append($('<input>')
                         .addClass('css-value')
                         .attr('type', 'text')
-                        .gAutoBlur()
                         .on('click', function () {
                             $(this).select();
                         })

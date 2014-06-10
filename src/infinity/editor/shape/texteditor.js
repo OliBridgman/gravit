@@ -209,7 +209,7 @@
     /** @override */
     IFTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
         // Add a default style with a default fill
-        var style = new IFStyle();
+        var style = new IFInlineStyle();
         style.appendChild(new IFFillPaint());
         this.getElement().getStyleSet().appendChild(style);
     };

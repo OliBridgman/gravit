@@ -16,27 +16,52 @@
      * @enum
      */
     IFPaintCanvas.LineCap = {
-        Butt: 0,
-        Round: 1,
-        Square: 2
+        Butt: 'butt',
+        Round: 'round',
+        Square: 'square'
     };
 
     /**
      * @enum
      */
     IFPaintCanvas.LineJoin = {
-        Miter: 0,
-        Bevel: 1,
-        Round: 2
+        Miter: 'miter',
+        Bevel: 'bevel',
+        Round: 'round'
     };
 
+    /**
+     * @enum
+     */
+    IFPaintCanvas.BlendMode = {
+        Normal: 'normal',
+        Multiply: 'multiply',
+        Screen: 'screen',
+        Overlay: 'overlay',
+        Darken: 'darken',
+        Lighten: 'lighten',
+        ColorDoge: 'color-doge',
+        ColorBurn: 'color-burn',
+        HardLight: 'hard-light',
+        SoftLight: 'soft-light',
+        Difference: 'difference',
+        Exclusion: 'exclusion',
+        Hue: 'hue',
+        Saturation: 'saturation',
+        Color: 'color',
+        Luminosity: 'luminosity'
+    };
+
+    /**
+     * @enum
+     */
     IFPaintCanvas.CompositeOperator = {
         /**
          * Displays the source image over the destination image
          * @type {Number}
          * @version 1.0
          */
-        SourceOver: 0,
+        SourceOver: 'source-over',
 
         /**
          * Displays the source image on top of the destination image.
@@ -44,7 +69,7 @@
          * @type {Number}
          * @version 1.0
          */
-        SourceAtTop: 1,
+        SourceAtTop: 'source-atop',
 
         /**
          * Displays the source image in to the destination image. Only the part of the source image that is
@@ -52,7 +77,7 @@
          * @type {Number}
          * @version 1.0
          */
-        SourceIn: 2,
+        SourceIn: 'source-in',
 
         /**
          * Displays the source image out of the destination image. Only the part of the source image that is
@@ -60,14 +85,14 @@
          * @type {Number}
          * @version 1.0
          */
-        SourceOut: 3,
+        SourceOut: 'source-out',
 
         /**
          * Displays the destination image over the source image
          * @type {Number}
          * @version 1.0
          */
-        DestinationOver: 10,
+        DestinationOver: 'destination-over',
 
         /**
          * Displays the destination image on top of the source image. The part of the destination image
@@ -75,7 +100,7 @@
          * @type {Number}
          * @version 1.0
          */
-        DestinationAtTop: 11,
+        DestinationAtTop: 'destination-atop',
 
         /**
          * Displays the destination image in to the source image. Only the part of the destination image that is
@@ -83,7 +108,7 @@
          * @type {Number}
          * @version 1.0
          */
-        DestinationIn: 12,
+        DestinationIn: 'destination-in',
 
         /**
          * Displays the destination image out of the source image. Only the part of the destination image that is
@@ -91,35 +116,35 @@
          * @type {Number}
          * @version 1.0
          */
-        DestinationOut: 13,
-
-        /**
-         * Displays the source image + the destination image making the intersection lighter
-         * @type {Number}
-         * @version 1.0
-         */
-        Lighter: 20,
-
-        /**
-         * Displays the source image + the destination image making the intersection darker
-         * @type {Number}
-         * @version 1.0
-         */
-        Darker: 21,
+        DestinationOut: 'destination-out',
 
         /**
          * Displays the source image. The destination image is ignored
          * @type {Number}
          * @version 1.0
          */
-        Copy: 30,
+        Copy: 'copy',
 
         /**
          * The source image is combined by using an exclusive OR with the destination image
          * @type {Number}
          * @version 1.0
          */
-        Xor: 31
+        Xor: 'xor',
+
+        /**
+         * Displays the source image + the destination image making the intersection lighter
+         * @type {Number}
+         * @version 1.0
+         */
+        Lighter: 'lighter',
+
+        /**
+         * Displays the source image + the destination image making the intersection darker
+         * @type {Number}
+         * @version 1.0
+         */
+        Darker: 'darker'
     };
 
     /**
@@ -128,13 +153,13 @@
      */
     IFPaintCanvas.RepeatMode = {
         /** Horizontal and vertical repeat */
-        Both: 0,
+        Both: 'repeat',
         /** Horizontal repeat */
-        Horizontal: 1,
+        Horizontal: 'repeat-x',
         /** Vertical repeat */
-        Vertical: 2,
+        Vertical: 'repeat-y',
         /** No repeat */
-        None: 3
+        None: 'no-repeat'
     };
 
     IFPaintCanvas.COLOR_MATRIX_IDENTITY = [
@@ -465,20 +490,16 @@
      * @param {Number} [dx]
      * @param {Number} [dy]
      * @param {Number} [opacity]
-     * @param {IFPaintCanvas.CompositeOperator} [composite]
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, composite) {
+    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, cmpOrBlend) {
         if (typeof opacity == "number") {
             this._canvasContext.globalAlpha = opacity;
         } else {
             this._canvasContext.globalAlpha = 1.0;
         }
 
-        if (typeof composite == "number") {
-            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
-        } else {
-            this._canvasContext.globalCompositeOperation = "source-over";
-        }
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
         // Make sure to reset scale when drawing canvases + make non smooth
         var hadSmooth = this._getImageSmoothingEnabled();
@@ -610,13 +631,13 @@
      * @param {Number} [join] the line join used for stroking
      * @param {Number} [miterLimit] the miter limit used for stroking
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      * @see IFPaintCanvas.LineCap
      * @see IFPaintCanvas.LineJoin
      * @see IFPaintCanvas.StrokeAlignment
      * @see IFPaintCanvas.CompositeOperator
      */
-    IFPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, composite) {
+    IFPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, cmpOrBlend) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -625,39 +646,10 @@
             this._canvasContext.lineWidth = 1.0;
         }
 
-        if (typeof cap == "number") {
-            switch (cap) {
-                case IFPaintCanvas.LineCap.Butt:
-                    this._canvasContext.lineCap = "butt";
-                    break;
-                case IFPaintCanvas.LineCap.Round:
-                    this._canvasContext.lineCap = "round";
-                    break;
-                case IFPaintCanvas.LineCap.Square:
-                    this._canvasContext.lineCap = "square";
-                    break;
-            }
-        } else {
-            this._canvasContext.lineCap = "butt";
-        }
 
-        if (typeof join == "number") {
-            switch (join) {
-                case IFPaintCanvas.LineJoin.Bevel:
-                    this._canvasContext.lineJoin = "bevel";
-                    break;
-                case IFPaintCanvas.LineJoin.Round:
-                    this._canvasContext.lineJoin = "round";
-                    break;
-                default:
-                    this._canvasContext.lineJoin = "miter";
-                    this._canvasContext.miterLimit = typeof miterLimit == 'number' ? miterLimit : 10;
-                    break;
-            }
-        } else {
-            this._canvasContext.lineJoin = "miter";
-            this._canvasContext.miterLimit = 10;
-        }
+        this._canvasContext.lineCap = cap ? cap : "butt";
+        this._canvasContext.lineJoin = join ? join : "miter";
+        this._canvasContext.miterLimit = typeof miterLimit == 'number' ? miterLimit : 10;
 
         if (typeof opacity == "number") {
             this._canvasContext.globalAlpha = opacity;
@@ -665,11 +657,7 @@
             this._canvasContext.globalAlpha = 1.0;
         }
 
-        if (typeof composite == "number") {
-            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
-        } else {
-            this._canvasContext.globalCompositeOperation = "source-over";
-        }
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
         this._canvasContext.stroke();
     };
@@ -679,9 +667,9 @@
      * @param {*} [fill] the fill to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {IFPaintCanvas.CompositeOperator} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, composite) {
+    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, cmpOrBlend) {
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
@@ -691,11 +679,7 @@
             this._canvasContext.globalAlpha = 1.0;
         }
 
-        if (typeof composite == "number") {
-            this._canvasContext.globalCompositeOperation = this._convertComposite(composite, "source-over");
-        } else {
-            this._canvasContext.globalCompositeOperation = "source-over";
-        }
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
         this._canvasContext.fill();
     };
@@ -770,11 +754,11 @@
      * @param {Number} [y] the y-position of the image, defaults to zero
      * @param {Boolean} [noSmooth] if set to true, will render pixelated without smoothing. Defaults to false.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {Number} [composite] the composite operator to use for drawing, defaults to IFPaintCanvas.CompositeOperator.SourceOver
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      * @see IFPaintCanvas.CompositeOperator
      * @version 1.0
      */
-    IFPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, composite) {
+    IFPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, cmpOrBlend) {
         x = x || 0;
         y = y || 0;
 
@@ -787,11 +771,7 @@
             this._canvasContext.globalAlpha = 1.0;
         }
 
-        if (typeof composite == "number") {
-            this._canvasContext = this._convertComposite(composite, "source-over");
-        } else {
-            this._canvasContext.globalCompositeOperation = "source-over";
-        }
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
         var hadSmooth = this._getImageSmoothingEnabled();
         this._setImageSmoothingEnabled(!noSmooth);
@@ -1111,46 +1091,6 @@
     };
 
     /**
-     * @param {Number} composite
-     * @param {String} defaultReturn
-     * @returns {String}
-     * @private
-     */
-    IFPaintCanvas.prototype._convertComposite = function (composite, defaultReturn) {
-        if (typeof composite == "number") {
-            switch (composite) {
-                case IFPaintCanvas.CompositeOperator.SourceOver:
-                    return "source-over";
-                case IFPaintCanvas.CompositeOperator.SourceAtTop:
-                    return "source-atop";
-                case IFPaintCanvas.CompositeOperator.SourceIn:
-                    return "source-in";
-                case IFPaintCanvas.CompositeOperator.SourceOut:
-                    return "source-out";
-                case IFPaintCanvas.CompositeOperator.DestinationOver:
-                    return "destination-over";
-                case IFPaintCanvas.CompositeOperator.DestinationAtTop:
-                    return "destination-atop";
-                case IFPaintCanvas.CompositeOperator.DestinationIn:
-                    return "destination-in";
-                case IFPaintCanvas.CompositeOperator.DestinationOut:
-                    return "destination-out";
-                case IFPaintCanvas.CompositeOperator.Lighter:
-                    return "lighter";
-                case IFPaintCanvas.CompositeOperator.Darker:
-                    return "darker";
-                case IFPaintCanvas.CompositeOperator.Copy:
-                    return "copy";
-                case IFPaintCanvas.CompositeOperator.Xor:
-                    return "xor";
-                default:
-                    break;
-            }
-        }
-        return defaultReturn;
-    };
-
-    /**
      * @param {*} style
      * @param {*} defaultReturn
      * @returns {*}
@@ -1176,20 +1116,6 @@
             return image._canvasContext.canvas;
         } else {
             throw new Error('Not Supported.');
-        }
-    };
-
-    /** @private */
-    IFPaintCanvas.prototype._convertRepeat = function (repeat) {
-        switch (repeat) {
-            case IFPaintCanvas.RepeatMode.Both:
-                return "repeat";
-            case IFPaintCanvas.RepeatMode.Horizontal:
-                return "repeat-x";
-            case IFPaintCanvas.RepeatMode.Vertical:
-                return "repeat-y";
-            case IFPaintCanvas.RepeatMode.None:
-                return "no-repeat";
         }
     };
 

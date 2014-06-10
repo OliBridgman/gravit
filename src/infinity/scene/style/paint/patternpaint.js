@@ -21,8 +21,8 @@
         pat: IFColor.BLACK,
         // Pattern transformation (GTransform)
         trf: null,
-        // The composite of the style
-        cmp: IFPaintCanvas.CompositeOperator.SourceOver,
+        // The blend mode of the paint
+        blm: IFPaintCanvas.BlendMode.Normal,
         // The opacity of the style
         opc: 1.0
     };

@@ -59,7 +59,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {

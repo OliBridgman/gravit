@@ -327,14 +327,14 @@
     IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
         if (context.configuration.isRasterEffects(context)) {
             var styleOpacity = 1.0;
-            var styleCmpOp = IFPaintCanvas.CompositeOperator.SourceOver;
+            var styleBlendMode = IFPaintCanvas.BlendMode.Normal;
 
             if (style instanceof IFAppliedStyle) {
                 styleOpacity = style.getProperty('opc');
-                styleCmpOp = style.getProperty('cmp');
+                styleBlendMode = style.getProperty('blm');
             }
 
-            var needContentsCanvas = styleOpacity !== 1.0 || styleCmpOp !== IFPaintCanvas.CompositeOperator.SourceOver;
+            var needContentsCanvas = styleOpacity !== 1.0 || styleBlendMode !== IFPaintCanvas.BlendMode.Normal
 
             var hasRenderedContents = false;
 
@@ -392,7 +392,7 @@
                         // Paint contents before first post filter
                         if (!hasRenderedContents && effect.isPost()) {
                             hasRenderedContents = true;
-                            sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+                            sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
                         }
 
                         // Render effect and paint the effect canvas
@@ -402,7 +402,7 @@
                 }
 
                 if (!hasRenderedContents) {
-                    sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+                    sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
                 }
             } else {
                 this._paint(context, style, styleIndex);

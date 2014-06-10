@@ -25,8 +25,8 @@
      * Visual properties
      */
     IFAppliedStyle.VisualProperties = {
-        // The composite of the style
-        cmp: IFPaintCanvas.CompositeOperator.SourceOver,
+        // The blend mode of the style
+        blm: IFPaintCanvas.BlendMode.Normal,
         // The opacity of the style
         opc: 1.0
     };
@@ -92,7 +92,7 @@
     IFAppliedStyle.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFAppliedStyle.GeometryProperties);
         this._handleVisualChangeForProperties(change, args, IFAppliedStyle.VisualProperties);
-        IFNode.prototype._handleChange.call(this, change, args);
+        IFStyle.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

@@ -46,7 +46,6 @@
                     .attr('type', 'text')
                     .attr('data-property', 'pts')
                     .css('width', '3em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
@@ -75,7 +74,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '5em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -89,7 +87,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
@@ -112,7 +109,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {

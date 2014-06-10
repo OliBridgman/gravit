@@ -109,7 +109,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value === null || (typeof value === 'number' && value >= 0)) {
@@ -218,7 +217,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = $(this).val();
                         value = !value || value === "" ? null : IFLength.parseEquationValue(value);
@@ -233,7 +231,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = $(this).val();
                         value = !value || value === "" ? null : parseInt(value);
@@ -258,8 +255,7 @@
                     .text('Box:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createInput('vb')
-                        .css('margin-right', '3px'))
+                    .append(_createInput('vb'))
                     .append(_createInput('aw'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
@@ -280,10 +276,8 @@
                     .text('Style:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createInput('fw')
-                        .css('margin-right', '3px'))
-                    .append(_createInput('fs')
-                        .css('margin-right', '3px'))
+                    .append(_createInput('fw'))
+                    .append(_createInput('fs'))
                     /*.append(_createInput('fc'))*/))
             .append($('<tr></tr>')
                 .append($('<td></td>')
@@ -298,10 +292,7 @@
                     .text('Space:'))
                 .append($('<td></td>')
                     .append(_createInput('ws')
-                        .css({
-                            'margin-right': '3px',
-                            'width': '1.5em'
-                        })
+                        .css('width', '1.5em')
                         // TODO : I18N
                         .attr('title', 'Word Spacing'))
                     .append(_createInput('cs')

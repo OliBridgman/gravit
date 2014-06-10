@@ -237,6 +237,20 @@
         return parent instanceof IFStyleSet;
     };
 
+    /** @override */
+    IFStyle.prototype._handleChange = function (change, args) {
+        if (change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) {
+            if (args instanceof IFStyleEntry) {
+                this.prepareGeometryChange();
+            }
+        } else if (change == IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) {
+            if (args instanceof IFStyleEntry) {
+                this.finishGeometryChange();
+            }
+        }
+
+        IFNode.prototype._handleChange.call(this, change, args);
+    };
 
     /**
      * This will fire a change event for geometry updates on this style

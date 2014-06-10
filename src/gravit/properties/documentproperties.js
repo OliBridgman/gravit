@@ -47,7 +47,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 1) {
@@ -72,7 +71,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 1) {
@@ -86,7 +84,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
@@ -101,7 +98,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '3em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var value = parseInt($(this).val());
                         if (!isNaN(value)) {
@@ -133,7 +129,6 @@
                     .text('Size:'))
                 .append($('<td></td>')
                     .append(_createInput('gridSizeX')
-                        .css('margin-right', '3px')
                         // TODO : I18N
                         .attr('title', 'Horizontal Grid-Size'))
                     .append(_createInput('gridSizeY')
@@ -157,7 +152,6 @@
                     .text('Cursor:'))
                 .append($('<td></td>')
                     .append(_createInput('crDistSmall')
-                        .css('margin-right', '3px')
                         // TODO : I18N
                         .attr('title', 'Small Distance when moving via Arrow-Keys'))
                     .append(_createInput('crDistBig')
@@ -180,8 +174,7 @@
                     .attr('colspan', '4')
                     .append(_createInput('pickDist')
                         // TODO : I18N
-                        .attr('title', 'Pick Distance in Pixels')
-                        .css('margin-right', '3px'))
+                        .attr('title', 'Pick Distance in Pixels'))
                     .append(_createInput('snapDist')
                         // TODO : I18N
                         .attr('title', 'Snap Distance in Pixels'))))

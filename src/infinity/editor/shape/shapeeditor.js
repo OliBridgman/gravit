@@ -22,7 +22,7 @@
     /** @override */
     IFShapeEditor.prototype.initialSetup = function () {
         // Add a default style with a default stroke
-        var style = new IFStyle();
+        var style = new IFInlineStyle();
         style.appendChild(new IFStrokePaint());
         this.getElement().getStyleSet().appendChild(style);
     };

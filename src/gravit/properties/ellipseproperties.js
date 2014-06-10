@@ -65,7 +65,6 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .css('width', '4em')
-                    .gAutoBlur()
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {

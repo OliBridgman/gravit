@@ -70,7 +70,6 @@
                     .attr('type', 'text')
                     .attr('data-point-property', property)
                     .css('width', '5em')
-                    .gAutoBlur()
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {

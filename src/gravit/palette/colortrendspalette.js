@@ -76,7 +76,6 @@
                     .addClass('color-trend-value')
                     .append($('<input>')
                         .attr('type', 'text')
-                        .gAutoBlur()
                         .on('input', function (evt) {
                             var val = $(evt.target).val();
                             var newColor = this._updateTrendValue(index, val);
