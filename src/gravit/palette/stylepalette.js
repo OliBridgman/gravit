@@ -315,7 +315,7 @@
             var style = this._styles[this._selectedStyleIndex].getActualStyle();
 
             for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
-                if (entry instanceof IFFillPaint) {
+                if (entry instanceof IFFillPaint || entry instanceof IFStrokePaint) {
                     _createFillRow(entry);
                 }
             }
