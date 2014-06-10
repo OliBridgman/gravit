@@ -116,7 +116,7 @@
         canvas.setScale(scaleX);
 
         // Paint rectangle with this style
-        previewRect.render2(context, this);
+        previewRect.renderStyle(context, this);
 
         canvas.finish();
         return canvas.asPNGImage();

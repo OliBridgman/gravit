@@ -317,6 +317,92 @@
         return this._styleSet;
     };
 
+    /**
+     * Render with a given Style. This will render with raster and filter
+     * effects if there're any within the given style
+     * @param {IFPaintContext} context
+     * @param {IFStyle} style
+     * @param {Number} [styleIndex] the style's index
+     */
+    IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
+        var styleOpacity = style.getProperty('opc');
+        var styleCmpOp = style.getProperty('cmp');
+
+        // If style has other than default cmp operator or opacity we need a separate canvas
+        var needContentsCanvas = styleOpacity !== IFStyle.VisualProperties.cmp ||
+            styleCmpOp !== IFStyle.VisualProperties.opc;
+
+        var hasRenderedContents = false;
+
+        // Collect filter and effects
+        var effects = [];
+        var filters = [];
+        for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
+                if (child instanceof IFEffectEntry) {
+                    effects.push(child);
+                    needContentsCanvas = true;
+                } else if (child instanceof IFFilterEntry) {
+                    filters.push(child);
+                    needContentsCanvas = true;
+                }
+            }
+        }
+
+        if (needContentsCanvas) {
+            // Create a temporary canvas for our actual contents
+            var paintBBox = style.getBBox(this.getGeometryBBox());
+            var sourceCanvas = context.canvas;
+            var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
+            context.canvas = contentsCanvas;
+            try {
+                this._paint(context, style, styleIndex);
+            } finally {
+                context.canvas = sourceCanvas;
+            }
+
+            // Apply filters on contents
+            for (var i = 0; i < filters.length; ++i) {
+                filters[i].apply(contentsCanvas);
+            }
+
+            // Apply effects if desired...
+            if (effects.length > 0) {
+                // Order effects whether they're pre- or post-effects
+                effects.sort(function (a, b) {
+                    return (a.isPost() === b.isPost()) ? 0 : b.isPost() ? -1 : 1;
+                });
+
+                // Initiate a temporary effect canvas
+                var effectCanvas = sourceCanvas.createCanvas(paintBBox);
+                for (var i = 0; i < effects.length; ++i) {
+                    var effect = effects[i];
+
+                    if (i > 0) {
+                        // Clear previous effect contents
+                        effectCanvas.fillRect(0, 0, paintBBox.getWidth(), paintBBox.getHeight());
+                    }
+
+                    // Paint contents before first post filter
+                    if (!hasRenderedContents && effect.isPost()) {
+                        hasRenderedContents = true;
+                        sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+                    }
+
+                    // Render effect and paint the effect canvas
+                    effect.render(effectCanvas, contentsCanvas);
+                    sourceCanvas.drawCanvas(effectCanvas, 0, 0);
+                }
+            }
+
+            if (!hasRenderedContents) {
+                sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
+            }
+        } else {
+            this._paint(context, style, styleIndex);
+        }
+    };
+
     /** @override */
     IFElement.Style.prototype.toString = function () {
         return "[Mixin IFElement.Style]";
@@ -664,7 +750,7 @@
                     if (!context.configuration.isRasterEffects(context)) {
                         this._paint(context, style, styleIndex);
                     } else {
-                        this.render2(context, style, styleIndex);
+                        this.renderStyle(context, style, styleIndex);
                     }
 
                     styleIndex++;
@@ -677,92 +763,6 @@
         }
 
         this._finishPaint(context);
-    };
-
-    /**
-     * Second rendering step that renders on a given style in any case.
-     * Usually you'd call render() and never this one directly.
-     * @param {IFPaintContext} context
-     * @param {IFStyle} style
-     * @param {Number} [styleIndex] the style's index
-     */
-    IFElement.prototype.render2 = function (context, style, styleIndex) {
-        var styleOpacity = style.getProperty('opc');
-        var styleCmpOp = style.getProperty('cmp');
-
-        // If style has other than default cmp operator or opacity we need a separate canvas
-        var needContentsCanvas = styleOpacity !== IFStyle.VisualProperties.cmp ||
-            styleCmpOp !== IFStyle.VisualProperties.opc;
-
-        var hasRenderedContents = false;
-
-        // Collect filter and effects
-        var effects = [];
-        var filters = [];
-        for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
-                if (child instanceof IFEffectEntry) {
-                    effects.push(child);
-                    needContentsCanvas = true;
-                } else if (child instanceof IFFilterEntry) {
-                    filters.push(child);
-                    needContentsCanvas = true;
-                }
-            }
-        }
-
-        if (needContentsCanvas) {
-            // Create a temporary canvas for our actual contents
-            var paintBBox = style.getBBox(this.getGeometryBBox());
-            var sourceCanvas = context.canvas;
-            var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
-            context.canvas = contentsCanvas;
-            try {
-                this._paint(context, style, styleIndex);
-            } finally {
-                context.canvas = sourceCanvas;
-            }
-
-            // Apply filters on contents
-            for (var i = 0; i < filters.length; ++i) {
-                filters[i].apply(contentsCanvas);
-            }
-
-            // Apply effects if desired...
-            if (effects.length > 0) {
-                // Order effects whether they're pre- or post-effects
-                effects.sort(function (a, b) {
-                    return (a.isPost() === b.isPost()) ? 0 : b.isPost() ? -1 : 1;
-                });
-
-                // Initiate a temporary effect canvas
-                var effectCanvas = sourceCanvas.createCanvas(paintBBox);
-                for (var i = 0; i < effects.length; ++i) {
-                    var effect = effects[i];
-
-                    if (i > 0) {
-                        // Clear previous effect contents
-                        effectCanvas.fillRect(0, 0, paintBBox.getWidth(), paintBBox.getHeight());
-                    }
-
-                    // Paint contents before first post filter
-                    if (!hasRenderedContents && effect.isPost()) {
-                        hasRenderedContents = true;
-                        sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
-                    }
-
-                    // Render effect and paint the effect canvas
-                    effect.render(effectCanvas, contentsCanvas);
-                    sourceCanvas.drawCanvas(effectCanvas, 0, 0);
-                }
-            }
-
-            if (!hasRenderedContents) {
-                sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleCmpOp);
-            }
-        } else {
-            this._paint(context, style, styleIndex);
-        }
     };
 
     /**

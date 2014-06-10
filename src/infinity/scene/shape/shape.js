@@ -180,11 +180,6 @@
                     }
                 }
             }
-
-            // Paint contents after first style
-            if (styleIndex === 0) {
-                this._paintContents(context);
-            }
         }
 
         // Paint our foreground
@@ -237,6 +232,16 @@
             context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
             oldContentsCanvas.drawCanvas(context.canvas);
             context.canvas = oldContentsCanvas;
+        }
+    };
+
+    /** @override */
+    IFShape.prototype.renderStyle = function (context, style, styleIndex) {
+        IFElement.Style.prototype.renderStyle.call(this, context, style, styleIndex);
+
+        // Render our contents here and clip' em if any after first style
+        if (styleIndex === 0) {
+            this._paintContents(context);
         }
     };
 
