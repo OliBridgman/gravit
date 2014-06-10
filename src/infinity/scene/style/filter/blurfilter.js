@@ -50,6 +50,12 @@
     };
 
     /** @override */
+    IFBlurFilter.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, IFBlurFilter.GeometryProperties);
+        IFFilterEntry.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
     IFBlurFilter.prototype.toString = function () {
         return "[IFBlurFilter]";
     };

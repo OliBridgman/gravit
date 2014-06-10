@@ -120,6 +120,12 @@
     };
 
     /** @override */
+    IFStrokePaint.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, IFStrokePaint.GeometryProperties);
+        IFPatternPaint.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
     IFStrokePaint.prototype.toString = function () {
         return "[IFStrokePaint]";
     };

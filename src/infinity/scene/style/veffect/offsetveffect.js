@@ -74,6 +74,12 @@
     };
 
     /** @override */
+    IFOffsetVEffect.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, IFOffsetVEffect.GeometryProperties);
+        IFVEffectEntry.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
     IFOffsetVEffect.prototype.toString = function () {
         return "[IFOffsetVEffect]";
     };

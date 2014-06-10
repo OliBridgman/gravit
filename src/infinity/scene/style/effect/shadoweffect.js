@@ -87,6 +87,12 @@
     };
 
     /** @override */
+    IFShadowEffect.prototype._handleChange = function (change, args) {
+        this._handleGeometryChangeForProperties(change, args, IFShadowEffect.GeometryProperties);
+        IFEffectEntry.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
     IFShadowEffect.prototype.toString = function () {
         return "[IFShadowEffect]";
     };

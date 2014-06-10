@@ -210,10 +210,83 @@
         return null;
     };
 
+    /**
+     * Called to prepare this style for a geometrical change
+     */
+    IFStyle.prototype.prepareGeometryChange = function () {
+        // NO-OP
+    };
+
+    /**
+     * Called to finish this style from a geometrical change
+     */
+    IFStyle.prototype.finishGeometryChange = function () {
+        // NO-OP
+    };
+
+    /**
+     * Called to trigger a visual change on this style
+     */
+    IFStyle.prototype.visualChange = function () {
+        // NO-OP
+    };
+
     /** @override */
     IFStyle.prototype.validateInsertion = function (parent, reference) {
         // By default, styles can only be appended to stylesets
         return parent instanceof IFStyleSet;
+    };
+
+
+    /**
+     * This will fire a change event for geometry updates on this style
+     * whenever a given property has been changed that affected the geometry.
+     * This is usually called from the _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * geometrical changes
+     * @return {Boolean} true if there was a property change that affected a
+     * change of the geometry and was handled (false i.e. for no owner element)
+     * @private
+     */
+    IFStyle.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
+            if (gUtil.containsObjectKey(args.properties, properties)) {
+                switch (change) {
+                    case IFNode._Change.BeforePropertiesChange:
+                        this.prepareGeometryChange();
+                        break;
+                    case IFNode._Change.AfterPropertiesChange:
+                        this.finishGeometryChange();
+                        break;
+                }
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * This will fire an invalidation event for visual updates on this style
+     * whenever a given property has been changed that affected the visual.
+     * This is usually called from the _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * visual changes
+     * @return {Boolean} true if there was a property change that affected a
+     * visual change and was handled (false i.e. for no owner element)
+     * @private
+     */
+    IFStyle.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
+            if (gUtil.containsObjectKey(args.properties, properties)) {
+                this.visualChange();
+                return true;
+            }
+        }
+        return false;
     };
 
     /** @override */

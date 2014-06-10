@@ -76,6 +76,12 @@
         return false;
     };
 
+    /** @override */
+    IFPatternPaint.prototype._handleChange = function (change, args) {
+        this._handleVisualChangeForProperties(change, args, IFPatternPaint.VisualProperties);
+        IFPaintEntry.prototype._handleChange.call(this, change, args);
+    };
+
     /**
      * Creates and returns a paintable pattern
      * @param {IFPaintCanvas} canvas the canvas used for creating the pattern
