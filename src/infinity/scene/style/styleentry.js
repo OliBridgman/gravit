@@ -77,7 +77,7 @@
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
             var style = this.getOwnerStyle();
             if (style) {
-                if (gUtil.containsObjectKey(args.properties, properties)) {
+                if (ifUtil.containsObjectKey(args.properties, properties)) {
                     switch (change) {
                         case IFNode._Change.BeforePropertiesChange:
                             style.prepareGeometryChange();
@@ -110,7 +110,7 @@
         if (change == IFNode._Change.AfterPropertiesChange) {
             var style = this.getOwnerStyle();
             if (style) {
-                if (gUtil.containsObjectKey(args.properties, properties)) {
+                if (ifUtil.containsObjectKey(args.properties, properties)) {
                     style.visualChange();
                     return true;
                 }

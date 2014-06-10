@@ -31,7 +31,7 @@
         ResizeAll: (1 << 10) | (1 << 11)
     };
 
-    IFBlockEditor.RESIZE_HANDLE_PART_ID = gUtil.uuid();
+    IFBlockEditor.RESIZE_HANDLE_PART_ID = ifUtil.uuid();
 
     /** @override */
     IFBlockEditor.prototype.getBBoxMargin = function () {

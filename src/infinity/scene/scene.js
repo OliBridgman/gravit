@@ -12,6 +12,8 @@
     function IFScene() {
         IFElement.call(this);
         this._scene = this;
+        this._references = {};
+        this._links = {};
         this._setDefaultProperties(IFScene.MetaProperties);
     }
 
@@ -99,6 +101,17 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFScene Class
     // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @type {{}}
+     * @private
+     */
+    IFScene.prototype._references = null;
+
+    /**
+     * @type {{}}
+     * @private
+     */
+    IFScene.prototype._links = null;
 
     /**
      * @type {IFScene.StyleCollection}
@@ -183,7 +196,7 @@
      * @returns {string} the resulting string without unit postfix
      */
     IFScene.prototype.lengthToString = function (length) {
-        return gUtil.formatNumber(length.toUnit(this.$unit));
+        return ifUtil.formatNumber(length.toUnit(this.$unit));
     };
 
     /**
@@ -259,6 +272,80 @@
             }
         }
         return false;
+    };
+
+    IFScene.prototype.link = function (target, link) {
+        if (!target.__$$linkID) {
+            target.__$$linkID = ifUtil.uuid();
+        }
+        if (!this._links[target.__$$linkID]) {
+            this._links[target.__$$linkID] = [];
+        }
+        this._links[target.__$$linkID].push(link);
+    };
+
+    IFScene.prototype.unlink = function (target, link) {
+
+    };
+
+    /**
+     * Visits all links linking to a specific target node
+     * @param {IFNode} target the target node to visit links for
+     * @param {Function} visitor the visitor function called for each
+     * link with the link being the only argument
+     */
+    IFScene.prototype.visitLinks = function (target, visitor) {
+        var links = this._links[target.__$$linkID];
+        if (links) {
+            for (var i = 0; i < links.length; ++i) {
+                visitor(links[i]);
+            }
+        }
+    };
+
+    /**
+     * Returns whether a given reference node has links or not
+     * @param {IFNode.Reference} reference
+     * @returns {boolean}
+     */
+    IFScene.prototype.hasLinks = function (reference) {
+        return this._links.hasOwnProperty(reference.getReferenceId());
+    };
+
+    /**
+     * Register a referenceable node
+     * @param {IFNode.Reference} reference
+     */
+    IFScene.prototype.addReference = function (reference) {
+        var referenceId = reference.getReferenceId();
+        if (this._references.hasOwnProperty(referenceId)) {
+            throw new Error('Reference allready added.');
+        }
+        this._references[referenceId] = reference;
+    };
+
+    /**
+     * Unregister a referenceable node
+     * @param {IFNode.Reference} reference
+     */
+    IFScene.prototype.removeReference = function (reference) {
+        var referenceId = reference.getReferenceId();
+        if (!this._references.hasOwnProperty(referenceId)) {
+            throw new Error('Reference not yet added.');
+        }
+        delete this._references[referenceId];
+    };
+
+    /**
+     * Returns a reference node by it's id if any
+     * @param {String} referenceId
+     * @return {IFNode.Reference}
+     */
+    IFScene.prototype.getReference = function (referenceId) {
+        if (this._references.hasOwnProperty(referenceId)) {
+            return this._references[referenceId];
+        }
+        return null;
     };
 
     /**

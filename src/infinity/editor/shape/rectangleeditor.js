@@ -13,9 +13,9 @@
     IFObject.inherit(IFRectangleEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFRectangleEditor, IFRectangle);
 
-    IFRectangleEditor.LEFT_SHOULDER_PART_ID = gUtil.uuid();
-    IFRectangleEditor.RIGHT_SHOULDER_PART_ID = gUtil.uuid();
-    IFRectangleEditor.ANY_SHOULDER_PART_ID = gUtil.uuid();
+    IFRectangleEditor.LEFT_SHOULDER_PART_ID = ifUtil.uuid();
+    IFRectangleEditor.RIGHT_SHOULDER_PART_ID = ifUtil.uuid();
+    IFRectangleEditor.ANY_SHOULDER_PART_ID = ifUtil.uuid();
 
     /** @override */
     IFEllipseEditor.prototype.getBBoxMargin = function () {

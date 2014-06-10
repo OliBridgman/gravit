@@ -252,7 +252,7 @@
      */
     IFStyle.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (gUtil.containsObjectKey(args.properties, properties)) {
+            if (ifUtil.containsObjectKey(args.properties, properties)) {
                 switch (change) {
                     case IFNode._Change.BeforePropertiesChange:
                         this.prepareGeometryChange();
@@ -281,7 +281,7 @@
      */
     IFStyle.prototype._handleVisualChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.AfterPropertiesChange) {
-            if (gUtil.containsObjectKey(args.properties, properties)) {
+            if (ifUtil.containsObjectKey(args.properties, properties)) {
                 this.visualChange();
                 return true;
             }

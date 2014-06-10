@@ -268,9 +268,9 @@
         this._panel.find('input[data-property="ir"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ir')));
         this._panel.find('input[data-property="oa"]').val(
-            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
+            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
-            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
+            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
         this._panel.find('select[data-property="oct"]').val(polygon.getProperty('oct'));
         this._panel.find('select[data-property="ict"]').val(polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(

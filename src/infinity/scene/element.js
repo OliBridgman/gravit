@@ -719,12 +719,10 @@
         if (!this.isVisible()) {
             return false;
         }
-
-        // If there's no parent and we're not the document then
-        // we're not paintable at all except if we've been provided
-        // an explicit context which enforces us to paint
-        if (!context && !this.getParent() && !(this instanceof IFScene)) {
-            return false;
+        if (!context) {
+            // If there's no context we can only paint when attached and having a parent
+            // or when we are the scene by ourself
+            return (this.isAttached() && this.getParent()) || (this instanceof IFScene);
         }
 
         var paintBBox = this.getPaintBBox();
@@ -1061,7 +1059,7 @@
      */
     IFElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (gUtil.containsObjectKey(args.properties, properties)) {
+            if (ifUtil.containsObjectKey(args.properties, properties)) {
                 switch (change) {
                     case IFNode._Change.BeforePropertiesChange:
                         this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
@@ -1090,7 +1088,7 @@
      */
     IFElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.AfterPropertiesChange) {
-            if (gUtil.containsObjectKey(args.properties, properties)) {
+            if (ifUtil.containsObjectKey(args.properties, properties)) {
                 this._notifyChange(IFElement._Change.InvalidationRequest);
                 return true;
             }

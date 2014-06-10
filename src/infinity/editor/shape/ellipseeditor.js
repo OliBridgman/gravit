@@ -13,8 +13,8 @@
     IFObject.inherit(IFEllipseEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFEllipseEditor, IFEllipse);
 
-    IFEllipseEditor.START_ANGLE_PART_ID = gUtil.uuid();
-    IFEllipseEditor.END_ANGLE_PART_ID = gUtil.uuid();
+    IFEllipseEditor.START_ANGLE_PART_ID = ifUtil.uuid();
+    IFEllipseEditor.END_ANGLE_PART_ID = ifUtil.uuid();
 
     /** @override */
     IFEllipseEditor.prototype.getBBoxMargin = function () {

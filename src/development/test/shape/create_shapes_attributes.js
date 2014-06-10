@@ -73,19 +73,19 @@
 
             var style = new IFLinkedStyle();
             style.setProperty('opc', 0.25);
-            style._styleReference = sharedStyle_1;
+            style.setProperty('ref', sharedStyle_1.getReferenceId());
             rect.getStyleSet().appendChild(style);
 
             style = new IFLinkedStyle();
             style.setProperty('opc', 0.5);
-            style._styleReference = sharedStyle_2;
+            style.setProperty('ref', sharedStyle_2.getReferenceId());
             rect.getStyleSet().appendChild(style);
 
             var rect2 = new IFRectangle();
             rect2.setProperties(['trf'], [new GTransform(rectWidth / 2, 0, 0, rectHeight / 2,
                 x + 20 + rectWidth / 2, y + rectHeight / 2)]);
             var style = new IFLinkedStyle();
-            style._styleReference = sharedStyle_3;
+            style.setProperty('ref', sharedStyle_3.getReferenceId());
             rect2.getStyleSet().appendChild(style);
             rect.appendChild(rect2);
 

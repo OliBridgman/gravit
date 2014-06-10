@@ -691,7 +691,7 @@
         var C = cx * by - cy * bx;
         ifMath.getQuadraticRoots(A, B, C, splitPoints);
 
-        return gUtil.uSortSegment(0, 1, splitPoints, sPts);
+        return ifUtil.uSortSegment(0, 1, splitPoints, sPts);
     };
 
     /**
@@ -1445,7 +1445,7 @@
                 }
             }
             else {
-                gUtil.uSortSegment(a, b, rootsDeriv2, rootsD2);
+                ifUtil.uSortSegment(a, b, rootsDeriv2, rootsD2);
                 a1 = a;
                 fVals[0] = fa;
                 if (useSt) {

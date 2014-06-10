@@ -509,7 +509,7 @@
             .val(this._document.getScene().pointToString(propertySource.getProperty('in')));
 
         var lh = propertySource.getProperty('lh');
-        this._panel.find('input[data-property="lh"]').val(lh !== null ? gUtil.formatNumber(lh) : "");
+        this._panel.find('input[data-property="lh"]').val(lh !== null ? ifUtil.formatNumber(lh) : "");
 
         this._panel.find('input[data-property="mt"]')
             .val(this._document.getScene().pointToString(propertySource.getProperty('mt')));

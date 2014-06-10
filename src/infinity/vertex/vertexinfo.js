@@ -1054,7 +1054,7 @@
         splitPoints.push(0.0);
         splitPoints.push(1.0);
         var sPtsNew = [];
-        var nPoints = gUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
+        var nPoints = ifUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
 
         // 2. Implicitize each peace
         ctrlsx = new Float64Array(4);

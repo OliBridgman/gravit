@@ -232,7 +232,7 @@
         this._panel.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
         this._panel.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
         this._panel.find('input[data-property="crConstraint"]').val(
-            gUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
+            ifUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
     };

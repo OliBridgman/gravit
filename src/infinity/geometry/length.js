@@ -90,7 +90,7 @@
             return null;
         }
 
-        var number = gUtil.parseNumber(string);
+        var number = ifUtil.parseNumber(string);
         if (typeof number != "number") {
             return null;
         }
@@ -208,7 +208,7 @@
     };
 
     IFLength.prototype.toString = function (digits) {
-        var result = gUtil.formatNumber(this._value, digits);
+        var result = ifUtil.formatNumber(this._value, digits);
 
         switch (this._unit) {
             case IFLength.Unit.PT:

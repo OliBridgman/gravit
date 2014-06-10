@@ -78,9 +78,9 @@
     /**
      * The identifiers of the locations relatively to transform box
      */
-    IFTransformBox.OUTLINE = gUtil.uuid();
-    IFTransformBox.INSIDE = gUtil.uuid();
-    IFTransformBox.OUTSIDE = gUtil.uuid();
+    IFTransformBox.OUTLINE = ifUtil.uuid();
+    IFTransformBox.INSIDE = ifUtil.uuid();
+    IFTransformBox.OUTSIDE = ifUtil.uuid();
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFTransformBox Class

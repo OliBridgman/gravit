@@ -296,7 +296,7 @@
         block.accept(function (node) {
             if (node instanceof IFBlock) {
                 // Create an unique treeId for the new block
-                var treeId = gUtil.uuid();
+                var treeId = ifUtil.uuid();
 
                 // Insert into tree
                 var nextTreeNode = node.getNext() ? this._getTreeNode(node.getNext()) : null;

@@ -157,9 +157,9 @@
         var ellipse = this._ellipses[0];
         this._panel.find('select[data-property="etp"]').val(ellipse.getProperty('etp'));
         this._panel.find('input[data-property="sa"]').val(
-            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('sa')), 2));
+            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('sa')), 2));
         this._panel.find('input[data-property="ea"]').val(
-            gUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('ea')), 2));
+            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - ellipse.getProperty('ea')), 2));
     };
 
     /**

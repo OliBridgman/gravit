@@ -374,7 +374,7 @@
     IFPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
         var path = this.getPath();
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (gUtil.containsObjectKey(args.properties, IFPathBase.AnchorPoint.GeometryProperties)) {
+            if (ifUtil.containsObjectKey(args.properties, IFPathBase.AnchorPoint.GeometryProperties)) {
                 if (change === IFNode._Change.BeforePropertiesChange) {
                     // Handle uniformity of corner lengths
                     var cuIndex = args.properties.indexOf('cu');

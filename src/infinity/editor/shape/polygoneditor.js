@@ -13,8 +13,8 @@
     IFObject.inherit(IFPolygonEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFPolygonEditor, IFPolygon);
 
-    IFPolygonEditor.INSIDE_PART_ID = gUtil.uuid();
-    IFPolygonEditor.OUTSIDE_PART_ID = gUtil.uuid();
+    IFPolygonEditor.INSIDE_PART_ID = ifUtil.uuid();
+    IFPolygonEditor.OUTSIDE_PART_ID = ifUtil.uuid();
 
     /** @override */
     IFPolygonEditor.prototype.getBBoxMargin = function () {

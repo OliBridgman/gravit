@@ -10,7 +10,7 @@
 
     /**
      * This is equal to the Array.indexOf function except that for
-     * comparing the values in the array, the gUtil.equals function
+     * comparing the values in the array, the ifUtil.equals function
      * is used instead
      * @param {Array} array the array to get an index for an element
      * @param {*} element the element to get the index for
@@ -207,11 +207,11 @@
      * @returns {String}
      */
     IFUtil.prototype.unescape = function (html) {
-        var result = gUtil.replaceAll(html, "&lt;", '<');
-        result = gUtil.replaceAll(result, "&gt;", '>');
-        result = gUtil.replaceAll(result, "&quot;", '"');
-        result = gUtil.replaceAll(result, "&#039;", "'");
-        result = gUtil.replaceAll(result, "&amp;", '&');
+        var result = ifUtil.replaceAll(html, "&lt;", '<');
+        result = ifUtil.replaceAll(result, "&gt;", '>');
+        result = ifUtil.replaceAll(result, "&quot;", '"');
+        result = ifUtil.replaceAll(result, "&#039;", "'");
+        result = ifUtil.replaceAll(result, "&amp;", '&');
         return result;
     };
 
@@ -331,5 +331,5 @@
         return parseFloat(parseString);
     };
 
-    _.gUtil = new IFUtil();
+    _.ifUtil = new IFUtil();
 })(this);

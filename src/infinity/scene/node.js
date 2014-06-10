@@ -678,7 +678,7 @@
             var propName = (custom ? '@' : '$') + properties[i];
             var oldValue = this[propName];
 
-            if (!gUtil.equals(value, oldValue, false)) {
+            if (!ifUtil.equals(value, oldValue, false)) {
                 propertiesToModify.push(properties[i]);
                 valuesToModify.push(values[i])
             }
@@ -726,7 +726,7 @@
         for (var property in properties) {
             var defaultValue = properties[property];
             var value = this['$' + property];
-            if (!gUtil.equals(value, defaultValue, true)) {
+            if (!ifUtil.equals(value, defaultValue, true)) {
                 var myValue = filter(property, value);
                 blob[property] = myValue;
             }
@@ -843,6 +843,31 @@
      */
     IFNode.Tag.prototype.getTags = function () {
         throw new Error("Not Supported.");
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFNode.Reference Mixin
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * A mixin to make a node become referenceable
+     * @class IFNode.Reference
+     * @mixin
+     * @constructor
+     */
+    IFNode.Reference = function () {
+    };
+
+    IFNode.Reference.prototype._referenceId = null;
+
+    /**
+     * Returns the reference id of this node used for linking
+     * @return {String}
+     */
+    IFNode.Reference.prototype.getReferenceId = function () {
+        if (!this._referenceId) {
+            this._referenceId = ifUtil.uuid();
+        }
+        return this._referenceId;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -973,7 +998,7 @@
             if (child.accept) {
                 child.accept(function (node) {
                     // Assign this scene to the node
-                    node._scene = self._scene;
+                    node._setScene(self._scene);
                 }, true);
             }
         }
@@ -1017,7 +1042,7 @@
         if (this.isAttached()) {
             if (child.accept) {
                 child.accept(function (node) {
-                    node._scene = null;
+                    node._setScene(null);
                 }, true);
             }
         }
@@ -1144,6 +1169,11 @@
             }
         }
 
+        if (this.hasMixin(IFNode.Reference) && this._referenceId) {
+            // Restore referenceId
+            blob['#'] = this._referenceId;
+        }
+
         // Return true by default
         return true;
     };
@@ -1175,6 +1205,11 @@
                     this[property] = blob[property];
                 }
             }
+        }
+
+        if (this.hasMixin(IFNode.Reference) && blob.hasOwnProperty('#')) {
+            // Restore referenceId
+            this._referenceId = blob['#'];
         }
 
         // Return true by default
@@ -1480,6 +1515,11 @@
      * @return {Boolean} true if node could be removed, false if not
      */
     IFNode.prototype.validateRemoval = function () {
+        // If node is referenceable and still has links it can not be removed
+        if (this.hasMixin(IFNode.Reference) && this.getScene().hasLinks(this)) {
+            return false;
+        }
+
         // return true by default
         return true;
     };
@@ -1671,6 +1711,24 @@
 
         var event_id = IFObject.getTypeId(eventClass);
         return !this._blockedEvents || !this._blockedEvents[event_id];
+    };
+
+    /**
+     * @param {IFScene} scene
+     * @private
+     */
+    IFNode.prototype._setScene = function (scene) {
+        if (scene !== this._scene) {
+            if (this.hasMixin(IFNode.Reference)) {
+                if (scene) {
+                    scene.addReference(this);
+                } else {
+                    this._scene.removeReference(this);
+                }
+            }
+
+            this._scene = scene;
+        }
     };
 
     /**
