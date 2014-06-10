@@ -27,8 +27,11 @@
     };
 
     /** @override */
-    IFFillPaint.prototype.paint = function (canvas, source) {
-        canvas.fillVertices(IFColor.parseCSSColor('red'));
+    IFFillPaint.prototype.paint = function (canvas, source, bbox) {
+        var pattern = this._createPaintPattern(canvas, bbox);
+        if (pattern) {
+            canvas.fillVertices(pattern, this.$opc, this.$cmp);
+        }
     };
 
     /** @override */

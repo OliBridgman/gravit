@@ -83,23 +83,26 @@
     };
 
     /** @override */
-    IFStrokePaint.prototype.paint = function (canvas, source) {
-        var strokeWidth = this.$sw;
+    IFStrokePaint.prototype.paint = function (canvas, source, bbox) {
+        var pattern = this._createPaintPattern(canvas, bbox);
+        if (pattern) {
+            var strokeWidth = this.$sw;
 
-        // Except center alignment we need to double the stroke width
-        // as we're gonna clip half away
-        if (this.$sa !== IFStrokePaint.Alignment.Center) {
-            strokeWidth *= 2;
-        }
+            // Except center alignment we need to double the stroke width
+            // as we're gonna clip half away
+            if (this.$sa !== IFStrokePaint.Alignment.Center) {
+                strokeWidth *= 2;
+            }
 
-        // Stroke vertices now
-        canvas.strokeVertices(IFColor.BLACK, strokeWidth, this.$slc, this.$slj, this.$slm);
+            // Stroke vertices now
+            canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$cmp);
 
-        // Depending on the stroke alignment we might need to clip now
-        if (this.$sa === IFStrokePaint.Alignment.Inside) {
-            canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-        } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
-            canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+            // Depending on the stroke alignment we might need to clip now
+            if (this.$sa === IFStrokePaint.Alignment.Inside) {
+                canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
+                canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+            }
         }
     };
 

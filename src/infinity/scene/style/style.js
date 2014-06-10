@@ -1,34 +1,24 @@
 (function (_) {
 
     /**
-     * A base style class
+     * Base style class
      * @class IFStyle
-     * @extends IFStyleBase
-     * @mixes IFNode.Container
+     * @extends IFNode
+     * @mixes IFNode.Store
+     * @mixes IFNode.Properties
      * @constructor
      */
     function IFStyle() {
-        IFStyleBase.call(this);
-        this._setDefaultProperties(IFStyle.VisualProperties);
+        IFNode.call(this);
     }
 
-    IFNode.inheritAndMix('style', IFStyle, IFStyleBase, [IFNode.Container]);
+    IFObject.inheritAndMix(IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
      * Style's mime-type
      * @type {string}
      */
     IFStyle.MIME_TYPE = "application/infinity+style";
-
-    /**
-     * Visual properties
-     */
-    IFStyle.VisualProperties = {
-        // The composite of the style
-        cmp: IFPaintCanvas.CompositeOperator.SourceOver,
-        // The opacity of the style
-        opc: 1.0
-    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFStyle.HitResult Class
@@ -60,23 +50,14 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFStyle Class
     // -----------------------------------------------------------------------------------------------------------------
-
-    /** @override */
-    IFStyle.prototype.store = function (blob) {
-        if (IFStyleBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFStyle.VisualProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFStyle.prototype.restore = function (blob) {
-        if (IFStyleBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFStyle.VisualProperties);
-            return true;
-        }
-        return false;
+    /**
+     * Returns the actual style. You should always use this one to act on the style
+     * when reading something from it. Note that this should always return a style
+     * with a container.
+     * @param {IFStyle}
+     */
+    IFStyle.prototype.getActualStyle = function () {
+        return this;
     };
 
     /**
@@ -134,7 +115,7 @@
         var effectPadding = [0, 0, 0, 0];
         var paintPadding = [0, 0, 0, 0];
 
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+        for (var child = this.getActualStyle().getFirstChild(); child !== null; child = child.getNext()) {
             if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
                 var padding = child.getPadding();
                 if (padding) {
@@ -192,7 +173,7 @@
      * @return {IFVertexSource}
      */
     IFStyle.prototype.createVertexSource = function (source) {
-        for (var entry = this.getFirstChild(); entry !== null; entry = entry.getNext()) {
+        for (var entry = this.getActualStyle().getFirstChild(); entry !== null; entry = entry.getNext()) {
             if (entry instanceof IFVEffectEntry && entry.getProperty('vs') === true) {
                 source = entry.createEffect(source);
             }
@@ -218,7 +199,7 @@
         source = this.createVertexSource(source);
 
         // Hit test our children now
-        for (var entry = this.getLastChild(); entry !== null; entry = entry.getPrevious()) {
+        for (var entry = this.getActualStyle().getLastChild(); entry !== null; entry = entry.getPrevious()) {
             if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
                 var result = entry.hitTest(source, location, transform, tolerance);
                 if (result) {

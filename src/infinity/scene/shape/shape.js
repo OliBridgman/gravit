@@ -136,7 +136,7 @@
         } else if (style) {
             // Iterate all (visible) paints
             var paints = null;
-            for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
+            for (var entry = style.getActualStyle().getFirstChild(); entry !== null; entry = entry.getNext()) {
                 if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
                     if (!paints) {
                         paints = [];
@@ -170,13 +170,13 @@
                         paintCanvas.putVertices(vertexSource);
 
                         // Paint
-                        paint.paint(paintCanvas, vertexSource);
+                        paint.paint(paintCanvas, vertexSource, paintBBox);
 
                         // Draw the temporary canvas back
                         context.canvas.drawCanvas(paintCanvas);
                     } else {
                         // Regular painting on main canvas
-                        paint.paint(context.canvas, vertexSource);
+                        paint.paint(context.canvas, vertexSource, paintBBox);
                     }
                 }
             }

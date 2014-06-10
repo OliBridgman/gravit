@@ -79,8 +79,62 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFScene.StyleCollection Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class IFScene.StyleCollection
+     * @extends IFStyleSet
+     * @private
+     */
+    IFScene.StyleCollection = function () {
+    }
+
+    IFNode.inherit("styleCollection", IFScene.StyleCollection, IFStyleSet);
+
+    /** @override */
+    IFScene.StyleCollection.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFScene;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFScene Class
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @type {IFScene.StyleCollection}
+     * @private
+     */
+    IFScene._styleCollection = null;
+
+    /**
+     * Returns the style-collection of this scene
+     * @returns {IFScene.StyleCollection}
+     */
+    IFScene.prototype.getStyleCollection = function () {
+        // If we have a _styleCollection reference and it not
+        // has ourself as a parent, then clear it, first
+        if (this._styleCollection && this._styleCollection.getParent() !== this) {
+            this._styleCollection = null;
+        }
+
+        if (!this._styleCollection) {
+            // Find our style-collection and save reference for faster access
+            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
+                if (child instanceof IFScene.StyleCollection) {
+                    this._styleCollection = child;
+                    break;
+                }
+            }
+        }
+
+        if (!this._styleCollection) {
+            this._styleCollection = new IFScene.StyleCollection();
+            this.appendChild(this._styleCollection);
+        }
+
+        return this._styleCollection;
+    };
+    
     /** @override */
     IFScene.prototype.store = function (blob) {
         if (IFNode.Store.prototype.store.call(this, blob)) {

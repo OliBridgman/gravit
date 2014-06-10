@@ -48,8 +48,9 @@
      * pre-filled with the given vertex source.
      * @param {IFPaintCanvas} canvas the canvas used for painting
      * @param {IFVertexSource} source the vertex source used for painting
+     * @param {GRect} bbox the bbox used for painting
      */
-    IFPaintEntry.prototype.paint = function (canvas, source) {
+    IFPaintEntry.prototype.paint = function (canvas, source, bbox) {
         throw new Error("Not Supported");
     };
 

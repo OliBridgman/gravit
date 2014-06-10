@@ -326,12 +326,15 @@
      */
     IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
         if (context.configuration.isRasterEffects(context)) {
-            var styleOpacity = style.getProperty('opc');
-            var styleCmpOp = style.getProperty('cmp');
+            var styleOpacity = 1.0;
+            var styleCmpOp = IFPaintCanvas.CompositeOperator.SourceOver;
 
-            // If style has other than default cmp operator or opacity we need a separate canvas
-            var needContentsCanvas = styleOpacity !== IFStyle.VisualProperties.cmp ||
-                styleCmpOp !== IFStyle.VisualProperties.opc;
+            if (style instanceof IFAppliedStyle) {
+                styleOpacity = style.getProperty('opc');
+                styleCmpOp = style.getProperty('cmp');
+            }
+
+            var needContentsCanvas = styleOpacity !== 1.0 || styleCmpOp !== IFPaintCanvas.CompositeOperator.SourceOver;
 
             var hasRenderedContents = false;
 
@@ -340,7 +343,7 @@
             var filters = [];
 
 
-            for (var child = style.getFirstChild(); child !== null; child = child.getNext()) {
+            for (var child = style.getActualStyle().getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
                     if (child instanceof IFEffectEntry) {
                         effects.push(child);
