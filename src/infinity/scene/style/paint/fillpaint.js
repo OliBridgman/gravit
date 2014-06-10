@@ -13,11 +13,6 @@
     IFNode.inherit('fillPaint', IFFillPaint, IFPatternPaint);
 
     /** @override */
-    IFFillPaint.prototype.getStackIndex = function () {
-        return 0;
-    };
-
-    /** @override */
     IFFillPaint.prototype.hitTest = function (source, location, transform, tolerance) {
         var vertexHit = new IFVertexInfo.HitResult();
         if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), tolerance, true, vertexHit)) {

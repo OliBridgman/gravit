@@ -37,13 +37,7 @@
      * @type {JQuery}
      * @private
      */
-    GStylePalette.prototype._fillsPanel = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GStylePalette.prototype._bordersPanel = null;
+    GStylePalette.prototype._patternsPanel = null;
 
     /**
      * @type {JQuery}
@@ -113,22 +107,13 @@
             .addClass('style-selector')
             .appendTo(this._htmlElement);
 
-        // Fill section
-        this._fillsPanel = $('<div></div>')
-            .addClass('fill-panel')
+        // Patterns section
+        this._patternsPanel = $('<div></div>')
+            .addClass('patterns-panel')
             .append($('<h1></h1>')
                 .addClass('g-divider')
                 // TODO : I18N
-                .text('Fills'))
-            .appendTo(this._htmlElement);
-
-        // Border section
-        this._bordersPanel = $('<div></div>')
-            .addClass('border-panel')
-            .append($('<h1></h1>')
-                .addClass('g-divider')
-                // TODO : I18N
-                .text('Borders'))
+                .text('Fills & Borders'))
             .appendTo(this._htmlElement);
 
         // Filter section
@@ -171,7 +156,9 @@
             this._document = null;
             this._styleElements = null;
             this._styles = null;
-            this._updateAll();
+            this._selectedStyleIndex = -1;
+            this._updateStyleSelector();
+            this._updateSelectedStyle();
 
             this.trigger(GPalette.UPDATE_EVENT);
         }
@@ -183,7 +170,7 @@
     GStylePalette.prototype._updateFromSelection = function () {
         this._styleElements = null;
         this._styles = null;
-        this._selectedStyleIndex = -1;
+        this._selectedStyleIndex = null; //!null here to enforce refresh later
         var selection = this._document.getEditor().getSelection();
 
         // Figure our available style elements
@@ -234,16 +221,10 @@
         }
 
         // Now let ourself update
-        this._updateAll();
+        this._updateStyleSelector();
 
         // Set default selected style
-        if (this._styles) {
-            this._setSelectedStyle(0);
-        }
-    };
-
-    GStylePalette.prototype._updateAll = function () {
-        this._updateStyleSelector();
+        this._setSelectedStyle(this._styles ? 0 : -1);
     };
 
     GStylePalette.prototype._updateStyleSelector = function () {
@@ -276,10 +257,10 @@
                                 }
                             })))
                     /*TODO
-                    .append($('<div></div>')
-                        .addClass('style-link')
-                        .append($('<span></span>')
-                            .addClass('fa fa-link fa-fw')))*/
+                     .append($('<div></div>')
+                     .addClass('style-link')
+                     .append($('<span></span>')
+                     .addClass('fa fa-link fa-fw')))*/
                     .on('click', function () {
                         this._setSelectedStyle(index);
                     }.bind(this))
@@ -299,6 +280,45 @@
                 $(block)
                     .toggleClass('selected', index === selectedIndex);
             });
+            this._updateSelectedStyle();
+        }
+    };
+
+    GStylePalette.prototype._updateSelectedStyle = function () {
+        this._updatePatterns();
+    };
+
+    GStylePalette.prototype._updatePatterns = function () {
+        var _createFillRow = function (fill) {
+            $('<div></div>')
+                .addClass('pattern-row')
+                .append($('<button></button>')
+                    .gColorButton({
+                        clearColor: false
+                    })
+                    .gColorButton('value', fill.getProperty('pat'))
+                    .on('change', function (evt, color) {
+                        fill.setProperty('pat', color);
+
+                        //self._assignProperty(property, color);
+                    }))
+                .append($('<select></select>'))
+                .append($('<input>'))
+                .appendTo(this._patternsPanel);
+        }.bind(this);
+
+        this._patternsPanel.empty();
+        this._patternsPanel.css('display', 'none');
+
+        if (this._selectedStyleIndex >= 0) {
+            this._patternsPanel.css('display', '');
+            var style = this._styles[this._selectedStyleIndex].getActualStyle();
+
+            for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
+                if (entry instanceof IFFillPaint) {
+                    _createFillRow(entry);
+                }
+            }
         }
     };
 

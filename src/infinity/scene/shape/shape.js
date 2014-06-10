@@ -146,11 +146,6 @@
             }
 
             if (paints) {
-                // Order paints by their stack index, lowest to highest
-                paints.sort(function (a, b) {
-                    return a.getStackIndex() < b.getStackIndex();
-                });
-
                 // Create vertex source and put 'em onto canvas
                 var vertexSource = style.createVertexSource(this);
                 context.canvas.putVertices(vertexSource);

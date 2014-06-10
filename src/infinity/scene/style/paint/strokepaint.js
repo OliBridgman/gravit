@@ -51,11 +51,6 @@
     };
 
     /** @override */
-    IFStrokePaint.prototype.getStackIndex = function () {
-        return 1;
-    };
-
-    /** @override */
     IFStrokePaint.prototype.isSeparate = function () {
         return this.$sa !== IFStrokePaint.Alignment.Center;
     };
