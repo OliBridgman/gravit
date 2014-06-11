@@ -45,7 +45,7 @@
       @include box-sizing(border-box);
       display: table;
       width: 100%;
-      padding: 4px 5px;
+      padding: 6px 5px;
       background: $frameBorderColor;
 
       > div {
@@ -84,12 +84,78 @@
       }
     }
 
-    > .style-entries-panel-content {
-      padding: 5px 5px;
+    > .style-entries-panel-table {
+      border-collapse: separate;
+      width: 100%;
 
-      &.last-visible {
-        margin-bottom: 0px;
+      > tbody {
+        > tr {
+          &:not(:last-child) > td {
+            border-bottom: 1px solid $frame3DShadowColor;
+          }
+
+          &:not(:first-child) > td {
+            border-top: 1px solid $frame3DLightColor;
+          }
+
+          > td {
+            padding: 5px 0px;
+            vertical-align: middle;
+
+            &.drag-slider {
+              background: $frameBorderColor;
+            }
+
+            &.visibility {
+              text-align: center;
+
+              &, * {
+                cursor: pointer;
+              }
+            }
+
+            &.contents {
+              padding-right: 5px;
+            }
+          }
+        }
       }
+
+      /*
+
+      .style-entry-row {
+        display: table-row;
+
+        > div {
+          display: table-cell;
+          vertical-align: middle;
+          padding: 3px 0px;
+        }
+
+        &:not(:last-child) > div {
+        }
+
+        > div.drag-slider {
+          background: $frameDarkColor;
+          padding-right: 5px;
+          cursor: url('cursor/hand-open.cur'), auto;
+        }
+
+        > div.visibility {
+          padding-left: 5px;
+          padding-right: 5px;
+
+          &, * {
+            cursor: pointer;
+          }
+        }
+
+        > div.contents {
+          width: 100%;
+          padding-right: 5px;
+        }
+      }
+      */
     }
   }
 }

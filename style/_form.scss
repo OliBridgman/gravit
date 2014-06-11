@@ -159,3 +159,70 @@ input[type=radio] {
   border-radius: 2em;
   bottom: 2px;
 }
+
+/** Switch */
+.g-switch {
+  position: relative;
+  display: inline-block;
+  border: 1px solid $frameDarkColor;
+
+  &:not(:last-child) {
+    margin-right: 3px;
+  }
+
+  &, * {
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+  }
+
+  label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .switch {
+    display: block;
+    width: 200%;
+    margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s;
+    -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s;
+    transition: margin 0.3s ease-in 0s;
+  }
+
+  .switch:before,
+  .switch:after {
+    display: block;
+    float: left;
+    width: 50%;
+    margin: 0px;
+    padding: 4px;
+    color: $textColor;
+    line-height: 1em;
+    vertical-align: middle;
+    text-align: center;
+    //text-transform: uppercase;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .switch:before {
+    content: attr(data-on);
+    background-color: $frameDarkColor;
+  }
+
+  .switch:after {
+    content: attr(data-off);
+    background: $frameColor;
+  }
+
+  input[type="checkbox"]:checked + .switch {
+    margin-left: 0;
+  }
+}

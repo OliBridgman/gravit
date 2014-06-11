@@ -70,16 +70,24 @@
                         self._assignProperty(property, $(this).val());
                     });
             } else if (property === 'aw') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-property', property)
-                        .on('change', function () {
-                            self._assignProperty(property, $(this).is(':checked'));
-                        }))
-                    .append($('<span></span>')
-                        // TODO : I18N
-                        .html('&nbsp;Auto-Width'))
+
+                return $('<div></div>')
+                    .css('width', '8em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-property', property)
+                            .on('change', function () {
+                                self._assignProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'Auto Width',
+                                'data-off': 'Fixed Width'
+                            })));
             } else if (property === 'ff') {
                 var select = $('<select></select>')
                     .css('width', '100%')
@@ -254,8 +262,9 @@
                     // TODO : I18N
                     .text('Box:'))
                 .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('vb'))
+                    .append(_createInput('vb')))
+                .append($('<td></td>')
+                    .attr('colspan', '2')
                     .append(_createInput('aw'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')

@@ -42,16 +42,24 @@
         var _createInput = function (property) {
             var self = this;
             if (property === 'uf') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-property', 'uniform-corners')
-                        .on('change', function () {
-                            self._assignProperty('uf', $(this).is(':checked'));
-                            self._updateCornerProperties();
-                        }))
-                    .append($('<span></span>')
-                        .html('&nbsp;Uniform Corners'));
+                return $('<div></div>')
+                    .css('width', '12em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-property', property)
+                            .on('change', function () {
+                                self._assignProperty('uf', $(this).is(':checked'));
+                                self._updateCornerProperties();
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'Uniform Corners',
+                                'data-off': 'Separate Corners'
+                            })));
             }
             else if (property === 'tl_sx' || property === 'tl_sy' || property === 'tr_sx' || property === 'tr_sy' ||
                 property === 'bl_sx' || property === 'bl_sy' || property === 'br_sx' || property === 'br_sy') {
@@ -243,7 +251,7 @@
             }
         }.bind(this);
 
-        this._panel.find('input[data-property="uniform-corners"]').prop('checked', allUniform);
+        this._panel.find('input[data-property="uf"]').prop('checked', allUniform);
         _updateCorners(['tl', 'tr', 'bl', 'br']);
     };
 

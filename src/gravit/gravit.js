@@ -137,6 +137,12 @@
             new GPageProperties()
         );
 
+        // Register default style entries
+        gravit.styleEntries.push(
+            new GFillPaintEntry(),
+            new GStrokePaintEntry()
+        );
+
         // Register default actions
         gravit.actions = gravit.actions.concat(this._createDefaultActions());
     };

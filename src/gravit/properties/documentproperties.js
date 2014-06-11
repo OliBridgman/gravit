@@ -56,16 +56,23 @@
                         }
                     });
             } else if (property === 'gridActive') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-property', property)
-                        .on('change', function () {
-                            self._assignProperty(property, $(this).is(':checked'));
-                        }))
-                    .append($('<span></span>')
-                        // TODO : I18N
-                        .html('&nbsp;Active'))
+                return $('<div></div>')
+                    .css('width', '4em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-property', property)
+                            .on('change', function () {
+                                self._assignProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'On',
+                                'data-off': 'Off'
+                            })));
             } else if (property === 'crDistSmall' || property === 'crDistBig') {
                 return $('<input>')
                     .attr('type', 'text')

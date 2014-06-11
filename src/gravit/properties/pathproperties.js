@@ -47,17 +47,24 @@
 
         var _createPathInput = function (property) {
             var self = this;
-            if (property === 'evenodd' || property === 'closed') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-path-property', property)
-                        .on('change', function () {
-                            self._assignPathProperty(property, $(this).is(':checked'));
-                        }))
-                    .append($('<span></span>')
-                        // TODO : I18N
-                        .html('&nbsp;' + (property === 'evenodd' ? 'Even/odd' : 'Closed')))
+            if (property === 'evenodd' || property === 'closed') {
+                return $('<div></div>')
+                    .css('width', '6em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-path-property', property)
+                            .on('change', function () {
+                                self._assignPathProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': property === 'closed' ? 'Closed' : 'Even Fill',
+                                'data-off': property === 'closed' ? 'Open' : 'Odd Fill'
+                            })));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -113,16 +120,23 @@
                         self._assignPointProperty('tp', val);
                     });
             } else if (property === 'ah') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-point-property', property)
-                        .on('change', function () {
-                            self._assignPointProperty(property, $(this).is(':checked'));
-                        }))
-                    .append($('<span></span>')
-                        // TODO : I18N
-                        .html('&nbsp;Automatic'))
+                return $('<div></div>')
+                    .css('width', '4.5em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-point-property', property)
+                            .on('change', function () {
+                                self._assignPointProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'Auto',
+                                'data-off': 'Off'
+                            })));
             } else if (property === 'cu') {
                 return $('<button></button>')
                     .addClass('g-flat')
@@ -146,11 +160,8 @@
                     .addClass('label')
                     .html('&nbsp;'))
                 .append($('<td></td>')
-                    .append(_createPathInput('evenodd')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('&nbsp;'))
-                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createPathInput('evenodd'))
                     .append(_createPathInput('closed'))))
             .append($('<tr></tr>')
                 .attr('data-point-property', '_row')

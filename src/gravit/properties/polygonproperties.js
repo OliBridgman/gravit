@@ -59,16 +59,23 @@
                         }
                     });
             } else if (property === 'evenodd') {
-                return $('<label></label>')
-                    .append($('<input>')
-                        .attr('type', 'checkbox')
-                        .attr('data-property', 'evenodd')
-                        .on('change', function () {
-                            self._assignProperty(property, $(this).is(':checked'));
-                        }))
-                    .append($('<span></span>')
-                        // TODO : I18N
-                        .html('&nbsp;Even/odd'))
+                return $('<div></div>')
+                    .css('width', '6em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-property', property)
+                            .on('change', function () {
+                                self._assignProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'Even Fill',
+                                'data-off': 'Odd Fill'
+                            })));
             } else if (property === 'ir' || property === 'or') {
                 return $('<input>')
                     .attr('type', 'text')
