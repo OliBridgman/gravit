@@ -101,15 +101,12 @@
           > td {
             padding: 5px 0px;
             vertical-align: middle;
-
-            &.drag-slider {
-              background: $frameBorderColor;
-            }
+            background: $frameColor;
 
             &.visibility {
               text-align: center;
 
-              &, * {
+              > span {
                 cursor: pointer;
               }
             }
@@ -118,44 +115,23 @@
               padding-right: 5px;
             }
           }
-        }
-      }
 
-      /*
-
-      .style-entry-row {
-        display: table-row;
-
-        > div {
-          display: table-cell;
-          vertical-align: middle;
-          padding: 3px 0px;
-        }
-
-        &:not(:last-child) > div {
-        }
-
-        > div.drag-slider {
-          background: $frameDarkColor;
-          padding-right: 5px;
-          cursor: url('cursor/hand-open.cur'), auto;
-        }
-
-        > div.visibility {
-          padding-left: 5px;
-          padding-right: 5px;
-
-          &, * {
+          &.drag {
+            opacity: 0.5 !important;
             cursor: pointer;
           }
-        }
 
-        > div.contents {
-          width: 100%;
-          padding-right: 5px;
+          &.drop {
+            > td {
+              background: $selectedColor;
+
+              * {
+                pointer-events: none;
+              }
+            }
+          }
         }
       }
-      */
     }
   }
 }
