@@ -67,7 +67,7 @@
             // Save source canvas, exchange it with pixel content canvas and paint the scene
             var sourceCanvas = context.canvas;
             context.canvas = this._pixelContentCanvas;
-            this._view.getScene().paint(context);
+            this._view.getScene().render(context);
             this._pixelContentCanvas.finish();
 
             // Now render our pixel content canvas at the given scale on our source canvas
