@@ -1,7 +1,7 @@
 (function (_) {
 
     /**
-     * A set of styles
+     * A set of styles appended to elements
      * @class IFStyleSet
      * @extends IFNode
      * @mixes IFNode.Container
@@ -59,6 +59,24 @@
             }
         }
         return null;
+    };
+
+    /** @override */
+    IFStyleSet.prototype._handleChange = function (change, args) {
+        var parent = this.getParent();
+        if (parent && parent instanceof IFElement) {
+            if (change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) {
+                if (args instanceof IFStyle) {
+                    parent._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+                }
+            } else if (change == IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) {
+                if (args instanceof IFStyle) {
+                    parent._notifyChange(IFElement._Change.FinishGeometryUpdate);
+                }
+            }
+        }
+
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

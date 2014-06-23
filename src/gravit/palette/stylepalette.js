@@ -38,6 +38,30 @@
      * @type {JQuery}
      * @private
      */
+    GStylePalette.prototype._styleVisibilityToggleControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GStylePalette.prototype._styleLinkToggleControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GStylePalette.prototype._styleDeleteControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GStylePalette.prototype._styleAddControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
     GStylePalette.prototype._styleSelector = null;
 
     /**
@@ -116,28 +140,39 @@
         this._htmlElement = htmlElement;
 
         // Init controls
-        $('<button></button>')
-            .addClass('fa fa-fw fa-plus')
-            // TODO : I18N
-            .attr('title', 'Add new style')
+        this._styleVisibilityToggleControl = $('<button></button>')
+            .addClass('fa fa-fw')
+            .on('click', function (evt) {
+                var makeVisible = $(evt.target).hasClass('fa-eye');
+                this._modifyEachSelectedStyle(function (style) {
+                    style.setProperty('vs', makeVisible);
+                });
+            }.bind(this))
+            .appendTo(controls);
+
+        this._styleLinkToggleControl = $('<button></button>')
+            .addClass('fa fa-fw')
             .on('click', function () {
                 // TODO
             }.bind(this))
             .appendTo(controls);
 
-        $('<button></button>')
-            .addClass('fa fa-fw fa-link')
-            // TODO : I18N
-            .attr('title', 'Add linked style')
-            .on('click', function () {
-                // TODO
-            }.bind(this))
-            .appendTo(controls);
-
-        $('<button></button>')
+        this._styleDeleteControl = $('<button></button>')
             .addClass('fa fa-fw fa-trash-o')
             // TODO : I18N
-            .attr('title', 'Remove selected style')
+            .attr('title', 'Remove style')
+            .on('click', function () {
+                this._modifyEachSelectedStyle(function (style) {
+                    style.getParent().removeChild(style);
+                });
+            }.bind(this))
+            .appendTo(controls);
+
+        this._styleAddControl = $('<button></button>')
+            .addClass('fa fa-fw fa-plus')
+            .css('margin-left', '5px')
+            // TODO : I18N
+            .attr('title', 'Add new style')
             .on('click', function () {
                 // TODO
             }.bind(this))
@@ -373,7 +408,7 @@
                 this._removeEntryRow(evt.node);
             }
         } else if (evt.node instanceof IFStyle) {
-            // TODO
+            this._removeStyle(evt.node);
         }
     };
 
@@ -498,37 +533,10 @@
                     .append($('<img>')
                         .addClass('style-preview')
                         .attr('src', style.createPreviewImage(36, 36)))
-                    .append($('<div></div>')
-                        .addClass('style-visible')
-                        .append($('<span></span>')
-                            .addClass('fa fa-fw ' + (style.getProperty('vs') ? 'fa-circle' : 'fa-circle-o'))
-                            .on('click', function (evt) {
-                                var $this = $(evt.target);
-                                evt.stopPropagation();
-                                if (style.getProperty('vs') === true) {
-                                    this._modifyEachSelectedStyle(function (style) {
-                                        style.setProperty('vs', false);
-                                    }, index);
-
-                                    $this.removeClass('fa-circle');
-                                    $this.addClass('fa-circle-o');
-                                } else {
-                                    this._modifyEachSelectedStyle(function (style) {
-                                        style.setProperty('vs', true);
-                                    }, index);
-
-                                    $this.removeClass('fa-circle-o');
-                                    $this.addClass('fa-circle');
-                                }
-                            }.bind(this))))
-                    /*TODO
-                     .append($('<div></div>')
-                     .addClass('style-link')
-                     .append($('<span></span>')
-                     .addClass('fa fa-link fa-fw')))*/
                     .on('click', function () {
                         this._setSelectedStyle(index);
                     }.bind(this))
+                    .data('style', style)
                     .appendTo(this._styleSelector);
             }.bind(this);
 
@@ -579,6 +587,54 @@
         }
     };
 
+    GStylePalette.prototype._insertStyle = function (style) {
+
+    };
+
+    GStylePalette.prototype._removeStyle = function (style) {
+        if (this._styles) {
+            var styleIndex = null;
+
+            for (var i = 0; i < this._styles.length; ++i) {
+                for (var j = 0; j < this._styles[i].length; ++j) {
+                    if (this._styles[i][j] === style) {
+                        styleIndex = i;
+                        break;
+                    }
+                }
+
+                if (styleIndex !== null) {
+                    // Remove from style selector
+                    this._styleSelector.find('.style-block').each(function (index, element) {
+                        var $element = $(element);
+                        for (var j = 0; j < this._styles[styleIndex].length; ++j) {
+                            if ($element.data('style') === this._styles[styleIndex][j]) {
+                                $element.remove();
+                                return false;
+                            }
+                        }
+                    }.bind(this));
+
+                    // Remove from styles
+                    this._styles.splice(styleIndex, 1);
+
+                    // Update selected style if active
+                    if (styleIndex === this._selectedStyleIndex) {
+                        this._setSelectedStyle(this._styles.length > 0 ? 0 : -1);
+                    }
+
+                    // Update style selector when there's no styles
+                    if (this._styles.length === 0) {
+                        this._styles = null;
+                        this._updateStyleSelector();
+                    }
+
+                    break;
+                }
+            }
+        }
+    };
+
     GStylePalette.prototype._removeHiddenEntries = function (entryClasses) {
         this._modifyEachSelectedStyle(function (style) {
             var style = style.getActualStyle();
@@ -608,10 +664,30 @@
 
     GStylePalette.prototype._updateStyleSettings = function () {
         this._styleSettings.css('display', 'none');
+        this._styleVisibilityToggleControl.css('display', 'none');
+        this._styleLinkToggleControl.css('display', 'none');
+        this._styleDeleteControl.prop('disabled', true);
+        this._styleAddControl.prop('disabled', this._styleElements === null || this._styleElements.length === 0);
 
         if (this._selectedStyleIndex >= 0) {
             this._styleSettings.css('display', '');
             var style = this._styles[this._selectedStyleIndex][0];
+
+            this._styleVisibilityToggleControl
+                .toggleClass('fa-eye', style.getProperty('vs') == false)
+                .toggleClass('fa-eye-slash', style.getProperty('vs') == true)
+                // TODO : I18N
+                .attr('title', style.getProperty('vs') ? 'Hide style' : 'Show style')
+                .css('display', '');
+
+            this._styleLinkToggleControl
+                .toggleClass('fa-link', !(style instanceof IFLinkedStyle))
+                .toggleClass('fa-unlink', style instanceof IFLinkedStyle)
+                // TODO : I18N
+                .attr('title', style instanceof IFLinkedStyle ? 'Unlink style' : 'Link style')
+                .css('display', '');
+
+            this._styleDeleteControl.prop('disabled', false);
 
             this._styleSettings.find('[data-property="blm"]').val(style.getProperty('blm'));
             this._styleSettings.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100));
