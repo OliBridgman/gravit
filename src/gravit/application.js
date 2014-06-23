@@ -7,15 +7,19 @@
      * @version 1.0
      */
     function GApplication() {
+        this._actions = [];
+        this._toolManager = new IFToolManager();
+        this._documents = [];
+        this._windowMenuMap = [];
+
         document.addEventListener("touchstart", this._touchHandler, true);
         document.addEventListener("touchmove", this._touchHandler, true);
         document.addEventListener("touchend", this._touchHandler, true);
         document.addEventListener("touchcancel", this._touchHandler, true);
 
-        this._actions = [];
-        this._toolManager = new IFToolManager();
-        this._documents = [];
-        this._windowMenuMap = [];
+        window.onerror = function(message, url, line) {
+            prompt('Sorry, an error ocurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
+        };
 
         // This is a hack to focus our active window
         // whenever a key is hit down (in capture phase) and
