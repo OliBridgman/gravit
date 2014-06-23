@@ -64,6 +64,10 @@
     /** @override */
     IFStyleSet.prototype._handleChange = function (change, args) {
         var parent = this.getParent();
+
+        // If our parent is an element we need to ensure to trigger updates on adding/removing styles,
+        // otherwise if our direct parent is not an element (i.e. the scene style collection) we'll
+        // completely ignore this handling
         if (parent && parent instanceof IFElement) {
             if (change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) {
                 if (args instanceof IFStyle) {

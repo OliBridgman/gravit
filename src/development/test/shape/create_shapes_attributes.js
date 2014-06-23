@@ -1,6 +1,7 @@
 (function () {
     function test(scene, page, layer, view) {
         var sharedStyle_1 = new IFSharedStyle();
+        sharedStyle_1.setProperty('name', 'Base Stroking');
         var stroke = new IFStrokePaint();
         stroke.setProperties(['sw', 'sa'], [15, IFStrokePaint.Alignment.Inside]);
         sharedStyle_1.appendChild(stroke);
@@ -15,6 +16,7 @@
         var sharedStyle_3 = new IFSharedStyle();
         var fill = new IFFillPaint();
         fill.setProperty('pat', IFColor.parseCSSColor('red'));
+        sharedStyle_3.setProperty('name', 'A red fill style');
         sharedStyle_3.appendChild(fill);
 
         scene.getStyleCollection().appendChild(sharedStyle_1);

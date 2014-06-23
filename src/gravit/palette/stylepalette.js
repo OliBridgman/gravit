@@ -145,32 +145,66 @@
             .css('margin-right', '5px')
             // TODO : I18N
             .attr('title', 'Add new style')
-            .on('click', function () {
-                // TODO : Chooser panel
-                var styleIndex = -1;
-                var editor = this._document.getEditor();
-                editor.beginTransaction();
-                try {
-                    for (var i = 0; i < this._styleElements.length; ++i) {
-                        var style = new IFInlineStyle();
-                        this._styleElements[i].getStyleSet().appendChild(style);
+            .on('click', function (evt) {
+                $('<div></div>')
+                    .css({
+                        'width': '250px'
+                    })
+                    .gStylePanel({
+                        styleSet: this._document.getScene().getStyleCollection(),
+                        nullStyle: $('<span></span>')
+                            .addClass('fa fa-plus-circle')
+                            .css({
+                                'font-size': '24px',
+                                'position': 'absolute',
+                                'display': 'block',
+                                'top': '50%',
+                                'left': '0px',
+                                'right': '0px',
+                                'margin-top': '-12px',
+                                'text-align': 'center'
+                            })
+                    })
+                    .gOverlay({
+                        releaseOnClose: true
+                    })
+                    .gOverlay('open', evt.target)
+                    .on('change', function (evt, style) {
+                        $(evt.target).gOverlay('close');
 
-                        if (styleIndex < 0) {
-                            styleIndex = this._getStyleIndex(style);
-                            this._setSelectedStyle(styleIndex);
+                        var styleIndex = -1;
+                        var editor = this._document.getEditor();
+                        editor.beginTransaction();
+                        try {
+                            for (var i = 0; i < this._styleElements.length; ++i) {
+                                var appliedStyle = null;
+
+                                if (style) {
+                                    appliedStyle = new IFLinkedStyle();
+                                    appliedStyle.setProperty('ref', style.getReferenceId());
+                                } else {
+                                    appliedStyle = new IFInlineStyle();
+                                }
+
+                                this._styleElements[i].getStyleSet().appendChild(appliedStyle);
+
+                                if (styleIndex < 0) {
+                                    styleIndex = this._getStyleIndex(appliedStyle);
+                                    this._setSelectedStyle(styleIndex);
+                                }
+                            }
+                        } finally {
+                            // TODO : I18N
+                            editor.commitTransaction('Add Style');
                         }
-                    }
-                } finally {
-                    // TODO : I18N
-                    editor.commitTransaction('Add Style');
-                }
+                    }.bind(this));
             }.bind(this))
             .appendTo(controls);
 
         this._styleVisibilityToggleControl = $('<button></button>')
             .addClass('fa fa-fw')
             .on('click', function (evt) {
-                var makeVisible = $(evt.target).hasClass('fa-eye');
+                var makeVisible = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
                 this._modifyEachSelectedStyle(function (style) {
                     style.setProperty('vs', makeVisible);
                 });
@@ -180,7 +214,11 @@
         this._styleLinkToggleControl = $('<button></button>')
             .addClass('fa fa-fw')
             .on('click', function () {
-                // TODO
+                //var activeStyle = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
+
+                // TODO : I18N
+                var name = prompt('Enter a name for the new style. Not providing a name will remove the style when it is no longer in use.', '');
+
             }.bind(this))
             .appendTo(controls);
 
@@ -192,11 +230,12 @@
                 var editor = this._document.getEditor();
                 editor.beginTransaction();
                 try {
-                    for (var i = 0; i < this._styles.length; ++i) {
-                        var styles = this._styles[i];
-                        for (var j = 0; j < styles.length; ++j) {
-                            if (styles[j].getProperty('vs') === false) {
-                                styles[j].getParent().removeChild(styles[j]);
+                    var styles = this._styles.slice();
+                    for (var i = 0; i < styles.length; ++i) {
+                        var style = styles[i].slice();
+                        for (var j = 0; j < style.length; ++j) {
+                            if (style[j].getProperty('vs') === false) {
+                                style[j].getParent().removeChild(style[j]);
                             }
                         }
                     }
@@ -461,7 +500,7 @@
     GStylePalette.prototype._updateFromSelection = function () {
         this._styleElements = null;
         this._styles = null;
-        this._selectedStyleIndex = null; //!null here to enforce refresh later
+        this._selectedStyleIndex = -1;
         var selection = this._document.getEditor().getSelection();
 
         // Figure our available style elements
@@ -485,19 +524,19 @@
             this._insertStyles();
         }
 
-        // Set default selected style
-        this._setSelectedStyle(this._styles ? 0 : -1);
+        // Reset style selection if there're no styles
+        if (!this._styles) {
+            this._setSelectedStyle(-1);
+        }
     };
 
     GStylePalette.prototype._setSelectedStyle = function (selectedIndex) {
-        if (selectedIndex !== this._selectedStyleIndex) {
-            this._selectedStyleIndex = selectedIndex;
-            this._styleSelector.find('.style-block').each(function (index, block) {
-                $(block)
-                    .toggleClass('selected', index === selectedIndex);
-            });
-            this._updateSelectedStyle();
-        }
+        this._selectedStyleIndex = selectedIndex;
+        this._styleSelector.find('.style-block').each(function (index, block) {
+            $(block)
+                .toggleClass('selected', index === selectedIndex);
+        });
+        this._updateSelectedStyle();
     };
 
     GStylePalette.prototype._modifyEachSelectedStyle = function (modifier, styleIndex) {
@@ -515,7 +554,7 @@
 
     GStylePalette.prototype._visitEachSelectedStyle = function (visitor, styleIndex) {
         if (typeof styleIndex === 'number' || this._selectedStyleIndex >= 0) {
-            var style = this._styles[this._selectedStyleIndex >= 0 ? this._selectedStyleIndex : styleIndex];
+            var style = this._styles[this._selectedStyleIndex >= 0 ? this._selectedStyleIndex : styleIndex].slice();
             for (var i = 0; i < style.length; ++i) {
                 visitor(style[i]);
             }
@@ -652,6 +691,11 @@
                 }
             }
         }
+
+        // Make default selection if there's none yet
+        if (this._selectedStyleIndex < 0 && this._styles && this._styles.length > 0) {
+            this._setSelectedStyle(0);
+        }
     };
 
     GStylePalette.prototype._removeStyle = function (style) {
@@ -682,6 +726,8 @@
                     // Update selected style if active
                     if (styleIndex === this._selectedStyleIndex) {
                         this._setSelectedStyle(this._styles.length > 0 ? 0 : -1);
+                    } else if (styleIndex < this._selectedStyleIndex) {
+                        this._selectedStyleIndex -= 1;
                     }
 
                     // Update style selector when there's no styles

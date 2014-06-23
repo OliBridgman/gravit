@@ -30,6 +30,7 @@
                 }
 
                 var colorpanel = $('<div></div>')
+                    .css('padding', '5px')
                     .gColorPanel(options)
                     .gOverlay()
                     .on('change', function (evt, color) {

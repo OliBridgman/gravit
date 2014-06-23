@@ -1,20 +1,27 @@
 (function ($) {
+    var openOverlayStack = [];
+
+    document.addEventListener('keydown', function (evt) {
+        if (openOverlayStack.length > 0) {
+            if (evt.keyCode === 27) {
+                openOverlayStack[openOverlayStack.length - 1].gOverlay('close');
+            }
+        }
+    });
+
     var methods = {
         init: function (options) {
             var self = this;
 
             options = $.extend({
-                // Default vertical position
-                defaultVertical : 'start',
-                // Default horizontal position
-                defaultHorizontal : 'start'
+                // Whether to release on close or just detach
+                releaseOnClose: false
             }, options);
 
             return this.each(function () {
                 var $this = $(this)
                     .data('goverlay', {
-                        vertical : options.defaultVertical,
-                        horizontal : options.defaultHorizontal
+                        releaseOnClose: options.releaseOnClose
                     });
 
                 var overlay = $('<div></div>')
@@ -33,7 +40,7 @@
             });
         },
 
-        open: function (target, vertical, horizontal) {
+        open: function (target) {
             var $this = $(this);
             var data = $this.data('goverlay');
 
@@ -47,28 +54,54 @@
             var containerHeight = container.outerHeight();
             var $target = $(target);
             var offset = $target.offset();
-            var top = (offset.top + $target.outerHeight());
+            var top = offset.top;
             var left = offset.left;
+            var right = offset.left + $target.outerWidth();
+            var bottom = offset.top +  + $target.outerHeight();
 
-            // Normalize position to not run out of screen
-            // TODO : Make this more solid + honor vertical / horizontal + merge with menus
-            if (left + containerWidth > windowWidth) {
-                left = windowWidth - containerWidth;
+            // By default we try to position at left-bottom
+            // but need to check whether we run out of window
+            // and eventually adjust positioning
+            var x = left;
+            var y = bottom;
+
+            if (x + containerWidth > windowWidth) {
+                x = right - containerWidth;
             }
-            if (top + containerHeight > windowHeight) {
-                top = windowHeight - containerHeight;
+            if (x + containerWidth > windowWidth) {
+                x = windowWidth - containerWidth;
+            }
+
+            if (y + containerHeight > windowHeight) {
+                y = top - containerHeight;
+            }
+            if (y + containerHeight > windowHeight) {
+                y = windowHeight - containerHeight;
             }
 
             container
-                .css('top', top + 'px')
-                .css('left', left + 'px');
+                .css('left', x + 'px')
+                .css('top', y + 'px');
+
+            openOverlayStack.push($this);
 
             return this;
         },
 
         close: function () {
             var $this = $(this);
-            $this.parents('.g-modal-background').detach();
+            var data = $this.data('goverlay');
+
+            this.trigger('close');
+
+            if (data.releaseOnClose) {
+                $this.parents('.g-modal-background').remove();
+            } else {
+                $this.parents('.g-modal-background').detach();
+            }
+
+            openOverlayStack.pop();
+
             return this;
         }
     };
