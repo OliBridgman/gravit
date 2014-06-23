@@ -140,6 +140,33 @@
         this._htmlElement = htmlElement;
 
         // Init controls
+        this._styleAddControl = $('<button></button>')
+            .addClass('fa fa-fw fa-plus')
+            .css('margin-right', '5px')
+            // TODO : I18N
+            .attr('title', 'Add new style')
+            .on('click', function () {
+                // TODO : Chooser panel
+                var styleIndex = -1;
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    for (var i = 0; i < this._styleElements.length; ++i) {
+                        var style = new IFInlineStyle();
+                        this._styleElements[i].getStyleSet().appendChild(style);
+
+                        if (styleIndex < 0) {
+                            styleIndex = this._getStyleIndex(style);
+                            this._setSelectedStyle(styleIndex);
+                        }
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Add Style');
+                }
+            }.bind(this))
+            .appendTo(controls);
+
         this._styleVisibilityToggleControl = $('<button></button>')
             .addClass('fa fa-fw')
             .on('click', function (evt) {
@@ -160,21 +187,23 @@
         this._styleDeleteControl = $('<button></button>')
             .addClass('fa fa-fw fa-trash-o')
             // TODO : I18N
-            .attr('title', 'Remove style')
+            .attr('title', 'Remove hidden styles')
             .on('click', function () {
-                this._modifyEachSelectedStyle(function (style) {
-                    style.getParent().removeChild(style);
-                });
-            }.bind(this))
-            .appendTo(controls);
-
-        this._styleAddControl = $('<button></button>')
-            .addClass('fa fa-fw fa-plus')
-            .css('margin-left', '5px')
-            // TODO : I18N
-            .attr('title', 'Add new style')
-            .on('click', function () {
-                // TODO
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    for (var i = 0; i < this._styles.length; ++i) {
+                        var styles = this._styles[i];
+                        for (var j = 0; j < styles.length; ++j) {
+                            if (styles[j].getProperty('vs') === false) {
+                                styles[j].getParent().removeChild(styles[j]);
+                            }
+                        }
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Removed Hidden Styles');
+                }
             }.bind(this))
             .appendTo(controls);
 
@@ -375,7 +404,6 @@
             this._styleElements = null;
             this._styles = null;
             this._selectedStyleIndex = -1;
-            this._updateStyleSelector();
             this._updateSelectedStyle();
 
             this.trigger(GPalette.UPDATE_EVENT);
@@ -393,7 +421,7 @@
                 this._insertEntryRow(evt.node);
             }
         } else if (evt.node instanceof IFStyle) {
-            // TODO
+            this._insertStyles(evt.node);
         }
     };
 
@@ -449,102 +477,16 @@
                 }
             }
         }
+
+        // Clear style selector
+        this._styleSelector.empty();
+
         if (this._styleElements) {
-            if (this._styleElements.length === 1) {
-                // Easy-peacy, add all styles from element
-                var styleSet = this._styleElements[0].getStyleSet();
-                for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
-                    if (node instanceof IFStyle) {
-                        if (!this._styles) {
-                            this._styles = [];
-                        }
-                        this._styles.push([node]);
-                    }
-                }
-            } else {
-                // Iterate and add the first, non-linked style as default one
-                // as well as add all linked styles that are common to _all_ elements
-                var linkedStyles = [];
-                var defaultStyles = [];
-
-                for (var i = 0; i < this._styleElements.length; ++i) {
-                    var styleSet = this._styleElements[i].getStyleSet();
-                    var hasDefaultStyle = false;
-                    for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
-                        if (node instanceof IFLinkedStyle) {
-                            var hasLinkedStyle = false;
-                            for (var j = 0; j < linkedStyles.length; ++j) {
-                                if (linkedStyles[j][0].getProperty('ref') === node.getProperty('ref')) {
-                                    linkedStyles[j].push(node);
-                                    hasLinkedStyle = true;
-                                    break;
-                                }
-                            }
-
-                            if (!hasLinkedStyle) {
-                                linkedStyles.push([node]);
-                            }
-                        }
-                        else if (node instanceof IFInlineStyle) {
-                            if (!hasDefaultStyle) {
-                                defaultStyles.push(node);
-                            }
-                            hasDefaultStyle = true;
-                        }
-                    }
-                }
-
-                // Add default style if common to all elements
-                if (defaultStyles.length === this._styleElements.length) {
-                    if (!this._styles) {
-                        this._styles = [];
-                    }
-                    this._styles.push(defaultStyles);
-                }
-
-                // Add all linked styles if they're common to all elements
-                for (var i = 0; i < linkedStyles.length; ++i) {
-                    if (linkedStyles[i].length === this._styleElements.length) {
-                        if (!this._styles) {
-                            this._styles = [];
-                        }
-                        this._styles.push(linkedStyles[i]);
-                    }
-                }
-            }
+            this._insertStyles();
         }
-
-        // Now let ourself update
-        this._updateStyleSelector();
 
         // Set default selected style
         this._setSelectedStyle(this._styles ? 0 : -1);
-    };
-
-    GStylePalette.prototype._updateStyleSelector = function () {
-        this._styleSelector
-            .css('display', this._styles ? '' : 'none')
-            .empty();
-
-        if (this._styles) {
-            var _addStyleBlock = function (style, index) {
-                $('<div></div>')
-                    .addClass('style-block')
-                    .append($('<img>')
-                        .addClass('style-preview')
-                        .attr('src', style.createPreviewImage(36, 36)))
-                    .on('click', function () {
-                        this._setSelectedStyle(index);
-                    }.bind(this))
-                    .data('style', style)
-                    .appendTo(this._styleSelector);
-            }.bind(this);
-
-            for (var i = 0; i < this._styles.length; ++i) {
-                var style = this._styles[i][0];
-                _addStyleBlock(style, i);
-            }
-        }
     };
 
     GStylePalette.prototype._setSelectedStyle = function (selectedIndex) {
@@ -581,41 +523,160 @@
     };
 
     GStylePalette.prototype._isSelectedStyle = function (style) {
-        if (this._selectedStyleIndex >= 0) {
-            var selStyle = this._styles[this._selectedStyleIndex];
-            return selStyle.indexOf(style) >= 0;
-        }
+        return this._selectedStyleIndex >= 0 && this._getStyleIndex(style) === this._selectedStyleIndex;
     };
 
-    GStylePalette.prototype._insertStyle = function (style) {
+    GStylePalette.prototype._insertStyles = function (style) {
+        var _addStyleBlock = function (style, index) {
+            var block = $('<div></div>')
+                .addClass('style-block')
+                .append($('<img>')
+                    .addClass('style-preview')
+                    .attr('src', style.createPreviewImage(36, 36)))
+                .on('click', function () {
+                    this._setSelectedStyle(this._getStyleIndex(style));
+                }.bind(this))
+                .data('style', style);
 
-    };
+            if (index >= 0) {
+                block.insertBefore(this._styleSelector.children('.style-block').eq(index));
+            } else {
+                block.appendTo(this._styleSelector);
+            }
+        }.bind(this);
 
-    GStylePalette.prototype._removeStyle = function (style) {
-        if (this._styles) {
-            var styleIndex = null;
+        var _addStyles = function (styles) {
+            var canAddStyles = false;
 
-            for (var i = 0; i < this._styles.length; ++i) {
-                for (var j = 0; j < this._styles[i].length; ++j) {
-                    if (this._styles[i][j] === style) {
-                        styleIndex = i;
+            if (style) {
+                for (var i = 0; i < styles.length; ++i) {
+                    if (styles[i] === style) {
+                        canAddStyles = true;
+                        break;
+                    }
+                }
+            } else {
+                canAddStyles = true;
+            }
+
+            if (canAddStyles && this._styles && this._styles.length > 0) {
+                // Make sure the styles doesn't yet exist in our containers
+                for (var i = 0; i < this._styles.length; ++i) {
+                    if (this._styles[i][0] === styles[0]) {
+                        canAddStyles = false;
+                        break;
+                    }
+                }
+            }
+
+            if (canAddStyles) {
+                // Figure the right insertion point for the style
+                var style = styles[0];
+                var nextStyleIndex = -1;
+                for (var next = style.getNext(); next !== null; next = next.getNext()) {
+                    if (next instanceof IFStyle) {
+                        nextStyleIndex = this._getStyleIndex(next);
                         break;
                     }
                 }
 
-                if (styleIndex !== null) {
-                    // Remove from style selector
-                    this._styleSelector.find('.style-block').each(function (index, element) {
-                        var $element = $(element);
-                        for (var j = 0; j < this._styles[styleIndex].length; ++j) {
-                            if ($element.data('style') === this._styles[styleIndex][j]) {
-                                $element.remove();
-                                return false;
+                if (!this._styles) {
+                    this._styles = [];
+                }
+
+                if (nextStyleIndex >= 0) {
+                    this._styles.splice(nextStyleIndex, 0, styles);
+                } else {
+                    this._styles.push(styles);
+                }
+
+                _addStyleBlock(styles[0], nextStyleIndex);
+            }
+        }.bind(this);
+
+        if (!this._styleElements || this._styleElements.length === 0) {
+            // NO-OP w/o stylable elements
+            return;
+        }
+
+        if (this._styleElements.length === 1) {
+            // Easy-peacy, add all styles from element
+            var styleSet = this._styleElements[0].getStyleSet();
+            for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
+                if (node instanceof IFStyle) {
+                    _addStyles([node]);
+                }
+            }
+        } else {
+            // Iterate and add the first, non-linked style as default one
+            // as well as add all linked styles that are common to _all_ elements
+            var linkedStyles = [];
+            var defaultStyles = [];
+
+            for (var i = 0; i < this._styleElements.length; ++i) {
+                var styleSet = this._styleElements[i].getStyleSet();
+                var hasDefaultStyle = false;
+                for (var node = styleSet.getFirstChild(); node !== null; node = node.getNext()) {
+                    if (node instanceof IFLinkedStyle) {
+                        var hasLinkedStyle = false;
+                        for (var j = 0; j < linkedStyles.length; ++j) {
+                            if (linkedStyles[j][0].getProperty('ref') === node.getProperty('ref')) {
+                                linkedStyles[j].push(node);
+                                hasLinkedStyle = true;
+                                break;
                             }
                         }
-                    }.bind(this));
 
-                    // Remove from styles
+                        if (!hasLinkedStyle) {
+                            linkedStyles.push([node]);
+                        }
+                    }
+                    else if (node instanceof IFInlineStyle) {
+                        if (!hasDefaultStyle) {
+                            defaultStyles.push(node);
+                        }
+                        hasDefaultStyle = true;
+                    }
+                }
+            }
+
+            // Add default style if common to all elements
+            if (defaultStyles.length === this._styleElements.length) {
+                _addStyles(defaultStyles);
+            }
+
+            // Add all linked styles if they're common to all elements
+            for (var i = 0; i < linkedStyles.length; ++i) {
+                if (linkedStyles[i].length === this._styleElements.length) {
+                    _addStyles(linkedStyles[i]);
+                }
+            }
+        }
+    };
+
+    GStylePalette.prototype._removeStyle = function (style) {
+        if (this._styles) {
+            var styleIndex = this._getStyleIndex(style);
+
+            if (styleIndex >= 0) {
+                // Remove from style selector
+                this._styleSelector.find('.style-block').each(function (index, element) {
+                    if (index === styleIndex) {
+                        $(element).remove();
+                        return false;
+                    }
+                });
+
+                // Remove from styles array
+                var styles = this._styles[styleIndex];
+                for (var i = 0; i < styles.length; ++i) {
+                    if (styles[i] === style) {
+                        styles.splice(i, 1);
+                        break;
+                    }
+                }
+
+                if (styles.length === 0) {
                     this._styles.splice(styleIndex, 1);
 
                     // Update selected style if active
@@ -626,13 +687,33 @@
                     // Update style selector when there's no styles
                     if (this._styles.length === 0) {
                         this._styles = null;
-                        this._updateStyleSelector();
+                        this._styleSelector.css('display', 'none');
                     }
-
-                    break;
                 }
             }
         }
+    };
+
+    GStylePalette.prototype._getStyleIndex = function (style) {
+        if (!this._styles || this._styles.length === 0) {
+            return -1;
+        }
+
+        for (var i = 0; i < this._styles.length; ++i) {
+            for (var j = 0; j < this._styles[i].length; ++j) {
+                if (style instanceof IFSharedStyle) {
+                    if (this._styles[i][j] instanceof IFLinkedStyle && this._styles[i][j].getProperty('ref') === style.getReferenceId()) {
+                        return i;
+                    }
+                } else {
+                    if (this._styles[i][j] === style) {
+                        return i;
+                    }
+                }
+            }
+        }
+
+        return -1;
     };
 
     GStylePalette.prototype._removeHiddenEntries = function (entryClasses) {
@@ -658,6 +739,7 @@
     };
 
     GStylePalette.prototype._updateSelectedStyle = function () {
+        this._styleSelector.css('display', this._styles ? '' : 'none');
         this._updateStyleSettings();
         this._updateEntries();
     };
