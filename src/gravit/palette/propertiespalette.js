@@ -69,8 +69,8 @@
     };
 
     /** @override */
-    GPropertiesPalette.prototype.init = function (htmlElement, menu) {
-        GPalette.prototype.init.call(this, htmlElement, menu);
+    GPropertiesPalette.prototype.init = function (htmlElement, menu, controls) {
+        GPalette.prototype.init.call(this, htmlElement, menu, controls);
 
         this._htmlElement = htmlElement;
 

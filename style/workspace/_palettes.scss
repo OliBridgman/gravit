@@ -15,6 +15,7 @@
 
     > .palette-group-header {
       display: table;
+      height: 24px;
       width: 100%;
       background: #CED7E0 linear-gradient(to top, $frameDarkColor, $frameColor);
       border-top: 1px solid $frame3DLightColor;
@@ -24,6 +25,7 @@
         display: table-cell;
         height: 100%;
         vertical-align: middle;
+        white-space: nowrap;
       }
 
       button {

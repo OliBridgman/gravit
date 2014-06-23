@@ -133,11 +133,11 @@
     /**
      * Called to let the palette initialize on a given panel
      * and within a given menu if any
-     * @param {HTMLDivElement} htmlElement the panel
-     * @param {GUIMenu} menu the menu
-     * @version 1.0
+     * @param {JQuery} htmlElement the panel to put the palette into
+     * @param {GUIMenu} menu the menu to create actions into
+     * @param {JQuery} controls the controls to add controls into
      */
-    GPalette.prototype.init = function (htmlElement, menu) {
+    GPalette.prototype.init = function (htmlElement, menu, controls) {
         gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
     };
 

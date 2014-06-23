@@ -110,10 +110,38 @@
     };
 
     /** @override */
-    GStylePalette.prototype.init = function (htmlElement, menu) {
-        GPalette.prototype.init.call(this, htmlElement, menu);
+    GStylePalette.prototype.init = function (htmlElement, menu, controls) {
+        GPalette.prototype.init.call(this, htmlElement, menu, controls);
 
         this._htmlElement = htmlElement;
+
+        // Init controls
+        $('<button></button>')
+            .addClass('fa fa-fw fa-plus')
+            // TODO : I18N
+            .attr('title', 'Add new style')
+            .on('click', function () {
+                // TODO
+            }.bind(this))
+            .appendTo(controls);
+
+        $('<button></button>')
+            .addClass('fa fa-fw fa-link')
+            // TODO : I18N
+            .attr('title', 'Add linked style')
+            .on('click', function () {
+                // TODO
+            }.bind(this))
+            .appendTo(controls);
+
+        $('<button></button>')
+            .addClass('fa fa-fw fa-trash-o')
+            // TODO : I18N
+            .attr('title', 'Remove selected style')
+            .on('click', function () {
+                // TODO
+            }.bind(this))
+            .appendTo(controls);
 
         // Initialize all style entry handlers
         for (var i = 0; i < gravit.styleEntries.length; ++i) {

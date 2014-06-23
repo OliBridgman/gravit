@@ -107,8 +107,13 @@
                 groupInfo.menuButton.setMenu(paletteInfo.menu);
 
                 // Toggle menu button visibility depending on menu items
-                groupInfo.menuButton._htmlElement.css('visibility', paletteInfo.menu.getItemCount() === 0 ? 'hidden' : 'visible');
+                groupInfo.menuButton._htmlElement.css('display', paletteInfo.menu.getItemCount() === 0 ? 'none' : '');
                 groupInfo.menuButton._item._htmlElement.addClass('g-flat');
+
+                // Empty and re-assign controls
+                var controls = groupInfo.container.find('.palette-group-controls');
+                controls.children().detach();
+                controls.append(paletteInfo.controls);
 
                 // Group needs to be visible and expanded
                 this._setGroupVisible(groupInfo, true);
@@ -214,9 +219,10 @@
             .addClass('palette-' + palette.getId())
             .css('display', 'none');
         var menu = new GUIMenu();
+        var controls = $('<div></div>');
 
         // Let palette init itself on panel and menu
-        palette.init(panel, menu);
+        palette.init(panel, menu, controls);
 
         //
         // Add default actions to menu
@@ -277,7 +283,8 @@
         var paletteInfo = {
             palette: palette,
             panel: panel,
-            menu: menu
+            menu: menu,
+            controls: controls
         };
         this._palettesInfo.push(paletteInfo);
 
@@ -368,6 +375,8 @@
                         }.bind(this))))
                 .append($('<div></div>')
                     .addClass('palette-group-tabs'))
+                .append($('<div></div>')
+                    .addClass('palette-group-controls'))
                 .append(groupInfo.menuButton._htmlElement))
             .append($('<div></div>')
                 .addClass('palette-group-panels'))
