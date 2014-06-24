@@ -121,12 +121,6 @@
         return "style";
     };
 
-    /**
-     * @override
-     */
-    GStylePalette.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'F9'];
-    };
 
     /** @override */
     GStylePalette.prototype.isEnabled = function () {

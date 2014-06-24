@@ -324,13 +324,6 @@
         return GPalette.GROUP_COLOR;
     };
 
-    /**
-     * @override
-     */
-    GColorMixerPalette.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, 'F9'];
-    };
-
     /** @override */
     GColorMixerPalette.prototype.init = function (htmlElement, menu) {
         GPalette.prototype.init.call(this, htmlElement, menu);

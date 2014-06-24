@@ -53,3 +53,6 @@ ifLocale.setValues(GColorMixerPalette, IFLocale.Language.English, ["title"], ["M
 ifLocale.setValues(GColorTrendsPalette, IFLocale.Language.English, ["title"], ["Trends"]);
 ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
+
+// Sidebar
+ifLocale.setValues(GStylesSidebar, IFLocale.Language.English, ["title"], ["Styles"]);

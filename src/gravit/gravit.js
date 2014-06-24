@@ -23,6 +23,11 @@
             */
         );
 
+        // Register default sidebars
+        gravit.sidebars.push(
+            new GStylesSidebar()
+        );
+
         // Register default tools
         // TODO : I18N
         gravit.tools.push(

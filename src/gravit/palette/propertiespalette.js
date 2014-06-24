@@ -56,13 +56,6 @@
         return "properties";
     };
 
-    /**
-     * @override
-     */
-    GPropertiesPalette.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'F3'];
-    };
-
     /** @override */
     GPropertiesPalette.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();

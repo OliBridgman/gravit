@@ -1,6 +1,6 @@
 #toolbar {
   position: absolute;
-  width: 35px;
+  width: 34px;
   background: $frameColor;
   border-right: 1px solid $frame3DShadowColor;
 
@@ -18,15 +18,10 @@
       margin: 1px 3px;
       width: 28px;
       height: 28px;
-      font-size: 18px;
 
       &:hover, &:active, &.g-active {
         background-color: $activeColor;
       }
-
-      > span.fa:first-child {
-         font-size: 16px;
-       }
     }
 
     .divider {
@@ -37,11 +32,13 @@
     }
 
     &.sidebars {
+      border-top: none;
       padding: 0px;
 
       button {
         margin: 0px;
         width: 100%;
+        height: 28px;
       }
     }
 

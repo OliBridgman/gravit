@@ -1,11 +1,8 @@
 @import "compass/css3/user-interface";
 @import "compass/css3/box-sizing";
 
-// FontAwesome import
-$fa-font-path: 'font';
-@import '../bower_components/font-awesome/scss/font-awesome.scss';
-
 @import 'variables';
+@import 'fonts';
 @import 'base';
 @import 'cursors';
 @import 'form';
@@ -22,7 +19,7 @@ $fa-font-path: 'font';
 @import 'workspace/workspace';
 @import 'workspace/header';
 @import 'workspace/toolbar';
-@import 'workspace/sidebar';
+@import 'workspace/sidebars';
 @import 'workspace/windows';
 @import 'workspace/palettes';
 

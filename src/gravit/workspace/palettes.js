@@ -289,7 +289,7 @@
         this._palettesInfo.push(paletteInfo);
 
         // Add update listener to palette
-        palette.addEventListener(GPalette.UpdateEvent, function () {
+        palette.addEventListener(GView.UpdateEvent, function () {
             this.setPaletteEnabled(palette.getId(), palette.isEnabled());
             // TODO : Update title, shortcut, etc.
         }.bind(this));

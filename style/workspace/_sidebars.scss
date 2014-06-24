@@ -1,14 +1,18 @@
-#sidebar {
-  display: none;
-
+#sidebars {
   position: absolute;
   top: 0px;
   left: 0px;
   width: 170px;
   height: 100%;
+  padding: 3px;
   border-left: 1px solid $frame3DLightColor;
   border-right: 1px solid $frameBorderColor;
   background: $frameColor;
+
+  .sidebar-panel {
+    width: 100%;
+    height: 100%;
+  }
 
   &, *:not(.fa) {
     font: $smallFont;

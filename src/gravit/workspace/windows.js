@@ -168,7 +168,7 @@
         if (source instanceof GWindow) {
             var sourceView = source.getView();
             // TODO : Serialize/deserialize window settings instead
-            window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom(), sourceView.getOrientation());
+            window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom());
         }
 
         return window;

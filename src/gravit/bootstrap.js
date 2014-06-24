@@ -30,7 +30,12 @@ var gravit = {
     palettes: [],
 
     /**
-     * Array<{{instance: IFTool, title: String, group: String, keys: Array<String>}, icon: String}>
+     * Array<GSidebar>
+     */
+    sidebars: [],
+
+    /**
+     * Array<{{instance: IFTool, title: String|IFLocale.Key, group: String, keys: Array<String>}, icon: String}>
      */
     tools: [],
 

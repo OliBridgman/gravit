@@ -6,29 +6,10 @@
      */
     function GToolbar(htmlElement) {
         this._htmlElement = htmlElement;
+
         htmlElement
-            /*
             .append($('<div></div>')
-                .addClass('section sidebars')
-                .append($('<button></button>')
-                    //.prop('disabled', true)
-                    .addClass('g-active')
-                    .append($('<span></span>')
-                        .addClass('fa fa-files-o')
-                        // TODO : I18N
-                        .attr('title', 'Pages')))
-                .append($('<button></button>')
-                    .prop('disabled', true)
-                    .append($('<span></span>')
-                        .addClass('fa fa-leaf')
-                        // TODO : I18N
-                        .attr('title', 'Components')))
-                .append($('<button></button>')
-                    .prop('disabled', true)
-                    .append($('<span></span>')
-                        .addClass('fa fa-sitemap')
-                        // TODO : I18N
-                        .attr('title', 'Structure'))))*/
+                .addClass('section sidebars'))
             .append($('<div></div>')
                 .addClass('section toolpanel'));
 
@@ -52,6 +33,38 @@
      * Called from the workspace to initialize
      */
     GToolbar.prototype.init = function () {
+        // Add sidebars
+        if (gravit.sidebars && gravit.sidebars.length > 0) {
+            var sidebarsSection = this._htmlElement.find('.sidebars');
+
+            for (var i = 0; i < gravit.sidebars.length; ++i) {
+                var sidebar = gravit.sidebars[i];
+
+                $('<button></button>')
+                    .append($(sidebar.getIcon()))
+                    .attr('title', ifLocale.get(sidebar.getTitle()))
+                    .attr('data-sidebar-id', sidebar.getId())
+                    .on('click', function () {
+                        var btn = $(this);
+                        var isActive = btn.hasClass('g-active');
+
+                        sidebarsSection.find('button').each(function (index, element) {
+                            $(element).removeClass('g-active');
+                        });
+
+                        if (isActive) {
+                            gApp.getSidebars().setActiveSidebar(null);
+                            gApp.setPartVisible(GApplication.Part.Sidebars, false);
+                        } else {
+                            gApp.getSidebars().setActiveSidebar(btn.attr('data-sidebar-id'));
+                            gApp.setPartVisible(GApplication.Part.Sidebars, true);
+                            btn.addClass('g-active');
+                        }
+                    })
+                    .appendTo(sidebarsSection);
+            }
+        }
+
         // Init and add tools
         var toolpanel = this._htmlElement.find('.toolpanel');
         var _addToolButton = function (tool) {
@@ -64,7 +77,7 @@
                 }.bind(this));
 
             // Concat/read the tool's title
-            var title = tool.title;
+            var title = ifLocale.get(tool.title);
             if (tool.keys && tool.keys.length > 0) {
                 for (var i = 0; i < tool.keys.length; ++i) {
                     if (i == 0) {

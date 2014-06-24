@@ -71,8 +71,8 @@
         Toolbar: {
             id: "toolbar"
         },
-        Sidebar: {
-            id: "sidebar"
+        Sidebars: {
+            id: "sidebars"
         },
         Windows: {
             id: "windows"
@@ -198,10 +198,10 @@
     GApplication.prototype._toolbar = null;
 
     /**
-     * @type {GSidebar}
+     * @type {GSidebars}
      * @private
      */
-    GApplication.prototype._sidebar = null;
+    GApplication.prototype._sidebars = null;
 
     /**
      * @type {GWindows}
@@ -288,11 +288,11 @@
     };
 
     /**
-     * Return access to the sidebar
-     * @returns {GSidebar}
+     * Return access to the sidebars
+     * @returns {GSidebars}
      */
-    GApplication.prototype.getSidebar = function () {
-        return this._sidebar;
+    GApplication.prototype.getSidebars = function () {
+        return this._sidebars;
     };
 
     /**
@@ -596,12 +596,12 @@
 
         this._toolbar = new GToolbar(toolbarPart);
 
-        // Sidebar-Part
-        var sidebarPart = $("<div></div>")
-            .attr('id', GApplication.Part.Sidebar.id)
+        // Sidebars-Part
+        var sidebarsPart = $("<div></div>")
+            .attr('id', GApplication.Part.Sidebars.id)
             .appendTo(this._view);
 
-        this._sidebar = new GSidebar(sidebarPart);
+        this._sidebars = new GSidebars(sidebarsPart);
 
         // Palettes-Part
         var palettesPart = $("<div></div>")
@@ -672,9 +672,12 @@
 
         this._header.init();
         this._toolbar.init();
-        this._sidebar.init();
+        this._sidebars.init();
         this._windows.init();
         this._palettes.init();
+
+        // Hide sidebars by default - TODO : Load & save view configuration here
+        this.setPartVisible(GApplication.Part.Sidebars, false);
 
         // Mark initialized
         this._initialized = true;
@@ -709,11 +712,11 @@
             toolbarPart.height(this._view.height() - topOffset);
             leftOffset += this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0;
 
-            var sidebarPart = this.getPart(GApplication.Part.Sidebar);
-            sidebarPart.css('top', topOffset.toString() + 'px');
-            sidebarPart.css('left', (this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
-            sidebarPart.height(this._view.height() - topOffset);
-            leftOffset += this.isPartVisible(GApplication.Part.Sidebar) ? sidebarPart.outerWidth() : 0;
+            var sidebarsPart = this.getPart(GApplication.Part.Sidebars);
+            sidebarsPart.css('top', topOffset.toString() + 'px');
+            sidebarsPart.css('left', (this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
+            sidebarsPart.height(this._view.height() - topOffset);
+            leftOffset += this.isPartVisible(GApplication.Part.Sidebars) ? sidebarsPart.outerWidth() : 0;
 
             var palettesPart = this.getPart(GApplication.Part.Palettes);
             palettesPart.css('top', topOffset.toString() + 'px');
@@ -722,7 +725,7 @@
 
             this._header.relayout();
             this._toolbar.relayout();
-            this._sidebar.relayout();
+            this._sidebars.relayout();
             this._windows.relayout([leftOffset, topOffset, rightOffset, bottomOffset]);
             this._palettes.relayout();
         }.bind(this), 0);
