@@ -233,8 +233,8 @@
 
     /** @override */
     IFStyle.prototype.validateInsertion = function (parent, reference) {
-        // By default, styles can only be appended to stylesets
-        return parent instanceof IFStyleSet;
+        // By default, styles can only be appended to stylesets and scene's style collection
+        return parent instanceof IFStyleSet || parent instanceof IFScene.StyleCollection;
     };
 
     /** @override */

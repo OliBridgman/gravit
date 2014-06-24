@@ -85,13 +85,16 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @class IFScene.StyleCollection
-     * @extends IFStyleSet
+     * @extends IFNode
+     * @mixes IFNode.Container
+     * @mixes IFNode.Store
      * @private
      */
     IFScene.StyleCollection = function () {
+        IFNode.call(this);
     }
 
-    IFNode.inherit("styleCollection", IFScene.StyleCollection, IFStyleSet);
+    IFNode.inheritAndMix("styleCollection", IFScene.StyleCollection, IFNode, [IFNode.Container, IFNode.Store]);
 
     /** @override */
     IFScene.StyleCollection.prototype.validateInsertion = function (parent, reference) {
