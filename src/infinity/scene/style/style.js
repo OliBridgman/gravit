@@ -21,6 +21,32 @@
     IFStyle.MIME_TYPE = "application/infinity+style";
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFStyle.StyleChangeEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event for a style change notification sent via a scene
+     * @param {IFStyle} style the style that has changed
+     * @class IFStyle.StyleChangeEvent
+     * @extends GEvent
+     * @constructor
+     */
+    IFStyle.StyleChangeEvent = function (style) {
+        this.style = style;
+    };
+    IFObject.inherit(IFStyle.StyleChangeEvent, GEvent);
+
+    /**
+     * The style that has been changed
+     * @type IFStyle
+     */
+    IFStyle.StyleChangeEvent.prototype.style = null;
+
+    /** @override */
+    IFStyle.StyleChangeEvent.prototype.toString = function () {
+        return "[Event IFStyle.StyleChangeEvent]";
+    };    
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFStyle.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -221,14 +247,18 @@
      * Called to finish this style from a geometrical change
      */
     IFStyle.prototype.finishGeometryChange = function () {
-        // NO-OP
+        if (this._canEventBeSend(IFStyle.StyleChangeEvent)) {
+            this._scene.trigger(new IFStyle.StyleChangeEvent(this));
+        }
     };
 
     /**
      * Called to trigger a visual change on this style
      */
     IFStyle.prototype.visualChange = function () {
-        // NO-OP
+        if (this._canEventBeSend(IFStyle.StyleChangeEvent)) {
+            this._scene.trigger(new IFStyle.StyleChangeEvent(this));
+        }
     };
 
     /** @override */

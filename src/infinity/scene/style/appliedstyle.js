@@ -50,6 +50,7 @@
         if (ownerElement) {
             ownerElement._notifyChange(IFElement._Change.PrepareGeometryUpdate);
         }
+        IFStyle.prototype.prepareGeometryChange.call(this);
     };
 
     /** @override */
@@ -58,6 +59,7 @@
         if (ownerElement) {
             ownerElement._notifyChange(IFElement._Change.FinishGeometryUpdate);
         }
+        IFStyle.prototype.finishGeometryChange.call(this);
     };
 
     /** @override */
@@ -66,6 +68,7 @@
         if (ownerElement) {
             ownerElement._notifyChange(IFElement._Change.InvalidationRequest);
         }
+        IFStyle.prototype.visualChange.call(this);
     };
 
     /** @override */

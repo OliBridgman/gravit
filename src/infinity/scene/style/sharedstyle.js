@@ -32,6 +32,7 @@
                 }
             });
         }
+        IFStyle.prototype.prepareGeometryChange.call(this);
     };
 
     /** @override */
@@ -44,6 +45,7 @@
                 }
             });
         }
+        IFStyle.prototype.finishGeometryChange.call(this);
     };
 
     /** @override */
@@ -56,6 +58,7 @@
                 }
             });
         }
+        IFStyle.prototype.visualChange.call(this);
     };
 
     /** @override */
