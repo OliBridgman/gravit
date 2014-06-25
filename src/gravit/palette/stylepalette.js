@@ -442,7 +442,7 @@
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
-                            this._removeHiddenEntries([IFEffectEntry, IFVectorAttribute]);
+                            this._removeHiddenEntries([IFEffectEntry, IFVEffectEntry]);
                         }.bind(this)))))
             .append($('<table></table>')
                 .addClass('style-entries-panel-table'))
