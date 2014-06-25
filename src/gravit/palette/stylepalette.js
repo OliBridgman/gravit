@@ -144,7 +144,7 @@
                     .css({
                         'width': '250px'
                     })
-                    //.addClass('g-style-list')
+                    .addClass('g-style-list')
                     .gStylePanel({
                         nullStyle: $('<span></span>')
                             .addClass('g-icon')
@@ -251,6 +251,14 @@
         // Add style selector
         this._styleSelector = $('<div></div>')
             .addClass('style-selector')
+            .gStylePanel({
+                allowDrop: true,
+                previewWidth: 40,
+                previewHeight: 40
+            })
+            .on('change', function (evt, style) {
+                this._setSelectedStyle(this._getStyleIndex(style));
+            }.bind(this))
             .appendTo(this._htmlElement);
 
         // Style settings
@@ -415,6 +423,7 @@
             scene.addEventListener(IFNode.AfterInsertEvent, this._afterInsert, this);
             scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeRemove, this);
             scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.addEventListener(IFStyle.StyleChangeEvent, this._styleChange, this);
 
             // Subscribe to the editor's events
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
@@ -430,9 +439,10 @@
             editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection);
 
             // Unsubscribe from scene events
-            scene.removeEventListener(IFNode.AfterInsertEvent, this._afterInsert);
-            scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeRemove);
-            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            scene.removeEventListener(IFNode.AfterInsertEvent, this._afterInsert, this);
+            scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeRemove, this);
+            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.removeEventListener(IFNode.StyleChangeEvent, this._styleChange, this);
 
             this._document = null;
             this._styleElements = null;
@@ -490,6 +500,17 @@
     };
 
     /**
+     * @param {IFStyle.StyleChangeEvent} evt
+     * @private
+     */
+    GStylePalette.prototype._styleChange = function (evt) {
+        if (this._isSelectedStyle(evt.style)) {
+            var style = this._styles[this._getStyleIndex(evt.style, true)][0];
+            this._styleSelector.gStylePanel('updateStyle', style);
+        }
+    };
+
+    /**
      * @private
      */
     GStylePalette.prototype._updateFromSelection = function () {
@@ -513,7 +534,7 @@
         }
 
         // Clear style selector
-        this._styleSelector.empty();
+        this._styleSelector.gStylePanel('clear');
 
         if (this._styleElements) {
             this._insertStyles();
@@ -526,11 +547,8 @@
     };
 
     GStylePalette.prototype._setSelectedStyle = function (selectedIndex) {
+        this._styleSelector.gStylePanel('value', selectedIndex >= 0 ? this._styles[selectedIndex][0] : null);
         this._selectedStyleIndex = selectedIndex;
-        this._styleSelector.find('.style-block').each(function (index, block) {
-            $(block)
-                .toggleClass('selected', index === selectedIndex);
-        });
         this._updateSelectedStyle();
     };
 
@@ -556,27 +574,9 @@
         }
     };
 
-    GStylePalette.prototype._isSelectedStyle = function (style) {
-        return this._selectedStyleIndex >= 0 && this._getStyleIndex(style) === this._selectedStyleIndex;
-    };
-
     GStylePalette.prototype._insertStyles = function (style) {
         var _addStyleBlock = function (style, index) {
-            var block = $('<div></div>')
-                .addClass('style-block')
-                .append($('<img>')
-                    .addClass('style-preview')
-                    .attr('src', style.createPreviewImage(36, 36)))
-                .on('click', function () {
-                    this._setSelectedStyle(this._getStyleIndex(style));
-                }.bind(this))
-                .data('style', style);
-
-            if (index >= 0) {
-                block.insertBefore(this._styleSelector.children('.style-block').eq(index));
-            } else {
-                block.appendTo(this._styleSelector);
-            }
+            this._styleSelector.gStylePanel('insertStyle', style, index);
         }.bind(this);
 
         var _addStyles = function (styles) {
@@ -699,12 +699,7 @@
 
             if (styleIndex >= 0) {
                 // Remove from style selector
-                this._styleSelector.find('.style-block').each(function (index, element) {
-                    if (index === styleIndex) {
-                        $(element).remove();
-                        return false;
-                    }
-                });
+                this._styleSelector.gStylePanel('removeStyle', this._styles[styleIndex][0]);
 
                 // Remove from styles array
                 var styles = this._styles[styleIndex];
@@ -735,14 +730,18 @@
         }
     };
 
-    GStylePalette.prototype._getStyleIndex = function (style) {
+    GStylePalette.prototype._isSelectedStyle = function (style) {
+        return this._selectedStyleIndex >= 0 && this._getStyleIndex(style, true) === this._selectedStyleIndex;
+    };
+
+    GStylePalette.prototype._getStyleIndex = function (style, handleSharedStyles) {
         if (!this._styles || this._styles.length === 0) {
             return -1;
         }
 
         for (var i = 0; i < this._styles.length; ++i) {
             for (var j = 0; j < this._styles[i].length; ++j) {
-                if (style instanceof IFSharedStyle) {
+                if (style instanceof IFSharedStyle && handleSharedStyles) {
                     if (this._styles[i][j] instanceof IFLinkedStyle && this._styles[i][j].getProperty('ref') === style.getReferenceId()) {
                         return i;
                     }

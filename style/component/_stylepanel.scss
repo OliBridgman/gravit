@@ -7,10 +7,10 @@
     padding: 2px;
 
     &.selected {
-      border: 2px solid $selectedColor;
       background: $selectedColor;
       color: $selectedTextColor;
-      padding: 0px;
+      //padding: 0px;
+      //margin: 2px;
     }
 
     &.drop {

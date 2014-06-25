@@ -48,9 +48,9 @@
                 // no null style will be provided for choosing
                 nullStyle: null,
                 // The width of the style preview
-                previewWidth: 40,
+                previewWidth: 30,
                 // The height of the style preview
-                previewHeight: 40
+                previewHeight: 30
             }, options);
 
             var self = this;
