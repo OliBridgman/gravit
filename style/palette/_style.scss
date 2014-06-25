@@ -117,7 +117,8 @@
 
           &.drop {
             > td {
-              background: $selectedColor;
+              background: $dragColor;
+              color: $dragTextColor;
 
               * {
                 pointer-events: none;

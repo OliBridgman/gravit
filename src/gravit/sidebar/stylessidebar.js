@@ -40,6 +40,7 @@
         GSidebar.prototype.init.call(this, htmlElement);
 
         this._stylePanel = $('<div></div>')
+            .addClass('g-style-list')
             .css({
                 'height': '100%',
                 'overflow-y': 'auto',

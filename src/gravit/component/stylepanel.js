@@ -32,9 +32,18 @@
         }
     };
 
+    /** @type {IFStyle} */
+    var dragStyle = null;
+
     var methods = {
         init: function (options) {
             options = $.extend({
+                // Whether to allow dragging of styles
+                allowDrag: true,
+                // Whether to allow dropping of styles
+                allowDrop: false,
+                // Whether to allow re-order of styles or not
+                allowReorder: true,
                 // The html code or Jquery for the null style, if set to null,
                 // no null style will be provided for choosing
                 nullStyle: null,
@@ -50,9 +59,7 @@
                     .addClass('g-style-panel')
                     .data('gstylepanel', {
                         selected: null,
-                        hasNull: !!options.nullStyle,
-                        previewWidth: options.previewWidth,
-                        previewHeight: options.previewHeight
+                        options: options
                     });
 
                 if (options.nullStyle) {
@@ -84,31 +91,141 @@
                 index = style.getParent().getIndexOfChild(style);
             }
 
-            if (data.hasNull) {
+            if (data.options.nullStyle) {
                 index += 1;
             }
 
             var block = $('<div></div>')
                 .addClass('style-block')
-                .attr('draggable', 'true')
                 .data('style', style)
-                .append($('<img>')
-                    .addClass('style-preview'))
-                .on('click', function () {
+                .append($('<div></div>')
+                    .addClass('style-content')
+                    .append($('<div></div>')
+                        .addClass('style-preview')
+                        .append($('<img>')))
+                    .append($('<div></div>')
+                        .addClass('style-name')))
+                .on('mousedown', function () {
                     $this.data('gstylepanel').selected = style;
                     updateSelectedStyle($this, style);
-                    self.trigger('change', style)
                 })
-                .on('dragstart', function (evt) {
-                    var event = evt.originalEvent;
-
-                    $this.trigger('styledrag', style);
-
-                    // Setup our drag-event now
-                    event.dataTransfer.effectAllowed = 'move';
-                    event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
-                    event.dataTransfer.setDragImage(block.find('.style-preview')[0], data.previewWidth / 2, data.previewHeight / 2);
+                .on('click', function () {
+                    self.trigger('change', style);
                 });
+
+            if (data.options.allowDrag || data.options.allowReorder) {
+                block
+                    .attr('draggable', 'true')
+                    .on('dragstart', function (evt) {
+                        var event = evt.originalEvent;
+
+                        dragStyle = $(this).data('style');
+
+                        if (data.options.allowDrag) {
+                            self.trigger('styledragstart', style);
+
+                            // Setup our drag-event now
+                            event.dataTransfer.effectAllowed = 'move';
+                            event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
+                            event.dataTransfer.setDragImage(block.find('.style-preview > img')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
+                        }
+                    })
+                    .on('dragend', function (evt) {
+                        dragStyle = null;
+
+                        if (data.options.allowDrag) {
+                            var offset = $this.offset();
+                            var width = $this.outerWidth();
+                            var height = $this.outerHeight();
+                            var x = evt.originalEvent.pageX;
+                            var y = evt.originalEvent.pageY;
+
+                            if (x <= offset.left || x >= offset.left + width ||
+                                y <= offset.top || y >= offset.top + height) {
+                                self.trigger('styledragaway', style);
+                            } else {
+                                self.trigger('styledragend', style);
+                            }
+                        }
+                    });
+            }
+
+            var _canDrop = function () {
+                if (dragStyle) {
+                    var targetStyle = $(this).data('style');
+
+                    if (targetStyle && targetStyle !== dragStyle) {
+                        if (dragStyle.getParent() === targetStyle.getParent()) {
+                            return data.options.allowReorder;
+                        } else {
+                            return data.options.allowDrop;
+                        }
+                    }
+                }
+
+                return false;
+            };
+
+            if (data.options.allowDrop || data.options.allowReorder) {
+                block
+                    .on('dragenter', function (evt) {
+                        var event = evt.originalEvent;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (_canDrop.call(this)) {
+                            $(this).addClass('drop');
+                        }
+                    })
+                    .on('dragleave', function (evt) {
+                        var event = evt.originalEvent;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (_canDrop.call(this)) {
+                            $(this).removeClass('drop');
+                        }
+                    })
+                    .on('dragover', function (evt) {
+                        var event = evt.originalEvent;
+                        if (_canDrop.call(this)) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            event.dataTransfer.dropEffect = 'move';
+                        }
+                    })
+                    .on('drop', function (evt) {
+                        var event = evt.originalEvent;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $(this).removeClass('drop');
+
+                        if (data.options.allowReorder) {
+                            if (data.container && dragStyle.getParent() === data.container) {
+                                var targetStyle = $(this).data('style');
+                                var parent = dragStyle.getParent();
+                                var sourceIndex = parent.getIndexOfChild(dragStyle);
+                                var targetIndex = parent.getIndexOfChild(targetStyle);
+                                var editor = IFEditor.getEditor(parent.getScene());
+
+                                if (editor) {
+                                    editor.beginTransaction();
+                                }
+
+                                try {
+                                    parent.removeChild(dragStyle);
+                                    parent.insertChild(dragStyle, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
+                                } finally {
+                                    if (editor) {
+                                        editor.commitTransaction('Move Style');
+                                    }
+                                }
+                            }
+
+                            self.trigger('stylemove', dragStyle, targetStyle);
+                        } else if (data.options.allowDrop) {
+                            self.trigger('styledrop', dragStyle, targetStyle);
+                        }
+                    });
+            }
 
             var insertBefore = index >= 0 ? $this.children('.style-block').eq(index) : null;
             if (insertBefore && insertBefore.length > 0) {
@@ -128,10 +245,20 @@
                 var $element = $(element);
                 if ($element.data('style') === style) {
                     $element
-                        .find('.style-preview')
-                        .attr('src', style.createPreviewImage(data.previewWidth, data.previewHeight));
+                        .find('.style-preview > img')
+                        .attr('src', style.createPreviewImage(data.options.previewWidth, data.options.previewHeight));
 
-                    $element.attr('title', style instanceof IFSharedStyle ? style.getProperty('name') : '');
+                    var name = '';
+                    if (style instanceof IFSharedStyle) {
+                        name = style.getProperty('name');
+                        if (name === null) {
+                            // TODO : I18N
+                            name = '#Unnamed';
+                        }
+                    }
+
+                    $element.attr('title', name);
+                    $element.find('.style-name').text(name);
                     return false;
                 }
             });

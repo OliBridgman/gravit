@@ -144,6 +144,7 @@
                     .css({
                         'width': '250px'
                     })
+                    //.addClass('g-style-list')
                     .gStylePanel({
                         nullStyle: $('<span></span>')
                             .addClass('g-icon')

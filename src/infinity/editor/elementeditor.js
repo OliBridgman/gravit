@@ -799,15 +799,21 @@
         // Dropping a style on stylable elements will be handled as well
         if (type === IFElementEditor.DropType.Node && source && source instanceof IFStyle) {
             if (this._element.hasMixin(IFElement.Style)) {
-                if (source instanceof IFSharedStyle) {
-                    var linkedStyle = new IFLinkedStyle();
-                    linkedStyle.setProperty('ref', source.getReferenceId());
-                    this._element.getStyleSet().appendChild(linkedStyle);
-                    return true;
-                } else if (source instanceof IFAppliedStyle) {
-                    this._element.getStyleSet().appendChild(source);
-                    return true;
+                var editor = IFEditor.getEditor(this._element.getScene());
+                editor.beginTransaction();
+                try {
+                    if (source instanceof IFSharedStyle) {
+                        var linkedStyle = new IFLinkedStyle();
+                        linkedStyle.setProperty('ref', source.getReferenceId());
+                        this._element.getStyleSet().appendChild(linkedStyle);
+                    } else {
+                        this._element.getStyleSet().appendChild(source);
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Drag Style');
                 }
+                return true;
             }
         }
 

@@ -1515,11 +1515,6 @@
      * @return {Boolean} true if node could be removed, false if not
      */
     IFNode.prototype.validateRemoval = function () {
-        // If node is referenceable and still has links it can not be removed
-        if (this.hasMixin(IFNode.Reference) && this.getScene().hasLinks(this)) {
-            return false;
-        }
-
         // return true by default
         return true;
     };

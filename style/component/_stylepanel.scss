@@ -1,22 +1,62 @@
 .g-style-panel {
-  background: white;
-  padding: 5px;
+  padding: 3px;
 
   .style-block {
     display: inline-block;
     position: relative;
-    margin: 0px 4px 0px 0px;
-    border: 2px solid white;
-
-    &.style-null {
-    }
+    padding: 2px;
 
     &.selected {
       border: 2px solid $selectedColor;
+      background: $selectedColor;
+      color: $selectedTextColor;
+      padding: 0px;
+    }
+
+    &.drop {
+      background: $dragColor;
+      color: $dragTextColor;
     }
 
     .style-preview {
+      padding: 2px;
+
+      img {
+        display: block;
+        padding: 1px;
+        background: #FFF;
+        box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    .style-name {
+      display: none;
+      font: $font;
+    }
+
+    * {
+      pointer-events: none;
+    }
+  }
+
+  &.g-style-list {
+    .style-block {
       display: block;
+
+      .style-content {
+        display: table-row;
+        width: 100%;
+
+        > div {
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        .style-name {
+          width: 100%;
+          padding: 0px 5px;
+        }
+      }
     }
   }
 }
