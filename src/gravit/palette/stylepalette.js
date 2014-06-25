@@ -146,7 +146,8 @@
                     })
                     .gStylePanel({
                         nullStyle: $('<span></span>')
-                            .addClass('fa fa-plus-circle')
+                            .addClass('g-icon')
+                            .html('&#xe984;')
                             .css({
                                 'font-size': '24px',
                                 'position': 'absolute',

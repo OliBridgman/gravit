@@ -37,7 +37,11 @@
             options = $.extend({
                 // The html code or Jquery for the null style, if set to null,
                 // no null style will be provided for choosing
-                nullStyle: null
+                nullStyle: null,
+                // The width of the style preview
+                previewWidth: 40,
+                // The height of the style preview
+                previewHeight: 40
             }, options);
 
             var self = this;
@@ -45,13 +49,21 @@
                 var $this = $(this)
                     .addClass('g-style-panel')
                     .data('gstylepanel', {
-                        selected: null
+                        selected: null,
+                        hasNull: !!options.nullStyle,
+                        previewWidth: options.previewWidth,
+                        previewHeight: options.previewHeight
                     });
 
                 if (options.nullStyle) {
                     $('<div></div>')
                         .addClass('style-block style-null')
-                        .append(options.nullStyle)
+                        .append($('<div></div>')
+                            .css({
+                                'width': options.previewWidth + 'px',
+                                'height': options.previewHeight + 'px'
+                            })
+                            .append(options.nullStyle))
                         .on('click', function () {
                             $this.data('gstylepanel').selected = null;
                             updateSelectedStyle($this, null);
@@ -65,13 +77,21 @@
 
         insertStyle: function (style, index) {
             var $this = $(this);
+            var data = $this.data('gstylepanel');
             var self = this;
 
-            index = index || style.getNext() ? style.getParent().getIndexOfChild(style) : -1;
+            if (typeof index !== 'number') {
+                index = style.getParent().getIndexOfChild(style);
+            }
+
+            if (data.hasNull) {
+                index += 1;
+            }
 
             var block = $('<div></div>')
                 .addClass('style-block')
                 .attr('draggable', 'true')
+                .data('style', style)
                 .append($('<img>')
                     .addClass('style-preview'))
                 .on('click', function () {
@@ -79,10 +99,20 @@
                     updateSelectedStyle($this, style);
                     self.trigger('change', style)
                 })
-                .data('style', style);
+                .on('dragstart', function (evt) {
+                    var event = evt.originalEvent;
 
-            if (index >= 0) {
-                block.insertBefore($this.children('.style-block').eq(index));
+                    $this.trigger('styledrag', style);
+
+                    // Setup our drag-event now
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.dataTransfer.setData(IFStyle.MIME_TYPE, IFNode.serialize(style));
+                    event.dataTransfer.setDragImage(block.find('.style-preview')[0], data.previewWidth / 2, data.previewHeight / 2);
+                });
+
+            var insertBefore = index >= 0 ? $this.children('.style-block').eq(index) : null;
+            if (insertBefore && insertBefore.length > 0) {
+                block.insertBefore(insertBefore);
             } else {
                 block.appendTo($this);
             }
@@ -91,12 +121,15 @@
         },
 
         updateStyle: function (style) {
-            $(this).find('.style-block').each(function (index, element) {
+            var $this = $(this);
+            var data = $this.data('gstylepanel');
+
+            $this.find('.style-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('style') === style) {
                     $element
                         .find('.style-preview')
-                        .attr('src', style.createPreviewImage(36, 36));
+                        .attr('src', style.createPreviewImage(data.previewWidth, data.previewHeight));
 
                     $element.attr('title', style instanceof IFSharedStyle ? style.getProperty('name') : '');
                     return false;

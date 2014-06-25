@@ -6,23 +6,17 @@
     display: inline-block;
     position: relative;
     margin: 0px 4px 0px 0px;
-    width: 40px;
-    height: 40px;
     border: 2px solid white;
-    z-index: 2;
+
+    &.style-null {
+    }
 
     &.selected {
       border: 2px solid $selectedColor;
     }
 
     .style-preview {
-      position: absolute;
       display: block;
-      top: 0px;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      margin: auto auto;
     }
   }
 }
