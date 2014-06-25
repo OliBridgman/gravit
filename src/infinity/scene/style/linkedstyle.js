@@ -47,7 +47,7 @@
     /** @override */
     IFLinkedStyle.prototype._handleChange = function (change, args) {
         if (this._handleGeometryChangeForProperties(change, args, IFLinkedStyle.GeometryProperties)) {
-            if (args.properties.indexOf('ls') >= 0) {
+            if (args.properties.indexOf('ref') >= 0) {
                 var referencedStyle = this.getActualStyle();
                 if (referencedStyle) {
                     switch (change) {

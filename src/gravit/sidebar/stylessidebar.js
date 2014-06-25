@@ -14,6 +14,12 @@
     GStylesSidebar.ID = "styles";
     GStylesSidebar.TITLE = new IFLocale.Key(GStylesSidebar, "title");
 
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GStylesSidebar.prototype._stylePanel = null;
+
     /** @override */
     GStylesSidebar.prototype.getId = function () {
         return GStylesSidebar.ID;
@@ -33,7 +39,7 @@
     GStylesSidebar.prototype.init = function (htmlElement) {
         GSidebar.prototype.init.call(this, htmlElement);
 
-        $('<div></div>')
+        this._stylePanel = $('<div></div>')
             .css({
                 'height': '100%',
                 'overflow-y': 'auto',
@@ -43,6 +49,18 @@
                 //styleSet: gApp.getActiveDocument().getScene().getStyleCollection()
             })
             .appendTo(htmlElement);
+    };
+
+    /** @override */
+    GStylesSidebar.prototype._documentEvent = function (event) {
+        if (event.type === GApplication.DocumentEvent.Type.Activated) {
+            this._document = event.document;
+            var scene = this._document.getScene();
+            this._stylePanel.gStylePanel('attach', scene.getStyleCollection());
+        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var scene = this._document.getScene();
+            this._stylePanel.gStylePanel('detach');
+        }
     };
 
     /** @override */

@@ -8,14 +8,21 @@
         });
     };
 
+    function afterInsertEvent (evt) {
+        var $this = $(this);
+        var container = $this.data('gstylepanel').container;
+        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+            methods.insertStyle.call(this, evt.node);
+        }
+    };
+
+    function beforeRemoveEvent (evt) {
+        // TODO
+    };
+
     var methods = {
         init: function (options) {
             options = $.extend({
-                // A styleSet to subscribe to for rendering the styles,
-                // if not provided, styles and events need to be handled
-                // manually
-                styleSet: null,
-
                 // The html code or Jquery for the null style, if set to null,
                 // no null style will be provided for choosing
                 nullStyle: null
@@ -41,14 +48,6 @@
                         .data('style', null)
                         .appendTo($this);
                 }
-
-                if (options.styleSet) {
-                    for (var child = options.styleSet.getFirstChild(); child !== null; child = child.getNext()) {
-                        if (child instanceof IFStyle) {
-                            methods.insertStyle.call(self, child);
-                        }
-                    }
-                }
             });
         },
 
@@ -71,7 +70,7 @@
 
             var name = style instanceof IFSharedStyle ? style.getProperty('name') : '';
             if (name !== '') {
-                block.attr('data-name', name);
+                block.attr('title', name);
             }
 
             //if (index >= 0) {
@@ -82,12 +81,78 @@
             block.appendTo($this);
         },
 
+        clear: function () {
+            var remove = [];
+
+            $(this).find('.style-block').each(function (index, block) {
+                var $block = $(block);
+                if (!$block.hasClass('style-null')) {
+                    remove.push($block);
+                }
+            });
+
+            for (var i = 0; i < remove.length; ++i) {
+                remove[i].remove();
+            }
+        },
+
+        attach: function (container) {
+            var $this = $(this);
+            var data = $this.data('gstylepanel');
+
+            methods.detach.call(this);
+
+            data.container = container;
+
+            if (container) {
+                for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFStyle) {
+                        methods.insertStyle.call(this, child);
+                    }
+                }
+
+                // Subscribe to container
+                var scene = container.getScene();
+                if (scene) {
+                    data.afterInsertHandler = afterInsertEvent.bind(this);
+                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                }
+            }
+            return this;
+        },
+
+        detach: function () {
+            var $this = $(this);
+            var data = $this.data('gstylepanel');
+            var container = data.container;
+
+            if (container) {
+                // Unsubscribe from container
+                var scene = container.getScene();
+                if (scene) {
+                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                }
+            }
+
+            data.container = null;
+            data.afterInsertHandler = null;
+            data.beforeRemoveHandler = null;
+
+            methods.clear.call(this);
+
+            return this;
+        },
+
+        // Assigns or returns the selected style
         value: function (value) {
             var $this = $(this);
             if (!arguments.length) {
                 return $this.data('gstylepanel').selected;
             } else {
-                $this.data('gcolorpanel').selected = value;
+                $this.data('gstylepanel').selected = value;
                 updateSelectedStyle($this, value);
                 return this;
             }

@@ -48,22 +48,23 @@
             };
         }
 
-        this._listeners[event_id].listeners.push({listener: listener, sourceListener: sourceListener});
+        this._listeners[event_id].listeners.push({listener: listener, sourceListener: sourceListener, target: target});
     };
 
     /**
      * Remove a listener for a specific eventClass from this object
      * @param {*} eventClass the constructor of the eventClass to unregister for
      * @param {Function} listener the listener function to be removed
+     * @param {Object} [target] optional target ("this") for the listener
      * @version 1.0
      */
-    GEventTarget.prototype.removeEventListener = function (eventClass, listener) {
+    GEventTarget.prototype.removeEventListener = function (eventClass, listener, target) {
         var event_id = IFObject.getTypeId(eventClass);
 
         if (this._listeners && event_id in this._listeners) {
             var array = this._listeners[event_id].listeners;
             for (var i = 0; i < array.length; ++i) {
-                if (array[i].sourceListener == listener) {
+                if (array[i].sourceListener == listener && (!target || array[i].target === target)) {
                     array.splice(i, 1);
                 }
             }

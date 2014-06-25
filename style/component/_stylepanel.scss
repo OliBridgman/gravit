@@ -24,48 +24,5 @@
       right: 0px;
       margin: auto auto;
     }
-
-    &[data-name]:before,
-    &[data-name]:after {
-      visibility: hidden;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    &[data-name]:before {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      margin-bottom: 5px;
-      margin-left: -75px;
-      padding: 7px;
-      width: 150px;
-      background-color: $frameColor;
-      border: 1px solid $frameBorderColor;
-      color: $textColor;
-      content: attr(data-name);
-      text-align: center;
-      font: small-caption;
-    }
-
-    &[data-name]:after {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      margin-left: -5px;
-      width: 0;
-      border-top: 5px solid $frameBorderColor;
-      border-right: 5px solid transparent;
-      border-left: 5px solid transparent;
-      content: " ";
-      font-size: 0;
-      line-height: 0;
-    }
-
-    &[data-name]:hover:before,
-    &[data-name]:hover:after {
-      visibility: visible;
-      opacity: 1;
-    }
   }
 }

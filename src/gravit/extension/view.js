@@ -7,7 +7,6 @@
      * @constructor
      */
     function GView() {
-        this._documentStates = [];
     };
     IFObject.inherit(GView, GEventTarget);
 
@@ -141,6 +140,10 @@
                 var state = this._createDocumentState(event.document);
                 if (state) {
                     state.init();
+                    if (!this._documentStates) {
+                        this._documentStates = [];
+                    }
+
                     this._documentStates.push(state);
 
                     this.trigger(GView.UPDATE_EVENT);
@@ -152,6 +155,10 @@
                 if (state) {
                     state.release();
                     this._documentStates.splice(this._documentStates.indexOf(state), 1);
+
+                    if (this._documentStates.length === 0) {
+                        this._documentStates = null;
+                    }
 
                     this.trigger(GView.UPDATE_EVENT);
                 }
@@ -188,6 +195,10 @@
      * @private
      */
     GView.prototype._findDocumentState = function (document) {
+        if (!this._documentStates) {
+            return null;
+        }
+
         for (var i = 0; i < this._documentStates.length; ++i) {
             if (this._documentStates[i].document === document) {
                 return this._documentStates[i];

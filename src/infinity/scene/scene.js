@@ -150,7 +150,7 @@
 
         return this._styleCollection;
     };
-    
+
     /** @override */
     IFScene.prototype.store = function (blob) {
         if (IFNode.Store.prototype.store.call(this, blob)) {
@@ -277,28 +277,46 @@
         return false;
     };
 
+    /**
+     * Links a referenceable target to a linked node
+     * @param {IFNode.Reference} target referenceable target to be linked against
+     * @param {IFNode} link linked node to be linked from
+     */
     IFScene.prototype.link = function (target, link) {
-        if (!target.__$$linkID) {
-            target.__$$linkID = ifUtil.uuid();
+        var referenceId = target.getReferenceId();
+        if (!this._links.hasOwnProperty(referenceId)) {
+            this._links[referenceId] = [];
         }
-        if (!this._links[target.__$$linkID]) {
-            this._links[target.__$$linkID] = [];
-        }
-        this._links[target.__$$linkID].push(link);
+        this._links[referenceId].push(link);
     };
 
+    /**
+     * Unlinks a referenceable target from a linked node
+     * @param {IFNode.Reference} target referenceable target to be unlinked to
+     * @param {IFNode} link linked node to be unlinked from
+     */
     IFScene.prototype.unlink = function (target, link) {
-
+        var referenceId = target.getReferenceId();
+        if (this._links.hasOwnProperty(referenceId)) {
+            var links = this._links[referenceId];
+            var index = links.indexOf(link);
+            if (index >= 0) {
+                links.splice(index, 1);
+                if (links.length === 0) {
+                    delete this._links[referenceId];
+                }
+            }
+        }
     };
 
     /**
      * Visits all links linking to a specific target node
-     * @param {IFNode} target the target node to visit links for
+     * @param {IFNode.Reference} target the target node to visit links for
      * @param {Function} visitor the visitor function called for each
      * link with the link being the only argument
      */
     IFScene.prototype.visitLinks = function (target, visitor) {
-        var links = this._links[target.__$$linkID];
+        var links = this._links[target.getReferenceId()];
         if (links) {
             for (var i = 0; i < links.length; ++i) {
                 visitor(links[i]);

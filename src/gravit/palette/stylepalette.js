@@ -145,7 +145,6 @@
                         'width': '250px'
                     })
                     .gStylePanel({
-                        styleSet: this._document.getScene().getStyleCollection(),
                         nullStyle: $('<span></span>')
                             .addClass('fa fa-plus-circle')
                             .css({
@@ -159,10 +158,14 @@
                                 'text-align': 'center'
                             })
                     })
+                    .gStylePanel('attach', this._document.getScene().getStyleCollection())
                     .gOverlay({
                         releaseOnClose: true
                     })
                     .gOverlay('open', evt.target)
+                    .on('close', function () {
+                        $(this).gStylePanel('detach');
+                    })
                     .on('change', function (evt, style) {
                         $(evt.target).gOverlay('close');
 
@@ -208,11 +211,7 @@
         this._styleLinkToggleControl = $('<button></button>')
             .addClass('fa fa-fw')
             .on('click', function () {
-                //var activeStyle = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
-
-                // TODO : I18N
-                var name = prompt('Enter a name for the new style. Not providing a name will remove the style when it is no longer in use.', '');
-
+                this._toggleStyleLink();
             }.bind(this))
             .appendTo(controls);
 
@@ -776,6 +775,100 @@
                 style.removeChild(removal[i]);
             }
         });
+    };
+
+    GStylePalette.prototype._toggleStyleLink = function () {
+        var activeStyle = this._styles[this._selectedStyleIndex][0];
+        if (activeStyle instanceof IFLinkedStyle) {
+            // Unlink
+            var editor = this._document.getEditor();
+            var scene = this._document.getScene();
+            editor.beginTransaction();
+            try {
+                // Get the shared style reference
+                var sharedStyle = activeStyle.getActualStyle();
+
+                // Save selected style index
+                var selectedStyleIndex = this._selectedStyleIndex;
+
+                // Replace all active style nodes with a new inline style
+                this._visitEachSelectedStyle(function (style) {
+                    // Create new inline style
+                    var inlineStyle = new IFInlineStyle();
+
+                    // Transfer style
+                    inlineStyle.transferProperties(style, [IFAppliedStyle.GeometryProperties, IFAppliedStyle.VisualProperties]);
+                    for (var child = sharedStyle.getFirstChild(); child !== null; child = child.getNext()) {
+                        if (child instanceof IFStyleEntry) {
+                            inlineStyle.appendChild(child.clone());
+                        }
+                    }
+
+                    // Insert before actual style
+                    style.getParent().insertChild(inlineStyle, style);
+
+                    // Remove original style
+                    style.getParent().removeChild(style);
+                });
+
+                // If the shared style doesn't have a name and doesn't have anymore
+                // references we'll be removing it here
+                if (sharedStyle.getProperty('name') === null && !scene.hasLinks(sharedStyle)) {
+                    sharedStyle.getParent().removeChild(sharedStyle);
+                }
+
+                // Re-assign selected style
+                this._setSelectedStyle(selectedStyleIndex);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Unlink Style');
+            }
+        } else {
+            // Link
+            // TODO : I18N
+            var name = prompt('Enter a name for the new style. Not providing a name will remove the style when it is no longer in use.', '');
+            var editor = this._document.getEditor();
+            var scene = this._document.getScene();
+            editor.beginTransaction();
+            try {
+                // Create our shared style
+                var sharedStyle = new IFSharedStyle();
+                if (name && name.trim() !== '') {
+                    sharedStyle.setProperty('name', name);
+                }
+
+                // Transfer style
+                for (var child = activeStyle.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFStyleEntry) {
+                        sharedStyle.appendChild(child.clone());
+                    }
+                }
+
+                // Add the shared style to our collection
+                scene.getStyleCollection().appendChild(sharedStyle);
+
+                // Save selected style index
+                var selectedStyleIndex = this._selectedStyleIndex;
+
+                // Replace all active style nodes with a new linked style
+                this._visitEachSelectedStyle(function (style) {
+                    // Insert new linked style before
+                    var linkedStyle = new IFLinkedStyle();
+                    linkedStyle.transferProperties(style, [IFAppliedStyle.GeometryProperties, IFAppliedStyle.VisualProperties]);
+                    linkedStyle.setProperty('ref', sharedStyle.getReferenceId());
+                    style.getParent().insertChild(linkedStyle, style);
+
+                    // Remove original style
+                    style.getParent().removeChild(style);
+                });
+
+                // Re-assign selected style
+                this._setSelectedStyle(selectedStyleIndex);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Link Style');
+            }
+        }
     };
 
     GStylePalette.prototype._updateSelectedStyle = function () {
