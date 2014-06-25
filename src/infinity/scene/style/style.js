@@ -14,12 +14,6 @@
 
     IFObject.inheritAndMix(IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
 
-    /**
-     * Style's mime-type
-     * @type {string}
-     */
-    IFStyle.MIME_TYPE = "application/infinity+style";
-
     // -----------------------------------------------------------------------------------------------------------------
     // IFStyle.StyleChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
@@ -263,8 +257,7 @@
 
     /** @override */
     IFStyle.prototype.validateInsertion = function (parent, reference) {
-        // By default, styles can only be appended to stylesets and scene's style collection
-        return parent instanceof IFStyleSet || parent instanceof IFScene.StyleCollection;
+        return false;
     };
 
     /** @override */

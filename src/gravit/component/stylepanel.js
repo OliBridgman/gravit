@@ -106,7 +106,7 @@
 
                     // Setup our drag-event now
                     event.dataTransfer.effectAllowed = 'move';
-                    event.dataTransfer.setData(IFStyle.MIME_TYPE, IFNode.serialize(style));
+                    event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
                     event.dataTransfer.setDragImage(block.find('.style-preview')[0], data.previewWidth / 2, data.previewHeight / 2);
                 });
 

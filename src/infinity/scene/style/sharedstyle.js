@@ -80,6 +80,11 @@
     };
 
     /** @override */
+    IFSharedStyle.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFScene.StyleCollection;
+    };
+
+    /** @override */
     IFSharedStyle.prototype.toString = function () {
         return "[IFSharedStyle]";
     };

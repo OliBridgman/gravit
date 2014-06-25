@@ -796,6 +796,21 @@
             }
         }
 
+        // Dropping a style on stylable elements will be handled as well
+        if (type === IFElementEditor.DropType.Node && source && source instanceof IFStyle) {
+            if (this._element.hasMixin(IFElement.Style)) {
+                if (source instanceof IFSharedStyle) {
+                    var linkedStyle = new IFLinkedStyle();
+                    linkedStyle.setProperty('ref', source.getReferenceId());
+                    this._element.getStyleSet().appendChild(linkedStyle);
+                    return true;
+                } else if (source instanceof IFAppliedStyle) {
+                    this._element.getStyleSet().appendChild(source);
+                    return true;
+                }
+            }
+        }
+
         return false;
     };
 

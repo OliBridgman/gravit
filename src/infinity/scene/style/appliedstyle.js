@@ -92,6 +92,11 @@
     };
 
     /** @override */
+    IFAppliedStyle.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFStyleSet;
+    };
+
+    /** @override */
     IFAppliedStyle.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFAppliedStyle.GeometryProperties);
         this._handleVisualChangeForProperties(change, args, IFAppliedStyle.VisualProperties);

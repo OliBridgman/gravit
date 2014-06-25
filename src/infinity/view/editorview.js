@@ -141,8 +141,8 @@
                     // If we had have one or more hits, iterate them
                     var acceptedDrop = false;
                     if (stackedHits && stackedHits.length > 0) {
-                        for (var i = 0; i < stackedHits.length; ++i) {
-                            var hit = stackedHits[i];
+                        for (var j = 0; j < stackedHits.length; ++j) {
+                            var hit = stackedHits[j];
                             // Create a temporary editor for the hit element which gets not attached
                             var editor = IFElementEditor.createEditor(hit.element);
                             if (editor && editor.acceptDrop(scenePosition, type, source, hit.data)) {

@@ -15,12 +15,6 @@
     IFObject.inheritAndMix(IFStyleSet, IFNode, [IFNode.Container, IFNode.Store]);
 
     /**
-     * StyleSet's mime-type
-     * @type {string}
-     */
-    IFStyleSet.MIME_TYPE = "application/infinity+styleSet";
-
-    /**
      * Returns the bounding box of the styleSet which is
      * the union of all visible style's bboxes
      * @param {GRect} source the source bbox
