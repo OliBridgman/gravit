@@ -1,6 +1,6 @@
 (function ($) {
 
-    function updateSelectedStyle ($this, style) {
+    function updateSelectedStyle($this, style) {
         $this.find('.style-block').each(function (index, element) {
             var $element = $(element);
             $element
@@ -8,7 +8,7 @@
         });
     };
 
-    function afterInsertEvent (evt) {
+    function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
@@ -16,8 +16,20 @@
         }
     };
 
-    function beforeRemoveEvent (evt) {
-        // TODO
+    function beforeRemoveEvent(evt) {
+        var $this = $(this);
+        var container = $this.data('gstylepanel').container;
+        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+            methods.removeStyle.call(this, evt.node);
+        }
+    };
+
+    function styleChangeEvent(evt) {
+        var $this = $(this);
+        var container = $this.data('gstylepanel').container;
+        if (evt.style.getParent() === container) {
+            methods.updateStyle.call(this, evt.style);
+        }
     };
 
     var methods = {
@@ -55,12 +67,13 @@
             var $this = $(this);
             var self = this;
 
+            index = index || style.getNext() ? style.getParent().getIndexOfChild(style) : -1;
+
             var block = $('<div></div>')
                 .addClass('style-block')
                 .attr('draggable', 'true')
                 .append($('<img>')
-                    .addClass('style-preview')
-                    .attr('src', style.createPreviewImage(36, 36)))
+                    .addClass('style-preview'))
                 .on('click', function () {
                     $this.data('gstylepanel').selected = style;
                     updateSelectedStyle($this, style);
@@ -68,17 +81,37 @@
                 })
                 .data('style', style);
 
-            var name = style instanceof IFSharedStyle ? style.getProperty('name') : '';
-            if (name !== '') {
-                block.attr('title', name);
+            if (index >= 0) {
+                block.insertBefore($this.children('.style-block').eq(index));
+            } else {
+                block.appendTo($this);
             }
 
-            //if (index >= 0) {
-            //    block.insertBefore(this._styleSelector.children('.style-block').eq(index));
-            //} else {
-            //    block.appendTo(this._styleSelector);
-            //}
-            block.appendTo($this);
+            methods.updateStyle.call(this, style);
+        },
+
+        updateStyle: function (style) {
+            $(this).find('.style-block').each(function (index, element) {
+                var $element = $(element);
+                if ($element.data('style') === style) {
+                    $element
+                        .find('.style-preview')
+                        .attr('src', style.createPreviewImage(36, 36));
+
+                    $element.attr('title', style instanceof IFSharedStyle ? style.getProperty('name') : '');
+                    return false;
+                }
+            });
+        },
+
+        removeStyle: function (style) {
+            $(this).find('.style-block').each(function (index, element) {
+                var $element = $(element);
+                if ($element.data('style') === style) {
+                    $element.remove();
+                    return false;
+                }
+            });
         },
 
         clear: function () {
@@ -116,8 +149,10 @@
                 if (scene) {
                     data.afterInsertHandler = afterInsertEvent.bind(this);
                     data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                    data.styleChangeHandler = styleChangeEvent.bind(this);
                     scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
             return this;
@@ -134,12 +169,14 @@
                 if (scene) {
                     scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
 
             data.container = null;
             data.afterInsertHandler = null;
             data.beforeRemoveHandler = null;
+            data.styleChangeHandler = null;
 
             methods.clear.call(this);
 
