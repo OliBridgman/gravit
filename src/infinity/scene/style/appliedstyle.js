@@ -14,6 +14,30 @@
     IFObject.inherit(IFAppliedStyle, IFStyle);
 
     /**
+     * The type of a style
+     * @enum
+     */
+    IFAppliedStyle.Type = {
+        /**
+         * Content type - render contents and effects
+         */
+        Content: 'C',
+
+        /**
+         * Knockout - Applies effects on contents
+         * but doesn't render the contents
+         */
+        Knockout: 'K',
+
+        /**
+         * Mask - Applies effects on background and
+         * clips againts contents but doesn't render
+         * the contents
+         */
+        Mask: 'M'
+    };
+
+    /**
      * Geometry properties
      */
     IFAppliedStyle.GeometryProperties = {
@@ -25,6 +49,8 @@
      * Visual properties
      */
     IFAppliedStyle.VisualProperties = {
+        // The type of the style
+        tp: IFAppliedStyle.Type.Content,
         // The blend mode of the style
         blm: IFPaintCanvas.BlendMode.Normal,
         // The opacity of the style

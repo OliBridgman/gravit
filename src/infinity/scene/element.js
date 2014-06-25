@@ -326,15 +326,35 @@
      */
     IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
         if (context.configuration.isRasterEffects(context)) {
+            var styleAsMask = false;
+            var styleKnockout = false;
             var styleOpacity = 1.0;
             var styleBlendMode = IFPaintCanvas.BlendMode.Normal;
 
+
             if (style instanceof IFAppliedStyle) {
+                var styleType = style.getProperty('tp');
+                switch (styleType) {
+                    case IFAppliedStyle.Type.Content:
+                        break;
+                    case IFAppliedStyle.Type.Mask:
+                        styleAsMask = true;
+                        break;
+                    case IFAppliedStyle.Type.Knockout:
+                        styleKnockout = true;
+                        break;
+                    default:
+                        break;
+                }
+
                 styleOpacity = style.getProperty('opc');
                 styleBlendMode = style.getProperty('blm');
             }
 
-            var needContentsCanvas = styleOpacity !== 1.0 || styleBlendMode !== IFPaintCanvas.BlendMode.Normal
+            var needContentsCanvas =
+                styleOpacity !== 1.0 ||
+                    styleBlendMode !== IFPaintCanvas.BlendMode.Normal ||
+                    styleAsMask === true;
 
             var hasRenderedContents = false;
 
@@ -359,6 +379,9 @@
                 // Create a temporary canvas for our actual contents
                 var paintBBox = style.getBBox(this.getGeometryBBox());
                 var sourceCanvas = context.canvas;
+
+                // TODO : implement styleAsMask !!!!
+
                 var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
                 context.canvas = contentsCanvas;
                 try {
@@ -390,7 +413,7 @@
                         }
 
                         // Paint contents before first post filter
-                        if (!hasRenderedContents && effect.isPost()) {
+                        if (!hasRenderedContents && !styleKnockout && effect.isPost()) {
                             hasRenderedContents = true;
                             sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
                         }
@@ -401,7 +424,7 @@
                     }
                 }
 
-                if (!hasRenderedContents) {
+                if (!hasRenderedContents && !styleKnockout) {
                     sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
                 }
             } else {
@@ -722,7 +745,7 @@
         if (!context) {
             // If there's no context we can only paint when attached and having a parent
             // or when we are the scene by ourself
-            return (this.isAttached() && this.getParent()) || (this instanceof IFScene);
+            return (this.isAttached() && this.getParent()) || (this instanceof IFScene);
         }
 
         var paintBBox = this.getPaintBBox();

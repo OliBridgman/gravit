@@ -303,10 +303,7 @@
             .addClass('g-form style-settings')
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Blend:'))
-                .append($('<td></td>')
+                    .attr('colspan', '2')
                     .append($('<select></select>')
                         .attr('data-property', 'blm')
                         .gBlendMode()
@@ -315,11 +312,7 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.setProperty('blm', val);
                             });
-                        }.bind(this))))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Opacity:'))
-                .append($('<td></td>')
+                        }.bind(this)))
                     .append($('<input>')
                         .attr('data-property', 'opc')
                         .css('width', '3em')
@@ -334,6 +327,42 @@
                             } else {
                                 this._updateStyleSettings();
                             }
+                        }.bind(this))))
+                .append($('<td></td>')
+                    .attr('colspan', '2')
+                    .css('padding-left', '7px')
+                    .append($('<button></button>')
+                        .addClass('g-icon')
+                        .attr('data-property-tp', IFAppliedStyle.Type.Content)
+                        // TODO : I18N
+                        .attr('title', 'Content Style')
+                        .html('&#xe740;')
+                        .on('click', function (evt) {
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.setProperty('tp', IFAppliedStyle.Type.Content);
+                            });
+                        }.bind(this)))
+                    .append($('<button></button>')
+                        .addClass('g-icon')
+                        .attr('data-property-tp', IFAppliedStyle.Type.Mask)
+                        // TODO : I18N
+                        .attr('title', 'Mask Style')
+                        .html('&#xe73f;')
+                        .on('click', function (evt) {
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.setProperty('tp', IFAppliedStyle.Type.Mask);
+                            });
+                        }.bind(this)))
+                    .append($('<button></button>')
+                        .addClass('g-icon')
+                        .attr('data-property-tp', IFAppliedStyle.Type.Knockout)
+                        // TODO : I18N
+                        .attr('title', 'Knockout Style')
+                        .html('&#xe916;')
+                        .on('click', function (evt) {
+                            this._modifyEachSelectedStyle(function (style) {
+                                style.setProperty('tp', IFAppliedStyle.Type.Knockout);
+                            });
                         }.bind(this)))))
             .appendTo(this._htmlElement);
 
@@ -934,6 +963,11 @@
 
             this._styleSettings.find('[data-property="blm"]').val(style.getProperty('blm'));
             this._styleSettings.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100));
+
+            this._styleSettings.find('[data-property-tp]').each(function (index, element) {
+                var $element = $(element);
+                $element.toggleClass('g-active', $element.attr('data-property-tp') === style.getProperty('tp'));
+            });
         }
     };
 
