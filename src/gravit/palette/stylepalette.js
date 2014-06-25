@@ -1093,7 +1093,7 @@
             return this._paintsPanel;
         } else if (entry instanceof IFFilterEntry) {
             return this._filtersPanel;
-        } else if (entry instanceof IFEffectAttribute || entry instanceof IFVectorAttribute) {
+        } else if (entry instanceof IFEffectEntry || entry instanceof IFVEffectEntry) {
             return this._effectsPanel;
         }
     };
