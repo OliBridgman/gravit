@@ -199,8 +199,9 @@
                         $(this).removeClass('drop');
 
                         if (data.options.allowReorder) {
+                            var targetStyle = $(this).data('style');
+
                             if (data.container && dragStyle.getParent() === data.container) {
-                                var targetStyle = $(this).data('style');
                                 var parent = dragStyle.getParent();
                                 var sourceIndex = parent.getIndexOfChild(dragStyle);
                                 var targetIndex = parent.getIndexOfChild(targetStyle);
@@ -220,9 +221,9 @@
                                 }
                             }
 
-                            self.trigger('stylemove', dragStyle, targetStyle);
+                            self.trigger('stylemove', [dragStyle, targetStyle]);
                         } else if (data.options.allowDrop) {
-                            self.trigger('styledrop', dragStyle, targetStyle);
+                            self.trigger('styledrop', [dragStyle, targetStyle]);
                         }
                     });
             }

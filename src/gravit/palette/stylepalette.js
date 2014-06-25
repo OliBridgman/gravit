@@ -259,6 +259,43 @@
             .on('change', function (evt, style) {
                 this._setSelectedStyle(this._getStyleIndex(style));
             }.bind(this))
+            .on('styledragaway', function (evt, style) {
+                var styleIndex = this._getStyleIndex(style);
+                var styles = this._styles[styleIndex];
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    for (var i = 0; i < styles.length; ++i) {
+                        styles[i].getParent().removeChild(styles[i]);
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Remove Style');
+                }
+            }.bind(this))
+            .on('stylemove', function (evt, sourceStyle, targetStyle) {
+                var sourceStyleIndex = this._getStyleIndex(sourceStyle);
+                var targetStyleIndex = this._getStyleIndex(targetStyle);
+                var sourceStyles = this._styles[sourceStyleIndex].slice();
+                var targetStyles = this._styles[targetStyleIndex].slice();
+                var selectedStyleIndex = this._selectedStyleIndex;
+                this._selectedStyleIndex = -1;
+                var editor = this._document.getEditor();
+
+                editor.beginTransaction();
+                try {
+                    for (var i = 0; i < sourceStyles.length; ++i) {
+                        var parent = sourceStyles[i].getParent();
+                        parent.removeChild(sourceStyles[i]);
+                        parent.insertChild(sourceStyles[i], sourceStyleIndex < targetStyleIndex ? targetStyles[i].getNext() : targetStyles[i]);
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Move Style');
+                }
+
+                this._setSelectedStyle(this._getStyleIndex(sourceStyle));
+            }.bind(this))
             .appendTo(this._htmlElement);
 
         // Style settings
@@ -702,29 +739,19 @@
                 this._styleSelector.gStylePanel('removeStyle', this._styles[styleIndex][0]);
 
                 // Remove from styles array
-                var styles = this._styles[styleIndex];
-                for (var i = 0; i < styles.length; ++i) {
-                    if (styles[i] === style) {
-                        styles.splice(i, 1);
-                        break;
-                    }
+                this._styles.splice(styleIndex, 1);
+
+                // Update selected style if active
+                if (styleIndex === this._selectedStyleIndex) {
+                    this._setSelectedStyle(this._styles.length > 0 ? 0 : -1);
+                } else if (styleIndex < this._selectedStyleIndex) {
+                    this._selectedStyleIndex -= 1;
                 }
 
-                if (styles.length === 0) {
-                    this._styles.splice(styleIndex, 1);
-
-                    // Update selected style if active
-                    if (styleIndex === this._selectedStyleIndex) {
-                        this._setSelectedStyle(this._styles.length > 0 ? 0 : -1);
-                    } else if (styleIndex < this._selectedStyleIndex) {
-                        this._selectedStyleIndex -= 1;
-                    }
-
-                    // Update style selector when there's no styles
-                    if (this._styles.length === 0) {
-                        this._styles = null;
-                        this._styleSelector.css('display', 'none');
-                    }
+                // Update style selector when there's no styles
+                if (this._styles.length === 0) {
+                    this._styles = null;
+                    this._styleSelector.css('display', 'none');
                 }
             }
         }
