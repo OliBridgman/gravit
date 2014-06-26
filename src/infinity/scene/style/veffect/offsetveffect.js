@@ -30,7 +30,7 @@
         // Offset-Type
         tp: IFOffsetVEffect.OffsetType.Outset,
         // The offset amount
-        off: 5
+        off: 1
     };
 
     /** @override */

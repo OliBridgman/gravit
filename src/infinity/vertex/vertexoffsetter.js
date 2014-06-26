@@ -10,16 +10,11 @@
      * @constructor
      */
     function IFVertexOffsetter(source, offset, inset, outset, tol) {
-        var tolerance = tol ? tol / 3 : 0.03;
+        this._tolerance = tol ? tol / 3 : 0.03;
         this._source = source;
-        this._polyline = new IFVertexOffsetter.PolySegmentContainer();
-        this._polyoutset = [];
-        this._polyinset = [];
-        this._outset = [];
-        this._inset = [];
-        this.generatePolyLine(tolerance);
-        this.generatePolyOffset(Math.abs(offset), inset, outset, tolerance);
-        this.generateOffset(inset, outset, tolerance);
+        this._offset = offset;
+        this._makeInset = inset;
+        this._makeOutset = outset;
     }
 
     IFObject.inherit(IFVertexOffsetter, IFVertexSource);
@@ -194,6 +189,30 @@
     IFVertexOffsetter.prototype._source = null;
 
     /**
+     * @type {Number}
+     * @private
+     */
+    IFVertexOffsetter.prototype._offset = null;
+
+    /**
+     * @type {Boolean}
+     * @private
+     */
+    IFVertexOffsetter.prototype._makeInset = false;
+
+    /**
+     * @type {Boolean}
+     * @private
+     */
+    IFVertexOffsetter.prototype._makeOutset = false;
+
+    /**
+     * @type {Number}
+     * @private
+     */
+    IFVertexOffsetter.prototype._tolerance = null;
+
+    /**
      *
      * @type {IFVertexOffsetter.PolySegmentContainer}
      * @private
@@ -217,23 +236,49 @@
         if (index != 0) {
             return false;
         }
-        if (this._inset.length) {
-            this._rewindVertices(false);
-            this._insetIdx = 0;
-        }
-        if (this._outset.length) {
-            this._rewindVertices(true);
-            this._outsetIdx = 0;
-        }
+        this._inset = null;
+        this._insetIdx = 0;
+        this._outset = null;
+        this._outsetIdx = 0;
+
         return this._source.rewindVertices(0);
     };
 
     /** override */
     IFVertexOffsetter.prototype.readVertex = function (vertex) {
-        if (this._outset.length && this._readVertex(vertex, true)) {
-            return true;
+        var haveVertices = true;
+        var startVertex = null;
+        while (haveVertices) {
+            if (this._outset && this._outset.length && this._readVertex(vertex, true)) {
+                return true;
+            }
+            if (this._inset && this._inset.length && this._readVertex(vertex, false)) {
+                return true;
+            }
+            this._polyline = new IFVertexOffsetter.PolySegmentContainer();
+            this._polyoutset = [];
+            this._polyinset = [];
+            this._outset = [];
+            this._inset = [];
+            this._insetIdx = 0;
+            this._outsetIdx = 0;
+            startVertex = this.generatePolyLine(this._tolerance, startVertex);
+            if (this._polyline.count) {
+                this.generatePolyOffset(Math.abs(this._offset), this._makeInset, this._makeOutset, this._tolerance);
+                this.generateOffset(this._makeInset, this._makeOutset, this._tolerance);
+                if (this._inset.length) {
+                    this._rewindVertices(false);
+                    this._insetIdx = 0;
+                }
+                if (this._outset.length) {
+                    this._rewindVertices(true);
+                    this._outsetIdx = 0;
+                }
+            } else if (!startVertex) {
+                haveVertices = false;
+            }
         }
-        return (this._inset.length && this._readVertex(vertex, false));
+        return false;
     };
 
     /**
@@ -715,11 +760,7 @@
         }
     };
 
-    IFVertexOffsetter.prototype.generatePolyLine = function (tolerance) {
-        if (!this._source.rewindVertices(0)) {
-            return;
-        }
-
+    IFVertexOffsetter.prototype.generatePolyLine = function (tolerance, startVertex) {
         // The following documents will be used to approximate a bezier curve with polyline
         // (a combination of linear segments and circular arcs):
         //
@@ -735,15 +776,24 @@
         //
         // 5. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
+        var newStartVertex = null;
         var vertex1 = null;
         var vertex2 = new IFVertex();
         var polySegm;
-
-        while (this._source.readVertex(vertex2)) {
+        var proceed = true;
+        if (startVertex) {
+            vertex1 = startVertex;
+        }
+        while (proceed && this._source.readVertex(vertex2)) {
             switch (vertex2.command) {
                 case IFVertex.Command.Move:
-                    vertex1 = vertex2;
-                    vertex2 = new IFVertex();
+                    if (!startVertex) {
+                        vertex1 = vertex2;
+                        vertex2 = new IFVertex();
+                    } else {
+                        newStartVertex = vertex2;
+                        proceed = false;
+                    }
                     break;
                 case IFVertex.Command.Line:
                     if (!vertex1) {
@@ -804,6 +854,11 @@
                         this._polyline.closed = true;
                         polySegm = new IFVertexOffsetter.PolySegment(this._polyline.head.point, 0);
                         this._polyline.insertSegment(polySegm);
+                        newStartVertex = new IFVertex();
+                        newStartVertex.command = IFVertex.Command.Move;
+                        newStartVertex.x = this._polyline.head.point.getX();
+                        newStartVertex.y = this._polyline.head.point.getY();
+                        proceed = false;
                     }
                     break;
 
@@ -811,7 +866,7 @@
                     throw new Error("Unknown vertex command: " + vertex.command.toString());
             }
         }
-        if (vertex1) {
+        if (vertex1 && this._polyline.count) {
             polySegm = new IFVertexOffsetter.PolySegment(new GPoint(vertex1.x, vertex1.y), 0);
             this._polyline.insertSegment(polySegm);
             if (ifMath.isEqualEps(vertex1.x, this._polyline.head.point.getX()) &&
@@ -820,6 +875,7 @@
                 this._polyline.closed = true;
             }
         }
+        return newStartVertex;
     };
 
     IFVertexOffsetter.prototype.generatePolyOffset = function (offset, inset, outset, tolerance) {
