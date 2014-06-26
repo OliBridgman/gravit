@@ -35,7 +35,7 @@
      * The visual properties of a page with their default values
      */
     IFPage.VisualProperties = {
-        cls: new IFColor(IFColor.Type.RGB, [255, 255, 255, 100])
+        cls: null
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -82,11 +82,6 @@
         var pageRect = new GRect(this.$x, this.$y, this.$w, this.$h);
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
-
-        // Paint page if it has any color
-        if (this.$cls) {
-            context.canvas.fillRect(x, y, w, h, this.$cls);
-        }
 
         // If we have contents and are in output mode we'll clip to our page extents
         if (hasContents && context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Output) {

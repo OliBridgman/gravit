@@ -70,6 +70,7 @@
 
     /** @override */
     IFEditorView.prototype._initLayers = function () {
+        this._addLayer(new IFBackgroundLayer(this));
         this._addLayer(new IFSceneLayer(this));
         this._addLayer(new IFGridLayer(this));
         this._addLayer(new IFEditorLayer(this));

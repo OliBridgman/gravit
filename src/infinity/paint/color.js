@@ -17,8 +17,6 @@
      */
     IFColor.MIME_TYPE = "application/infinity+color";
 
-
-
     /**
      * @enum
      */

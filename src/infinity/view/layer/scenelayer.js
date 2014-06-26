@@ -30,22 +30,9 @@
 
     /** @override */
     IFSceneLayer.prototype.paint = function (context) {
-        var scene = this._view.getScene();
-        // Before any painting we need to convert our dirty matcher's
-        // dirty regions back into scene coordinates in any case
         if (context.dirtyMatcher) {
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
-
-        // Fill Canvas with pasteboard color in either single page mode or output paint mode
-        //if (this._viewConfiguration.paintMode === IFScenePaintConfiguration.PaintMode.Output || targetPage) {
-        //    context.canvas.fillRect(0, 0, context.canvas.getWidth(), context.canvas.getHeight(), this._viewConfiguration.pasteboardColor);
-        //}
-
-        // Paint either target page and/or pageSet before anything else
-        //var oldCanvasTransform = context.canvas.setTransform(this._worldToViewTransform);
-        //this._scene.getPageSet().paint(context);
-        //context.canvas.setTransform(oldCanvasTransform);
 
         // Handle rendering in pixel mode but only if we're not at 100%
         if (this._view.getViewConfiguration().pixelMode && !ifMath.isEqualEps(this._view.getZoom(), 1.0)) {
@@ -79,10 +66,8 @@
         } else {
             // Render regular vectors
             this._pixelContentCanvas = null;
-            // Make sure to round scrolling to avoid floating point errors
-            context.canvas.setOrigin(new GPoint(Math.round(this._view._scrollX), Math.round(this._view._scrollY)));
+            context.canvas.setOrigin(new GPoint(this._view._scrollX, this._view._scrollY));
             context.canvas.setScale(this._view._zoom);
-            //context.canvas.setTransform(this._view.getWorldTransform());
             this._view.getScene().render(context);
         }
     };

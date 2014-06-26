@@ -144,15 +144,13 @@
             'x',
             'y',
             'w',
-            'h',
-            'cls'
+            'h'
         ], [
             'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),
             insertPos.getY(),
             800,
-            600,
-            IFColor.parseCSSColor('white')
+            600
         ]);
 
         // Append child and be done with it

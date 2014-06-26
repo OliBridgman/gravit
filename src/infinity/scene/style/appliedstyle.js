@@ -19,7 +19,7 @@
      */
     IFAppliedStyle.Type = {
         /**
-         * Content type - render contents and effects
+         * Content type - Render contents and effects
          */
         Content: 'C',
 
@@ -30,11 +30,16 @@
         Knockout: 'K',
 
         /**
-         * Mask - Applies effects on background and
-         * clips againts contents but doesn't render
-         * the contents
+         * Mask - Applies effects on contents
+         * and clips background with them
          */
-        Mask: 'M'
+        Mask: 'M',
+
+        /**
+         * Background - Applies effects on
+         * backgrounds and clips it with contents
+         */
+        Background: 'B'
     };
 
     /**

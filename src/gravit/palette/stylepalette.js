@@ -278,7 +278,6 @@
                 var targetStyleIndex = this._getStyleIndex(targetStyle);
                 var sourceStyles = this._styles[sourceStyleIndex].slice();
                 var targetStyles = this._styles[targetStyleIndex].slice();
-                var selectedStyleIndex = this._selectedStyleIndex;
                 this._selectedStyleIndex = -1;
                 var editor = this._document.getEditor();
 
@@ -303,7 +302,10 @@
             .addClass('g-form style-settings')
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', '2')
+                    .addClass('label g-icon')
+                    // TODO : I18N
+                    .html('&#xe73c;'))
+                .append($('<td></td>')
                     .append($('<select></select>')
                         .attr('data-property', 'blm')
                         .gBlendMode()
@@ -330,38 +332,29 @@
                         }.bind(this))))
                 .append($('<td></td>')
                     .attr('colspan', '2')
-                    .css('padding-left', '7px')
-                    .append($('<button></button>')
-                        .addClass('g-icon')
-                        .attr('data-property-tp', IFAppliedStyle.Type.Content)
-                        // TODO : I18N
-                        .attr('title', 'Content Style')
-                        .html('&#xe740;')
-                        .on('click', function (evt) {
+                    .css('text-align', 'right')
+                    .append($('<select></select>')
+                        .attr('data-property', 'tp')
+                        .append($('<option></option>')
+                            .attr('value', IFAppliedStyle.Type.Content)
+                            // TODO : I18N
+                            .text('Content'))
+                        .append($('<option></option>')
+                            .attr('value', IFAppliedStyle.Type.Knockout)
+                            // TODO : I18N
+                            .text('Knockout'))
+                        .append($('<option></option>')
+                            .attr('value', IFAppliedStyle.Type.Mask)
+                            // TODO : I18N
+                            .text('Mask'))
+                        .append($('<option></option>')
+                            .attr('value', IFAppliedStyle.Type.Background)
+                            // TODO : I18N
+                            .text('Background'))
+                        .on('change', function (evt) {
+                            var val = $(evt.target).val();
                             this._modifyEachSelectedStyle(function (style) {
-                                style.setProperty('tp', IFAppliedStyle.Type.Content);
-                            });
-                        }.bind(this)))
-                    .append($('<button></button>')
-                        .addClass('g-icon')
-                        .attr('data-property-tp', IFAppliedStyle.Type.Mask)
-                        // TODO : I18N
-                        .attr('title', 'Mask Style')
-                        .html('&#xe73f;')
-                        .on('click', function (evt) {
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.setProperty('tp', IFAppliedStyle.Type.Mask);
-                            });
-                        }.bind(this)))
-                    .append($('<button></button>')
-                        .addClass('g-icon')
-                        .attr('data-property-tp', IFAppliedStyle.Type.Knockout)
-                        // TODO : I18N
-                        .attr('title', 'Knockout Style')
-                        .html('&#xe916;')
-                        .on('click', function (evt) {
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.setProperty('tp', IFAppliedStyle.Type.Knockout);
+                                style.setProperty('tp', val);
                             });
                         }.bind(this)))))
             .appendTo(this._htmlElement);
@@ -964,10 +957,7 @@
             this._styleSettings.find('[data-property="blm"]').val(style.getProperty('blm'));
             this._styleSettings.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100));
 
-            this._styleSettings.find('[data-property-tp]').each(function (index, element) {
-                var $element = $(element);
-                $element.toggleClass('g-active', $element.attr('data-property-tp') === style.getProperty('tp'));
-            });
+            this._styleSettings.find('[data-property="tp"]').val(style.getProperty('tp'));
         }
     };
 

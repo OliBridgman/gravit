@@ -79,14 +79,14 @@
      * @type Number
      * @private
      */
-    IFView.prototype._scrollX = 0.0;
+    IFView.prototype._scrollX = 0;
 
     /**
      * The current vertical scroll of this view
      * @type Number
      * @private
      */
-    IFView.prototype._scrollY = 0.0;
+    IFView.prototype._scrollY = 0;
 
     /**
      * The current zoom of this view
@@ -393,7 +393,10 @@
     IFView.prototype._updateViewTransforms = function () {
         // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
         // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
-        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-Math.round(this._scrollX), -Math.round(this._scrollY));
+        this._scrollX = Math.round(this._scrollX);
+        this._scrollY = Math.round(this._scrollY);
+
+        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-this._scrollX, -this._scrollY);
         if (!GTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
             this._worldToViewTransform = worldToViewTransform;
             this._viewToWorldTransform = worldToViewTransform.inverted();

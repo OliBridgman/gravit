@@ -133,7 +133,7 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Size:'))
+                    .text('Grid:'))
                 .append($('<td></td>')
                     .append(_createInput('gridSizeX')
                         // TODO : I18N

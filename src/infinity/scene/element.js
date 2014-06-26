@@ -327,10 +327,10 @@
     IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
         if (context.configuration.isRasterEffects(context)) {
             var styleAsMask = false;
+            var styleOnBackground = false;
             var styleKnockout = false;
             var styleOpacity = 1.0;
             var styleBlendMode = IFPaintCanvas.BlendMode.Normal;
-
 
             if (style instanceof IFAppliedStyle) {
                 var styleType = style.getProperty('tp');
@@ -343,6 +343,9 @@
                     case IFAppliedStyle.Type.Knockout:
                         styleKnockout = true;
                         break;
+                    case IFAppliedStyle.Type.Background:
+                        styleOnBackground = true;
+                        break;
                     default:
                         break;
                 }
@@ -354,14 +357,12 @@
             var needContentsCanvas =
                 styleOpacity !== 1.0 ||
                     styleBlendMode !== IFPaintCanvas.BlendMode.Normal ||
-                    styleAsMask === true;
-
-            var hasRenderedContents = false;
+                    styleAsMask === true ||
+                    styleOnBackground === true;
 
             // Collect filter and effects if desired
             var effects = [];
             var filters = [];
-
 
             for (var child = style.getActualStyle().getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
@@ -377,12 +378,14 @@
 
             if (needContentsCanvas) {
                 // Create a temporary canvas for our actual contents
+                var hasRenderedPaintCanvas = false;
                 var paintBBox = style.getBBox(this.getGeometryBBox());
                 var sourceCanvas = context.canvas;
-
-                // TODO : implement styleAsMask !!!!
-
                 var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
+                var paintCanvas = contentsCanvas;
+                var backgroundCanvas = null;
+
+                // Paint our contents now
                 context.canvas = contentsCanvas;
                 try {
                     this._paint(context, style, styleIndex);
@@ -390,9 +393,43 @@
                     context.canvas = sourceCanvas;
                 }
 
+                // If style is a mask or on background, create a background canvas here that
+                // keeps the contents of the background within ourself
+                if (styleAsMask || styleOnBackground) {
+                    backgroundCanvas = sourceCanvas.createCanvas(paintBBox, true/*copy contents*/);
+
+                    // If style is on background, switch paintCanvas from contents
+                    // to the background canvas as everything will be applied there instead
+                    if (styleOnBackground) {
+                        paintCanvas = backgroundCanvas;
+                    }
+                }
+
+                var _tryRenderPaintCanvas = function () {
+                    if (!hasRenderedPaintCanvas) {
+                        if (styleAsMask) {
+                            // For masking, we'll first clip our background canvas with the
+                            // paint canvas, then clear our target area in our canvas and
+                            // finally paint the background canvas
+                            backgroundCanvas.drawCanvas(paintCanvas, 0, 0, 1.0, IFPaintCanvas.CompositeOperator.DestinationIn);
+                            sourceCanvas.drawCanvas(backgroundCanvas, 0, 0, styleOpacity, styleBlendMode, true/*clear*/);
+                        } else if (styleOnBackground) {
+                            // For background style we'll clip the paint canvas which is our
+                            // background canvas with applied effects with the contents canvas
+                            // and finally paint it then
+                            paintCanvas.drawCanvas(contentsCanvas, 0, 0, 1.0, IFPaintCanvas.CompositeOperator.DestinationIn);
+                            sourceCanvas.drawCanvas(paintCanvas, 0, 0, styleOpacity, styleBlendMode);
+                        } else {
+                            // Regular painting
+                            sourceCanvas.drawCanvas(paintCanvas, 0, 0, styleOpacity, styleBlendMode);
+                        }
+                        hasRenderedPaintCanvas = true;
+                    }
+                };
+
                 // Apply filters on contents
                 for (var i = 0; i < filters.length; ++i) {
-                    filters[i].apply(contentsCanvas);
+                    filters[i].apply(paintCanvas);
                 }
 
                 // Apply effects if desired...
@@ -412,21 +449,18 @@
                             effectCanvas.fillRect(0, 0, paintBBox.getWidth(), paintBBox.getHeight());
                         }
 
-                        // Paint contents before first post filter
-                        if (!hasRenderedContents && !styleKnockout && effect.isPost()) {
-                            hasRenderedContents = true;
-                            sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
+                        // Paint contents before first post filter except if knocked out
+                        if (!styleKnockout && effect.isPost()) {
+                            _tryRenderPaintCanvas();
                         }
 
                         // Render effect and paint the effect canvas
-                        effect.render(effectCanvas, contentsCanvas);
-                        sourceCanvas.drawCanvas(effectCanvas, 0, 0);
+                        effect.render(effectCanvas, paintCanvas);
+                        sourceCanvas.drawCanvas(effectCanvas, 0, 0, styleOpacity, styleBlendMode);
                     }
                 }
 
-                if (!hasRenderedContents && !styleKnockout) {
-                    sourceCanvas.drawCanvas(contentsCanvas, 0, 0, styleOpacity, styleBlendMode);
-                }
+                _tryRenderPaintCanvas();
             } else {
                 this._paint(context, style, styleIndex);
             }
@@ -742,6 +776,7 @@
         if (!this.isVisible()) {
             return false;
         }
+
         if (!context) {
             // If there's no context we can only paint when attached and having a parent
             // or when we are the scene by ourself
@@ -752,6 +787,7 @@
         if (paintBBox == null || paintBBox.isEmpty()) {
             return false;
         }
+
         if (context && context.dirtyMatcher && !context.dirtyMatcher.isDirty(paintBBox)) {
             return false;
         }

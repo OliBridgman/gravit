@@ -99,6 +99,9 @@
         context.canvas = canvas;
         context.configuration = new IFScenePaintConfiguration();
 
+        // Paint transparent background
+        context.canvas.fillRect(0, 0, width, height, context.canvas.createTexture(IFPaintCanvas.CHESSBOARD_SMALL_IMAGE));
+
         // Calculate real bounding box
         var bbox = this.getBBox(new GRect(0, 0, width, height));
 

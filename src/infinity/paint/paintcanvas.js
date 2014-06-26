@@ -162,18 +162,29 @@
         None: 'no-repeat'
     };
 
+    IFPaintCanvas.CHESSBOARD_LARGE_IMAGE = function () {
+        var img = document.createElement('img');
+        img.setAttribute('src', '/assets/image/chessboard_8x8.png');
+        return img;
+    }();
+    IFPaintCanvas.CHESSBOARD_SMALL_IMAGE = function () {
+        var img = document.createElement('img');
+        img.setAttribute('src', '/assets/image/chessboard_4x4.png');
+        return img;
+    }();
+
     IFPaintCanvas.COLOR_MATRIX_IDENTITY = [
         1, 0, 0, 0, 0,
         0, 1, 0, 0, 0,
         0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        0, 0, 0, 1, 0
     ];
 
     IFPaintCanvas.COLOR_MATRIX_INVERT = [
         -1, 0, 0, 0, 255,
         0, -1, 0, 0, 255,
         0, 0, -1, 0, 255,
-        0, 0, 0, 1, 0,
+        0, 0, 0, 1, 0
     ];
 
     IFPaintCanvas.COLOR_MATRIX_GRAYSCALE = [
@@ -443,17 +454,24 @@
      * including the current zoom level. Note that the
      * canvas will include a transformation so that the
      * extent's x/y coordinates are equal to 0,0.
-     * @param {GRect} extents the extents for the requested
-     * canvas
+     * @param {GRect} extents the extents for the requested canvas
+     * @param {Boolean} [copyContents] if set to true, the contents of this
+     * canvas within the given extents will be copied into the new canvas.
+     * Defaults to false.
      */
-    IFPaintCanvas.prototype.createCanvas = function (extents) {
+    IFPaintCanvas.prototype.createCanvas = function (extents, copyContents) {
         var result = new IFPaintCanvas();
 
-        // Resize canvas including our scalation plus a small tolerance factor
-        result.resize(
-            extents.getWidth() * (this._scale ? this._scale : 1),
-            extents.getHeight() * (this._scale ? this._scale : 1)
+        var scale = this._scale ? this._scale : 1;
+        var finalExtents = new GRect(
+            extents.getX() * scale,
+            extents.getY() * scale,
+            extents.getWidth() * scale,
+            extents.getHeight() * scale
         );
+
+        // Resize canvas including our scalation plus a small tolerance factor
+        result.resize(finalExtents.getWidth(), finalExtents.getHeight());
 
         // Prepare canvas with our own clipping areas but ensure to
         // transform them into the target canvas' origin, first.
@@ -473,10 +491,25 @@
         // TODO : Uncommment areas param when working
         result.prepare(null);//areas);
 
+        // Copy contents if desired before we apply any transformations
+        if (copyContents) {
+            result._canvasContext.drawImage(
+                this._canvasContext.canvas,
+                finalExtents.getX() - this._origin.getX(),
+                finalExtents.getY() - this._origin.getY(),
+                finalExtents.getWidth(),
+                finalExtents.getHeight(),
+                0,
+                0,
+                finalExtents.getWidth(),
+                finalExtents.getHeight()
+            );
+        }
+
         // Set result's origin and scalation
-        var scale = this._scale ? this._scale : 1;
-        result.setOrigin(new GPoint(extents.getX() * scale, extents.getY() * scale));
-        result.setOffset(new GPoint(extents.getX() * scale, extents.getY() * scale));
+        var topLeft = finalExtents.getSide(GRect.Side.TOP_LEFT);
+        result.setOrigin(topLeft);
+        result.setOffset(topLeft);
         result.setScale(this._scale);
 
         // Finally return our new canvas
@@ -491,16 +524,10 @@
      * @param {Number} [dy]
      * @param {Number} [opacity]
      * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {Boolean} [clear] if true, the underlying area the canvas will be put onto
+     * will be cleared first with transparent alpha values. Defaults to false.
      */
-    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, cmpOrBlend) {
-        if (typeof opacity == "number") {
-            this._canvasContext.globalAlpha = opacity;
-        } else {
-            this._canvasContext.globalAlpha = 1.0;
-        }
-
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
-
+    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, cmpOrBlend, clear) {
         // Make sure to reset scale when drawing canvases + make non smooth
         var hadSmooth = this._getImageSmoothingEnabled();
         var oldScale = this._scale;
@@ -510,16 +537,44 @@
         dx = dx | 0;
         dy = dy | 0;
 
-        var x = canvas._offset.getX() | 0;
-        var y = canvas._offset.getY() | 0;
+        var offset = canvas.getOffset();
+        var x = offset ? offset.getX() : 0 | 0;
+        var y = offset ? offset.getY() : 0 | 0;
+        var w = canvas.getWidth();
+        var h = canvas.getHeight();
 
         x += dx;
         y += dy;
 
-        this._canvasContext.drawImage(canvas._canvasContext.canvas, x, y);
+        if (clear) {
+            this._canvasContext.clearRect(x, y, w, h);
+        }
+
+        if (typeof opacity == "number") {
+            this._canvasContext.globalAlpha = opacity;
+        } else {
+            this._canvasContext.globalAlpha = 1.0;
+        }
+
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+
+        this._canvasContext.drawImage(canvas._canvasContext.canvas, 0, 0, w, h, x, y, w, h);
 
         this.setScale(oldScale);
         this._setImageSmoothingEnabled(hadSmooth);
+    };
+
+    /**
+     * Creates and returns a texture pattern
+     *
+     * @param {Image|IFPaintCanvas} image the image or canvas for the texture
+     * @param {IFPaintCanvas.RepeatMode} [repeat] the repeat mode, defaults
+     * to IFPaintCanvas.RepeatMode.Both
+     */
+    IFPaintCanvas.prototype.createTexture = function (image, repeat) {
+        repeat = repeat || IFPaintCanvas.RepeatMode.Both;
+        image = this._convertImage(image);
+        return this._canvasContext.createPattern(image, repeat);
     };
 
     /**
@@ -1110,7 +1165,7 @@
 
     /** @private */
     IFPaintCanvas.prototype._convertImage = function (image) {
-        if (image instanceof Image) {
+        if (image instanceof HTMLImageElement || image instanceof Image) {
             return image;
         } else if (image instanceof IFPaintCanvas) {
             return image._canvasContext.canvas;

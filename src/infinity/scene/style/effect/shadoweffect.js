@@ -20,11 +20,11 @@
         // Inner shadow or not (drop shadow)
         in: false,
         // The radius of the shadow
-        r: 5,
+        r: 10,
         // The horizontal shift of the shadow
-        x: 0,
+        x: 10,
         // The vertical shift of the shadow
-        y: 0
+        y: 10
     };
 
     /**
