@@ -15,6 +15,7 @@
         this._offset = offset;
         this._makeInset = inset;
         this._makeOutset = outset;
+        this._startVertex = null;
     }
 
     IFObject.inherit(IFVertexOffsetter, IFVertexSource);
@@ -231,6 +232,13 @@
 
     IFVertexOffsetter.prototype._outsetIdx = 0;
 
+    /**
+     * Stores the new path start position when 'Close' or 'Move' is used in the middle of vertex sequence
+     * @type {IFVertex}
+     * @private
+     */
+    IFVertexOffsetter.prototype._startVertex = null;
+
     /** @override */
     IFVertexOffsetter.prototype.rewindVertices = function (index) {
         if (index != 0) {
@@ -240,44 +248,48 @@
         this._insetIdx = 0;
         this._outset = null;
         this._outsetIdx = 0;
+        this._startVertex = null;
 
         return this._source.rewindVertices(0);
     };
 
     /** override */
     IFVertexOffsetter.prototype.readVertex = function (vertex) {
-        var haveVertices = true;
-        var startVertex = null;
-        while (haveVertices) {
-            if (this._outset && this._outset.length && this._readVertex(vertex, true)) {
+        if (this._outset && this._outset.length && this._readVertex(vertex, true)) {
+            return true;
+        }
+        if (this._inset && this._inset.length && this._readVertex(vertex, false)) {
+            return true;
+        }
+
+        this._polyline = new IFVertexOffsetter.PolySegmentContainer();
+        this._polyoutset = [];
+        this._polyinset = [];
+        this._outset = [];
+        this._inset = [];
+        this._insetIdx = 0;
+        this._outsetIdx = 0;
+        this._startVertex = this.generatePolyLine(this._tolerance, this._startVertex);
+
+        if (this._polyline.count) {
+            this.generatePolyOffset(Math.abs(this._offset), this._makeInset, this._makeOutset, this._tolerance);
+            this.generateOffset(this._makeInset, this._makeOutset, this._tolerance);
+            if (this._inset.length) {
+                this._rewindVertices(false);
+                this._insetIdx = 0;
+            }
+            if (this._outset.length) {
+                this._rewindVertices(true);
+                this._outsetIdx = 0;
+            }
+            if (this._outset.length && this._readVertex(vertex, true)) {
                 return true;
             }
-            if (this._inset && this._inset.length && this._readVertex(vertex, false)) {
+            if (this._inset.length && this._readVertex(vertex, false)) {
                 return true;
-            }
-            this._polyline = new IFVertexOffsetter.PolySegmentContainer();
-            this._polyoutset = [];
-            this._polyinset = [];
-            this._outset = [];
-            this._inset = [];
-            this._insetIdx = 0;
-            this._outsetIdx = 0;
-            startVertex = this.generatePolyLine(this._tolerance, startVertex);
-            if (this._polyline.count) {
-                this.generatePolyOffset(Math.abs(this._offset), this._makeInset, this._makeOutset, this._tolerance);
-                this.generateOffset(this._makeInset, this._makeOutset, this._tolerance);
-                if (this._inset.length) {
-                    this._rewindVertices(false);
-                    this._insetIdx = 0;
-                }
-                if (this._outset.length) {
-                    this._rewindVertices(true);
-                    this._outsetIdx = 0;
-                }
-            } else if (!startVertex) {
-                haveVertices = false;
             }
         }
+
         return false;
     };
 
@@ -777,18 +789,18 @@
         // 5. Modeling of Bézier Curves Using a Combination of Linear and Circular Arc Approximations
         // P. Kaewsaiha, N. Dejdumrong, 2012
         var newStartVertex = null;
-        var vertex1 = null;
+        var origStartVertex = startVertex;
+        var vertex1 = origStartVertex;
         var vertex2 = new IFVertex();
         var polySegm;
         var proceed = true;
-        if (startVertex) {
-            vertex1 = startVertex;
-        }
+
         while (proceed && this._source.readVertex(vertex2)) {
             switch (vertex2.command) {
                 case IFVertex.Command.Move:
-                    if (!startVertex) {
+                    if (!origStartVertex || !this._polyline.count) {
                         vertex1 = vertex2;
+                        origStartVertex = vertex1;
                         vertex2 = new IFVertex();
                     } else {
                         newStartVertex = vertex2;
