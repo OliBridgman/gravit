@@ -1,4 +1,5 @@
 (function (_) {
+    var PREVIEW_CHESSBOARD_FILL = null;
 
     /**
      * Base style class
@@ -100,7 +101,10 @@
         context.configuration = new IFScenePaintConfiguration();
 
         // Paint transparent background
-        context.canvas.fillRect(0, 0, width, height, context.canvas.createTexture(IFPaintCanvas.CHESSBOARD_SMALL_IMAGE));
+        if (!PREVIEW_CHESSBOARD_FILL) {
+            PREVIEW_CHESSBOARD_FILL = IFPaintCanvas.createChessboard(4, 'white', 'rgb(185, 185, 185)');
+        }
+        context.canvas.fillRect(0, 0, width, height, context.canvas.createTexture(PREVIEW_CHESSBOARD_FILL));
 
         // Calculate real bounding box
         var bbox = this.getBBox(new GRect(0, 0, width, height));

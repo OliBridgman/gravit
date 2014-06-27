@@ -162,16 +162,18 @@
         None: 'no-repeat'
     };
 
-    IFPaintCanvas.CHESSBOARD_LARGE_IMAGE = function () {
-        var img = document.createElement('img');
-        img.setAttribute('src', '/assets/image/chessboard_8x8.png');
-        return img;
-    }();
-    IFPaintCanvas.CHESSBOARD_SMALL_IMAGE = function () {
-        var img = document.createElement('img');
-        img.setAttribute('src', '/assets/image/chessboard_4x4.png');
-        return img;
-    }();
+    function createChessboardCanvas (size, backColor, foreColor) {
+        var result = document.createElement('canvas');
+        result.width = size * 2;
+        result.height = size * 2;
+        var context = result.getContext('2d');
+        context.fillStyle = backColor;
+        context.fillRect(0, 0, result.width, result.height);
+        context.fillStyle = foreColor;
+        context.fillRect(0, 0, size, size);
+        context.fillRect(size, size, size, size);
+        return result;
+    };
 
     IFPaintCanvas.COLOR_MATRIX_IDENTITY = [
         1, 0, 0, 0, 0,
@@ -193,6 +195,19 @@
         0.33, 0.33, 0.33, 0, 0,
         0, 0, 0, 1, 0
     ];
+
+    IFPaintCanvas.createChessboard = function (size, backColor, foreColor) {
+        var result = document.createElement('canvas');
+        result.width = size * 2;
+        result.height = size * 2;
+        var context = result.getContext('2d');
+        context.fillStyle = backColor;
+        context.fillRect(0, 0, result.width, result.height);
+        context.fillStyle = foreColor;
+        context.fillRect(0, 0, size, size);
+        context.fillRect(size, size, size, size);
+        return result;
+    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFPaintCanvas Class
@@ -1165,7 +1180,7 @@
 
     /** @private */
     IFPaintCanvas.prototype._convertImage = function (image) {
-        if (image instanceof HTMLImageElement || image instanceof Image) {
+        if (image instanceof HTMLImageElement || image instanceof Image || image instanceof HTMLCanvasElement) {
             return image;
         } else if (image instanceof IFPaintCanvas) {
             return image._canvasContext.canvas;

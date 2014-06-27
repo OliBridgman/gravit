@@ -1,4 +1,6 @@
 (function (_) {
+    var PAGE_CHESSBOARD_FILL = null;
+
     /**
      * A layer for rendering the background
      * @param {IFView} view
@@ -10,6 +12,7 @@
         IFViewLayer.call(this, view);
         view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
+
     IFObject.inherit(IFBackgroundLayer, IFViewLayer);
 
 
@@ -51,7 +54,15 @@
 
         // Paint page color or chessboard if transparent
         var pageColor = page.getProperty('cls');
-        var fill = pageColor ? pageColor : context.canvas.createTexture(IFPaintCanvas.CHESSBOARD_LARGE_IMAGE);
+        var fill = pageColor;
+
+        if (!fill) {
+            if (!PAGE_CHESSBOARD_FILL) {
+                PAGE_CHESSBOARD_FILL = IFPaintCanvas.createChessboard(8, 'white', 'rgb(205, 205, 205)');
+            }
+            fill = context.canvas.createTexture(PAGE_CHESSBOARD_FILL);
+        }
+
         context.canvas.setTransform(new GTransform(1, 0, 0, 1, x, y));
         context.canvas.fillRect(0, 0, w, h, fill);
         context.canvas.resetTransform();
