@@ -3,19 +3,14 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // Wether to show null color value or not
-                clearColor: true
                 // see options of gColorTarget
             }, options);
 
             var self = this;
             return this.each(function () {
                 var $this = $(this)
-                    .addClass('g-color-swatch g-cursor-hand-open')
+                    .addClass('g-color-swatch')
                     .html('&nbsp;')
-                    .data('gcolorswatch', {
-                        clearColor: options.clearColor
-                    })
                     .gColorTarget(options)
                     .on('change', function (evt, color) {
                         methods.value.call(self, color);
@@ -31,17 +26,7 @@
                 return $this.gColorTarget('value');
             } else {
                 $this.gColorTarget('value', value);
-                var color = $this.gColorTarget('value');
-
-                if (color) {
-                    $this.css('background', color.asCSSString());
-                } else {
-                    if (data.clearColor) {
-                        $this.css('background', 'linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 40%,rgba(203,0,11,1) 50%,rgba(255,255,255,1) 60%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%,rgba(255,255,255,1) 100%)');
-                    } else {
-                        $this.css('background', 'transparent');
-                    }
-                }
+                $this.toggleClass('g-cursor-hand-open', !!value);
                 return this;
             }
         }

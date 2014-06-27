@@ -46,6 +46,14 @@
      */
     IFViewLayer.prototype._repaintRequestFrameId = null;
 
+    IFViewLayer.prototype.show = function () {
+        this._canvas._canvasContext.canvas.style.visibility = '';
+    };
+
+    IFViewLayer.prototype.hide = function () {
+        this._canvas._canvasContext.canvas.style.visibility = 'hidden';
+    };
+
     /**
      * Called to invalidate this paint widget or only a part of it
      * @param {GRect} [area] the area to invalidate. If null (default),

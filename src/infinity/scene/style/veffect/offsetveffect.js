@@ -30,13 +30,16 @@
         // Offset-Type
         tp: IFOffsetVEffect.OffsetType.Outset,
         // The offset amount
-        off: 1
+        off: 5
     };
 
     /** @override */
     IFOffsetVEffect.prototype.getPadding = function () {
         if (this.$off > 0) {
-            var val = this.$tp === IFOffsetVEffect.OffsetType.Inset ? -this.$off : this.$off;
+            // TODO : Right now we don't know whether we'll expand or inset as this depends
+            // on our path's direction so we'll always expand by default to cover any case
+            //var val = this.$tp === IFOffsetVEffect.OffsetType.Inset ? -this.$off : this.$off;
+            var val = this.$off;
             return [val, val, val, val];
         }
         return null;

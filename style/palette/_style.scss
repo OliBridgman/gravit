@@ -83,6 +83,8 @@
             background: $frameColor;
 
             &.visibility {
+              padding-left: 5px;
+              padding-right: 7px;
               text-align: center;
 
               > span {
@@ -92,6 +94,7 @@
 
             &.contents {
               padding-right: 5px;
+              width: 100%;
             }
           }
 

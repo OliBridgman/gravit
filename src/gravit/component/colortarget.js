@@ -58,11 +58,6 @@
 
                 if (options.drop) {
                     $this
-                        .on('dragenter', function (evt) {
-                            var event = evt.originalEvent;
-                            event.preventDefault();
-                            event.stopPropagation();
-                        })
                         .on('dragover', function (evt) {
                             var event = evt.originalEvent;
                             event.preventDefault();
@@ -71,8 +66,6 @@
                         })
                         .on('drop', function (evt) {
                             var event = evt.originalEvent;
-                            event.preventDefault();
-                            event.stopPropagation();
                             var sourceColor = event.dataTransfer.getData(IFColor.MIME_TYPE);
                             if (sourceColor && sourceColor !== "") {
                                 var color = IFColor.parseColor(sourceColor);

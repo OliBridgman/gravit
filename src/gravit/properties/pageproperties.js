@@ -207,7 +207,6 @@
                     .addClass('label')
                     .text('Color:'))
                 .append($('<td></td>')
-                    .css('text-align', 'right')
                     .append(_createInput('cls'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')

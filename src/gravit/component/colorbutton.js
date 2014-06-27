@@ -2,10 +2,6 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // Whether to show a swatch or not
-                swatch: true,
-                // Whether to show dropdown indicator or not
-                dropdown: true
                 // see options of gColorTarget
                 // see options of gColorPanel
             }, options);
@@ -13,21 +9,6 @@
             var self = this;
             return this.each(function () {
                 var $this = $(this);
-
-                var colorswatch = null;
-
-                if (options.swatch) {
-                    colorswatch = $('<div></div>')
-                        .gColorSwatch({
-                            drag: false,
-                            drop: false,
-                            globalColor: false,
-                            clearColor: options.clearColor ? true : false
-                        })
-                        .on('change', function (evt, color) {
-                            $this.trigger('change', color);
-                        });
-                }
 
                 var colorpanel = $('<div></div>')
                     .css('padding', '5px')
@@ -40,37 +21,17 @@
                     });
 
                 $this
-                    .addClass('g-color-button')
+                    .addClass('g-icon g-cursor-pipette')
+                    .css('color', 'transparent')
                     .gColorTarget(options)
                     .data('g-colorbutton', {
-                        colorswatch: colorswatch,
-                        colorpanel: colorpanel,
-                        container: null
+                        options: options,
+                        colorpanel: colorpanel
                     })
                     .on('change', function (evt, color) {
                         methods.value.call(self, color);
-                    });
-
-                // Save and remove text
-                var text = $this.text();
-                $this.text('');
-
-                // Append swatch if any
-                if (colorswatch) {
-                    $this.append(colorswatch);
-                }
-
-                // Append text
-                $('<span></span>')
-                    .text(text)
-                    .appendTo($this);
-
-                // Append dropdown indicator if any
-                if (options.dropdown) {
-                    $('<span></span>')
-                        .addClass('fa fa-caret-down')
-                        .appendTo($this);
-                }
+                    })
+                    .html('&#xe73c;');
 
                 $this.on('click', function () {
                     methods.open.call(self);
@@ -95,17 +56,19 @@
         value: function (value) {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            var colorswatch = data.colorswatch;
             var colorpanel = data.colorpanel;
 
             if (!arguments.length) {
                 return $this.gColorTarget('value');
             } else {
-                if (colorswatch) {
-                    colorswatch.gColorSwatch('value', value);
-                }
                 colorpanel.gColorPanel('value', value);
                 $this.gColorTarget('value', value);
+
+                $this.css({
+                    'color': value ? 'transparent' : data.options.clearColor ? '' : 'transparent',
+                    'background': value ? value.asCSSString() : 'transparent'
+                });
+
                 return this;
             }
         }

@@ -1,8 +1,9 @@
-button, .g-button, input, select, .g-input {
+button, .g-button, input, textArea, select, .g-input {
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
   -ms-appearance: none;
+  @include box-sizing(border-box);
   margin: 0px;
   padding: 3px;
   line-height: 1em;
@@ -31,7 +32,7 @@ button, .g-button {
   }
 
   &:active, &.g-active {
-    background: $activeColor;
+    background: $activeColor !important;
 
     &, * {
       color: $activeTextColor;
@@ -114,7 +115,7 @@ select {
 }
 
 input[type="range"] {
-  height: 7px;
+  padding: 2px;
 
   &::-moz-range-track {
     border: none;

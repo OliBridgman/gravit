@@ -8,6 +8,16 @@
         this._htmlElement = htmlElement;
         this._palettesInfo = [];
         this._groupsInfo = [];
+
+        // Attach listeners on enter & leave to hide
+        // and show the editor layer on the active view
+        this._htmlElement
+            .on('mouseenter', function (evt) {
+                gApp.getWindows().getActiveWindow().getView().getLayer(IFEditorLayer).hide();
+            }.bind(this))
+            .on('mouseleave', function (evt) {
+                gApp.getWindows().getActiveWindow().getView().getLayer(IFEditorLayer).show();
+            }.bind(this));
     };
 
     /**

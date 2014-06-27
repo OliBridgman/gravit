@@ -1,4 +1,4 @@
-.g-form {
+table.g-form {
   td {
     padding-bottom: 5px;
   }
@@ -18,5 +18,41 @@
 
   td > hr {
     margin: 1px 0px 2px 0px;
+  }
+}
+
+div.g-form {
+  display: table;
+
+  > div {
+    display: table-row;
+
+    > div {
+      display: table-cell;
+      vertical-align: middle;
+
+      &:not(:last-child) {
+        padding-right: 5px;
+      }
+
+      > label {
+        &:first-child, &:last-child {
+          display: block;
+          text-align: center;
+        }
+
+        &:first-child {
+          padding-bottom: 2px;
+        }
+
+        &:last-child {
+          padding-top: 2px;
+        }
+      }
+    }
+
+    &:not(:last-child) > div {
+      padding-bottom: 5px;
+    }
   }
 }

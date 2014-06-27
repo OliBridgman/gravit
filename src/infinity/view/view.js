@@ -364,12 +364,12 @@
     };
 
     /**
-     * Add an internal layer
+     * Add a layer
      * @param {IFViewLayer} layer
      * @returns {IFViewLayer} the provided layer
      * @private
      */
-    IFView.prototype._addLayer = function (layer) {
+    IFView.prototype.addLayer = function (layer) {
         if (this._layers == null) {
             this._layers = [];
         }
@@ -383,6 +383,22 @@
         this._htmlElement.appendChild(layerElement);
 
         return layer;
+    };
+    
+    /**
+     * Retrieve a layer
+     * @param {IFViewLayer} layerClass
+     * @returns {IFViewLayer}
+     */
+    IFView.prototype.getLayer = function (layerClass) {
+        if (this._layers) {
+            for (var i = 0; i < this._layers.length; ++i) {
+                if (layerClass.prototype.isPrototypeOf(this._layers[i])) {
+                    return this._layers[i];
+                }
+            }
+        }
+        return null;
     };
 
     /**
@@ -410,7 +426,7 @@
      * @private
      */
     IFView.prototype._initLayers = function () {
-        this._addLayer(new IFSceneLayer(this));
+        this.addLayer(new IFSceneLayer(this));
     };
 
     /** @override */

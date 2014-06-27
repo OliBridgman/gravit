@@ -145,7 +145,10 @@
         // Register default style entries
         gravit.styleEntries.push(
             new GFillPaintEntry(),
-            new GStrokePaintEntry()
+            new GStrokePaintEntry(),
+            new GBlurFilterEntry(),
+            new GOffsetVEffectEntry(),
+            new GShadowEffectEntry()
         );
 
         // Register default actions

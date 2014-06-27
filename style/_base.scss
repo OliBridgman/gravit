@@ -8,8 +8,7 @@ body, html {
   -ms-content-zooming: none;
 
   & {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
+    font: $font;
   }
 
   p {

@@ -1005,13 +1005,15 @@
                 .on('dragstart', function (evt) {
                     var event = evt.originalEvent;
                     event.dataTransfer.effectAllowed = 'move';
+                    // dummy data as some browser may not drag otherwise
+                    event.dataTransfer.setData('text/plain', '');
                     this.className = 'drag';
                     dragRow = this;
                     hasDropped = false;
                 })
                 .on('dragend', function (evt) {
+                    // Delete our entry when not dropped
                     if (!hasDropped) {
-                        // Delete our entry
                         // TODO : Undo + Redo + Apply to all
                         entry.getParent().removeChild(entry);
                     }
@@ -1021,36 +1023,31 @@
                     hasDropped = false;
                 })
                 .on('dragenter', function (evt) {
-                    var event = evt.originalEvent;
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (_canDrop(dragRow, this)) {
                         this.className = 'drop';
                     }
                 })
                 .on('dragleave', function (evt) {
-                    var event = evt.originalEvent;
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (_canDrop(dragRow, this)) {
                         this.className = '';
                     }
                 })
                 .on('dragover', function (evt) {
                     var event = evt.originalEvent;
-                    if (_canDrop(dragRow, this)) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                })
-                .on('drop', function (evt) {
-                    var event = evt.originalEvent;
+
+                    // always allow dragover, also
+                    // on ourself, we'll check in drop
                     event.preventDefault();
                     event.stopPropagation();
-                    this.className = '';
+                })
+                .on('drop', function (evt) {
                     hasDropped = true;
 
-                    // TODO : Move our entry
+                    if (_canDrop(dragRow, this)) {
+                        this.className = '';
+
+                        // TODO : Move our entry
+                    }
                 })
                 .append($('<td></td>')
                     .addClass('visibility')

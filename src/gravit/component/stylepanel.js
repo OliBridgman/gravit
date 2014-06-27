@@ -169,17 +169,11 @@
             if (data.options.allowDrop || data.options.allowReorder) {
                 block
                     .on('dragenter', function (evt) {
-                        var event = evt.originalEvent;
-                        event.preventDefault();
-                        event.stopPropagation();
                         if (_canDrop.call(this)) {
                             $(this).addClass('drop');
                         }
                     })
                     .on('dragleave', function (evt) {
-                        var event = evt.originalEvent;
-                        event.preventDefault();
-                        event.stopPropagation();
                         if (_canDrop.call(this)) {
                             $(this).removeClass('drop');
                         }
@@ -193,14 +187,10 @@
                         }
                     })
                     .on('drop', function (evt) {
-                        var event = evt.originalEvent;
-                        event.preventDefault();
-                        event.stopPropagation();
                         $(this).removeClass('drop');
+                        var targetStyle = $(this).data('style');
 
                         if (data.options.allowReorder) {
-                            var targetStyle = $(this).data('style');
-
                             if (data.container && dragStyle.getParent() === data.container) {
                                 var parent = dragStyle.getParent();
                                 var sourceIndex = parent.getIndexOfChild(dragStyle);

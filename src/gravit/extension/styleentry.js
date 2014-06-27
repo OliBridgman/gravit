@@ -18,7 +18,7 @@
 
     /**
      * Should return the name of the entry class
-     * @return {String}
+     * @return {String|IFLocale.Key}
      */
     GStyleEntry.prototype.getEntryName = function () {
         throw new Error("Not Supported.");
