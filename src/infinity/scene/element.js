@@ -354,7 +354,7 @@
                 styleBlendMode = style.getProperty('blm');
             }
 
-            var needContentsCanvas =
+            var needSeparateCanvas =
                 styleOpacity !== 1.0 ||
                     styleBlendMode !== IFPaintCanvas.BlendMode.Normal ||
                     styleAsMask === true ||
@@ -368,24 +368,23 @@
                 if (child instanceof IFStyleEntry && child.getProperty('vs') === true) {
                     if (child instanceof IFEffectEntry) {
                         effects.push(child);
-                        needContentsCanvas = true;
+                        needSeparateCanvas = true;
                     } else if (child instanceof IFFilterEntry) {
                         filters.push(child);
-                        needContentsCanvas = true;
+                        needSeparateCanvas = true;
                     }
                 }
             }
 
-            if (needContentsCanvas) {
-                // Create a temporary canvas for our actual contents
-                var hasRenderedPaintCanvas = false;
-                var paintBBox = style.getBBox(this.getGeometryBBox());
+            if (needSeparateCanvas) {
                 var sourceCanvas = context.canvas;
-                var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
-                var paintCanvas = contentsCanvas;
-                var backgroundCanvas = null;
+                var paintBBox = style.getBBox(this.getGeometryBBox());
 
-                // Paint our contents now
+                // The canvas our results will be put onto
+                var stackCanvas = sourceCanvas.createCanvas(paintBBox);
+
+                // The canvas for rendering the contents of ourself
+                var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
                 context.canvas = contentsCanvas;
                 try {
                     this._paint(context, style, styleIndex);
@@ -393,53 +392,16 @@
                     context.canvas = sourceCanvas;
                 }
 
-                // If style is a mask or on background, create a background canvas here that
-                // keeps the contents of the background within ourself
-                if (styleAsMask || styleOnBackground) {
-                    backgroundCanvas = sourceCanvas.createCanvas(paintBBox, true/*copy contents*/);
+                var hasRenderedContents = styleKnockout; // knockout means no contents painting
 
-                    // If style is on background, switch paintCanvas from contents
-                    // to the background canvas as everything will be applied there instead
-                    if (styleOnBackground) {
-                        paintCanvas = backgroundCanvas;
-                    }
-                }
-
-                var _tryRenderPaintCanvas = function () {
-                    if (!hasRenderedPaintCanvas) {
-                        if (styleAsMask) {
-                            // For masking, we'll first clip our background canvas with the
-                            // paint canvas, then clear our target area in our canvas and
-                            // finally paint the background canvas
-                            backgroundCanvas.drawCanvas(paintCanvas, 0, 0, 1.0, IFPaintCanvas.CompositeOperator.DestinationIn);
-                            sourceCanvas.drawCanvas(backgroundCanvas, 0, 0, styleOpacity, styleBlendMode, true/*clear*/);
-                        } else if (styleOnBackground) {
-                            // For background style we'll clip the paint canvas which is our
-                            // background canvas with applied effects with the contents canvas
-                            // and finally paint it then
-                            paintCanvas.drawCanvas(contentsCanvas, 0, 0, 1.0, IFPaintCanvas.CompositeOperator.DestinationIn);
-                            sourceCanvas.drawCanvas(paintCanvas, 0, 0, styleOpacity, styleBlendMode);
-                        } else {
-                            // Regular painting
-                            sourceCanvas.drawCanvas(paintCanvas, 0, 0, styleOpacity, styleBlendMode);
-                        }
-                        hasRenderedPaintCanvas = true;
-                    }
-                };
-
-                // Apply filters on contents
-                for (var i = 0; i < filters.length; ++i) {
-                    filters[i].apply(paintCanvas);
-                }
-
-                // Apply effects if desired...
+                // Apply effects if desired and stack them
                 if (effects.length > 0) {
                     // Order effects whether they're pre- or post-effects
                     effects.sort(function (a, b) {
                         return (a.isPost() === b.isPost()) ? 0 : b.isPost() ? -1 : 1;
                     });
 
-                    // Initiate a temporary effect canvas
+                    // Initiate an effect canvas to paint each effect on
                     var effectCanvas = sourceCanvas.createCanvas(paintBBox);
                     for (var i = 0; i < effects.length; ++i) {
                         var effect = effects[i];
@@ -450,17 +412,31 @@
                         }
 
                         // Paint contents before first post filter except if knocked out
-                        if (!styleKnockout && effect.isPost()) {
-                            _tryRenderPaintCanvas();
+                        if (effect.isPost()) {
+                            if (!hasRenderedContents) {
+                                stackCanvas.drawCanvas(contentsCanvas);
+                                hasRenderedContents = true;
+                            }
                         }
 
-                        // Render effect and paint the effect canvas
-                        effect.render(effectCanvas, paintCanvas);
-                        sourceCanvas.drawCanvas(effectCanvas, 0, 0, styleOpacity, styleBlendMode);
+                        // Render effect and paint the effect canvas on our stack canvas
+                        effect.render(effectCanvas, contentsCanvas);
+                        stackCanvas.drawCanvas(effectCanvas);
                     }
                 }
 
-                _tryRenderPaintCanvas();
+                // Render contents if not yet done
+                if (!hasRenderedContents) {
+                    stackCanvas.drawCanvas(contentsCanvas);
+                }
+
+                // Apply any filters to our stack canvas
+                for (var i = 0; i < filters.length; ++i) {
+                    filters[i].apply(stackCanvas);
+                }
+
+                // Finally paint our stack canvas back into source canvas
+                sourceCanvas.drawCanvas(stackCanvas, 0, 0, styleOpacity, styleBlendMode);
             } else {
                 this._paint(context, style, styleIndex);
             }
