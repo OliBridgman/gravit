@@ -23,7 +23,7 @@
     };
 
     /** @override */
-    GShadowEffectEntry.prototype.createContent = function (entry) {
+    GShadowEffectEntry.prototype.createContent = function (scene, assign, revert) {
         // TODO
         return $('<div></div>')
             .addClass('g-form')
@@ -35,7 +35,10 @@
                         .append($('<label></label>')
                             .append($('<input>')
                                 .attr('type', 'checkbox')
-                                .attr('data-property', 'in'))
+                                .attr('data-property', 'in')
+                                .on('change', function () {
+                                    assign();
+                                }))
                             .append($('<span></span>')
                                 .addClass('switch')
                                 .attr({
@@ -49,33 +52,75 @@
                 .append($('<div></div>')
                     .append($('<input>')
                         .css('width', '3em')
-                        .attr('data-property', 'x'))
+                        .attr('data-property', 'x')
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number') {
+                                assign();
+                            } else {
+                                revert();
+                            }
+                        }))
                     .append($('<label></label>')
                         .text('X')))
                 .append($('<div></div>')
                     .append($('<input>')
                         .css('width', '3em')
-                        .attr('data-property', 'y'))
+                        .attr('data-property', 'y')
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number') {
+                                assign();
+                            } else {
+                                revert();
+                            }
+                        }))
                     .append($('<label></label>')
                         .text('Y')))
                 .append($('<div></div>')
                     .append($('<input>')
                         .css('width', '3em')
-                        .attr('data-property', 'r'))
+                        .attr('data-property', 'r')
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number' && value >= 0) {
+                                assign();
+                            } else {
+                                revert();
+                            }
+                        }))
                     .append($('<label></label>')
                         .text('Blur')))
                 .append($('<div></div>')
                     .append($('<button></button>')
                         .attr('data-property', 'cls')
                         .gColorButton({
+                        })
+                        .on('change', function (evt) {
+                            assign();
                         }))
                     .append($('<label></label>')
                         .text('Color'))));
     };
 
     /** @override */
-    GShadowEffectEntry.prototype.updateContent = function (content, entry) {
-        content.find('[data-property="r"]').val(entry.getProperty('r'));
+    GShadowEffectEntry.prototype.updateProperties = function (content, entry, scene) {
+        content.find('[data-property="in"]').prop('checked', entry.getProperty('in'));
+        content.find('[data-property="x"]').val(scene.pointToString(entry.getProperty('x')));
+        content.find('[data-property="y"]').val(scene.pointToString(entry.getProperty('y')));
+        content.find('[data-property="r"]').val(scene.pointToString(entry.getProperty('r')));
+        content.find('[data-property="cls"]').gColorButton('value', entry.getProperty('cls'));
+    };
+
+    /** @override */
+    GShadowEffectEntry.prototype.assignProperties = function (content, entry, scene) {
+        entry.setProperties(['in', 'x', 'y', 'r', 'cls'], [
+            content.find('[data-property="in"]').is(':checked'),
+            scene.stringToPoint(content.find('[data-property="x"]').val()),
+            scene.stringToPoint(content.find('[data-property="y"]').val()),
+            scene.stringToPoint(content.find('[data-property="r"]').val()),
+            content.find('[data-property="cls"]').gColorButton('value')
+        ]);
     };
 
     /** @override */

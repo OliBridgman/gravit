@@ -4,7 +4,7 @@
         var image = new IFImage();
         image.setProperties(['src'], ['/assets/icon/icon_144x144.png']);
 
-        var style = new IFStyle();
+        var style = new IFInlineStyle();
         //style.appendChild(new IFStrokeStyle());
         style.appendChild(new IFBlurFilter());
         var shadow = new IFShadowEffect();

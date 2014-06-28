@@ -22,13 +22,13 @@
     };
 
     /** @override */
-    GStrokePaintEntry.prototype.createContent = function (entry) {
+    GStrokePaintEntry.prototype.createContent = function (scene, assign, revert) {
         // TODO
         return $('<div></div>').text('STROKE CONTENTS');
     };
 
     /** @override */
-    GStrokePaintEntry.prototype.updateContent = function (content, entry) {
+    GStrokePaintEntry.prototype.updateProperties = function (content, entry, scene) {
         // TODO
     };
 

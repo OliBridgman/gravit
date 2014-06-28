@@ -22,7 +22,7 @@
     };
 
     /** @override */
-    GFillPaintEntry.prototype.createContent = function (entry) {
+    GFillPaintEntry.prototype.createContent = function (scene, assign, revert) {
         // TODO
         return $('<div></div>')
             .append($('<select></select>')
@@ -45,7 +45,7 @@
     };
 
     /** @override */
-    GFillPaintEntry.prototype.updateContent = function (content, entry) {
+    GFillPaintEntry.prototype.updateProperties = function (content, entry, scene) {
         // TODO
     };
 

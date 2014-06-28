@@ -993,7 +993,15 @@
             var panel = this._getPanelFromEntry(entry);
             var table = panel.find('.style-entries-panel-table');
 
-            var contents = handler.createContent(entry);
+            var assign = function () {
+                this._assignEntryRow(entry);
+            }.bind(this);
+
+            var revert = function () {
+                this._updateEntryRow(entry);
+            }.bind(this);
+
+            var contents = handler.createContent(this._document.getScene(), assign, revert);
 
             var _canDrop = function (source, target) {
                 return source !== target && source.parentNode === target.parentNode;
@@ -1068,18 +1076,7 @@
     };
 
     GStylePalette.prototype._removeEntryRow = function (entry, row) {
-        if (!row) {
-            var panel = this._getPanelFromEntry(entry);
-            var table = panel.find('.style-entries-panel-table');
-
-            table.find('tr').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('entry') === entry) {
-                    row = $element;
-                    return false;
-                }
-            });
-        }
+        row = row || this._getRowForEntry(entry);
 
         if (row) {
             row.remove();
@@ -1090,23 +1087,48 @@
         var handler = this._styleEntries[IFObject.getTypeId(entry)];
 
         if (handler) {
-            if (!row) {
-                var panel = this._getPanelFromEntry(entry);
-                var table = panel.find('.style-entries-panel-table');
-
-                table.find('tr').each(function (index, element) {
-                    var $element = $(element);
-                    if ($element.data('entry') === entry) {
-                        row = $element;
-                        return false;
-                    }
-                });
-            }
+            row = row || this._getRowForEntry(entry);
 
             if (row) {
                 row.find('.visibility span').attr('class', 'fa fa-eye' + (!entry.getProperty('vs') ? '-slash' : ''));
+                handler.updateProperties(row.find('.contents > :first-child'), row.data('entry'), this._document.getScene());
             }
         }
+    };
+
+    GStylePalette.prototype._assignEntryRow = function (entry, row) {
+        var handler = this._styleEntries[IFObject.getTypeId(entry)];
+
+        if (handler) {
+            row = row || this._getRowForEntry(entry);
+
+            if (row) {
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    handler.assignProperties(row.find('.contents > :first-child'), entry, this._document.getScene());
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Modify ' + handler.getEntryName() + ' Style');
+                }
+            }
+        }
+    };
+
+    GStylePalette.prototype._getRowForEntry = function (entry) {
+        var panel = this._getPanelFromEntry(entry);
+        var table = panel.find('.style-entries-panel-table');
+
+        var result = null;
+        table.find('tr').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('entry') === entry) {
+                result = $element;
+                return false;
+            }
+        });
+
+        return result;
     };
 
     GStylePalette.prototype._getPanelFromEntry = function (entry) {

@@ -89,6 +89,7 @@
     /** @override */
     IFShadowEffect.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFShadowEffect.GeometryProperties);
+        this._handleVisualChangeForProperties(change, args, IFShadowEffect.VisualProperties);
         IFEffectEntry.prototype._handleChange.call(this, change, args);
     };
 

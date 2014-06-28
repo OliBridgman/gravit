@@ -23,8 +23,7 @@
     };
 
     /** @override */
-    GBlurFilterEntry.prototype.createContent = function (entry) {
-        // TODO
+    GBlurFilterEntry.prototype.createContent = function (scene, assign, revert) {
         return $('<div></div>')
             .addClass('g-form')
             .append($('<div></div>')
@@ -38,16 +37,34 @@
                         .attr('type', 'range')
                         .attr('min', '0')
                         .attr('max', '50')
-                        .attr('data-property', 'r')))
+                        .attr('data-property', 'r')
+                        .on('input', function (evt) {
+                            var $this = $(this);
+                            $this.parents('.g-form').find('[data-property="r"]:not([type="range"])').val($this.val());
+                            assign();
+                        })))
                 .append($('<div></div>')
                     .append($('<input>')
                         .css('width', '3em')
-                        .attr('data-property', 'r'))));
+                        .attr('data-property', 'r')
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number' && value >= 0) {
+                                assign();
+                            } else {
+                                revert();
+                            }
+                        }))));
     };
 
     /** @override */
-    GBlurFilterEntry.prototype.updateContent = function (content, entry) {
-        content.find('[data-property="r"]').val(entry.getProperty('r'));
+    GBlurFilterEntry.prototype.updateProperties = function (content, entry, scene) {
+        content.find('[data-property="r"]').val(scene.pointToString(entry.getProperty('r')));
+    };
+
+    /** @override */
+    GBlurFilterEntry.prototype.assignProperties = function (content, entry, scene) {
+        entry.setProperties(['r'], [scene.stringToPoint(content.find('[data-property="r"]:not([type="range"])').val())]);
     };
 
     /** @override */
