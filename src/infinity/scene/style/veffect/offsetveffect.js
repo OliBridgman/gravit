@@ -29,17 +29,17 @@
     IFOffsetVEffect.GeometryProperties = {
         // Offset-Type
         tp: IFOffsetVEffect.OffsetType.Outset,
-        // The offset amount
-        off: 5
+        // The offset radius
+        r: 5
     };
 
     /** @override */
     IFOffsetVEffect.prototype.getPadding = function () {
-        if (this.$off > 0) {
+        if (this.$r > 0) {
             // TODO : Right now we don't know whether we'll expand or inset as this depends
             // on our path's direction so we'll always expand by default to cover any case
-            //var val = this.$tp === IFOffsetVEffect.OffsetType.Inset ? -this.$off : this.$off;
-            var val = this.$off;
+            //var val = this.$tp === IFOffsetVEffect.OffsetType.Inset ? -this.$r : this.$r;
+            var val = this.$r;
             return [val, val, val, val];
         }
         return null;
@@ -47,10 +47,10 @@
 
     /** @override */
     IFOffsetVEffect.prototype.createEffect = function (source) {
-        if (this.$off > 0) {
+        if (this.$r > 0) {
             return new IFVertexOffsetter(
                 source,
-                this.$off,
+                this.$r,
                 this.$tp === IFOffsetVEffect.OffsetType.Inset || this.$tp === IFOffsetVEffect.OffsetType.Both,
                 this.$tp === IFOffsetVEffect.OffsetType.Outset || this.$tp === IFOffsetVEffect.OffsetType.Both
             );
