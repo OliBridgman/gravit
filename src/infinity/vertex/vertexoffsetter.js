@@ -2284,16 +2284,28 @@
         return res;
     };
 
+    IFVertexOffsetter.prototype._roundOut = function (num) {
+        var tolRange = 1;
+        var tol = this._tolerance;
+        for (var i = 0; tol < 1; ++i) {
+            tol *= 10;
+            tolRange *= 10;
+        }
+        var newNum = Math.round(num * tolRange) / tolRange;
+        return newNum;
+    };
+
     IFVertexOffsetter.prototype._genCurves = function (polyLns, outset, tolerance) {
         var poln;
         for (var i = 0; i < polyLns.length; ++i) {
             poln = polyLns[i];
             var segm = poln.head;
             var part = new IFVertexContainer();
-            part.addVertex(IFVertex.Command.Move, segm.point.getX(), segm.point.getY());
+            part.addVertex(IFVertex.Command.Move, this._roundOut(segm.point.getX()), this._roundOut(segm.point.getY()));
             for (var j = 0; j < poln.count - 1; ++j) {
                 if (!segm.bulge) {
-                    part.addVertex(IFVertex.Command.Line, segm.next.point.getX(), segm.next.point.getY());
+                    part.addVertex(IFVertex.Command.Line,
+                        this._roundOut(segm.next.point.getX()), this._roundOut(segm.next.point.getY()));
                 } else {
                     // Construct Bezier curves
                     this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center, segm.radius, tolerance, part);
@@ -2356,9 +2368,9 @@
             x2 = x3 + k * sinPhi2;
             y2 = y3 - k * cosPhi2;
 
-            target.addVertex(IFVertex.Command.Curve2, x3, y3);
-            target.addVertex(IFVertex.Command.Curve2, x1, y1);
-            target.addVertex(IFVertex.Command.Curve2, x2, y2);
+            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x3), this._roundOut(y3));
+            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x1), this._roundOut(y1));
+            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x2), this._roundOut(y2));
         }
     };
 

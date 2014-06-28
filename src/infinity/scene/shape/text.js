@@ -931,6 +931,9 @@
 
         if (!this._runItOutline) {
             var run = this._runs[this._runItIndex];
+            if (!run) {
+                return false;
+            }
             this._runItOutline = ifFont.getGlyphOutline(run.family, run.variant, run.size, run.x, run.y, run.char);
             if (!this._runItOutline.rewindVertices(0)) {
                 throw new Error('Unexpected end of outline');
