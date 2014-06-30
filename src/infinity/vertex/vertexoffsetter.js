@@ -16,6 +16,13 @@
         this._makeInset = inset;
         this._makeOutset = outset;
         this._startVertex = null;
+        var tolRange = 1;
+        var tol = this._tolerance;
+        for (var i = 0; tol < 1; ++i) {
+            tol *= 10;
+            tolRange *= 10;
+        }
+        this._tolRange = tolRange;
     }
 
     IFObject.inherit(IFVertexOffsetter, IFVertexSource);
@@ -214,6 +221,12 @@
     IFVertexOffsetter.prototype._tolerance = null;
 
     /**
+     * @type {Number}
+     * @private
+     */
+    IFVertexOffsetter.prototype._tolRange = 1;
+
+    /**
      *
      * @type {IFVertexOffsetter.PolySegmentContainer}
      * @private
@@ -224,13 +237,9 @@
 
     IFVertexOffsetter.prototype._polyoutset = null;
 
-    IFVertexOffsetter.prototype._inset = null;
+    IFVertexOffsetter.prototype._pieces = null;
 
-    IFVertexOffsetter.prototype._insetIdx = 0;
-
-    IFVertexOffsetter.prototype._outset = null;
-
-    IFVertexOffsetter.prototype._outsetIdx = 0;
+    IFVertexOffsetter.prototype._pieceIdx = 0;
 
     /**
      * Stores the new path start position when 'Close' or 'Move' is used in the middle of vertex sequence
@@ -244,10 +253,8 @@
         if (index != 0) {
             return false;
         }
-        this._inset = null;
-        this._insetIdx = 0;
-        this._outset = null;
-        this._outsetIdx = 0;
+        this._pieces= null;
+        this._pieceIdx = 0;
         this._startVertex = null;
 
         return this._source.rewindVertices(0);
@@ -255,37 +262,26 @@
 
     /** override */
     IFVertexOffsetter.prototype.readVertex = function (vertex) {
-        if (this._outset && this._outset.length && this._readVertex(vertex, true)) {
-            return true;
-        }
-        if (this._inset && this._inset.length && this._readVertex(vertex, false)) {
+        if (this._pieces && this._pieces.length && this._readVertex(vertex)) {
             return true;
         }
 
         this._polyline = new IFVertexOffsetter.PolySegmentContainer();
         this._polyoutset = [];
         this._polyinset = [];
-        this._outset = [];
-        this._inset = [];
-        this._insetIdx = 0;
-        this._outsetIdx = 0;
+        this._pieces = [];
+        this._pieceIdx = 0;
         this._startVertex = this.generatePolyLine(this._tolerance, this._startVertex);
 
         if (this._polyline.count) {
             this.generatePolyOffset(Math.abs(this._offset), this._makeInset, this._makeOutset, this._tolerance);
             this.generateOffset(this._makeInset, this._makeOutset, this._tolerance);
-            if (this._inset.length) {
-                this._rewindVertices(false);
-                this._insetIdx = 0;
+            if (this._pieces.length) {
+                this._rewindVertices();
+                this._pieceIdx = 0;
             }
-            if (this._outset.length) {
-                this._rewindVertices(true);
-                this._outsetIdx = 0;
-            }
-            if (this._outset.length && this._readVertex(vertex, true)) {
-                return true;
-            }
-            if (this._inset.length && this._readVertex(vertex, false)) {
+
+            if (this._pieces && this._pieces.length && this._readVertex(vertex)) {
                 return true;
             }
         }
@@ -1025,22 +1021,62 @@
         // 1. Drawing an elliptical arc using polylines, quadratic or cubic Bezier curves
         // L. Maisonobe, 2003
 
+        var piecesTmp = [];
+
         if (outset && inset && !this._polyline.closed) {
             // TODO: this._genArc(this._polyoutset[0].head.point,
             //      this._polyinset[0].head.point, this._polyline.head.point, offset, this._outset);
-            this._genCurves(this._polyoutset, this._outset, tolerance);
+            this._genCurves(this._polyoutset, piecesTmp, tolerance);
             // TODO: this._genArc(this._polyoutset[this._polyoutset.count].end.point,
             //      this._polyinset[this._polyinset.count].end.point, this._polyline.end.point, offset, this._outset);
-            this._genCurves(this._polyinset, this._outset, tolerance);
+            this._genCurves(this._polyinset, piecesTmp, tolerance);
         } else {
             if (outset) {
-                this._genCurves(this._polyoutset, this._outset, tolerance);
+                this._genCurves(this._polyoutset, piecesTmp, tolerance);
             }
             if (inset) {
-                this._genCurves(this._polyinset, this._inset, tolerance);
+                this._genCurves(this._polyinset, piecesTmp, tolerance);
             }
         }
 
+        this._pieces = this._mergePieces(piecesTmp);
+    };
+
+    IFVertexOffsetter.prototype._mergePieces = function (piecesTmp) {
+        var pieces = [];
+        while (piecesTmp.length > 0) {
+            var piece = piecesTmp[0];
+            piecesTmp.splice(0, 1);
+            var repeat = (piece.stPt.getX() != piece.endPt.getX()) || (piece.stPt.getY() != piece.endPt.getY());
+            while (repeat) {
+                repeat = false;
+                var pc = null;
+                for (var i = piecesTmp.length - 1; i >= 0; --i) {
+                    pc = piecesTmp[i];
+                    if ((pc.stPt.getX() == piece.endPt.getX()) && (pc.stPt.getY() == piece.endPt.getY())) {
+                        piece.endPt = pc.endPt;
+                        piece.vrt.push.apply(piece.vrt, pc.vrt);
+                        repeat = true;
+                        piecesTmp.splice(i, 1);
+                    } else if ((piece.stPt.getX() == pc.endPt.getX()) && (piece.stPt.getY() == pc.endPt.getY())) {
+                        pc.endPt = piece.endPt;
+                        pc.vrt.push.apply(pc.vrt, piece.vrt);
+                        piece = pc;
+                        repeat = true;
+                        piecesTmp.splice(i, 1);
+                    }
+                }
+            }
+            var pieceCont = new IFVertexContainer();
+            pieceCont.addVertex(IFVertex.Command.Move, piece.stPt.getX(), piece.stPt.getY());
+            for (var i = 0; i < piece.vrt.length; ++i) {
+                var vert = piece.vrt[i];
+                pieceCont.addVertex(vert.c, vert.x, vert.y);
+            }
+            pieces.push(pieceCont);
+        }
+
+        return pieces;
     };
 
     /**
@@ -2285,13 +2321,7 @@
     };
 
     IFVertexOffsetter.prototype._roundOut = function (num) {
-        var tolRange = 1;
-        var tol = this._tolerance;
-        for (var i = 0; tol < 1; ++i) {
-            tol *= 10;
-            tolRange *= 10;
-        }
-        var newNum = Math.round(num * tolRange) / tolRange;
+        var newNum = Math.round(num * this._tolRange) / this._tolRange;
         return newNum;
     };
 
@@ -2300,24 +2330,38 @@
         for (var i = 0; i < polyLns.length; ++i) {
             poln = polyLns[i];
             var segm = poln.head;
-            var part = new IFVertexContainer();
-            part.addVertex(IFVertex.Command.Move, this._roundOut(segm.point.getX()), this._roundOut(segm.point.getY()));
+            var vertices = [];
+            var stPt = new GPoint(this._roundOut(segm.point.getX()), this._roundOut(segm.point.getY()));
+            var endPt = stPt;
             for (var j = 0; j < poln.count - 1; ++j) {
                 if (!segm.bulge) {
-                    part.addVertex(IFVertex.Command.Line,
-                        this._roundOut(segm.next.point.getX()), this._roundOut(segm.next.point.getY()));
+                    vertices.push({
+                        c : IFVertex.Command.Line,
+                        x : this._roundOut(segm.next.point.getX()),
+                        y : this._roundOut(segm.next.point.getY())
+                    });
+                    if (j == poln.count - 2) {
+                        endPt = new GPoint(this._roundOut(segm.next.point.getX()), this._roundOut(segm.next.point.getY()));
+                    }
                 } else {
                     // Construct Bezier curves
-                    this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center, segm.radius, tolerance, part);
+                    this._genBeziers(segm.point, segm.next.point, segm.bulge, segm.center,
+                        segm.radius, tolerance, vertices);
+
+                    if (j == poln.count - 2) {
+                        var vert = vertices[vertices.length - 3];
+                        endPt = new GPoint(vert.x, vert.y);
+                    }
                 }
                 segm = segm.next;
             }
+            var part = {stPt: stPt, endPt: endPt, vrt: vertices};
             outset.push(part);
         }
     };
 
     IFVertexOffsetter.prototype._genBeziers = function (
-            p1, p2, bulge, cntr, radius, tolerance, target) {
+            p1, p2, bulge, cntr, radius, tolerance, vertices) {
 
         // Drawing an elliptical arc using polylines, quadratic or cubic Bezier curves
         // L. Maisonobe, 2003
@@ -2368,9 +2412,21 @@
             x2 = x3 + k * sinPhi2;
             y2 = y3 - k * cosPhi2;
 
-            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x3), this._roundOut(y3));
-            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x1), this._roundOut(y1));
-            target.addVertex(IFVertex.Command.Curve2, this._roundOut(x2), this._roundOut(y2));
+            vertices.push({
+                c : IFVertex.Command.Curve2,
+                x : this._roundOut(x3),
+                y : this._roundOut(y3)
+            });
+            vertices.push({
+                c : IFVertex.Command.Curve2,
+                x : this._roundOut(x1),
+                y : this._roundOut(y1)
+            });
+            vertices.push({
+                c : IFVertex.Command.Curve2,
+                x : this._roundOut(x2),
+                y : this._roundOut(y2)
+            });
         }
     };
 
@@ -2385,29 +2441,18 @@
         return k * Math.exp(c0 + c1 * alpha);
     };
 
-    IFVertexOffsetter.prototype._rewindVertices = function (outset) {
-        var polyLns = outset ? this._outset : this._inset;
-
-        for (var i = 0; i < polyLns.length; ++i) {
-            polyLns[i].rewindVertices(0);
+    IFVertexOffsetter.prototype._rewindVertices = function () {
+        for (var i = 0; i < this._pieces.length; ++i) {
+            this._pieces[i].rewindVertices(0);
         }
     };
 
-    IFVertexOffsetter.prototype._readVertex = function (vertex, outset) {
-        if (outset) {
-            if (this._outset[this._outsetIdx] && this._outset[this._outsetIdx].readVertex(vertex)) {
-                return true;
-            } else {
-                ++this._outsetIdx;
-                return (this._outset[this._outsetIdx] && this._outset[this._outsetIdx].readVertex(vertex));
-            }
-        } else { // inset
-            if (this._inset[this._insetIdx] && this._inset[this._insetIdx].readVertex(vertex)) {
-                return true;
-            } else {
-                ++this._insetIdx;
-                return (this._inset[this._insetIdx] && this._inset[this._insetIdx].readVertex(vertex));
-            }
+    IFVertexOffsetter.prototype._readVertex = function (vertex) {
+        if (this._pieces[this._pieceIdx] && this._pieces[this._pieceIdx].readVertex(vertex)) {
+            return true;
+        } else {
+            ++this._pieceIdx;
+            return (this._pieces[this._pieceIdx] && this._pieces[this._pieceIdx].readVertex(vertex));
         }
     };
 
