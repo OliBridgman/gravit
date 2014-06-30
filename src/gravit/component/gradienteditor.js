@@ -157,12 +157,16 @@
             var stopIndex = data.stops.length;
             data.stops.push(stop);
 
+            var hasChanged = false;
+
             // Insert stop widget
             $('<div></div>')
                 .addClass('stop')
                 .attr('stop-index', stopIndex.toString())
-                .gColorTarget({
-                    drag: false
+                .gColorButton({
+                    drag: false,
+                    transient: true,
+                    autoOpen: false
                 })
                 .append($('<div></div>')
                     .addClass('stop-color'))
@@ -172,11 +176,21 @@
                         $this.trigger('change');
                     }
                 })
+                .on('click', function (evt) {
+                    if (!hasChanged) {
+                        $(this).gColorButton('open');
+                    }
+                })
                 .on('mousedown', function (evt) {
+                    // Important to prevent anything else as we might reside
+                    // within a container that is draggable
+                    evt.preventDefault();
+                    evt.stopPropagation();
+
                     var $stop = $(this);
                     var stopindex = parseInt($stop.attr('stop-index'));
 
-                    var hasChanged = false;
+                    hasChanged = false;
 
                     // Select stop on mouse down
                     methods.selected.call(self, stopIndex, true);
@@ -231,14 +245,22 @@
                             .off("mousemove", docMouseMove)
                             .off("mouseup", docMouseUp);
 
-                        // Delete the stop if marked
+                        // Delete the stop if marked and we
+                        // still have at least two steps left
+                        var triggerChange = true;
                         if (data.stops[stopIndex].markDelete) {
-                            data.stops.splice(stopIndex, 1);
-                            $stop.remove();
-                            hasChanged = true;
+                            if (data.stops.length > 2) {
+                                data.stops.splice(stopIndex, 1);
+                                $stop.remove();
+                                hasChanged = true;
+                            } else {
+                                data.stops[stopIndex].markDelete = false;
+                                hasChanged = true;
+                                triggerChange = false;
+                            }
                         }
 
-                        if (hasChanged) {
+                        if (hasChanged && triggerChange) {
                             $this.trigger('change');
                         }
                     };

@@ -96,6 +96,10 @@
             &.contents {
               padding-right: 5px;
               width: 100%;
+
+              > :first-child {
+                width: 100%;
+              }
             }
           }
 

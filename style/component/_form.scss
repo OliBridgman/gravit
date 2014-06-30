@@ -22,14 +22,15 @@ table.g-form {
 }
 
 div.g-form {
-  display: table;
+  //display: table;
 
   > div {
-    display: table-row;
+    //display: table-row;
 
     > div {
       display: table-cell;
       vertical-align: middle;
+      white-space: nowrap;
 
       &:not(:last-child) {
         padding-right: 5px;
@@ -42,17 +43,27 @@ div.g-form {
         }
 
         &:first-child {
-          padding-bottom: 2px;
+          padding-bottom: 5px;
         }
 
         &:last-child {
-          padding-top: 2px;
+          padding-top: 5px;
         }
+      }
+    }
+
+    &:not(:first-child) > div {
+      > label:first-child {
+        padding-top: 5px;
       }
     }
 
     &:not(:last-child) > div {
       padding-bottom: 5px;
+
+      > label:last-child {
+        padding-bottom: 5px;
+      }
     }
   }
 }

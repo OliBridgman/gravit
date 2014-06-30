@@ -2,6 +2,13 @@
     var methods = {
         init: function (options) {
             options = $.extend({
+                // Whether to behave as button or not, which, in the latter case,
+                // means that the target element will only react on clicking but
+                // not behave like a button with icon and background color
+                transient: false,
+                // Whether to automatically open the color chooser on click
+                // or wait for a manual call to the open function
+                autoOpen: true,
                 // see options of gColorTarget
                 // see options of gColorPanel
             }, options);
@@ -21,8 +28,6 @@
                     });
 
                 $this
-                    .addClass('g-icon g-cursor-pipette')
-                    .css('color', 'transparent')
                     .gColorTarget(options)
                     .data('g-colorbutton', {
                         options: options,
@@ -30,12 +35,21 @@
                     })
                     .on('change', function (evt, color) {
                         methods.value.call(self, color);
-                    })
-                    .html('&#xe73c;');
+                    });
 
-                $this.on('click', function () {
-                    methods.open.call(self);
-                });
+                if (!options.transient) {
+                    $this
+                        .addClass('g-icon g-cursor-pipette')
+                        .css('color', 'transparent')
+                        .html('&#xe73c;');
+                }
+
+                if (options.autoOpen) {
+                    $this
+                        .on('click', function () {
+                            methods.open.call(self);
+                        })
+                }
             });
         },
 
@@ -64,10 +78,12 @@
                 colorpanel.gColorPanel('value', value);
                 $this.gColorTarget('value', value);
 
-                $this.css({
-                    'color': value ? 'transparent' : data.options.clearColor ? '' : 'transparent',
-                    'background': value ? value.asCSSString() : 'transparent'
-                });
+                if (!data.options.transient) {
+                    $this.css({
+                        'color': value ? 'transparent' : data.options.clearColor ? '' : 'transparent',
+                        'background': value ? value.asCSSString() : 'transparent'
+                    });
+                }
 
                 return this;
             }

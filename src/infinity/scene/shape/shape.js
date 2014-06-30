@@ -168,7 +168,7 @@
                         paint.paint(paintCanvas, vertexSource, paintBBox);
 
                         // Draw the temporary canvas back
-                        context.canvas.drawCanvas(paintCanvas);
+                        context.canvas.drawCanvas(paintCanvas, 0, 0, paint.getPaintOpacity(), paint.getPaintCmpOrBlend());
                     } else {
                         // Regular painting on main canvas
                         paint.paint(context.canvas, vertexSource, paintBBox);

@@ -52,7 +52,10 @@
 
     /** @override */
     IFStrokePaint.prototype.isSeparate = function () {
-        return this.$sa !== IFStrokePaint.Alignment.Center;
+        if (IFPatternPaint.prototype.isSeparate.call(this) === false) {
+            return this.$sa !== IFStrokePaint.Alignment.Center;
+        }
+        return false;
     };
 
     /** @override */
@@ -90,7 +93,7 @@
             }
 
             // Stroke vertices now
-            canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$cmp);
+            canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
 
             // Depending on the stroke alignment we might need to clip now
             if (this.$sa === IFStrokePaint.Alignment.Inside) {

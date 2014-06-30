@@ -1011,6 +1011,13 @@
                 .data('entry', entry)
                 .attr('draggable', 'true')
                 .on('dragstart', function (evt) {
+                    // Only allow dragging when we're
+                    if (evt.target.nodeName !== 'tr' && evt.target.nodeName !== 'td') {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                        return;
+                    }
+
                     var event = evt.originalEvent;
                     event.dataTransfer.effectAllowed = 'move';
                     // dummy data as some browser may not drag otherwise

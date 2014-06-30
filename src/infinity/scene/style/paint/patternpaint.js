@@ -14,17 +14,63 @@
     IFObject.inherit(IFPatternPaint, IFPaintEntry);
 
     /**
+     * @enum
+     */
+    IFPatternPaint.PatternType = {
+        Color: 'C',
+        Gradient: 'G',
+        Texture: 'T',
+        Noise: 'N'
+    };
+
+    IFPatternPaint.getTypeOf = function (pattern) {
+        if (pattern) {
+            if (pattern instanceof IFColor) {
+                return IFPatternPaint.PatternType.Color;
+            } else if (pattern instanceof IFGradient) {
+                return IFPatternPaint.PatternType.Gradient;
+            }
+        // TODO :
+        //} else if (pattern instanceof IFTexture) {
+        //    return IFPatternPaint.PatternType.Texture;
+        //} else if (pattern instanceof IFNoise) {
+        //    return IFPatternPaint.PatternType.Noise;
+        //}
+        }
+
+        return null;
+    };
+
+    /**
      * Visual properties
      */
     IFPatternPaint.VisualProperties = {
-        // Pattern (IFColor, IFGradient, ...)
+        // Pattern (IFColor, IFGradient, IFTexture, IFNoise ...)
         pat: IFColor.BLACK,
-        // Pattern transformation (GTransform)
-        trf: null,
+        // The horizontal translation of the pattern in % (0..1.0)
+        tx: 0,
+        // The horizontal translation of the pattern in % (0..1.0)
+        ty: 0,
+        // The horizontal scalation of the pattern in % (0..1.0)
+        sx: 1,
+        // The vertical scalation of the pattern in % (0..1.0)
+        sy: 1,
+        // The rotation of the pattern in radians
+        rt: 0,
         // The blend mode of the paint
         blm: IFPaintCanvas.BlendMode.Normal,
         // The opacity of the style
         opc: 1.0
+    };
+
+    /** @override */
+    IFPatternPaint.prototype.getPaintCmpOrBlend = function () {
+        return this.$blm;
+    };
+
+    /** @override */
+    IFPatternPaint.prototype.getPaintOpacity = function () {
+        return this.$opc;
     };
 
     /** @override */
@@ -41,8 +87,6 @@
                             // TODO
                             throw new Error('Unsupported.');
                         }
-                    } else if (property === 'trf') {
-                        return GTransform.serialize(value);
                     }
                 }
                 return value;
@@ -66,8 +110,6 @@
                             // TODO
                             throw new Error('Unsupported.');
                         }
-                    } else if (property === 'trf') {
-                        return GTransform.deserialize(value);
                     }
                 }
             });
@@ -99,7 +141,7 @@
                 var y1 = bbox.getY();
                 var x2 = x1 + bbox.getWidth();
                 var y2 = y1;// + bbox.getHeight();
-                return ccanvas.createLinearGradient(x1, y1, x2, y2, this.$pat);
+                return canvas.createLinearGradient(x1, y1, x2, y2, this.$pat);
             } else {
                 throw new Error('Unsupported.');
             }

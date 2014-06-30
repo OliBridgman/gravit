@@ -15,10 +15,27 @@
     /**
      * Called to test on whether this paint requires to paint
      * itself on a separate canvas or not
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     IFPaintEntry.prototype.isSeparate = function () {
         return false;
+    };
+
+    /**
+     * Returns the composite or blend mode for this paint
+     * or null if there's none such
+     * @return {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode}
+     */
+    IFPaintEntry.prototype.getPaintCmpOrBlend = function () {
+        return null;
+    };
+
+    /**
+     * Returns the opacity for this paint or null if there's none such
+     * @return {Number}
+     */
+    IFPaintEntry.prototype.getPaintOpacity = function () {
+        return null;
     };
 
     /**

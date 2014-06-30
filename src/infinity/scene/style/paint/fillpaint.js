@@ -25,7 +25,20 @@
     IFFillPaint.prototype.paint = function (canvas, source, bbox) {
         var pattern = this._createPaintPattern(canvas, bbox);
         if (pattern) {
-            canvas.fillVertices(pattern, this.$opc, this.$cmp);
+            var transform = canvas.getTransform(true);
+
+            if (this.$rt !== 0) {
+                transform = transform
+                    .translated(-bbox.getX(), -bbox.getY())
+                    .rotated(this.$rt)
+                    .translated(bbox.getX(), bbox.getY());
+            }
+
+            var oldTransform = canvas.setTransform(transform);
+
+            canvas.fillVertices(pattern, this.$opc, this.$blm);
+
+            canvas.setTransform(oldTransform);
         }
     };
 

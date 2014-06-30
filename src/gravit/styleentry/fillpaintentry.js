@@ -3,12 +3,13 @@
     /**
      * Fill paint style entry handler
      * @class GFillPaintEntry
-     * @extends GStyleEntry
+     * @extends GPatternPaintEntry
      * @constructor
      */
     function GFillPaintEntry() {
+        GPatternPaintEntry.call(this);
     }
-    IFObject.inherit(GFillPaintEntry, GStyleEntry);
+    IFObject.inherit(GFillPaintEntry, GPatternPaintEntry);
 
     /** @override */
     GFillPaintEntry.prototype.getEntryClass = function () {
@@ -23,30 +24,21 @@
 
     /** @override */
     GFillPaintEntry.prototype.createContent = function (scene, assign, revert) {
-        // TODO
-        return $('<div></div>')
-            .append($('<select></select>')
-                .gBlendMode())
-            .append($('<input>')
-                .css('width', '3em'))
-            .append($('<div></div>')
-                .css('margin-top', '5px')
-                .gGradientEditor()
-                .gGradientEditor('value', [
-                    {
-                        position: 0,
-                        color: IFColor.parseCSSColor('red')
-                    },
-                    {
-                        position: 100,
-                        color: IFColor.parseCSSColor('yellow')
-                    }
-                ]));
+        return GPatternPaintEntry.prototype.createContent.call(this, scene, assign, revert);
     };
 
     /** @override */
     GFillPaintEntry.prototype.updateProperties = function (content, entry, scene) {
+        GPatternPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
         // TODO
+    };
+
+    /** @override */
+    GFillPaintEntry.prototype.assignProperties = function (content, entry, scene) {
+        var properties = [];
+        var values = [];
+        this._getPropertiesToAssign(content, entry, scene, properties, values);
+        entry.setProperties(properties, values);
     };
 
     /** @override */

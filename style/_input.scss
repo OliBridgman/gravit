@@ -64,7 +64,7 @@ button, .g-button {
     background: transparent;
 
     &:active, &.g-active {
-      background: transparent;
+      background: transparent !important;
       border: 1px solid transparent;
 
       &, * {

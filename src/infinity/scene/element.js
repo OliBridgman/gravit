@@ -372,6 +372,15 @@
                     } else if (child instanceof IFFilterEntry) {
                         filters.push(child);
                         needSeparateCanvas = true;
+                    } else if (child instanceof IFPaintEntry) {
+                        // If paint entry has no default composite or blend mode
+                        // then we need a separate canvas as well if we're a vertex source
+                        if (this.hasMixin(IFVertexSource)) {
+                            var cmpOrBlend = child.getPaintCmpOrBlend();
+                            if (cmpOrBlend !== null && cmpOrBlend !== IFPaintCanvas.CompositeOperator.SourceOver && cmpOrBlend !== IFPaintCanvas.BlendMode.Normal) {
+                                needSeparateCanvas = true;
+                            }
+                        }
                     }
                 }
             }
