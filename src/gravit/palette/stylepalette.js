@@ -343,6 +343,7 @@
                             .attr('value', IFAppliedStyle.Type.Knockout)
                             // TODO : I18N
                             .text('Knockout'))
+                        /* TODO
                         .append($('<option></option>')
                             .attr('value', IFAppliedStyle.Type.Mask)
                             // TODO : I18N
@@ -350,7 +351,7 @@
                         .append($('<option></option>')
                             .attr('value', IFAppliedStyle.Type.Background)
                             // TODO : I18N
-                            .text('Background'))
+                            .text('Background'))*/
                         .on('change', function (evt) {
                             var val = $(evt.target).val();
                             this._modifyEachSelectedStyle(function (style) {

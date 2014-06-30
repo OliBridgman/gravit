@@ -3,13 +3,13 @@
     /**
      * Stroke paint style entry handler
      * @class GStrokePaintEntry
-     * @extends GPatternPaintEntry
+     * @extends GAreaPaintEntry
      * @constructor
      */
     function GStrokePaintEntry() {
-        GPatternPaintEntry.call(this);
+        GAreaPaintEntry.call(this);
     }
-    IFObject.inherit(GStrokePaintEntry, GPatternPaintEntry);
+    IFObject.inherit(GStrokePaintEntry, GAreaPaintEntry);
 
     /** @override */
     GStrokePaintEntry.prototype.getEntryClass = function () {
@@ -24,7 +24,7 @@
 
     /** @override */
     GStrokePaintEntry.prototype.createContent = function (scene, assign, revert) {
-        var content = GPatternPaintEntry.prototype.createContent.call(this, scene, assign, revert);
+        var content = GAreaPaintEntry.prototype.createContent.call(this, scene, assign, revert);
 
         $('<div></div>')
             .attr('data-element', 'stroke-settings')
@@ -146,7 +146,7 @@
 
     /** @override */
     GStrokePaintEntry.prototype.updateProperties = function (content, entry, scene) {
-        GPatternPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
+        GAreaPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
         content.find('[data-property="sw"]').val(scene.pointToString(entry.getProperty('sw')));
         content.find('[data-property="sa"]').val(entry.getProperty('sa'));
         content.find('[data-property="slc"]').val(entry.getProperty('slc'));
@@ -155,10 +155,8 @@
     };
 
     /** @override */
-    GStrokePaintEntry.prototype.assignProperties = function (content, entry, scene) {
-        var properties = [];
-        var values = [];
-        this._getPropertiesToAssign(content, entry, scene, properties, values);
+    GStrokePaintEntry.prototype._getPropertiesToAssign = function (content, entry, scene, properties, values) {
+        GAreaPaintEntry.prototype._getPropertiesToAssign.call(this, content, entry, scene, properties, values);
 
         properties.push(
             'sw',
@@ -175,8 +173,6 @@
             content.find('[data-property="slj"]').val(),
             scene.stringToPoint(content.find('[data-property="slm"]').val())
         );
-
-        entry.setProperties(properties, values);
     };
 
     /** @override */

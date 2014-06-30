@@ -25,7 +25,6 @@
 
     /** @override */
     GPatternPaintEntry.prototype.createContent = function (scene, assign, revert) {
-        // TODO
         return $('<div></div>')
             .addClass('g-form')
             .append($('<div></div>')
@@ -37,10 +36,17 @@
                             .attr('value', IFPatternPaint.PatternType.Color)
                             // TODO : I18N
                             .text('Color'))
+                        .append($('<optgroup></optgroup>')
+                            // TODO I18N
+                            .attr('label', 'Gradient')
                         .append($('<option></option>')
-                            .attr('value', IFPatternPaint.PatternType.Gradient)
+                            .attr('value', IFPatternPaint.PatternType.Gradient + '#' + IFGradient.Type.Linear)
                             // TODO : I18N
-                            .text('Gradient'))
+                            .text('Linear'))
+                        .append($('<option></option>')
+                                .attr('value', IFPatternPaint.PatternType.Gradient + '#' + IFGradient.Type.Radial)
+                            // TODO : I18N
+                            .text('Radial')))
                         /* TODO :
                          .append($('<option></option>')
                          .attr('value', 'texture')
@@ -87,79 +93,7 @@
                         .gGradientEditor()
                         .on('change', function (evt) {
                             assign();
-                        }))))
-            .append($('<div></div>')
-                .attr('data-element', 'transform')
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .attr('data-property', 'tx')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var value = IFLength.parseEquationValue($(evt.target).val());
-                            if (value !== null) {
-                                assign();
-                            } else {
-                                revert();
-                            }
-                        }))
-                    .append($('<label></label>')
-                        .text('X')))
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .attr('data-property', 'ty')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var value = IFLength.parseEquationValue($(evt.target).val());
-                            if (value !== null) {
-                                assign();
-                            } else {
-                                revert();
-                            }
-                        }))
-                    .append($('<label></label>')
-                        .text('Y')))
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .attr('data-property', 'sx')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var value = IFLength.parseEquationValue($(evt.target).val());
-                            if (value !== null && value !== 0.0) {
-                                assign();
-                            } else {
-                                revert();
-                            }
-                        }))
-                    .append($('<label>&#xe878;</label>')
-                        .addClass('g-icon')))
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .attr('data-property', 'sy')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var value = IFLength.parseEquationValue($(evt.target).val());
-                            if (value !== null && value !== 0.0) {
-                                assign();
-                            } else {
-                                revert();
-                            }
-                        }))
-                    .append($('<label>&#xead9;</label>')
-                        .addClass('g-icon')))
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .attr('data-property', 'rt')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var value = IFLength.parseEquationValue($(evt.target).val());
-                            if (value !== null) {
-                                assign();
-                            } else {
-                                revert();
-                            }
-                        }))
-                    .append($('<label>&#xe9cc;</label>')
-                        .addClass('g-icon'))));
+                        }))));
     };
 
     /** @override */
@@ -167,7 +101,12 @@
         var pattern = entry.getProperty('pat');
         var patternType = IFPatternPaint.getTypeOf(pattern);
 
-        content.find('[data-element="type"]').val(patternType);
+        var patternSubType = null;
+        if (patternType === IFPatternPaint.PatternType.Gradient) {
+            patternSubType = pattern.getType();
+        }
+
+        content.find('[data-element="type"]').val(patternSubType ? (patternType + '#' + patternSubType) : patternType);
         content.find('[data-element="color"]')
             .gColorButton('value', patternType === IFPatternPaint.PatternType.Color ? pattern : IFColor.BLACK)
             .css('display', patternType === IFPatternPaint.PatternType.Color ? '' : 'none');
@@ -182,30 +121,21 @@
             content.find('[data-element="gradient"]').css('display', 'none');
             content.find('.g-gradient-editor').gGradientEditor('value', DEFAULT_GRADIENT.getStops());
         }
+    };
 
-        // Transform
-        if (patternType !== IFPatternPaint.PatternType.Color) {
-            content.find('[data-element="transform"]').css('display', '');
-            content.find('[data-property="tx"]').val(ifUtil.formatNumber(entry.getProperty('tx')));
-            content.find('[data-property="ty"]').val(ifUtil.formatNumber(entry.getProperty('ty')));
-            content.find('[data-property="sx"]').val(ifUtil.formatNumber(entry.getProperty('sx')));
-            content.find('[data-property="sy"]').val(ifUtil.formatNumber(entry.getProperty('sy')));
-            content.find('[data-property="rt"]').val(ifUtil.formatNumber(ifMath.toDegrees(entry.getProperty('rt')), 2));
-        } else {
-            content.find('[data-element="transform"]').css('display', 'none');
-        }
+    /** @override */
+    GPatternPaintEntry.prototype.assignProperties = function (content, entry, scene) {
+        var properties = [];
+        var values = [];
+        this._getPropertiesToAssign(content, entry, scene, properties, values);
+        entry.setProperties(properties, values);
     };
 
     GPatternPaintEntry.prototype._getPropertiesToAssign = function (content, entry, scene, properties, values) {
         properties.push(
             'pat',
             'blm',
-            'opc',
-            'tx',
-            'ty',
-            'sx',
-            'sy',
-            'rt'
+            'opc'
         );
 
         var opacity = IFLength.parseEquationValue(content.find('[data-property="opc"]').val());
@@ -215,6 +145,12 @@
 
         var pattern = null;
         var patternType = content.find('[data-element="type"]').val();
+        var patternSubType = null;
+        if (patternType.indexOf('#') >= 0) {
+            var ptArray = patternType.split('#');
+            patternType = ptArray[0];
+            patternSubType = ptArray[1];
+        }
 
         if (patternType === IFPatternPaint.PatternType.Color) {
             if (oldPatternType === IFPatternPaint.PatternType.Gradient) {
@@ -233,21 +169,16 @@
                         position: 100,
                         color: IFColor.WHITE
                     }
-                ]);
+                ], patternSubType);
             } else {
-                pattern = new IFGradient(content.find('.g-gradient-editor').gGradientEditor('value'));
+                pattern = new IFGradient(content.find('.g-gradient-editor').gGradientEditor('value'), patternSubType);
             }
         }
 
         values.push(
             pattern, // pat
             content.find('[data-property="blm"]').val(), // blm
-            (opacity < 0 ? 0 : opacity > 100 ? 100 : opacity) / 100.0, // opc
-            patternType !== 'color' ? IFLength.parseEquationValue(content.find('[data-property="tx"]').val()) : 0, // tx
-            patternType !== 'color' ? IFLength.parseEquationValue(content.find('[data-property="ty"]').val()) : 0, // ty
-            patternType !== 'color' ? IFLength.parseEquationValue(content.find('[data-property="sx"]').val()) : 1, // sx
-            patternType !== 'color' ? IFLength.parseEquationValue(content.find('[data-property="sy"]').val()) : 1, // sy
-            patternType !== 'color' ? ifMath.normalizeAngleRadians(ifMath.toRadians(IFLength.parseEquationValue(content.find('[data-property="rt"]').val()))) : 0 // rt
+            (opacity < 0 ? 0 : opacity > 100 ? 100 : opacity) / 100.0 // opc
         );
     };
 

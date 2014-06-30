@@ -613,6 +613,25 @@
     };
 
     /**
+     * Creates and returns a radial gradient pattern
+     * @param {Number} cx the radial gradient's horizontal center position
+     * @param {Number} cy the radial gradient's vertical center position
+     * @param {Number} radius the radial gradient's radius
+     * @param {IFGradient} gradient the gradient to be used
+     * @return {*} a pattern specific to this canvas-type
+     */
+    IFPaintCanvas.prototype.createRadialGradient = function (cx, cy, radius, gradient) {
+        var result = this._canvasContext.createRadialGradient(cx, cy, 0, cx, cy, radius);
+        var stops = gradient.getStops();
+
+        for (var i = 0; i < stops.length; ++i) {
+            result.addColorStop(stops[i].position / 100.0, stops[i].color.asCSSString());
+        }
+
+        return result;
+    };
+
+    /**
      * Use a rectangle source as clipping region (adds to the current one)
      * @param {Number} x x-position of rectangle
      * @param {Number} y y-position of rectangle

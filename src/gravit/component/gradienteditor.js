@@ -3,6 +3,8 @@
     var methods = {
         init: function (options) {
             options = $.extend({
+                // whether to highlight selected or not
+                highlightSelected: false
             }, options);
 
             var self = this;
@@ -10,7 +12,8 @@
             return this.each(function () {
                 var data = {
                     stops: [],
-                    selected: -1
+                    selected: -1,
+                    options: options
                 };
 
                 var $this = $(this)
@@ -32,6 +35,11 @@
                             .gColorTarget({
                                 drag: false,
                                 globalColor: false
+                            })
+                            .on('mousedown', function (evt) {
+                                // Prevents any accident drag'n'drop actions
+                                evt.preventDefault();
+                                evt.stopPropagation();
                             })
                             .on('colordrop', function (evt, color, mouseEvent) {
                                 var $stops = $(evt.target);
@@ -116,10 +124,12 @@
                 if (selected !== data.selected) {
                     data.selected = selected;
 
-                    $this.find('.stop').each(function () {
-                        var $stop = $(this);
-                        $stop.toggleClass('g-active', $stop.attr('stop-index') == selected);
-                    });
+                    if (data.options.highlightSelected) {
+                        $this.find('.stop').each(function () {
+                            var $stop = $(this);
+                            $stop.toggleClass('g-active', $stop.attr('stop-index') == selected);
+                        });
+                    }
 
                     if (triggerEvent) {
                         this.trigger('selected');
@@ -134,35 +144,24 @@
             var data = $this.data('ggradienteditor');
             var $stops = $this.find('.stops');
 
-            // Find insertion position for stop
-            var insertIndex = -1;
-            for (var i = 0; i < data.stops.length; ++i) {
-                if (data.stops[i].position >= position) {
-                    insertIndex = i;
-                    break;
-                }
-            }
-
             // Normalize position
             position = Math.round(position);
             position = position < 0 ? 0 : position > 100 ? 100 : position;
 
             // Insert stop data keeper
-            var stop = {
+            data.stops.push({
                 position: position,
                 color: color,
                 markDelete: false
-            };
-
-            var stopIndex = data.stops.length;
-            data.stops.push(stop);
+            });
 
             var hasChanged = false;
+            var insertedStopIndex = data.stops.length - 1;
 
             // Insert stop widget
             $('<div></div>')
                 .addClass('stop')
-                .attr('stop-index', stopIndex.toString())
+                .attr('stop-index', insertedStopIndex)
                 .gColorButton({
                     drag: false,
                     transient: true,
@@ -172,6 +171,7 @@
                     .addClass('stop-color'))
                 .on('change', function (evt, color) {
                     if (color) {
+                        var stopIndex = parseInt($(this).attr('stop-index'));
                         methods.updateStop.call(self, stopIndex, null, color);
                         $this.trigger('change');
                     }
@@ -182,13 +182,8 @@
                     }
                 })
                 .on('mousedown', function (evt) {
-                    // Important to prevent anything else as we might reside
-                    // within a container that is draggable
-                    evt.preventDefault();
-                    evt.stopPropagation();
-
                     var $stop = $(this);
-                    var stopindex = parseInt($stop.attr('stop-index'));
+                    var stopIndex = parseInt($stop.attr('stop-index'));
 
                     hasChanged = false;
 
@@ -272,11 +267,11 @@
                 .appendTo($this.find('.stops'));
 
             // Update stop widget
-            methods.updateStop.call(self, stopIndex);
+            methods.updateStop.call(self, insertedStopIndex);
 
             // Select stop if desired
             if (select) {
-                methods.selected.call(self, stopIndex, true);
+                methods.selected.call(self, insertedStopIndex, true);
             }
         },
 

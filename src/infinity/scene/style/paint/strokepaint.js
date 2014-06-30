@@ -3,15 +3,15 @@
     /**
      * A stroke paint
      * @class IFStrokePaint
-     * @extends IFPatternPaint
+     * @extends IFAreaPaint
      * @constructor
      */
     function IFStrokePaint() {
-        IFPatternPaint.call(this);
+        IFAreaPaint.call(this);
         this._setDefaultProperties(IFStrokePaint.GeometryProperties);
     }
 
-    IFNode.inherit('strokePaint', IFStrokePaint, IFPatternPaint);
+    IFNode.inherit('strokePaint', IFStrokePaint, IFAreaPaint);
 
     /**
      * Alignment of a stroke
@@ -52,7 +52,7 @@
 
     /** @override */
     IFStrokePaint.prototype.isSeparate = function () {
-        if (IFPatternPaint.prototype.isSeparate.call(this) === false) {
+        if (IFAreaPaint.prototype.isSeparate.call(this) === false) {
             return this.$sa !== IFStrokePaint.Alignment.Center;
         }
         return false;
@@ -93,7 +93,13 @@
             }
 
             // Stroke vertices now
-            canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
+            if (pattern instanceof IFColor) {
+                canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
+            } else {
+                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(this._getPatternTransform(bbox)));
+                canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
+                canvas.setTransform(oldTransform);
+            }
 
             // Depending on the stroke alignment we might need to clip now
             if (this.$sa === IFStrokePaint.Alignment.Inside) {
@@ -106,7 +112,7 @@
 
     /** @override */
     IFStrokePaint.prototype.store = function (blob) {
-        if (IFPatternPaint.prototype.store.call(this, blob)) {
+        if (IFAreaPaint.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFStrokePaint.GeometryProperties);
             return true;
         }
@@ -115,7 +121,7 @@
 
     /** @override */
     IFStrokePaint.prototype.restore = function (blob) {
-        if (IFPatternPaint.prototype.restore.call(this, blob)) {
+        if (IFAreaPaint.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFStrokePaint.GeometryProperties);
             return true;
         }
@@ -125,7 +131,7 @@
     /** @override */
     IFStrokePaint.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFStrokePaint.GeometryProperties);
-        IFPatternPaint.prototype._handleChange.call(this, change, args);
+        IFAreaPaint.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */

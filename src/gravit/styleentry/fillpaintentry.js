@@ -3,13 +3,13 @@
     /**
      * Fill paint style entry handler
      * @class GFillPaintEntry
-     * @extends GPatternPaintEntry
+     * @extends GAreaPaintEntry
      * @constructor
      */
     function GFillPaintEntry() {
-        GPatternPaintEntry.call(this);
+        GAreaPaintEntry.call(this);
     }
-    IFObject.inherit(GFillPaintEntry, GPatternPaintEntry);
+    IFObject.inherit(GFillPaintEntry, GAreaPaintEntry);
 
     /** @override */
     GFillPaintEntry.prototype.getEntryClass = function () {
@@ -24,21 +24,13 @@
 
     /** @override */
     GFillPaintEntry.prototype.createContent = function (scene, assign, revert) {
-        return GPatternPaintEntry.prototype.createContent.call(this, scene, assign, revert);
+        return GAreaPaintEntry.prototype.createContent.call(this, scene, assign, revert);
     };
 
     /** @override */
     GFillPaintEntry.prototype.updateProperties = function (content, entry, scene) {
-        GPatternPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
+        GAreaPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
         // TODO
-    };
-
-    /** @override */
-    GFillPaintEntry.prototype.assignProperties = function (content, entry, scene) {
-        var properties = [];
-        var values = [];
-        this._getPropertiesToAssign(content, entry, scene, properties, values);
-        entry.setProperties(properties, values);
     };
 
     /** @override */

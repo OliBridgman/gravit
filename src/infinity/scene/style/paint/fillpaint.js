@@ -3,14 +3,14 @@
     /**
      * A fill paint
      * @class IFFillPaint
-     * @extends IFPatternPaint
+     * @extends IFAreaPaint
      * @constructor
      */
     function IFFillPaint() {
-        IFPatternPaint.call(this);
+        IFAreaPaint.call(this);
     }
 
-    IFNode.inherit('fillPaint', IFFillPaint, IFPatternPaint);
+    IFNode.inherit('fillPaint', IFFillPaint, IFAreaPaint);
 
     /** @override */
     IFFillPaint.prototype.hitTest = function (source, location, transform, tolerance) {
@@ -25,20 +25,13 @@
     IFFillPaint.prototype.paint = function (canvas, source, bbox) {
         var pattern = this._createPaintPattern(canvas, bbox);
         if (pattern) {
-            var transform = canvas.getTransform(true);
-
-            if (this.$rt !== 0) {
-                transform = transform
-                    .translated(-bbox.getX(), -bbox.getY())
-                    .rotated(this.$rt)
-                    .translated(bbox.getX(), bbox.getY());
+            if (pattern instanceof IFColor) {
+                canvas.fillVertices(pattern, this.$opc, this.$blm);
+            } else {
+                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(this._getPatternTransform(bbox)));
+                canvas.fillVertices(pattern, this.$opc, this.$blm);
+                canvas.setTransform(oldTransform);
             }
-
-            var oldTransform = canvas.setTransform(transform);
-
-            canvas.fillVertices(pattern, this.$opc, this.$blm);
-
-            canvas.setTransform(oldTransform);
         }
     };
 

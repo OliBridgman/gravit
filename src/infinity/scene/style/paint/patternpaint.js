@@ -47,16 +47,6 @@
     IFPatternPaint.VisualProperties = {
         // Pattern (IFColor, IFGradient, IFTexture, IFNoise ...)
         pat: IFColor.BLACK,
-        // The horizontal translation of the pattern in % (0..1.0)
-        tx: 0,
-        // The horizontal translation of the pattern in % (0..1.0)
-        ty: 0,
-        // The horizontal scalation of the pattern in % (0..1.0)
-        sx: 1,
-        // The vertical scalation of the pattern in % (0..1.0)
-        sy: 1,
-        // The rotation of the pattern in radians
-        rt: 0,
         // The blend mode of the paint
         blm: IFPaintCanvas.BlendMode.Normal,
         // The opacity of the style
@@ -76,13 +66,13 @@
     /** @override */
     IFPatternPaint.prototype.store = function (blob) {
         if (IFPaintEntry.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFStrokePaint.VisualProperties, function (property, value) {
+            this.storeProperties(blob, IFPatternPaint.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
                         if (value instanceof IFColor) {
-                            return 'c' + value.asString();
+                            return 'C' + value.asString();
                         } else if (value instanceof IFGradient) {
-                            return 'g' + value.asString();
+                            return 'G' + value.asString();
                         } else {
                             // TODO
                             throw new Error('Unsupported.');
@@ -99,12 +89,14 @@
     /** @override */
     IFPatternPaint.prototype.restore = function (blob) {
         if (IFPaintEntry.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFStrokePaint.VisualProperties, function (property, value) {
+            this.restoreProperties(blob, IFPatternPaint.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        if (value.charAt(0) === 'c') {
+                        var type = value.charAt(0);
+                        value =value .substring(1);
+                        if (type === 'C') {
                             return IFColor.parseColor(value);
-                        } else if (value.charAt(0) === 'g') {
+                        } else if (type === 'G') {
                             return IFGradient.parseGradient(value);
                         } else {
                             // TODO
@@ -137,13 +129,18 @@
             if (this.$pat instanceof IFColor) {
                 return this.$pat;
             } else if (this.$pat instanceof IFGradient) {
-                var x1 = bbox.getX();
-                var y1 = bbox.getY();
-                var x2 = x1 + bbox.getWidth();
-                var y2 = y1;// + bbox.getHeight();
-                return canvas.createLinearGradient(x1, y1, x2, y2, this.$pat);
+                var width = bbox.getWidth();
+                var height = bbox.getHeight();
+
+                if (this.$pat.getType() === IFGradient.Type.Linear) {
+                    return canvas.createLinearGradient(0, 0, width, 0, this.$pat);
+                } else if (this.$pat.getType() === IFGradient.Type.Radial) {
+                    return canvas.createRadialGradient(0, 0, Math.min(width, height), this.$pat);
+                } else {
+                    throw new Error('Unsupported gradient type for paint pattern.');
+                }
             } else {
-                throw new Error('Unsupported.');
+                throw new Error('Unsupported pattern for paint.');
             }
         }
         return null;

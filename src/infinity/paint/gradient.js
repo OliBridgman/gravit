@@ -4,7 +4,7 @@
      * @class IFGradient
      * @constructor
      */
-    function IFGradient(stops) {
+    function IFGradient(stops, type) {
         if (stops) {
             this._stops = [];
             for (var i = 0; i < stops.length; ++i) {
@@ -16,7 +16,17 @@
         } else {
             this._stops = [new IFColor(IFColor.Type.Black), new IFColor(IFColor.Type.White)];
         }
+
+        this._type = type ? type : IFGradient.Type.Linear;
     }
+
+    /**
+     * @enum
+     */
+    IFGradient.Type = {
+        Linear: 'L',
+        Radial: 'R'
+    };
 
     /**
      * Gradient's mime-type
@@ -35,13 +45,14 @@
         }
 
         var blob = JSON.parse(string);
-        if (blob && blob instanceof Array) {
+        if (blob) {
             var result = new IFGradient();
 
+            result._type = blob.t;
             result._stops = [];
 
-            for (var i = 0; i < blob.length; ++i) {
-                var stop = blob[i];
+            for (var i = 0; i < blob.s.length; ++i) {
+                var stop = blob.s[i];
                 result._stops.push({
                     position: stop.p,
                     color: IFColor.parseColor(stop.c)
@@ -58,27 +69,35 @@
      * Compare two gradients for equality Also takes care of null parameters
      * @param {IFGradient} left left side gradient
      * @param {IFGradient} right right side gradient
+     * @param {Boolean} [stopsOnly] if set, gradients are equal if their stop
+     * values are equal no matter of their type, defaults to false
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    IFGradient.equals = function (left, right) {
+    IFGradient.equals = function (left, right, stopsOnly) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-                if (left._stops.length !== right._stops.length) {
+            if (!stopsOnly) {
+                if (left._type !== right._type) {
+                    return false;
+                }
+            }
+
+            if (left._stops.length !== right._stops.length) {
+                return false;
+            }
+
+            var s1 = left._stops;
+            var s2 = right._stops;
+            for (var i = 0; i < s1.length; ++i) {
+                if (s1[i].position !== s2[i].position) {
                     return false;
                 }
 
-                var s1 = left._stops;
-                var s2 = right._stops;
-                for (var i = 0; i < s1.length; ++i) {
-                    if (s1[i].position !== s2[i].position) {
-                        return false;
-                    }
-
-                    if (!IFColor.equals(s1[i].color, s2[i].color)) {
-                        return false;
-                    }
+                if (!IFColor.equals(s1[i].color, s2[i].color)) {
+                    return false;
                 }
+            }
         }
         return false;
     };
@@ -88,6 +107,13 @@
      * @private
      */
     IFGradient.prototype._stops = null;
+
+    /**
+     * @return {IFGradient.Type}
+     */
+    IFGradient.prototype.getType = function () {
+        return this._type;
+    };
 
     /**
      * You may modify the return value though this class
@@ -104,14 +130,18 @@
      * @return {String}
      */
     IFGradient.prototype.asString = function () {
-        var blob = [];
-
+        var stops = [];
         for (var i = 0; i < this._stops.length; ++i) {
-            blob.push({
+            stops.push({
                 p: this._stops[i].position,
                 c: this._stops[i].color.asString()
             })
         }
+
+        var blob = {
+            t: this._type,
+            s: stops
+        };
 
         return JSON.stringify(blob);
     };
@@ -119,11 +149,9 @@
     /**
      * Return CSS-Compatible string representation of the underlying gradient
      * stops separated by comma
-     * @param {Boolean} forceLinear if true, will always return a linear gradient,
-     * otherwise the internal gradient's type will be taken instead
      * @return {String}
      */
-    IFGradient.prototype.asCSSString = function (ignoreType) {
+    IFGradient.prototype.asCSSString = function () {
         var cssStops = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
