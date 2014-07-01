@@ -395,7 +395,7 @@
             .gColorButton({
                 swatch : false
             })
-            .on('change', function (evt, color) {
+            .on('colorchange', function (evt, color) {
                 gApp.setGlobalColor(color);
             })
             .appendTo(modes);
@@ -406,13 +406,13 @@
             .append($('<div></div>')
                 .attr('data-color-type', 'previous')
                 .gColorSwatch()
-                .on('change', function (evt, color) {
+                .on('colorchange', function (evt, color) {
                     gApp.setGlobalColor(color);
                 }))
             .append($('<div></div>')
                 .attr('data-color-type', 'current')
                 .gColorSwatch()
-                .on('change', function (evt, color) {
+                .on('colorchange', function (evt, color) {
                     gApp.setGlobalColor(color);
                 }))
             .appendTo(toolbar);

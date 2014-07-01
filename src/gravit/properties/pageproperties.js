@@ -158,7 +158,7 @@
                     .gColorButton({
                         clearColor: true
                     })
-                    .on('change', function (evt, color) {
+                    .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
             } else if (property === 'w' || property === 'h') {
@@ -321,7 +321,9 @@
         var page = this._pages[0];
 
         this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
-        this._panel.find('[data-property="cls"]').gColorButton('value', page.getProperty('cls'));
+        this._panel.find('[data-property="cls"]')
+            .gColorButton('value', page.getProperty('cls'))
+            .gColorButton('scene', scene);
         this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
         this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));
         this._panel.find('input[data-property="mt"]').val(scene.pointToString(page.getProperty('mt')));

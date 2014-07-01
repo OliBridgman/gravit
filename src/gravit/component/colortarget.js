@@ -73,7 +73,7 @@
                                 if (color && !IFColor.equals(color, myColor)) {
                                     methods.value.call(self, color);
                                     $this.trigger('colordrop', [color, event]);
-                                    $this.trigger('change', color);
+                                    $this.trigger('colorchange', color);
                                 }
                             }
                             return false;

@@ -12,7 +12,7 @@
                     .addClass('g-color-swatch')
                     .html('&nbsp;')
                     .gColorTarget(options)
-                    .on('change', function (evt, color) {
+                    .on('colorchange', function (evt, color) {
                         methods.value.call(self, color);
                     });
             });

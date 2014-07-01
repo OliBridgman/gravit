@@ -95,8 +95,9 @@
                     .append($('<button></button>')
                         .attr('data-property', 'cls')
                         .gColorButton({
+                            scene: scene
                         })
-                        .on('change', function (evt) {
+                        .on('colorchange', function (evt) {
                             assign();
                         }))
                     .append($('<label></label>')

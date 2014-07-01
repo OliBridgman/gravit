@@ -60,8 +60,10 @@
                         }))
                     .append($('<button></button>')
                         .attr('data-element', 'color')
-                        .gColorButton()
-                        .on('change', function (evt) {
+                        .gColorButton({
+                            scene: scene
+                        })
+                        .on('colorchange', function (evt) {
                             assign();
                         })))
                 .append($('<div></div>')
@@ -90,7 +92,9 @@
                     .css('display', 'block')
                     .append($('<div></div>')
                         .css('width', '100%')
-                        .gGradientEditor()
+                        .gGradientEditor({
+                            scene : scene
+                        })
                         .on('change', function (evt) {
                             assign();
                         }))));

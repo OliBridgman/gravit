@@ -8,7 +8,7 @@
                 transient: false,
                 // Whether to automatically open the color chooser on click
                 // or wait for a manual call to the open function
-                autoOpen: true,
+                autoOpen: true
                 // see options of gColorTarget
                 // see options of gColorPanel
             }, options);
@@ -21,10 +21,9 @@
                     .css('padding', '5px')
                     .gColorPanel(options)
                     .gOverlay()
-                    .on('change', function (evt, color) {
-                        methods.close.call(self);
+                    .on('colorchange', function (evt, color) {
                         methods.value.call(self, color);
-                        $this.trigger('change', color);
+                        $this.trigger('colorchange', color);
                     });
 
                 $this
@@ -33,7 +32,7 @@
                         options: options,
                         colorpanel: colorpanel
                     })
-                    .on('change', function (evt, color) {
+                    .on('colorchange', function (evt, color) {
                         methods.value.call(self, color);
                     });
 
@@ -42,7 +41,7 @@
                         .addClass('g-cursor-pipette')
                         .css('color', 'transparent')
                         .append($('<span></span>')
-                            .addClass('fa fa-ban g-cursor-pipette'));
+                            .addClass('fa fa-fw fa-ban g-cursor-pipette'));
                 }
 
                 if (options.autoOpen) {
@@ -66,6 +65,13 @@
             var data = $this.data('g-colorbutton');
             data.colorpanel.gOverlay('close', this);
             return this;
+        },
+
+        scene: function (value) {
+            var $this = $(this);
+            var data = $this.data('g-colorbutton');
+            var result = data.colorpanel.gColorPanel('scene', value);
+            return !arguments.length ? this: result
         },
 
         value: function (value) {

@@ -176,7 +176,7 @@
             .append($('<div></div>')
                 .attr('data-color-type', 'current')
                 .gColorSwatch()
-                .on('change', function (evt, color) {
+                .on('colorchange', function (evt, color) {
                     gApp.setGlobalColor(color);
                 }))
             .appendTo(toolbar);

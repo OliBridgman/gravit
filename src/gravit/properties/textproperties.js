@@ -167,9 +167,10 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .gColorButton({
-                        clearColor: true
+                        clearColor: true,
+                        scene: this._document.getScene()
                     })
-                    .on('change', function (evt, color) {
+                    .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
             } else if (property === 'al') {

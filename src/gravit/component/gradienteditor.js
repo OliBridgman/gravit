@@ -3,6 +3,9 @@
     var methods = {
         init: function (options) {
             options = $.extend({
+                // An attached scene used for swatch handling
+                // when coosing a color
+                scene: null,
                 // whether to highlight selected or not
                 highlightSelected: false
             }, options);
@@ -165,11 +168,12 @@
                 .gColorButton({
                     drag: false,
                     transient: true,
-                    autoOpen: false
+                    autoOpen: false,
+                    scene: data.options.scene
                 })
                 .append($('<div></div>')
                     .addClass('stop-color'))
-                .on('change', function (evt, color) {
+                .on('colorchange', function (evt, color) {
                     if (color) {
                         var stopIndex = parseInt($(this).attr('stop-index'));
                         methods.updateStop.call(self, stopIndex, null, color);

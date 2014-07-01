@@ -39,7 +39,7 @@
                         .attr('min', '0')
                         .attr('max', '50')
                         .attr('data-property', 'r')
-                        .on('change', function (evt) {
+                        .on('input', function (evt) {
                             var $this = $(this);
                             $this.parents('.g-form').find('[data-property="r"]:not([type="range"])').val($this.val());
                             assign();
