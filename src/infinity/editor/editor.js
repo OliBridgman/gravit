@@ -40,7 +40,14 @@
 
     IFEditor.options = {
         /** Maximum number of undo-steps */
-        maxUndoSteps: 10
+        maxUndoSteps: 20,
+        /**
+         * Specifies whether changing the exact properties will
+         * be merged into a previous undo step with the same
+         * properties. This will only work if the current and
+         * the previous undo steps do not include *any* other changes
+         */
+        smartUndoPropertyMerge: true
     };
 
     /**
@@ -143,7 +150,7 @@
          * Inline editor is about to be opened
          */
         BeforeOpen: 0,
-        
+
         /**
          * Inline editor has been opened
          */
@@ -870,6 +877,76 @@
         }
     };
 
+    IFEditor.prototype._transactionRedo = function (data) {
+        for (var i = 0; i < data.actions.length; ++i) {
+            data.actions[i].action();
+        }
+        
+        this._loadSelection(data.newSelection);
+        
+        if (data.newTransformBox || this._transformBox != data.newTransformBox) {
+            this._transformBox = data.newTransformBox;
+            
+            if (data.newTransformBox) {
+                this.updateSelectionTransformBox();
+            }
+        }
+    };
+
+    IFEditor.prototype._transactionUndo = function (data) {
+        // Revert needs to play the actions backwards
+        for (var i = data.actions.length - 1; i >= 0; --i) {
+            data.actions[i].revert();
+        }
+        
+        this._loadSelection(data.selection);
+        
+        if (data.transformBox || this._transformBox != data.transformBox) {
+            this._transformBox = data.transformBox;
+            
+            if (data.transformBox) {
+                this.updateSelectionTransformBox();
+            }
+        }
+    };
+
+    IFEditor.prototype._transactionMerge = function (data, previousData) {
+        if (IFEditor.options.smartUndoPropertyMerge) {
+            if (data.actions.length === 1 && previousData.actions.length === 1) {
+                var action = data.actions[0];
+                var previousAction = previousData.actions[0];
+
+                if (action.isPropertyChangeAction &&
+                    previousAction.isPropertyChangeAction &&
+                    action.node === previousAction.node &&
+                    action.properties.length === previousAction.properties.length) {
+                    // If the properties are equal then we can merge
+                    var propertiesAreEqual = true;
+
+                    for (var i = 0; i < previousAction.properties.length; ++i) {
+                        var property = previousAction.properties[i];
+                        if (action.properties.indexOf(property) < 0) {
+                            propertiesAreEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (propertiesAreEqual) {
+                        // Merge new values in their order
+                        for (var i = 0; i < action.properties.length; ++i) {
+                            var property = action.properties[i];
+                            previousAction.values[previousAction.properties.indexOf(property)] = action.values[i];
+                        }
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    };
+
     /**
      * Commit the current transaction. If the transaction doesn't
      * include any changes, no undo/redo state will be committed.
@@ -882,43 +959,15 @@
 
         if (this._transaction.actions.length > 0) {
             var transaction = this._transaction;
-            var actions = transaction.actions.slice();
-            var selection = transaction.selection ? transaction.selection.slice() : null;
-            var tBox = transaction.tBox;
-            var newSelection = this._saveSelection();
-            var newtBox = this._transformBox;
+            var data = {
+                actions: transaction.actions.slice(),
+                selection: transaction.selection ? transaction.selection.slice() : null,
+                newSelection: this._saveSelection(),
+                transformBox: transaction.transformBox,
+                newTransformBox: this._transformBox
+            };
 
-            // push a new state
-            var action = function () {
-                for (var i = 0; i < actions.length; ++i) {
-                    actions[i].action();
-                }
-                this._loadSelection(newSelection);
-                if (newtBox || this._transformBox != newtBox) {
-                    this._transformBox = newtBox;
-                    if (newtBox) {
-                        this.updateSelectionTransformBox();
-                    }
-                    gApp.getToolManager().getActiveTool().invalidateArea();
-                }
-            }.bind(this);
-
-            var revert = function () {
-                // Revert needs to play the actions backwards
-                for (var i = actions.length - 1; i >= 0; --i) {
-                    actions[i].revert();
-                }
-                this._loadSelection(selection);
-                if (tBox || this._transformBox != tBox) {
-                    this._transformBox = tBox;
-                    if (tBox) {
-                        this.updateSelectionTransformBox();
-                    }
-                    gApp.getToolManager().getActiveTool().invalidateArea();
-                }
-            }.bind(this);
-
-            this.pushState(action, revert, name);
+            this.pushState(name, this._transactionRedo.bind(this), this._transactionUndo.bind(this), data, this._transactionMerge.bind(this));
         }
 
         this._transaction = null;
@@ -926,20 +975,36 @@
 
     /**
      * Manually push an undo state action
-     * @param {Function} action the action to be executed when executing ("redo")
-     * @param {Function} revert the action to be executed when undoing
      * @param {String} name a name for the state
+     * @param {Function(data)} action the action to be executed when executing ("redo")
+     * @param {Function(data)} revert the action to be executed when undoing
+     * @param {*} data data of the state that'll be pushed to the action and revert functions
+     * @param {Function(data, previousData)} [merge] the function to be called to merge the given
+     * undo state data with the previous steps' one. If this returns true, the previous undo
+     * state is assumed to be merged and the new one will be not added.
      */
-    IFEditor.prototype.pushState = function (action, revert, name) {
+    IFEditor.prototype.pushState = function (name, action, revert, data, merge) {
+        // Try a merge, first
+        if (merge && data && this._undoStates.length > 0) {
+            var lastUndoState = this._undoStates[this._undoStates.length - 1];
+            if (lastUndoState.data) {
+                if (merge(lastUndoState.data, data)) {
+                    // Merged so return here
+                    return;
+                }
+            }
+        }
+
         if (this._undoStates.length >= IFEditor.options.maxUndoSteps) {
             // Cut undo list of when reaching our undo limit
             this._undoStates.shift();
         }
 
         this._undoStates.push({
+            name: name ? name : "",
             action: action,
             revert: revert,
-            name: name ? name : ""
+            data: data
         });
 
         // Push a new undo state has to clear out all the redo steps
@@ -996,7 +1061,7 @@
             this._redoStates.push(state);
 
             // Execute revert action of the state
-            state.revert();
+            state.revert(state.data);
         }
     };
 
@@ -1012,10 +1077,10 @@
             this._undoStates.push(state);
 
             // Execute action of the state
-            state.action();
+            state.action(state.data);
         }
     };
-    
+
     /**
      * Called to open an inline editor for a given node and view
      * @param {IFNode} node
@@ -1024,25 +1089,25 @@
      */
     IFEditor.prototype.openInlineEditor = function (node, view) {
         this.closeInlineEditor();
-        
+
         var editor = IFElementEditor.getEditor(node);
         if (editor && editor.canInlineEdit()) {
             if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
                 this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeOpen));
             }
-            
+
             editor.beginInlineEdit(view, view._htmlElement);
             editor.adjustInlineEditForView(view);
-            
+
             this._currentInlineEditorNode = node;
 
             if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
                 this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterOpen));
             }
-            
+
             return true;
         }
-        
+
         return false;
     };
 
@@ -1170,14 +1235,20 @@
             }
 
             this._transaction.actions.push({
+                isPropertyChangeAction: true,
+                node: node,
+                properties: properties.slice(),
+                values: values.slice(),
+                oldValues: oldValues,
+
                 action: function () {
                     // Simply assign the property values
-                    node.setProperties(properties, values);
+                    node.setProperties(this.properties, this.values);
                 },
 
                 revert: function () {
                     // Simply assign the previous property values
-                    node.setProperties(properties, oldValues);
+                    node.setProperties(this.properties, this.oldValues);
                 }
             });
         }
@@ -1368,7 +1439,7 @@
             if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
                 this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeClose));
             }
-            
+
             var editText = null;
             this.beginTransaction();
             try {
@@ -1377,11 +1448,11 @@
                 // TODO : I18N
                 this.commitTransaction(editText ? editText : 'Inline Editing');
             }
-            
+
             if (node === this._currentInlineEditorNode) {
                 this._currentInlineEditorNode = null;
             }
-            
+
             if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
                 this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterClose));
             }
