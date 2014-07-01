@@ -1538,5 +1538,5 @@
     };
 
     _.IFVertexInfo = IFVertexInfo;
-    _.gVertexInfo = new IFVertexInfo();
+    _.ifVertexInfo = new IFVertexInfo();
 })(this);

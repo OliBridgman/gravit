@@ -242,7 +242,7 @@
 
     /** @override */
     IFShape.prototype._calculateGeometryBBox = function () {
-        return gVertexInfo.calculateBounds(this, true);
+        return ifVertexInfo.calculateBounds(this, true);
     };
 
     /** @override */
@@ -271,14 +271,14 @@
         } else if (force) {
             // When forced we'll always hit-test our whole "invisible" outline / fill area
             var vertexHit = new IFVertexInfo.HitResult();
-            if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
                 return new IFElement.HitResult(this, vertexHit);
             }
         } else {
             // If we didn't hit a style entry, then hit-test our "invisible" tolerance outline area if any
             if (tolerance) {
                 var vertexHit = new IFVertexInfo.HitResult();
-                if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {
+                if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {
                     return new IFElement.HitResult(this, vertexHit);
                 }
             }

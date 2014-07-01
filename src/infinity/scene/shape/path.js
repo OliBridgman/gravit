@@ -111,7 +111,7 @@
         var elemHitRes = null;
         var outlineWidth = scaleFactor + tolerance * 2;
 
-        if (gVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
+        if (ifVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {
             elemHitRes = new IFElement.HitResult(this, hitResult);
         }

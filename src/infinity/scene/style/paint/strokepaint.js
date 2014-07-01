@@ -53,7 +53,19 @@
     /** @override */
     IFStrokePaint.prototype.isSeparate = function () {
         if (IFAreaPaint.prototype.isSeparate.call(this) === false) {
-            return this.$sa !== IFStrokePaint.Alignment.Center;
+            // If we're not having a center-aligned stroke then
+            // we need a separate canvas here
+            if (this.$sa !== IFStrokePaint.Alignment.Center) {
+                return true;
+            }
+
+            // If we're having anything else than a color fill and
+            // the scale factor is not 100%, we need a separate canvas
+            if (this.$pat && IFPatternPaint.getTypeOf(this.$pat)) {
+                if (this.$sx !== 1 || this.$sy !== 1) {
+                    return true;
+                }
+            }
         }
         return false;
     };
@@ -62,7 +74,7 @@
     IFStrokePaint.prototype.hitTest = function (source, location, transform, tolerance) {
         var outlineWidth = this.$sw * transform.getScaleFactor() + tolerance * 2;
         var vertexHit = new IFVertexInfo.HitResult();
-        if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
+        if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), outlineWidth, false, vertexHit)) {
             return new IFStyle.HitResult(this, vertexHit);
         }
         return null;
@@ -96,9 +108,34 @@
             if (pattern instanceof IFColor) {
                 canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
             } else {
-                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(this._getPatternTransform(bbox)));
-                canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, this.$opc, this.$blm);
-                canvas.setTransform(oldTransform);
+                // If we're on a separate canvas then use the standard opacity and blend mode
+                // as our canvas will be blended in using the given options
+                var blendMode = this.$blm;
+                var opacity = this.$opc;
+
+                if (this.isSeparate()) {
+                    blendMode = IFPaintCanvas.BlendMode.Normal;
+                    opacity = 1;
+                }
+
+                // If our scale factors are != 100% then we'll fill the whole area as
+                // we're on a separate canvas and clip our stroke, otherwise we'll do
+                // the simple stroke
+                if (this.$sx !== 1 || this.$sy !== 1) {
+                    // Fill everything with the pattern, first
+                    var patternTransform = this._getPatternTransform(bbox);
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(patternTransform));
+                    var patternFillArea = patternTransform.inverted().mapRect(bbox);
+                    canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), pattern);
+                    canvas.setTransform(oldTransform);
+
+                    // Now stroke as regular but use our stroke as mask
+                    canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                } else {
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(this._getPatternTransform(bbox)))
+                    canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, opacity, blendMode);
+                    canvas.setTransform(oldTransform);
+                }
             }
 
             // Depending on the stroke alignment we might need to clip now

@@ -135,7 +135,7 @@
 
     /** @override */
     IFTransformBox.prototype._calculateGeometryBBox = function () {
-        return gVertexInfo.calculateBounds(this, true);
+        return ifVertexInfo.calculateBounds(this, true);
     };
 
     /** @override */
@@ -241,7 +241,7 @@
         // test outline and inside
         if (!result) {
             var hitRes = new IFVertexInfo.HitResult();
-            if (gVertexInfo.hitTest(location.getX(), location.getY(), this,
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), this,
                     tolerance, true, hitRes)) {
 
                 if (hitRes.outline) {

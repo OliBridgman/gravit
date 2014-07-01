@@ -684,7 +684,7 @@
                 // TODO : How to check bbox intersection with area vertex source including partial param?
                 // --> area.intersects(..)
 
-                var areaBounds = gVertexInfo.calculateBounds(area, true);
+                var areaBounds = ifVertexInfo.calculateBounds(area, true);
 
                 if ((flags & IFElement.CollisionFlag.Partial) != 0) {
                     if (areaBounds.intersectsRect(bbox)) {

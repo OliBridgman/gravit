@@ -15,7 +15,7 @@
     /** @override */
     IFFillPaint.prototype.hitTest = function (source, location, transform, tolerance) {
         var vertexHit = new IFVertexInfo.HitResult();
-        if (gVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), tolerance, true, vertexHit)) {
+        if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(source, transform), tolerance, true, vertexHit)) {
             return new IFStyle.HitResult(this, vertexHit);
         }
         return null;

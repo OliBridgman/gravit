@@ -42,7 +42,7 @@
      * @return {GRect} the area bounds
      */
     IFMarqueeTool._AreaSelector.prototype.getAreaBounds = function () {
-        return gVertexInfo.calculateBounds(this._pixelTransformer, false);
+        return ifVertexInfo.calculateBounds(this._pixelTransformer, false);
     };
 
     /**

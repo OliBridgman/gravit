@@ -51,7 +51,7 @@
                 var xPt = Math.random() * width + cx - width/2;
                 var yPt = Math.random() * height + cy - height/2;
                 var hitTestRes = new IFVertexInfo.HitResult();
-                var res = gVertexInfo.hitTest(xPt, yPt, polygon, 2, true, hitTestRes);
+                var res = ifVertexInfo.hitTest(xPt, yPt, polygon, 2, true, hitTestRes);
                 if (res && !hitTestRes.outline) {
                     var path = new IFPath();
                     var ap1 = new IFPathBase.AnchorPoint();

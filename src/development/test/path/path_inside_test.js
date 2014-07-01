@@ -30,7 +30,7 @@
 
             /*
             // Calculate bounds and paint them if any
-            var bounds = gVertexInfo.calculateBounds(this._vertexSource, true);
+            var bounds = ifVertexInfo.calculateBounds(this._vertexSource, true);
             if (bounds && !bounds.isEmpty()) {
                 var boundsVertices = new IFVertexContainer(5);
                 boundsVertices.addVertex(IFVertex.Command.Move, bounds.getX(), bounds.getY());
@@ -184,7 +184,7 @@
                         yPt = Math.random() * height;
 //                        xPt = 110;
 //                        yPt = 190;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 2, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 2, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
@@ -221,7 +221,7 @@
                         yPt = Math.random() * height;
                         //xPt = 200;
                         //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
@@ -257,7 +257,7 @@
                         yPt = Math.random() * height;
                         //xPt = 200;
                         //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
@@ -293,7 +293,7 @@
                         yPt = Math.random() * height;
 //                        xPt = 260;
 //                        yPt = 150;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
                         if (res) {
                         cnt = vertexSource.getCount();
 
@@ -329,7 +329,7 @@
                         yPt = Math.random() * height;
 //                        xPt = 253;
 //                        yPt = 143;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
@@ -363,7 +363,7 @@
                         yPt = Math.random() * height;
                         //xPt = cx+5;
                         //yPt = cy;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 10, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
@@ -397,7 +397,7 @@
                         yPt = Math.random() * height;
                         //xPt = 250;
                         //yPt = 200;
-                        res = gVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
+                        res = ifVertexInfo.hitTest(xPt, yPt, vertexCurve, 40, true, hitTestRes);
                         if (res) {
                             cnt = vertexSource.getCount();
 
