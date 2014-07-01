@@ -70,7 +70,14 @@
     IFShadowEffect.prototype.store = function (blob) {
         if (IFEffectEntry.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFShadowEffect.GeometryProperties);
-            this.storeProperties(blob, IFShadowEffect.VisualProperties);
+            this.storeProperties(blob, IFShadowEffect.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'cls') {
+                        return value.asString();
+                    }
+                }
+                return value;
+            });
             return true;
         }
         return false;
@@ -80,7 +87,13 @@
     IFShadowEffect.prototype.restore = function (blob) {
         if (IFEffectEntry.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFShadowEffect.GeometryProperties);
-            this.restoreProperties(blob, IFShadowEffect.VisualProperties);
+            this.restoreProperties(blob, IFShadowEffect.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'cls') {
+                        return IFColor.parseColor(value);
+                    }
+                }
+            });
             return true;
         }
         return false;
