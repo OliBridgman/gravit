@@ -6,7 +6,7 @@
         "mousetrap": "latest",
         "font-awesome": "latest",
         "jqtree": "latest",
-        "opentype.js": "git://github.com/nodebox/opentype.js.git#9eba421aa20fbcf1da2940783624e839073e32b0",
+        "opentype.js": "git://github.com/nodebox/opentype.js.git#latest",
         "pako": "latest",
         "rangy": "latest"
     },
