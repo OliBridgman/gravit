@@ -51,7 +51,8 @@
     /** @override */
     IFShadowEffect.prototype.render = function (canvas, contents) {
         // Fill our whole canvas with the shadow color
-        canvas.fillRect(canvas.getOrigin().getX(), canvas.getOrigin().getY(), canvas.getWidth(), canvas.getHeight(), this.$cls);
+        var fillRect = canvas.getTransform(false).inverted().mapRect(new GRect(0, 0, canvas.getWidth(), canvas.getHeight()));
+        canvas.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), this.$cls);
 
         // Paint shadow now
         if (this.$in) {
