@@ -910,7 +910,7 @@
         }
     };
 
-    IFEditor.prototype._transactionMerge = function (data, previousData) {
+    IFEditor.prototype._transactionMerge = function (previousData, data) {
         if (IFEditor.options.smartUndoPropertyMerge) {
             if (data.actions.length === 1 && previousData.actions.length === 1) {
                 var action = data.actions[0];
