@@ -58,8 +58,9 @@
                             revert();
                         }
                     }))
-                .append($('<label>&#xead9;</label>')
-                    .addClass('g-icon')))
+                .append($('<label></label>')
+                    // TODO : I18N
+                    .text('W')))
             .append($('<div></div>')
                 .append($('<input>')
                     .attr('data-property', 'sy')
@@ -72,8 +73,9 @@
                             revert();
                         }
                     }))
-                .append($('<label>&#xe878;</label>')
-                    .addClass('g-icon')))
+                .append($('<label></label>')
+                    // TODO : I18N
+                    .text('H')))
             .append($('<div></div>')
                 .append($('<input>')
                     .attr('data-property', 'rt')
@@ -86,8 +88,8 @@
                             revert();
                         }
                     }))
-                .append($('<label>&#xe9cc;</label>')
-                    .addClass('g-icon')))
+                .append($('<label></label>')
+                    .text('°')))
             .appendTo(content);
 
         return content;

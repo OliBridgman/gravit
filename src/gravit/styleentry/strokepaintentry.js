@@ -128,9 +128,11 @@
             .append($('<div></div>')
                 .css('width', '100%')
                 .css('text-align', 'right')
-                .append($('<button>&#xe759;</button>')
+                .append($('<button></button>')
                     .attr('data-element', 'more')
-                    .addClass('g-icon g-flat')
+                    .addClass('g-flat')
+                    .append($('<span></span>')
+                        .addClass('fa fa-cog'))
                     .on('click', function (evt) {
                         var $this = $(this);
                         var active = $this.hasClass('g-active');

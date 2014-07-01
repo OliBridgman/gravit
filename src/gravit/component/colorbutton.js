@@ -39,9 +39,10 @@
 
                 if (!options.transient) {
                     $this
-                        .addClass('g-icon g-cursor-pipette')
+                        .addClass('g-cursor-pipette')
                         .css('color', 'transparent')
-                        .html('&#xe73c;');
+                        .append($('<span></span>')
+                            .addClass('fa fa-ban g-cursor-pipette'));
                 }
 
                 if (options.autoOpen) {
@@ -79,10 +80,9 @@
                 $this.gColorTarget('value', value);
 
                 if (!data.options.transient) {
-                    $this.css({
-                        'color': value ? 'transparent' : data.options.clearColor ? '' : 'transparent',
-                        'background': value ? value.asCSSString() : 'transparent'
-                    });
+                    $this.css('background', value ? value.asCSSString() : 'transparent');
+                    $this.find('> span')
+                        .css('color', value ? 'transparent' : data.options.clearColor ? '' : 'transparent');
                 }
 
                 return this;

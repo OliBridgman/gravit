@@ -147,8 +147,7 @@
                     .addClass('g-style-list')
                     .gStylePanel({
                         nullStyle: $('<span></span>')
-                            .addClass('g-icon')
-                            .html('&#xe984;')
+                            .addClass('fa fa-plus-square-o')
                             .css({
                                 'font-size': '24px',
                                 'position': 'absolute',
@@ -302,10 +301,7 @@
             .addClass('g-form style-settings')
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .addClass('label g-icon')
-                    // TODO : I18N
-                    .html('&#xe73c;'))
-                .append($('<td></td>')
+                    .attr('colspan', '2')
                     .append($('<select></select>')
                         .attr('data-property', 'blm')
                         .gBlendMode()

@@ -32,7 +32,7 @@
 
     /** @override */
     GStylesSidebar.prototype.getIcon = function () {
-        return '<span class="g-icon">&#xe794;</span>';
+        return '<span class="fa fa-fw fa-leaf"></span>';
     };
 
     /** @override */
