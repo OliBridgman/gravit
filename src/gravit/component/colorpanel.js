@@ -56,6 +56,23 @@
         }
     };
 
+    function assignValue($this, value, overwritePrevious) {
+        var data = $this.data('gcolorpanel');
+
+        data.color = value;
+
+        if (overwritePrevious) {
+            data.previousColor = value;
+        }
+
+        value = typeof value === 'string' ? IFColor.parseColor(value) : value;
+        $this.data('gcolorpanel').color = value;
+        $this.find('input[type="color"]').val(value ? value.asHTMLHexString() : '');
+        $this.find('.previous-color').css(IFColor.blendedCSSBackground(data.previousColor));
+        $this.find('.current-color').css(IFColor.blendedCSSBackground(data.color));
+        $this.find('.color-input').val(data.color ? data.color.asHTMLHexString() : '');
+    }
+
     var methods = {
         init: function (options) {
             options = $.extend({
@@ -86,7 +103,7 @@
                         })
                         .on('change', function () {
                             var color = IFColor.parseCSSColor($(this).val());
-                            methods.value.call(self, color);
+                            assignValue($this, color, false);
                             $this.trigger('colorchange', color);
                         }))
                     .append($('<div></div>')
@@ -100,7 +117,7 @@
                                 .append($('<span></span>')
                                     .addClass('fa fa-ban'))
                                 .on('click', function () {
-                                    methods.value.call(self, null);
+                                    assignValue($this, null, false);
                                     $this.trigger('colorchange', null);
                                 }))
                             .append($('<button></button>')
@@ -143,10 +160,26 @@
                                 .append($('<option>HSL</option>'))
                                 .append($('<option>Tone</option>')))))
                     .append($('<div></div>')
-                        .addClass('colors'))
+                        .addClass('color-area'))
                     .append($('<div></div>')
-                        .addClass('current')
-                        .text('Current Color'))
+                        .addClass('color')
+                        .append($('<div></div>')
+                            .append($('<div>&nbsp;</div>')
+                                .addClass('previous-color g-input'))
+                            .append($('<div>&nbsp;</div>')
+                                .addClass('current-color g-input'))
+                            .append($('<input>')
+                                .addClass('color-input')
+                                .on('change', function () {
+                                    var color = IFColor.parseCSSColor($(this).val());
+                                    if (color) {
+                                        assignValue($this, color, false);
+                                        $this.trigger('colorchange', color);
+                                    }
+                                })))
+                        .append($('<div></div>')
+                            .append($('<select></select>')
+                                .addClass('matcher-select'))))
                     .append($('<div></div>')
                         .addClass('matcher')
                         .text('Matcher'))
@@ -161,6 +194,48 @@
                             methods.view.call(self, $element.attr('data-view'));
                         });
                 });
+
+                // Initiate matchers
+                // TODO : Order color matchers by group
+                var _initColorMatcher = function (matcher, group) {
+                    // Init and add panel
+                    var panel = $('<div></div>');
+                    matcher.init(panel);
+
+                    // Add option
+                    $('<option></option>')
+                        .data('matcher', {
+                            matcher: matcher,
+                            panel: panel
+                        })
+                        .text(ifLocale.get(matcher.getTitle()))
+                        .appendTo(group);
+
+                    // Register on update event
+                    matcher.addEventListener(GColorMatcher.MatchUpdateEvent, function () {
+                        //if (this._matcher === matcher) {
+                        //    this._updateMatches();
+                        //}
+                    }.bind(this));
+                }.bind(this);
+
+                var matcherSelect = $this.find('.matcher-select');
+                var matcherGroup = matcherSelect;
+                var lastCategory = null;
+                for (var i = 0; i < gravit.colorMatchers.length; ++i) {
+                    var matcher = gravit.colorMatchers[i];
+                    var category = ifLocale.get(matcher.getCategory());
+
+                    // Add to selector
+                    if (!lastCategory || category !== lastCategory) {
+                        matcherGroup = $('<optgroup></optgroup>')
+                            .attr('label', category)
+                            .appendTo(matcherSelect);
+                        lastCategory = category;
+                    }
+
+                    _initColorMatcher(matcher, matcherGroup);
+                }
 
                 if (options.scene) {
                     methods.scene.call(self, options.scene);
@@ -186,8 +261,8 @@
                         $element.toggleClass('g-active', $element.attr('data-view') === value);
                     });
 
-                    createPalette($this.find('.colors'), null, function (color) {
-                        methods.value.call(self, color);
+                    createPalette($this.find('.color-area'), null, function (color) {
+                        assignValue($this, color, false);
                         $this.trigger('colorchange', color);
                     });
                 }
@@ -213,8 +288,7 @@
             if (!arguments.length) {
                 return $this.data('gcolorpanel').color;
             } else {
-                value = typeof value === 'string' ? IFColor.parseColor(value) : value;
-                $this.data('gcolorpanel').color = value;
+                assignValue($this, value, true);
                 return this;
             }
         }

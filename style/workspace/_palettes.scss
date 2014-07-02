@@ -67,7 +67,7 @@
     .palette-panel {
       position: relative;
 
-      &, *:not(.fa):not(.g-icon) {
+      &, *:not(.fa) {
         font: $smallFont;
       }
 

@@ -1,6 +1,10 @@
 .g-color-panel {
   width: 275px;
 
+  *:not(.fa) {
+    font: $smallFont;
+  }
+
   .toolbar {
     width: 100%;
     margin-bottom: 5px;
@@ -18,6 +22,43 @@
       &.section-end {
         text-align: right;
       }
+    }
+  }
+
+  .color-area {
+    margin-bottom: 5px;
+  }
+
+  .color {
+    margin-bottom: 5px;
+
+    > div {
+      display: table-cell;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    > div:last-child {
+      text-align: right;
+      width: 100%;
+    }
+
+    .previous-color, .current-color {
+      display: inline-block;
+      width: 3em;
+    }
+
+    .previous-color {
+      margin-right: 0px;
+      border-right: none;
+    }
+
+    .current-color {
+      border-left: none;
+    }
+
+    .color-input {
+      width: 6em;
     }
   }
 }

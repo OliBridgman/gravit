@@ -37,11 +37,12 @@
                     });
 
                 if (!options.transient) {
+                    // Add an invisible placeholder for sizing
                     $this
                         .addClass('g-cursor-pipette')
-                        .css('color', 'transparent')
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-ban g-cursor-pipette'));
+                            .addClass('fa fa-fw fa-ban')
+                            .css('visibility', 'hidden'));
                 }
 
                 if (options.autoOpen) {
@@ -56,6 +57,7 @@
         open: function () {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
+            data.colorpanel.gColorPanel('value', methods.value.call(this));
             data.colorpanel.gOverlay('open', this);
             return this;
         },
@@ -77,18 +79,14 @@
         value: function (value) {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            var colorpanel = data.colorpanel;
 
             if (!arguments.length) {
                 return $this.gColorTarget('value');
             } else {
-                colorpanel.gColorPanel('value', value);
                 $this.gColorTarget('value', value);
 
                 if (!data.options.transient) {
-                    $this.css('background', value ? value.asCSSString() : 'transparent');
-                    $this.find('> span')
-                        .css('color', value ? 'transparent' : data.options.clearColor ? '' : 'transparent');
+                    $this.css(IFColor.blendedCSSBackground(value));
                 }
 
                 return this;

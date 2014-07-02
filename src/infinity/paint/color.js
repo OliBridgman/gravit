@@ -162,6 +162,42 @@
     IFColor.SELECTION_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
     IFColor.HIGHLIGHT_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
 
+
+    /**
+     * Returns a css3 background definition for the color value.
+     * If the color has an alpha component, the background
+     * definition will include a blended chessboard pattern. If
+     * the color is null, only the chessboard pattern will be returned.
+     * @param {IFColor} color the color to be used
+     * @param {Number} [size] size of the chessboard pattern,
+     * if not provided defaults to 4 pixels
+     * @return {*} a css declaration object
+     */
+    IFColor.blendedCSSBackground = function (color, size) {
+        var colorRGB = color ? color.asRGB() : null;
+        if (colorRGB && colorRGB[3] === 100) {
+            return {
+                'background': color.asCSSString()
+            };
+        } else {
+            size = size || 4;
+
+            var alpha = colorRGB ? colorRGB[3] / 100.0 : 1;
+            var colorBack = [255, 255, 255];
+            var colorFore = [205, 205, 205];
+            colorBack = ifUtil.rgbToHtmlHex(colorRGB ? ifUtil.blendRGBColors(colorBack, colorRGB, alpha) : colorBack);
+            colorFore = ifUtil.rgbToHtmlHex(colorRGB ? ifUtil.blendRGBColors(colorFore, colorRGB, alpha) : colorFore);
+
+            return {
+                'background': 'linear-gradient(45deg, ' + colorFore + ' 25%, transparent 25%, transparent 75%, ' + colorFore + ' 75%, ' + colorFore + '),' +
+                    'linear-gradient(45deg, ' + colorFore + ' 25%, transparent 25%, transparent 75%, ' + colorFore + ' 75%, ' + colorFore + '), ' +
+                    colorBack,
+                'background-size': (size * 2).toString() + 'px ' + (size * 2).toString() + 'px',
+                'background-position': '0 0,' + size + 'px ' + size + 'px'
+            };
+        }
+    };
+
     /**
      * Parse a string into a IFColor
      * @param {String} string
@@ -751,13 +787,23 @@
     IFColor.prototype.asCSSString = function () {
         var rgb = this.asRGB();
         if (rgb[3] === 100) {
-            var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
-            return '#' + (function (h) {
-                return new Array(7 - h.length).join("0") + h
-            })(bin.toString(16).toUpperCase());
+            return this.asHTMLHexString();
         } else {
             return 'rgba(' + rgb[0].toString() + ',' + rgb[1].toString() + ',' + rgb[2].toString() + ',' + (rgb[3] / 100.0).toString() + ')';
         }
+    };
+
+    /**
+     * Return a html 6-digit hex color code excluding any alpha component
+     * @return {String}
+     */
+    IFColor.prototype.asHTMLHexString = function () {
+        var rgb = this.asRGB();
+
+        var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+        return '#' + (function (h) {
+            return new Array(7 - h.length).join("0") + h
+        })(bin.toString(16).toUpperCase());
     };
 
     /**
