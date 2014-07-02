@@ -156,7 +156,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .gColorButton({
-                        clearColor: true
+                        allowClear: true
                     })
                     .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);

@@ -167,7 +167,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .gColorButton({
-                        clearColor: true,
+                        allowClear: true,
                         scene: this._document.getScene()
                     })
                     .on('colorchange', function (evt, color) {

@@ -1,4 +1,17 @@
 (function ($) {
+
+    var COLORPANEL = null;
+
+    function getColorPanel() {
+        if (!COLORPANEL) {
+            COLORPANEL = $('<div></div>')
+                .css('padding', '5px')
+                .gColorPanel()
+                .gOverlay();
+        }
+        return COLORPANEL;
+    }
+
     var methods = {
         init: function (options) {
             options = $.extend({
@@ -8,30 +21,35 @@
                 transient: false,
                 // Whether to automatically open the color chooser on click
                 // or wait for a manual call to the open function
-                autoOpen: true
+                autoOpen: true,
+                // Whether to allow clearing the color or not
+                allowClear: false,
+                // Scene to be used for swatches
+                scene: null
                 // see options of gColorTarget
-                // see options of gColorPanel
             }, options);
 
             var self = this;
             return this.each(function () {
                 var $this = $(this);
 
-                var colorpanel = $('<div></div>')
-                    .css('padding', '5px')
-                    .gColorPanel(options)
-                    .gOverlay()
-                    .on('colorchange', function (evt, color) {
-                        methods.value.call(self, color);
-                        $this.trigger('colorchange', color);
-                    });
-
                 $this
-                    .gColorTarget(options)
                     .data('g-colorbutton', {
                         options: options,
-                        colorpanel: colorpanel
+                        scene: options.scene,
+                        panelCloseListener: function (evt) {
+                            var data = $this.data('g-colorbutton');
+                            var colorPanel = getColorPanel();
+                            colorPanel.gColorPanel('scene', null);
+                            colorPanel.off('colorchange', data.panelChangeListener);
+                            colorPanel.off('close', data.panelCloseListener);
+                        },
+                        panelChangeListener: function (evt, color) {
+                            methods.value.call(self, color);
+                            $this.trigger('colorchange', color);
+                        }
                     })
+                    .gColorTarget(options)
                     .on('colorchange', function (evt, color) {
                         methods.value.call(self, color);
                     });
@@ -57,23 +75,32 @@
         open: function () {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            data.colorpanel.gColorPanel('value', methods.value.call(this));
-            data.colorpanel.gOverlay('open', this);
+            var colorPanel = getColorPanel();
+            colorPanel.gColorPanel('scene', data.scene);
+            colorPanel.gColorPanel('value', methods.value.call(this));
+            colorPanel.gColorPanel('allowClear', data.options.allowClear);
+            colorPanel.on('colorchange', data.panelChangeListener);
+            colorPanel.on('close', data.panelCloseListener);
+            colorPanel.gOverlay('open', this);
             return this;
         },
 
         close: function () {
-            var $this = $(this);
-            var data = $this.data('g-colorbutton');
-            data.colorpanel.gOverlay('close', this);
+            var colorPanel = getColorPanel();
+            colorPanel.gOverlay('close', this);
             return this;
         },
 
         scene: function (value) {
             var $this = $(this);
             var data = $this.data('g-colorbutton');
-            var result = data.colorpanel.gColorPanel('scene', value);
-            return !arguments.length ? this: result
+
+            if (!arguments.length) {
+                return data.scene;
+            } else {
+                data.scene = value;
+                return this;
+            }
         },
 
         value: function (value) {
