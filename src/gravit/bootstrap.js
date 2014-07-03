@@ -71,10 +71,13 @@ var gAPIUrl = null;
 function gShellFinished() {
     // TODO : FIX THIS, FOR NEW WE ALWAYS CREATE NEW DOC ON EACH RUN
     setTimeout(function () {
+        console.log('NEW DOC');
         gApp.executeAction(GNewAction.ID);
-    }, 0);
+    }, 250);
 
+    /*
     // Verify account
+
     var gravitUser = window.localStorage ? window.localStorage.getItem('gravit.user') : null;
     if (!window.gAPI && !gravitUser) {
         alert('Please go online to load your account settings.');
@@ -87,6 +90,7 @@ function gShellFinished() {
             console.log('Synchronize user ' + gAPI.user.id);
         });
     }
+    */
 }
 
 // Bootstrapping when the DOM is ready
@@ -95,6 +99,7 @@ $(document).ready(function () {
         throw new Error("Shell needs to be initialized, first.");
     }
 
+    /*
     // Load GAPI Script
     if (gShell.isDevelopment()) {
         gAPIUrl = 'http://localhost:3000/';
@@ -104,7 +109,7 @@ $(document).ready(function () {
     $('<script></script>')
         .attr('src', gAPIUrl + 'gapi.js')
         .appendTo($('body'));
-
+*/
     // Initialize ourself now
     gApp = new GApplication();
     gShell.prepareLoad();
@@ -116,4 +121,6 @@ $(window).load(function () {
     rangy.init();
     gApp.init();
     gShell.finishLoad();
+
+    console.log('FINISH_LOAD');
 });
