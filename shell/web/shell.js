@@ -99,7 +99,7 @@
 
         if (shortcut) {
             gApp.registerShortcut(shortcut, function () {
-                this.executeAction(item.action.getId());
+                callback();
             }.bind(this));
 
             item.setShortcutHint(shortcut);
