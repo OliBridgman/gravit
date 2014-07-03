@@ -47,9 +47,6 @@ ifLocale.setValues(GAnalogousMatcher, IFLocale.Language.English, ["title"], ["An
 ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], ["Complementary"]);
 
 // Palette
-ifLocale.setValues(GColorMatcherPalette, IFLocale.Language.English, ["title"], ["Matcher"]);
-ifLocale.setValues(GColorMixerPalette, IFLocale.Language.English, ["title"], ["Mixer"]);
-ifLocale.setValues(GColorTrendsPalette, IFLocale.Language.English, ["title"], ["Trends"]);
 ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
 

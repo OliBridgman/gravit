@@ -42,9 +42,6 @@
                 return true;
             }
         }, true);
-
-        // Set default global color to white
-        this._globalColor = new IFColor(IFColor.Type.White);
     };
     IFObject.inherit(GApplication, GEventTarget);
 
@@ -126,26 +123,6 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GApplication.GlobalColorChangedEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever the global color has changed
-     * @class GApplication.GlobalColorChangedEvent
-     * @extends GEvent
-     * @constructor
-     */
-    GApplication.GlobalColorChangedEvent = function () {
-    }
-    IFObject.inherit(GApplication.GlobalColorChangedEvent, GEvent);
-
-    /** @override */
-    GApplication.GlobalColorChangedEvent.prototype.toString = function () {
-        return "[Object GApplication.GlobalColorChangedEvent]";
-    };
-
-    GApplication.GLOBAL_COLOR_CHANGED_EVENT = new GApplication.GlobalColorChangedEvent();
-
-    // -----------------------------------------------------------------------------------------------------------------
     // GApplication Class
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -214,12 +191,6 @@
      * @private
      */
     GApplication.prototype._palettes = null;
-
-    /**
-     * @type {IFColor}
-     * @private
-     */
-    GApplication.prototype._globalColor = null;
 
     /**
      * @type {Number}
@@ -309,27 +280,6 @@
      */
     GApplication.prototype.getPalettes = function () {
         return this._palettes;
-    };
-
-    /**
-     * @return {IFColor}
-     */
-    GApplication.prototype.getGlobalColor = function () {
-        return this._globalColor;
-    };
-
-    /**
-     * @param {IFColor} color
-     */
-    GApplication.prototype.setGlobalColor = function (color) {
-        if (!IFColor.equals(color, this._globalColor)) {
-            this._globalColor = color;
-
-            // Trigger update event
-            if (this.hasEventListeners(GApplication.GlobalColorChangedEvent)) {
-                this.trigger(GApplication.GLOBAL_COLOR_CHANGED_EVENT);
-            }
-        }
     };
 
     /**

@@ -8,9 +8,7 @@
                 // Color can be dragged away
                 drag: true,
                 // Color can be dropped
-                drop: true,
-                // Double click assigns global color
-                globalColor: true
+                drop: true
             }, options);
 
             var self = this;
@@ -77,16 +75,6 @@
                                 }
                             }
                             return false;
-                        });
-                }
-
-                if (options.globalColor) {
-                    $this
-                        .on('dblclick', function () {
-                            var color = $this.data('gcolortarget').color;
-                            if (color) {
-                                gApp.setGlobalColor(color);
-                            }
                         });
                 }
             });

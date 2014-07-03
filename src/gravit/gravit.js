@@ -16,11 +16,6 @@
         gravit.palettes.push(
             new GPropertiesPalette(),
             new GStylePalette()
-            /*
-            new GColorMixerPalette(),
-            new GColorMatcherPalette(),
-            new GColorTrendsPalette()
-            */
         );
 
         // Register default sidebars

@@ -36,8 +36,7 @@
                         .append($('<div></div>')
                             .addClass('stops')
                             .gColorTarget({
-                                drag: false,
-                                globalColor: false
+                                drag: false
                             })
                             .on('mousedown', function (evt) {
                                 // Prevents any accident drag'n'drop actions
