@@ -79,6 +79,13 @@
                 y = windowHeight - containerHeight;
             }
 
+            if (y < 0) {
+                y = 0;
+            }
+            if (x < 0) {
+                x = 0;
+            }
+
             container
                 .css('left', x + 'px')
                 .css('top', y + 'px');

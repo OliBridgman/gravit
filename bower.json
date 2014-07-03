@@ -8,7 +8,8 @@
         "jqtree": "latest",
         "opentype.js": "git://github.com/nodebox/opentype.js.git#latest",
         "pako": "latest",
-        "rangy": "latest"
+        "rangy": "latest",
+        "color-thief": "latest"
     },
     "devDependencies": {},
     "private": true

@@ -23,15 +23,6 @@
     };
 
     /** @override */
-    GComplementaryMatcher.prototype.init = function (htmlElement) {
-    };
-
-    /** @override */
-    GComplementaryMatcher.prototype.isReferenceColorBased = function () {
-        return true;
-    };
-
-    /** @override */
     GComplementaryMatcher.prototype.match = function (referenceColor) {
         var hsl = referenceColor.asHSL();
         hsl[0] = ifMath.normalizeAngleDegrees(hsl[0] + 180);

@@ -226,12 +226,11 @@
         '00FFFF', '85144B', '333333', '9900CC', '9933CC', '9966CC', '9999CC', '99CCCC', '99FFCC', 'CC00CC', 'CC33CC', 'CC66CC', 'CC99CC', 'CCCCCC', 'CCFFCC', 'FF00CC', 'FF33CC', 'FF66CC', 'FF99CC', 'FFCCCC', 'FFFFCC',
         'FF00FF', 'B10DC9', '222222', '9900FF', '9933FF', '9966FF', '9999FF', '99CCFF', '99FFFF', 'CC00FF', 'CC33FF', 'CC66FF', 'CC99FF', 'CCCCFF', 'CCFFFF', 'FF00FF', 'FF33FF', 'FF66FF', 'FF99FF', 'FFCCFF', 'FFFFFF'];
 
-    function createPalette(container, activate) {
-        var table = $('<table></table>')
-            .addClass('color-swatches')
-            .appendTo(container);
+    function createPaletteView($this) {
+        var view = $('<table></table>')
+            .addClass('color-swatches');
 
-        var parent = $('<tr></tr>').appendTo(table);
+        var parent = $('<tr></tr>').appendTo(view);
 
         var col = 0;
         for (var i = 0; i < PALETTE.length; ++i) {
@@ -242,16 +241,270 @@
                 .css('background', color)
                 .attr('data-color', color)
                 .on('click', function () {
-                    activate(IFColor.parseCSSColor($(this).attr('data-color')));
+                    var color = IFColor.parseCSSColor($(this).attr('data-color'));
+                    assignValue($this, color, false);
+                    $this.trigger('colorchange', color);
                 })
                 .appendTo(parent);
 
             if (++col === MAX_SWATCHES_PER_ROW) {
                 col = 0;
-                parent = $('<tr></tr>').appendTo(table);
+                parent = $('<tr></tr>').appendTo(view);
             }
         }
+
+        return view;
     };
+
+    function createSwatchesView($this) {
+        return $('<div>SWATCHES</div>');
+    }
+
+    function createTrendsView($this) {
+        var _addTrend = function (index, view) {
+            var label = null;
+            switch (index) {
+                // Tint
+                case 1:
+                    // TODO : I18N
+                    label = 'Tint';
+                    break;
+                // Shade
+                case 2:
+                    label = 'Shade';
+                    break;
+                // Tone
+                case 3:
+                    label = 'Tone';
+                    break;
+            }
+
+
+            $('<div></div>')
+                .addClass('color-trend-label')
+                .text(label)
+                .appendTo(view);
+
+            var container = $('<div></div>')
+                .addClass('color-trend color-trend-' + index.toString())
+                .append($('<div></div>')
+                    .addClass('color-palette')
+                    .append($('<div></div>')
+                        .addClass('color-preview')))
+                .append($('<div></div>')
+                    .addClass('color-trend-value')
+                    .append($('<input>')
+                        .attr('type', 'text')
+                        .on('input', function (evt) {
+                            var val = $(this).val();
+                            var color = updateTrendValue($this, index, val);
+                        })))
+                .appendTo(view);
+
+            var preview = container.find('.color-preview');
+            for (var i = 1; i <= 10; ++i) {
+                $('<div>&nbsp;</div>')
+                    .addClass('g-input color-trend-box-' + (i === 10 ? 'current' : i.toString()))
+                    .css('width', '10%')
+                    .on('click', function (evt) {
+                        var color = IFColor.parseColor($(this).attr('data-color'));
+                        if (color) {
+                            assignValue($this, color, false);
+                            $this.trigger('colorchange', color);
+                        }
+                    })
+                    .appendTo(preview);
+            }
+        }.bind(this);
+
+        var view = $('<div></div>');
+
+        _addTrend(1, view);
+        _addTrend(2, view);
+        _addTrend(3, view);
+
+        return view;
+    }
+
+    function colorForTrendAndValue($this, trend, value) {
+        var sourceColor = $this.data('gcolorpanel').color;
+        if (!sourceColor) {
+            return null;
+        }
+
+        // Calculate a new color
+        switch (trend) {
+            // Tint
+            case 1:
+                return sourceColor.withTint(value);
+
+            // Shade
+            case 2:
+                return sourceColor.withShade(value);
+
+            // Tone
+            case 3:
+                return sourceColor.withTone(value);
+
+            default:
+                throw new Error('Unknown trend: ' + trend);
+        }
+    };
+
+    function updateTrendValue($this, trend, value) {
+        if (typeof value === 'string') {
+            value = parseInt(value);
+            if (isNaN(value)) {
+                value = 50;
+            }
+        }
+        if (value < 0) {
+            value = 0;
+        } else if (value > 100) {
+            value = 100;
+        }
+
+
+        var trendsView = $this.find('[data-view="trends"]');
+        var container = trendsView.find('.color-trend-' + trend.toString());
+
+        var newColor = colorForTrendAndValue($this, trend, value);
+
+        container.find('.color-trend-box-current')
+            .attr('data-color', newColor ? newColor.asString() : '')
+            .css(IFColor.blendedCSSBackground(newColor));
+
+        container.find('.color-trend-value > input')
+            .val(value);
+
+        return newColor;
+    }
+
+    function updateTrends($this) {
+        var trendsView = $this.find('[data-view="trends"]');
+
+        for (var i = 1; i <= 3; ++i) {
+            var container = trendsView.find('.color-trend-' + i.toString());
+            for (var k = 1; k <= 9; ++k) {
+                var newColor = colorForTrendAndValue($this, i, k * 10);
+
+                // Assign to color box
+                container
+                    .find('.color-trend-box-' + k.toString())
+                    .attr('data-color', newColor ? newColor.asString() : '')
+                    .css(IFColor.blendedCSSBackground(newColor));
+
+                // If this is 50% then assign to current trend box
+                // and update it's text input
+                if (k === 5) {
+                    updateTrendValue($this, i, 50);
+                }
+            }
+        }
+    }
+
+    function cvColorThiefColor(color) {
+        return new IFColor(IFColor.Type.RGB, [color[0], color[1], color[2], 100]);
+    }
+
+    function createImageView($this) {
+        return $('<div></div>')
+            .append($('<div></div>')
+                .addClass('image-panel')
+                .text('Drag an image here')
+                .on('dragenter', function () {
+                    $(this).css('background', 'maroon');
+                    return false;
+                })
+                .on('dragleave', function () {
+                    $(this).css('background', '');
+                    return false;
+                })
+                .on('dragover', function () {
+                    return false;
+                })
+                .on('drop', function (event) {
+                    var imagePanel = $(this);
+                    imagePanel.css('background', '');
+
+                    var palettePanel = imagePanel.closest('[data-view]').find('.image-palette');
+                    palettePanel.empty();
+
+                    var _addPaletteColor = function (color) {
+                        $('<div></div>')
+                            .css(IFColor.blendedCSSBackground(color))
+                            .on('click', function () {
+                                assignValue($this, color, false);
+                                $this.trigger('colorchange', color);
+                            }.bind(this))
+                            .appendTo(palettePanel);
+                    }.bind(this);
+
+                    var files = event.originalEvent.dataTransfer.files;
+                    var fileCount = files.length;
+                    var imageType = /image.*/;
+
+                    for (var i = 0; i < fileCount; i++) {
+                        var file = files[i];
+
+                        if (file.type.match(imageType)) {
+                            var reader = new FileReader();
+                            reader.onload = function (event) {
+                                var image = new Image();
+                                image.src = event.target.result;
+                                image.onload = function () {
+                                    var colorThief = new ColorThief();
+                                    var mainColor = cvColorThiefColor(colorThief.getColor(image));
+                                    _addPaletteColor(mainColor);
+
+                                    var palette = colorThief.getPalette(image, 8);
+                                    for (var i = 0; i < palette.length; ++i) {
+                                        var convertedColor = cvColorThiefColor(palette[i]);
+
+                                        // Take care to avoid duplications with dominant color
+                                        if (!IFColor.equals(convertedColor, mainColor)) {
+                                            _addPaletteColor(convertedColor);
+                                        }
+                                    }
+                                }.bind(this);
+
+                                imagePanel
+                                    .css('background-image', 'url(' + event.target.result + ')')
+                                    .text('');
+                            }.bind(this);
+                            reader.readAsDataURL(file);
+                            break;
+                        }
+                    }
+
+                    return false;
+                }))
+            .append($('<div></div>')
+                .addClass('image-palette'));
+    }
+
+    function createView($this, viewType) {
+        var view = null;
+
+        if (viewType === ViewType.Palette) {
+            view = createPaletteView($this);
+        } else if (viewType === ViewType.Swatches) {
+            view = createSwatchesView($this);
+        } else if (viewType === ViewType.Trends) {
+            view = createTrendsView($this);
+        } else if (viewType === ViewType.Image) {
+            view = createImageView($this);
+        } else {
+            throw new Error('Unknown color view: ' + viewType);
+        }
+
+        if (view) {
+            view
+                .attr('data-view', viewType)
+                .css('display', 'none')
+                .appendTo($this.find('.color-view'));
+        }
+    }
 
     function updateMatches($this) {
         var data = $this.data('gcolorpanel');
@@ -265,6 +518,7 @@
                     .css(IFColor.blendedCSSBackground(color))
                     .on('click', function () {
                         assignValue($this, color, false);
+                        $this.trigger('colorchange', color);
                     }.bind(this))
                     .appendTo(palettePanel);
             }.bind(this);
@@ -364,8 +618,6 @@
     function updateToComponents($this) {
         var data = $this.data('gcolorpanel');
 
-        // TODO !!! Take CMS into account !!!
-
         var color = data.color ? data.color : IFColor.WHITE;
 
         // Get the components in the right format
@@ -436,6 +688,7 @@
         activateColorMode($this, value ? value.getType().key : IFColor.Type.RGB.key);
         updateMatches($this);
         updateToComponents($this);
+        updateTrends($this);
     }
 
     var methods = {
@@ -497,14 +750,14 @@
                             .addClass('section-center')
                             .append($('<button></button>')
                                 .addClass('g-flat')
-                                .attr('data-view', ViewType.Palette)
+                                .attr('data-activate-view', ViewType.Palette)
                                 // TODO : I18N
                                 .attr('title', 'Palette')
                                 .append($('<span></span>')
                                     .addClass('fa fa-th')))
                             .append($('<button></button>')
                                 .addClass('g-flat')
-                                .attr('data-view', ViewType.Swatches)
+                                .attr('data-activate-view', ViewType.Swatches)
                                 // TODO : I18N
                                 .attr('title', 'Swatches')
                                 .css('display', 'none')
@@ -512,14 +765,14 @@
                                     .addClass('fa fa-bars')))
                             .append($('<button></button>')
                                 .addClass('g-flat')
-                                .attr('data-view', ViewType.Trends)
+                                .attr('data-activate-view', ViewType.Trends)
                                 // TODO : I18N
                                 .attr('title', 'Trends')
                                 .append($('<span></span>')
                                     .addClass('fa fa-sliders')))
                             .append($('<button></button>')
                                 .addClass('g-flat')
-                                .attr('data-view', ViewType.Image)
+                                .attr('data-activate-view', ViewType.Image)
                                 // TODO : I18N
                                 .attr('title', 'From Image')
                                 .append($('<span></span>')
@@ -532,7 +785,7 @@
                                     activateColorMode($this, $(this).val());
                                 }))))
                     .append($('<div></div>')
-                        .addClass('color-area'))
+                        .addClass('color-view'))
                     .append($('<div></div>')
                         .addClass('color-components'))
                     .append($('<hr/>'))
@@ -540,7 +793,13 @@
                         .addClass('color')
                         .append($('<div></div>')
                             .append($('<div>&nbsp;</div>')
-                                .addClass('previous-color g-input'))
+                                .addClass('previous-color g-input')
+                                .on('click', function () {
+                                    if (data.previousColor) {
+                                        assignValue($this, data.previousColor, false);
+                                        $this.trigger('colorchange', data.previousColor);
+                                    }
+                                }))
                             .append($('<div>&nbsp;</div>')
                                 .addClass('current-color g-input'))
                             .append($('<input>')
@@ -561,11 +820,11 @@
                     .append($('<div></div>')
                         .addClass('matcher-palette'));
 
-                $this.find('[data-view]').each(function (index, element) {
+                $this.find('[data-activate-view]').each(function (index, element) {
                     var $element = $(element);
                     $element
                         .on('click', function (evt) {
-                            methods.view.call(self, $element.attr('data-view'));
+                            methods.view.call(self, $element.attr('data-activate-view'));
                         });
                 });
 
@@ -654,6 +913,14 @@
                     }
                 }
 
+                // Init views
+                for (var view in ViewType) {
+                    if (ViewType.hasOwnProperty(view)) {
+                        createView($this, ViewType[view]);
+                    }
+                }
+
+                // Set default view
                 methods.view.call(self, options.defaultView);
             });
         },
@@ -669,14 +936,14 @@
                 if (value !== data.view) {
                     data.view = value;
 
-                    $this.find('[data-view]').each(function (index, element) {
+                    $this.find('[data-activate-view]').each(function (index, element) {
                         var $element = $(element);
-                        $element.toggleClass('g-active', $element.attr('data-view') === value);
+                        $element.toggleClass('g-active', $element.attr('data-activate-view') === value);
                     });
 
-                    createPalette($this.find('.color-area'), function (color) {
-                        assignValue($this, color, false);
-                        $this.trigger('colorchange', color);
+                    $this.find('.color-view > *').each(function (index, element) {
+                        var $element = $(element);
+                        $element.css('display', $element.attr('data-view') === value ? '' : 'none');
                     });
                 }
                 return this;
@@ -703,7 +970,7 @@
             } else {
                 // TODO : Detach & Attach listeners & Change active view if swatches & value=null
                 $this.data('gcolorpanel').scene = value;
-                $this.find('[data-view="' + ViewType.Swatches + '"]')
+                $this.find('[data-activate-view="' + ViewType.Swatches + '"]')
                     .css('display', value ? '' : 'none');
                 return this;
             }

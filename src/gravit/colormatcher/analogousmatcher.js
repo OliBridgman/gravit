@@ -23,15 +23,6 @@
     };
 
     /** @override */
-    GAnalogousMatcher.prototype.init = function (htmlElement) {
-    };
-
-    /** @override */
-    GAnalogousMatcher.prototype.isReferenceColorBased = function () {
-        return true;
-    };
-
-    /** @override */
     GAnalogousMatcher.prototype.match = function (referenceColor) {
         var result = [];
         var hslLeft = referenceColor.asHSL();

@@ -45,7 +45,6 @@ ifLocale.setValues(GZoomOutAction, IFLocale.Language.English, ["title"], ["Zoom 
 // Color
 ifLocale.setValues(GAnalogousMatcher, IFLocale.Language.English, ["title"], ["Analogous"]);
 ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], ["Complementary"]);
-ifLocale.setValues(GImagePaletteMatcher, IFLocale.Language.English, ["title"], ["From Image"]);
 
 // Palette
 ifLocale.setValues(GColorMatcherPalette, IFLocale.Language.English, ["title"], ["Matcher"]);

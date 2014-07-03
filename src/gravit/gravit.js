@@ -126,8 +126,7 @@
         // Register default color matcher
         gravit.colorMatchers.push(
             new GAnalogousMatcher(),
-            new GComplementaryMatcher(),
-            new GImagePaletteMatcher()
+            new GComplementaryMatcher()
         );
 
         // Register default properties
