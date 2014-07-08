@@ -99,7 +99,7 @@
             var $this = $(this);
             var data = $this.data('goverlay');
 
-            this.trigger('close');
+            $this.trigger('close');
 
             if (data.releaseOnClose) {
                 $this.parents('.g-modal-background').remove();
