@@ -10,7 +10,7 @@
     function GTransform(sx, shy, shx, sy, tx, ty) {
         this._sx = typeof sx === 'number' ? sx : 1.0;
         this._shy = typeof shy === 'number' ? shy : 0.0;
-        this._shx = typeof shx === 'number'  ? shx : 0.0;
+        this._shx = typeof shx === 'number' ? shx : 0.0;
         this._sy = typeof sy === 'number' ? sy : 1.0;
         this._tx = typeof tx === 'number' ? tx : 0.0;
         this._ty = typeof ty === 'number' ? ty : 0.0;
@@ -168,6 +168,22 @@
     };
 
     /**
+     * Returns the determinant of the matrix
+     * @returns {Number}
+     */
+    GTransform.prototype.getDeterminant = function () {
+        return this._sx * this._sy - this._shy * this._shx;
+    };
+
+    /**
+     * Returns the reciprocal of the determinant of the matrix
+     * @returns {Number}
+     */
+    GTransform.prototype.getDeterminantReciprocal = function () {
+        return 1.0 / (this._sx * this._sy - this._shy * this._shx);
+    };
+
+    /**
      * Returns the translation this transformation
      * @return {GPoint}
      */
@@ -180,7 +196,9 @@
      * @return {Number}
      */
     GTransform.prototype.getScaleFactor = function () {
-        return Math.sqrt(this._sx * this._sx + this._shy * this._shy)
+        var x = 0.707106781 * this._sx + 0.707106781 * this._shx;
+        var y = 0.707106781 * this._shy + 0.707106781 * this._sy;
+        return Math.sqrt(x * x + y * y);
     };
 
     /**

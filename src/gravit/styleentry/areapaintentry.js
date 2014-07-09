@@ -144,7 +144,7 @@
         var ty = ty !== null ? ty / 100 : 0;
         var sx = sx !== null ? sx / 100 : 1;
         var sy = sy !== null ? sy / 100 : 1;
-        var rt = rt !== null ? ifMath.normalizeAngleRadians(ifMath.toRadians(rt)) : 0;
+        var rt = rt !== null ? (ifMath.normalizeAngleRadians(ifMath.toRadians(rt))) : 0;
 
         var oldPattern = entry.getProperty('pat');
         var oldPatternType = IFPatternPaint.getTypeOf(oldPattern);
@@ -174,12 +174,12 @@
                 if (patternSubType === IFGradient.Type.Linear) {
                     sx = 1;
                     sy = 1;
-                    tx = 0;
+                    tx = 0.5;
                     ty = 0.5;
-                    rt = 0;
+                    rt = ifMath.toRadians(90);
                 } else if (patternSubType === IFGradient.Type.Radial) {
-                    sx = 0.5;
-                    sy = 0.5;
+                    sx = 1;
+                    sy = 1;
                     tx = 0.5;
                     ty = 0.5;
                     rt = 0;

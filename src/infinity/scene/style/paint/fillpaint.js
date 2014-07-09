@@ -23,14 +23,15 @@
 
     /** @override */
     IFFillPaint.prototype.paint = function (canvas, source, bbox) {
-        var pattern = this._createPaintPattern(canvas, bbox);
+        var pattern = this._createPaintPattern(canvas);
         if (pattern) {
-            if (pattern instanceof IFColor) {
-                canvas.fillVertices(pattern, this.$opc, this.$blm);
-            } else {
-                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(this._getPatternTransform(bbox)));
+            var patternTransform = this._getPaintPatternTransform(bbox);
+            if (patternTransform) {
+                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(patternTransform));
                 canvas.fillVertices(pattern, this.$opc, this.$blm);
                 canvas.setTransform(oldTransform);
+            } else {
+                canvas.fillVertices(pattern, this.$opc, this.$blm);
             }
         }
     };

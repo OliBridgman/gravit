@@ -71,7 +71,6 @@ var gAPIUrl = null;
 function gShellFinished() {
     // TODO : FIX THIS, FOR NEW WE ALWAYS CREATE NEW DOC ON EACH RUN
     setTimeout(function () {
-        console.log('NEW DOC');
         gApp.executeAction(GNewAction.ID);
     }, 250);
 
@@ -121,6 +120,4 @@ $(window).load(function () {
     rangy.init();
     gApp.init();
     gShell.finishLoad();
-
-    console.log('FINISH_LOAD');
 });

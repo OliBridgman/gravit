@@ -54,19 +54,56 @@
     };
 
     /**
-     * @param {GRect} bbox
-     * @return {GTransform}
+     * This will create a paint pattern and return it
+     * @param {IFPaintCanvas} canvas the canvas used for creating the pattern
+     * @return {*} a paint pattern or null for none
      * @private
      */
-    IFAreaPaint.prototype._getPatternTransform = function (bbox) {
-        var width = bbox.getWidth();
-        var height = bbox.getHeight();
+    IFAreaPaint.prototype._createPaintPattern = function (canvas) {
+        if (this.$pat) {
+            if (this.$pat instanceof IFColor) {
+                return this.$pat;
+            } else if (this.$pat instanceof IFGradient) {
+                var gradient = null;
 
-        return new GTransform()
-            .scaled(this.$sx, this.$sy)
-            .rotated(this.$rt)
-            .translated(bbox.getX(), bbox.getY())
-            .translated(this.$tx * width, this.$ty * height);
+                if (this.$pat.getType() === IFGradient.Type.Linear) {
+                    return canvas.createLinearGradient(-0.5, 0, 0.5, 0, this.$pat);
+                } else if (this.$pat.getType() === IFGradient.Type.Radial) {
+                    return canvas.createRadialGradient(0, 0, 0.5, this.$pat);
+                }
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * Returns the transformation for painting the pattern
+     * @param {GRect} bbox the bounding box to be used
+     * @returns {GTransform} null for no transform or a valid transformation
+     * @private
+     */
+    IFAreaPaint.prototype._getPaintPatternTransform = function (bbox) {
+        if (this.$pat) {
+            if (this.$pat instanceof IFGradient) {
+                    var left = bbox.getX();
+                    var top = bbox.getY();
+                    var width = bbox.getWidth();
+                    var height = bbox.getHeight();
+
+                    var sx = this.$sx * width;
+                    var sy = this.$sy * height;
+                    var tx = left + this.$tx * width;
+                    var ty = top + this.$ty * height;
+
+                    return new GTransform()
+                        .scaled(sx, sy)
+                        .rotated(this.$rt)
+                        .translated(tx, ty);
+            }
+        }
+
+        return null;
     };
 
     /** @override */

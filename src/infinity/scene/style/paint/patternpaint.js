@@ -116,36 +116,6 @@
         IFPaintEntry.prototype._handleChange.call(this, change, args);
     };
 
-    /**
-     * Creates and returns a paintable pattern
-     * @param {IFPaintCanvas} canvas the canvas used for creating the pattern
-     * @param {GRect} bbox the bounding box to be used
-     * @return {*} a canvas-specific fill pattern or null if
-     * there's no fill available
-     * @private
-     */
-    IFPatternPaint.prototype._createPaintPattern = function (canvas, bbox) {
-        if (this.$pat) {
-            if (this.$pat instanceof IFColor) {
-                return this.$pat;
-            } else if (this.$pat instanceof IFGradient) {
-                var width = bbox.getWidth();
-                var height = bbox.getHeight();
-
-                if (this.$pat.getType() === IFGradient.Type.Linear) {
-                    return canvas.createLinearGradient(0, 0, width, 0, this.$pat);
-                } else if (this.$pat.getType() === IFGradient.Type.Radial) {
-                    return canvas.createRadialGradient(0, 0, Math.min(width, height), this.$pat);
-                } else {
-                    throw new Error('Unsupported gradient type for paint pattern.');
-                }
-            } else {
-                throw new Error('Unsupported pattern for paint.');
-            }
-        }
-        return null;
-    };
-
     /** @override */
     IFPatternPaint.prototype.toString = function () {
         return "[IFPatternPaint]";

@@ -87,6 +87,12 @@
     };
 
     /**
+     * A unit rect starting at 0,0 width an unit size of 1
+     * @type {GRect}
+     */
+    GRect.UNIT_RECT = new GRect(0, 0, 1, 1);
+
+    /**
      * Construct a rectangle from a set of given points. This
      * @return {GRect} a new rect enclosing all points
      * @version 1.0
