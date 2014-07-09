@@ -111,8 +111,7 @@
                 }
 
                 return select;
-            } else if (property === 'fi' || property === 'ws' || property === 'cs' || property === 'in' || property === 'cg' ||
-                property === 'mt' || property === 'mb' || property === 'ml' || property === 'mr') {
+            } else if (property === 'fi' || property === 'ws' || property === 'cs' || property === 'in' || property === 'cg') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -353,34 +352,6 @@
                     .text('Line:'))
                 .append($('<td></td>')
                     .append(_createInput('lh'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Top:'))
-                .append($('<td></td>')
-                    .append(_createInput('mt')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Bottom:'))
-                .append($('<td></td>')
-                    .append(_createInput('mb'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Left:'))
-                .append($('<td></td>')
-                    .append(_createInput('ml')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Right:'))
-                .append($('<td></td>')
-                    .append(_createInput('mr'))))
             .appendTo(panel);
     };
 
@@ -511,15 +482,6 @@
 
         var lh = propertySource.getProperty('lh');
         this._panel.find('input[data-property="lh"]').val(lh !== null ? ifUtil.formatNumber(lh) : "");
-
-        this._panel.find('input[data-property="mt"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('mt')));
-        this._panel.find('input[data-property="mr"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('mr')));
-        this._panel.find('input[data-property="mb"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('mb')));
-        this._panel.find('input[data-property="ml"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('ml')));
     };
 
     /**

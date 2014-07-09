@@ -430,15 +430,7 @@
         /** The first line intendation */
         in: null,
         /** The line height whereas 1 = 100% */
-        lh: null,
-        /** Top margin */
-        mt: null,
-        /** Right margin */
-        mr: null,
-        /** Bottom margin */
-        mb: null,
-        /** Left margin */
-        ml: null
+        lh: null
     };
 
     IFText.Paragraph.propertyToCss = function (property, value, css) {
@@ -493,14 +485,6 @@
             css['text-indent'] = value !== null ? value + 'px' : '';
         } else if (property === 'lh') {
             css['line-height'] = value !== null ? value : '';
-        } else if (property === 'mt') {
-            css['margin-top'] = value !== null ? value + 'px' : '';
-        } else if (property === 'mr') {
-            css['margin-right'] = value !== null ? value + 'px' : '';
-        } else if (property === 'mb') {
-            css['margin-bottom'] = value !== null ? value + 'px' : '';
-        } else if (property === 'ml') {
-            css['margin-left'] = value !== null ? value + 'px' : '';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
         }
@@ -551,26 +535,6 @@
             var lineHeight = parseFloat(css['line-height']);
             if (!isNaN(lineHeight)) {
                 return lineHeight;
-            }
-        } else if (property === 'mt') {
-            var value = parseFloat(css['margin-top']);
-            if (!isNaN(value)) {
-                return value;
-            }
-        } else if (property === 'mr') {
-            var value = parseFloat(css['margin-right']);
-            if (!isNaN(value)) {
-                return value;
-            }
-        } else if (property === 'mb') {
-            var value = parseFloat(css['margin-bottom']);
-            if (!isNaN(value)) {
-                return value;
-            }
-        } else if (property === 'ml') {
-            var value = parseFloat(css['margin-left']);
-            if (!isNaN(value)) {
-                return value;
             }
         } else {
             throw new Error('Unimplemented property (cssToProperty): ' + property);
