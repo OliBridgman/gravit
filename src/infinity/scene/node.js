@@ -896,6 +896,21 @@
     IFNode.Container.prototype._lastChild = null;
 
     /**
+     * Returns an array of all children within this node
+     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
+     * This defaults to false.
+     * @return {Array<IFNode>} array of all children of this node or
+     * an empty array if there're no children
+     */
+    IFNode.Container.prototype.getChildren = function (shadow) {
+        var result = [];
+        for (var child = this.getFirstChild(shadow); child !== null; child = child.getNext(shadow)) {
+            result.push(child);
+        }
+        return result;
+    };
+
+    /**
      * Access the first child of this node if any
      * @param {Boolean} [shadow] if true, returns shadow nodes as well.
      * This defaults to false.

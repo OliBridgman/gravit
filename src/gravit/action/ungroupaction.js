@@ -79,16 +79,19 @@
                 var item = selection[i];
                 if (item instanceof IFGroup) {
                     var groupParent = item.getParent();
+                    var groupNext = item.getNext();
+                    var groupChildren = item.getChildren();
 
-                    // Move all sub-items of group before the group
-                    for (var child = item.getFirstChild(); child !== null; child = child.getNext()) {
+                    // Remove the group, first
+                    groupParent.removeChild(item);
+
+                    // Now move all sub-items of group before the group
+                    for (var j = 0; j < groupChildren.length; ++j) {
+                        var child = groupChildren[j];
                         item.removeChild(child);
-                        groupParent.insertChild(child, item);
+                        groupParent.insertChild(child, groupNext);
                         newSelection.push(child);
                     }
-
-                    // Now remove the group
-                    groupParent.removeChild(item);
                 }
             }
 
