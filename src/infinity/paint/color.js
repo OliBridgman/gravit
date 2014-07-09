@@ -160,7 +160,7 @@
     IFColor.WHITE = new IFColor(IFColor.Type.White);
 
     IFColor.SELECTION_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
-    IFColor.HIGHLIGHT_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
+    IFColor.HIGHLIGHT_OUTLINE = new IFColor(IFColor.Type.RGB, [128, 0, 0, 100]);
 
 
     /**
