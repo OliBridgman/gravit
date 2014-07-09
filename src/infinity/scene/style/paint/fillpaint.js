@@ -22,7 +22,7 @@
     };
 
     /** @override */
-    IFFillPaint.prototype.paint = function (canvas, source, bbox) {
+    IFFillPaint.prototype.paint = function (canvas, bbox) {
         var pattern = this._createPaintPattern(canvas);
         if (pattern) {
             var patternTransform = this._getPaintPatternTransform(bbox);

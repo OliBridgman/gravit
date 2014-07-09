@@ -88,7 +88,7 @@
     };
 
     /** @override */
-    IFStrokePaint.prototype.paint = function (canvas, source, bbox) {
+    IFStrokePaint.prototype.paint = function (canvas, bbox) {
         var strokeBBox = bbox;
         var padding = this.getPadding();
 
