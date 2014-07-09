@@ -61,21 +61,7 @@
     /** @override */
     IFPageEditor.prototype._prePaint = function (transform, context) {
         if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-            // Calculate transformed geometry bbox
-            var pageRect = this._element.getGeometryBBox();
-            var transformedRect = transform.mapRect(pageRect);
-
-            // Ensure to pixel-align the rect
-            var x = Math.floor(transformedRect.getX());
-            var y = Math.floor(transformedRect.getY());
-            var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
-            var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
-
-            if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
-            } else {
-                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
-            }
+            this._paintBBoxOutline(transform, context);
         }
         IFBlockEditor.prototype._prePaint.call(this, transform, context);
     };

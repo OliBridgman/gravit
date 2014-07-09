@@ -316,6 +316,37 @@
         }
     };
 
+    /**
+     * Paint bbox outline of underlying element
+     * @param {GTransform} transform the current transformation in use
+     * @param {IFPaintContext} context the paint context to paint on
+     * @param {IFColor} [color] the color for the outline. If not provided,
+     * uses either selection or highlight color depending on the current state.
+     * @private
+     */
+    IFBlockEditor.prototype._paintBBoxOutline = function (transform, context, color) {
+        // Calculate transformed geometry bbox
+        var sourceRect = this._element.getGeometryBBox();
+        var transformedRect = transform.mapRect(sourceRect);
+
+        // Ensure to pixel-align the rect
+        var x = Math.floor(transformedRect.getX());
+        var y = Math.floor(transformedRect.getY());
+        var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
+        var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
+
+
+        if (!color) {
+            if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
+            } else {
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
+            }
+        } else {
+            context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, color);
+        }
+    };
+
     /** @override */
     IFBlockEditor.prototype.toString = function () {
         return "[Object IFBlockEditor]";
