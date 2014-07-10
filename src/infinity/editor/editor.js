@@ -534,7 +534,7 @@
             try {
                 var orderedSelection = IFNode.order(this._selection, true);
                 for (var i = 0; i < orderedSelection.length; ++i) {
-                    var selElement = orderedSelection[0];
+                    var selElement = orderedSelection[i];
                     selElement.getParent().removeChild(selElement);
                 }
             } finally {
