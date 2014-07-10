@@ -37,10 +37,7 @@
 
     /** @override */
     IFShadowEffect.prototype.getPadding = function () {
-        if (!this.$in) {
-            return [this.$r - this.$x, this.$r - this.$y, this.$r + this.$x, this.$r + this.$y];
-        }
-        return null;
+        return [this.$r - this.$x, this.$r - this.$y, this.$r + this.$x, this.$r + this.$y];
     };
 
     /** @override */
@@ -56,7 +53,6 @@
 
         // Paint shadow now
         if (this.$in) {
-            // Inset shadow
             canvas.drawCanvas(contents, this.$x, this.$y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
             canvas.blur(this.$r);
             canvas.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
