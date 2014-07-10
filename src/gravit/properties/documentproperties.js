@@ -184,7 +184,7 @@
                         .attr('title', 'Pick Distance in Pixels'))
                     .append(_createInput('snapDist')
                         // TODO : I18N
-                        .attr('title', 'Snap Distance in Pixels'))))
+                        .attr('title', 'Snap Distance'))))
             .appendTo(panel);
     };
 

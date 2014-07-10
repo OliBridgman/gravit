@@ -49,8 +49,11 @@
     IFBackgroundLayer.prototype._renderPage = function (context, transform, page) {
         // Get page rectangle and transform it into world space
         var pageRect = new GRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
+        var marginRect = pageRect.expanded(-page.getProperty('ml'), -page.getProperty('mt'), -page.getProperty('mr'), -page.getProperty('mb'));
         var transformedPageRect = transform.mapRect(pageRect).toAlignedRect();
+        var transformedMarginRect = transform.mapRect(marginRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
+        var mx = transformedMarginRect.getX(), my = transformedMarginRect.getY(), mw = transformedMarginRect.getWidth(), mh = transformedMarginRect.getHeight();
 
         // Paint page color or chessboard if transparent
         var pageColor = page.getProperty('cls');
@@ -66,6 +69,11 @@
         context.canvas.setTransform(new GTransform(1, 0, 0, 1, x, y));
         context.canvas.fillRect(0, 0, w, h, fill);
         context.canvas.resetTransform();
+
+        // Paint margin rect
+        if (!GRect.equals(pageRect, marginRect)) {
+            context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1, IFColor.MARGIN_OUTLINE);
+        }
     };
 
     /** @override */
