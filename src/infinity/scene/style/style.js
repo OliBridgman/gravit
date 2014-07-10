@@ -95,7 +95,7 @@
         // Setup canvas and context for painting
         var canvas = new IFPaintCanvas();
         canvas.resize(width, height);
-        canvas.prepare(null);
+        canvas.prepare();
         var context = new IFPaintContext();
         context.canvas = canvas;
         context.configuration = new IFScenePaintConfiguration();
@@ -126,7 +126,6 @@
         // Paint rectangle with this style
         previewRect.renderStyle(context, this);
 
-        canvas.finish();
         return canvas.asPNGImage();
     };
 

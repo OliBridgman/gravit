@@ -1,5 +1,35 @@
 (function () {
     function test(scene, page, layer, view) {
+
+        var x = 200;
+        var y = 0;
+        var w = 200;
+        var h = 100;
+
+        var rect = new IFRectangle();
+        rect.setProperties(['trf'], [new GTransform(w / 2, 0, 0, h / 2,
+            x + w / 2, y + h / 2)]);
+
+        var style = new IFInlineStyle();
+        var fill = new IFFillPaint();
+        fill.setProperty('pat', IFColor.parseCSSColor('red'));
+        style.appendChild(fill);
+        style.appendChild(new IFBlurFilter());
+        rect.getStyleSet().appendChild(style);
+
+        page.appendChild(rect);
+
+        setTimeout(function () {
+            var paintBBox = rect.getPaintBBox();
+            scene.trigger(new IFScene.InvalidationRequestEvent(new GRect(paintBBox.getX(), paintBBox.getY(), paintBBox.getWidth() / 2, paintBBox.getHeight() / 2)));
+        }, 250);
+
+        //fill.setProperty('pat', IFColor.parseCSSColor('yellow'));
+
+        return;
+
+
+
         var sharedStyle_1 = new IFSharedStyle();
         sharedStyle_1.setProperty('name', 'Base Stroking');
         var stroke = new IFStrokePaint();
@@ -26,7 +56,7 @@
         var rectWidth = 200;
         var rectHeight = 100;
         var y = 20;
-        var x = 20;
+        var x = 20 + rectWidth + 50;
 
         for (var i = 0; i < 3; ++i) {
             var rect = new IFRectangle();
@@ -66,7 +96,7 @@
         }
 
         y = 20;
-        x += rectWidth + 50;
+        x -= rectWidth + 50;
 
         for (var i = 0; i < 3; ++i) {
             var rect = new IFRectangle();

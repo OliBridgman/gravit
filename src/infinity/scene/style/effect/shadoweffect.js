@@ -46,19 +46,23 @@
     };
 
     /** @override */
-    IFShadowEffect.prototype.render = function (canvas, contents) {
+    IFShadowEffect.prototype.render = function (canvas, contents, scale) {
         // Fill our whole canvas with the shadow color
         canvas.fillCanvas(this.$cls);
 
+        var x = this.$x * scale;
+        var y = this.$y * scale;
+        var r = this.$r * scale;
+
         // Paint shadow now
         if (this.$in) {
-            canvas.drawCanvas(contents, this.$x, this.$y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
-            canvas.blur(this.$r);
+            canvas.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+            canvas.blur(r);
             canvas.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
         } else {
             // Drop shadow
-            canvas.drawCanvas(contents, this.$x, this.$y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-            canvas.blur(this.$r);
+            canvas.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            canvas.blur(r);
         }
     };
 

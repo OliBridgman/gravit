@@ -27,8 +27,8 @@
     };
 
     /** @override */
-    IFBlurFilter.prototype.apply = function (contents) {
-        contents.blur(this.$r);
+    IFBlurFilter.prototype.apply = function (contents, scale) {
+        contents.blur(this.$r * scale);
     };
 
     /** @override */

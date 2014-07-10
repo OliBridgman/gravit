@@ -55,13 +55,13 @@
             var sourceCanvas = context.canvas;
             context.canvas = this._pixelContentCanvas;
             this._view.getScene().render(context);
-            this._pixelContentCanvas.finish();
 
             // Now render our pixel content canvas at the given scale on our source canvas
             sourceCanvas.setTransform(this._view.getWorldTransform());
             sourceCanvas.drawImage(this._pixelContentCanvas, tl.getX(), tl.getY(), true);
 
             // Finally reset our source canvas
+            this._pixelContentCanvas.finish();
             context.canvas = sourceCanvas;
         } else {
             // Render regular vectors

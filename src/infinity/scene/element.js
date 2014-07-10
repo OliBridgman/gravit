@@ -325,7 +325,7 @@
      * @param {Number} [styleIndex] the style's index
      */
     IFElement.Style.prototype.renderStyle = function (context, style, styleIndex) {
-        if (context.configuration.isRasterEffects(context)) {
+        if (!context.configuration.isOutline(context)) {
             var styleAsMask = false;
             var styleOnBackground = false;
             var styleKnockout = false;
@@ -389,16 +389,30 @@
                 var sourceCanvas = context.canvas;
                 var paintBBox = style.getBBox(this.getGeometryBBox());
 
-                // The canvas our results will be put onto
-                var stackCanvas = sourceCanvas.createCanvas(paintBBox);
+                // The canvas our results will be put onto. If we're in fast
+                // mode, we'll try to cache the result and paint at 100%, otherwise
+                // we'll be painting on a temporary canvas, instead
+                var styleCanvas = null;
+                if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
+                    styleCanvas = new IFPaintCanvas();
+                    styleCanvas.resize(paintBBox.getWidth(), paintBBox.getHeight());
+                    styleCanvas.prepare();
+
+                    var topLeft = paintBBox.getSide(GRect.Side.TOP_LEFT);
+                    styleCanvas.setOrigin(topLeft);
+                    styleCanvas.setOffset(topLeft);
+                } else {
+                    styleCanvas = sourceCanvas.createCanvas(paintBBox, false);
+                }
 
                 // The canvas for rendering the contents of ourself
-                var contentsCanvas = sourceCanvas.createCanvas(paintBBox);
+                var contentsCanvas = styleCanvas.createCanvas(paintBBox);
                 context.canvas = contentsCanvas;
                 try {
                     this._paint(context, style, styleIndex);
                 } finally {
                     context.canvas = sourceCanvas;
+                    contentsCanvas.finish();
                 }
 
                 var hasRenderedContents = styleKnockout; // knockout means no contents painting
@@ -411,42 +425,45 @@
                     });
 
                     // Initiate an effect canvas to paint each effect on
-                    var effectCanvas = sourceCanvas.createCanvas(paintBBox);
+                    var effectCanvas = styleCanvas.createCanvas(paintBBox);
                     for (var i = 0; i < effects.length; ++i) {
                         var effect = effects[i];
 
                         if (i > 0) {
                             // Clear previous effect contents
                             effectCanvas.clear();
-                            //effectCanvas = sourceCanvas.createCanvas(paintBBox);
                         }
 
                         // Paint contents before first post filter except if knocked out
                         if (effect.isPost()) {
                             if (!hasRenderedContents) {
-                                stackCanvas.drawCanvas(contentsCanvas);
+                                styleCanvas.drawCanvas(contentsCanvas);
                                 hasRenderedContents = true;
                             }
                         }
 
                         // Render effect and paint the effect canvas on our stack canvas
-                        effect.render(effectCanvas, contentsCanvas);
-                        stackCanvas.drawCanvas(effectCanvas);
+                        effect.render(effectCanvas, contentsCanvas, effectCanvas.getScale());
+                        styleCanvas.drawCanvas(effectCanvas);
                     }
+                    effectCanvas.finish();
                 }
 
                 // Render contents if not yet done
                 if (!hasRenderedContents) {
-                    stackCanvas.drawCanvas(contentsCanvas);
+                    styleCanvas.drawCanvas(contentsCanvas);
                 }
 
                 // Apply any filters to our stack canvas
                 for (var i = 0; i < filters.length; ++i) {
-                    filters[i].apply(stackCanvas);
+                    filters[i].apply(styleCanvas, styleCanvas.getScale());
                 }
 
                 // Finally paint our stack canvas back into source canvas
-                sourceCanvas.drawCanvas(stackCanvas, 0, 0, styleOpacity, styleBlendMode);
+                sourceCanvas.drawCanvas(styleCanvas, 0, 0, styleOpacity, styleBlendMode);
+
+                // Release our element's canvas
+                styleCanvas.finish();
             } else {
                 this._paint(context, style, styleIndex);
             }

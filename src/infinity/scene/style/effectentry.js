@@ -24,8 +24,9 @@
     /**
      * @param {IFPaintCanvas} canvas the target canvas for the effect
      * @param {IFPaintCanvas} contents the contents the effect is applied on
+     * @param {Number} scale a scale factor you need to multiply your params with
      */
-    IFEffectEntry.prototype.render = function (canvas, contents) {
+    IFEffectEntry.prototype.render = function (canvas, contents, scale) {
         throw new Error("Not Supported");
     };
 

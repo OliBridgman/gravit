@@ -55,7 +55,7 @@
      * The current paint mode
      * @type {IFScenePaintConfiguration.PaintMode}
      */
-    IFScenePaintConfiguration.prototype.paintMode = IFScenePaintConfiguration.PaintMode.Full;
+    IFScenePaintConfiguration.prototype.paintMode = IFScenePaintConfiguration.PaintMode.Fast;
 
     /**
      * Whether to render in pixel mode or not

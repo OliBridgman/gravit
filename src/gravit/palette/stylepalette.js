@@ -340,14 +340,14 @@
                             // TODO : I18N
                             .text('Knockout'))
                         /* TODO
-                        .append($('<option></option>')
-                            .attr('value', IFAppliedStyle.Type.Mask)
-                            // TODO : I18N
-                            .text('Mask'))
-                        .append($('<option></option>')
-                            .attr('value', IFAppliedStyle.Type.Background)
-                            // TODO : I18N
-                            .text('Background'))*/
+                         .append($('<option></option>')
+                         .attr('value', IFAppliedStyle.Type.Mask)
+                         // TODO : I18N
+                         .text('Mask'))
+                         .append($('<option></option>')
+                         .attr('value', IFAppliedStyle.Type.Background)
+                         // TODO : I18N
+                         .text('Background'))*/
                         .on('change', function (evt) {
                             var val = $(evt.target).val();
                             this._modifyEachSelectedStyle(function (style) {
@@ -560,8 +560,9 @@
      * @private
      */
     GStylePalette.prototype._styleChange = function (evt) {
-        if (this._isSelectedStyle(evt.style)) {
-            var style = this._styles[this._getStyleIndex(evt.style, true)][0];
+        var styleIndex = this._getStyleIndex(evt.style, false);
+        if (styleIndex >= 0 && styleIndex === this._selectedStyleIndex) {
+            var style = this._styles[styleIndex][0];
             this._styleSelector.gStylePanel('updateStyle', style);
         }
     };

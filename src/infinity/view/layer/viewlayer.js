@@ -105,7 +105,7 @@
      * Called to update the view area
      */
     IFViewLayer.prototype.updateViewArea = function () {
-        var viewArea = this._view.getViewBox(true);
+        var viewArea = new GRect(0, 0, this._view.getWidth(), this._view.getHeight());
         if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
             this.invalidate();

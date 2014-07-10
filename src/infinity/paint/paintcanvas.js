@@ -366,10 +366,10 @@
      */
     IFPaintCanvas.prototype.getTransform = function (local) {
         var transform = this._transform;
-        if (!local && (this._origin || this._scale)) {
-            var tx = this._origin ? this._origin.getX() : 0;
-            var ty = this._origin ? this._origin.getY() : 0;
-            var s = this._scale ? this._scale : 1.0;
+        if (!local) {
+            var tx = this._origin.getX();
+            var ty = this._origin.getY();
+            var s = this._scale;
             transform = transform.multiplied(new GTransform().scaled(s, s).translated(-tx, -ty));
         }
         return transform;
@@ -412,7 +412,6 @@
      * to enforce to provide integer based rectangles only as internally,
      * the canvas may need to convert into integers first which may
      * result in rounding errors otherwise
-     * @version 1.0
      */
     IFPaintCanvas.prototype.prepare = function (areas) {
         // save context before anything else
@@ -420,9 +419,9 @@
 
         // Reset some stuff
         this._transform = new GTransform();
-        this._origin = null;
-        this._scale = null;
-        this._areas = areas;
+        this._origin = new GPoint(0, 0);
+        this._scale = 1.0;
+        this._areas = areas ? areas.slice() : null;
         this._updateTransform();
 
         // Clip and clear our areas if any
@@ -436,6 +435,13 @@
                 var yMin = rect.getY();
                 var yMax = yMin + rect.getHeight();
 
+                // Clip to our own extents
+                xMin = Math.max(0, xMin);
+                xMax = Math.min(this.getWidth(), xMax);
+                yMin = Math.max(0, yMin);
+                yMax = Math.min(this.getHeight(), yMax);
+
+                // Add path
                 this._canvasContext.moveTo(xMin, yMin);
                 this._canvasContext.lineTo(xMax, yMin);
                 this._canvasContext.lineTo(xMax, yMax);
@@ -466,60 +472,63 @@
      * Creates a temporary canvas with the given extents.
      * The returned canvas will be compatible to this canvas
      * and thus, will prepared in the same way as this one
-     * including the current zoom level. Note that the
+     * including the current zoom level and dirty areas. Note that the
      * canvas will include a transformation so that the
-     * extent's x/y coordinates are equal to 0,0.
+     * extent's x/y coordinates are equal to 0,0. Temporary canvases
+     * should never be used i.e. for effects as they might be cut off.
      * @param {GRect} extents the extents for the requested canvas
-     * @param {Boolean} [copyContents] if set to true, the contents of this
-     * canvas within the given extents will be copied into the new canvas.
      * Defaults to false.
      */
-    IFPaintCanvas.prototype.createCanvas = function (extents, copyContents) {
+    IFPaintCanvas.prototype.createCanvas = function (extents, clipDirty) {
         var result = new IFPaintCanvas();
 
-        var scale = this._scale ? this._scale : 1;
+        // Convert extents into this canvas' coordinates and clip accordingly
+        var paintExtents = this.getTransform(false).mapRect(extents);
+        var left = paintExtents.getX();
+        var top = paintExtents.getY();
+        var width = paintExtents.getWidth();
+        var height = paintExtents.getHeight();
+
+        if (top < 0) {
+            height += top;
+            top = 0;
+        }
+
+        if (left < 0) {
+            width += left;
+            left = 0;
+        }
+
+        if (left + width > this.getWidth()) {
+            width = this.getWidth() - left;
+        }
+
+        if (top + height > this.getHeight()) {
+            height = this.getHeight() - top;
+        }
+
+        var sceneExtents = this.getTransform(false).inverted().mapRect(new GRect(left, top, width, height));
+
         var finalExtents = new GRect(
-            extents.getX() * scale,
-            extents.getY() * scale,
-            extents.getWidth() * scale,
-            extents.getHeight() * scale
+            sceneExtents.getX() * this._scale,
+            sceneExtents.getY() * this._scale,
+            sceneExtents.getWidth() * this._scale,
+            sceneExtents.getHeight() * this._scale
         );
 
         // Resize canvas including our scalation plus a small tolerance factor
         result.resize(finalExtents.getWidth(), finalExtents.getHeight());
 
-        // Prepare canvas with our own clipping areas but ensure to
-        // transform them into the target canvas' origin, first.
-
-        // TODO : Make sure to clip resulting canvas size and
-        // correctly map and assign dirty areas below. Also make
-        // sure that if resulting canvas image is clipped to assign
-        // the correct offset which by then no longer is the origin
-
-        var areas = new Array();
-        if (this._areas) {
+        var areas = null;
+        if (clipDirty && this._areas) {
+            areas = [];
             for (var i = 0; i < this._areas.length; ++i) {
-                areas.push(this._areas[i].translated(-extents.getX(), -extents.getY()));
+                areas.push(this._areas[i].translated(-left, -top));
             }
         }
 
-        // TODO : Uncommment areas param when working
-        result.prepare(null);//areas);
-
-        // Copy contents if desired before we apply any transformations
-        if (copyContents) {
-            result._canvasContext.drawImage(
-                this._canvasContext.canvas,
-                finalExtents.getX() - this._origin.getX(),
-                finalExtents.getY() - this._origin.getY(),
-                finalExtents.getWidth(),
-                finalExtents.getHeight(),
-                0,
-                0,
-                finalExtents.getWidth(),
-                finalExtents.getHeight()
-            );
-        }
+        // Let canvas prepare itself
+        result.prepare(areas);
 
         // Set result's origin and scalation
         var topLeft = finalExtents.getSide(GRect.Side.TOP_LEFT);
@@ -540,8 +549,9 @@
     };
 
     /**
-     * Draw a canvas previously gathered via createCanvas.
-     * Note that the canvas will be painted at it's origin.
+     * Draw a canvas on this one. The canvas will be painted at it's given
+     * offset position including the delta parameters. If the given canvas' scale
+     * is != 100%, the canvas will draw it at 100%
      * @param {IFPaintCanvas} canvas
      * @param {Number} [dx]
      * @param {Number} [dy]
@@ -554,8 +564,10 @@
         // Make sure to reset scale when drawing canvases + make non smooth
         var hadSmooth = this._getImageSmoothingEnabled();
         var oldScale = this._scale;
-        this._setImageSmoothingEnabled(false);
-        this.setScale(1);
+        this._setImageSmoothingEnabled(oldScale < 1);
+        if (canvas.getScale() !== 1.0) {
+            this.setScale(1);
+        }
 
         dx = dx | 0;
         dy = dy | 0;

@@ -14,8 +14,9 @@
 
     /**
      * @param {IFPaintCanvas} contents the contents canvas to apply the filter onto
+     * @param {Number} scale a scale factor you need to multiply your params with
      */
-    IFFilterEntry.prototype.apply = function (contents) {
+    IFFilterEntry.prototype.apply = function (contents, scale) {
         throw new Error("Not Supported");
     };
 
