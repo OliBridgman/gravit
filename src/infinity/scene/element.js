@@ -417,7 +417,8 @@
 
                         if (i > 0) {
                             // Clear previous effect contents
-                            effectCanvas.fillRect(0, 0, paintBBox.getWidth(), paintBBox.getHeight());
+                            effectCanvas.clear();
+                            //effectCanvas = sourceCanvas.createCanvas(paintBBox);
                         }
 
                         // Paint contents before first post filter except if knocked out

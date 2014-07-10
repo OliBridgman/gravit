@@ -532,6 +532,14 @@
     };
 
     /**
+     * Clears the whole canvas to be fully transparent
+     */
+    IFPaintCanvas.prototype.clear = function () {
+        var clearRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
+        this._canvasContext.clearRect(clearRect.getX(), clearRect.getY(), clearRect.getWidth(), clearRect.getHeight());
+    };
+
+    /**
      * Draw a canvas previously gathered via createCanvas.
      * Note that the canvas will be painted at it's origin.
      * @param {IFPaintCanvas} canvas
@@ -774,7 +782,16 @@
     };
 
     /**
-     * Function to fill a rectangle with a color. This does not care about
+     * Function to fill the whole canvas with a given fill.
+     * @param {*} [fill] the fill, defaults to full opaque black
+     */
+    IFPaintCanvas.prototype.fillCanvas = function (fill) {
+        var fillRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
+        this.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill);
+    };
+
+    /**
+     * Function to fill a rectangle with fill. This does not care about
      * any special operations like composite and the such though the rectangle
      * gets transformed into the current space.
      *
@@ -787,12 +804,14 @@
      */
     IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
         fill = this._convertStyle(fill ? fill : IFColor.BLACK);
+        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalAlpha = 1.0;
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
     };
 
     /**
-     * Function to stroke a rectangle with a color. This does not care about
+     * Function to stroke a rectangle with a stroke. This does not care about
      * any special operations like composite and the such though the rectangle
      * gets transformed into the current space.
      *
@@ -801,12 +820,14 @@
      * @param {Number} width width of rectangle
      * @param {Number} height height of rectangle
      * @param {Number} [strokeWidth] the width of the stroke, defaults to 1.0
-     * @param {Number} [fill] the stroke, defaults to full opaque black
+     * @param {Number} [stroke] the stroke, defaults to full opaque black
      * @version 1.0
      */
     IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
+        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalAlpha = 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
         this._canvasContext.strokeRect(x, y, width, height);
@@ -828,6 +849,8 @@
     IFPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
         stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
+        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalAlpha = 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
         this._canvasContext.beginPath();
