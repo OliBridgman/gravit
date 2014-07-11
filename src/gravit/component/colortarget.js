@@ -64,16 +64,30 @@
                         })
                         .on('drop', function (evt) {
                             var event = evt.originalEvent;
+
                             var sourceColor = event.dataTransfer.getData(IFColor.MIME_TYPE);
+                            var sourceNode = event.dataTransfer.getData(IFNode.MIME_TYPE);
+
+                            var targetColor = null;
+
                             if (sourceColor && sourceColor !== "") {
-                                var color = IFColor.parseColor(sourceColor);
-                                var myColor = $this.data('gcolortarget').color;
-                                if (color && !IFColor.equals(color, myColor)) {
-                                    methods.value.call(self, color);
-                                    $this.trigger('colordrop', [color, event]);
-                                    $this.trigger('colorchange', color);
+                                targetColor = IFColor.parseColor(sourceColor);
+                            } else if (sourceNode && sourceNode !== "") {
+                                var node = IFNode.deserialize(sourceNode);
+                                if (node instanceof IFSwatch && node.getSwatchType() === IFSwatch.SwatchType.Color) {
+                                    targetColor = node.getProperty('val');
                                 }
                             }
+
+                            if (targetColor) {
+                                var myColor = $this.data('gcolortarget').color;
+                                if (!IFColor.equals(targetColor, myColor)) {
+                                    methods.value.call(self, targetColor);
+                                    $this.trigger('colordrop', [targetColor, event]);
+                                    $this.trigger('colorchange', targetColor);
+                                }
+                            }
+
                             return false;
                         });
                 }

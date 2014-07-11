@@ -1,34 +1,25 @@
 (function () {
     function test(scene, page, layer, view) {
+        var swatch = new IFSwatch();
+        swatch.setProperties(['name', 'val'], ['test color', IFColor.parseCSSColor('rgb(128,0,128)')]);
+        scene.getSwatchCollection().appendChild(swatch);
 
-        var x = 200;
-        var y = 0;
-        var w = 200;
-        var h = 100;
+        swatch = new IFSwatch();
+        swatch.setProperties(['val'], [IFColor.parseCSSColor('rgb(128,128,128)')]);
+        scene.getSwatchCollection().appendChild(swatch);
 
-        var rect = new IFRectangle();
-        rect.setProperties(['trf'], [new GTransform(w / 2, 0, 0, h / 2,
-            x + w / 2, y + h / 2)]);
-
-        var style = new IFInlineStyle();
-        var fill = new IFFillPaint();
-        fill.setProperty('pat', IFColor.parseCSSColor('red'));
-        style.appendChild(fill);
-        style.appendChild(new IFBlurFilter());
-        rect.getStyleSet().appendChild(style);
-
-        page.appendChild(rect);
-
-        setTimeout(function () {
-            var paintBBox = rect.getPaintBBox();
-            scene.trigger(new IFScene.InvalidationRequestEvent(new GRect(paintBBox.getX(), paintBBox.getY(), paintBBox.getWidth() / 2, paintBBox.getHeight() / 2)));
-        }, 250);
-
-        //fill.setProperty('pat', IFColor.parseCSSColor('yellow'));
-
-        return;
-
-
+        swatch = new IFSwatch();
+        swatch.setProperties(['name', 'val'], ['test gradient', new IFGradient([
+            {
+                position: 0,
+                color: IFColor.BLACK
+            },
+            {
+                position: 100,
+                color: IFColor.WHITE
+            }
+        ], IFGradient.Type.Radial)]);
+        scene.getSwatchCollection().appendChild(swatch);
 
         var sharedStyle_1 = new IFSharedStyle();
         sharedStyle_1.setProperty('name', 'Base Stroking');

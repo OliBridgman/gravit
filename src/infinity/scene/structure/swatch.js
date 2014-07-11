@@ -11,6 +11,7 @@
         IFNode.call(this);
         this._setDefaultProperties(IFSwatch.VisualProperties, IFSwatch.MetaProperties);
     }
+
     IFNode.inheritAndMix('swatch', IFSwatch, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
@@ -39,12 +40,33 @@
     /**
      * @returns {IFSwatch.SwatchType}
      */
-    IFSwatch.prototype.getType = function () {
+    IFSwatch.prototype.getSwatchType = function () {
         if (this.$val) {
             if (this.$val instanceof IFColor) {
                 return IFSwatch.SwatchType.Color;
             } else if (this.$val instanceof IFGradient) {
                 return IFSwatch.SwatchType.Gradient;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Returns a css3 background definition for the swatch
+     * @param {Number} width background width
+     * @param {Number} height background height
+     * @return {*} css object
+     */
+    IFSwatch.prototype.asCSSBackgroundString = function (width, height) {
+        var type = this.getSwatchType();
+        if (type) {
+            switch (type) {
+                case IFSwatch.SwatchType.Color:
+                    return IFColor.blendedCSSBackground(this.$val, (width + height) / 2);
+                case IFSwatch.SwatchType.Gradient:
+                    return {
+                        'background': this.$val.asCSSBackgroundString()
+                    }
             }
         }
         return null;
@@ -81,7 +103,7 @@
                 if (value) {
                     if (property === 'val') {
                         var type = value.charAt(0);
-                        value =value .substring(1);
+                        value = value.substring(1);
                         if (type === 'C') {
                             return IFColor.parseColor(value);
                         } else if (type === 'G') {

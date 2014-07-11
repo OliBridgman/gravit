@@ -51,4 +51,4 @@ ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["P
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
 
 // Sidebar
-ifLocale.setValues(GStylesSidebar, IFLocale.Language.English, ["title"], ["Styles"]);
+ifLocale.setValues(GStylesSwatchesSidebar, IFLocale.Language.English, ["title"], ["Styles & Swatches"]);

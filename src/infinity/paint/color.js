@@ -483,6 +483,18 @@
     };
 
     /**
+     * Returns the color difference from this color to another
+     * color using the CIEDE2000 algorithm
+     * @param otherColor
+     * @returns {Number}
+     */
+    IFColor.prototype.difference = function (otherColor) {
+        var m = this.asLAB();
+        var o = otherColor.asLAB();
+        return ciede2000({L: m[0], a: m[1], b: m[2]}, {L: o[0], a: o[1], b: o[2]})
+    };
+
+    /**
      * Return new instanceof this color with type RGB
      * @returns {IFColor}
      */
@@ -744,7 +756,25 @@
         var rgb = this.asRGB();
         var whitePointReference = whitePointReference ? whitePointReference : [];
 
-        // TODO : Calculate matrix and convert
+        // TODO : Properly calculate matrix
+
+        var convert = function (channel) {
+            return channel > 0.04045 ?
+                Math.pow(( ( channel + 0.055 ) / 1.055 ), 2.4) :
+                channel / 12.92;
+            ;
+        };
+
+        var r = convert(rgb[0] / 255) * 100;
+        var g = convert(rgb[1] / 255) * 100;
+        var b = convert(rgb[2] / 255) * 100;
+
+        // Observer. = 2°, Illuminant = D65
+        var x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+        var y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+        var z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+
+        return [x, y, z];
     };
 
     /**

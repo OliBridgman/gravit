@@ -875,46 +875,48 @@
             // Link
             // TODO : I18N
             var name = prompt('Enter a name for the new style. Not providing a name will remove the style when it is no longer in use.', '');
-            var editor = this._document.getEditor();
-            var scene = this._document.getScene();
-            editor.beginTransaction();
-            try {
-                // Create our shared style
-                var sharedStyle = new IFSharedStyle();
-                if (name && name.trim() !== '') {
-                    sharedStyle.setProperty('name', name);
-                }
-
-                // Transfer style
-                for (var child = activeStyle.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFStyleEntry) {
-                        sharedStyle.appendChild(child.clone());
+            if (name !== null) {
+                var editor = this._document.getEditor();
+                var scene = this._document.getScene();
+                editor.beginTransaction();
+                try {
+                    // Create our shared style
+                    var sharedStyle = new IFSharedStyle();
+                    if (name.trim() !== '') {
+                        sharedStyle.setProperty('name', name);
                     }
+
+                    // Transfer style
+                    for (var child = activeStyle.getFirstChild(); child !== null; child = child.getNext()) {
+                        if (child instanceof IFStyleEntry) {
+                            sharedStyle.appendChild(child.clone());
+                        }
+                    }
+
+                    // Add the shared style to our collection
+                    scene.getStyleCollection().appendChild(sharedStyle);
+
+                    // Save selected style index
+                    var selectedStyleIndex = this._selectedStyleIndex;
+
+                    // Replace all active style nodes with a new linked style
+                    this._visitEachSelectedStyle(function (style) {
+                        // Insert new linked style before
+                        var linkedStyle = new IFLinkedStyle();
+                        linkedStyle.transferProperties(style, [IFAppliedStyle.GeometryProperties, IFAppliedStyle.VisualProperties]);
+                        linkedStyle.setProperty('ref', sharedStyle.getReferenceId());
+                        style.getParent().insertChild(linkedStyle, style);
+
+                        // Remove original style
+                        style.getParent().removeChild(style);
+                    });
+
+                    // Re-assign selected style
+                    this._setSelectedStyle(selectedStyleIndex);
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Link Style');
                 }
-
-                // Add the shared style to our collection
-                scene.getStyleCollection().appendChild(sharedStyle);
-
-                // Save selected style index
-                var selectedStyleIndex = this._selectedStyleIndex;
-
-                // Replace all active style nodes with a new linked style
-                this._visitEachSelectedStyle(function (style) {
-                    // Insert new linked style before
-                    var linkedStyle = new IFLinkedStyle();
-                    linkedStyle.transferProperties(style, [IFAppliedStyle.GeometryProperties, IFAppliedStyle.VisualProperties]);
-                    linkedStyle.setProperty('ref', sharedStyle.getReferenceId());
-                    style.getParent().insertChild(linkedStyle, style);
-
-                    // Remove original style
-                    style.getParent().removeChild(style);
-                });
-
-                // Re-assign selected style
-                this._setSelectedStyle(selectedStyleIndex);
-            } finally {
-                // TODO : I18N
-                editor.commitTransaction('Link Style');
             }
         }
     };
@@ -1002,7 +1004,7 @@
             var contents = handler.createContent(this._document.getScene(), assign, revert);
 
             var _canDrop = function (source, target) {
-                return source !== target && source.parentNode === target.parentNode;
+                return source && target && source !== target && source.parentNode === target.parentNode;
             };
 
             var row = $('<tr></tr>')

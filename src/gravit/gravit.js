@@ -20,7 +20,7 @@
 
         // Register default sidebars
         gravit.sidebars.push(
-            new GStylesSidebar()
+            new GStylesSwatchesSidebar()
         );
 
         // Register default tools

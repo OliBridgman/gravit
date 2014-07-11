@@ -227,8 +227,7 @@
         'FF00FF', 'B10DC9', '222222', '9900FF', '9933FF', '9966FF', '9999FF', '99CCFF', '99FFFF', 'CC00FF', 'CC33FF', 'CC66FF', 'CC99FF', 'CCCCFF', 'CCFFFF', 'FF00FF', 'FF33FF', 'FF66FF', 'FF99FF', 'FFCCFF', 'FFFFFF'];
 
     function createPaletteView($this) {
-        var view = $('<table></table>')
-            .addClass('color-swatches');
+        var view = $('<table></table>');
 
         var parent = $('<tr></tr>').appendTo(view);
 
@@ -257,7 +256,68 @@
     };
 
     function createSwatchesView($this) {
-        return $('<div>SWATCHES</div>');
+        var data = $this.data('gcolorpanel');
+
+        return $('<div></div>')
+            .gSwatchPanel({
+                nullSwatch: $('<span></span>')
+                    .addClass('fa fa-plus-circle'),
+                // TODO : I18N
+                nullName: 'Add current color as new swatch',
+                types: [IFSwatch.SwatchType.Color],
+                allowSelect: false
+            })
+            .on('change', function (evt, swatch) {
+                if (!swatch) {
+                    if (!data.scene || !data.color) {
+                        return; // leave here, no color or scene
+                    }
+                    // Make sure there's no such color, yet
+                    var swatches = data.scene.getSwatchCollection();
+                    for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
+                        if (node instanceof IFSwatch && node.getSwatchType() === IFSwatch.SwatchType.Color) {
+                            if (IFColor.equals(data.color, node.getProperty('val'))) {
+                                return; // leave here, colors are equal
+                            }
+                        }
+                    }
+
+                    // Ask for a name
+                    var name = prompt('Enter a name for the new swatch:', data.color.asString());
+                    if (name === null) {
+                        return; // leave here, user has canceled
+                    }
+                    if (name.trim() === '') {
+                        name = data.color.asString();
+                    }
+
+                    // Add current color as swatch
+                    var editor = IFEditor.getEditor(data.scene);
+
+                    if (editor) {
+                        editor.beginTransaction();
+                    }
+
+                    try {
+                        var swatch = new IFSwatch();
+                        swatch.setProperties(['name', 'val'], [name, data.color]);
+                        swatches.appendChild(swatch);
+                    } finally {
+                        if (editor) {
+                            editor.commitTransaction('Add Swatch');
+
+                        } else {
+                            var color = swatch.getProperty('val');
+                            assignValue($this, color, false);
+                            $this.trigger('colorchange', color);
+                        }
+                    }
+                } else {
+                    var color = swatch.getProperty('val');
+                    assignValue($this, color, false);
+                    $this.trigger('colorchange', color);
+                }
+            });
     }
 
     function createTrendsView($this) {
@@ -685,6 +745,15 @@
         $this.find('.current-color').css(IFColor.blendedCSSBackground(data.color));
         $this.find('.color-input').val(data.color ? data.color.asHTMLHexString() : '');
 
+        // Show color difference
+        var colorDiff = '&ndash;';
+        if (data.previousColor && data.color) {
+            var diff = data.color.difference(data.previousColor);
+            colorDiff = '&Delta;&nbsp;' + (diff < 0 ? ifUtil.formatNumber(diff, 2) : diff.toFixed(0));
+        }
+        $this.find('.color-difference').html(colorDiff);
+
+
         activateColorMode($this, value ? value.getType().key : IFColor.Type.RGB.key);
         updateMatches($this);
         updateToComponents($this);
@@ -760,7 +829,7 @@
                                 .attr('data-activate-view', ViewType.Swatches)
                                 // TODO : I18N
                                 .attr('title', 'Swatches')
-                                .css('display', 'none')
+                                .css('display', 'none') // of by default
                                 .append($('<span></span>')
                                     .addClass('fa fa-bars')))
                             .append($('<button></button>')
@@ -802,6 +871,10 @@
                                 }))
                             .append($('<div>&nbsp;</div>')
                                 .addClass('current-color g-input'))
+                            .append($('<div></div>')
+                                .addClass('color-difference g-input')
+                                // TODO : I18N
+                                .attr('title', 'Color Difference (CIEDE2000)'))
                             .append($('<input>')
                                 .addClass('color-input')
                                 .on('change', function () {
@@ -965,13 +1038,26 @@
 
         scene: function (value) {
             var $this = $(this);
+            var data = $this.data('gcolorpanel');
+
             if (!arguments.length) {
-                return $this.data('gcolorpanel').scene;
+                return data.scene;
             } else {
-                // TODO : Detach & Attach listeners & Change active view if swatches & value=null
-                $this.data('gcolorpanel').scene = value;
+                var oldScene = data.scene;
+                data.scene = value;
+
+                // Update swatches
+                var swatchView = $this.find('[data-view="' + ViewType.Swatches + '"]');
+                if (oldScene) {
+                    swatchView.gSwatchPanel('detach');
+                }
+                if (data.scene) {
+                    swatchView.gSwatchPanel('attach', data.scene.getSwatchCollection());
+                }
+
                 $this.find('[data-activate-view="' + ViewType.Swatches + '"]')
-                    .css('display', value ? '' : 'none');
+                    .css('display', data.scene ? '' : 'none');
+
                 return this;
             }
         },

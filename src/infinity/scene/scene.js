@@ -115,7 +115,7 @@
         IFNode.call(this);
     }
 
-    IFNode.inheritAndMix("swatcjCollection", IFScene.SwatchCollection, IFNode, [IFNode.Container, IFNode.Store]);
+    IFNode.inheritAndMix("swatchCollection", IFScene.SwatchCollection, IFNode, [IFNode.Container, IFNode.Store]);
 
     /** @override */
     IFScene.SwatchCollection.prototype.validateInsertion = function (parent, reference) {

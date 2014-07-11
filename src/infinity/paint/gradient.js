@@ -162,6 +162,21 @@
         return cssStops.join(', ');
     };
 
+    /**
+     * Return CSS-Compatible string representation of the underlying gradient
+     * including the gradient declaration used for css background
+     * @return {String}
+     */
+    IFGradient.prototype.asCSSBackgroundString = function () {
+        var cssStops = this.asCSSString();
+        switch (this._type) {
+            case IFGradient.Type.Radial:
+                return 'radial-gradient(ellipse at center, ' + cssStops + ')';
+            default:
+                return 'linear-gradient(90deg, ' + cssStops + ')';
+        }
+    };
+
     /** @override */
     IFGradient.prototype.toString = function () {
         return "[Object IFGradient]";
