@@ -147,17 +147,13 @@
                     .addClass('g-style-list')
                     .gStylePanel({
                         nullStyle: $('<span></span>')
-                            .addClass('fa fa-plus-square-o')
+                            .addClass('fa fa-plus-circle')
                             .css({
                                 'font-size': '24px',
-                                'position': 'absolute',
-                                'display': 'block',
-                                'top': '50%',
-                                'left': '0px',
-                                'right': '0px',
-                                'margin-top': '-12px',
-                                'text-align': 'center'
-                            })
+                                'line-height': '30px'
+                            }),
+                        // TODO : I18N
+                        nullName: 'Add new style to element'
                     })
                     .gStylePanel('attach', this._document.getScene().getStyleCollection())
                     .gOverlay({

@@ -47,6 +47,8 @@
                 // The html code or Jquery for the null style, if set to null,
                 // no null style will be provided for choosing
                 nullStyle: null,
+                // The name of the null style if any
+                nullName: null,
                 // The width of the style preview
                 previewWidth: 30,
                 // The height of the style preview
@@ -65,18 +67,28 @@
                 if (options.nullStyle) {
                     $('<div></div>')
                         .addClass('style-block style-null')
+                        .data('style', null)
+                        .attr('title', options.nullName ? options.nullName : '')
                         .append($('<div></div>')
-                            .css({
-                                'width': options.previewWidth + 'px',
-                                'height': options.previewHeight + 'px'
-                            })
-                            .append(options.nullStyle))
+                            .addClass('style-content')
+                            .append($('<div></div>')
+                                .addClass('style-preview')
+                                .append($('<div></div>')
+                                    .css({
+                                        'display': 'inline-block',
+                                        'width': options.previewWidth + 'px',
+                                        'height': options.previewHeight + 'px',
+                                        'line-height': options.previewHeight + 'px'
+                                    })
+                                    .append(options.nullStyle)))
+                            .append($('<div></div>')
+                                .addClass('style-name')
+                                .text(options.nullName ? options.nullName : '')))
                         .on('click', function () {
                             $this.data('gstylepanel').selected = null;
                             updateSelectedStyle($this, null);
                             self.trigger('change', null);
                         })
-                        .data('style', null)
                         .appendTo($this);
                 }
             });
