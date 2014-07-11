@@ -14,6 +14,11 @@
     IFElementEditor.exports(IFImageEditor, IFImage);
 
     /** @override */
+    IFImageEditor.prototype.initialSetup = function () {
+        // Nothing to do as image has no style by default
+    };
+
+    /** @override */
     IFImageEditor.prototype.toString = function () {
         return "[Object IFImageEditor]";
     };
