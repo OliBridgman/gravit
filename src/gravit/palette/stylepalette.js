@@ -1006,6 +1006,8 @@
                 .attr('draggable', 'true')
                 .on('dragstart', function (evt) {
                     var event = evt.originalEvent;
+                    event.stopPropagation();
+
                     event.dataTransfer.effectAllowed = 'move';
                     // dummy data as some browser may not drag otherwise
                     event.dataTransfer.setData('text/plain', '');
@@ -1014,6 +1016,9 @@
                     hasDropped = false;
                 })
                 .on('dragend', function (evt) {
+                    var event = evt.originalEvent;
+                    event.stopPropagation();
+
                     // Delete our entry when not dropped
                     if (!hasDropped) {
                         // TODO : Undo + Redo + Apply to all

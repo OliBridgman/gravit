@@ -16,6 +16,7 @@
                 var $this = $(this);
                 $this
                     .data('gcolortarget', {
+                        options: options,
                         color: null
                     });
 
@@ -29,9 +30,9 @@
                             if (!color) {
                                 // No dragging without a color
                                 event.preventDefault();
-                                event.stopPropagation();
                                 return;
                             }
+                            event.stopPropagation();
 
                             $this.trigger('colordrag', color);
 
@@ -48,9 +49,13 @@
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFColor.MIME_TYPE, color.asString());
+                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.asString(color));
                             event.dataTransfer.setDragImage(img, previewBoxSize / 2, previewBoxSize / 2);
                             event.dataTransfer.sourceElement = this;
+                        })
+                        .on('dragend', function (evt) {
+                            var event = evt.originalEvent;
+                            event.stopPropagation();
                         });
                 }
 
@@ -65,26 +70,19 @@
                         .on('drop', function (evt) {
                             var event = evt.originalEvent;
 
-                            var sourceColor = event.dataTransfer.getData(IFColor.MIME_TYPE);
-                            var sourceNode = event.dataTransfer.getData(IFNode.MIME_TYPE);
+                            var source = event.dataTransfer.getData(IFPattern.MIME_TYPE);
+                            if (source) {
+                                source = IFPattern.parseString(source);
+                                if (source && source.getPatternType() === IFPattern.Type.Color) {
+                                    var targetColor = source.getPattern();
+                                    var myColor = $this.data('gcolortarget').color;
+                                    if (!IFColor.equals(targetColor, myColor)) {
+                                        methods.value.call(self, targetColor);
+                                        $this.trigger('colorchange', targetColor);
+                                    }
 
-                            var targetColor = null;
-
-                            if (sourceColor && sourceColor !== "") {
-                                targetColor = IFColor.parseColor(sourceColor);
-                            } else if (sourceNode && sourceNode !== "") {
-                                var node = IFNode.deserialize(sourceNode);
-                                if (node instanceof IFSwatch && node.getSwatchType() === IFSwatch.SwatchType.Color) {
-                                    targetColor = node.getProperty('val');
-                                }
-                            }
-
-                            if (targetColor) {
-                                var myColor = $this.data('gcolortarget').color;
-                                if (!IFColor.equals(targetColor, myColor)) {
-                                    methods.value.call(self, targetColor);
+                                    // color drop will always fire
                                     $this.trigger('colordrop', [targetColor, event]);
-                                    $this.trigger('colorchange', targetColor);
                                 }
                             }
 
@@ -96,11 +94,13 @@
 
         value: function (value) {
             var $this = $(this);
+            var data = $this.data('gcolortarget');
+
             if (!arguments.length) {
-                return $this.data('gcolortarget').color;
+                return data.color;
             } else {
                 value = typeof value === 'string' ? IFColor.parseColor(value) : value;
-                $this.data('gcolortarget').color = value;
+                data.color = value;
                 return this;
             }
         }

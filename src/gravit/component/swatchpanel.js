@@ -69,6 +69,66 @@
                     .data('gswatchpanel', {
                         selected: null,
                         options: options
+                    })
+                    .on('dragover', function (evt) {
+                        var event = evt.originalEvent;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        event.dataTransfer.dropEffect = 'move';
+                    })
+                    .on('drop', function (evt) {
+                        var data = $this.data('gswatchpanel');
+
+                        var event = evt.originalEvent;
+                        event.stopPropagation();
+
+                        if (!data.container || !data.container.getScene()) {
+                            return;
+                        }
+
+                        var scene = data.container.getScene();
+                        var sourcePattern = event.dataTransfer.getData(IFPattern.MIME_TYPE);
+                        if (sourcePattern) {
+                            var pattern = IFPattern.parseString(sourcePattern);
+                            if (pattern) {
+                                // Make sure there's no such swatch, yet
+                                var swatches = scene.getSwatchCollection();
+                                for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
+                                    if (node instanceof IFSwatch) {
+                                        if (IFPattern.equals(pattern, node.getProperty('pat'))) {
+                                            return; // leave here, patterns are equal
+                                        }
+                                    }
+                                }
+
+                                // Ask for a name
+                                // TODO : I18N
+                                var name = prompt('Enter a name for the new swatch:', pattern.asString());
+                                if (name === null) {
+                                    return; // leave here, user has canceled
+                                }
+                                if (name.trim() === '') {
+                                    name = pattern.asString();
+                                }
+
+                                // Add pattern as swatch
+                                var editor = IFEditor.getEditor(scene);
+
+                                if (editor) {
+                                    editor.beginTransaction();
+                                }
+
+                                try {
+                                    var swatch = new IFSwatch();
+                                    swatch.setProperties(['name', 'pat'], [name, pattern]);
+                                    swatches.appendChild(swatch);
+                                } finally {
+                                    if (editor) {
+                                        editor.commitTransaction('Add Swatch');
+                                    }
+                                }
+                            }
+                        }
                     });
 
                 if (options.nullSwatch) {
@@ -107,7 +167,7 @@
 
             // don't add if type is not right
             var types = data.options.types;
-            if (types !== null && types.length > 0 && types.indexOf(swatch.getSwatchType()) < 0) {
+            if (types !== null && types.length > 0 && types.indexOf(swatch.getPatternType()) < 0) {
                 return;
             }
 
@@ -146,27 +206,36 @@
                     .attr('draggable', 'true')
                     .on('dragstart', function (evt) {
                         var event = evt.originalEvent;
+                        event.stopPropagation();
 
                         dragSwatch = $(this).data('swatch');
+                        var pattern = dragSwatch.getProperty('pat');
+                        if (!pattern) {
+                            event.preventDefault();
+                            return;
+                        }
 
                         if (data.options.allowDrag) {
-                            self.trigger('swatchdragstart', swatch);
+                            self.trigger('swatchdragstart', dragSwatch);
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(swatch));
+                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.asString(pattern));
                             event.dataTransfer.setDragImage(block.find('.swatch-preview > div')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
                         }
                     })
                     .on('dragend', function (evt) {
+                        var event = evt.originalEvent;
+                        event.stopPropagation();
+
                         dragSwatch = null;
 
                         if (data.options.allowDrag) {
                             var offset = $this.offset();
                             var width = $this.outerWidth();
                             var height = $this.outerHeight();
-                            var x = evt.originalEvent.pageX;
-                            var y = evt.originalEvent.pageY;
+                            var x = event.pageX;
+                            var y = event.pageY;
 
                             if (x <= offset.left || x >= offset.left + width ||
                                 y <= offset.top || y >= offset.top + height) {

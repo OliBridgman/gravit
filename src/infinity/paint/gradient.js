@@ -2,6 +2,7 @@
     /**
      * A class representing a color gradient
      * @class IFGradient
+     * @extends IFPattern
      * @constructor
      */
     function IFGradient(stops, type) {
@@ -20,6 +21,8 @@
         this._type = type ? type : IFGradient.Type.Linear;
     }
 
+    IFObject.inherit(IFGradient, IFPattern);
+
     /**
      * @enum
      */
@@ -27,12 +30,6 @@
         Linear: 'L',
         Radial: 'R'
     };
-
-    /**
-     * Gradient's mime-type
-     * @type {string}
-     */
-    IFGradient.MIME_TYPE = "application/infinity+gradient";
 
     /**
      * Parse a string into a IFGradient
@@ -107,6 +104,16 @@
      * @private
      */
     IFGradient.prototype._stops = null;
+
+    /** @override */
+    IFGradient.prototype.getPatternType = function () {
+        return IFPattern.Type.Gradient;
+    };
+
+    /** @override */
+    IFGradient.prototype.getPattern = function () {
+        return this;
+    };
 
     /**
      * @return {IFGradient.Type}

@@ -4,6 +4,7 @@
      * @param {IFColor.Type} type
      * @param {Array<Number>|String> [value]
      * @class IFColor
+     * @extends IFPattern
      * @constructor
      */
     function IFColor(type, value) {
@@ -11,11 +12,7 @@
         this._value = value && value instanceof Array ? value.slice() : value;
     }
 
-    /**
-     * Color's mime-type
-     * @type {string}
-     */
-    IFColor.MIME_TYPE = "application/infinity+color";
+    IFObject.inherit(IFColor, IFPattern);
 
     /**
      * @enum
@@ -459,6 +456,16 @@
      * @private
      */
     IFColor.prototype._value = null;
+
+    /** @override */
+    IFColor.prototype.getPatternType = function () {
+        return IFPattern.Type.Color;
+    };
+
+    /** @override */
+    IFColor.prototype.getPattern = function () {
+        return this;
+    };
 
     /**
      * @returns {IFColor.Type}

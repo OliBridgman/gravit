@@ -100,11 +100,11 @@
         GPatternPaintEntry.prototype.updateProperties.call(this, content, entry, scene);
 
         var pattern = entry.getProperty('pat');
-        var patternType = IFPatternPaint.getTypeOf(pattern);
+        var patternType = pattern ? pattern.getPatternType() : null;
 
         // Transform
         var transformContent = content.find('[data-element="transform"]');
-        if (patternType !== IFPatternPaint.PatternType.Color) {
+        if (patternType !== IFPattern.Type.Color) {
             transformContent.css('display', '');
             transformContent.find('[data-property="tx"]').val(ifUtil.formatNumber(entry.getProperty('tx') * 100));
             transformContent.find('[data-property="ty"]').val(ifUtil.formatNumber(entry.getProperty('ty') * 100));
@@ -147,7 +147,7 @@
         var rt = rt !== null ? (ifMath.normalizeAngleRadians(ifMath.toRadians(rt))) : 0;
 
         var oldPattern = entry.getProperty('pat');
-        var oldPatternType = IFPatternPaint.getTypeOf(oldPattern);
+        var oldPatternType = oldPattern ? oldPattern.getPatternType() : null;
 
         var pattern = null;
         var patternType = content.find('[data-element="type"]').val();
@@ -158,7 +158,7 @@
             patternSubType = ptArray[1];
         }
 
-        if (patternType === IFPatternPaint.PatternType.Color) {
+        if (patternType === IFPattern.Type.Color) {
             // reset transform values to default
             tx = 0;
             ty = 0;
@@ -166,10 +166,10 @@
             sy = 1;
             rt = 0;
         }
-        else if (patternType === IFPatternPaint.PatternType.Gradient) {
+        else if (patternType === IFPattern.Type.Gradient) {
             // Set reasonable defaults for gradient if previous was either not
             // a gradient or did have a different gradient type
-            if (oldPatternType !== IFPatternPaint.PatternType.Gradient ||
+            if (oldPatternType !== IFPattern.Type.Gradient ||
                 oldPattern.getType() !== patternSubType) {
                 if (patternSubType === IFGradient.Type.Linear) {
                     sx = 1;
@@ -189,7 +189,7 @@
                 }
             }
 
-            if (oldPatternType === IFPatternPaint.PatternType.Color) {
+            if (oldPatternType === IFPattern.Type.Color) {
                 pattern = new IFGradient([
                     {
                         position: 0,

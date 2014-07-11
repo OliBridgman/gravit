@@ -87,9 +87,9 @@
      */
     IFElementEditor.DropType = {
         /**
-         * A color is dropped, the type is IFColor
+         * A pattern is dropped, the type is IFPattern
          */
-        Color: 0,
+        Pattern: 0,
 
         /**
          * A text is dropped, the type is String

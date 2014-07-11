@@ -15,19 +15,11 @@
     IFNode.inheritAndMix('swatch', IFSwatch, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
-     * @enum
-     */
-    IFSwatch.SwatchType = {
-        Color: 'C',
-        Gradient: 'G'
-    };
-
-    /**
      * Visual properties
      */
     IFSwatch.VisualProperties = {
-        // The value of the swatch, be it a color, a gradient, pattern, etc.
-        val: null
+        // The pattern of the swatch (IFPattern)
+        pat: null
     };
 
     /**
@@ -37,18 +29,21 @@
         name: null
     };
 
+    /** @override */
+    IFSwatch.prototype.getPatternType = function () {
+        return this.$pat ? this.$pat.getPatternType() : null;
+    };
+
+    /** @override */
+    IFSwatch.prototype.getPattern = function () {
+        return this.$pat;
+    };
+
     /**
-     * @returns {IFSwatch.SwatchType}
+     * @returns {IFPattern.Type}
      */
-    IFSwatch.prototype.getSwatchType = function () {
-        if (this.$val) {
-            if (this.$val instanceof IFColor) {
-                return IFSwatch.SwatchType.Color;
-            } else if (this.$val instanceof IFGradient) {
-                return IFSwatch.SwatchType.Gradient;
-            }
-        }
-        return null;
+    IFSwatch.prototype.getPatternType = function () {
+        return this.$pat ? this.$pat.getPatternType() : null;
     };
 
     /**
@@ -58,14 +53,14 @@
      * @return {*} css object
      */
     IFSwatch.prototype.asCSSBackgroundString = function (width, height) {
-        var type = this.getSwatchType();
+        var type = this.getPatternType();
         if (type) {
             switch (type) {
-                case IFSwatch.SwatchType.Color:
-                    return IFColor.blendedCSSBackground(this.$val, (width + height) / 2);
-                case IFSwatch.SwatchType.Gradient:
+                case IFPattern.Type.Color:
+                    return IFColor.blendedCSSBackground(this.$pat, (width + height) / 2);
+                case IFPattern.Type.Gradient:
                     return {
-                        'background': this.$val.asCSSBackgroundString()
+                        'background': this.$pat.asCSSBackgroundString()
                     }
             }
         }
@@ -77,15 +72,8 @@
         if (IFNode.Store.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'val') {
-                        if (value instanceof IFColor) {
-                            return 'C' + value.asString();
-                        } else if (value instanceof IFGradient) {
-                            return 'G' + value.asString();
-                        } else {
-                            // TODO
-                            throw new Error('Unsupported.');
-                        }
+                    if (property === 'pat') {
+                        return IFPattern.asString(value);
                     }
                 }
                 return value;
@@ -101,17 +89,8 @@
         if (IFNode.Store.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'val') {
-                        var type = value.charAt(0);
-                        value = value.substring(1);
-                        if (type === 'C') {
-                            return IFColor.parseColor(value);
-                        } else if (type === 'G') {
-                            return IFGradient.parseGradient(value);
-                        } else {
-                            // TODO
-                            throw new Error('Unsupported.');
-                        }
+                    if (property === 'pat') {
+                        return IFPattern.parseString(value);
                     }
                 }
             });

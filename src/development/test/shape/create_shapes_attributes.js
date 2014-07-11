@@ -1,15 +1,15 @@
 (function () {
     function test(scene, page, layer, view) {
         var swatch = new IFSwatch();
-        swatch.setProperties(['name', 'val'], ['test color', IFColor.parseCSSColor('rgb(128,0,128)')]);
+        swatch.setProperties(['name', 'pat'], ['test color', IFColor.parseCSSColor('rgb(128,0,128)')]);
         scene.getSwatchCollection().appendChild(swatch);
 
         swatch = new IFSwatch();
-        swatch.setProperties(['val'], [IFColor.parseCSSColor('rgb(128,128,128)')]);
+        swatch.setProperties(['pat'], [IFColor.parseCSSColor('rgb(128,128,128)')]);
         scene.getSwatchCollection().appendChild(swatch);
 
         swatch = new IFSwatch();
-        swatch.setProperties(['name', 'val'], ['test gradient', new IFGradient([
+        swatch.setProperties(['name', 'pat'], ['test gradient', new IFGradient([
             {
                 position: 0,
                 color: IFColor.BLACK

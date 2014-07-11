@@ -16,12 +16,11 @@
             // Support dropping colors, gradients and swatches
             // TODO : Support dropping IFTexture as well
             if (hitData instanceof IFStyle.HitResult && hitData.entry instanceof IFPatternPaint) {
-                if (source instanceof IFColor || source instanceof IFGradient || source instanceof IFSwatch) {
-                    var value = source instanceof IFSwatch ? source.getProperty('val') : source;
+                if (source instanceof IFPattern) {
                     var editor = IFEditor.getEditor(this.getElement().getScene());
                     editor.beginTransaction();
                     try {
-                        hitData.entry.setProperty('pat', value);
+                        hitData.entry.setProperty('pat', source);
                     } finally {
                         editor.commitTransaction('Drop Pattern');
                     }

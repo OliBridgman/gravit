@@ -33,18 +33,18 @@
                     .append($('<select></select>')
                         .attr('data-element', 'type')
                         .append($('<option></option>')
-                            .attr('value', IFPatternPaint.PatternType.Color)
+                            .attr('value', IFPattern.Type.Color)
                             // TODO : I18N
                             .text('Color'))
                         .append($('<optgroup></optgroup>')
                             // TODO I18N
                             .attr('label', 'Gradient')
                         .append($('<option></option>')
-                            .attr('value', IFPatternPaint.PatternType.Gradient + '#' + IFGradient.Type.Linear)
+                            .attr('value', IFPattern.Type.Gradient + '#' + IFGradient.Type.Linear)
                             // TODO : I18N
                             .text('Linear'))
                         .append($('<option></option>')
-                                .attr('value', IFPatternPaint.PatternType.Gradient + '#' + IFGradient.Type.Radial)
+                                .attr('value', IFPattern.Type.Gradient + '#' + IFGradient.Type.Radial)
                             // TODO : I18N
                             .text('Radial')))
                         /* TODO :
@@ -103,22 +103,22 @@
     /** @override */
     GPatternPaintEntry.prototype.updateProperties = function (content, entry, scene) {
         var pattern = entry.getProperty('pat');
-        var patternType = IFPatternPaint.getTypeOf(pattern);
+        var patternType = pattern ? pattern.getPatternType() : null;
 
         var patternSubType = null;
-        if (patternType === IFPatternPaint.PatternType.Gradient) {
+        if (patternType === IFPattern.Type.Gradient) {
             patternSubType = pattern.getType();
         }
 
         content.find('[data-element="type"]').val(patternSubType ? (patternType + '#' + patternSubType) : patternType);
         content.find('[data-element="color"]')
-            .gColorButton('value', patternType === IFPatternPaint.PatternType.Color ? pattern : IFColor.BLACK)
-            .css('display', patternType === IFPatternPaint.PatternType.Color ? '' : 'none');
+            .gColorButton('value', patternType === IFPattern.Type.Color ? pattern : IFColor.BLACK)
+            .css('display', patternType === IFPattern.Type.Color ? '' : 'none');
         content.find('[data-property="blm"]').val(entry.getProperty('blm'));
         content.find('[data-property="opc"]').val(ifUtil.formatNumber(entry.getProperty('opc') * 100));
 
         // Gradient
-        if (patternType === IFPatternPaint.PatternType.Gradient) {
+        if (patternType === IFPattern.Type.Gradient) {
             content.find('[data-element="gradient"]').css('display', '');
             content.find('.g-gradient-editor').gGradientEditor('value', pattern.getStops());
         } else {
@@ -145,7 +145,7 @@
         var opacity = IFLength.parseEquationValue(content.find('[data-property="opc"]').val());
 
         var oldPattern = entry.getProperty('pat');
-        var oldPatternType = IFPatternPaint.getTypeOf(oldPattern);
+        var oldPatternType = oldPattern ? oldPattern.getPatternType() : null;
 
         var pattern = null;
         var patternType = content.find('[data-element="type"]').val();
@@ -156,14 +156,14 @@
             patternSubType = ptArray[1];
         }
 
-        if (patternType === IFPatternPaint.PatternType.Color) {
-            if (oldPatternType === IFPatternPaint.PatternType.Gradient) {
+        if (patternType === IFPattern.Type.Color) {
+            if (oldPatternType === IFPattern.Type.Gradient) {
                 pattern = oldPattern.getStops()[0].color;
             } else {
                 pattern = content.find('[data-element="color"]').gColorButton('value');
             }
-        } else if (patternType === IFPatternPaint.PatternType.Gradient) {
-            if (oldPatternType === IFPatternPaint.PatternType.Color) {
+        } else if (patternType === IFPattern.Type.Gradient) {
+            if (oldPatternType === IFPattern.Type.Color) {
                 pattern = new IFGradient([
                     {
                         position: 0,

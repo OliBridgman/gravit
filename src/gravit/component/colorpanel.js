@@ -264,7 +264,7 @@
                     .addClass('fa fa-plus-circle'),
                 // TODO : I18N
                 nullName: 'Add current color as new swatch',
-                types: [IFSwatch.SwatchType.Color],
+                types: [IFPattern.Type.Color],
                 allowSelect: false
             })
             .on('change', function (evt, swatch) {
@@ -272,11 +272,12 @@
                     if (!data.scene || !data.color) {
                         return; // leave here, no color or scene
                     }
+
                     // Make sure there's no such color, yet
                     var swatches = data.scene.getSwatchCollection();
                     for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
-                        if (node instanceof IFSwatch && node.getSwatchType() === IFSwatch.SwatchType.Color) {
-                            if (IFColor.equals(data.color, node.getProperty('val'))) {
+                        if (node instanceof IFSwatch && node.getPatternType() === IFPattern.Type.Color) {
+                            if (IFColor.equals(data.color, node.getProperty('pat'))) {
                                 return; // leave here, colors are equal
                             }
                         }
@@ -300,16 +301,11 @@
 
                     try {
                         var swatch = new IFSwatch();
-                        swatch.setProperties(['name', 'val'], [name, data.color]);
+                        swatch.setProperties(['name', 'IFSwatch'], [name, data.color]);
                         swatches.appendChild(swatch);
                     } finally {
                         if (editor) {
                             editor.commitTransaction('Add Swatch');
-
-                        } else {
-                            var color = swatch.getProperty('val');
-                            assignValue($this, color, false);
-                            $this.trigger('colorchange', color);
                         }
                     }
                 } else {

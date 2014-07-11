@@ -130,6 +130,7 @@
                     .attr('draggable', 'true')
                     .on('dragstart', function (evt) {
                         var event = evt.originalEvent;
+                        event.stopPropagation();
 
                         dragStyle = $(this).data('style');
 
@@ -143,14 +144,17 @@
                         }
                     })
                     .on('dragend', function (evt) {
+                        var event = evt.originalEvent;
+                        event.stopPropagation();
+
                         dragStyle = null;
 
                         if (data.options.allowDrag) {
                             var offset = $this.offset();
                             var width = $this.outerWidth();
                             var height = $this.outerHeight();
-                            var x = evt.originalEvent.pageX;
-                            var y = evt.originalEvent.pageY;
+                            var x = event.pageX;
+                            var y = event.pageY;
 
                             if (x <= offset.left || x >= offset.left + width ||
                                 y <= offset.top || y >= offset.top + height) {

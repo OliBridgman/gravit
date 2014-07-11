@@ -121,10 +121,10 @@
                 var type = null;
                 var source = null;
 
-                if (item.type === IFColor.MIME_TYPE) {
-                    type = IFElementEditor.DropType.Color;
-                    source = dataTransfer.getData(IFColor.MIME_TYPE);
-                    source = source && source !== "" ? IFColor.parseColor(source) : null;
+                if (item.type === IFPattern.MIME_TYPE) {
+                    type = IFElementEditor.DropType.Pattern;
+                    source = dataTransfer.getData(IFPattern.MIME_TYPE);
+                    source = source && source !== "" ? IFPattern.parseString(source) : null;
                 } else if (item.type === IFNode.MIME_TYPE) {
                     type = IFElementEditor.DropType.Node;
                     source = dataTransfer.getData(IFNode.MIME_TYPE);
