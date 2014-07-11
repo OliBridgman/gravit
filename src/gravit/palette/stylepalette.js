@@ -855,12 +855,6 @@
                     style.getParent().removeChild(style);
                 });
 
-                // If the shared style doesn't have a name and doesn't have anymore
-                // references we'll be removing it here
-                if (sharedStyle.getProperty('name') === null && !scene.hasLinks(sharedStyle)) {
-                    sharedStyle.getParent().removeChild(sharedStyle);
-                }
-
                 // Re-assign selected style
                 this._setSelectedStyle(selectedStyleIndex);
             } finally {
@@ -869,18 +863,22 @@
             }
         } else {
             // Link
+            var scene = this._document.getScene();
+
             // TODO : I18N
-            var name = prompt('Enter a name for the new style. Not providing a name will remove the style when it is no longer in use.', '');
+            var styleDefaultName = 'Style-' + (scene.getStyleCollection().queryCount('> sharedStyle') + 1).toString();
+            var name = prompt('Enter a name for the new style:', styleDefaultName);
             if (name !== null) {
+                if (name.trim() === '') {
+                    name = styleDefaultName;
+                }
+
                 var editor = this._document.getEditor();
-                var scene = this._document.getScene();
                 editor.beginTransaction();
                 try {
                     // Create our shared style
                     var sharedStyle = new IFSharedStyle();
-                    if (name.trim() !== '') {
-                        sharedStyle.setProperty('name', name);
-                    }
+                    sharedStyle.setProperty('name', name);
 
                     // Transfer style
                     for (var child = activeStyle.getFirstChild(); child !== null; child = child.getNext()) {
