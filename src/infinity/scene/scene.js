@@ -102,6 +102,27 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFScene.SwatchCollection Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class IFScene.SwatchCollection
+     * @extends IFNode
+     * @mixes IFNode.Container
+     * @mixes IFNode.Store
+     * @private
+     */
+    IFScene.SwatchCollection = function () {
+        IFNode.call(this);
+    }
+
+    IFNode.inheritAndMix("swatcjCollection", IFScene.SwatchCollection, IFNode, [IFNode.Container, IFNode.Store]);
+
+    /** @override */
+    IFScene.SwatchCollection.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFScene;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFScene Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -121,6 +142,12 @@
      * @private
      */
     IFScene._styleCollection = null;
+
+    /**
+     * @type {IFScene.SwatchCollection}
+     * @private
+     */
+    IFScene._swatchCollection = null;
 
     /**
      * Returns the style-collection of this scene
@@ -149,6 +176,35 @@
         }
 
         return this._styleCollection;
+    };
+
+    /**
+     * Returns the swatch-collection of this scene
+     * @returns {IFScene.SwatchCollection}
+     */
+    IFScene.prototype.getSwatchCollection = function () {
+        // If we have a _swatchCollection reference and it not
+        // has ourself as a parent, then clear it, first
+        if (this._swatchCollection && this._swatchCollection.getParent() !== this) {
+            this._swatchCollection = null;
+        }
+
+        if (!this._swatchCollection) {
+            // Find our swatch-collection and save reference for faster access
+            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
+                if (child instanceof IFScene.SwatchCollection) {
+                    this._swatchCollection = child;
+                    break;
+                }
+            }
+        }
+
+        if (!this._swatchCollection) {
+            this._swatchCollection = new IFScene.SwatchCollection();
+            this.appendChild(this._swatchCollection);
+        }
+
+        return this._swatchCollection;
     };
 
     /** @override */
