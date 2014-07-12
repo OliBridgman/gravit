@@ -35,39 +35,6 @@
     };
 
     /** @override */
-    IFSwatch.prototype.getPattern = function () {
-        return this.$pat;
-    };
-
-    /**
-     * @returns {IFPattern.Type}
-     */
-    IFSwatch.prototype.getPatternType = function () {
-        return this.$pat ? this.$pat.getPatternType() : null;
-    };
-
-    /**
-     * Returns a css3 background definition for the swatch
-     * @param {Number} width background width
-     * @param {Number} height background height
-     * @return {*} css object
-     */
-    IFSwatch.prototype.asCSSBackgroundString = function (width, height) {
-        var type = this.getPatternType();
-        if (type) {
-            switch (type) {
-                case IFPattern.Type.Color:
-                    return IFColor.blendedCSSBackground(this.$pat, (width + height) / 2);
-                case IFPattern.Type.Gradient:
-                    return {
-                        'background': this.$pat.asCSSBackgroundString()
-                    }
-            }
-        }
-        return null;
-    };
-
-    /** @override */
     IFSwatch.prototype.store = function (blob) {
         if (IFNode.Store.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFSwatch.VisualProperties, function (property, value) {
@@ -90,7 +57,7 @@
             this.restoreProperties(blob, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.parseString(value);
+                        return IFPattern.parsePattern(value);
                     }
                 }
             });

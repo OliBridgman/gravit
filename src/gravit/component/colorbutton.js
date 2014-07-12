@@ -26,8 +26,11 @@
                 allowClear: false,
                 // Scene to be used for swatches
                 scene: null
-                // see options of gColorTarget
+                // see options of gPatternTarget
             }, options);
+
+            // always overwrite types to allow colors, only
+            options.types = [IFPattern.Type.Color];
 
             var self = this;
             return this.each(function () {
@@ -49,8 +52,8 @@
                             $this.trigger('colorchange', color);
                         }
                     })
-                    .gColorTarget(options)
-                    .on('colorchange', function (evt, color) {
+                    .gPatternTarget(options)
+                    .on('patternchange', function (evt, color) {
                         methods.value.call(self, color);
                     });
 
@@ -108,12 +111,12 @@
             var data = $this.data('g-colorbutton');
 
             if (!arguments.length) {
-                return $this.gColorTarget('value');
+                return $this.gPatternTarget('value');
             } else {
-                $this.gColorTarget('value', value);
+                $this.gPatternTarget('value', value);
 
                 if (!data.options.transient) {
-                    $this.css(IFColor.blendedCSSBackground(value));
+                    $this.css('background', IFPattern.asCSSBackground(value));
                 }
 
                 return this;

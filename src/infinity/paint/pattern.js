@@ -1,6 +1,10 @@
 (function (_) {
+    var SVG_CHESSBOARD_CSS_URL = 'url("data:image/svg+xml;base64,' +
+        btoa('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="white"/><rect width="4" height="4" fill="#CDCDCD"/><rect x="4" y="4" width="4" height="4" fill="#CDCDCD"/></svg>') +
+        '")';
+
     /**
-     * A mixin for patterns like color, gradients, etc.
+     * A base class for patterns like color, gradients, etc.
      * @mixin IFGradient
      * @extends IFObject
      * @constructor
@@ -51,7 +55,7 @@
      * @param string
      * @returns {IFPattern}
      */
-    IFPattern.parseString = function (string) {
+    IFPattern.parsePattern = function (string) {
         if (string && string.length > 0) {
             var type = string.charAt(0);
             string = string.substring(1);
@@ -71,27 +75,31 @@
      */
     IFPattern.asString = function (pattern) {
         if (pattern) {
-            pattern = pattern.getPattern();
-            if (pattern) {
-                return pattern.getPatternType() + pattern.asString();
-            }
+            return pattern.getPatternType() + pattern.asString();
         }
         return null;
     };
 
-    /**
-     * Returns the underlying pattern type
-     * @return {IFPattern.Type}
-     */
-    IFPattern.prototype.getPatternType = function () {
-        throw new Error('Not supported');
+    IFPattern.asCSSBackground = function (pattern) {
+        var result = SVG_CHESSBOARD_CSS_URL;
+        if (pattern) {
+            switch (pattern.getPatternType()) {
+                case IFPattern.Type.Color:
+                    result = 'linear-gradient(' + pattern.asCSSString() + ', ' + pattern.asCSSString() + '), ' + result;
+                    break;
+                case IFPattern.Type.Gradient:
+                    result = pattern.asCSSBackgroundString() + ', ' + result;
+                    break;
+            }
+        }
+        return result;
     };
 
     /**
-     * Returns the underlying pattern
-     * @return {IFPattern}
+     * Returns the pattern type
+     * @return {IFPattern.Type}
      */
-    IFPattern.prototype.getPattern = function () {
+    IFPattern.prototype.getPatternType = function () {
         throw new Error('Not supported');
     };
 

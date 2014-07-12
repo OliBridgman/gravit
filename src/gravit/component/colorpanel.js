@@ -301,7 +301,7 @@
 
                     try {
                         var swatch = new IFSwatch();
-                        swatch.setProperties(['name', 'IFSwatch'], [name, data.color]);
+                        swatch.setProperties(['name', 'pat'], [name, data.color]);
                         swatches.appendChild(swatch);
                     } finally {
                         if (editor) {
@@ -309,7 +309,7 @@
                         }
                     }
                 } else {
-                    var color = swatch.getProperty('val');
+                    var color = swatch.getProperty('pat');
                     assignValue($this, color, false);
                     $this.trigger('colorchange', color);
                 }
@@ -428,7 +428,7 @@
 
         container.find('.color-trend-box-current')
             .attr('data-color', newColor ? newColor.asString() : '')
-            .css(IFColor.blendedCSSBackground(newColor));
+            .css('background', IFPattern.asCSSBackground(newColor));
 
         container.find('.color-trend-value > input')
             .val(value);
@@ -448,7 +448,7 @@
                 container
                     .find('.color-trend-box-' + k.toString())
                     .attr('data-color', newColor ? newColor.asString() : '')
-                    .css(IFColor.blendedCSSBackground(newColor));
+                    .css('background', IFPattern.asCSSBackground(newColor));
 
                 // If this is 50% then assign to current trend box
                 // and update it's text input
@@ -488,7 +488,7 @@
 
                     var _addPaletteColor = function (color) {
                         $('<div></div>')
-                            .css(IFColor.blendedCSSBackground(color))
+                            .css('background', IFPattern.asCSSBackground(color))
                             .on('click', function () {
                                 assignValue($this, color, false);
                                 $this.trigger('colorchange', color);
@@ -571,7 +571,7 @@
             var _addMatchColor = function (color, width) {
                 $('<div></div>')
                     .css('width', width.toString() + '%')
-                    .css(IFColor.blendedCSSBackground(color))
+                    .css('background', IFPattern.asCSSBackground(color))
                     .on('click', function () {
                         assignValue($this, color, false);
                         $this.trigger('colorchange', color);
@@ -737,8 +737,8 @@
 
         $this.find('.color-mode-select').val(value ? value.getType().key : IFColor.Type.RGB.key);
         $this.find('input[type="color"]').val(value ? value.asHTMLHexString() : '');
-        $this.find('.previous-color').css(IFColor.blendedCSSBackground(data.previousColor));
-        $this.find('.current-color').css(IFColor.blendedCSSBackground(data.color));
+        $this.find('.previous-color').css('background', IFPattern.asCSSBackground(data.previousColor));
+        $this.find('.current-color').css('background', IFPattern.asCSSBackground(data.color));
         $this.find('.color-input').val(data.color ? data.color.asHTMLHexString() : '');
 
         // Show color difference

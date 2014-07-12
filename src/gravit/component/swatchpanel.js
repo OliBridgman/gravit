@@ -89,7 +89,7 @@
                         var scene = data.container.getScene();
                         var sourcePattern = event.dataTransfer.getData(IFPattern.MIME_TYPE);
                         if (sourcePattern) {
-                            var pattern = IFPattern.parseString(sourcePattern);
+                            var pattern = IFPattern.parsePattern(sourcePattern);
                             if (pattern) {
                                 // Make sure there's no such swatch, yet
                                 var swatches = scene.getSwatchCollection();
@@ -103,12 +103,13 @@
 
                                 // Ask for a name
                                 // TODO : I18N
-                                var name = prompt('Enter a name for the new swatch:', pattern.asString());
+                                var sourceName = pattern instanceof IFColor ? pattern.asString() : 'pattern';
+                                var name = prompt('Enter a name for the new swatch:', sourceName);
                                 if (name === null) {
                                     return; // leave here, user has canceled
                                 }
                                 if (name.trim() === '') {
-                                    name = pattern.asString();
+                                    name = sourceName;
                                 }
 
                                 // Add pattern as swatch
@@ -334,7 +335,7 @@
                 if ($element.data('swatch') === swatch) {
                     $element
                         .find('.swatch-preview > div')
-                        .css(swatch.asCSSBackgroundString(data.options.previewWidth, data.options.previewHeight));
+                        .css('background', IFPattern.asCSSBackground(swatch.getProperty('pat')));
 
                     var name = swatch.getProperty('name');
 

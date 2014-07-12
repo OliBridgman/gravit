@@ -110,11 +110,6 @@
         return IFPattern.Type.Gradient;
     };
 
-    /** @override */
-    IFGradient.prototype.getPattern = function () {
-        return this;
-    };
-
     /**
      * @return {IFGradient.Type}
      */

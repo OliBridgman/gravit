@@ -57,7 +57,7 @@
             this.restoreProperties(blob, IFPatternPaint.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.parseString(value);
+                        return IFPattern.parsePattern(value);
                     }
                 }
             });

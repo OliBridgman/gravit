@@ -3,7 +3,7 @@
     function updateStop($this, $stop) {
         $stop.css('left', $stop.data('stop-position') + '%');
         $stop.find('.stop-color').css('background', $stop.data('stop-color').asCSSString());
-        $stop.gColorTarget('value', stop.color);
+        $stop.gColorButton('value', $stop.data('stop-color'));
 
         updateGradient($this);
     }
@@ -18,6 +18,8 @@
         }
 
         $this.find('.gradient').css('background', 'linear-gradient(90deg, ' + cssStops.join(", ") + ')');
+
+        $this.gPatternTarget('value', new IFGradient(stops));
     }
 
     var methods = {
@@ -37,7 +39,24 @@
 
                 var $this = $(this)
                     .addClass('g-gradient-editor')
-                    .data('ggradienteditor', data);
+                    .data('ggradienteditor', data)
+                    .gPatternTarget({
+                        types: [IFPattern.Type.Color, IFPattern.Type.Gradient]
+                    })
+                    .on('patterndrop', function (evt, pattern, mouseEvent) {
+                        if (pattern && pattern instanceof IFColor) {
+                            var $stops = $(this).find('.stops');
+                            var stopsWidth = $stops.width();
+                            var relativePos = mouseEvent.pageX - $stops.offset().left;
+                            var percentPos = relativePos <= 0 ? 0 :
+                                relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
+                            methods.insertStop.call(self, percentPos, pattern);
+                            $this.trigger('change');
+                        } else if (pattern instanceof IFGradient) {
+                            methods.value.call(self, pattern.getStops());
+                            $this.trigger('change');
+                        }
+                    });
 
                 var container = $('<div></div>')
                     .addClass('container')
@@ -51,25 +70,10 @@
                             .css('background', 'transparent'))
                         .append($('<div></div>')
                             .addClass('stops')
-                            .gColorTarget({
-                                drag: false,
-                                hasValue: false
-                            })
                             .on('mousedown', function (evt) {
                                 // Prevents any accident drag'n'drop actions
                                 evt.preventDefault();
                                 evt.stopPropagation();
-                            })
-                            .on('colordrop', function (evt, color, mouseEvent) {
-                                var $stops = $(evt.target);
-                                if ($stops.hasClass('stops')) {
-                                    var stopsWidth = $stops.width();
-                                    var relativePos = mouseEvent.pageX - $stops.offset().left;
-                                    var percentPos = relativePos <= 0 ? 0 :
-                                        relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
-                                    methods.insertStop.call(self, percentPos, color);
-                                    $this.trigger('change');
-                                }
                             })
                             .on('dblclick', function (evt) {
                                 var $stops = $(evt.target);
