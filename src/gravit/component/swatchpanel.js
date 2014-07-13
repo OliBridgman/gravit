@@ -154,7 +154,7 @@
                         .on('click', function () {
                             $this.data('gswatchpanel').selected = null;
                             updateSelectedSwatch($this, null);
-                            self.trigger('change', null);
+                            self.trigger('swatchchange', null);
                         })
                         .appendTo($this);
                 }
@@ -199,7 +199,7 @@
                     updateSelectedSwatch($this, swatch);
                 })
                 .on('click', function () {
-                    self.trigger('change', swatch);
+                    self.trigger('swatchchange', swatch);
                 });
 
             if (data.options.allowDrag || data.options.allowReorder) {

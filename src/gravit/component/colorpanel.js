@@ -267,7 +267,7 @@
                 types: [IFPattern.Type.Color],
                 allowSelect: false
             })
-            .on('change', function (evt, swatch) {
+            .on('swatchchange', function (evt, swatch) {
                 if (!swatch) {
                     if (!data.scene || !data.color) {
                         return; // leave here, no color or scene

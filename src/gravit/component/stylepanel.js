@@ -87,7 +87,7 @@
                         .on('click', function () {
                             $this.data('gstylepanel').selected = null;
                             updateSelectedStyle($this, null);
-                            self.trigger('change', null);
+                            self.trigger('stylechange', null);
                         })
                         .appendTo($this);
                 }
@@ -122,7 +122,7 @@
                     updateSelectedStyle($this, style);
                 })
                 .on('click', function () {
-                    self.trigger('change', style);
+                    self.trigger('stylechange', style);
                 });
 
             if (data.options.allowDrag || data.options.allowReorder) {

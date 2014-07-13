@@ -163,7 +163,7 @@
                     .on('close', function () {
                         $(this).gStylePanel('detach');
                     })
-                    .on('change', function (evt, style) {
+                    .on('stylechange', function (evt, style) {
                         $(evt.target).gOverlay('close');
 
                         var styleIndex = -1;
@@ -251,7 +251,7 @@
                 previewWidth: 40,
                 previewHeight: 40
             })
-            .on('change', function (evt, style) {
+            .on('stylechange', function (evt, style) {
                 this._setSelectedStyle(this._getStyleIndex(style));
             }.bind(this))
             .on('styledragaway', function (evt, style) {
