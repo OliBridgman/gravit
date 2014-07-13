@@ -15,11 +15,13 @@
         // Register default palettes
         gravit.palettes.push(
             new GPropertiesPalette(),
+            new GTransformPalette(),
             new GStylePalette()
         );
 
         // Register default sidebars
         gravit.sidebars.push(
+            new GPagesLayersSidebar(),
             new GStylesSwatchesSidebar()
         );
 

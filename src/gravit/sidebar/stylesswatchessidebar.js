@@ -11,7 +11,7 @@
     }
     IFObject.inherit(GStylesSwatchesSidebar, GSidebar);
 
-    GStylesSwatchesSidebar.ID = "styles";
+    GStylesSwatchesSidebar.ID = "swatches-layers";
     GStylesSwatchesSidebar.TITLE = new IFLocale.Key(GStylesSwatchesSidebar, "title");
 
     /**

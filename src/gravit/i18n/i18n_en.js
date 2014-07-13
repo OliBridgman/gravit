@@ -49,6 +49,8 @@ ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], 
 // Palette
 ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
+ifLocale.setValues(GTransformPalette, IFLocale.Language.English, ["title"], ["Transform"]);
 
 // Sidebar
 ifLocale.setValues(GStylesSwatchesSidebar, IFLocale.Language.English, ["title"], ["Styles & Swatches"]);
+ifLocale.setValues(GPagesLayersSidebar, IFLocale.Language.English, ["title"], ["Pages & Layers"]);
