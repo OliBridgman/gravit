@@ -10,6 +10,29 @@
         }
     };
 
+    function updatePlaceholder($this) {
+        var data = $this.data('gswatchpanel');
+
+        if (data.options.placeholder) {
+            var placeholder = $this.find('.placeholder');
+            var blocks = $this.find('> .swatch-block');
+            if (blocks.length === 0) {
+                if (placeholder.length === 0) {
+                    placeholder = $('<div></div>')
+                        .addClass('placeholder')
+                        .text(data.options.placeholder)
+                        .appendTo($this);
+                } else {
+                    placeholder.remove();
+                }
+            } else {
+                if (placeholder.length > 0) {
+                    placeholder.remove();
+                }
+            }
+        }
+    }
+
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
@@ -56,6 +79,8 @@
                 nullSwatch: null,
                 // The name of the null swatch if any
                 nullName: null,
+                // The placeholder text if there's no content
+                placeholder: null,
                 // The width of the swatch preview
                 previewWidth: 20,
                 // The height of the swatch preview
@@ -323,6 +348,8 @@
                 block.appendTo($this);
             }
 
+            updatePlaceholder($this);
+
             methods.updateSwatch.call(this, swatch);
         },
 
@@ -347,19 +374,22 @@
         },
 
         removeSwatch: function (swatch) {
-            $(this).find('.swatch-block').each(function (index, element) {
+            var $this = $(this);
+            $this.find('.swatch-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('swatch') === swatch) {
                     $element.remove();
+                    updatePlaceholder($this);
                     return false;
                 }
             });
         },
 
         clear: function () {
+            var $this = $(this);
             var remove = [];
 
-            $(this).find('.swatch-block').each(function (index, block) {
+            $this.find('.swatch-block').each(function (index, block) {
                 var $block = $(block);
                 if (!$block.hasClass('swatch-null')) {
                     remove.push($block);
@@ -369,6 +399,8 @@
             for (var i = 0; i < remove.length; ++i) {
                 remove[i].remove();
             }
+
+            updatePlaceholder($this);
         },
 
         attach: function (container) {

@@ -8,6 +8,29 @@
         });
     };
 
+    function updatePlaceholder($this) {
+        var data = $this.data('gstylepanel');
+
+        if (data.options.placeholder) {
+            var placeholder = $this.find('.placeholder');
+            var blocks = $this.find('> .style-block');
+            if (blocks.length === 0) {
+                if (placeholder.length === 0) {
+                    placeholder = $('<div></div>')
+                        .addClass('placeholder')
+                        .text(data.options.placeholder)
+                        .appendTo($this);
+                } else {
+                    placeholder.remove();
+                }
+            } else {
+                if (placeholder.length > 0) {
+                    placeholder.remove();
+                }
+            }
+        }
+    }
+
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
@@ -49,6 +72,8 @@
                 nullStyle: null,
                 // The name of the null style if any
                 nullName: null,
+                // The placeholder text if there's no content
+                placeholder: null,
                 // The width of the style preview
                 previewWidth: 30,
                 // The height of the style preview
@@ -241,6 +266,8 @@
                 block.appendTo($this);
             }
 
+            updatePlaceholder($this);
+
             methods.updateStyle.call(this, style);
         },
 
@@ -272,19 +299,22 @@
         },
 
         removeStyle: function (style) {
-            $(this).find('.style-block').each(function (index, element) {
+            var $this = $(this);
+            $this.find('.style-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('style') === style) {
                     $element.remove();
+                    updatePlaceholder($this);
                     return false;
                 }
             });
         },
 
         clear: function () {
+            var $this = $(this);
             var remove = [];
 
-            $(this).find('.style-block').each(function (index, block) {
+            $this.find('.style-block').each(function (index, block) {
                 var $block = $(block);
                 if (!$block.hasClass('style-null')) {
                     remove.push($block);
@@ -294,6 +324,8 @@
             for (var i = 0; i < remove.length; ++i) {
                 remove[i].remove();
             }
+
+            updatePlaceholder($this);
         },
 
         attach: function (container) {

@@ -53,6 +53,8 @@
                 'overflow-x': 'hidden'
             })
             .gStylePanel({
+                // TODO : I18N
+                placeholder: 'No Shared Styles'
             })
             .appendTo(htmlElement);
 
@@ -64,6 +66,8 @@
                 'overflow-x': 'hidden'
             })
             .gSwatchPanel({
+                // TODO : I18N
+                placeholder: 'Drop Swatches here'
             })
             .appendTo(htmlElement);
     };
