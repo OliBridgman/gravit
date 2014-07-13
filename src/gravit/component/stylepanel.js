@@ -20,8 +20,6 @@
                         .addClass('placeholder')
                         .text(data.options.placeholder)
                         .appendTo($this);
-                } else {
-                    placeholder.remove();
                 }
             } else {
                 if (placeholder.length > 0) {
@@ -299,11 +297,20 @@
         },
 
         removeStyle: function (style) {
+            var self = this;
             var $this = $(this);
+            var data = $this.data('gstylepanel');
+
             $this.find('.style-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('style') === style) {
                     $element.remove();
+
+                    if (style === data.selected) {
+                        data.selected = null;
+                        self.trigger('stylechange', null);
+                    }
+
                     updatePlaceholder($this);
                     return false;
                 }
@@ -312,6 +319,7 @@
 
         clear: function () {
             var $this = $(this);
+            var data = $this.data('gstylepanel');
             var remove = [];
 
             $this.find('.style-block').each(function (index, block) {

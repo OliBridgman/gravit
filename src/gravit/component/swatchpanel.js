@@ -22,8 +22,6 @@
                         .addClass('placeholder')
                         .text(data.options.placeholder)
                         .appendTo($this);
-                } else {
-                    placeholder.remove();
                 }
             } else {
                 if (placeholder.length > 0) {
@@ -107,7 +105,8 @@
                         var event = evt.originalEvent;
                         event.stopPropagation();
 
-                        if (!data.container || !data.container.getScene()) {
+                        if (dragSwatch || !data.container || !data.container.getScene()) {
+                            dragSwatch = null;
                             return;
                         }
 
@@ -313,30 +312,32 @@
                         $(this).removeClass('drop');
                         var targetSwatch = $(this).data('swatch');
 
-                        if (data.options.allowReorder) {
-                            if (data.container && dragSwatch.getParent() === data.container) {
-                                var parent = dragSwatch.getParent();
-                                var sourceIndex = parent.getIndexOfChild(dragSwatch);
-                                var targetIndex = parent.getIndexOfChild(targetSwatch);
-                                var editor = IFEditor.getEditor(parent.getScene());
+                        if (dragSwatch) {
+                            if (data.options.allowReorder) {
+                                if (data.container && dragSwatch.getParent() === data.container) {
+                                    var parent = dragSwatch.getParent();
+                                    var sourceIndex = parent.getIndexOfChild(dragSwatch);
+                                    var targetIndex = parent.getIndexOfChild(targetSwatch);
+                                    var editor = IFEditor.getEditor(parent.getScene());
 
-                                if (editor) {
-                                    editor.beginTransaction();
-                                }
-
-                                try {
-                                    parent.removeChild(dragSwatch);
-                                    parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
-                                } finally {
                                     if (editor) {
-                                        editor.commitTransaction('Move Swatch');
+                                        editor.beginTransaction();
+                                    }
+
+                                    try {
+                                        parent.removeChild(dragSwatch);
+                                        parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
+                                    } finally {
+                                        if (editor) {
+                                            editor.commitTransaction('Move Swatch');
+                                        }
                                     }
                                 }
-                            }
 
-                            self.trigger('swatchmove', [dragSwatch, targetSwatch]);
-                        } else if (data.options.allowDrop) {
-                            self.trigger('swatchdrop', [dragSwatch, targetSwatch]);
+                                self.trigger('swatchmove', [dragSwatch, targetSwatch]);
+                            } else if (data.options.allowDrop) {
+                                self.trigger('swatchdrop', [dragSwatch, targetSwatch]);
+                            }
                         }
                     });
             }
@@ -374,11 +375,20 @@
         },
 
         removeSwatch: function (swatch) {
+            var self = this;
             var $this = $(this);
+            var data = $this.data('gswatchpanel');
+
             $this.find('.swatch-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('swatch') === swatch) {
                     $element.remove();
+
+                    if (swatch === data.selected) {
+                        data.selected = null;
+                        self.trigger('swatchchange', null);
+                    }
+
                     updatePlaceholder($this);
                     return false;
                 }
@@ -387,6 +397,7 @@
 
         clear: function () {
             var $this = $(this);
+            var data = $this.data('gswatchpanel');
             var remove = [];
 
             $this.find('.swatch-block').each(function (index, block) {

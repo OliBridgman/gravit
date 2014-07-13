@@ -1,6 +1,4 @@
 .g-style-panel {
-  padding: 3px;
-
   .style-block {
     display: inline-block;
     position: relative;
@@ -9,8 +7,6 @@
     &.selected {
       background: $selectedColor;
       color: $selectedTextColor;
-      //padding: 0px;
-      //margin: 2px;
     }
 
     &.drop {
