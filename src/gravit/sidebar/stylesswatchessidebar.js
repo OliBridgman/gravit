@@ -28,10 +28,10 @@
     GStylesSwatchesSidebar.prototype._swatchPanel = null;
 
     /**
-     * @type {Array<JQuery>}
+     * @type {JQuery}
      * @private
      */
-    GStylesSwatchesSidebar.prototype._swatchControls = null;
+    GStylesSwatchesSidebar.prototype._swatchDeleteControl = null;
 
     /** @override */
     GStylesSwatchesSidebar.prototype.getId = function () {
@@ -97,22 +97,20 @@
                 this._updateSwatchControls();
             }.bind(this));
 
-        this._swatchControls = [
-            $('<button></button>')
-                .addClass('fa fa-fw fa-trash-o')
-                // TODO : I18N
-                .attr('title', 'Delete selected swatch')
-                .on('click', function () {
-                    var swatch = this._swatchPanel.gSwatchPanel('value');
-                    var editor = this._document.getEditor();
-                    editor.beginTransaction();
-                    try {
-                        swatch.getParent().removeChild(swatch);
-                    } finally {
-                        editor.commitTransaction('Delete Swatch');
-                    }
-                }.bind(this))
-        ];
+        this._swatchDeleteControl = $('<button></button>')
+            .addClass('fa fa-fw fa-trash-o')
+            // TODO : I18N
+            .attr('title', 'Delete Selected Swatch')
+            .on('click', function () {
+                var swatch = this._swatchPanel.gSwatchPanel('value');
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    swatch.getParent().removeChild(swatch);
+                } finally {
+                    editor.commitTransaction('Delete Swatch');
+                }
+            }.bind(this));
 
         this._updateStyleControls();
         this._updateSwatchControls();
@@ -122,7 +120,9 @@
                 // TODO : I18N
                 title: 'Swatches',
                 content: this._swatchPanel,
-                controls: this._swatchControls
+                controls: [
+                    this._swatchDeleteControl
+                ]
             })
             .appendTo(htmlElement);
     };
@@ -150,13 +150,13 @@
     /** @private */
     GStylesSwatchesSidebar.prototype._updateStyleControls = function () {
         var style = this._stylePanel.gStylePanel('value');
-        //TODOthis._swatchControls[0].prop('disabled', !swatch);
+        //TODO...
     };
 
     /** @private */
     GStylesSwatchesSidebar.prototype._updateSwatchControls = function () {
         var swatch = this._swatchPanel.gSwatchPanel('value');
-        this._swatchControls[0].prop('disabled', !swatch);
+        this._swatchDeleteControl.prop('disabled', !swatch);
     };
 
     /** @override */
