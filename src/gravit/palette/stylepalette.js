@@ -1042,11 +1042,11 @@
                                 })
                                 .on('dragover', function (evt) {
                                     var event = evt.originalEvent;
-                                    if (_canDrop(dragRow, this.parentNode)) {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        event.dataTransfer.dropEffect = 'move';
-                                    }
+                                    // Let everything to through to escalate a drop
+                                    // event, we'll check later if possible or not
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    event.dataTransfer.dropEffect = 'move';
                                 })
                                 .on('drop', function (evt) {
                                     var $this = $(this);
@@ -1058,7 +1058,9 @@
                                     // Remove drag overlays
                                     $parent.closest('.style-entries-panel-table').find('.drag-overlay').remove();
 
-                                    // TODO : Move our entry
+                                    if (_canDrop(dragRow, this.parentNode)) {
+                                        // TODO : Move our entry
+                                    }
                                 }));
                     });
                 })
