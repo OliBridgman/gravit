@@ -152,12 +152,23 @@
             var data = $this.data('gstylepanel');
             var self = this;
 
-            if (typeof index !== 'number') {
-                index = style.getParent().getIndexOfChild(style);
-            }
+            var insertBefore = null;
 
-            if (data.options.nullStyle) {
-                index += 1;
+            if (typeof index === 'number') {
+                if (data.options.nullStyle) {
+                    index += 1;
+                }
+                insertBefore = $this.children('.style-block').eq(index);
+            } else {
+                if (style.getNext()) {
+                    $this.find('.style-block').each(function (index, element) {
+                        var $element = $(element);
+                        if ($element.data('style') === style.getNext()) {
+                            insertBefore = $element;
+                            return false;
+                        }
+                    });
+                }
             }
 
             var block = $('<div></div>')
@@ -278,7 +289,6 @@
                     });
             }
 
-            var insertBefore = index >= 0 ? $this.children('.style-block').eq(index) : null;
             if (insertBefore && insertBefore.length > 0) {
                 block.insertBefore(insertBefore);
             } else {

@@ -279,6 +279,17 @@
 
     /** @private */
     GPagesLayersSidebar.prototype._insertPage = function (page) {
+        var insertBefore = null;
+        if (page.getNext()) {
+            this._pagesPanel.find('.page-block').each(function (index, element) {
+                var $element = $(element);
+                if ($element.data('page') === page.getNext()) {
+                    insertBefore = $element;
+                    return false;
+                }
+            });
+        }
+
         var index = page.getParent().getIndexOfChild(page);
 
         var block = $('<div></div>')
@@ -352,15 +363,14 @@
             })
             .on('dragend', function (evt) {
                 var $this = $(this);
-                
+
                 var event = evt.originalEvent;
                 event.stopPropagation();
+
                 dragPage = null;
 
                 // Remove drag overlays
-                $this.closest('.pages').find('.page-block').each(function (index, element) {
-                    $(element).find('.drag-overlay').remove();
-                });
+                $this.closest('.pages').find('.drag-overlay').remove();
             })
             .on('dragenter', function (evt) {
                 if (canDropPage.call(this)) {
@@ -381,8 +391,14 @@
                 }
             })
             .on('drop', function (evt) {
-                $(this).removeClass('drop');
-                var targetPage = $(this).data('page');
+                var $this = $(this);
+
+                $this.removeClass('drop');
+
+                // Remove drag overlays
+                $this.closest('.pages').find('.drag-overlay').remove();
+
+                var targetPage = $this.data('page');
                 if (dragPage && dragPage.getParent() === targetPage.getParent()) {
                     var parent = dragPage.getParent();
                     var sourceIndex = parent.getIndexOfChild(dragPage);
@@ -396,7 +412,6 @@
                 }
             });
 
-        var insertBefore = index >= 0 ? this._pagesPanel.children('.page-block').eq(index) : null;
         if (insertBefore && insertBefore.length > 0) {
             block.insertBefore(insertBefore);
         } else {

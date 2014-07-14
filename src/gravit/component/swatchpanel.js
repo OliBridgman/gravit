@@ -208,12 +208,23 @@
                 return;
             }
 
-            if (typeof index !== 'number') {
-                index = swatch.getParent().getIndexOfChild(swatch);
-            }
+            var insertBefore = null;
 
-            if (data.options.nullSwatch) {
-                index += 1;
+            if (typeof index === 'number') {
+                if (data.options.nullSwatch) {
+                    index += 1;
+                }
+                insertBefore = $this.children('.swatch-block').eq(index);
+            } else {
+                if (swatch.getNext()) {
+                    $this.find('.swatch-block').each(function (index, element) {
+                        var $element = $(element);
+                        if ($element.data('swatch') === swatch.getNext()) {
+                            insertBefore = $element;
+                            return false;
+                        }
+                    });
+                }
             }
 
             var block = $('<div></div>')
@@ -344,7 +355,6 @@
                     });
             }
 
-            var insertBefore = index >= 0 ? $this.children('.swatch-block').eq(index) : null;
             if (insertBefore && insertBefore.length > 0) {
                 block.insertBefore(insertBefore);
             } else {
