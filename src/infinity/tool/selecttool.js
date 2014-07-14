@@ -122,7 +122,7 @@
         view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
         view.addEventListener(GUIKeyEvent.Release, this._keyRelease, this);
 
-        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -139,7 +139,7 @@
         view.removeEventListener(GUIKeyEvent.Down, this._keyDown);
         view.removeEventListener(GUIKeyEvent.Release, this._keyRelease);
 
-        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -208,7 +208,7 @@
             // activated temporarily with the meta key and should ignore the meta key.
             // When this is the case, we'll ignore hit-testing the editor(s) at all
             // and instead, go straight to hit-testing elements instead
-            var stacked = gPlatform.modifiers.metaKey && this._manager.getTemporaryActiveTool() == null;
+            var stacked = ifPlatform.modifiers.metaKey && this._manager.getTemporaryActiveTool() == null;
 
             if (!stacked) {
                 // Try to get a part of an editor, first
@@ -226,8 +226,8 @@
 
                         // Only update part selection if we're either holding shift
                         // or when we didn't actually retreieve an already selected part
-                        if (gPlatform.modifiers.shiftKey || (!editor.isPartSelected(partId) && selectable)) {
-                            editor.updatePartSelection(gPlatform.modifiers.shiftKey, [partId]);
+                        if (ifPlatform.modifiers.shiftKey || (!editor.isPartSelected(partId) && selectable)) {
+                            editor.updatePartSelection(ifPlatform.modifiers.shiftKey, [partId]);
                         }
 
                         // Save the editor part that initiated the movement
@@ -276,19 +276,19 @@
 
                     if (lastSelIndex == null || lastSelIndex + 1 >= selectableElements.length) {
                         // Start from the beginning
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [selectableElements[0]]);
+                        this._editor.updateSelection(ifPlatform.modifiers.shiftKey, [selectableElements[0]]);
                     } else {
                         // Select next in order
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [selectableElements[lastSelIndex + 1]]);
+                        this._editor.updateSelection(ifPlatform.modifiers.shiftKey, [selectableElements[lastSelIndex + 1]]);
                     }
 
                 } else {
                     this._elementUnderMouse = selectableElements[0];
 
-                    if (gPlatform.modifiers.shiftKey || !this._elementUnderMouse.hasFlag(IFNode.Flag.Selected)) {
+                    if (ifPlatform.modifiers.shiftKey || !this._elementUnderMouse.hasFlag(IFNode.Flag.Selected)) {
                         // Only update selection if we're either holding shift
                         // or when we didn't actually hit an already selected node
-                        this._editor.updateSelection(gPlatform.modifiers.shiftKey, [this._elementUnderMouse]);
+                        this._editor.updateSelection(ifPlatform.modifiers.shiftKey, [this._elementUnderMouse]);
                     } else if (this._elementUnderMouse.hasFlag(IFNode.Flag.Selected)) {
                         // As element is already selected we need to ensure to properly
                         // clear all selected parts as that is the default behavior
@@ -306,7 +306,7 @@
                 }
             } else {
                 // No hit at all so update without any nodes
-                this._editor.updateSelection(gPlatform.modifiers.shiftKey, []);
+                this._editor.updateSelection(ifPlatform.modifiers.shiftKey, []);
             }
         }
     };
@@ -396,7 +396,7 @@
                 // Holding option key when we've transformed the whole selection
                 // will actually clone the current selection and apply the transformation
                 // to the new selection so we'll do that here
-                this._editor.applySelectionTransform(gPlatform.modifiers.optionKey);
+                this._editor.applySelectionTransform(ifPlatform.modifiers.optionKey);
             }
         } else if (this._mode == IFSelectTool._Mode.Select) {
             // Check if we've selected an area
@@ -414,7 +414,7 @@
                 var collisions = this._scene.getCollisions(collisionArea, IFElement.CollisionFlag.GeometryBBox);
                 var selectableElements = this._getSelectableElements(collisions);
 
-                this._editor.updateSelection(gPlatform.modifiers.shiftKey, selectableElements);
+                this._editor.updateSelection(ifPlatform.modifiers.shiftKey, selectableElements);
 
                 // Invalidate to remove area selector's paint region
                 var selectArea = this._selectArea;
@@ -424,7 +424,7 @@
                 this._selectArea = null;
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
-            if (gPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
+            if (ifPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
 
                 this._editor.applySelectionTransform(true);
             } else {
@@ -482,7 +482,7 @@
                     this._updateMode(IFSelectTool._Mode.Moving);
                 }
 
-                var crDistance = gPlatform.modifiers.shiftKey ?
+                var crDistance = ifPlatform.modifiers.shiftKey ?
                     this._scene.getProperty('crDistBig') : this._scene.getProperty('crDistSmall');
 
                 var dx = 0;
@@ -548,10 +548,10 @@
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
-                    position, this._view.getViewTransform(), this._editor.getGuides(), gPlatform.modifiers.shiftKey, gPlatform.modifiers.optionKey);
+                    position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);
                 this._editor.getGuides().finishMap();
             } else {
-                if (gPlatform.modifiers.shiftKey) {
+                if (ifPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
                     var crConstraint = this._scene.getProperty('crConstraint');
                     position = ifMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
@@ -587,7 +587,7 @@
                 this._editor.getGuides().beginMap();
                 var transform = this._editor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
                     this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
-                    gPlatform.modifiers.optionKey, gPlatform.modifiers.shiftKey);
+                    ifPlatform.modifiers.optionKey, ifPlatform.modifiers.shiftKey);
 
                 this._editor.getTransformBox().setTransform(transform);
                 this._editor.transformSelection(transform, null, null);

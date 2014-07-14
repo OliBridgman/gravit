@@ -177,7 +177,7 @@
         view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
         view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
-        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = IFCursor.PenStart;
         this._transactionType = IFPathTool.Transaction.NoTransaction;
@@ -199,7 +199,7 @@
         view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
         view.removeEventListener(GUIKeyEvent.Down, this._keyDown);
-        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -514,7 +514,7 @@
         if (event.changed.optionKey) {
             this._firstAlt = false;
             if (!this._released) {
-                if (gPlatform.modifiers.optionKey) {
+                if (ifPlatform.modifiers.optionKey) {
                     this._firstAlt = !this._dragStarted;
                 }
                 this._mouseDrag(this._lastMouseEvent);
@@ -554,7 +554,7 @@
     IFPathTool.prototype._constrainIfNeeded = function (pt, transform, path, orientPt) {
         var constrPt = pt;
 
-        if (gPlatform.modifiers.shiftKey) {
+        if (ifPlatform.modifiers.shiftKey) {
             var otherPt = null;
             if (orientPt) {
                 otherPt = orientPt;
@@ -679,7 +679,7 @@
             this._startTransaction(IFPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
-                if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+                if (event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
                     var tp = anchorPt.getProperty('tp');
                     if (tp == IFPathBase.AnchorPoint.Type.Asymmetric) {
                         anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);

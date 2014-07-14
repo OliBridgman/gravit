@@ -190,7 +190,7 @@
                 // Remove ourself from the view tool layer's paint
                 this._viewLayer.paint = null;
                 // Unregister ourself from global modifiers change event
-                gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+                ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
             }
 
             this._view = view;
@@ -203,7 +203,7 @@
                 // Assign ourself to the view tool layer's paint
                 this._viewLayer.paint = this._paintLink;
                 // Register ourself to global modifiers change event
-                gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+                ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
             }
         }
     };
@@ -317,7 +317,7 @@
         // .) The active tool is not the pointer tool
         // .) The temporary tool is not the pointer tool
         //
-        if (gPlatform.modifiers.metaKey && !gPlatform.modifiers.spaceKey &&
+        if (ifPlatform.modifiers.metaKey && !ifPlatform.modifiers.spaceKey &&
             this._activeTool !== pointerToolInstance && this._temporaryActiveTool !== pointerToolInstance) {
             // Meta key switches to pointer tool
             temporaryTool = pointerToolInstance;
@@ -328,7 +328,7 @@
         // .) Option Key is hold
         // .) The active tool is the pointer tool or the temporaryTool is the pointer tool or the temporary active tool is the pointer tool
         //
-        if (gPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof IFPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
+        if (ifPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof IFPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
             temporaryTool = subselectToolInstance;
         }
 
@@ -339,7 +339,7 @@
         // .) The active tool is the hand tool
         // .) The temporary tool is not the hand tool
         //
-        if (gPlatform.modifiers.spaceKey && this._activeTool !== handToolInstance && this._temporaryActiveTool !== handToolInstance) {
+        if (ifPlatform.modifiers.spaceKey && this._activeTool !== handToolInstance && this._temporaryActiveTool !== handToolInstance) {
             temporaryTool = handToolInstance;
         }
 
@@ -348,7 +348,7 @@
         // .) Meta Key is hold
         // .) The active tool is the hand tool or the temporaryTool is the hand tool
         //
-        if (gPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof IFHandTool)) {
+        if (ifPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof IFHandTool)) {
             temporaryTool = zoomToolInstance;
         }
 

@@ -50,7 +50,7 @@
         this._editPt = null;
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT ||
-            event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+            event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
             this._released = false;
 
             this._blockDeactivation();
@@ -59,7 +59,7 @@
 
             if (this._mode == IFPathTool.Mode.Edit) {
                 var customizer = function(anchorPt) {
-                    if (gPlatform.modifiers.optionKey &&
+                    if (ifPlatform.modifiers.optionKey &&
                             anchorPt.getProperty('tp') != IFPathBase.AnchorPoint.Type.Connector) {
 
                         anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
@@ -123,7 +123,7 @@
      */
     IFBezigonTool.prototype._mouseMove = function (event) {
         if (!this._released) {
-            if (event.button == GUIMouseEvent.BUTTON_RIGHT && gPlatform.modifiers.optionKey) {
+            if (event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
                 this._mouseDrag(event);
             }
             return;
@@ -186,7 +186,7 @@
         anchorPt.setProperties(['x', 'y', 'ah'], [pt.getX(), pt.getY(), true]);
 
         if (event.button == GUIMouseEvent.BUTTON_LEFT) {
-            if (gPlatform.modifiers.optionKey) {
+            if (ifPlatform.modifiers.optionKey) {
                 anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
             } else {
                 anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Asymmetric);
@@ -232,7 +232,7 @@
                 // Close path
                 this._pathRef.beginUpdate();
                 this._pathEditor.selectOnePoint(otherPt);
-                if (gPlatform.modifiers.optionKey) {
+                if (ifPlatform.modifiers.optionKey) {
                     otherPt.setProperties(['ah', 'tp'], [false, IFPathBase.AnchorPoint.Type.Asymmetric]);
                 }
                 if (!otherPt.getProperty('ah')) {

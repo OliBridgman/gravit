@@ -109,7 +109,7 @@
         view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
 
-        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -122,7 +122,7 @@
         view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
 
-        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -281,7 +281,7 @@
                 var x2 = x1; // for line
                 var y2 = y1; // for line
 
-                if (this._keepRatio && gPlatform.modifiers.shiftKey) {
+                if (this._keepRatio && ifPlatform.modifiers.shiftKey) {
                     var w = Math.abs(x1 - x0);
                     var h = Math.abs(y1 - y0);
                     var wSign = x1 < x0 ? -1 : 1;
@@ -303,8 +303,8 @@
                 /** @type Array<GPoint> */
                 var dragLine = null;
 
-                //if (this._fromCenter && gPlatform.modifiers.shiftKey) {
-                if (this._fromCenter && gPlatform.modifiers.optionKey) {
+                //if (this._fromCenter && ifPlatform.modifiers.shiftKey) {
+                if (this._fromCenter && ifPlatform.modifiers.optionKey) {
                     dragArea = GRect.fromPoints(new GPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new GPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
                     dragLine = [new GPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new GPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
                 }

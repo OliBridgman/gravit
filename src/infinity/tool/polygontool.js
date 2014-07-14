@@ -45,7 +45,7 @@
         var distance = ifMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
 
         // Lock angle to 15° if desired
-        if (gPlatform.modifiers.shiftKey) {
+        if (ifPlatform.modifiers.shiftKey) {
             angle = Math.round(angle * 12 / Math.PI) * Math.PI / 12;
         }
 
@@ -55,7 +55,7 @@
         var outerRadius = distance;
         var innerRadius = distance * Math.cos(Math.PI / this._numberOfPoints);
 
-        if (gPlatform.modifiers.optionKey) {
+        if (ifPlatform.modifiers.optionKey) {
             innerRadius = distance * this._innerRadiusFactor;
         }
 

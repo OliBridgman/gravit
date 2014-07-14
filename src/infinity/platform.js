@@ -173,7 +173,7 @@
     };
 
     _.GUIPlatform = GUIPlatform;
-    _.gPlatform = new GUIPlatform();
+    _.ifPlatform = new GUIPlatform();
 
     /**
      * Fixture for the various requestAnimationFrame implementations on the browsers

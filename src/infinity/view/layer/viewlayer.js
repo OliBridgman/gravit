@@ -71,7 +71,7 @@
         if (area && this._dirtyList.dirty(area.getX(), area.getY(), area.getWidth(), area.getHeight())) {
             // Request a repaint for the next frame
             if (this._repaintRequestFrameId == null) {
-                this._repaintRequestFrameId = gPlatform.scheduleFrame(this._repaint.bind(this));
+                this._repaintRequestFrameId = ifPlatform.scheduleFrame(this._repaint.bind(this));
             }
 
             return true;

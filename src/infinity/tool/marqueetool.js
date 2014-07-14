@@ -119,7 +119,7 @@
         view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
 
-        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -132,7 +132,7 @@
         view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
 
-        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -211,7 +211,7 @@
             var collisionArea = new IFVertexTransformer(this._areaSelector._pixelTransformer, this._view.getViewTransform());
             var collisions = this._scene.getCollisions(collisionArea, IFElement.CollisionFlag.GeometryBBox);
 
-            this._editor.updateSelection(gPlatform.modifiers.shiftKey, collisions);
+            this._editor.updateSelection(ifPlatform.modifiers.shiftKey, collisions);
         }
         this._areaSelector.finish();
     };

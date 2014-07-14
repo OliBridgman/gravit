@@ -70,7 +70,7 @@
         view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
         view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
 
-        gPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -82,7 +82,7 @@
         view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
         view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
 
-        gPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -187,14 +187,14 @@
 
     IFZoomTool.prototype._updateMode = function () {
         var newMode = 0;
-        if (gPlatform.modifiers.optionKey) {
+        if (ifPlatform.modifiers.optionKey) {
             newMode = -1;
-            if (gPlatform.modifiers.shiftKey) {
+            if (ifPlatform.modifiers.shiftKey) {
                 newMode = -2;
             }
         } else {
             newMode = +1;
-            if (gPlatform.modifiers.shiftKey) {
+            if (ifPlatform.modifiers.shiftKey) {
                 newMode = +2;
             }
         }

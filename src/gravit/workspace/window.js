@@ -157,7 +157,7 @@
                     });
                     stackItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
                         this.element.removeFlag(IFNode.Flag.Highlighted);
-                        self._document.getEditor().updateSelection(gPlatform.modifiers.shiftKey, [this.element]);
+                        self._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [this.element]);
                     });
                     selectItem.getMenu().addItem(stackItem);
                 }

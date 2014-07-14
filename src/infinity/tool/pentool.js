@@ -48,7 +48,7 @@
 
         this._mDownTime = tm;
         this._released = false;
-        if (gPlatform.modifiers.optionKey) {
+        if (ifPlatform.modifiers.optionKey) {
             this._firstAlt = true;
         }
         this._blockDeactivation();
@@ -77,12 +77,12 @@
                 }
                 this._pathEditor.requestInvalidation();
                 if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
-                    if (gPlatform.modifiers.optionKey) {
+                    if (ifPlatform.modifiers.optionKey) {
                         this._editPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
                     } else {
                         this._editPt.setProperties(['tp', 'cu'], [IFPathBase.CornerType.Rounded, true]);
                     }
-                } else if (!gPlatform.modifiers.optionKey){
+                } else if (!ifPlatform.modifiers.optionKey){
                     this._closePreviewIfNeeded();
                 }
                 if (!this._dpathRef.getProperty('closed')) {
@@ -108,7 +108,7 @@
                 pt = this._editor.getGuides().mapPoint(pt);
                 anchorPt = this._constructNewPoint(event, pt);
                 if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
-                    if (gPlatform.modifiers.optionKey) {
+                    if (ifPlatform.modifiers.optionKey) {
                         anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
                     } else {
                         anchorPt.setProperties(['tp', 'cu'], [IFPathBase.CornerType.Rounded, true]);
@@ -273,7 +273,7 @@
                     }
                 }
             } else {
-                if (!gPlatform.modifiers.optionKey) {
+                if (!ifPlatform.modifiers.optionKey) {
                     this._editPt.setProperties(['tp', 'hlx', 'hly', 'hrx', 'hry'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null, null, null]);
                 } else {
                     this._editPt.setProperties(['tp', 'hrx', 'hry'], [IFPathBase.AnchorPoint.Type.Asymmetric, null, null]);
@@ -284,7 +284,7 @@
             var transformToNative = transformToNewPos.inverted();
             var newNativePos = transformToNative.mapPoint(newPos);
 
-            if (!this._newPoint && gPlatform.modifiers.optionKey && this._firstAlt &&
+            if (!this._newPoint && ifPlatform.modifiers.optionKey && this._firstAlt &&
                     tp != IFPathBase.AnchorPoint.Type.Connector &&
                     !(this._editPt.getPrevious() == null && this._editPt.getNext() == null)) {
 
@@ -302,7 +302,7 @@
                 this._editPt.setProperty('ah', false);
                 var h1x = newNativePos.getX();
                 var h1y = newNativePos.getY();
-                if (gPlatform.modifiers.optionKey) {
+                if (ifPlatform.modifiers.optionKey) {
                     if (this._mode == IFPathTool.Mode.Prepend) {
                         this._editPt.setProperties(['tp', 'hlx', 'hly'],
                             [IFPathBase.AnchorPoint.Type.Asymmetric, h1x, h1y]);
@@ -334,7 +334,7 @@
                 }
             } else { // tp == IFPathBase.AnchorPoint.Type.Connector
                 if (this._mode == IFPathTool.Mode.Append ||
-                        this._mode == IFPathTool.Mode.Edit && gPlatform.modifiers.optionKey) {
+                        this._mode == IFPathTool.Mode.Edit && ifPlatform.modifiers.optionKey) {
 
                     hlx = null;
                     hly = null;
