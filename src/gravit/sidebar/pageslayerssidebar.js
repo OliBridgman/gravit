@@ -6,7 +6,7 @@
         if (dragPage) {
             var targetPage = $(this).data('page');
 
-            if (targetPage && targetPage !== dragPage) {
+            if (targetPage && (targetPage !== dragPage || ifPlatform.modifiers.shiftKey)) {
                 return dragPage.getParent() === targetPage.getParent();
             }
         }
@@ -406,9 +406,18 @@
 
                     // TODO : I18N
                     IFEditor.tryRunTransaction(parent, function () {
-                        parent.removeChild(dragPage);
-                        parent.insertChild(dragPage, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
-                    }, 'Move Page');
+                        if (ifPlatform.modifiers.shiftKey) {
+                            // Clone page
+                            var insertPos = dragPage.getScene().getPageInsertPosition();
+                            var pageClone = dragPage.clone();
+                            pageClone.setProperties(['x', 'y', 'name'], [insertPos.getX(), insertPos.getY(), pageClone.getProperty('name') + '-copy']);
+                            parent.insertChild(pageClone, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
+                        } else {
+                            // Move page
+                            parent.removeChild(dragPage);
+                            parent.insertChild(dragPage, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
+                        }
+                    }, ifPlatform.modifiers.shiftKey ? 'Duplicate Page' : 'Move Page');
                 }
             });
 

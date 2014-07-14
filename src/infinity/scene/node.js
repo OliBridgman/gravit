@@ -1239,7 +1239,14 @@
         // Serialize and deserialize ourself
         var serialized = IFNode.serialize(this);
         if (serialized) {
-            return IFNode.deserialize(serialized);
+            var result = IFNode.deserialize(serialized);
+
+            // Make sure to reset referenceid on referenceables
+            if (result.hasMixin(IFNode.Reference)) {
+                result._referenceId = null;
+            }
+
+            return result;
         }
         return null;
     };

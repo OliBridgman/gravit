@@ -396,7 +396,7 @@
     IFScene.prototype.addReference = function (reference) {
         var referenceId = reference.getReferenceId();
         if (this._references.hasOwnProperty(referenceId)) {
-            throw new Error('Reference allready added.');
+            throw new Error('Reference already added.');
         }
         this._references[referenceId] = reference;
     };
