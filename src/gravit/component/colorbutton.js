@@ -32,8 +32,8 @@
             // always overwrite types to allow colors, only
             options.types = [IFPattern.Type.Color];
 
-            var self = this;
             return this.each(function () {
+                var self = this;
                 var $this = $(this);
 
                 $this

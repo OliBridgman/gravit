@@ -10,8 +10,9 @@
                 controls: null
             }, options);
 
-            var self = this;
             return this.each(function () {
+                var self = this;
+
                 var $this = $(this)
                     .empty()
                     .addClass('g-panel')

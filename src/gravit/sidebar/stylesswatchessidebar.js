@@ -55,6 +55,7 @@
         this._stylePanel = $('<div></div>')
             .addClass('g-style-list')
             .gStylePanel({
+                allowNameEdit: true,
                 // TODO : I18N
                 placeholder: 'No Shared Styles'
             })
@@ -82,6 +83,7 @@
         this._swatchPanel = $('<div></div>')
             .addClass('g-swatch-list')
             .gSwatchPanel({
+                allowNameEdit: true,
                 // TODO : I18N
                 placeholder: 'Drop Swatches here'
             })

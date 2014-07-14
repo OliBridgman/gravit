@@ -30,9 +30,9 @@
                 scene: null
             }, options);
 
-            var self = this;
-
             return this.each(function () {
+                var self = this;
+
                 var data = {
                     options: options
                 };

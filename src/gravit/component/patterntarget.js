@@ -25,9 +25,10 @@
                 types: null
             }, options);
 
-            var self = this;
             return this.each(function () {
+                var self = this;
                 var $this = $(this);
+
                 $this
                     .data('gpatterntarget', {
                         options: options,

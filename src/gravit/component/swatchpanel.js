@@ -51,7 +51,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node.getParent() === container) {
-            methods.updateSwatch.call(this, evt.swatch);
+            methods.updateSwatch.call(this, evt.node);
         }
     };
 
@@ -72,6 +72,8 @@
                 allowReorder: true,
                 // Whether to allow selecting or not
                 allowSelect: true,
+                // Allow editing the swatch name or not
+                allowNameEdit: false,
                 // The html code or Jquery for the null swatch, if set to null,
                 // no null swatch will be provided for choosing
                 nullSwatch: null,
@@ -85,8 +87,8 @@
                 previewHeight: 20
             }, options);
 
-            var self = this;
             return this.each(function () {
+                var self = this;
                 var $this = $(this)
                     .addClass('g-swatch-panel')
                     .data('gswatchpanel', {
@@ -137,21 +139,12 @@
                                 }
 
                                 // Add pattern as swatch
-                                var editor = IFEditor.getEditor(scene);
-
-                                if (editor) {
-                                    editor.beginTransaction();
-                                }
-
-                                try {
+                                // TODO : I18N
+                                IFEditor.tryRunTransaction(scene, function () {
                                     var swatch = new IFSwatch();
                                     swatch.setProperties(['name', 'pat'], [name, pattern]);
                                     swatches.appendChild(swatch);
-                                } finally {
-                                    if (editor) {
-                                        editor.commitTransaction('Add Swatch');
-                                    }
-                                }
+                                }, 'Add Swatch');
                             }
                         }
                     });
@@ -225,6 +218,21 @@
                 .on('click', function () {
                     self.trigger('swatchchange', swatch);
                 });
+
+            if (data.options.allowNameEdit) {
+                block
+                    .gAutoEdit({
+                        selector: '.swatch-name'
+                    })
+                    .on('submitvalue', function (evt, value) {
+                        if (value && value.trim() !== '') {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(swatch, function () {
+                                swatch.setProperty('name', value);
+                            }, 'Rename Swatch');
+                        }
+                    });
+            }
 
             if (data.options.allowDrag || data.options.allowReorder) {
                 block
@@ -318,20 +326,11 @@
                                     var parent = dragSwatch.getParent();
                                     var sourceIndex = parent.getIndexOfChild(dragSwatch);
                                     var targetIndex = parent.getIndexOfChild(targetSwatch);
-                                    var editor = IFEditor.getEditor(parent.getScene());
 
-                                    if (editor) {
-                                        editor.beginTransaction();
-                                    }
-
-                                    try {
+                                    IFEditor.tryRunTransaction(parent, function () {
                                         parent.removeChild(dragSwatch);
                                         parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
-                                    } finally {
-                                        if (editor) {
-                                            editor.commitTransaction('Move Swatch');
-                                        }
-                                    }
+                                    }, 'Move Swatch');
                                 }
 
                                 self.trigger('swatchmove', [dragSwatch, targetSwatch]);

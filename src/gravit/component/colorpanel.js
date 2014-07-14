@@ -763,8 +763,9 @@
                 defaultView: ViewType.Palette
             }, options);
 
-            var self = this;
             return this.each(function () {
+                var self = this;
+
                 var data = {
                     options: options,
                     allowClear: false,

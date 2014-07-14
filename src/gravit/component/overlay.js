@@ -11,14 +11,14 @@
 
     var methods = {
         init: function (options) {
-            var self = this;
-
             options = $.extend({
                 // Whether to release on close or just detach
                 releaseOnClose: false
             }, options);
 
             return this.each(function () {
+                var self = this;
+
                 var $this = $(this)
                     .data('goverlay', {
                         releaseOnClose: options.releaseOnClose

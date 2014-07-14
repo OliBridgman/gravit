@@ -60,6 +60,29 @@
         return scene.__graphic_editor__ ? scene.__graphic_editor__ : null;
     };
 
+    /**
+     * Runs + commits a transaction on an editor. If there's no editor for a
+     * given source, the action will still be ran but without any
+     * transactions at all
+     * @param {IFNode} source the source to get an editor from
+     * @param {Function} action the actual action to be ran
+     * @param {String} name the name of the transaction when committed
+     */
+    IFEditor.tryRunTransaction = function (source, action, name) {
+        var editor = IFEditor.getEditor(source.getScene());
+        if (editor) {
+            editor.beginTransaction();
+        }
+
+        try {
+            action();
+        } finally {
+            if (editor) {
+                editor.commitTransaction(name);
+            }
+        }
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // IFEditor.CurrentLayerChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------

@@ -45,6 +45,14 @@
         }
     };
 
+    function afterPropertiesChangeEvent(evt) {
+        var $this = $(this);
+        var container = $this.data('gstylepanel').container;
+        if (evt.node.getParent() === container) {
+            methods.updateStyle.call(this, evt.node);
+        }
+    };
+
     function styleChangeEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
@@ -65,6 +73,8 @@
                 allowDrop: false,
                 // Whether to allow re-order of styles or not
                 allowReorder: true,
+                // Allow editing the style name or not
+                allowNameEdit: false,
                 // The html code or Jquery for the null style, if set to null,
                 // no null style will be provided for choosing
                 nullStyle: null,
@@ -78,8 +88,9 @@
                 previewHeight: 30
             }, options);
 
-            var self = this;
             return this.each(function () {
+                var self = this;
+
                 var $this = $(this)
                     .addClass('g-style-panel')
                     .data('gstylepanel', {
@@ -147,6 +158,21 @@
                 .on('click', function () {
                     self.trigger('stylechange', style);
                 });
+
+            if (data.options.allowNameEdit && style instanceof IFSharedStyle) {
+                block
+                    .gAutoEdit({
+                        selector: '.style-name'
+                    })
+                    .on('submitvalue', function (evt, value) {
+                        if (value && value.trim() !== '') {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(style, function () {
+                                style.setProperty('name', value);
+                            }, 'Rename Style');
+                        }
+                    });
+            }
 
             if (data.options.allowDrag || data.options.allowReorder) {
                 block
@@ -234,20 +260,12 @@
                                 var parent = dragStyle.getParent();
                                 var sourceIndex = parent.getIndexOfChild(dragStyle);
                                 var targetIndex = parent.getIndexOfChild(targetStyle);
-                                var editor = IFEditor.getEditor(parent.getScene());
 
-                                if (editor) {
-                                    editor.beginTransaction();
-                                }
-
-                                try {
+                                // TODO : I18N
+                                IFEditor.tryRunTransaction(parent, function () {
                                     parent.removeChild(dragStyle);
                                     parent.insertChild(dragStyle, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
-                                } finally {
-                                    if (editor) {
-                                        editor.commitTransaction('Move Style');
-                                    }
-                                }
+                                }, 'Move Style');
                             }
 
                             self.trigger('stylemove', [dragStyle, targetStyle]);
@@ -357,8 +375,10 @@
                     data.afterInsertHandler = afterInsertEvent.bind(this);
                     data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
                     data.styleChangeHandler = styleChangeEvent.bind(this);
+                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
                     scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     scene.addEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
@@ -376,6 +396,7 @@
                 if (scene) {
                     scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     scene.removeEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
@@ -383,6 +404,7 @@
             data.container = null;
             data.afterInsertHandler = null;
             data.beforeRemoveHandler = null;
+            data.afterPropertiesChangeHandler = null;
             data.styleChangeHandler = null;
 
             methods.clear.call(this);
