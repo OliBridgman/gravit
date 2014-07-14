@@ -58,9 +58,10 @@
     /** @type {IFSwatch} */
     var dragSwatch = null;
 
-    var canDrop = function () {
+    function canDrop($this, target) {
+        var data = $this.data('gswatchpanel');
         if (dragSwatch) {
-            var targetSwatch = $(this).data('swatch');
+            var targetSwatch = $(target).data('swatch');
 
             if (targetSwatch && targetSwatch !== dragSwatch) {
                 if (dragSwatch.getParent() === targetSwatch.getParent()) {
@@ -301,18 +302,18 @@
             if (data.options.allowDrop || data.options.allowReorder) {
                 block
                     .on('dragenter', function (evt) {
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             $(this).addClass('drop');
                         }
                     })
                     .on('dragleave', function (evt) {
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             $(this).removeClass('drop');
                         }
                     })
                     .on('dragover', function (evt) {
                         var event = evt.originalEvent;
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             event.preventDefault();
                             event.stopPropagation();
                             event.dataTransfer.dropEffect = 'move';

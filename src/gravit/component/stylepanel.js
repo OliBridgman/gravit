@@ -64,9 +64,10 @@
     /** @type {IFStyle} */
     var dragStyle = null;
 
-    var canDrop = function () {
+    function canDrop($this, target) {
+        var data = $this.data('gstylepanel');
         if (dragStyle) {
-            var targetStyle = $(this).data('style');
+            var targetStyle = $(target).data('style');
 
             if (targetStyle && targetStyle !== dragStyle) {
                 if (dragStyle.getParent() === targetStyle.getParent()) {
@@ -236,18 +237,18 @@
             if (data.options.allowDrop || data.options.allowReorder) {
                 block
                     .on('dragenter', function (evt) {
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             $(this).addClass('drop');
                         }
                     })
                     .on('dragleave', function (evt) {
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             $(this).removeClass('drop');
                         }
                     })
                     .on('dragover', function (evt) {
                         var event = evt.originalEvent;
-                        if (canDrop.call(this)) {
+                        if (canDrop($this, this)) {
                             event.preventDefault();
                             event.stopPropagation();
                             event.dataTransfer.dropEffect = 'move';
