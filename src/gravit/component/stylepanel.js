@@ -64,6 +64,22 @@
     /** @type {IFStyle} */
     var dragStyle = null;
 
+    var canDrop = function () {
+        if (dragStyle) {
+            var targetStyle = $(this).data('style');
+
+            if (targetStyle && targetStyle !== dragStyle) {
+                if (dragStyle.getParent() === targetStyle.getParent()) {
+                    return data.options.allowReorder;
+                } else {
+                    return data.options.allowDrop;
+                }
+            }
+        }
+
+        return false;
+    };
+
     var methods = {
         init: function (options) {
             options = $.extend({
@@ -125,6 +141,8 @@
                         })
                         .appendTo($this);
                 }
+
+                updatePlaceholder($this);
             });
         },
 
@@ -215,37 +233,21 @@
                     });
             }
 
-            var _canDrop = function () {
-                if (dragStyle) {
-                    var targetStyle = $(this).data('style');
-
-                    if (targetStyle && targetStyle !== dragStyle) {
-                        if (dragStyle.getParent() === targetStyle.getParent()) {
-                            return data.options.allowReorder;
-                        } else {
-                            return data.options.allowDrop;
-                        }
-                    }
-                }
-
-                return false;
-            };
-
             if (data.options.allowDrop || data.options.allowReorder) {
                 block
                     .on('dragenter', function (evt) {
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             $(this).addClass('drop');
                         }
                     })
                     .on('dragleave', function (evt) {
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             $(this).removeClass('drop');
                         }
                     })
                     .on('dragover', function (evt) {
                         var event = evt.originalEvent;
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             event.preventDefault();
                             event.stopPropagation();
                             event.dataTransfer.dropEffect = 'move';
@@ -255,7 +257,7 @@
                         $(this).removeClass('drop');
                         var targetStyle = $(this).data('style');
 
-                        if (data.options.allowReorder) {
+                        if (data.options.allowReorder && dragStyle) {
                             if (data.container && dragStyle.getParent() === data.container) {
                                 var parent = dragStyle.getParent();
                                 var sourceIndex = parent.getIndexOfChild(dragStyle);
@@ -301,10 +303,6 @@
                     var name = '';
                     if (style instanceof IFSharedStyle) {
                         name = style.getProperty('name');
-                        if (name === null) {
-                            // TODO : I18N
-                            name = '#Unnamed';
-                        }
                     }
 
                     $element.attr('title', name);

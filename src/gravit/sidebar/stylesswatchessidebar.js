@@ -142,6 +142,7 @@
             this._updateSwatchControls();
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
+            this._document = null;
             this._stylePanel.gStylePanel('detach');
             this._swatchPanel.gSwatchPanel('detach');
             this._updateStyleControls();

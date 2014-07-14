@@ -67,7 +67,7 @@
                 var sidebar = gravit.sidebars[i];
 
                 var panel = $('<div></div>')
-                    .addClass('sidebar-panel')
+                    .addClass('sidebar-panel sidebar-' + sidebar.getId())
                     .css('display', 'none')
                     .appendTo(this._htmlElement);
 

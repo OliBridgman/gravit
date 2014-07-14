@@ -58,6 +58,22 @@
     /** @type {IFSwatch} */
     var dragSwatch = null;
 
+    var canDrop = function () {
+        if (dragSwatch) {
+            var targetSwatch = $(this).data('swatch');
+
+            if (targetSwatch && targetSwatch !== dragSwatch) {
+                if (dragSwatch.getParent() === targetSwatch.getParent()) {
+                    return data.options.allowReorder;
+                } else {
+                    return data.options.allowDrop;
+                }
+            }
+        }
+
+        return false;
+    };
+
     var methods = {
         init: function (options) {
             options = $.extend({
@@ -175,6 +191,8 @@
                         })
                         .appendTo($this);
                 }
+
+                updatePlaceholder($this);
             });
         },
 
@@ -280,37 +298,21 @@
                     });
             }
 
-            var _canDrop = function () {
-                if (dragSwatch) {
-                    var targetSwatch = $(this).data('swatch');
-
-                    if (targetSwatch && targetSwatch !== dragSwatch) {
-                        if (dragSwatch.getParent() === targetSwatch.getParent()) {
-                            return data.options.allowReorder;
-                        } else {
-                            return data.options.allowDrop;
-                        }
-                    }
-                }
-
-                return false;
-            };
-
             if (data.options.allowDrop || data.options.allowReorder) {
                 block
                     .on('dragenter', function (evt) {
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             $(this).addClass('drop');
                         }
                     })
                     .on('dragleave', function (evt) {
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             $(this).removeClass('drop');
                         }
                     })
                     .on('dragover', function (evt) {
                         var event = evt.originalEvent;
-                        if (_canDrop.call(this)) {
+                        if (canDrop.call(this)) {
                             event.preventDefault();
                             event.stopPropagation();
                             event.dataTransfer.dropEffect = 'move';
