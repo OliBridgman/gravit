@@ -332,19 +332,35 @@
                 //
             })
             .on('dragstart', function (evt) {
+                var $this = $(this);
+
                 var event = evt.originalEvent;
                 event.stopPropagation();
 
-                dragPage = $(this).data('page');
+                dragPage = $this.data('page');
 
                 // Setup our drag-event now
                 event.dataTransfer.effectAllowed = 'move';
                 event.dataTransfer.setData('text/plain', 'dummy_data');
+
+                // Add drag overlays
+                $this.closest('.pages').find('.page-block').each(function (index, element) {
+                    $(element)
+                        .append($('<div></div>')
+                            .addClass('drag-overlay'));
+                });
             })
             .on('dragend', function (evt) {
+                var $this = $(this);
+                
                 var event = evt.originalEvent;
                 event.stopPropagation();
                 dragPage = null;
+
+                // Remove drag overlays
+                $this.closest('.pages').find('.page-block').each(function (index, element) {
+                    $(element).find('.drag-overlay').remove();
+                });
             })
             .on('dragenter', function (evt) {
                 if (canDropPage.call(this)) {

@@ -2,7 +2,7 @@
 
 .sidebar-pages-layers {
   .page-block {
-    display: table-row;
+    position: relative;
     width: 100%;
 
     &.g-active {
@@ -53,6 +53,14 @@
       &, * {
         cursor: default;
       }
+    }
+
+    > .drag-overlay {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
     }
   }
 }
