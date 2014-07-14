@@ -20,50 +20,6 @@
   }
 
   .style-entries-panel {
-    > .style-entries-panel-header {
-      @include box-sizing(border-box);
-      display: table;
-      width: 100%;
-      padding: 6px 5px;
-      background: $frameBorderColor;
-      margin-bottom: 1px;
-
-      > div {
-        display: table-cell;
-        vertical-align: middle;
-      }
-
-      > .title {
-        width: 100%;
-
-        > i.fa:first-child {
-          padding-right: 3px;
-        }
-      }
-
-      > .controls {
-        text-align: right;
-        white-space: nowrap;
-
-        input, button, .g-button, select {
-          border: none;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          background: transparent !important;
-          box-shadow: none;
-          margin: 0px;
-        }
-
-        button, .g-button {
-          &.g-active {
-            &, * {
-              color: $selectedColor;
-            }
-          }
-        }
-      }
-    }
-
     > .style-entries-panel-table {
       border-collapse: separate;
       width: 100%;

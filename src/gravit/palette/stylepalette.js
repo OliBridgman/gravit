@@ -355,14 +355,16 @@
         // Paints section
         this._paintsPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<div></div>')
-                .addClass('style-entries-panel-header')
-                .append($('<div></div>')
-                    .addClass('title')
-                    .text('Fills & Borders'))
-                .append($('<div></div>')
-                    .addClass('controls')
-                    .append($('<button></button>')
+            .append($('<table></table>')
+                .addClass('style-entries-panel-table'));
+
+        $('<div></div>')
+            .gPanel({
+                // TODO : I18N
+                title: 'Fills & Borders',
+                content: this._paintsPanel,
+                controls: [
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-pencil')
                         // TODO : I18N
                         .attr('title', 'Add Stroke')
@@ -370,8 +372,8 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFStrokePaint());
                             });
-                        }.bind(this)))
-                    .append($('<button></button>')
+                        }.bind(this)),
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-square')
                         // TODO : I18N
                         .attr('title', 'Add Fill')
@@ -379,30 +381,33 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFFillPaint());
                             });
-                        }.bind(this)))
-                    .append($('<button></button>')
+                        }.bind(this)),
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFPaintEntry]);
-                        }.bind(this)))))
-            .append($('<table></table>')
-                .addClass('style-entries-panel-table'))
+                        }.bind(this))
+                ]
+            })
             .appendTo(this._htmlElement);
 
         // Filter section
         this._filtersPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<div></div>')
-                .addClass('style-entries-panel-header')
-                .append($('<div></div>')
-                    .addClass('title')
-                    .text('Filters'))
-                .append($('<div></div>')
-                    .addClass('controls')
-                    .append($('<button></button>')
+            .append($('<table></table>')
+                .addClass('style-entries-panel-table'))
+            .appendTo(this._htmlElement);
+
+        $('<div></div>')
+            .gPanel({
+                // TODO : I18N
+                title: 'Filters',
+                content: this._filtersPanel,
+                controls: [
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-circle')
                         // TODO : I18N
                         .attr('title', 'Add Blur')
@@ -410,30 +415,33 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFBlurFilter());
                             });
-                        }.bind(this)))
-                    .append($('<button></button>')
+                        }.bind(this)),
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFFilterEntry]);
-                        }.bind(this)))))
-            .append($('<table></table>')
-                .addClass('style-entries-panel-table'))
+                        }.bind(this))
+                ]
+            })
             .appendTo(this._htmlElement);
 
         // Effects section
         this._effectsPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<div></div>')
-                .addClass('style-entries-panel-header')
-                .append($('<div></div>')
-                    .addClass('title')
-                    .text('Effects'))
-                .append($('<div></div>')
-                    .addClass('controls')
-                    .append($('<button></button>')
+            .append($('<table></table>')
+                .addClass('style-entries-panel-table'))
+            .appendTo(this._htmlElement);
+
+        $('<div></div>')
+            .gPanel({
+                // TODO : I18N
+                title: 'Effects',
+                content: this._effectsPanel,
+                controls: [
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-cube')
                         // TODO : I18N
                         .attr('title', 'Add Shadow')
@@ -441,8 +449,8 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFShadowEffect());
                             });
-                        }.bind(this)))
-                    .append($('<button></button>')
+                        }.bind(this)),
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-dot-circle-o')
                         // TODO : I18N
                         .attr('title', 'Add Vector Offset')
@@ -450,17 +458,17 @@
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFOffsetVEffect());
                             });
-                        }.bind(this)))
-                    .append($('<button></button>')
+                        }.bind(this)),
+                    $('<button></button>')
                         .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFEffectEntry, IFVEffectEntry]);
-                        }.bind(this)))))
-            .append($('<table></table>')
-                .addClass('style-entries-panel-table'))
+                        }.bind(this))
+                ]
+            })
             .appendTo(this._htmlElement);
     };
 
@@ -956,17 +964,17 @@
     };
 
     GStylePalette.prototype._updateEntries = function () {
-        this._paintsPanel.css('display', 'none');
+        this._paintsPanel.closest('.g-panel').css('display', 'none');
         this._paintsPanel.find('.style-entries-panel-table').empty();
-        this._filtersPanel.css('display', 'none');
+        this._filtersPanel.closest('.g-panel').css('display', 'none');
         this._filtersPanel.find('.style-entries-panel-table').empty();
-        this._effectsPanel.css('display', 'none');
+        this._effectsPanel.closest('.g-panel').css('display', 'none');
         this._effectsPanel.find('.style-entries-panel-table').empty();
 
         if (this._selectedStyleIndex >= 0) {
-            this._paintsPanel.css('display', '');
-            this._filtersPanel.css('display', '');
-            this._effectsPanel.css('display', '');
+            this._paintsPanel.closest('.g-panel').css('display', '');
+            this._filtersPanel.closest('.g-panel').css('display', '');
+            this._effectsPanel.closest('.g-panel').css('display', '');
             var style = this._styles[this._selectedStyleIndex][0].getActualStyle();
 
             for (var entry = style.getFirstChild(); entry !== null; entry = entry.getNext()) {
