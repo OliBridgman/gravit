@@ -2,11 +2,11 @@
 
     var dragPage = null;
 
-    var canDropPage = function () {
+    function canDropPage(target) {
         if (dragPage) {
-            var targetPage = $(this).data('page');
+            var targetPage = $(target).data('page');
 
-            if (targetPage && (targetPage !== dragPage || ifPlatform.modifiers.shiftKey)) {
+            if (targetPage && (targetPage !== dragPage || ifPlatform.modifiers.shiftKey)) {
                 return dragPage.getParent() === targetPage.getParent();
             }
         }
@@ -358,7 +358,56 @@
                 $this.closest('.pages').find('.page-block').each(function (index, element) {
                     $(element)
                         .append($('<div></div>')
-                            .addClass('drag-overlay'));
+                            .addClass('drag-overlay')
+                            .on('dragenter', function (evt) {
+                                if (canDropPage(this.parentNode)) {
+                                    $(this).parent().addClass('drop');
+                                }
+                            })
+                            .on('dragleave', function (evt) {
+                                if (canDropPage(this.parentNode)) {
+                                    $(this).parent().removeClass('drop');
+                                }
+                            })
+                            .on('dragover', function (evt) {
+                                var event = evt.originalEvent;
+                                if (canDropPage(this.parentNode)) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    event.dataTransfer.dropEffect = 'move';
+                                }
+                            })
+                            .on('drop', function (evt) {
+                                var $this = $(this);
+                                var $parent = $(this.parentNode);
+
+                                $parent.removeClass('drop');
+
+                                // Remove drag overlays
+                                $parent.closest('.pages').find('.drag-overlay').remove();
+
+                                var targetPage = $parent.data('page');
+                                if (dragPage && dragPage.getParent() === targetPage.getParent()) {
+                                    var parent = dragPage.getParent();
+                                    var sourceIndex = parent.getIndexOfChild(dragPage);
+                                    var targetIndex = parent.getIndexOfChild(targetPage);
+
+                                    // TODO : I18N
+                                    IFEditor.tryRunTransaction(parent, function () {
+                                        if (ifPlatform.modifiers.shiftKey) {
+                                            // Clone page
+                                            var insertPos = dragPage.getScene().getPageInsertPosition();
+                                            var pageClone = dragPage.clone();
+                                            pageClone.setProperties(['x', 'y', 'name'], [insertPos.getX(), insertPos.getY(), pageClone.getProperty('name') + '-copy']);
+                                            parent.insertChild(pageClone, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
+                                        } else {
+                                            // Move page
+                                            parent.removeChild(dragPage);
+                                            parent.insertChild(dragPage, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
+                                        }
+                                    }, ifPlatform.modifiers.shiftKey ? 'Duplicate Page' : 'Move Page');
+                                }
+                            }));
                 });
             })
             .on('dragend', function (evt) {
@@ -367,58 +416,10 @@
                 var event = evt.originalEvent;
                 event.stopPropagation();
 
+                // Remove drag overlays
+                $this.closest('.pages').find('.drag-overlay').remove();
+
                 dragPage = null;
-
-                // Remove drag overlays
-                $this.closest('.pages').find('.drag-overlay').remove();
-            })
-            .on('dragenter', function (evt) {
-                if (canDropPage.call(this)) {
-                    $(this).addClass('drop');
-                }
-            })
-            .on('dragleave', function (evt) {
-                if (canDropPage.call(this)) {
-                    $(this).removeClass('drop');
-                }
-            })
-            .on('dragover', function (evt) {
-                var event = evt.originalEvent;
-                if (canDropPage.call(this)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.dataTransfer.dropEffect = 'move';
-                }
-            })
-            .on('drop', function (evt) {
-                var $this = $(this);
-
-                $this.removeClass('drop');
-
-                // Remove drag overlays
-                $this.closest('.pages').find('.drag-overlay').remove();
-
-                var targetPage = $this.data('page');
-                if (dragPage && dragPage.getParent() === targetPage.getParent()) {
-                    var parent = dragPage.getParent();
-                    var sourceIndex = parent.getIndexOfChild(dragPage);
-                    var targetIndex = parent.getIndexOfChild(targetPage);
-
-                    // TODO : I18N
-                    IFEditor.tryRunTransaction(parent, function () {
-                        if (ifPlatform.modifiers.shiftKey) {
-                            // Clone page
-                            var insertPos = dragPage.getScene().getPageInsertPosition();
-                            var pageClone = dragPage.clone();
-                            pageClone.setProperties(['x', 'y', 'name'], [insertPos.getX(), insertPos.getY(), pageClone.getProperty('name') + '-copy']);
-                            parent.insertChild(pageClone, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
-                        } else {
-                            // Move page
-                            parent.removeChild(dragPage);
-                            parent.insertChild(dragPage, sourceIndex < targetIndex ? targetPage.getNext() : targetPage);
-                        }
-                    }, ifPlatform.modifiers.shiftKey ? 'Duplicate Page' : 'Move Page');
-                }
             });
 
         if (insertBefore && insertBefore.length > 0) {

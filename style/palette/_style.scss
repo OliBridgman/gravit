@@ -23,57 +23,62 @@
 
   .style-entries-panel {
     > .style-entries-panel-table {
-      border-collapse: separate;
       width: 100%;
 
-      > tbody {
-        > tr {
-          &:not(:last-child) > td {
-            border-bottom: 1px solid $frame3DShadowColor;
-          }
+      > div {
+        position: relative;
+        padding: 5px 0px;
+        background: $frameColor;
 
-          &:not(:first-child) > td {
-            border-top: 1px solid $frame3DLightColor;
-          }
+        &:not(:last-child) {
+          border-bottom: 1px solid $frame3DShadowColor;
+        }
 
-          > td {
-            padding: 5px 0px;
-            vertical-align: middle;
-            background: $frameColor;
+        &:not(:first-child) {
+          border-top: 1px solid $frame3DLightColor;
+        }
 
-            &.visibility {
-              padding-left: 5px;
-              padding-right: 7px;
-              text-align: center;
+        &.drag {
+          opacity: 0.5 !important;
+          cursor: pointer;
+        }
 
-              > span {
-                cursor: pointer;
-              }
-            }
-
-            &.contents {
-              padding-right: 5px;
-              width: 100%;
-
-              > :first-child {
-                width: 100%;
-              }
-            }
-          }
-
-          &.drag {
-            opacity: 0.5 !important;
-            cursor: pointer;
-          }
-
-          &.drop {
-            > td {
-              background: $dragColor;
+        &.drop {
+            background: $dragColor;
+            &, * {
               color: $dragTextColor;
+          }
+        }
 
-              * {
-                pointer-events: none;
-              }
+        > .drag-overlay {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+        }
+
+        > div:not(.drag-overlay) {
+          display: table-cell;
+
+          vertical-align: middle;
+
+          &.visibility {
+            padding-left: 5px;
+            padding-right: 7px;
+            text-align: center;
+
+            > span {
+              cursor: pointer;
+            }
+          }
+
+          &.contents {
+            padding-right: 5px;
+            width: 100%;
+
+            > :first-child {
+              width: 100%;
             }
           }
         }

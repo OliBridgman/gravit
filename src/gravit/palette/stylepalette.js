@@ -355,7 +355,7 @@
         // Paints section
         this._paintsPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<table></table>')
+            .append($('<div></div>')
                 .addClass('style-entries-panel-table'));
 
         $('<div></div>')
@@ -397,7 +397,7 @@
         // Filter section
         this._filtersPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<table></table>')
+            .append($('<div></div>')
                 .addClass('style-entries-panel-table'))
             .appendTo(this._htmlElement);
 
@@ -431,7 +431,7 @@
         // Effects section
         this._effectsPanel = $('<div></div>')
             .addClass('style-entries-panel')
-            .append($('<table></table>')
+            .append($('<div></div>')
                 .addClass('style-entries-panel-table'))
             .appendTo(this._htmlElement);
 
@@ -1009,10 +1009,12 @@
                 return source && target && source !== target && source.parentNode === target.parentNode;
             };
 
-            var row = $('<tr></tr>')
+            var row = $('<div></div>')
                 .data('entry', entry)
                 .attr('draggable', 'true')
                 .on('dragstart', function (evt) {
+                    var $this = $(this);
+
                     var event = evt.originalEvent;
                     event.stopPropagation();
 
@@ -1022,10 +1024,52 @@
                     this.className = 'drag';
                     dragRow = this;
                     hasDropped = false;
+
+                    // Add drag overlays
+                    $this.closest('.style-entries-panel-table').find('> div').each(function (index, element) {
+                        $(element)
+                            .append($('<div></div>')
+                                .addClass('drag-overlay')
+                                .on('dragenter', function (evt) {
+                                    if (_canDrop(dragRow, this.parentNode)) {
+                                        $(this).parent().addClass('drop');
+                                    }
+                                })
+                                .on('dragleave', function (evt) {
+                                    if (_canDrop(dragRow, this.parentNode)) {
+                                        $(this).parent().removeClass('drop');
+                                    }
+                                })
+                                .on('dragover', function (evt) {
+                                    var event = evt.originalEvent;
+                                    if (_canDrop(dragRow, this.parentNode)) {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        event.dataTransfer.dropEffect = 'move';
+                                    }
+                                })
+                                .on('drop', function (evt) {
+                                    var $this = $(this);
+                                    var $parent = $(this.parentNode);
+
+                                    hasDropped = true;
+                                    $parent.removeClass('drop');
+
+                                    // Remove drag overlays
+                                    $parent.closest('.style-entries-panel-table').find('.drag-overlay').remove();
+
+                                    // TODO : Move our entry
+                                }));
+                    });
                 })
                 .on('dragend', function (evt) {
+                    var $this = $(this);
+
                     var event = evt.originalEvent;
                     event.stopPropagation();
+
+                    // Remove drag overlays
+                    $this.closest('.style-entries-panel-table').find('.drag-overlay').remove();
 
                     // Delete our entry when not dropped
                     if (!hasDropped) {
@@ -1037,34 +1081,7 @@
                     dragRow = null;
                     hasDropped = false;
                 })
-                .on('dragenter', function (evt) {
-                    if (_canDrop(dragRow, this)) {
-                        this.className = 'drop';
-                    }
-                })
-                .on('dragleave', function (evt) {
-                    if (_canDrop(dragRow, this)) {
-                        this.className = '';
-                    }
-                })
-                .on('dragover', function (evt) {
-                    var event = evt.originalEvent;
-
-                    // always allow dragover, also
-                    // on ourself, we'll check in drop
-                    event.preventDefault();
-                    event.stopPropagation();
-                })
-                .on('drop', function (evt) {
-                    hasDropped = true;
-
-                    if (_canDrop(dragRow, this)) {
-                        this.className = '';
-
-                        // TODO : Move our entry
-                    }
-                })
-                .append($('<td></td>')
+                .append($('<div></div>')
                     .addClass('visibility')
                     .append($('<span></span>')
                         // TODO : I18N
@@ -1073,7 +1090,7 @@
                             // TODO : Undo + Redo + Apply to all
                             entry.setProperty('vs', !entry.getProperty('vs'));
                         })))
-                .append($('<td></td>')
+                .append($('<div></div>')
                     .addClass('contents')
                     .append(contents))
                 .appendTo(table);
@@ -1127,7 +1144,7 @@
         var table = panel.find('.style-entries-panel-table');
 
         var result = null;
-        table.find('tr').each(function (index, element) {
+        table.find('> div').each(function (index, element) {
             var $element = $(element);
             if ($element.data('entry') === entry) {
                 result = $element;

@@ -29,7 +29,7 @@
       border-top: 1px solid $frame3DLightColor;
     }
 
-    > div {
+    > div:not(.drag-overlay) {
       display: table-cell;
       vertical-align: middle;
       padding: 4px 3px;
@@ -37,21 +37,21 @@
       &, * {
         cursor: pointer;
       }
-    }
 
-    > div:first-child {
-      padding-left: 5px;
-    }
+      &:first-child {
+        padding-left: 5px;
+      }
 
-    > div:last-child {
-      padding-right: 5px;
-    }
+      &:last-child {
+        padding-right: 5px;
+      }
 
-    > .page-name {
-      width: 100%;
+      &.page-name {
+        width: 100%;
 
-      &, * {
-        cursor: default;
+        &, * {
+          cursor: default;
+        }
       }
     }
 
