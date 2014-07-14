@@ -1384,7 +1384,8 @@
                         } else { // case 2, construct arc
                             var arc = this._constructJoinArc(segm1, segm2, true);
                             polyONew.insertSegment(arc);
-                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(segm2.point, 0));
+                            polyONew.insertSegment(new IFVertexOffsetter.PolySegment(
+                                segm2.point, segm2.bulge, segm2.center, segm2.radius));
                         }
                     } else if (segm1.bulge != 0 && segm2.bulge == 0) { // Arc segment and line segment: use Algorithm 3
                         if (iRes.point) { // case 1
