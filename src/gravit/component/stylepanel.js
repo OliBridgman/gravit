@@ -186,7 +186,7 @@
                     updateSelectedStyle($this, style);
                 })
                 .on('click', function () {
-                    self.trigger('stylechange', style);
+                    $this.trigger('stylechange', style);
                 });
 
             if (data.options.allowNameEdit && style instanceof IFSharedStyle) {
@@ -214,7 +214,7 @@
                         dragStyle = $(this).data('style');
 
                         if (data.options.allowDrag) {
-                            self.trigger('styledragstart', style);
+                            $this.trigger('styledragstart', style);
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
@@ -237,9 +237,9 @@
 
                             if (x <= offset.left || x >= offset.left + width ||
                                 y <= offset.top || y >= offset.top + height) {
-                                self.trigger('styledragaway', style);
+                                $this.trigger('styledragaway', style);
                             } else {
-                                self.trigger('styledragend', style);
+                                $this.trigger('styledragend', style);
                             }
                         }
                     });
@@ -289,9 +289,9 @@
                                 }, ifPlatform.modifiers.shiftKey ? 'Duplicate Style' : 'Move Style');
                             }
 
-                            self.trigger('stylemove', [dragStyle, targetStyle]);
+                            $this.trigger('stylemove', [dragStyle, targetStyle]);
                         } else if (data.options.allowDrop) {
-                            self.trigger('styledrop', [dragStyle, targetStyle, ]);
+                            $this.trigger('styledrop', [dragStyle, targetStyle, ]);
                         }
                     });
             }
@@ -342,7 +342,7 @@
 
                     if (style === data.selected) {
                         data.selected = null;
-                        self.trigger('stylechange', null);
+                        $this.trigger('stylechange', null);
                     }
 
                     updatePlaceholder($this);

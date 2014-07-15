@@ -188,7 +188,7 @@
                         .on('click', function () {
                             $this.data('gswatchpanel').selected = null;
                             updateSelectedSwatch($this, null);
-                            self.trigger('swatchchange', null);
+                            $this.trigger('swatchchange', null);
                         })
                         .appendTo($this);
                 }
@@ -246,7 +246,7 @@
                     updateSelectedSwatch($this, swatch);
                 })
                 .on('click', function () {
-                    self.trigger('swatchchange', swatch);
+                    $this.trigger('swatchchange', swatch);
                 });
 
             if (data.options.allowNameEdit) {
@@ -279,7 +279,7 @@
                         }
 
                         if (data.options.allowDrag) {
-                            self.trigger('swatchdragstart', dragSwatch);
+                            $this.trigger('swatchdragstart', dragSwatch);
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
@@ -302,9 +302,9 @@
 
                             if (x <= offset.left || x >= offset.left + width ||
                                 y <= offset.top || y >= offset.top + height) {
-                                self.trigger('swatchdragaway', swatch);
+                                $this.trigger('swatchdragaway', swatch);
                             } else {
-                                self.trigger('swatchdragend', swatch);
+                                $this.trigger('swatchdragend', swatch);
                             }
                         }
                     });
@@ -347,9 +347,9 @@
                                     }, 'Move Swatch');
                                 }
 
-                                self.trigger('swatchmove', [dragSwatch, targetSwatch]);
+                                $this.trigger('swatchmove', [dragSwatch, targetSwatch]);
                             } else if (data.options.allowDrop) {
-                                self.trigger('swatchdrop', [dragSwatch, targetSwatch]);
+                                $this.trigger('swatchdrop', [dragSwatch, targetSwatch]);
                             }
                         }
                     });
@@ -398,7 +398,7 @@
 
                     if (swatch === data.selected) {
                         data.selected = null;
-                        self.trigger('swatchchange', null);
+                        $this.trigger('swatchchange', null);
                     }
 
                     updatePlaceholder($this);
