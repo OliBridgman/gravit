@@ -22,6 +22,10 @@
 
         // Initialize our layers
         this._initLayers();
+
+        // Subscribe to some scene events
+        scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
     }
 
     IFObject.inherit(IFView, GUIWidget);
@@ -384,7 +388,7 @@
 
         return layer;
     };
-    
+
     /**
      * Retrieve a layer
      * @param {IFViewLayer} layerClass
@@ -427,6 +431,49 @@
      */
     IFView.prototype._initLayers = function () {
         this.addLayer(new IFSceneLayer(this));
+    };
+
+    /**
+     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    IFView.prototype._afterPropertiesChange = function (event) {
+        // Handle single page mode change
+        if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
+            // Zoom active page if set to singlePage
+            if (this._scene.getProperty('singlePage')) {
+                var activePage = this._scene.getActivePage();
+                if (activePage) {
+                    var pageBBox = activePage.getPaintBBox();
+                    if (pageBBox && !pageBBox.isEmpty()) {
+                        this.zoomAll(pageBBox, false);
+                    }
+                }
+            }
+
+            // Invalidate all in any case
+            this.invalidate();
+        }
+    };
+
+    /**
+     * @param {IFNode.AfterFlagChangeEvent} event
+     * @private
+     */
+    IFView.prototype._afterFlagChange = function (event) {
+        // Handle single page mode and active page changing
+        if (this._scene.getProperty('singlePage') === true) {
+            if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active) {
+                this.invalidate();
+
+                if (event.set) {
+                    var pageBBox = event.node.getPaintBBox();
+                    if (pageBBox && !pageBBox.isEmpty()) {
+                        this.zoomAll(pageBBox, false);
+                    }
+                }
+            }
+        }
     };
 
     /** @override */

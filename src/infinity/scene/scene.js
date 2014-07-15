@@ -53,7 +53,9 @@
         /** The vertical grid size */
         gridSizeY: 10,
         /** Whether the grid is active or not */
-        gridActive: false
+        gridActive: false,
+        /** Whether to use single or multi page mode */
+        singlePage: true
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -298,6 +300,70 @@
     };
 
     /**
+     * Returns the currently active page if any or null
+     * @return {IFPage}
+     */
+    IFScene.prototype.getActivePage = function () {
+        // TODO : Cache result
+        return this.querySingle('page:active');
+    };
+
+    /**
+     * Assigns a currently active page
+     * @param {IFPage} page the page made active
+     */
+    IFScene.prototype.setActivePage = function (page) {
+        if (!page.isAttached()) {
+            throw new Error('Page needs to be attached to be made active.');
+        }
+
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFPage) {
+                if (child === page) {
+                    child.setFlag(IFNode.Flag.Active);
+                } else {
+                    child.removeFlag(IFNode.Flag.Active);
+                }
+            }
+        }
+    };
+
+    /**
+     * Returns the currently active layer if any or null
+     * @return {IFLayer}
+     */
+    IFScene.prototype.getActiveLayer = function () {
+        // TODO : Cache result
+        return this.querySingle('page:active layer:active');
+    };
+
+    /**
+     * Assigns a currently active layer, this may also switch
+     * the currently active page
+     * @param {IFLayer} layer the layer made active
+     */
+    IFScene.prototype.setActiveLayer = function (layer) {
+        if (!layer.isAttached()) {
+            throw new Error('Layer needs to be attached to be made active.');
+        }
+
+        // Make sure to activate parent page of layer, first
+        var layerPage = layer.getPage();
+        this.setActivePage(layerPage);
+
+        // Now activate the layer
+        layerPage.acceptChildren(function (node) {
+            if (node instanceof IFLayer) {
+                if (child === layer) {
+                    child.setFlag(IFNode.Flag.Active);
+                } else {
+                    child.removeFlag(IFNode.Flag.Active);
+                }
+            }
+        });
+    };
+
+    /**
      * Returns a point for a new page to be inserted
      * @returns {GPoint}
      */
@@ -437,14 +503,21 @@
     };
 
     /** @override */
-    IFScene.prototype._handleChange = function (change, args) {
-        // Handle some properties that require an invalidation of the scene
-        if (change == IFNode._Change.AfterPropertiesChange) {
-            if (args.properties.indexOf('unit') >= 0) {
-                this._invalidateArea();
+    IFElement.prototype._renderChildren = function (context) {
+        for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
+            if (node instanceof IFPage) {
+                // Handle single-page mode if set
+                if (!this.$singlePage || node.hasFlag(IFNode.Flag.Active)) {
+                    node.render(context);
+                }
+            } else if (node instanceof IFElement) {
+                node.render(context);
             }
         }
+    };
 
+    /** @override */
+    IFScene.prototype._handleChange = function (change, args) {
         IFElement.prototype._handleChange.call(this, change, args);
     };
 

@@ -54,7 +54,7 @@
     GInsertLayerAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
         var scene = editor.getScene();
-        var target = editor.getCurrentLayer() || editor.getCurrentLayer() || editor.getScene();
+        var target = scene.getActiveLayer() || scene.getActivePage();
         var layer = new IFLayer();
         layer.setProperties([
             'name'
@@ -66,7 +66,7 @@
         editor.beginTransaction();
         try {
             target.appendChild(layer);
-            editor.setCurrentLayer(layer);
+            scene.setActiveLayer(layer);
         } finally {
             // TODO : I18N
             editor.commitTransaction('Insert Layer');

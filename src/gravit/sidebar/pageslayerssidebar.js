@@ -290,8 +290,6 @@
             });
         }
 
-        var index = page.getParent().getIndexOfChild(page);
-
         var block = $('<div></div>')
             .addClass('page-block')
             .data('page', page)
@@ -340,7 +338,7 @@
                 // TODO
             })
             .on('click', function () {
-                //
+                page.getScene().setActivePage(page);
             })
             .on('dragstart', function (evt) {
                 var $this = $(this);

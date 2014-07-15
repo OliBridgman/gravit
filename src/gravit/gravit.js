@@ -251,6 +251,7 @@
             new GPaintModeAction(IFScenePaintConfiguration.PaintMode.Output),
 
             new GPixelPreviewAction(),
+            new GShowAllPagesAction(),
 
             new GShowRulersAction(),
 

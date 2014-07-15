@@ -46,7 +46,7 @@
      */
     GFitCurrentLayerAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        var activeLayer = document ? document.getEditor().getCurrentLayer() : null;
+        var activeLayer = document ? document.getScene().getActiveLayer() : null;
 
         return (activeLayer && activeLayer.getPaintBBox() && !activeLayer.getPaintBBox().isEmpty());
     };
@@ -56,7 +56,8 @@
      */
     GFitCurrentLayerAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
-        document.getActiveWindow().getView().zoomAll(document.getEditor().getCurrentLayer().getPaintBBox(), false);
+        var activeLayer = document.getScene().getActiveLayer();
+        document.getActiveWindow().getView().zoomAll(activeLayer.getPaintBBox(), false);
     };
 
     /** @override */

@@ -42,30 +42,21 @@
     };
 
     /**
-     * @param {IFScene} [scene] specific scene to add pages to,
-     * if not provided (default), takes the active document
      * @override
      */
-    GInsertPagesAction.prototype.isEnabled = function (scene) {
-        var scene = scene ? scene : gApp.getActiveDocument() ? gApp.getActiveDocument().getScene() : null;
-        return !!scene;
+    GInsertPagesAction.prototype.isEnabled = function () {
+        return !!gApp.getActiveDocument();
     };
 
     /**
-     * @param {IFScene} [scene] specific scene to add pages to,
-     * if not provided (default), takes the active document
-     * @param {Function} [done] if provided, this callback will be
-     * called when the user has setup the page(s)
      * @override
      */
-    GInsertPagesAction.prototype.execute = function (scene, done) {
-        var scene = scene || gApp.getActiveDocument().getScene();
+    GInsertPagesAction.prototype.execute = function () {
+        var scene = gApp.getActiveDocument().getScene();
         var insertPos = scene.getPageInsertPosition();
 
         // Create page
         var page = new IFPage();
-
-        // Assign page properties
         page.setProperties([
             'name',
             'x',
@@ -80,12 +71,15 @@
             600
         ]);
 
-        // Append child and be done with it
-        scene.appendChild(page);
+        // Add default layer
+        var layer = new IFLayer();
+        // TODO : I18N
+        layer.setProperties(['name'], ['Background']);
+        page.appendChild(layer);
 
-        if (done) {
-            done();
-        }
+        // Append page and mark it active
+        scene.appendChild(page);
+        scene.setActivePage(page);
     };
 
     /** @override */

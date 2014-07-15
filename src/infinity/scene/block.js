@@ -40,6 +40,32 @@
         return this.getNodeNameTranslated();
     };
 
+    /**
+     * Returns the owner page of this block if any
+     * @return {IFPage}
+     */
+    IFBlock.prototype.getPage = function () {
+        for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
+            if (parent instanceof IFPage) {
+                return parent;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Returns the owner layer of this block if any
+     * @return {IFLayer}
+     */
+    IFBlock.prototype.getPage = function () {
+        for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
+            if (parent instanceof IFLayer) {
+                return parent;
+            }
+        }
+        return null;
+    };
+
     /** @override */
     IFBlock.prototype.store = function (blob) {
         if (IFNode.Store.prototype.store.call(this, blob)) {

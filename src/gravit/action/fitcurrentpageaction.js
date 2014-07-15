@@ -53,7 +53,7 @@
      */
     GFitCurrentPageAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        var currentPage = document ? document.getEditor().getCurrentPage() : null;
+        var currentPage = document ? document.getScene().getActivePage() : null;
 
         return (currentPage && currentPage.getPaintBBox() && !currentPage.getPaintBBox().isEmpty());
     };
@@ -63,7 +63,8 @@
      */
     GFitCurrentPageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
-        document.getActiveWindow().getView().zoomAll(document.getEditor().getCurrentPage().getPaintBBox(), false);
+        var currentPage = document.getScene().getActivePage();
+        document.getActiveWindow().getView().zoomAll(currentPage.getPaintBBox(), false);
     };
 
     /** @override */

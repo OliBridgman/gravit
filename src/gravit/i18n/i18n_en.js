@@ -37,6 +37,7 @@ ifLocale.setValues(GSaveAction, IFLocale.Language.English, ["title"], ["Save"]);
 ifLocale.setValues(GSaveAllAction, IFLocale.Language.English, ["title"], ["Save All"]);
 ifLocale.setValues(GSaveAsAction, IFLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
 ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Rulers"]);
+ifLocale.setValues(GShowAllPagesAction, IFLocale.Language.English, ["title"], ["All Pages"]);
 ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungroup Selection"]);
 ifLocale.setValues(GZoomInAction, IFLocale.Language.English, ["title"], ["Zoom in"]);

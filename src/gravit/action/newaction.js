@@ -52,22 +52,11 @@
      * @override
      */
     GNewAction.prototype.execute = function () {
-        // Create Scene
+        // Create scene, add it and call insert page to insert a default page
         var scene = new IFScene();
         scene.setProperty('unit', IFLength.Unit.PX);
-
-        // Execute insert pages action
-        gApp.executeAction(GInsertPagesAction.ID, [scene, function () {
-            // Add scene as document
-            gApp.addDocument(scene);
-            var document = gApp.getActiveDocument();
-
-            // TODO
-            // Center page
-            gApp.executeAction(GOriginalViewAction.ID);
-            //var view = document.getActiveWindow();
-            //view.zoomAtCenter(page.getPaintBBox().getSide(GRect.Side.CENTER));
-        }]);
+        gApp.addDocument(scene);
+        gApp.executeAction(GInsertPagesAction.ID);
     };
 
     /** @override */

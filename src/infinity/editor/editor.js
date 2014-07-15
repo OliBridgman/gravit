@@ -29,12 +29,6 @@
                 this._tryAddToSelection(selectedNodes[i]);
             }
         }
-
-        // Mark first found page on scene as current if there's any
-        var firstPage = this._scene.querySingle('page');
-        if (firstPage) {
-            this.setCurrentPage(firstPage);
-        }
     };
     IFObject.inherit(IFEditor, GEventTarget);
 
@@ -81,52 +75,6 @@
                 editor.commitTransaction(name);
             }
         }
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.CurrentLayerChangedEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever the current layer has been changed
-     * @class IFEditor.CurrentLayerChangedEvent
-     * @extends GEvent
-     * @constructor
-     * @version 1.0
-     */
-    IFEditor.CurrentLayerChangedEvent = function (previousLayer) {
-        this.previousLayer = previousLayer;
-    };
-    IFObject.inherit(IFEditor.CurrentLayerChangedEvent, GEvent);
-
-    /** @type {IFLayer} */
-    IFEditor.CurrentLayerChangedEvent.prototype.previousLayer = null;
-
-    /** @override */
-    IFEditor.CurrentLayerChangedEvent.prototype.toString = function () {
-        return "[Event IFEditor.CurrentLayerChangedEvent]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.CurrentPageChangedEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever the current page has been changed
-     * @class IFEditor.CurrentPageChangedEvent
-     * @extends GEvent
-     * @constructor
-     * @version 1.0
-     */
-    IFEditor.CurrentPageChangedEvent = function (previousPage) {
-        this.previousPage = previousPage;
-    };
-    IFObject.inherit(IFEditor.CurrentPageChangedEvent, GEvent);
-
-    /** @type {IFPage} */
-    IFEditor.CurrentPageChangedEvent.prototype.previousPage = null;
-
-    /** @override */
-    IFEditor.CurrentPageChangedEvent.prototype.toString = function () {
-        return "[Event IFEditor.CurrentPageChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -288,18 +236,6 @@
      * @private
      */
     IFEditor.prototype._currentInlineEditorNode = null;
-
-    /**
-     * @type {IFPage}
-     * @private
-     */
-    IFEditor.prototype._currentPage = null;
-
-    /**
-     * @type {IFLayer}
-     * @private
-     */
-    IFEditor.prototype._currentLayer = null;
     /**
      * @returns {IFScene}
      */
@@ -363,85 +299,6 @@
      */
     IFEditor.prototype.getGuides = function () {
         return this._guides;
-    };
-
-    /**
-     * Return the currently active page if any
-     * @return {IFPage}
-     */
-    IFEditor.prototype.getCurrentPage = function () {
-        return this._currentPage;
-    };
-
-    /**
-     * Set the currently active page
-     * @param {IFPage} page
-     */
-    IFEditor.prototype.setCurrentPage = function (page) {
-        if (page !== this._currentPage) {
-            if (this._currentPage) {
-                this._currentPage.removeFlag(IFNode.Flag.Active);
-            }
-
-            var previousPage = this._currentPage;
-            this._currentPage = page;
-
-            if (this._currentPage) {
-                this._currentPage.setFlag(IFNode.Flag.Active);
-            }
-
-            if (this.hasEventListeners(IFEditor.CurrentPageChangedEvent)) {
-                this.trigger(new IFEditor.CurrentPageChangedEvent(previousPage));
-            }
-        }
-    };
-
-    /**
-     * Return the currently active layer if any
-     * @return {IFLayer}
-     */
-    IFEditor.prototype.getCurrentLayer = function () {
-        return this._currentLayer;
-    };
-
-    /**
-     * Set the currently active layer and moves the current
-     * selection into the new current layer
-     *
-     * @param {IFLayer} layer
-     */
-    IFEditor.prototype.setCurrentLayer = function (layer) {
-        if (layer !== this._currentLayer) {
-            var previousLayer = this._currentLayer;
-
-            this._currentLayer = layer;
-
-            if (this._selection && this._currentLayer) {
-                // Transfer all selected elements to the new layer if
-                // they've resisted on the previous layer
-                // TODO : Undo Group
-
-                // Save selection in the order of the model
-                var modelSelection = this._scene.queryAll(':selected');
-
-                // Clear our internal selection
-                this.clearSelection();
-
-                // Transfer the selection to the new layer
-                for (var i = 0; i < modelSelection.length; ++i) {
-                    var selNode = modelSelection[i];
-                    selNode.getParent().removeChild(selNode);
-                    this._currentLayer.appendChild(selNode);
-                }
-
-                // Finally re-select again
-                this.updateSelection(false, modelSelection);
-            }
-
-            if (this.hasEventListeners(IFEditor.CurrentLayerChangedEvent)) {
-                this.trigger(new IFEditor.CurrentLayerChangedEvent(previousLayer));
-            }
-        }
     };
 
     /**
@@ -831,7 +688,10 @@
      */
     IFEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
-        var target = this.getCurrentPage();// this.getCurrentLayer();
+        var target = this._scene.querySingle('page:active layer:active');
+        if (!target) {
+            throw new Error('No active page/layer.');
+        }
 
         if (!noTransaction) {
             this.beginTransaction();
@@ -865,19 +725,29 @@
 
     /**
      * Does various work when the mouse was pressed somewhere to update for
-     * example the currently active page
+     * example the currently active page. Does nothing on single page mode
      * @param {GPoint} position the mouse position
      * @param {GTransform} transform optional transformation for the position
      */
     IFEditor.prototype.updateByMousePosition = function (position, transformation) {
-        // TODO : Make this more efficient than hit-testing everything (aka iterate pages instead)
-        // Try to update the active page under mouse if any
-        var pageHits = this._scene.hitTest(position, transformation, function (hit) {
-            return hit instanceof IFPage;
-        }.bind(this), false, 1/*one level deep only*/);
+        if (this._scene.getProperty('singlePage') === false) {
+            // TODO : Make this more efficient than hit-testing everything (aka iterate pages instead)
+            // Try to update the active page under mouse if any
+            var pageHits = this._scene.hitTest(position, transformation, function (hit) {
+                return hit instanceof IFPage;
+            }.bind(this), false, 1/*one level deep only*/);
 
-        if (pageHits && pageHits.length === 1) {
-            this.setCurrentPage(pageHits[0].element);
+            if (pageHits && pageHits.length === 1) {
+                for (var child = this._scene.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFPage) {
+                        if (child === pageHits[0].element) {
+                            child.setFlag(IFNode.Flag.Active);
+                        } else {
+                            child.removeFlag(IFNode.Flag.Active);
+                        }
+                    }
+                }
+            }
         }
     };
 
@@ -904,12 +774,12 @@
         for (var i = 0; i < data.actions.length; ++i) {
             data.actions[i].action();
         }
-        
+
         this._loadSelection(data.newSelection);
-        
+
         if (data.newTransformBox || this._transformBox != data.newTransformBox) {
             this._transformBox = data.newTransformBox;
-            
+
             if (data.newTransformBox) {
                 this.updateSelectionTransformBox();
             }
@@ -921,12 +791,12 @@
         for (var i = data.actions.length - 1; i >= 0; --i) {
             data.actions[i].revert();
         }
-        
+
         this._loadSelection(data.selection);
-        
+
         if (data.transformBox || this._transformBox != data.transformBox) {
             this._transformBox = data.transformBox;
-            
+
             if (data.transformBox) {
                 this.updateSelectionTransformBox();
             }
@@ -1185,11 +1055,6 @@
 
         // Try to add newly inserted node into internal selection
         this._tryAddToSelection(evt.node);
-
-        // If page and we don't have a current one yet, mark it active now
-        if (evt.node instanceof IFPage && !this._currentPage) {
-            this.setCurrentPage(evt.node);
-        }
     };
 
     /**
@@ -1223,21 +1088,6 @@
             } else {
                 // Otherwise try to close any editors the node may have
                 this._closeEditor(evt.node);
-            }
-        }
-
-        // Handle removing the current page or layer
-        // by activating another one
-        if (this._currentPage && evt.node === this._currentPage) {
-            // Get a flat list of pages and select next/previous one
-            var allPages = this._scene.queryAll('page');
-            var pageIndex = allPages.indexOf(evt.node);
-            if (pageIndex > 0) {
-                this.setCurrentPage(allPages[pageIndex - 1]);
-            } else if (pageIndex + 1 < allPages.length) {
-                this.setCurrentPage(allPages[pageIndex + 1]);
-            } else {
-                throw new Error('Unexpected: No page available.');
             }
         }
     };

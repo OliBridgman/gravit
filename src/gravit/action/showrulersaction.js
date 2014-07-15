@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GShowRulersAction, GUIAction);
 
-    GShowRulersAction.ID = 'view.show.rulers';
+    GShowRulersAction.ID = 'view.show-rulers';
     GShowRulersAction.TITLE = new IFLocale.Key(GShowRulersAction, "title");
 
     /**
@@ -38,7 +38,7 @@
      * @override
      */
     GShowRulersAction.prototype.getGroup = function () {
-        return "guides";
+        return "show";
     };
 
     /**

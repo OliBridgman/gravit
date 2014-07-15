@@ -4,13 +4,14 @@
      * @class IFPage
      * @extends IFBlock
      * @mixes IFNode.Container
+     * @mixes IFNode.Reference
      * @constructor
      */
     function IFPage() {
         IFBlock.call(this);
         this._setDefaultProperties(IFPage.GeometryProperties, IFPage.VisualProperties);
     };
-    IFNode.inheritAndMix("page", IFPage, IFBlock, [IFNode.Container]);
+    IFNode.inheritAndMix("page", IFPage, IFBlock, [IFNode.Container, IFNode.Reference]);
 
     /**
      * The geometry properties of a page with their default values

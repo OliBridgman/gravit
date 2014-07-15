@@ -23,9 +23,10 @@
         }
 
         // We'll leave our canvas in view coordinates for the background
+        var singlePage = this._view.getScene().getProperty('singlePage');
         var transform = this._view.getWorldTransform();
         for (var node = this._view.getScene().getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof IFPage && node.isRenderable(context)) {
+            if (node instanceof IFPage && node.isRenderable(context) && (!singlePage || node.hasFlag(IFNode.Flag.Active))) {
                 this._renderPage(context, transform, node);
             }
         }
