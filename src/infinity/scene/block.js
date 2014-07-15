@@ -57,7 +57,7 @@
      * Returns the owner layer of this block if any
      * @return {IFLayer}
      */
-    IFBlock.prototype.getPage = function () {
+    IFBlock.prototype.getLayer = function () {
         for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
             if (parent instanceof IFLayer) {
                 return parent;

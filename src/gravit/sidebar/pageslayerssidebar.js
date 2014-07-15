@@ -106,15 +106,7 @@
                 // TODO : I18N
                 .attr('title', 'Add Page')
                 .on('click', function () {
-                    /* TODO
-                     var swatch = this._swatchPanel.gSwatchPanel('value');
-                     var editor = this._document.getEditor();
-                     editor.beginTransaction();
-                     try {
-                     swatch.getParent().removeChild(swatch);
-                     } finally {
-                     editor.commitTransaction('Delete Swatch');
-                     }*/
+                    gApp.executeAction(GAddPageAction.ID);
                 }.bind(this));
 
         this._pageDeleteControl =
@@ -175,15 +167,7 @@
                 // TODO : I18N
                 .attr('title', 'Add Layer')
                 .on('click', function () {
-                    /* TODO
-                     var swatch = this._swatchPanel.gSwatchPanel('value');
-                     var editor = this._document.getEditor();
-                     editor.beginTransaction();
-                     try {
-                     swatch.getParent().removeChild(swatch);
-                     } finally {
-                     editor.commitTransaction('Delete Swatch');
-                     }*/
+                    gApp.executeAction(GAddLayerAction.ID);
                 }.bind(this));
 
         this._layerDeleteControl =

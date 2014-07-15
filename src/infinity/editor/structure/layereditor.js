@@ -18,7 +18,7 @@
         // Setup outline colors if we have a color
         var oldSelOutlineColor = context.selectionOutlineColor;
         var layerColor = this._element.getProperty('cls');
-        context.selectionOutlineColor = layerColor.asRGBInt();
+        context.selectionOutlineColor = layerColor;
 
         // Call super
         IFBlockEditor.prototype.paint.call(this, transform, context);

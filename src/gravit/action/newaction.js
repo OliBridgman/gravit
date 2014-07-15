@@ -52,11 +52,11 @@
      * @override
      */
     GNewAction.prototype.execute = function () {
-        // Create scene, add it and call insert page to insert a default page
+        // Create scene, add it and call add page to insert a default page
         var scene = new IFScene();
         scene.setProperty('unit', IFLength.Unit.PX);
         gApp.addDocument(scene);
-        gApp.executeAction(GInsertPagesAction.ID);
+        gApp.executeAction(GAddPageAction.ID, [true]);
     };
 
     /** @override */

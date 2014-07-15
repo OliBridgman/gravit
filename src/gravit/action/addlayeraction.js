@@ -2,56 +2,56 @@
 
     /**
      * Action for inserting a layer
-     * @class GInsertLayerAction
+     * @class GAddLayerAction
      * @extends GUIAction
      * @constructor
      */
-    function GInsertLayerAction() {
+    function GAddLayerAction() {
     };
-    IFObject.inherit(GInsertLayerAction, GUIAction);
+    IFObject.inherit(GAddLayerAction, GUIAction);
 
-    GInsertLayerAction.ID = 'modify.insert-layer';
-    GInsertLayerAction.TITLE = new IFLocale.Key(GInsertLayerAction, "title");
+    GAddLayerAction.ID = 'modify.add-layer';
+    GAddLayerAction.TITLE = new IFLocale.Key(GAddLayerAction, "title");
 
     /**
      * @override
      */
-    GInsertLayerAction.prototype.getId = function () {
-        return GInsertLayerAction.ID;
-    };
-
-    /**
-     * @override
-     */
-    GInsertLayerAction.prototype.getTitle = function () {
-        return GInsertLayerAction.TITLE;
+    GAddLayerAction.prototype.getId = function () {
+        return GAddLayerAction.ID;
     };
 
     /**
      * @override
      */
-    GInsertLayerAction.prototype.getCategory = function () {
+    GAddLayerAction.prototype.getTitle = function () {
+        return GAddLayerAction.TITLE;
+    };
+
+    /**
+     * @override
+     */
+    GAddLayerAction.prototype.getCategory = function () {
         return GApplication.CATEGORY_MODIFY;
     };
 
     /**
      * @override
      */
-    GInsertLayerAction.prototype.getGroup = function () {
-        return "insert";
+    GAddLayerAction.prototype.getGroup = function () {
+        return "layer";
     };
 
     /**
      * @override
      */
-    GInsertLayerAction.prototype.isEnabled = function () {
+    GAddLayerAction.prototype.isEnabled = function () {
         return !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
-    GInsertLayerAction.prototype.execute = function () {
+    GAddLayerAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
         var scene = editor.getScene();
         var target = scene.getActiveLayer() || scene.getActivePage();
@@ -69,14 +69,14 @@
             scene.setActiveLayer(layer);
         } finally {
             // TODO : I18N
-            editor.commitTransaction('Insert Layer');
+            editor.commitTransaction('Add Layer');
         }
     };
 
     /** @override */
-    GInsertLayerAction.prototype.toString = function () {
-        return "[Object GInsertLayerAction]";
+    GAddLayerAction.prototype.toString = function () {
+        return "[Object GAddLayerAction]";
     };
 
-    _.GInsertLayerAction = GInsertLayerAction;
+    _.GAddLayerAction = GAddLayerAction;
 })(this);

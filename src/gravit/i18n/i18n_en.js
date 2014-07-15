@@ -6,6 +6,8 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, ["category.window", 
     ["Window", "File", "File/Open", "File/Save As", "File/Import", "File/Export", "Edit", "Modify", "View", "View/Magnification", "Help"]);
 
 // Action
+ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
+ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
@@ -21,8 +23,6 @@ ifLocale.setValues(GFitCurrentPageAction, IFLocale.Language.English, ["title"], 
 ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["Fit Selection"]);
 ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
 ifLocale.setValues(GImportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
-ifLocale.setValues(GInsertLayerAction, IFLocale.Language.English, ["title"], ["Insert Layer"]);
-ifLocale.setValues(GInsertPagesAction, IFLocale.Language.English, ["title"], ["Insert Page(s)..."]);
 ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);

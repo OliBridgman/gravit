@@ -354,10 +354,10 @@
         // Now activate the layer
         layerPage.acceptChildren(function (node) {
             if (node instanceof IFLayer) {
-                if (child === layer) {
-                    child.setFlag(IFNode.Flag.Active);
+                if (node === layer) {
+                    node.setFlag(IFNode.Flag.Active);
                 } else {
-                    child.removeFlag(IFNode.Flag.Active);
+                    node.removeFlag(IFNode.Flag.Active);
                 }
             }
         });

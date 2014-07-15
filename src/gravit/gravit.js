@@ -225,8 +225,8 @@
             new GGroupAction(),
             new GUngroupAction(),
 
-            new GInsertPagesAction(),
-            //new GInsertLayerAction(),
+            new GAddPageAction(),
+            new GAddLayerAction(),
 
             // View
             new GOriginalViewAction(),
