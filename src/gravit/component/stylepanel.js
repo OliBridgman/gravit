@@ -138,7 +138,7 @@
                         .on('click', function () {
                             $this.data('gstylepanel').selected = null;
                             updateSelectedStyle($this, null);
-                            self.trigger('stylechange', null);
+                            $this.trigger('stylechange', null);
                         })
                         .appendTo($this);
                 }
