@@ -2,6 +2,9 @@
 
     /**
      * The transform box to transform multiple elements
+     * @param {GRect} bbox - selection bounding box
+     * @param {Number} cx - the x coordinate of the transform bbox center (optional)
+     * @param {Number} cy - the y coordinate of the transform bbox center (optional)
      * @class IFTransformBox
      * @extends IFElement
      * @mixes IFElement.Transform
@@ -9,7 +12,7 @@
      * @mixes IFVertexSource
      * @constructor
      */
-    function IFTransformBox(bbox) {
+    function IFTransformBox(bbox, cx, cy) {
         IFItem.call(this);
         this._setDefaultProperties(IFTransformBox.GeometryProperties);
         var tl = bbox.getSide(GRect.Side.TOP_LEFT);
@@ -25,8 +28,8 @@
         this.$blx = bl.getX();
         this.$bly = bl.getY();
         this._vertices = new IFVertexContainer();
-        this.$cx = (this.$tlx + this.$brx) / 2;
-        this.$cy = (this.$tly + this.$bry) / 2;
+        this.$cx = cx ? cx : (this.$tlx + this.$brx) / 2;
+        this.$cy = cy ? cy : (this.$tly + this.$bry) / 2;
     }
     IFObject.inherit(IFTransformBox, IFItem);
 
@@ -44,7 +47,8 @@
         blx: null,
         bly: null,
         cx: null,
-        cy: null
+        cy: null,
+        cTrf: null
     };
 
     /**
@@ -132,7 +136,6 @@
         return this._vertices.readVertex(vertex);
     };
 
-
     /** @override */
     IFTransformBox.prototype._calculateGeometryBBox = function () {
         return ifVertexInfo.calculateBounds(this, true);
@@ -142,8 +145,16 @@
     IFTransformBox.prototype._calculatePaintBBox = function () {
         var bbox = this._calculateGeometryBBox();
         if (bbox) {
-            return bbox.expanded(IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE,
+            bbox = bbox.expanded(IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE,
                 IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE);
+
+            var annotBBox = ifAnnotation.getAnnotationBBox(null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
+                IFTransformBox.ANNOT_SIZE);
+            if (annotBBox) {
+                bbox = bbox.united(annotBBox);
+            }
+
+            return bbox;
         }
 
         return null;
@@ -213,6 +224,14 @@
     };
 
     /**
+     * Sets the transformation for transform box center only
+     * @param {GTransform} transform
+     */
+    IFTransformBox.prototype.setCenterTransform = function (transform) {
+        this.setProperty('cTrf', transform);
+    };
+
+    /**
      * Called whenever information about a part at a given location shall be returned
      * @param {GPoint} location the location to get a part for in view coordinates
      * @param {GTransform} transform the current transformation of the view
@@ -271,22 +290,21 @@
      * @returns {GTransform}
      */
     IFTransformBox.prototype.calculateTransformation = function (partInfo, startPtTr, endPtTr, guides, option, ratio) {
+        var deltaTr = endPtTr.subtract(startPtTr);
+        var dx = deltaTr.getX();
+        var dy = deltaTr.getY();
+
+        var _snap = function (x, y, snapX, snapY) {
+            var pt = guides.mapPoint(new GPoint(x + dx, y + dy));
+            if (snapX) {
+                dx = pt.getX() - x;
+            }
+            if (snapY) {
+                dy = pt.getY() - y;
+            }
+        }.bind(this);
+
         if (partInfo.id < 8) {
-            var pt = null;
-            var deltaTr = endPtTr.subtract(startPtTr);
-            var dx = deltaTr.getX();
-            var dy = deltaTr.getY();
-
-            var _snap = function (x, y, snapX, snapY) {
-                var pt = guides.mapPoint(new GPoint(x + dx, y + dy));
-                if (snapX) {
-                    dx = pt.getX() - x;
-                }
-                if (snapY) {
-                    dy = pt.getY() - y;
-                }
-            }.bind(this);
-
             var transform1 = null;
             var transform3 = null;
             var width = this.$brx - this.$tlx;
@@ -422,33 +440,26 @@
             var transform2 = new GTransform(scaleX, 0, 0, scaleY, 0, 0);
 
             return transform1.multiplied(transform2).multiplied(transform3);
+        } else if (partInfo.id == IFTransformBox.Handles.ROTATION_CENTER) {
+            _snap(this.$cx, this.$cy, true, true);
+            return new GTransform(1, 0, 0, 1, dx, dy);
         } else {
-            var deltaTr = endPtTr.subtract(startPtTr);
-            var transform = new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
-            var tlOrig = new GPoint(this.$tlx, this.$tly);
-            var tl = transform.mapPoint(tlOrig);
-            if (guides) {
-                tl = guides.mapPoint(tl);
-            }
-            deltaTr = tl.subtract(tlOrig);
-            return new GTransform(1, 0, 0, 1, deltaTr.getX(), deltaTr.getY());
-            // TODO: support rotation when OUTSIDE, move center when center, skew when outline
+            _snap(this.$tlx, this.$tly, true, true);
+            return new GTransform(1, 0, 0, 1, dx, dy);
+            // TODO: support rotation when OUTSIDE, skew when outline
         }
     };
 
     /**
-     * Permanently applies transform from $trf property to the transform box
+     * Permanently applies transform from $trf or $cTrf property to the transform box center
      */
     IFTransformBox.prototype.applyTransform = function () {
-        if (this.$trf) {
-            var tl = this.$trf.mapPoint(new GPoint(this.$tlx, this.$tly));
-            var tr = this.$trf.mapPoint(new GPoint(this.$trx, this.$try));
-            var br = this.$trf.mapPoint(new GPoint(this.$brx, this.$bry));
-            var bl = this.$trf.mapPoint(new GPoint(this.$blx, this.$bly));
-            var cntr = this.$trf.mapPoint(new GPoint(this.$cx, this.$cy));
-            this.setProperties(['trf', 'tlx', 'tly', 'trx', 'try', 'brx', 'bry', 'blx', 'bly', 'cx', 'cy'],
-                [null, tl.getX(), tl.getY(), tr.getX(), tr.getY(), br.getX(), br.getY(), bl.getX(), bl.getY(),
-                cntr.getX(), cntr.getY()]);
+        // Transform is applied to center only, as transform box itself should always stay rectangular.
+        // So the transform box itself should be recalculated after transformation is applied to the selection
+        if (this.$trf || this.$cTrf) {
+            var trf = this.$trf ? this.$trf : this.$cTrf;
+            var cntr = trf.mapPoint(new GPoint(this.$cx, this.$cy));
+            this.setProperties(['cTrf', 'trf', 'cx', 'cy'], [null, null, cntr.getX(), cntr.getY()]);
         }
     };
 
@@ -486,10 +497,11 @@
     IFTransformBox.prototype._getPoint = function (side, noTransform) {
         var pt = null;
 
-        var _transform = function (pt) {
+        var _transform = function (pt, trans) {
+            var objTrans = trans ? trans : this.$trf;
             var targTrans = this._extTransform;
-            if (this.$trf && !noTransform) {
-                targTrans = targTrans ? this.$trf.multiplied(targTrans) : this.$trf;
+            if (objTrans && !noTransform) {
+                targTrans = targTrans ? objTrans.multiplied(targTrans) : objTrans;
             }
 
             if (targTrans && pt) {
@@ -533,7 +545,7 @@
                 pt = new GPoint(pt.getX() - IFTransformBox.TRANSFORM_MARGIN, pt.getY());
                 break;
             case IFTransformBox.Handles.ROTATION_CENTER:
-                pt = _transform(new GPoint(this.$cx, this.$cy));
+                pt = _transform(new GPoint(this.$cx, this.$cy), this.$cTrf);
                 break;
         }
 

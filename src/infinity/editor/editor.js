@@ -645,6 +645,7 @@
                         this.updateSelection(false, clonedSelection);
                     }
                     if (this._transformBox) {
+                        this._transformBox.applyTransform();
                         this.updateSelectionTransformBox();
                     }
                 } finally {
@@ -658,11 +659,17 @@
     };
 
     IFEditor.prototype.updateSelectionTransformBox = function () {
+        var cx = null;
+        var cy = null;
+        if (this._transformBox) {
+            cx = this._transformBox.getProperty('cx');
+            cy = this._transformBox.getProperty('cy');
+        }
         this._transformBox = null;
         if (this.getSelection()) {
             var selBBox = this._getSelectionBBox(false);
             if (selBBox) {
-                this._transformBox = new IFTransformBox(selBBox);
+                this._transformBox = new IFTransformBox(selBBox, cx, cy);
             }
         }
     };
