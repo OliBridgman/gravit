@@ -64,6 +64,12 @@
         SelectResizeUpRightDownLeft: "select-upright-downleft",
 
         /**
+         * Select transform box rotation cursors
+         */
+        SelectRotate: ["select-rot-tl", "select-rot-tc", "select-rot-tr", "select-rot-rc", "select-rot-br",
+            "select-rot-bc", "select-rot-bl", "select-rot-lc"],
+
+        /**
          * Zoom-Plus cursor
          * @version 1.0
          */

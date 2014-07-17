@@ -42,6 +42,38 @@
   @include g-cursor(select-upright-downleft);
 }
 
+.g-cursor-select-rot-tl {
+  @include g-cursor(select-rot-tl);
+}
+
+.g-cursor-select-rot-tc {
+  @include g-cursor(select-rot-tc);
+}
+
+.g-cursor-select-rot-tr {
+  @include g-cursor(select-rot-tr);
+}
+
+.g-cursor-select-rot-rc {
+  @include g-cursor(select-rot-rc);
+}
+
+.g-cursor-select-rot-br {
+  @include g-cursor(select-rot-br);
+}
+
+.g-cursor-select-rot-bc {
+  @include g-cursor(select-rot-bc);
+}
+
+.g-cursor-select-rot-bl {
+  @include g-cursor(select-rot-bl);
+}
+
+.g-cursor-select-rot-lc {
+  @include g-cursor(select-rot-lc);
+}
+
 .g-cursor-zoom-plus {
   @include g-cursor(zoom-plus);
 }

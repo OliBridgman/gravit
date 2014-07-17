@@ -108,6 +108,11 @@
                     case IFTransformBox.INSIDE:
                         cursor = IFCursor.SelectCross;
                         break;
+                    case IFTransformBox.OUTSIDE:
+                        if (this._editor.getTransformBox()) {
+                            cursor = IFCursor.SelectRotate[this._editorUnderMouseInfo.data];
+                        }
+                        break;
                     case IFTransformBox.Handles.TOP_CENTER:
                     case IFTransformBox.Handles.BOTTOM_CENTER:
                         cursor = IFCursor.SelectResizeVert;
@@ -672,15 +677,23 @@
                 }
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming && this._editor.getTransformBox()) {
-            if (!this._editorMovePartInfo || this._editorMovePartInfo !== this._editorUnderMouseInfo) {
-                var partInfo = this._editorMovePartInfo ? this._editorMovePartInfo :
-                    this._editor.getTransformBox().getPartInfoAt(mouse,
-                        this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+            var partInfo;
+            if (this._editorMovePartInfo) {
+                partInfo = new IFElementEditor.PartInfo(this._editorMovePartInfo.editor, this._editorMovePartInfo.id,
+                    this._editorMovePartInfo.data);
+            } else {
+                partInfo = this._editor.getTransformBox().getPartInfoAt(mouse,
+                    this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+            }
+            if (partInfo.id  == IFTransformBox.OUTSIDE) {
+                partInfo.data = this._editor.getTransformBox().getRotationSegment(
+                    mouse, this._view.getWorldTransform());
+            }
+            if (!this._editorUnderMouseInfo || this._editorUnderMouseInfo.id !== partInfo.id ||
+                    this._editorUnderMouseInfo.data !== partInfo.data) {
 
-                if (partInfo !== this._editorUnderMouseInfo) {
-                    this._editorUnderMouseInfo = partInfo;
-                    this.updateCursor();
-                }
+                this._editorUnderMouseInfo = partInfo;
+                this.updateCursor();
             }
             hasEditorInfoUnderMouse = true;
         }
