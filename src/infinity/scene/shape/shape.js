@@ -80,7 +80,7 @@
 
     /** @override */
     IFShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFBlock;
+        return parent instanceof IFLayer || parent instanceof IFShapeSet || parent instanceof IFShape;
     };
 
     /** @override */

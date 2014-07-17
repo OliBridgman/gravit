@@ -7,6 +7,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, ["category.window", 
 
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
+ifLocale.setValues(GAddLayerSetAction, IFLocale.Language.English, ["title"], ["Add Layer Set"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);

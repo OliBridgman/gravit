@@ -57,13 +57,25 @@
      * @type {JQuery}
      * @private
      */
-    GPagesLayersSidebar.prototype._layersPanel = null;
+    GPagesLayersSidebar.prototype._layersTree = null;
+
+    /**
+     * @type {Array<*>}
+     * @private
+     */
+    GPagesLayersSidebar.prototype._layersTreeNodeMap = null;
 
     /**
      * @type {JQuery}
      * @private
      */
     GPagesLayersSidebar.prototype._layerAddControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GPagesLayersSidebar.prototype._layerSetAddControl = null;
 
     /**
      * @type {JQuery}
@@ -158,8 +170,34 @@
             .appendTo(htmlElement);
 
         // -- Layers --
-        this._layersPanel = $('<div></div>')
-            .addClass('layers');
+        this._layersTree = $('<div></div>')
+            .addClass('layers')
+            .tree({
+                data: [],
+                dragAndDrop: true,
+                openFolderDelay: 0,
+                slide: false,
+                onIsMoveHandle: function ($element) {
+                    return ($element.is('.jqtree-title'));
+                },
+                onCreateLi: this._createLayerTreeItem.bind(this),
+                onCanMoveTo: this._canMoveLayerTreeNode.bind(this),
+                onCanSelectNode: this._canSelectLayerTreeNode.bind(this)
+            })
+            .on('tree.open', function (evt) {
+                if (evt.node.layerOrItem) {
+                    evt.node.layerOrItem.setFlag(IFNode.Flag.Expanded);
+                    this._tryFillLayerChildren(evt.node);
+                }
+            }.bind(this))
+            .on('tree.close', function (evt) {
+                if (evt.node.layerOrItem) {
+                    evt.node.layerOrItem.removeFlag(IFNode.Flag.Expanded);
+                    this._clearLayerChildren(evt.node);
+                    this._updateLayer(evt.node.layerOrItem);
+                }
+            }.bind(this))
+            .on('tree.move', this._moveLayerTreeNode.bind(this));
 
         this._layerAddControl =
             $('<button></button>')
@@ -168,6 +206,15 @@
                 .attr('title', 'Add Layer')
                 .on('click', function () {
                     gApp.executeAction(GAddLayerAction.ID);
+                }.bind(this));
+
+        this._layerSetAddControl =
+            $('<button></button>')
+                .addClass('fa fa-fw fa-folder-o')
+                // TODO : I18N
+                .attr('title', 'Add Layer Set')
+                .on('click', function () {
+                    gApp.executeAction(GAddLayerSetAction.ID);
                 }.bind(this));
 
         this._layerDeleteControl =
@@ -209,7 +256,7 @@
             .gPanel({
                 // TODO : I18N
                 title: 'Layers',
-                content: this._layersPanel,
+                content: this._layersTree,
                 controls: [
                     this._layerAddControl,
                     this._layerDeleteControl,
@@ -255,7 +302,6 @@
             for (var child = scene.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof IFPage) {
                     this._insertPage(child);
-                    //if (child.hasFlag())
                 }
             }
         }
@@ -456,22 +502,112 @@
 
     /** @private */
     GPagesLayersSidebar.prototype._clearLayers = function () {
-        // TODO
+        this._layersTree.tree('loadData', []);
+        this._layersTreeNodeMap = [];
+
+        if (this._document) {
+            var activePage = this._document.getScene().getActivePage();
+            if (activePage) {
+                for (var child = activePage.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFLayerBlock) {
+                        this._insertLayer(child);
+                    }
+                }
+            }
+        }
     };
 
     /** @private */
     GPagesLayersSidebar.prototype._insertLayer = function (layerOrItem) {
-        // TODO
+        // Create an unique treeId for the new tree node
+        var treeId = ifUtil.uuid();
+
+        // Either insert before or append
+        var nextNode = layerOrItem.getNext() ? this._getLayerTreeNode(layerOrItem.getNext()) : null;
+        if (nextNode) {
+            this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, nextNode);
+        } else {
+            var parent = layerOrItem.getParent();
+            var parentTreeNode = !parent || parent instanceof IFPage ? null : this._getLayerTreeNode(parent);
+            this._layersTree.tree('appendNode', { id: treeId, layerOrItem: layerOrItem }, parentTreeNode);
+        }
+
+        // Insert the mapping
+        this._layersTreeNodeMap.push({
+            node: layerOrItem,
+            treeId: treeId
+        });
+
+        // Make an initial update
+        this._updateLayer(layerOrItem);
+
+        // Gather the new treenode for our node
+        var treeNode = this._getLayerTreeNode(layerOrItem);
+
+        // Select if layer and active
+        if (layerOrItem instanceof IFLayer && layerOrItem.hasFlag(IFNode.Flag.Active)) {
+            this._layersTree.tree('selectNode', treeNode);
+        }
+
+        // Open entry if collapsed
+        if (layerOrItem.hasFlag(IFNode.Flag.Expanded)) {
+            this._layersTree.tree('openNode', treeNode);
+        }
     };
 
     /** @private */
     GPagesLayersSidebar.prototype._updateLayer = function (layerOrItem) {
-        // TODO
+        // Gather a tree node for the item
+        var treeNode = this._getLayerTreeNode(layerOrItem);
+
+        if (treeNode) {
+            // Call an update for the node
+            this._layersTree.tree('updateNode', treeNode, layerOrItem.getLabel());
+
+            // Append a dummy node if we have any children or remove any dummy node if we don't have any
+            var hasChildren = false;
+            for (var child = layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFBlock) {
+                    hasChildren = true;
+                    break;
+                }
+            }
+
+            var dummyTreeNode = null;
+            for (var i = 0; i < treeNode.children.length; i++) {
+                var treeChild = treeNode.children[i];
+                if (!treeChild.layerOrItem) {
+                    dummyTreeNode = treeChild;
+                    break;
+                }
+            }
+
+            if (hasChildren && !dummyTreeNode && !layerOrItem.hasFlag(IFNode.Flag.Expanded)) {
+                this._layersTree.tree('appendNode', { id: ifUtil.uuid(), layerOrItem: null }, treeNode);
+            } else if (!hasChildren && dummyTreeNode) {
+                this._layersTree.tree('removeNode', dummyTreeNode);
+            }
+        }
     };
 
     /** @private */
     GPagesLayersSidebar.prototype._removeLayer = function (layerOrItem) {
-        // TODO
+        var treeNode = this._getLayerTreeNode(layerOrItem);
+        if (treeNode) {
+            this._layersTree.tree('removeNode', treeNode);
+
+            // Visit to remove each mapping as well
+            layerOrItem.accept(function (node) {
+                if (node instanceof IFLayerBlock || node instanceof IFItem) {
+                    for (var i = 0; i < this._layersTreeNodeMap.length; ++i) {
+                        if (this._layersTreeNodeMap[i].node === node) {
+                            this._layersTreeNodeMap.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            }.bind(this));
+        }
     };
 
     /**
@@ -481,8 +617,19 @@
     GPagesLayersSidebar.prototype._afterNodeInsert = function (event) {
         if (event.node instanceof IFPage) {
             this._insertPage(event.node);
-        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
-            this._insertLayer(event.node);
+        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
+            var activePage = this._document.getScene().getActivePage();
+            if (event.node.getPage() === activePage) {
+                var parent = event.node.getParent();
+                if (parent instanceof IFPage || parent.hasFlag(IFNode.Flag.Expanded)) {
+                    this._insertLayer(event.node);
+                } else {
+                    // Update parent instead if it is not the page
+                    if (parent instanceof IFLayerBlock || parent instanceof IFItem) {
+                        this._updateLayer(parent);
+                    }
+                }
+            }
         }
     };
 
@@ -516,12 +663,162 @@
      */
     GPagesLayersSidebar.prototype._afterFlagChange = function (event) {
         if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active) {
-            this._updatePage(event.node);
+            this._pagesPanel.find('.page-block').each(function (index, element) {
+                var $element = $(element);
+                if ($element.data('page') === event.node) {
+                    $element.toggleClass('g-active', event.set);
+                } else {
+                    $element.removeClass('g-active');
+                }
+            });
+
+            // Page activeness change requires clearing layers
+            this._clearLayers();
         } else if (event.node instanceof IFLayer && event.flag === IFNode.Flag.Active) {
-            this._updateLayer(event.node);
-        } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
-            this._updateLayer(event.node);
+            var treeNode = this._getLayerTreeNode(event.node);
+            if (treeNode) {
+                if (event.set) {
+                    this._layersTree.tree('selectNode', treeNode);
+                } else {
+                    this._layersTree.tree('selectNode', null);
+                }
+            }
         }
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._createLayerTreeItem = function (node, li) {
+        if (node.layerOrItem) {
+            var layerOrItem = node.layerOrItem;
+
+            // First, we'll make our title editable
+            li
+                .gAutoEdit({
+                    selector: '> .jqtree-element > .jqtree-title'
+                })
+                .on('submitvalue', function (evt, value) {
+                    // TODO : I18M
+                    if (value && value.trim() !== '') {
+                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                            layerOrItem.setProperty('name', value);
+                        }, 'Rename Layer/Item');
+                    }
+                });
+        }
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._canMoveLayerTreeNode = function (moved_node, target_node, position) {
+        return true;// this._getLayerTreeNodeMoveInfo(position, moved_node.layerOrItem, target_node.layerOrItem) !== null;
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._canSelectLayerTreeNode = function (node) {
+        return node.layerOrItem && node.layerOrItem instanceof IFLayer;
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._moveLayerTreeNode = function (event) {
+        event.preventDefault();
+
+        var moveInfo = this._getLayerTreeNodeMoveInfo(event.move_info.position,
+            event.move_info.moved_node.layerOrItem, event.move_info.target_node.layerOrItem);
+
+        if (moveInfo) {
+            // TODO : I18N
+            IFEditor.tryRunTransaction(this._document.getScene(), function () {
+                moveInfo.source.getParent().removeChild(moveInfo.source);
+                moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
+            }, 'Move Layer/Item');
+        }
+    };
+
+    /**
+     * @param event
+     * @return {{parent: IFNode, before: IFNode, source: IFNode}} the result of the move
+     * or null if the actual move is not allowed
+     * @private
+     */
+    GPagesLayersSidebar.prototype._getLayerTreeNodeMoveInfo = function (position, source, target) {
+        if (source && target && position !== 'none') {
+            var parent = null;
+            var before = null;
+
+            if (position === 'inside') {
+                parent = target;
+                before = target.getFirstChild();
+            } else if (position === 'before') {
+                parent = target.getParent();
+                before = target;
+            } else if (position == 'after') {
+                parent = target.getParent();
+                before = target.getNext();
+            }
+
+            if (source.validateInsertion(parent, before)) {
+                return {
+                    parent: parent,
+                    before: before,
+                    source: source
+                };
+            }
+        }
+
+        return null;
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._clearLayerChildren = function (layerTreeNode) {
+        var children = layerTreeNode.children.slice();
+        for (var i = 0; i < children.length; i++) {
+            this._removeLayer(children[i].layerOrItem);
+        }
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._tryFillLayerChildren = function (layerTreeNode) {
+        var dummyTreeNode = null;
+        for (var i = 0; i < layerTreeNode.children.length; i++) {
+            var treeChild = layerTreeNode.children[i];
+            if (!treeChild.layerOrItem) {
+                dummyTreeNode = treeChild;
+                break;
+            }
+        }
+
+        if (dummyTreeNode) {
+            this._layersTree.tree('removeNode', dummyTreeNode);
+
+            for (var child = layerTreeNode.layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFLayerBlock || child instanceof IFItem) {
+                    this._insertLayer(child);
+                }
+            }
+        }
+    };
+
+    /**
+     * @param {IFNode} node
+     * @return {*}
+     * @private
+     */
+    GPagesLayersSidebar.prototype._getLayerTreeNodeId = function (node) {
+        if (this._layersTreeNodeMap) {
+            for (var i = 0; i < this._layersTreeNodeMap.length; ++i) {
+                if (this._layersTreeNodeMap[i].node === node) {
+                    return this._layersTreeNodeMap[i].treeId;
+                }
+            }
+        }
+    };
+
+    /**
+     * @param {IFNode} node
+     * @return {*}
+     * @private
+     */
+    GPagesLayersSidebar.prototype._getLayerTreeNode = function (node) {
+        return this._layersTree.tree('getNodeById', this._getLayerTreeNodeId(node));
     };
 
     /** @override */

@@ -208,21 +208,28 @@
          * @type {Number}
          * @version 1.0
          */
-        Selected: 1 << 10,
+        Selected: 1 << 1,
 
         /**
          * Flag marking a node to be highlighted
          * @type {Number}
          * @version 1.0
          */
-        Highlighted: 1 << 11,
+        Highlighted: 1 << 2,
 
         /**
          * Flag marking a node to be active
          * @type {Number}
          * @version 1.0
          */
-        Active: 1 << 12
+        Active: 1 << 3,
+
+        /**
+         * Flag marking a node to be expanded
+         * @type {Number}
+         * @version 1.0
+         */
+        Expanded: 1 << 4
     };
 
     /**

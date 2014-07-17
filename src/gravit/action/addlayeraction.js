@@ -52,25 +52,16 @@
      * @override
      */
     GAddLayerAction.prototype.execute = function () {
-        var editor = gApp.getActiveDocument().getEditor();
-        var scene = editor.getScene();
-        var target = scene.getActiveLayer() || scene.getActivePage();
-        var layer = new IFLayer();
-        layer.setProperties([
-            'name'
-        ], [
-            // TODO : I18N
-            'Layer ' + scene.queryCount('layer').toString()
-        ]);
+        var scene = gApp.getActiveDocument().getScene();
+        var activePage = scene.getActivePage();
 
-        editor.beginTransaction();
-        try {
-            target.appendChild(layer);
+        // TODO : I18N
+        IFEditor.tryRunTransaction(activePage, function () {
+            var layer = new IFLayer();
+            layer.setProperty('name', 'Layer ' + scene.queryCount('layerSet').toString());
+            activePage.appendChild(layer);
             scene.setActiveLayer(layer);
-        } finally {
-            // TODO : I18N
-            editor.commitTransaction('Add Layer');
-        }
+        }, 'Add Layer Set');
     };
 
     /** @override */

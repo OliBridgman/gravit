@@ -30,7 +30,9 @@ ifLocale.setValues(IFFont, IFLocale.Language.English, ["weight.thin", "weight.ex
 // Scene
 ifLocale.setValues(IFEllipse, IFLocale.Language.English, ["name"], ["Ellipse"]);
 ifLocale.setValues(IFRectangle, IFLocale.Language.English, ["name"], ["Rectangle"]);
-ifLocale.setValues(IFLayer, IFLocale.Language.English, ["name", "type.output", "type.draft", "type.guide"], ["Layer", "Output", "Draft", "Guide"]);
+ifLocale.setValues(IFLayerBlock, IFLocale.Language.English, ["type.output", "type.draft", "type.guide"], ["Output", "Draft", "Guide"]);
+ifLocale.setValues(IFLayer, IFLocale.Language.English, ["name"], ["Layer"]);
+ifLocale.setValues(IFLayerSet, IFLocale.Language.English, ["name"], ["Layer Set"]);
 ifLocale.setValues(IFScene, IFLocale.Language.English, ["name"], ["Scene"]);
 ifLocale.setValues(IFPolygon, IFLocale.Language.English, ["name"], ["Polygon"]);
 ifLocale.setValues(IFPage, IFLocale.Language.English, ["name"], ["Page"]);

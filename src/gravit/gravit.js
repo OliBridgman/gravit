@@ -227,6 +227,7 @@
 
             new GAddPageAction(),
             new GAddLayerAction(),
+            new GAddLayerSetAction(),
 
             // View
             new GOriginalViewAction(),

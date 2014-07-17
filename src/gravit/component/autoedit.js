@@ -34,6 +34,10 @@
             var container = $this.find(data.options.selector);
 
             if (container.length === 0) {
+                if (data.options.selector) {
+                    return;
+                }
+
                 container = $this;
             }
 
@@ -70,12 +74,16 @@
             var $this = $(this);
             var data = $this.data('gautoedit');
 
-            if (data.input) {
-                if (data.value !== data.input.val()) {
-                    $this.trigger('submitvalue', data.input.val());
-                }
+            // save input value
+            var inputVal = data.input ? data.input.val() : null;
 
-                methods.close.call(this);
+            // close first
+            methods.close.call(this);
+
+            if (inputVal) {
+                if (data.value !== inputVal) {
+                    $this.trigger('submitvalue', inputVal);
+                }
             }
         },
 

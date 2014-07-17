@@ -1,66 +1,100 @@
 @import '../variables';
 
 .sidebar-pages-layers {
-  .page-block {
-    position: relative;
-    width: 100%;
+  .pages {
+    .page-block {
+      position: relative;
+      width: 100%;
 
-    &.g-active {
-      background: $selectedColor;
+      &.g-active {
+        background: $selectedColor;
 
-      &, * {
-        color: $selectedTextColor;
-      }
-    }
-
-    &.drop {
-      background: $dragColor;
-
-      &, * {
-        color: $dragTextColor;
-      }
-    }
-
-    &:not(:last-child) > div {
-      border-bottom: 1px solid $frame3DShadowColor;
-    }
-
-    &:not(:first-child) > div {
-      border-top: 1px solid $frame3DLightColor;
-    }
-
-    > div:not(.drag-overlay) {
-      display: table-cell;
-      vertical-align: middle;
-      padding: 4px 3px;
-
-      &, * {
-        cursor: pointer;
+        &, * {
+          color: $selectedTextColor;
+        }
       }
 
-      &:first-child {
-        padding-left: 5px;
+      &.drop {
+        background: $dragColor;
+
+        &, * {
+          color: $dragTextColor;
+        }
       }
 
-      &:last-child {
+      &:not(:last-child) > div {
+        border-bottom: 1px solid $frame3DShadowColor;
+      }
+
+      &:not(:first-child) > div {
+        border-top: 1px solid $frame3DLightColor;
+      }
+
+      > div:not(.drag-overlay) {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 4px 3px;
+
+        &, * {
+          cursor: pointer;
+        }
+
+        &:first-child {
+          padding-left: 5px;
+        }
+
+        &:last-child {
+          padding-right: 5px;
+        }
+
+        &.page-name {
+          width: 100%;
+
+          &, * {
+            cursor: default;
+          }
+        }
+      }
+
+      > .drag-overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+      }
+    }
+  }
+
+  .layers {
+    div.jqtree-element {
+      padding: 0px;
+
+      > * {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 4px 3px;
+      }
+
+      > :not(:last-child) {
         padding-right: 5px;
       }
 
-      &.page-name {
-        width: 100%;
+      > .layer-icon {
+        font-size: 14px !important;
+      }
 
-        &, * {
-          cursor: default;
-        }
+      > .layer-icon-action {
+        cursor: pointer;
+      }
+
+      > .jqtree-title {
+        width: 100%;
       }
     }
 
-    > .drag-overlay {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
+    ul.jqtree_common {
+      margin-left: 0px;
     }
   }
 }

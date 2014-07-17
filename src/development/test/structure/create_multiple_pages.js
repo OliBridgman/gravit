@@ -33,7 +33,11 @@
             text.setProperties(['trf'], [new GTransform(1, 0, 0, 1,
                 insertPos.getX() + (insertSize.getX() - textPaintBBox.getWidth()) / 2,
                 insertPos.getY() + (insertSize.getY() - textPaintBBox.getHeight()) / 2)]);
-            page.appendChild(text);
+
+            var layer = new IFLayer();
+            layer.appendChild(text);
+
+            page.appendChild(layer);
 
             scene.appendChild(page);
 
