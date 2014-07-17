@@ -101,11 +101,38 @@
 
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
+        var cursor = IFCursor.Select;
         if (this._editorUnderMouseInfo) {
-            return IFCursor.SelectDot;
-        } else {
-            return IFCursor.Select;
+            if (this._mode == IFSelectTool._Mode.Transforming) {
+                switch (this._editorUnderMouseInfo.id) {
+                    case IFTransformBox.INSIDE:
+                        cursor = IFCursor.SelectCross;
+                        break;
+                    case IFTransformBox.Handles.TOP_CENTER:
+                    case IFTransformBox.Handles.BOTTOM_CENTER:
+                        cursor = IFCursor.SelectResizeVert;
+                        break;
+                    case IFTransformBox.Handles.LEFT_CENTER:
+                    case IFTransformBox.Handles.RIGHT_CENTER:
+                        cursor = IFCursor.SelectResizeHoriz;
+                        break;
+                    case IFTransformBox.Handles.TOP_LEFT:
+                    case IFTransformBox.Handles.BOTTOM_RIGHT:
+                        cursor = IFCursor.SelectResizeUpLeftDownRight;
+                        break;
+                    case IFTransformBox.Handles.TOP_RIGHT:
+                    case IFTransformBox.Handles.BOTTOM_LEFT:
+                        cursor = IFCursor.SelectResizeUpRightDownLeft;
+                        break;
+                    case IFTransformBox.Handles.ROTATION_CENTER:
+                        cursor = IFCursor.SelectArrowOnly;
+                        break;
+                }
+            } else {
+                cursor = IFCursor.SelectDot;
+            }
         }
+        return cursor;
     };
 
     /** @override */
@@ -644,6 +671,18 @@
                     this.updateCursor();
                 }
             }
+        } else if (this._mode == IFSelectTool._Mode.Transforming && this._editor.getTransformBox()) {
+            if (!this._editorMovePartInfo || this._editorMovePartInfo !== this._editorUnderMouseInfo) {
+                var partInfo = this._editorMovePartInfo ? this._editorMovePartInfo :
+                    this._editor.getTransformBox().getPartInfoAt(mouse,
+                        this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+
+                if (partInfo !== this._editorUnderMouseInfo) {
+                    this._editorUnderMouseInfo = partInfo;
+                    this.updateCursor();
+                }
+            }
+            hasEditorInfoUnderMouse = true;
         }
 
         if (!hasEditorInfoUnderMouse && this._editorUnderMouseInfo) {

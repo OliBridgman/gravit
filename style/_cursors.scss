@@ -18,6 +18,30 @@
   @include g-cursor(select-dot-inverse);
 }
 
+.g-cursor-select-arrow-only {
+  @include g-cursor(select-arrow-only);
+}
+
+.g-cursor-select-cross {
+  @include g-cursor(select-cross);
+}
+
+.g-cursor-select-resize-vert {
+  @include g-cursor(select-resize-vert);
+}
+
+.g-cursor-select-resize-horiz {
+  @include g-cursor(select-resize-horiz);
+}
+
+.g-cursor-select-upleft-downright {
+  @include g-cursor(select-upleft-downright);
+}
+
+.g-cursor-select-upright-downleft {
+  @include g-cursor(select-upright-downleft);
+}
+
 .g-cursor-zoom-plus {
   @include g-cursor(zoom-plus);
 }
