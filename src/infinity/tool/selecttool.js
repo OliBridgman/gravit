@@ -424,9 +424,18 @@
                 this._selectArea = null;
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
-            if (ifPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 8)) {
+            if (ifPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 9)) {
 
                 this._editor.applySelectionTransform(true);
+            } else if (this._editorMovePartInfo.id == IFTransformBox.Handles.ROTATION_CENTER){
+                this._editor.beginTransaction();
+                try {
+                    this._editor.getTransformBox().applyTransform();
+                    this._editor.getTransformBox().show();
+                } finally {
+                    // TODO : I18N
+                    this._editor.commitTransaction('Move');
+                }
             } else {
                 this._editor.applySelectionTransform();
             }
@@ -589,8 +598,12 @@
                     this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
                     ifPlatform.modifiers.optionKey, ifPlatform.modifiers.shiftKey);
 
-                this._editor.getTransformBox().setTransform(transform);
-                this._editor.transformSelection(transform, null, null);
+                if (this._editorMovePartInfo.id != IFTransformBox.Handles.ROTATION_CENTER) {
+                    this._editor.getTransformBox().setTransform(transform);
+                    this._editor.transformSelection(transform, null, null);
+                } else {
+                    this._editor.getTransformBox().setCenterTransform(transform);
+                }
                 this._editor.getGuides().finishMap();
             }
             this.invalidateArea();
