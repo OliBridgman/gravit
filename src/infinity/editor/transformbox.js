@@ -264,7 +264,8 @@
                     tolerance, true, hitRes)) {
 
                 if (hitRes.outline) {
-                    result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTLINE, null);
+                    var edgeType = hitRes.segment % 2;
+                    result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTLINE, edgeType);
                 } else {
                     result = new IFElementEditor.PartInfo(null, IFTransformBox.INSIDE, null);
                 }
@@ -474,10 +475,17 @@
             var sinA = Math.sin(angleDelta);
             var transform2 = new GTransform(cosA, -sinA, sinA, cosA, 0, 0);
             return transform1.multiplied(transform2).multiplied(transform3);
+        } else if (partInfo.id == IFTransformBox.OUTLINE) {
+            transform1 = new GTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
+            transform3 = new GTransform(1, 0, 0, 1, this.$cx, this.$cy);
+
+            var transform2 = new GTransform(
+                1, dy * 2 / (this.$brx - this.$tlx), -dx * 2 / (this.$bry - this.$tly), 1, 0, 0);
+
+            return transform1.multiplied(transform2).multiplied(transform3);
         } else {
             _snap(this.$tlx, this.$tly, true, true);
             return new GTransform(1, 0, 0, 1, dx, dy);
-            // TODO: support skew when outline
         }
     };
 

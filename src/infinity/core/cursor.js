@@ -64,6 +64,16 @@
         SelectResizeUpRightDownLeft: "select-upright-downleft",
 
         /**
+         * Select transform box skew vertically cursor
+         */
+        SelectSkewVert: "select-skew-vert",
+
+        /**
+         * Select transform box skew horizontally cursor
+         */
+        SelectSkewHoriz: "select-skew-horiz",
+
+        /**
          * Select transform box rotation cursors
          */
         SelectRotate: ["select-rot-tl", "select-rot-tc", "select-rot-tr", "select-rot-rc", "select-rot-br",

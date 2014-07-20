@@ -42,6 +42,14 @@
   @include g-cursor(select-upright-downleft);
 }
 
+.g-cursor-select-skew-vert {
+  @include g-cursor(select-skew-vert);
+}
+
+.g-cursor-select-skew-horiz {
+  @include g-cursor(select-skew-horiz);
+}
+
 .g-cursor-select-rot-tl {
   @include g-cursor(select-rot-tl);
 }

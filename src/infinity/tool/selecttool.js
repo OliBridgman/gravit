@@ -113,6 +113,9 @@
                             cursor = IFCursor.SelectRotate[this._editorUnderMouseInfo.data];
                         }
                         break;
+                    case IFTransformBox.OUTLINE:
+                        cursor = this._editorUnderMouseInfo.data ? IFCursor.SelectSkewHoriz : IFCursor.SelectSkewVert;
+                        break;
                     case IFTransformBox.Handles.TOP_CENTER:
                     case IFTransformBox.Handles.BOTTOM_CENTER:
                         cursor = IFCursor.SelectResizeVert;
