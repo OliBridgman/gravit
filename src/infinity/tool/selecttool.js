@@ -101,11 +101,46 @@
 
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
+        var cursor = IFCursor.Select;
         if (this._editorUnderMouseInfo) {
-            return IFCursor.SelectDot;
-        } else {
-            return IFCursor.Select;
+            if (this._mode == IFSelectTool._Mode.Transforming) {
+                switch (this._editorUnderMouseInfo.id) {
+                    case IFTransformBox.INSIDE:
+                        cursor = IFCursor.SelectCross;
+                        break;
+                    case IFTransformBox.OUTSIDE:
+                        if (this._editor.getTransformBox()) {
+                            cursor = IFCursor.SelectRotate[this._editorUnderMouseInfo.data];
+                        }
+                        break;
+                    case IFTransformBox.OUTLINE:
+                        cursor = this._editorUnderMouseInfo.data ? IFCursor.SelectSkewHoriz : IFCursor.SelectSkewVert;
+                        break;
+                    case IFTransformBox.Handles.TOP_CENTER:
+                    case IFTransformBox.Handles.BOTTOM_CENTER:
+                        cursor = IFCursor.SelectResizeVert;
+                        break;
+                    case IFTransformBox.Handles.LEFT_CENTER:
+                    case IFTransformBox.Handles.RIGHT_CENTER:
+                        cursor = IFCursor.SelectResizeHoriz;
+                        break;
+                    case IFTransformBox.Handles.TOP_LEFT:
+                    case IFTransformBox.Handles.BOTTOM_RIGHT:
+                        cursor = IFCursor.SelectResizeUpLeftDownRight;
+                        break;
+                    case IFTransformBox.Handles.TOP_RIGHT:
+                    case IFTransformBox.Handles.BOTTOM_LEFT:
+                        cursor = IFCursor.SelectResizeUpRightDownLeft;
+                        break;
+                    case IFTransformBox.Handles.ROTATION_CENTER:
+                        cursor = IFCursor.SelectArrowOnly;
+                        break;
+                }
+            } else {
+                cursor = IFCursor.SelectDot;
+            }
         }
+        return cursor;
     };
 
     /** @override */
@@ -644,6 +679,26 @@
                     this.updateCursor();
                 }
             }
+        } else if (this._mode == IFSelectTool._Mode.Transforming && this._editor.getTransformBox()) {
+            var partInfo;
+            if (this._editorMovePartInfo) {
+                partInfo = new IFElementEditor.PartInfo(this._editorMovePartInfo.editor, this._editorMovePartInfo.id,
+                    this._editorMovePartInfo.data);
+            } else {
+                partInfo = this._editor.getTransformBox().getPartInfoAt(mouse,
+                    this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+            }
+            if (partInfo.id  == IFTransformBox.OUTSIDE) {
+                partInfo.data = this._editor.getTransformBox().getRotationSegment(
+                    mouse, this._view.getWorldTransform());
+            }
+            if (!this._editorUnderMouseInfo || this._editorUnderMouseInfo.id !== partInfo.id ||
+                    this._editorUnderMouseInfo.data !== partInfo.data) {
+
+                this._editorUnderMouseInfo = partInfo;
+                this.updateCursor();
+            }
+            hasEditorInfoUnderMouse = true;
         }
 
         if (!hasEditorInfoUnderMouse && this._editorUnderMouseInfo) {

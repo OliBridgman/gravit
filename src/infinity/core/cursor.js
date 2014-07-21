@@ -34,6 +34,52 @@
         SelectDotInverse: "select-dot-inverse",
 
         /**
+         * Select transform box rotation center cursor
+         */
+        SelectArrowOnly: "select-arrow-only",
+
+        /**
+         * Select transform box move cursor
+         */
+        SelectCross: "select-cross",
+
+        /**
+         * Select transform box resize vertically cursor
+         */
+        SelectResizeVert: "select-resize-vert",
+
+        /**
+         * Select transform box resize horizontally cursor
+         */
+        SelectResizeHoriz: "select-resize-horiz",
+
+        /**
+         * Select transform box resize via up left or down right corner cursor
+         */
+        SelectResizeUpLeftDownRight: "select-upleft-downright",
+
+        /**
+         * Select transform box resize via up right or down left corner cursor
+         */
+        SelectResizeUpRightDownLeft: "select-upright-downleft",
+
+        /**
+         * Select transform box skew vertically cursor
+         */
+        SelectSkewVert: "select-skew-vert",
+
+        /**
+         * Select transform box skew horizontally cursor
+         */
+        SelectSkewHoriz: "select-skew-horiz",
+
+        /**
+         * Select transform box rotation cursors
+         */
+        SelectRotate: ["select-rot-tl", "select-rot-tc", "select-rot-tr", "select-rot-rc", "select-rot-br",
+            "select-rot-bc", "select-rot-bl", "select-rot-lc"],
+
+        /**
          * Zoom-Plus cursor
          * @version 1.0
          */

@@ -264,17 +264,39 @@
                     tolerance, true, hitRes)) {
 
                 if (hitRes.outline) {
-                    result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTLINE, null);
+                    var edgeType = hitRes.segment % 2;
+                    result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTLINE, edgeType);
                 } else {
                     result = new IFElementEditor.PartInfo(null, IFTransformBox.INSIDE, null);
                 }
             } else {
-                // TODO: return sector for proper cursor
+                // PartInfo.data field is set to null here, however, later it will contain a rotation sector number
+                // for each mouse position
                 result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTSIDE, null);
             }
         }
 
         return result;
+    };
+
+    /**
+     * Called whenever information about a circle sector at a given location shall be returned
+     * @param {GPoint} location the location to get a sector for in view coordinates
+     * @param {GTransform} transform the current transformation of the view
+     * @returns {Number} the number of the rotation sector from 8 equal sectors, starting from top left
+     */
+    IFTransformBox.prototype.getRotationSegment = function (location, transform) {
+        var rotSegm = 0;
+        var cntr = transform.mapPoint(new GPoint(this.$cx, this.$cy));
+        var angle = Math.atan2(location.getY() - cntr.getY(), location.getX() - cntr.getX()) + Math.PI * 7 / 8;
+        if (angle < 0) {
+            angle += ifMath.PI2;
+        }
+        rotSegm = Math.floor(angle / (Math.PI / 4));
+        if (rotSegm < 0 || rotSegm > 7) {
+            rotSegm = 7;
+        }
+        return rotSegm;
     };
 
     /**
@@ -443,10 +465,27 @@
         } else if (partInfo.id == IFTransformBox.Handles.ROTATION_CENTER) {
             _snap(this.$cx, this.$cy, true, true);
             return new GTransform(1, 0, 0, 1, dx, dy);
+        } else if (partInfo.id == IFTransformBox.OUTSIDE) {
+            transform1 = new GTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
+            transform3 = new GTransform(1, 0, 0, 1, this.$cx, this.$cy);
+            var angle1 = Math.atan2(startPtTr.getY() - this.$cy, startPtTr.getX() - this.$cx);
+            var angle2 = Math.atan2(endPtTr.getY() - this.$cy, endPtTr.getX() - this.$cx);
+            var angleDelta = angle1 - angle2;
+            var cosA = Math.cos(angleDelta);
+            var sinA = Math.sin(angleDelta);
+            var transform2 = new GTransform(cosA, -sinA, sinA, cosA, 0, 0);
+            return transform1.multiplied(transform2).multiplied(transform3);
+        } else if (partInfo.id == IFTransformBox.OUTLINE) {
+            transform1 = new GTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
+            transform3 = new GTransform(1, 0, 0, 1, this.$cx, this.$cy);
+
+            var transform2 = new GTransform(
+                1, dy * 2 / (this.$brx - this.$tlx), -dx * 2 / (this.$bry - this.$tly), 1, 0, 0);
+
+            return transform1.multiplied(transform2).multiplied(transform3);
         } else {
             _snap(this.$tlx, this.$tly, true, true);
             return new GTransform(1, 0, 0, 1, dx, dy);
-            // TODO: support rotation when OUTSIDE, skew when outline
         }
     };
 
