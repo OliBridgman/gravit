@@ -7,6 +7,10 @@
   background: $frameColor;
   border-left: 1px solid $frameBorderColor;
 
+  &, *:not(.fa) {
+    font: $smallFont;
+  }
+
   .palette-group {
     overflow: hidden;
     border-bottom: 1px solid $frame3DShadowColor;
@@ -46,7 +50,7 @@
           margin-right: 5px;
           border-left: 1px solid $frameBorderColor;
           padding-left: 5px;
-          font-weight: bold;
+          font-weight: 600;
           text-transform: uppercase;
           color: $selectedColor;
         }
@@ -68,10 +72,6 @@
 
     .palette-panel {
       position: relative;
-
-      &, *:not(.fa) {
-        font: $smallFont;
-      }
 
       .fa {
         font-size: 14px;

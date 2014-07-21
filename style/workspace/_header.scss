@@ -4,7 +4,7 @@
   position: absolute;
   width: 100%;
   background: $frameColor;
-  border-bottom: 1px solid $frame3DShadowColor;
+  border-bottom: 3px solid $frameDarkColor;
 
   > * {
     height: 2em !important;
