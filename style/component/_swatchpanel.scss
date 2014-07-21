@@ -1,6 +1,10 @@
 @import '../variables';
 
 .g-swatch-panel {
+  .placeholder {
+    padding: 4px;
+  }
+
   .swatch-block {
     display: inline-block;
     position: relative;

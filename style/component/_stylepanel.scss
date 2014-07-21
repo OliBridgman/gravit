@@ -1,6 +1,10 @@
 @import '../variables';
 
 .g-style-panel {
+  .placeholder {
+    padding: 4px;
+  }
+
   .style-block {
     display: inline-block;
     position: relative;
