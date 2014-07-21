@@ -232,6 +232,18 @@
     IFEditor.prototype._guides = null;
 
     /**
+     * @type {IFTransformBox}
+     * @private
+     */
+    IFEditor.prototype._transformBox = null;
+
+    /**
+     * @type {Boolean}
+     * @private
+     */
+    IFEditor.prototype._hasTransformBox = true;
+
+    /**
      * @type {IFNode}
      * @private
      */
@@ -299,6 +311,21 @@
      */
     IFEditor.prototype.getGuides = function () {
         return this._guides;
+    };
+
+    /**
+     * Activates the transform box functionality on mouse double click
+     */
+    IFEditor.prototype.activateTransformBox = function () {
+        this._hasTransformBox = true;
+    };
+
+    /**
+     * Disables the transform box functionality on mouse double click
+     */
+    IFEditor.prototype.deactivateTransformBox = function () {
+        this.cleanTransformBox();
+        this._hasTransformBox = false;
     };
 
     /**
@@ -666,7 +693,7 @@
             cy = this._transformBox.getProperty('cy');
         }
         this._transformBox = null;
-        if (this.getSelection()) {
+        if (this._hasTransformBox && this.getSelection()) {
             var selBBox = this._getSelectionBBox(false);
             if (selBBox) {
                 this._transformBox = new IFTransformBox(selBBox, cx, cy);
@@ -675,7 +702,7 @@
     };
 
     IFEditor.prototype.getTransformBox = function () {
-        return this._transformBox;
+        return this._hasTransformBox ? this._transformBox : null;
     };
 
     IFEditor.prototype.cleanTransformBox = function () {
