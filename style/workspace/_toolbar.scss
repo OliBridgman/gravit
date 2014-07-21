@@ -4,11 +4,10 @@
   position: absolute;
   width: 34px;
   background: $frameColor;
+  border-top: 1px solid $frame3DLightColor;
   border-right: 1px solid $frame3DShadowColor;
 
   > div.section {
-    border-top: 1px solid $frame3DLightColor;
-    border-bottom: 1px solid $frame3DShadowColor;
     padding: 2px 0px;
 
     button {
@@ -26,7 +25,7 @@
     }
 
     &.sidebars {
-      border-top: none;
+      border-bottom: 3px solid $frameDarkColor;
       padding: 0px;
 
       button {
