@@ -176,6 +176,8 @@
                 data: [],
                 dragAndDrop: true,
                 openFolderDelay: 0,
+                closedIcon: $('<span class="fa fa-fw fa-caret-right"></span>'),
+                openedIcon: $('<span class="fa fa-fw fa-caret-down"></span>'),
                 slide: false,
                 onIsMoveHandle: function ($element) {
                     return ($element.is('.jqtree-title'));
@@ -335,7 +337,7 @@
                     }, 'Toggle Page Visibility');
                 })
                 .append($('<span></span>')
-                    .addClass('fa')))
+                    .addClass('fa fa-fw')))
             .append($('<div></div>')
                 .addClass('page-locked')
                 // TODO : I18N
@@ -347,7 +349,7 @@
                     }, 'Toggle Page Lock');
                 })
                 .append($('<span></span>')
-                    .addClass('fa')))
+                    .addClass('fa fa-fw')))
             .append($('<div></div>')
                 .addClass('page-name')
                 .gAutoEdit({
@@ -363,7 +365,7 @@
             .append($('<div></div>')
                 .addClass('page-master-slave')
                 .append($('<span></span>')
-                    .addClass('fa')))
+                    .addClass('fa fa-fw')))
             .on('mousedown', function () {
                 // TODO
             })
@@ -667,8 +669,6 @@
                 var $element = $(element);
                 if ($element.data('page') === event.node) {
                     $element.toggleClass('g-active', event.set);
-                } else {
-                    $element.removeClass('g-active');
                 }
             });
 

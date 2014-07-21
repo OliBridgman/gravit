@@ -42,6 +42,7 @@
 
                 $('<button></button>')
                     .append($(sidebar.getIcon()))
+                    .addClass('g-flat')
                     .attr('title', ifLocale.get(sidebar.getTitle()))
                     .attr('data-sidebar-id', sidebar.getId())
                     .on('click', function () {
@@ -70,6 +71,7 @@
         var _addToolButton = function (tool) {
             var button = $("<button></button>")
                 .attr('class', tool.instance == gApp.getToolManager().getActiveTool() ? 'g-active' : '')
+                .addClass('g-flat')
                 .append($(tool.icon).attr('width', '18px').attr('height', '18px'))
                 .appendTo(toolpanel)
                 .on('click', function () {

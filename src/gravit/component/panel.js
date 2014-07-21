@@ -25,7 +25,7 @@
                         .append($('<div></div>')
                             .addClass('title')
                             .append($('<i></i>')
-                                .addClass('fa fa-fw fa-caret-down'))
+                                .addClass('fa fa-angle-down'))
                             .append($('<span></span>')
                                 .text(options.title))
                             .on('click', function () {
@@ -58,8 +58,8 @@
                     $this.find('.content').css('display', data.expanded ? '' : 'none');
                     $this.find('.controls').css('visibility', data.expanded ? '' : 'hidden');
                     $this.find('.header i.fa')
-                        .toggleClass('fa-caret-down', data.expanded)
-                        .toggleClass('fa-caret-right', !data.expanded);
+                        .toggleClass('fa-angle-down', data.expanded)
+                        .toggleClass('fa-angle-right', !data.expanded);
                 }
                 return this;
             }

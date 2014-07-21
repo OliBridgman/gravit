@@ -7,10 +7,10 @@
       width: 100%;
 
       &.g-active {
-        background: $selectedColor;
+        background: $activeColor;
 
         &, * {
-          color: $selectedTextColor;
+          color: $activeTextColor;
         }
       }
 
@@ -24,10 +24,6 @@
 
       &:not(:last-child) > div {
         border-bottom: 1px solid $frame3DShadowColor;
-      }
-
-      &:not(:first-child) > div {
-        border-top: 1px solid $frame3DLightColor;
       }
 
       > div:not(.drag-overlay) {
@@ -69,6 +65,7 @@
   .layers {
     div.jqtree-element {
       padding: 0px;
+      border-bottom: 1px solid $frame3DShadowColor;
 
       > * {
         display: table-cell;

@@ -12,18 +12,10 @@
     padding: 2px 0px;
 
     button {
-      border: none;
-      border-radius: 0px;
-      background-color: transparent;
-      box-shadow: none;
       padding: 0px;
       margin: 1px 3px;
       width: 28px;
       height: 28px;
-
-      &:hover, &:active, &.g-active {
-        background-color: $activeColor;
-      }
     }
 
     .divider {
@@ -41,6 +33,12 @@
         margin: 0px;
         width: 100%;
         height: 28px;
+
+        &:active, &.g-active {
+          * {
+            color: $selectedColor;
+          }
+        }
       }
     }
 
@@ -50,7 +48,16 @@
         width: 28px;
 
         &:active, &.g-active {
-          background-color: $selectedColor;
+          background: $activeColor;
+
+          &, * {
+            color: $activeTextColor;
+          }
+
+          svg {
+            fill: $activeTextColor;
+            stroke: $activeTextColor;
+          }
         }
       }
     }

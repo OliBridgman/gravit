@@ -35,6 +35,7 @@
                 insertPos.getY() + (insertSize.getY() - textPaintBBox.getHeight()) / 2)]);
 
             var layer = new IFLayer();
+            layer.setFlag(IFNode.Flag.Active);
             layer.appendChild(text);
 
             page.appendChild(layer);
