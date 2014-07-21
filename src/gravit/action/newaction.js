@@ -3,12 +3,12 @@
     /**
      * Action creating a new document
      * @class GNewAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GNewAction() {
     };
-    IFObject.inherit(GNewAction, GUIAction);
+    IFObject.inherit(GNewAction, GAction);
 
     GNewAction.ID = 'file.new';
     GNewAction.TITLE = new IFLocale.Key(GNewAction, "title");

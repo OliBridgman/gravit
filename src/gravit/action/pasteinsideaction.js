@@ -3,12 +3,12 @@
     /**
      * Action for pasting clipboard contents into selection
      * @class GPasteInsideAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GPasteInsideAction() {
     };
-    IFObject.inherit(GPasteInsideAction, GUIAction);
+    IFObject.inherit(GPasteInsideAction, GAction);
 
     GPasteInsideAction.ID = 'edit.paste-inside';
     GPasteInsideAction.TITLE = new IFLocale.Key(GPasteInsideAction, "title");

@@ -3,12 +3,12 @@
     /**
      * Action for copying the current selection's attributes to the clipboard
      * @class GCopyAttributesAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GCopyAttributesAction() {
     };
-    IFObject.inherit(GCopyAttributesAction, GUIAction);
+    IFObject.inherit(GCopyAttributesAction, GAction);
 
     GCopyAttributesAction.ID = 'edit.copy-attributes';
     GCopyAttributesAction.TITLE = new IFLocale.Key(GCopyAttributesAction, "title");

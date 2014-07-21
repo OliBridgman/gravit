@@ -2,20 +2,20 @@
 
     /**
      * Base class for an action
-     * @class GUIAction
+     * @class GAction
      * @extends IFObject
      * @constructor
      */
-    function GUIAction() {
+    function GAction() {
     };
-    IFObject.inherit(GUIAction, IFObject);
+    IFObject.inherit(GAction, IFObject);
 
     /**
      * Get the id of the action
      * @return {String}
      * @version 1.0
      */
-    GUIAction.prototype.getId = function () {
+    GAction.prototype.getId = function () {
         throw new Error("Not Supported");
     };
 
@@ -24,7 +24,7 @@
      * @return {IFLocale.Key|String}
      * @version 1.0
      */
-    GUIAction.prototype.getTitle = function () {
+    GAction.prototype.getTitle = function () {
         throw new Error("Not Supported");
     };
 
@@ -34,7 +34,7 @@
      * @return {IFLocale.Key|String}
      * @version 1.0
      */
-    GUIAction.prototype.getCategory = function () {
+    GAction.prototype.getCategory = function () {
         return null;
     };
 
@@ -43,7 +43,7 @@
      * @return {String}
      * @version 1.0
      */
-    GUIAction.prototype.getGroup = function () {
+    GAction.prototype.getGroup = function () {
         return null;
     };
 
@@ -52,7 +52,7 @@
      * @return {Array<Number>}
      * @version 1.0
      */
-    GUIAction.prototype.getShortcut = function () {
+    GAction.prototype.getShortcut = function () {
         return null;
     };
 
@@ -61,7 +61,7 @@
      * @return {Boolean} true if enabled, false if not
      * @version 1.0
      */
-    GUIAction.prototype.isEnabled = function () {
+    GAction.prototype.isEnabled = function () {
         // Enabled by default
         return true;
     };
@@ -70,7 +70,7 @@
      * Whether this action is checkable or not
      * @return {Boolean} true if checkable, false if not
      */
-    GUIAction.prototype.isCheckable = function () {
+    GAction.prototype.isCheckable = function () {
         // Not checkable by default
         return false;
     };
@@ -80,7 +80,7 @@
      * @return {Boolean} true if checked, false if not
      * @version 1.0
      */
-    GUIAction.prototype.isChecked = function () {
+    GAction.prototype.isChecked = function () {
         // Not checked by default
         return false;
     };
@@ -89,7 +89,7 @@
      * Called to check if the action is available or not
      * @return {Boolean} true if available, false if not
      */
-    GUIAction.prototype.isAvailable = function () {
+    GAction.prototype.isAvailable = function () {
         // Available by default
         return true;
     };
@@ -98,14 +98,14 @@
      * Execute the action
      * @version 1.0
      */
-    GUIAction.prototype.execute = function () {
+    GAction.prototype.execute = function () {
         throw new Error("Not Supported");
     };
 
     /** @override */
-    GUIAction.prototype.toString = function () {
-        return "[Object GUIAction]";
+    GAction.prototype.toString = function () {
+        return "[Object GAction]";
     };
 
-    _.GUIAction = GUIAction;
+    _.GAction = GAction;
 })(this);

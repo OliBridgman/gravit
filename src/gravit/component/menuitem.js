@@ -198,7 +198,7 @@
     GUIMenuItem.prototype._shortcutHint = null;
 
     /**
-     * @type {GUIAction}
+     * @type {GAction}
      * @private
      */
     GUIMenuItem.prototype._action = null;
@@ -303,7 +303,7 @@
     };
 
     /**
-     * @returns {GUIAction} the item's action
+     * @returns {GAction} the item's action
      */
     GUIMenuItem.prototype.getAction = function () {
         return this._action;
@@ -311,7 +311,7 @@
 
     /**
      * Assign an action to this menu item or remove it
-     * @param {GUIAction} action
+     * @param {GAction} action
      */
     GUIMenuItem.prototype.setAction = function (action) {
         if (action !== this._action) {

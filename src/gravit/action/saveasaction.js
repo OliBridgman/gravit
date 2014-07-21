@@ -5,14 +5,14 @@
      * @param {GStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class GSaveAsAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GSaveAsAction(storage, isDefault) {
         this._storage = storage;
         this._default = isDefault;
     };
-    IFObject.inherit(GSaveAsAction, GUIAction);
+    IFObject.inherit(GSaveAsAction, GAction);
 
     GSaveAsAction.ID = 'file.save-as';
     GSaveAsAction.TITLE = new IFLocale.Key(GSaveAsAction, "title");

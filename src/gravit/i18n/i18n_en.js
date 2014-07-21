@@ -2,13 +2,30 @@
 ifLocale.setValues(GColorMatcher, IFLocale.Language.English, ["category.harmony", "category.palette"], ["Harmony", "Palette"]);
 
 // Root
-ifLocale.setValues(GApplication, IFLocale.Language.English, ["category.window", "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export", "category.edit", "category.modify", "category.view", "category.view.magnification", "category.help"],
-    ["Window", "File", "File/Open", "File/Save As", "File/Import", "File/Export", "Edit", "Modify", "View", "View/Magnification", "Help"]);
+ifLocale.setValues(GApplication, IFLocale.Language.English, [
+    "category.window",
+    "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export",
+    "category.edit",
+    "category.modify",
+    "category.arrange",
+    "category.view", "category.view.magnification",
+    "category.help"],
+    [
+        "Window",
+        "File", "File/Open", "File/Save As", "File/Import", "File/Export",
+        "Edit",
+        "Modify",
+        "Arrange",
+        "View",
+        "View/Magnification",
+        "Help"]);
 
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddLayerSetAction, IFLocale.Language.English, ["title"], ["Add Layer Set"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
+ifLocale.setValues(GAlignLeftAction, IFLocale.Language.English, ["title"], ["Align Left"]);
+ifLocale.setValues(GBringForwardAction, IFLocale.Language.English, ["title"], ["Bring Forward"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);

@@ -3,12 +3,12 @@
     /**
      * Action for inserting one or more new pages
      * @class GAddPageAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GAddPageAction() {
     };
-    IFObject.inherit(GAddPageAction, GUIAction);
+    IFObject.inherit(GAddPageAction, GAction);
 
     GAddPageAction.ID = 'modify.add-pages';
     GAddPageAction.TITLE = new IFLocale.Key(GAddPageAction, "title");

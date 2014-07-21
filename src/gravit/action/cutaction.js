@@ -3,12 +3,12 @@
     /**
      * Action for cutting the current selection to the clipboard
      * @class GCutAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GCutAction() {
     };
-    IFObject.inherit(GCutAction, GUIAction);
+    IFObject.inherit(GCutAction, GAction);
 
     GCutAction.ID = 'edit.cut';
     GCutAction.TITLE = new IFLocale.Key(GCutAction, "title");

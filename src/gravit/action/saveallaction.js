@@ -3,12 +3,12 @@
     /**
      * Action saving all documents
      * @class GSaveAllAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GSaveAllAction() {
     };
-    IFObject.inherit(GSaveAllAction, GUIAction);
+    IFObject.inherit(GSaveAllAction, GAction);
 
     GSaveAllAction.ID = 'file.save-all';
     GSaveAllAction.TITLE = new IFLocale.Key(GSaveAllAction, "title");

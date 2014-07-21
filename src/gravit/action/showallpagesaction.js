@@ -3,12 +3,12 @@
     /**
      * Action for switching between single and multi page view
      * @class GShowAllPagesAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GShowAllPagesAction() {
     };
-    IFObject.inherit(GShowAllPagesAction, GUIAction);
+    IFObject.inherit(GShowAllPagesAction, GAction);
 
     GShowAllPagesAction.ID = 'view.show-all-pages';
     GShowAllPagesAction.TITLE = new IFLocale.Key(GShowAllPagesAction, 'title');

@@ -20,7 +20,7 @@ var gravit = {
     exporters: [],
 
     /**
-     * Array<GUIAction>
+     * Array<GAction>
      */
     actions: [],
 

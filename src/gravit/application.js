@@ -50,9 +50,10 @@
     GApplication.CATEGORY_FILE_OPEN = new IFLocale.Key(GApplication, "category.file.open");
     GApplication.CATEGORY_FILE_SAVEAS = new IFLocale.Key(GApplication, "category.file.saveas");
     GApplication.CATEGORY_FILE_IMPORT = new IFLocale.Key(GApplication, "category.file.import");
-    GApplication.CATEGORY_FILE_GPORT = new IFLocale.Key(GApplication, "category.file.export");
+    GApplication.CATEGORY_FILE_EXPORT = new IFLocale.Key(GApplication, "category.file.export");
     GApplication.CATEGORY_EDIT = new IFLocale.Key(GApplication, "category.edit");
     GApplication.CATEGORY_MODIFY = new IFLocale.Key(GApplication, "category.modify");
+    GApplication.CATEGORY_ARRANGE = new IFLocale.Key(GApplication, "category.arrange");
     GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");
     GApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(GApplication, "category.view.magnification");
     GApplication.CATEGORY_WINDOW = new IFLocale.Key(GApplication, "category.window");
@@ -201,7 +202,7 @@
 
     /**
      * Array of registered actions
-     * @type {Array<GUIAction>}
+     * @type {Array<GAction>}
      * @private
      */
     GApplication.prototype._actions = null;
@@ -313,7 +314,7 @@
 
     /**
      * Get a list of all registered actions
-     * @return {Array<GUIAction>} list of registered actions
+     * @return {Array<GAction>} list of registered actions
      */
     GApplication.prototype.getActions = function () {
         return this._actions;
@@ -717,7 +718,7 @@
 
     /**
      * Create the main menu based on actions
-     * @param {Array<GUIAction>} actions
+     * @param {Array<GAction>} actions
      * @private
      */
     GApplication.prototype._createMainMenu = function () {

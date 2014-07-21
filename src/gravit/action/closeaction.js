@@ -3,12 +3,12 @@
     /**
      * Action closing a document
      * @class GCloseAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GCloseAction() {
     };
-    IFObject.inherit(GCloseAction, GUIAction);
+    IFObject.inherit(GCloseAction, GAction);
 
     GCloseAction.ID = "file.close";
     GCloseAction.TITLE = new IFLocale.Key(GCloseAction, "title");

@@ -3,12 +3,12 @@
     /**
      * Action for fitting the current layer into the current view
      * @class GFitCurrentLayerAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GFitCurrentLayerAction() {
     };
-    IFObject.inherit(GFitCurrentLayerAction, GUIAction);
+    IFObject.inherit(GFitCurrentLayerAction, GAction);
 
     GFitCurrentLayerAction.ID = 'view.zoom.fit-current-layer';
     GFitCurrentLayerAction.TITLE = new IFLocale.Key(GFitCurrentLayerAction, "title");

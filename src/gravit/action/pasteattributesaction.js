@@ -3,12 +3,12 @@
     /**
      * Action for pasting clipboard contents as attributes
      * @class GPasteAttributesAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GPasteAttributesAction() {
     };
-    IFObject.inherit(GPasteAttributesAction, GUIAction);
+    IFObject.inherit(GPasteAttributesAction, GAction);
 
     GPasteAttributesAction.ID = 'edit.paste-attributes';
     GPasteAttributesAction.TITLE = new IFLocale.Key(GPasteAttributesAction, "title");

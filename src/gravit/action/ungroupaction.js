@@ -3,12 +3,12 @@
     /**
      * Action for ungrouping the selection
      * @class GUngroupAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GUngroupAction() {
     };
-    IFObject.inherit(GUngroupAction, GUIAction);
+    IFObject.inherit(GUngroupAction, GAction);
 
     GUngroupAction.ID = 'modify.ungroup';
     GUngroupAction.TITLE = new IFLocale.Key(GUngroupAction, "title");

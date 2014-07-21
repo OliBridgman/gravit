@@ -4,13 +4,13 @@
      * Action importing a document
      * @param {GImport} import_
      * @class GImportAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GImportAction(import_) {
         this._import = import_;
     };
-    IFObject.inherit(GImportAction, GUIAction);
+    IFObject.inherit(GImportAction, GAction);
 
     GImportAction.ID = 'file.import';
     GImportAction.TITLE = new IFLocale.Key(GImportAction, "title");

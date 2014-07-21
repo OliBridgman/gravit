@@ -3,13 +3,13 @@
     /**
      * Action for changing paint mode in the current view
      * @class GPaintModeAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GPaintModeAction(paintMode) {
         this._paintMode = paintMode;
     };
-    IFObject.inherit(GPaintModeAction, GUIAction);
+    IFObject.inherit(GPaintModeAction, GAction);
 
     GPaintModeAction.ID = 'view.page.decoration';
     GPaintModeAction.TITLE = new IFLocale.Key(GPaintModeAction, 'title');

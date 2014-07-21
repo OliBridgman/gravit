@@ -3,12 +3,12 @@
     /**
      * Action for reseting the current view to the original view
      * @class GOriginalViewAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GOriginalViewAction() {
     };
-    IFObject.inherit(GOriginalViewAction, GUIAction);
+    IFObject.inherit(GOriginalViewAction, GAction);
 
     GOriginalViewAction.ID = 'view.zoom.original';
     GOriginalViewAction.TITLE = new IFLocale.Key(GOriginalViewAction, "title");

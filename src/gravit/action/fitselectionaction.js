@@ -3,12 +3,12 @@
     /**
      * Action for fitting the selection into the current view
      * @class GFitSelectionAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GFitSelectionAction() {
     };
-    IFObject.inherit(GFitSelectionAction, GUIAction);
+    IFObject.inherit(GFitSelectionAction, GAction);
 
     GFitSelectionAction.ID = 'view.zoom.fit-selection';
     GFitSelectionAction.TITLE = new IFLocale.Key(GFitSelectionAction, "title");

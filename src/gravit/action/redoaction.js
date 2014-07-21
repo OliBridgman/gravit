@@ -3,12 +3,12 @@
     /**
      * Action for redo on the current document
      * @class GRedoAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GRedoAction() {
     };
-    IFObject.inherit(GRedoAction, GUIAction);
+    IFObject.inherit(GRedoAction, GAction);
 
     GRedoAction.ID = 'edit.redo';
     GRedoAction.TITLE = new IFLocale.Key(GRedoAction, "title");

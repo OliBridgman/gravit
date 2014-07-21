@@ -3,12 +3,12 @@
     /**
      * Action for zooming out of the current view
      * @class GZoomOutAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GZoomOutAction() {
     };
-    IFObject.inherit(GZoomOutAction, GUIAction);
+    IFObject.inherit(GZoomOutAction, GAction);
 
     GZoomOutAction.ID = 'zoom.out';
     GZoomOutAction.TITLE = new IFLocale.Key(GZoomOutAction, "title");

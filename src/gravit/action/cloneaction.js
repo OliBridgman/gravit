@@ -3,12 +3,12 @@
     /**
      * Action for cloning the selection from the current document
      * @class GCloneAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GCloneAction() {
     };
-    IFObject.inherit(GCloneAction, GUIAction);
+    IFObject.inherit(GCloneAction, GAction);
 
     GCloneAction.ID = 'edit.clone';
     GCloneAction.TITLE = new IFLocale.Key(GCloneAction, "title");

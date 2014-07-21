@@ -3,12 +3,12 @@
     /**
      * Action for zooming into the current view
      * @class GZoomInAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GZoomInAction() {
     };
-    IFObject.inherit(GZoomInAction, GUIAction);
+    IFObject.inherit(GZoomInAction, GAction);
 
     GZoomInAction.ID = 'view.zoom.in';
     GZoomInAction.TITLE = new IFLocale.Key(GZoomInAction, "title");

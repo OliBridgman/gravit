@@ -4,13 +4,13 @@
      * Action importing a document
      * @param {GExport} export_
      * @class GExportAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GExportAction(export_) {
         this._export = export_;
     };
-    IFObject.inherit(GExportAction, GUIAction);
+    IFObject.inherit(GExportAction, GAction);
 
     GExportAction.ID = 'file.export';
     GExportAction.TITLE = new IFLocale.Key(GExportAction, "title");
@@ -33,7 +33,7 @@
      * @override
      */
     GExportAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_FILE_GPORT;
+        return GApplication.CATEGORY_FILE_EXPORT;
     };
 
     /**

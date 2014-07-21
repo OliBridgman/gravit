@@ -3,12 +3,12 @@
     /**
      * Action for grouping the selection together
      * @class GGroupAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GGroupAction() {
     };
-    IFObject.inherit(GGroupAction, GUIAction);
+    IFObject.inherit(GGroupAction, GAction);
 
     GGroupAction.ID = 'modify.group';
     GGroupAction.TITLE = new IFLocale.Key(GGroupAction, "title");

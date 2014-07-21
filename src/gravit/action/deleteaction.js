@@ -3,12 +3,12 @@
     /**
      * Action for deleting the selection from the current document
      * @class GDeleteAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GDeleteAction() {
     };
-    IFObject.inherit(GDeleteAction, GUIAction);
+    IFObject.inherit(GDeleteAction, GAction);
 
     GDeleteAction.ID = 'edit.delete';
     GDeleteAction.TITLE = new IFLocale.Key(GDeleteAction, "title");

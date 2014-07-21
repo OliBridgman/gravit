@@ -129,7 +129,7 @@
 
     /**
      * Creates a menu out of the registered actions
-     * @param {Array<GUIAction>} actions array of actions to create a menu of
+     * @param {Array<GAction>} actions array of actions to create a menu of
      * @param {GUIMenu} targetMenu the menu to create the action structure into
      */
     GUIMenu.createActionMenu = function (actions, targetMenu) {

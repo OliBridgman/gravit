@@ -3,12 +3,12 @@
     /**
      * Action for undo on the current document
      * @class GUndoAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GUndoAction() {
     };
-    IFObject.inherit(GUndoAction, GUIAction);
+    IFObject.inherit(GUndoAction, GAction);
 
     GUndoAction.ID = 'edit.undo';
     GUndoAction.TITLE = new IFLocale.Key(GUndoAction, "title");

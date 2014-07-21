@@ -229,6 +229,10 @@
             new GAddLayerAction(),
             new GAddLayerSetAction(),
 
+            // Arrange
+            new GBringForwardAction(),
+            new GAlignLeftAction(),
+
             // View
             new GOriginalViewAction(),
             new GFitSelectionAction(),

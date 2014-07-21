@@ -3,12 +3,12 @@
     /**
      * Action for cloning the current view
      * @class GNewWindowAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GNewWindowAction() {
     };
-    IFObject.inherit(GNewWindowAction, GUIAction);
+    IFObject.inherit(GNewWindowAction, GAction);
 
     GNewWindowAction.ID = 'view.clone';
     GNewWindowAction.TITLE = new IFLocale.Key(GNewWindowAction, "title");

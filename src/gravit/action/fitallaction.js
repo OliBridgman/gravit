@@ -3,12 +3,12 @@
     /**
      * Action for fitting everything into the current view
      * @class GFitAllAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GFitAllAction() {
     };
-    IFObject.inherit(GFitAllAction, GUIAction);
+    IFObject.inherit(GFitAllAction, GAction);
 
     GFitAllAction.ID = 'view.zoom.fit.all';
     GFitAllAction.TITLE = new IFLocale.Key(GFitAllAction, "title");

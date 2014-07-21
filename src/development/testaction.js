@@ -2,7 +2,7 @@
     function TestAction(test) {
         this._test = test;
     };
-    IFObject.inherit(TestAction, GUIAction);
+    IFObject.inherit(TestAction, GAction);
 
     /**
      * @override

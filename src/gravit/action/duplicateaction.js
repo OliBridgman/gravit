@@ -3,12 +3,12 @@
     /**
      * Action for cloning the selection from the current document
      * @class GDuplicateAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GDuplicateAction() {
     };
-    IFObject.inherit(GDuplicateAction, GUIAction);
+    IFObject.inherit(GDuplicateAction, GAction);
 
     GDuplicateAction.ID = 'edit.duplicate';
     GDuplicateAction.TITLE = new IFLocale.Key(GDuplicateAction, "title");

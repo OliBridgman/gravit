@@ -5,14 +5,14 @@
      * @param {GStorage} storage
      * @param {Boolean} isDefault whether this is the default storage or not
      * @class GOpenAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GOpenAction(storage, isDefault) {
         this._storage = storage;
         this._default = isDefault;
     };
-    IFObject.inherit(GOpenAction, GUIAction);
+    IFObject.inherit(GOpenAction, GAction);
 
     GOpenAction.ID = 'file.open';
     GOpenAction.TITLE = new IFLocale.Key(GOpenAction, "title");

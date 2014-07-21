@@ -3,14 +3,14 @@
     /**
      * Action for setting a specific magnfication on current view
      * @class GMagnificationAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GMagnificationAction(magnification, shortcut) {
         this._magnification = magnification;
         this._shortcut = shortcut;
     };
-    IFObject.inherit(GMagnificationAction, GUIAction);
+    IFObject.inherit(GMagnificationAction, GAction);
 
     GMagnificationAction.ID = 'view.magnification';
 

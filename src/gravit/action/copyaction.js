@@ -3,12 +3,12 @@
     /**
      * Action for copying the current selection to the clipboard
      * @class GCopyAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GCopyAction() {
     };
-    IFObject.inherit(GCopyAction, GUIAction);
+    IFObject.inherit(GCopyAction, GAction);
 
     GCopyAction.ID = 'edit.copy';
     GCopyAction.TITLE = new IFLocale.Key(GCopyAction, "title");

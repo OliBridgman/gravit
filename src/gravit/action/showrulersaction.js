@@ -3,12 +3,12 @@
     /**
      * Action for showing / hiding the rulers
      * @class GShowRulersAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GShowRulersAction() {
     };
-    IFObject.inherit(GShowRulersAction, GUIAction);
+    IFObject.inherit(GShowRulersAction, GAction);
 
     GShowRulersAction.ID = 'view.show-rulers';
     GShowRulersAction.TITLE = new IFLocale.Key(GShowRulersAction, "title");

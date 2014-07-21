@@ -3,12 +3,12 @@
     /**
      * Action for fitting the current page into the current view
      * @class GFitCurrentPageAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GFitCurrentPageAction() {
     };
-    IFObject.inherit(GFitCurrentPageAction, GUIAction);
+    IFObject.inherit(GFitCurrentPageAction, GAction);
 
     GFitCurrentPageAction.ID = 'view.zoom.fit-current-page';
     GFitCurrentPageAction.TITLE = new IFLocale.Key(GFitCurrentPageAction, "title");

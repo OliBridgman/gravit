@@ -3,12 +3,12 @@
     /**
      * Action for inserting a layer-set
      * @class GAddLayerSetAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GAddLayerSetAction() {
     };
-    IFObject.inherit(GAddLayerSetAction, GUIAction);
+    IFObject.inherit(GAddLayerSetAction, GAction);
 
     GAddLayerSetAction.ID = 'modify.add-layer-set';
     GAddLayerSetAction.TITLE = new IFLocale.Key(GAddLayerSetAction, "title");

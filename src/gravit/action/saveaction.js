@@ -3,12 +3,12 @@
     /**
      * Action saving a document
      * @class GSaveAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GSaveAction() {
     };
-    IFObject.inherit(GSaveAction, GUIAction);
+    IFObject.inherit(GSaveAction, GAction);
 
     GSaveAction.ID = 'file.save';
     GSaveAction.TITLE = new IFLocale.Key(GSaveAction, "title");

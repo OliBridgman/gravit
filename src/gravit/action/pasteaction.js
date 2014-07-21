@@ -3,12 +3,12 @@
     /**
      * Action for pasting clipboard contents
      * @class GPasteAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GPasteAction() {
     };
-    IFObject.inherit(GPasteAction, GUIAction);
+    IFObject.inherit(GPasteAction, GAction);
 
     GPasteAction.ID = 'edit.paste';
     GPasteAction.TITLE = new IFLocale.Key(GPasteAction, "title");

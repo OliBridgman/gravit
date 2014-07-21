@@ -3,12 +3,12 @@
     /**
      * Action for switching between pixel-mode and vector mode
      * @class GPixelPreviewAction
-     * @extends GUIAction
+     * @extends GAction
      * @constructor
      */
     function GPixelPreviewAction() {
     };
-    IFObject.inherit(GPixelPreviewAction, GUIAction);
+    IFObject.inherit(GPixelPreviewAction, GAction);
 
     GPixelPreviewAction.ID = 'view.pixel-preview';
     GPixelPreviewAction.TITLE = new IFLocale.Key(GPixelPreviewAction, 'title');
