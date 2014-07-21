@@ -304,7 +304,7 @@
                     // than the current selection or start from the beginning
                     var lastSelIndex = null;
                     for (var i = 0; i < selectableElements.length; ++i) {
-                        if (selectableElements[i].element.hasFlag(IFNode.Flag.Selected)) {
+                        if (selectableElements[i].hasFlag(IFNode.Flag.Selected)) {
                             lastSelIndex = i;
                         }
                     }

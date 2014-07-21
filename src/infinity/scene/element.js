@@ -897,7 +897,7 @@
      * @private
      */
     IFElement.prototype._calculatePaintBBox = function () {
-        var result = this.getChildrenGeometryBBox();
+        var result = this.getChildrenPaintBBox();
 
         if (result && this.hasMixin(IFElement.Style)) {
             result = this.getStyleSet().getBBox(result);
