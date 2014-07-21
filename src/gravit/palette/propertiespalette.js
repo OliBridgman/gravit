@@ -86,7 +86,7 @@
                 .append($('<div></div>')
                     .addClass('title')
                     .append($('<i></i>')
-                        .addClass('fa fa-caret-down'))
+                        .addClass('fa fa-angle-down'))
                     .append($('<span></span>')
                         .text(ifLocale.get(properties.getCategory())))
                     .on('click', function () {
@@ -95,11 +95,11 @@
                             var icon = category.find('i.fa');
                             if (panel.css('display') !== 'none') {
                                 panel.css('display', 'none');
-                                icon.attr('class', 'fa fa-caret-right');
+                                icon.attr('class', 'fa fa-angle-right');
                                 category.attr('data-expanded', 'false');
                             } else {
                                 panel.css('display', '');
-                                icon.attr('class', 'fa fa-caret-down');
+                                icon.attr('class', 'fa fa-angle-down');
                                 category.attr('data-expanded', 'true');
                             }
                         }
