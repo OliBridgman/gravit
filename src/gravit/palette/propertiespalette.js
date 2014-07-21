@@ -62,8 +62,8 @@
     };
 
     /** @override */
-    GPropertiesPalette.prototype.init = function (htmlElement, menu, controls) {
-        GPalette.prototype.init.call(this, htmlElement, menu, controls);
+    GPropertiesPalette.prototype.init = function (htmlElement, controls) {
+        GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._htmlElement = htmlElement;
 
@@ -109,7 +109,7 @@
                 .appendTo(propertiesPanels);
 
             // Init properties
-            properties.init(panel, category.find('.controls'), menu);
+            properties.init(panel, category.find('.controls'));
 
             // Append panel
             panel.appendTo(propertiesPanels);

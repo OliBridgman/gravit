@@ -17,7 +17,7 @@
     GPalettes.prototype._htmlElement = null;
 
     /**
-     * @type {Array<{{palette: GPalette, panel: JQuery, menu: GUIMenu}}>}
+     * @type {Array<{{palette: GPalette, panel: JQuery}}>}
      * @private
      */
     GPalettes.prototype._palettesInfo = null;
@@ -102,13 +102,6 @@
                         el.css('display', 'none');
                     }
                 });
-
-                // Assign palette menu
-                groupInfo.menuButton.setMenu(paletteInfo.menu);
-
-                // Toggle menu button visibility depending on menu items
-                groupInfo.menuButton._htmlElement.css('display', paletteInfo.menu.getItemCount() === 0 ? 'none' : '');
-                groupInfo.menuButton._item._htmlElement.addClass('g-flat');
 
                 // Empty and re-assign controls
                 var controls = groupInfo.container.find('.palette-group-controls');
@@ -212,70 +205,17 @@
         // NO-OP
     };
     GPalettes.prototype._addPaletteInfo = function (palette) {
-        // Create panel and menu
+        // Create panel
         var panel = $('<div></div>')
             .attr('data-palette-id', palette.getId())
             .addClass('palette-panel')
             .addClass('palette-' + palette.getId())
             .css('display', 'none');
-        var menu = new GUIMenu();
+
         var controls = $('<div></div>');
 
-        // Let palette init itself on panel and menu
-        palette.init(panel, menu, controls);
-
-        //
-        // Add default actions to menu
-        //
-        // TODO : Properly support below actions
-        /*
-         if (menu.getItemCount() > 0) {
-         menu.addItem(new GUIMenuItem(GUIMenuItem.Type.Divider));
-         }
-
-         var groupWithItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
-         menu.addItem(groupWithItem);
-         // TODO : I18N
-         groupWithItem.setCaption('Group ' + ifLocale.get(palette.getTitle()) + ' with');
-         groupWithItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
-         // Clear all sub-items and re-add possible palettes to group with
-         });
-
-         var moveGroupUpItem = new GUIMenuItem();
-         menu.addItem(moveGroupUpItem);
-         // TODO : I18N
-         moveGroupUpItem.setCaption('Move Group Up');
-         moveGroupUpItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Move Group Up');
-         });
-
-         var moveGroupDownItem = new GUIMenuItem();
-         menu.addItem(moveGroupDownItem);
-         // TODO : I18N
-         moveGroupDownItem.setCaption('Move Group Down');
-         moveGroupDownItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Move Group Down');
-         });
-
-         var pinGroupItem = new GUIMenuItem();
-         menu.addItem(pinGroupItem);
-         // TODO : I18N
-         pinGroupItem.setCaption('Pin Group');
-         pinGroupItem.setIcon('fa fa-thumb-tack');
-         pinGroupItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Pin Group');
-         });
-
-         menu.addItem(new GUIMenuItem(GUIMenuItem.Type.Divider));
-
-         var closePanelItem = new GUIMenuItem();
-         menu.addItem(closePanelItem);
-         // TODO : I18N
-         closePanelItem.setCaption('Close Group');
-         closePanelItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
-         alert('TODO : Close Group');
-         });
-         */
+        // Let palette init itself on panel
+        palette.init(panel, controls);
 
         //
         // Initiate our palette info object and add it to our array
@@ -283,7 +223,6 @@
         var paletteInfo = {
             palette: palette,
             panel: panel,
-            menu: menu,
             controls: controls
         };
         this._palettesInfo.push(paletteInfo);
@@ -354,12 +293,8 @@
             expanded: true,
             visible: true,
             activePalette: null,
-            palettes: [],
-            menuButton: new GUIMenuButton()
+            palettes: []
         };
-
-        groupInfo.menuButton.setIcon($('<span></span>')
-            .addClass('fa fa-chevron-down'));
 
         groupInfo.container = $('<div></div>')
             .addClass('palette-group')
@@ -376,8 +311,7 @@
                 .append($('<div></div>')
                     .addClass('palette-group-tabs'))
                 .append($('<div></div>')
-                    .addClass('palette-group-controls'))
-                .append(groupInfo.menuButton._htmlElement))
+                    .addClass('palette-group-controls')))
             .append($('<div></div>')
                 .addClass('palette-group-panels'))
             .appendTo(this._htmlElement);

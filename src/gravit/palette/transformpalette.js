@@ -54,8 +54,8 @@
     };
 
     /** @override */
-    GTransformPalette.prototype.init = function (htmlElement, menu, controls) {
-        GPalette.prototype.init.call(this, htmlElement, menu, controls);
+    GTransformPalette.prototype.init = function (htmlElement, controls) {
+        GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._htmlElement = htmlElement;
 

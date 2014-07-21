@@ -37,6 +37,7 @@
       button {
         background: transparent !important;
         border: none;
+        margin: 0px;
       }
 
       > .palette-group-collapse > button {
@@ -65,8 +66,8 @@
         }
       }
 
-      > .g-menu-button > li > .g-menu-item-tail {
-        display: none;
+      > :last-child {
+        padding-right: 5px;
       }
     }
 

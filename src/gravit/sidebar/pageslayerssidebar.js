@@ -51,12 +51,6 @@
      * @type {JQuery}
      * @private
      */
-    GPagesLayersSidebar.prototype._pageActiveControl = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
     GPagesLayersSidebar.prototype._layersTree = null;
 
     /**
@@ -83,12 +77,6 @@
      */
     GPagesLayersSidebar.prototype._layerDeleteControl = null;
 
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GPagesLayersSidebar.prototype._layerActiveControl = null;
-
     /** @override */
     GPagesLayersSidebar.prototype.getId = function () {
         return GPagesLayersSidebar.ID;
@@ -114,7 +102,7 @@
 
         this._pageAddControl =
             $('<button></button>')
-                .addClass('fa fa-fw fa-plus')
+                .addClass('fa fa-plus')
                 // TODO : I18N
                 .attr('title', 'Add Page')
                 .on('click', function () {
@@ -123,27 +111,10 @@
 
         this._pageDeleteControl =
             $('<button></button>')
-                .addClass('fa fa-fw fa-trash-o')
+                .addClass('fa fa-trash-o')
+                .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Selected Page')
-                .on('click', function () {
-                    /* TODO
-                     var swatch = this._swatchPanel.gSwatchPanel('value');
-                     var editor = this._document.getEditor();
-                     editor.beginTransaction();
-                     try {
-                     swatch.getParent().removeChild(swatch);
-                     } finally {
-                     editor.commitTransaction('Delete Swatch');
-                     }*/
-                }.bind(this));
-
-        this._pageActiveControl =
-            $('<button></button>')
-                .addClass('fa fa-fw fa-thumb-tack')
-                .css('margin-left', '7px')
-                // TODO : I18N
-                .attr('title', 'Show All Pages')
                 .on('click', function () {
                     /* TODO
                      var swatch = this._swatchPanel.gSwatchPanel('value');
@@ -163,8 +134,7 @@
                 content: this._pagesPanel,
                 controls: [
                     this._pageAddControl,
-                    this._pageDeleteControl,
-                    this._pageActiveControl
+                    this._pageDeleteControl
                 ]
             })
             .appendTo(htmlElement);
@@ -176,8 +146,8 @@
                 data: [],
                 dragAndDrop: true,
                 openFolderDelay: 0,
-                closedIcon: $('<span class="fa fa-fw fa-caret-right"></span>'),
-                openedIcon: $('<span class="fa fa-fw fa-caret-down"></span>'),
+                closedIcon: $('<span class="fa fa-caret-right"></span>'),
+                openedIcon: $('<span class="fa fa-caret-down"></span>'),
                 slide: false,
                 onIsMoveHandle: function ($element) {
                     return ($element.is('.jqtree-title'));
@@ -189,21 +159,18 @@
             .on('tree.open', function (evt) {
                 if (evt.node.layerOrItem) {
                     evt.node.layerOrItem.setFlag(IFNode.Flag.Expanded);
-                    this._tryFillLayerChildren(evt.node);
                 }
             }.bind(this))
             .on('tree.close', function (evt) {
                 if (evt.node.layerOrItem) {
                     evt.node.layerOrItem.removeFlag(IFNode.Flag.Expanded);
-                    this._clearLayerChildren(evt.node);
-                    this._updateLayer(evt.node.layerOrItem);
                 }
             }.bind(this))
             .on('tree.move', this._moveLayerTreeNode.bind(this));
 
         this._layerAddControl =
             $('<button></button>')
-                .addClass('fa fa-fw fa-plus')
+                .addClass('fa fa-plus')
                 // TODO : I18N
                 .attr('title', 'Add Layer')
                 .on('click', function () {
@@ -212,7 +179,7 @@
 
         this._layerSetAddControl =
             $('<button></button>')
-                .addClass('fa fa-fw fa-folder-o')
+                .addClass('fa fa-folder-o')
                 // TODO : I18N
                 .attr('title', 'Add Layer Set')
                 .on('click', function () {
@@ -221,27 +188,10 @@
 
         this._layerDeleteControl =
             $('<button></button>')
-                .addClass('fa fa-fw fa-trash-o')
+                .addClass('fa fa-trash-o')
+                .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Selected Layer')
-                .on('click', function () {
-                    /* TODO
-                     var swatch = this._swatchPanel.gSwatchPanel('value');
-                     var editor = this._document.getEditor();
-                     editor.beginTransaction();
-                     try {
-                     swatch.getParent().removeChild(swatch);
-                     } finally {
-                     editor.commitTransaction('Delete Swatch');
-                     }*/
-                }.bind(this));
-
-        this._layerActiveControl =
-            $('<button></button>')
-                .addClass('fa fa-fw fa-thumb-tack fa-rotate-270')
-                .css('margin-left', '7px')
-                // TODO : I18N
-                .attr('title', 'Lock To Active Layer')
                 .on('click', function () {
                     /* TODO
                      var swatch = this._swatchPanel.gSwatchPanel('value');
@@ -261,8 +211,8 @@
                 content: this._layersTree,
                 controls: [
                     this._layerAddControl,
-                    this._layerDeleteControl,
-                    this._layerActiveControl
+                    this._layerSetAddControl,
+                    this._layerDeleteControl
                 ]
             })
             .appendTo(htmlElement);
@@ -472,6 +422,7 @@
             var $element = $(element);
             if ($element.data('page') === page) {
                 $element.toggleClass('g-active', page.hasFlag(IFNode.Flag.Active));
+                $element.toggleClass('g-selected', page.hasFlag(IFNode.Flag.Selected));
 
                 $element.find('.page-visibility > span')
                     .toggleClass('fa-eye', pageVisible)
@@ -543,11 +494,18 @@
         // Make an initial update
         this._updateLayer(layerOrItem);
 
+        // Iterate children and add them as well
+        layerOrItem.acceptChildren(function (node) {
+            if (node instanceof IFLayerBlock || node instanceof IFItem) {
+                this._insertLayer(node);
+            }
+        }.bind(this));
+
         // Gather the new treenode for our node
         var treeNode = this._getLayerTreeNode(layerOrItem);
 
-        // Select if layer and active
-        if (layerOrItem instanceof IFLayer && layerOrItem.hasFlag(IFNode.Flag.Active)) {
+        // Select if item and selected
+        if (layerOrItem instanceof IFItem && layerOrItem.hasFlag(IFNode.Flag.Selected)) {
             this._layersTree.tree('selectNode', treeNode);
         }
 
@@ -565,30 +523,6 @@
         if (treeNode) {
             // Call an update for the node
             this._layersTree.tree('updateNode', treeNode, layerOrItem.getLabel());
-
-            // Append a dummy node if we have any children or remove any dummy node if we don't have any
-            var hasChildren = false;
-            for (var child = layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFBlock) {
-                    hasChildren = true;
-                    break;
-                }
-            }
-
-            var dummyTreeNode = null;
-            for (var i = 0; i < treeNode.children.length; i++) {
-                var treeChild = treeNode.children[i];
-                if (!treeChild.layerOrItem) {
-                    dummyTreeNode = treeChild;
-                    break;
-                }
-            }
-
-            if (hasChildren && !dummyTreeNode && !layerOrItem.hasFlag(IFNode.Flag.Expanded)) {
-                this._layersTree.tree('appendNode', { id: ifUtil.uuid(), layerOrItem: null }, treeNode);
-            } else if (!hasChildren && dummyTreeNode) {
-                this._layersTree.tree('removeNode', dummyTreeNode);
-            }
         }
     };
 
@@ -622,15 +556,7 @@
         } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
             var activePage = this._document.getScene().getActivePage();
             if (event.node.getPage() === activePage) {
-                var parent = event.node.getParent();
-                if (parent instanceof IFPage || parent.hasFlag(IFNode.Flag.Expanded)) {
-                    this._insertLayer(event.node);
-                } else {
-                    // Update parent instead if it is not the page
-                    if (parent instanceof IFLayerBlock || parent instanceof IFItem) {
-                        this._updateLayer(parent);
-                    }
-                }
+                this._insertLayer(event.node);
             }
         }
     };
@@ -642,7 +568,7 @@
     GPagesLayersSidebar.prototype._beforeNodeRemove = function (event) {
         if (event.node instanceof IFPage) {
             this._removePage(event.node);
-        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
+        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
             this._removeLayer(event.node);
         }
     };
@@ -654,7 +580,7 @@
     GPagesLayersSidebar.prototype._afterPropertiesChange = function (event) {
         if (event.node instanceof IFPage) {
             this._updatePage(event.node);
-        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
+        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
             this._updateLayer(event.node);
         }
     };
@@ -664,17 +590,17 @@
      * @private
      */
     GPagesLayersSidebar.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active) {
+        if (event.node instanceof IFPage && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected)) {
             this._pagesPanel.find('.page-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('page') === event.node) {
-                    $element.toggleClass('g-active', event.set);
+                    $element.toggleClass(event.flag === IFNode.Flag.Active ? 'g-active' : 'g-selected', event.set);
                 }
             });
 
             // Page activeness change requires clearing layers
             this._clearLayers();
-        } else if (event.node instanceof IFLayer && event.flag === IFNode.Flag.Active) {
+        } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
             var treeNode = this._getLayerTreeNode(event.node);
             if (treeNode) {
                 if (event.set) {
@@ -691,10 +617,40 @@
         if (node.layerOrItem) {
             var layerOrItem = node.layerOrItem;
 
+            // Iterate parents up and collect some information
+            var itemLevel = 0;
+            var parentHidden = false;
+            var parentLocked = false;
+            var parentOutlined = false;
+
+            for (var p = layerOrItem.getParent(); p !== null; p = p.getParent()) {
+                // Stop on page root
+                if (p instanceof IFPage) {
+                    break;
+                }
+
+                // Query information
+                parentHidden = p.getProperty('visible') === false || parentHidden;
+                parentLocked = p.getProperty('locked') === true || parentLocked;
+
+                if (p instanceof IFLayerBlock) {
+                    parentOutlined = p.getProperty('otl') === true || parentOutlined;
+                }
+
+                itemLevel += 1;
+            }
+
+            var isHidden = parentHidden || layerOrItem.getProperty('visible') === false;
+            var isLocked = parentLocked || layerOrItem.getProperty('locked') === true;
+            var isOutlined = parentOutlined || (layerOrItem instanceof IFLayerBlock && layerOrItem.getProperty('otl'));
+
+            // Gather a reference to the element container
+            var container = li.find('div.jqtree-element');
+
             // First, we'll make our title editable
-            li
+            container
                 .gAutoEdit({
-                    selector: '> .jqtree-element > .jqtree-title'
+                    selector: '> .jqtree-title'
                 })
                 .on('submitvalue', function (evt, value) {
                     // TODO : I18M
@@ -704,17 +660,26 @@
                         }, 'Rename Layer/Item');
                     }
                 });
+
+            // Prepend visibility and locked markers
+            $('<span></span>')
+                .addClass('fa fa-fw fa-' + (isLocked ? 'lock' : 'unlock'))
+                .prependTo(container);
+
+            $('<span></span>')
+                .addClass('fa fa-fw fa-' + (isHidden ? 'eye-slash' : 'eye'))
+                .prependTo(container);
         }
     };
 
     /** @private */
     GPagesLayersSidebar.prototype._canMoveLayerTreeNode = function (moved_node, target_node, position) {
-        return true;// this._getLayerTreeNodeMoveInfo(position, moved_node.layerOrItem, target_node.layerOrItem) !== null;
+        return this._getLayerTreeNodeMoveInfo(position, moved_node.layerOrItem, target_node.layerOrItem) !== null;
     };
 
     /** @private */
     GPagesLayersSidebar.prototype._canSelectLayerTreeNode = function (node) {
-        return node.layerOrItem && node.layerOrItem instanceof IFLayer;
+        return node.layerOrItem && node.layerOrItem instanceof IFLayerBlock;
     };
 
     /** @private */
@@ -765,36 +730,6 @@
         }
 
         return null;
-    };
-
-    /** @private */
-    GPagesLayersSidebar.prototype._clearLayerChildren = function (layerTreeNode) {
-        var children = layerTreeNode.children.slice();
-        for (var i = 0; i < children.length; i++) {
-            this._removeLayer(children[i].layerOrItem);
-        }
-    };
-
-    /** @private */
-    GPagesLayersSidebar.prototype._tryFillLayerChildren = function (layerTreeNode) {
-        var dummyTreeNode = null;
-        for (var i = 0; i < layerTreeNode.children.length; i++) {
-            var treeChild = layerTreeNode.children[i];
-            if (!treeChild.layerOrItem) {
-                dummyTreeNode = treeChild;
-                break;
-            }
-        }
-
-        if (dummyTreeNode) {
-            this._layersTree.tree('removeNode', dummyTreeNode);
-
-            for (var child = layerTreeNode.layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFLayerBlock || child instanceof IFItem) {
-                    this._insertLayer(child);
-                }
-            }
-        }
     };
 
     /**

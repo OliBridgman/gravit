@@ -128,15 +128,14 @@
     };
 
     /** @override */
-    GStylePalette.prototype.init = function (htmlElement, menu, controls) {
-        GPalette.prototype.init.call(this, htmlElement, menu, controls);
+    GStylePalette.prototype.init = function (htmlElement, controls) {
+        GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._htmlElement = htmlElement;
 
         // Init controls
         this._styleAddControl = $('<button></button>')
-            .addClass('fa fa-fw fa-plus')
-            .css('margin-right', '5px')
+            .addClass('fa fa-plus')
             // TODO : I18N
             .attr('title', 'Add new style')
             .on('click', function (evt) {
@@ -196,7 +195,7 @@
             .appendTo(controls);
 
         this._styleVisibilityToggleControl = $('<button></button>')
-            .addClass('fa fa-fw')
+            .addClass('fa')
             .on('click', function (evt) {
                 var makeVisible = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
                 this._modifyEachSelectedStyle(function (style) {
@@ -206,14 +205,15 @@
             .appendTo(controls);
 
         this._styleLinkToggleControl = $('<button></button>')
-            .addClass('fa fa-fw')
+            .addClass('fa')
             .on('click', function () {
                 this._toggleStyleLink();
             }.bind(this))
             .appendTo(controls);
 
         this._styleDeleteControl = $('<button></button>')
-            .addClass('fa fa-fw fa-trash-o')
+            .addClass('fa fa-trash-o')
+            .css('margin-left', '5px')
             // TODO : I18N
             .attr('title', 'Remove hidden styles')
             .on('click', function () {
