@@ -154,7 +154,9 @@
                 },
                 onCreateLi: this._createLayerTreeItem.bind(this),
                 onCanMoveTo: this._canMoveLayerTreeNode.bind(this),
-                onCanSelectNode: this._canSelectLayerTreeNode.bind(this)
+                onCanSelectNode: function () {
+                    return false;
+                }
             })
             .on('tree.open', function (evt) {
                 if (evt.node.layerOrItem) {
@@ -166,6 +168,7 @@
                     evt.node.layerOrItem.removeFlag(IFNode.Flag.Expanded);
                 }
             }.bind(this))
+            .on('tree.click', this._clickLayerTreeNode.bind(this))
             .on('tree.move', this._moveLayerTreeNode.bind(this));
 
         this._layerAddControl =
@@ -289,7 +292,7 @@
                 .append($('<span></span>')
                     .addClass('fa fa-fw')))
             .append($('<div></div>')
-                .addClass('page-locked')
+                .addClass('page-lock')
                 // TODO : I18N
                 .attr('title', 'Toggle Page Lock')
                 .on('click', function (evt) {
@@ -312,10 +315,6 @@
                         }, 'Rename Page');
                     }
                 }))
-            .append($('<div></div>')
-                .addClass('page-master-slave')
-                .append($('<span></span>')
-                    .addClass('fa fa-fw')))
             .on('mousedown', function () {
                 // TODO
             })
@@ -415,8 +414,6 @@
     GPagesLayersSidebar.prototype._updatePage = function (page) {
         var pageVisible = page.getProperty('visible');
         var pageLocked = page.getProperty('locked');
-        var pageMaster = false;
-        var pageSlave = false;
 
         this._pagesPanel.find('.page-block').each(function (index, element) {
             var $element = $(element);
@@ -424,17 +421,19 @@
                 $element.toggleClass('g-active', page.hasFlag(IFNode.Flag.Active));
                 $element.toggleClass('g-selected', page.hasFlag(IFNode.Flag.Selected));
 
-                $element.find('.page-visibility > span')
+                $element.find('.page-visibility')
+                    .toggleClass('page-default', pageVisible)
+                    /*!!*/
+                    .find('> span')
                     .toggleClass('fa-eye', pageVisible)
                     .toggleClass('fa-eye-slash', !pageVisible);
 
-                $element.find('.page-locked > span')
+                $element.find('.page-lock')
+                    .toggleClass('page-default', !pageLocked)
+                    /*!!*/
+                    .find('> span')
                     .toggleClass('fa-lock', pageLocked)
                     .toggleClass('fa-unlock', !pageLocked);
-
-                $element.find('.page-master-slave > span')
-                    .toggleClass('fa-share', pageMaster)
-                    .toggleClass('fa-link', pageSlave);
 
                 $element.find('.page-name').text(page.getProperty('name'));
                 return false;
@@ -600,13 +599,25 @@
 
             // Page activeness change requires clearing layers
             this._clearLayers();
+        } else if (event.node instanceof IFLayerBlock && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected)) {
+            this._updateLayer(event.node);
         } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
-            var treeNode = this._getLayerTreeNode(event.node);
-            if (treeNode) {
-                if (event.set) {
-                    this._layersTree.tree('selectNode', treeNode);
-                } else {
-                    this._layersTree.tree('selectNode', null);
+            this._updateLayer(event.node);
+        }
+    };
+
+    /** @private */
+    GPagesLayersSidebar.prototype._clickLayerTreeNode = function (evt) {
+        if (evt.node.layerOrItem) {
+            if (evt.node.layerOrItem instanceof IFLayer) {
+                this._document.getScene().setActiveLayer(evt.node.layerOrItem);
+            } else if (evt.node.layerOrItem instanceof IFItem) {
+                if (ifPlatform.modifiers.shiftKey || !evt.node.layerOrItem.hasFlag(IFNode.Flag.Selected)) {
+                    // Add element to selection
+                    this._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [evt.node.layerOrItem]);
+                } else if (evt.node.layerOrItem.hasFlag(IFNode.Flag.Selected)) {
+                    // Clear selection leaving only the one element
+                    this._document.getEditor().clearSelection([evt.node.layerOrItem]);
                 }
             }
         }
@@ -647,8 +658,10 @@
             // Gather a reference to the element container
             var container = li.find('div.jqtree-element');
 
-            // First, we'll make our title editable
+            // First, we'll make our title editable and toogle active/selected
             container
+                .toggleClass('g-active', layerOrItem.hasFlag(IFNode.Flag.Active))
+                .toggleClass('g-selected', layerOrItem.hasFlag(IFNode.Flag.Selected))
                 .gAutoEdit({
                     selector: '> .jqtree-title'
                 })
@@ -661,13 +674,41 @@
                     }
                 });
 
-            // Prepend visibility and locked markers
+            // Prepend level spacers, visibility and locked markers
+            for (var i = 0; i < itemLevel; ++i) {
+                $('<span></span>')
+                    .addClass('layer-spacer')
+                    .prependTo(container);
+            }
+
             $('<span></span>')
-                .addClass('fa fa-fw fa-' + (isLocked ? 'lock' : 'unlock'))
+                .addClass('layer-lock fa fa-fw fa-' + (isLocked ? 'lock' : 'unlock'))
+                .toggleClass('layer-default', !isLocked)
+                // TODO : I18N
+                .attr('title', 'Toggle Lock')
+                .on('click', function () {
+                    if (!parentLocked) {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                            layerOrItem.setProperty('locked', !layerOrItem.getProperty('locked'));
+                        }, 'Toggle Layer Locked');
+                    }
+                })
                 .prependTo(container);
 
             $('<span></span>')
-                .addClass('fa fa-fw fa-' + (isHidden ? 'eye-slash' : 'eye'))
+                .addClass('layer-visibility fa fa-' + (isHidden ? 'eye-slash' : 'eye'))
+                .toggleClass('layer-default', !isHidden)
+                // TODO : I18N
+                .attr('title', 'Toggle Visibility')
+                .on('click', function () {
+                    if (!parentHidden) {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                            layerOrItem.setProperty('visible', !layerOrItem.getProperty('visible'));
+                        }, 'Toggle Layer Visibility');
+                    }
+                })
                 .prependTo(container);
         }
     };
@@ -675,11 +716,6 @@
     /** @private */
     GPagesLayersSidebar.prototype._canMoveLayerTreeNode = function (moved_node, target_node, position) {
         return this._getLayerTreeNodeMoveInfo(position, moved_node.layerOrItem, target_node.layerOrItem) !== null;
-    };
-
-    /** @private */
-    GPagesLayersSidebar.prototype._canSelectLayerTreeNode = function (node) {
-        return node.layerOrItem && node.layerOrItem instanceof IFLayerBlock;
     };
 
     /** @private */

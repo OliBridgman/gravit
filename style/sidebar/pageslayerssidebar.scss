@@ -37,26 +37,26 @@
       > div:not(.drag-overlay) {
         display: table-cell;
         vertical-align: middle;
-        padding: 4px 3px;
+        padding: 4px 0px;
 
-        &, * {
-          cursor: pointer;
-        }
+        &.page-visibility, &.page-lock {
+          border-right: 1px solid $frame3DShadowColor;
+          min-width: 21px;
+          max-width: 21px;
+          text-align: center;
 
-        &:first-child {
-          padding-left: 5px;
-        }
+          &.page-default * {
+            color: $disabledTextColor;
+          }
 
-        &:last-child {
-          padding-right: 5px;
+          &, * {
+            cursor: pointer;
+          }
         }
 
         &.page-name {
           width: 100%;
-
-          &, * {
-            cursor: default;
-          }
+          padding-left: 3px;
         }
       }
 
@@ -75,37 +75,51 @@
       padding: 0px;
       border-bottom: 1px solid $frame3DShadowColor;
 
-      > * {
-        //display: table-cell;
-        vertical-align: middle;
-        padding: 4px 3px;
+      &.g-active {
+        background: $activeColor;
 
         &, * {
-          cursor: pointer;
+          color: $activeTextColor;
         }
+      }
 
-        &:first-child {
-          padding-left: 5px;
+      &.g-selected {
+        background: $selectedColor;
+
+        &, * {
+          color: $selectedTextColor;
         }
+      }
 
-        &:last-child {
-          padding-right: 5px;
-        }
+      > * {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 4px 0px;
 
-        &.jqtree-toggler {
-          padding: 0px;
+        &.layer-visibility, &.layer-lock {
+          border-right: 1px solid $frame3DShadowColor;
+          min-width: 21px;
+          max-width: 21px;
+          text-align: center;
+
+          &.layer-default {
+            color: $disabledTextColor;
+          }
 
           &, * {
-            cursor: default;
+            cursor: pointer;
           }
+        }
+
+        &.jqtree-toggler, &.layer-spacer {
+          text-align: center;
+          min-width: 13px;
+          max-width: 13px;
         }
 
         &.jqtree-title {
           width: 100%;
-
-          &, * {
-            cursor: default;
-          }
+          padding-left: 3px;
         }
       }
     }

@@ -1255,11 +1255,6 @@
                 if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
                     this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
                 }
-
-                // Mark containing layer active if any
-                if (node.getParent() instanceof IFLayer) {
-                    node.getParent().setFlag(IFNode.Flag.Active);
-                }
             }
         }
     };
@@ -1302,12 +1297,6 @@
                 // Trigger selection change event
                 if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
                     this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
-                }
-
-                // Deactivate parent if layer and no other selected
-                // item has had the same parent
-                if (node.getParent() instanceof IFLayer && !sameParentInSelection) {
-                    node.getParent().removeFlag(IFNode.Flag.Active);
                 }
             }
         } else if (node instanceof IFNode && node.hasFlag(IFNode.Flag.Selected)) {
