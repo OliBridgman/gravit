@@ -111,9 +111,3 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
   color: $selectedTextColor;
 }
 
-ul.jqtree-tree li.jqtree-active > .jqtree-element,
-ul.jqtree-tree li.jqtree-active > .jqtree-element:hover {
-  background: $activeColor;
-  color: $activeTextColor;
-}
-
