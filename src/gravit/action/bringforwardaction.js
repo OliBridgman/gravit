@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GBringForwardAction, GAction);
 
-    GBringForwardAction.ID = 'modify.arrange.bring-forward';
+    GBringForwardAction.ID = 'arrange.bring-forward';
     GBringForwardAction.TITLE = new IFLocale.Key(GBringForwardAction, "title");
 
     /**

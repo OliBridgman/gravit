@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GAlignLeftAction, GAction);
 
-    GAlignLeftAction.ID = 'modify.align.left';
+    GAlignLeftAction.ID = 'arrange.align-left';
     GAlignLeftAction.TITLE = new IFLocale.Key(GAlignLeftAction, "title");
 
     /**
