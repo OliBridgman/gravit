@@ -96,7 +96,7 @@
         vertical-align: middle;
         padding: 4px 0px;
 
-        &.layer-visibility, &.layer-lock {
+        &.layer-visibility, &.layer-lock, &.layer-outline {
           border-right: 1px solid $frame3DShadowColor;
           min-width: 21px;
           max-width: 21px;
@@ -109,6 +109,15 @@
           &, * {
             cursor: pointer;
           }
+        }
+
+        &.layer-folder {
+          padding-left: 3px;
+        }
+
+        &.layer-color {
+          min-width: 8px;
+          max-width: 8px;
         }
 
         &.jqtree-toggler, &.layer-spacer {

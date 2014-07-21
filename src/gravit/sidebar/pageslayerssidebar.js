@@ -182,7 +182,7 @@
 
         this._layerSetAddControl =
             $('<button></button>')
-                .addClass('fa fa-folder-o')
+                .addClass('fa fa-folder')
                 // TODO : I18N
                 .attr('title', 'Add Layer Set')
                 .on('click', function () {
@@ -657,6 +657,7 @@
 
             // Gather a reference to the element container
             var container = li.find('div.jqtree-element');
+            var title = container.find('> .jqtree-title');
 
             // First, we'll make our title editable and toogle active/selected
             container
@@ -674,13 +675,21 @@
                     }
                 });
 
-            // Prepend level spacers, visibility and locked markers
+            // Prepend level spacers
             for (var i = 0; i < itemLevel; ++i) {
                 $('<span></span>')
                     .addClass('layer-spacer')
                     .prependTo(container);
             }
 
+            // Prepend icon before title
+            if (layerOrItem instanceof IFLayerSet) {
+                $('<span></span>')
+                    .addClass('layer-folder fa fa-' + (layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder'))
+                    .insertBefore(title);
+            }
+
+            // Prepend locked and visibility markers
             $('<span></span>')
                 .addClass('layer-lock fa fa-fw fa-' + (isLocked ? 'lock' : 'unlock'))
                 .toggleClass('layer-default', !isLocked)
@@ -710,6 +719,51 @@
                     }
                 })
                 .prependTo(container);
+
+            // Append outline & color for layers
+            if (layerOrItem instanceof IFLayerBlock) {
+                $('<span></span>')
+                    .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
+                    .toggleClass('layer-default', !isOutlined)
+                    // TODO : I18N
+                    .attr('title', 'Toggle Outline')
+                    .on('click', function () {
+                        if (!parentHidden) {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(layerOrItem, function () {
+                                layerOrItem.setProperty('otl', !layerOrItem.getProperty('otl'));
+                            }, 'Toggle Layer Outline');
+                        }
+                    })
+                    .appendTo(container);
+
+                $('<span></span>')
+                    .addClass('layer-color')
+                    .gColorButton({
+                        scene: this._document.getScene(),
+                        immediateClose: true
+                    })
+                    .gColorButton('value', layerOrItem.getProperty('cls'))
+                    .on('colorchange', function (evt, color) {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                            var myColor = layerOrItem.getProperty('cls');
+                            layerOrItem.setProperty('cls', color);
+
+                            // Apply color to all child layers recursively that
+                            // do have the same color as our layer
+                            layerOrItem.acceptChildren(function (node) {
+                                if (node instanceof IFLayerBlock) {
+                                    var childColor = node.getProperty('cls');
+                                    if (IFColor.equals(childColor, myColor)) {
+                                        node.setProperty('cls', color);
+                                    }
+                                }
+                            });
+                        }, 'Change Layer Color');
+                    })
+                    .appendTo(container);
+            }
         }
     };
 

@@ -49,7 +49,7 @@
         'D': new IFLocale.Key(IFLayerBlock, 'type.draft'),
         'G': new IFLocale.Key(IFLayerBlock, 'type.guide')
     };
-    
+
     /**
      * The meta properties of a layer with their default values
      */
@@ -116,6 +116,10 @@
                 // TODO : Mark draft layers like changing opacity etc.
             }
 
+            if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && this.$otl) {
+                context.outlineColors.push(this.$cls);
+            }
+
             return true;
         }
         return false;
@@ -130,11 +134,17 @@
             // TODO : Reset marked draft layers like changed opacity etc.
         }
 
+        if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && this.$otl) {
+            context.outlineColors.pop();
+        }
+
         IFBlock.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
     IFLayerBlock.prototype._handleChange = function (change, args) {
+        this._handleVisualChangeForProperties(change, args, IFLayerBlock.VisualProperties);
+
         if (change == IFNode._Change.AfterPropertiesChange) {
             var typeIndex = args.properties.indexOf('tp');
             if (typeIndex >= 0) {

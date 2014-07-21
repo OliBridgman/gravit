@@ -24,6 +24,8 @@
                 autoOpen: true,
                 // Whether to allow clearing the color or not
                 allowClear: false,
+                // Whether to immediately close after color has changed or not
+                immediateClose: false,
                 // Scene to be used for swatches
                 scene: null
                 // see options of gPatternTarget
@@ -48,6 +50,10 @@
                             colorPanel.off('close', data.panelCloseListener);
                         },
                         panelChangeListener: function (evt, color) {
+                            if (options.immediateClose) {
+                                methods.close.call(self);
+                            }
+
                             methods.value.call(self, color);
                             $this.trigger('colorchange', color);
                         }
