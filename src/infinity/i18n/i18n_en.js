@@ -33,6 +33,7 @@ ifLocale.setValues(IFRectangle, IFLocale.Language.English, ["name"], ["Rectangle
 ifLocale.setValues(IFLayerBlock, IFLocale.Language.English, ["type.output", "type.draft", "type.guide"], ["Output", "Draft", "Guide"]);
 ifLocale.setValues(IFLayer, IFLocale.Language.English, ["name"], ["Layer"]);
 ifLocale.setValues(IFLayerSet, IFLocale.Language.English, ["name"], ["Layer Set"]);
+ifLocale.setValues(IFShapeSet, IFLocale.Language.English, ["name"], ["Group"]);
 ifLocale.setValues(IFScene, IFLocale.Language.English, ["name"], ["Scene"]);
 ifLocale.setValues(IFPolygon, IFLocale.Language.English, ["name"], ["Polygon"]);
 ifLocale.setValues(IFPage, IFLocale.Language.English, ["name"], ["Page"]);

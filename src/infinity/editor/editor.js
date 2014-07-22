@@ -430,7 +430,8 @@
     /**
      * Delete current selection (if any). Note that this will only
      * delete IFItem based classes so that layers and/or pages
-     * are not accidently deleted
+     * are not accidently deleted. Note also that this will not
+     * delete items that are locked
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
@@ -444,7 +445,7 @@
                 var orderedSelection = IFNode.order(this._selection, true);
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
-                    if (selElement instanceof IFItem) {
+                    if (selElement instanceof IFItem && !selItem.hasFlag(IFElement.Flag.Locked)) {
                         selElement.getParent().removeChild(selElement);
                     }
                 }
@@ -659,6 +660,11 @@
                                     // Push clone into new selection
                                     clonedSelection.push(elementToApplyTransform);
                                 } else {
+                                    elementToApplyTransform = null;
+                                }
+                            } else {
+                                // Avoid transform when locked
+                                if (selectionElement.hasFlag(IFElement.Flag.Locked)) {
                                     elementToApplyTransform = null;
                                 }
                             }

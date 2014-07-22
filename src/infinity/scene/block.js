@@ -130,9 +130,9 @@
                 this.accept(function (node) {
                     if (node instanceof IFElement) {
                         if (isLocked) {
-                            node.removeFlag(IFElement.Flag.Locked);
-                        } else {
                             node.setFlag(IFElement.Flag.Locked);
+                        } else {
+                            node.removeFlag(IFElement.Flag.Locked);
                         }
                     }
                 });
