@@ -870,6 +870,11 @@
                 }
             }
 
+            if (before === source) {
+                // we can not insert before ourself
+                return null;
+            }
+
             if (source.validateInsertion(parent, before)) {
                 return {
                     parent: parent,

@@ -217,7 +217,6 @@
                 }
 
                 child.render(context);
-                break;
             }
         }
 
