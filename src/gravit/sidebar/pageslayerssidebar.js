@@ -834,11 +834,21 @@
                 parent = target;
                 before = target.getFirstChild();
             } else if (position === 'before') {
-                parent = target.getParent();
-                before = target;
+                if (target instanceof IFPage) {
+                    parent = target;
+                    before = target.getFirstChild();
+                } else {
+                    parent = target.getParent();
+                    before = target;
+                }
             } else if (position == 'after') {
-                parent = target.getParent();
-                before = target.getNext();
+                if (target instanceof IFPage) {
+                    parent = target;
+                    before = null;
+                } else {
+                    parent = target.getParent();
+                    before = target.getNext();
+                }
             }
 
             if (source.validateInsertion(parent, before)) {
