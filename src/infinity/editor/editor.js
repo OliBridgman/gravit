@@ -428,7 +428,9 @@
     };
 
     /**
-     * Delete current selection (if any)
+     * Delete current selection (if any). Note that this will only
+     * delete IFItem based classes so that layers and/or pages
+     * are not accidently deleted
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
@@ -442,7 +444,9 @@
                 var orderedSelection = IFNode.order(this._selection, true);
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
-                    selElement.getParent().removeChild(selElement);
+                    if (selElement instanceof IFItem) {
+                        selElement.getParent().removeChild(selElement);
+                    }
                 }
             } finally {
                 if (!noTransaction) {

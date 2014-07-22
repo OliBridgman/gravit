@@ -53,7 +53,19 @@
      */
     GDeleteAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        return document && !!document.getEditor().getSelection();
+
+        if (document) {
+            var selection = document.getEditor().getSelection();
+            if (selection) {
+                for (var i = 0; i < selection.length; ++i) {
+                    if (selection[i] instanceof IFItem) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     };
 
     /**
