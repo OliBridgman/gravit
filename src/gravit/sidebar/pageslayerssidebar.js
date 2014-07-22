@@ -737,15 +737,18 @@
                 .prependTo(container);
 
 
-
             // Add highlighter if item
             if (layerOrItem instanceof IFItem) {
                 visibleContainer
                     .on('mouseenter', function (evt) {
-                        layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                        if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
+                            layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                        }
                     })
                     .on('mouseleave', function (evt) {
-                        layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                        if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
+                            layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                        }
                     });
             }
 
