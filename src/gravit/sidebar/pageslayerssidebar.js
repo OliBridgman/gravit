@@ -721,7 +721,7 @@
                 })
                 .prependTo(container);
 
-            $('<span></span>')
+            var visibleContainer = $('<span></span>')
                 .addClass('layer-visibility fa fa-' + (isHidden ? 'eye-slash' : 'eye'))
                 .toggleClass('layer-default', !isHidden)
                 // TODO : I18N
@@ -735,6 +735,19 @@
                     }
                 })
                 .prependTo(container);
+
+
+
+            // Add highlighter if item
+            if (layerOrItem instanceof IFItem) {
+                visibleContainer
+                    .on('mouseenter', function (evt) {
+                        layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                    })
+                    .on('mouseleave', function (evt) {
+                        layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                    });
+            }
 
             // Append outline & color for layers
             if (layerOrItem instanceof IFLayerBlock) {
