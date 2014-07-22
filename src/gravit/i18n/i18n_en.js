@@ -41,6 +41,7 @@ ifLocale.setValues(GFitCurrentPageAction, IFLocale.Language.English, ["title"], 
 ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["Fit Selection"]);
 ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
 ifLocale.setValues(GImportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
+ifLocale.setValues(GInvertSelectionAction, IFLocale.Language.English, ["title"], ["Invert Selection"]);
 ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
@@ -55,6 +56,7 @@ ifLocale.setValues(GSaveAction, IFLocale.Language.English, ["title"], ["Save"]);
 ifLocale.setValues(GSaveAllAction, IFLocale.Language.English, ["title"], ["Save All"]);
 ifLocale.setValues(GSaveAsAction, IFLocale.Language.English, ["title", "title-default"], ["To %name%...", "Save As..."]);
 ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Rulers"]);
+ifLocale.setValues(GSelectAllAction, IFLocale.Language.English, ["title"], ["Select All"]);
 ifLocale.setValues(GShowAllPagesAction, IFLocale.Language.English, ["title"], ["All Pages"]);
 ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungroup Selection"]);

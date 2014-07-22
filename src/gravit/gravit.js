@@ -221,6 +221,9 @@
             new GDuplicateAction(),
             new GCloneAction(),
 
+            new GSelectAllAction(),
+            new GInvertSelectionAction(),
+
             // Modify
             new GGroupAction(),
             new GUngroupAction(),
