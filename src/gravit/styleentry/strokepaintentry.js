@@ -95,7 +95,7 @@
                     .css('width', '5em')
                     .on('change', function (evt) {
                         var value = scene.stringToPoint($(this).val());
-                        if (value !== null && typeof value === 'number' && value >= 0) {
+                        if (value !== null && typeof value === 'number' && value > 0) {
                             assign();
                         } else {
                             revert();
