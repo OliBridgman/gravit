@@ -452,7 +452,10 @@
 
     /** @private */
     GPagesLayersSidebar.prototype._clearLayers = function () {
+        // Clear layer tree and mark root opened afterwards (!!)
         this._layersTree.tree('loadData', []);
+        this._layersTree.tree('getTree').is_open = true;
+
         this._layersTreeNodeMap = [];
 
         if (this._document) {
