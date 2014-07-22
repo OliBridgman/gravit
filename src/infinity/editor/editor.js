@@ -445,7 +445,7 @@
                 var orderedSelection = IFNode.order(this._selection, true);
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
-                    if (selElement instanceof IFItem && !selItem.hasFlag(IFElement.Flag.Locked)) {
+                    if (selElement instanceof IFItem && !selElement.hasFlag(IFElement.Flag.Locked)) {
                         selElement.getParent().removeChild(selElement);
                     }
                 }
