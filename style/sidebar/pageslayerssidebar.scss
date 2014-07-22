@@ -91,7 +91,7 @@
         }
       }
 
-      > * {
+      > *:not(.jqtree-border) {
         display: table-cell;
         vertical-align: middle;
         padding: 4px 0px;
@@ -112,7 +112,7 @@
         }
 
         &.layer-folder {
-          padding-left: 3px;
+          padding-left: 5px;
         }
 
         &.layer-color {
@@ -121,14 +121,14 @@
         }
 
         &.jqtree-toggler, &.layer-spacer {
-          text-align: center;
-          min-width: 13px;
-          max-width: 13px;
+          min-width: 8px;
+          max-width: 8px;
+          padding-left: 5px;
         }
 
         &.jqtree-title {
           width: 100%;
-          padding-left: 3px;
+          padding-left: 5px;
         }
       }
     }

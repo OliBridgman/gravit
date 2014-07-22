@@ -65,13 +65,13 @@ ul.jqtree-tree li.jqtree-ghost span {
 
 ul.jqtree-tree li.jqtree-ghost span.jqtree-circle {
   border-radius: 9999px;
-  background: white;
-  border: 2px solid $dragColor;
+  background: $dragColor;
+  border: 1px solid white;
   height: 8px;
   width: 8px;
   position: absolute;
-  top: -4px;
-  left: 2px;
+  top: -5px;
+  left: 0px;
 }
 
 ul.jqtree-tree li.jqtree-ghost span.jqtree-line {
@@ -95,7 +95,7 @@ ul.jqtree-tree span.jqtree-border {
   top: 0;
   width: 100% !important;
   height: 100% !important;
-  border: solid 2px $dragColor;
+  background: rgba( $dragColor, 0.5);
   margin: 0;
 }
 

@@ -145,18 +145,16 @@
             .tree({
                 data: [],
                 dragAndDrop: true,
-                openFolderDelay: 0,
+                openFolderDelay: 500,
                 closedIcon: $('<span class="fa fa-caret-right"></span>'),
                 openedIcon: $('<span class="fa fa-caret-down"></span>'),
                 slide: false,
+                selectable: false,
                 onIsMoveHandle: function ($element) {
                     return ($element.is('.jqtree-title'));
                 },
                 onCreateLi: this._createLayerTreeItem.bind(this),
-                onCanMoveTo: this._canMoveLayerTreeNode.bind(this),
-                onCanSelectNode: function () {
-                    return false;
-                }
+                onCanMoveTo: this._canMoveLayerTreeNode.bind(this)
             })
             .on('tree.open', function (evt) {
                 if (evt.node.layerOrItem) {
@@ -510,7 +508,7 @@
 
         // Open entry if collapsed
         if (layerOrItem.hasFlag(IFNode.Flag.Expanded)) {
-            this._layersTree.tree('openNode', treeNode);
+            this._layersTree.tree('openNode', treeNode, false);
         }
     };
 
@@ -569,6 +567,24 @@
             this._removePage(event.node);
         } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
             this._removeLayer(event.node);
+
+            // If parent has no more children then update it accordingly
+            var parent = event.node.getParent();
+
+            if (parent instanceof IFLayerBlock || parent instanceof IFItem) {
+                var hasChildren = false;
+                for (var child = parent.getFirstChild(); child !== null; child = child.getNext()) {
+                    if ((child instanceof IFLayerBlock || child instanceof IFItem) && child !== event.node) {
+                        hasChildren = true;
+                        break;
+                    }
+                }
+
+                if (!hasChildren) {
+                    parent.removeFlag(IFNode.Flag.Expanded);
+                    this._updateLayer(parent);
+                }
+            }
         }
     };
 
@@ -599,7 +615,7 @@
 
             // Page activeness change requires clearing layers
             this._clearLayers();
-        } else if (event.node instanceof IFLayerBlock && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected)) {
+        } else if (event.node instanceof IFLayerBlock && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected || event.flag === IFNode.Flag.Expanded)) {
             this._updateLayer(event.node);
         } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
             this._updateLayer(event.node);
@@ -784,7 +800,20 @@
             IFEditor.tryRunTransaction(this._document.getScene(), function () {
                 moveInfo.source.getParent().removeChild(moveInfo.source);
                 moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
-            }, 'Move Layer/Item');
+
+                // Having dragged something inside requires to expand parent(s) and update 'em'
+                var rootParent = null;
+                for (var parent = moveInfo.parent; parent !== null; parent = parent.getParent()) {
+                    if (parent instanceof IFPage) {
+                        break;
+                    }
+
+                    parent.setFlag(IFNode.Flag.Expanded);
+                    rootParent = parent;
+                }
+
+                this._updateLayer(rootParent);
+            }.bind(this), 'Move Layer/Item');
         }
     };
 
@@ -795,6 +824,8 @@
      * @private
      */
     GPagesLayersSidebar.prototype._getLayerTreeNodeMoveInfo = function (position, source, target) {
+        target = target || this._document.getScene().getActivePage();
+
         if (source && target && position !== 'none') {
             var parent = null;
             var before = null;
