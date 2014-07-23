@@ -236,6 +236,8 @@
             new GUngroupAction(),
 
             new GAddPageAction(),
+            new GDeletePageAction(),
+
             new GAddLayerAction(),
             new GAddLayerSetAction(),
 

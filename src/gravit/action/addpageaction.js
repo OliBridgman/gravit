@@ -1,7 +1,7 @@
 (function (_) {
 
     /**
-     * Action for inserting one or more new pages
+     * Action for adding a new page
      * @class GAddPageAction
      * @extends GAction
      * @constructor
@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GAddPageAction, GAction);
 
-    GAddPageAction.ID = 'modify.add-pages';
+    GAddPageAction.ID = 'modify.add-page';
     GAddPageAction.TITLE = new IFLocale.Key(GAddPageAction, "title");
 
     /**
