@@ -138,7 +138,30 @@
 
     /** @override */
     IFTransformBox.prototype._calculateGeometryBBox = function () {
-        return ifVertexInfo.calculateBounds(this, true);
+        //return ifVertexInfo.calculateBounds(this, true);
+        var ct = this._getPoint(IFTransformBox.Handles.ROTATION_CENTER);
+        var xMin = ct.getX();
+        var xMax = xMin;
+        var yMin = ct.getY();
+        var yMax = yMin;
+        var edges = [IFTransformBox.Handles.TOP_LEFT, IFTransformBox.Handles.TOP_RIGHT,
+            IFTransformBox.Handles.BOTTOM_RIGHT, IFTransformBox.Handles.BOTTOM_LEFT];
+        for (var i = 0; i < edges.length; ++i) {
+            var pt = this._getPoint(edges[i]);
+            if (xMin > pt.getX()) {
+                xMin = pt.getX();
+            }
+            if (xMax < pt.getX()) {
+                xMax = pt.getX();
+            }
+            if (yMin > pt.getY()) {
+                yMin = pt.getY();
+            }
+            if (yMax < pt.getY()) {
+                yMax = pt.getY();
+            }
+        }
+        return new GRect(xMin, yMin, xMax - xMin, yMax - yMin);
     };
 
     /** @override */
@@ -148,11 +171,11 @@
             bbox = bbox.expanded(IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE,
                 IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE);
 
-            var annotBBox = ifAnnotation.getAnnotationBBox(null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
+            /*var annotBBox = ifAnnotation.getAnnotationBBox(null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
                 IFTransformBox.ANNOT_SIZE);
             if (annotBBox) {
                 bbox = bbox.united(annotBBox);
-            }
+            }   */
 
             return bbox;
         }
@@ -171,15 +194,15 @@
 
     /**
      * Paints the transform box and it's handles
-     * @param context
      * @param {GTransform} transform
+     * @param context
      */
-    IFTransformBox.prototype.paint = function (context, transform) {
+    IFTransformBox.prototype.paint = function (transform, context) {
         // Outline is painted with non-transformed stroke
         // so we reset transform, transform the vertices
         // ourself and then re-apply the transformation
         var canvasTransform = context.canvas.resetTransform();
-        this._extTransform = canvasTransform.multiplied(transform);
+        this._extTransform = transform ? canvasTransform.multiplied(transform) : canvasTransform;
         this._verticesDirty = true;
 
         if (!this._preparePaint(context)) {
@@ -207,6 +230,7 @@
         context.canvas.setTransform(canvasTransform);
 
         this._finishPaint(context);
+        this._extTransform = null;
     };
 
     /**
@@ -276,6 +300,7 @@
             }
         }
 
+        this._extTransform = null;
         return result;
     };
 

@@ -498,7 +498,7 @@
         }
 
         return IFElement.prototype.hitTest.call(this, location, transform, acceptor, stacked, level, tolerance, force);
-    }
+    };
 
     /**
      * Invalidate something
@@ -512,7 +512,7 @@
     };
 
     /** @override */
-    IFElement.prototype._renderChildren = function (context) {
+    IFScene.prototype._renderChildren = function (context) {
         for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
             if (node instanceof IFPage) {
                 // Handle single-page mode if set
@@ -523,6 +523,28 @@
                 node.render(context);
             }
         }
+    };
+
+    IFScene.prototype._calculatePaintBBox = function () {
+        var bbox = IFElement.prototype._calculatePaintBBox.call(this);
+        if (this._editor && this._editor.isTransformBoxActive()) {
+            var transBBox = this._editor.getTransformBox()._calculatePaintBBox();
+            if (transBBox && !transBBox.isEmpty()) {
+                bbox = bbox ? bbox.united(transBBox) : transBBox;
+            }
+        }
+        return bbox;
+    };
+
+    IFScene.prototype._calculateGeometryBBox = function () {
+        var bbox = IFElement.prototype._calculateGeometryBBox.call(this);
+        if (this._editor && this._editor.isTransformBoxActive()) {
+            var transBBox = this._editor.getTransformBox()._calculatePaintBBox();
+            if (transBBox && !transBBox.isEmpty()) {
+                bbox = bbox ? bbox.united(transBBox) : transBBox;
+            }
+        }
+        return bbox;
     };
 
     /** @override */

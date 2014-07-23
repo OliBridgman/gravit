@@ -87,6 +87,8 @@
      */
     IFSelectTool.prototype._moveCurrent = null;
 
+    IFSelectTool.prototype._sceneEditor = null;
+
     /** @override */
     IFSelectTool.prototype.getHint = function () {
         return IFTool.prototype.getHint.call(this)
@@ -109,7 +111,7 @@
                         cursor = IFCursor.SelectCross;
                         break;
                     case IFTransformBox.OUTSIDE:
-                        if (this._editor.isTransformBoxActive()) {
+                        if (this._sceneEditor.isTransformBoxActive()) {
                             cursor = IFCursor.SelectRotate[this._editorUnderMouseInfo.data];
                         }
                         break;
@@ -158,11 +160,14 @@
         view.addEventListener(GUIKeyEvent.Release, this._keyRelease, this);
 
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        this._sceneEditor = this._scene ? IFElementEditor.openEditor(this._scene) : null;
     };
 
     /** @override */
     IFSelectTool.prototype.deactivate = function (view) {
         IFTool.prototype.deactivate.call(this, view);
+
+        this._sceneEditor = null;
 
         view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
@@ -191,8 +196,6 @@
             var w = Math.ceil(this._selectArea.getWidth()) - 1.0;
             var h = Math.ceil(this._selectArea.getHeight()) - 1.0;
             context.canvas.strokeRect(x, y, w, h, 1, context.selectionOutlineColor);
-        } else if (this._editor.isTransformBoxActive()) {
-            this._editor.getTransformBox().paint(context, this._view.getWorldTransform());
         }
     };
 
@@ -226,12 +229,12 @@
         this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
 
         if (this._mode == IFSelectTool._Mode.Transforming) {
-            if (!this._editor.isTransformBoxActive()) {
-                this._editor.setTransformBoxActive(true);
+            if (!this._sceneEditor.isTransformBoxActive()) {
+                this._sceneEditor.setTransformBoxActive(true);
             }
-            if (this._editor.isTransformBoxActive()) {
+            if (this._sceneEditor.isTransformBoxActive()) {
                 // Transform box always returns non-null partInfo
-                this._editorMovePartInfo = this._editor.getTransformBox().getPartInfoAt(event.client,
+                this._editorMovePartInfo = this._sceneEditor.getTransformBox().getPartInfoAt(event.client,
                     this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
             }
         } else {
@@ -377,10 +380,9 @@
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
-            if (this._editor.isTransformBoxActive()) {
-                this._editor.getTransformBox().hide();
+            if (this._sceneEditor.isTransformBoxActive()) {
+                this._sceneEditor.hideTransformBox();
             }
-            this.invalidateArea();
         }
     };
 
@@ -463,12 +465,12 @@
 
                 this._editor.applySelectionTransform(true);
             } else if (this._editorMovePartInfo.id == IFTransformBox.Handles.ROTATION_CENTER &&
-                    this._editor.isTransformBoxActive()){
+                this._sceneEditor.isTransformBoxActive()){
 
                 this._editor.beginTransaction();
                 try {
-                    this._editor.getTransformBox().applyTransform();
-                    this._editor.getTransformBox().show();
+                    this._sceneEditor.getTransformBox().applyTransform();
+                    this._sceneEditor.showTransformBox();
                 } finally {
                     // TODO : I18N
                     this._editor.commitTransaction('Move');
@@ -487,8 +489,8 @@
         var openTransformBox = true;
 
         // Close an existing transform box, first
-        if (this._editor.isTransformBoxActive()) {
-            this._editor.setTransformBoxActive(false);
+        if (this._sceneEditor.isTransformBoxActive()) {
+            this._sceneEditor.setTransformBoxActive(false);
             this._updateMode(null);
             this.invalidateArea();
             openTransformBox = false;
@@ -505,11 +507,10 @@
         }
 
         if (openTransformBox) {
-            this._editor.setTransformBoxActive(true);
-            if (this._editor.isTransformBoxActive()) {
+            this._sceneEditor.setTransformBoxActive(true);
+            if (this._sceneEditor.isTransformBoxActive()) {
                 // Switch to transformation mode
                 this._updateMode(IFSelectTool._Mode.Transforming);
-                this.invalidateArea();
             }
         }
     };
@@ -628,18 +629,20 @@
                 }
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
-            if (this._editor.isTransformBoxActive() && this._moveStart) {
+            if (this._sceneEditor.isTransformBoxActive() && this._moveStart) {
                 var moveCurrentTransformed = this._view.getViewTransform().mapPoint(this._moveCurrent);
                 this._editor.getGuides().beginMap();
-                var transform = this._editor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
+                var transform = this._sceneEditor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
                     this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
                     ifPlatform.modifiers.optionKey, ifPlatform.modifiers.shiftKey);
 
                 if (this._editorMovePartInfo.id != IFTransformBox.Handles.ROTATION_CENTER) {
-                    this._editor.getTransformBox().setTransform(transform);
+                    this._sceneEditor.getTransformBox().setTransform(transform);
+                    this._sceneEditor.requestInvalidation();
                     this._editor.transformSelection(transform, null, null);
                 } else {
-                    this._editor.getTransformBox().setCenterTransform(transform);
+                    this._sceneEditor.getTransformBox().setCenterTransform(transform);
+                    this._sceneEditor.requestInvalidation();
                 }
                 this._editor.getGuides().finishMap();
             }
@@ -681,17 +684,17 @@
                     this.updateCursor();
                 }
             }
-        } else if (this._mode == IFSelectTool._Mode.Transforming && this._editor.isTransformBoxActive()) {
+        } else if (this._mode == IFSelectTool._Mode.Transforming && this._sceneEditor.isTransformBoxActive()) {
             var partInfo;
             if (this._editorMovePartInfo) {
                 partInfo = new IFElementEditor.PartInfo(this._editorMovePartInfo.editor, this._editorMovePartInfo.id,
                     this._editorMovePartInfo.data);
             } else {
-                partInfo = this._editor.getTransformBox().getPartInfoAt(mouse,
+                partInfo = this._sceneEditor.getTransformBox().getPartInfoAt(mouse,
                     this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
             }
             if (partInfo.id  == IFTransformBox.OUTSIDE) {
-                partInfo.data = this._editor.getTransformBox().getRotationSegment(
+                partInfo.data = this._sceneEditor.getTransformBox().getRotationSegment(
                     mouse, this._view.getWorldTransform());
             }
             if (!this._editorUnderMouseInfo || this._editorUnderMouseInfo.id !== partInfo.id ||

@@ -22,6 +22,8 @@
         this._scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
 
+        this._sceneEditor = IFElementEditor.openEditor(this._scene);
+
         // Try to create internal selection for all selected nodes
         var selectedNodes = this._scene.queryAll(":selected");
         if (selectedNodes && selectedNodes.length) {
@@ -232,12 +234,6 @@
     IFEditor.prototype._guides = null;
 
     /**
-     * @type {IFTransformBox}
-     * @private
-     */
-    IFEditor.prototype._transformBox = null;
-
-    /**
      * @type {IFNode}
      * @private
      */
@@ -308,30 +304,6 @@
     };
 
     /**
-     * Checks if the transform box is currently active
-     * @returns {Boolean}
-     */
-    IFEditor.prototype.isTransformBoxActive = function () {
-        return (this._transformBox != null);
-    };
-
-    /**
-     * Activates or deactivates the transform box
-     * Note: activation/deactivation is not responsible for painting. To paint transform box
-     * the calling of this editor getTransformBox().paint(context, transform) is required
-     * @param {Boolean} activate - when true or not set means activation is needed, when false - deactivation
-     */
-    IFEditor.prototype.setTransformBoxActive = function (activate) {
-        if (activate || activate === null) {
-            if (!this._transformBox) {
-                this._updateSelectionTransformBox();
-            }
-        } else {
-            this._transformBox = null;
-        }
-    };
-
-    /**
      * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
      * @return {IFPath} the selected path
@@ -365,6 +337,7 @@
      * Called to close and detach this editor
      */
     IFEditor.prototype.close = function () {
+        this._sceneEditor = null;
         delete this._scene.__graphic_editor__;
 
         this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert);
@@ -522,7 +495,7 @@
      */
     IFEditor.prototype.moveSelection = function (delta, align, partId, partData) {
         if (align) {
-            var selBBox = this._getSelectionBBox(false);
+            var selBBox = this.getSelectionBBox(false);
 
             var transBBox = selBBox.translated(delta.getX(), delta.getY());
             this._guides.beginMap();
@@ -547,7 +520,7 @@
      * @param {*} [partData] optional data of part that has started the transformation
      */
     IFEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
-        var selBBox = this._getSelectionBBox(false);
+        var selBBox = this.getSelectionBBox(false);
         if (selBBox) {
             // TODO : Align support
             var tl = selBBox.getSide(GRect.Side.TOP_LEFT);
@@ -684,9 +657,11 @@
                     if (clonedSelection.length > 0) {
                         this.updateSelection(false, clonedSelection);
                     }
-                    if (this._transformBox) {
-                        this._transformBox.applyTransform();
-                        this._updateSelectionTransformBox();
+
+                    if (this._sceneEditor.isTransformBoxActive()) {
+                        this._sceneEditor.getTransformBox().applyTransform();
+                        this._sceneEditor.requestInvalidation();
+                        this._sceneEditor._updateSelectionTransformBox();
                     }
                 } finally {
                     if (!noTransaction) {
@@ -696,10 +671,6 @@
                 }
             }
         }
-    };
-
-    IFEditor.prototype.getTransformBox = function () {
-        return this._transformBox;
     };
 
     /**
@@ -792,7 +763,7 @@
             this._transaction = {
                 actions: [],
                 selection: this._saveSelection(),
-                tBox: this._transformBox
+                transformBoxCenter: this._sceneEditor.getTransformBoxCenter()
             }
         }
     };
@@ -804,11 +775,11 @@
 
         this._loadSelection(data.newSelection);
 
-        if (data.newTransformBox || this._transformBox != data.newTransformBox) {
-            this._transformBox = data.newTransformBox;
-
-            if (data.newTransformBox) {
-                this._updateSelectionTransformBox();
+        if (data.newTransformBoxCenter || this._sceneEditor.isTransformBoxActive()) {
+            if (data.newTransformBoxCenter) {
+                this._sceneEditor.setTransformBoxActive(true, data.newTransformBoxCenter);
+            } else {
+                this._sceneEditor.setTransformBoxActive(false);
             }
         }
     };
@@ -821,11 +792,11 @@
 
         this._loadSelection(data.selection);
 
-        if (data.transformBox || this._transformBox != data.transformBox) {
-            this._transformBox = data.transformBox;
-
-            if (data.transformBox) {
-                this._updateSelectionTransformBox();
+        if (data.transformBoxCenter || this._sceneEditor.isTransformBoxActive()) {
+            if (data.transformBoxCenter) {
+                this._sceneEditor.setTransformBoxActive(true, data.transformBoxCenter);
+            } else {
+                this._sceneEditor.setTransformBoxActive(false);
             }
         }
     };
@@ -883,8 +854,8 @@
                 actions: transaction.actions.slice(),
                 selection: transaction.selection ? transaction.selection.slice() : null,
                 newSelection: this._saveSelection(),
-                transformBox: transaction.transformBox,
-                newTransformBox: this._transformBox
+                transformBoxCenter: transaction.transformBoxCenter,
+                newTransformBoxCenter: this._sceneEditor.getTransformBoxCenter()
             };
 
             this.pushState(name, this._transactionRedo.bind(this), this._transactionUndo.bind(this), data, this._transactionMerge.bind(this));
@@ -1409,7 +1380,7 @@
         }
     };
 
-    IFEditor.prototype._getSelectionBBox = function (paintBBox) {
+    IFEditor.prototype.getSelectionBBox = function (paintBBox) {
         var selBBox = null;
         if (this.getSelection()) {
             for (var i = 0; i < this.getSelection().length; ++i) {
@@ -1421,22 +1392,6 @@
         }
 
         return selBBox;
-    };
-
-    IFEditor.prototype._updateSelectionTransformBox = function () {
-        var cx = null;
-        var cy = null;
-        if (this._transformBox) {
-            cx = this._transformBox.getProperty('cx');
-            cy = this._transformBox.getProperty('cy');
-        }
-        this._transformBox = null;
-        if (this.getSelection()) {
-            var selBBox = this._getSelectionBBox(false);
-            if (selBBox) {
-                this._transformBox = new IFTransformBox(selBBox, cx, cy);
-            }
-        }
     };
 
     /** @override */
