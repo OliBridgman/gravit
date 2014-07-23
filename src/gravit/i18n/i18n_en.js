@@ -3,14 +3,23 @@ ifLocale.setValues(GColorMatcher, IFLocale.Language.English, ["category.harmony"
 
 // Root
 ifLocale.setValues(GApplication, IFLocale.Language.English, [
+    // Actions
     "category.window",
     "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export",
     "category.edit",
     "category.modify", "category.modify.layer-type",
     "category.arrange",
     "category.view", "category.view.magnification",
-    "category.help"],
+    "category.help",
+    // Tools
+    "tool-category.select",
+    "tool-category.image",
+    "tool-category.vector",
+    "tool-category.web",
+    "tool-category.color",
+    "tool-category.view"],
     [
+        // Actions
         "Window",
         "File", "File/Open", "File/Save As", "File/Import", "File/Export",
         "Edit",
@@ -18,7 +27,14 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
         "Arrange",
         "View",
         "View/Magnification",
-        "Help"]);
+        "Help",
+        // Tools
+        "Select",
+        "Image",
+        "Vector",
+        "Web",
+        "Color",
+        "View"]);
 
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);

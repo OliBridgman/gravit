@@ -143,8 +143,8 @@
 .g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled) > span,
 .g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled),
 .g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled) > span {
-  background: $selectedColor;
-  color: $selectedTextColor;
+  background: $activeColor;
+  color: $activeTextColor;
 }
 
 /** Release left-padding for checked items to have our checkmark fit */
