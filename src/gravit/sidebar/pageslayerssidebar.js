@@ -495,11 +495,13 @@
         this._updateLayer(layerOrItem);
 
         // Iterate children and add them as well
-        layerOrItem.acceptChildren(function (node) {
-            if (node instanceof IFLayerBlock || node instanceof IFItem) {
-                this._insertLayer(node);
+        if (layerOrItem.hasMixin(IFNode.Container)) {
+            for (var child = layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFLayerBlock || child instanceof IFItem) {
+                    this._insertLayer(child);
+                }
             }
-        }.bind(this));
+        }
 
         // Gather the new treenode for our node
         var treeNode = this._getLayerTreeNode(layerOrItem);
@@ -616,8 +618,10 @@
                 }
             });
 
-            // Page activeness change requires clearing layers
-            this._clearLayers();
+            if (event.flag === IFNode.Flag.Active) {
+                // Page activeness change requires clearing layers
+                this._clearLayers();
+            }
         } else if (event.node instanceof IFLayerBlock && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected || event.flag === IFNode.Flag.Expanded)) {
             this._updateLayer(event.node);
         } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {

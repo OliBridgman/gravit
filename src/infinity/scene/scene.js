@@ -318,14 +318,12 @@
         }
 
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFPage) {
-                if (child === page) {
-                    child.setFlag(IFNode.Flag.Active);
-                } else {
-                    child.removeFlag(IFNode.Flag.Active);
-                }
+            if (child instanceof IFPage && child !== page) {
+                child.removeFlag(IFNode.Flag.Active);
             }
         }
+
+        page.setFlag(IFNode.Flag.Active);
     };
 
     /**
@@ -353,14 +351,12 @@
 
         // Now activate the layer
         layerPage.acceptChildren(function (node) {
-            if (node instanceof IFLayer) {
-                if (node === layer) {
-                    node.setFlag(IFNode.Flag.Active);
-                } else {
-                    node.removeFlag(IFNode.Flag.Active);
-                }
+            if (node instanceof IFLayer && node !== layer) {
+                node.removeFlag(IFNode.Flag.Active);
             }
         });
+
+        layer.setFlag(IFNode.Flag.Active);
     };
 
     /**
