@@ -238,12 +238,6 @@
     IFEditor.prototype._transformBox = null;
 
     /**
-     * @type {Boolean}
-     * @private
-     */
-    IFEditor.prototype._hasTransformBox = true;
-
-    /**
      * @type {IFNode}
      * @private
      */
@@ -314,18 +308,27 @@
     };
 
     /**
-     * Activates the transform box functionality on mouse double click
+     * Checks if the transform box is currently active
+     * @returns {Boolean}
      */
-    IFEditor.prototype.activateTransformBox = function () {
-        this._hasTransformBox = true;
+    IFEditor.prototype.isTransformBoxActive = function () {
+        return (this._transformBox != null);
     };
 
     /**
-     * Disables the transform box functionality on mouse double click
+     * Activates or deactivates the transform box
+     * Note: activation/deactivation is not responsible for painting. To paint transform box
+     * the calling of this editor getTransformBox().paint(context, transform) is required
+     * @param {Boolean} activate - when true or not set means activation is needed, when false - deactivation
      */
-    IFEditor.prototype.deactivateTransformBox = function () {
-        this.cleanTransformBox();
-        this._hasTransformBox = false;
+    IFEditor.prototype.setTransformBoxActive = function (activate) {
+        if (activate || activate === null) {
+            if (!this._transformBox) {
+                this._updateSelectionTransformBox();
+            }
+        } else {
+            this._transformBox = null;
+        }
     };
 
     /**
@@ -683,7 +686,7 @@
                     }
                     if (this._transformBox) {
                         this._transformBox.applyTransform();
-                        this.updateSelectionTransformBox();
+                        this._updateSelectionTransformBox();
                     }
                 } finally {
                     if (!noTransaction) {
@@ -695,28 +698,8 @@
         }
     };
 
-    IFEditor.prototype.updateSelectionTransformBox = function () {
-        var cx = null;
-        var cy = null;
-        if (this._transformBox) {
-            cx = this._transformBox.getProperty('cx');
-            cy = this._transformBox.getProperty('cy');
-        }
-        this._transformBox = null;
-        if (this._hasTransformBox && this.getSelection()) {
-            var selBBox = this._getSelectionBBox(false);
-            if (selBBox) {
-                this._transformBox = new IFTransformBox(selBBox, cx, cy);
-            }
-        }
-    };
-
     IFEditor.prototype.getTransformBox = function () {
-        return this._hasTransformBox ? this._transformBox : null;
-    };
-
-    IFEditor.prototype.cleanTransformBox = function () {
-        this._transformBox = null;
+        return this._transformBox;
     };
 
     /**
@@ -825,7 +808,7 @@
             this._transformBox = data.newTransformBox;
 
             if (data.newTransformBox) {
-                this.updateSelectionTransformBox();
+                this._updateSelectionTransformBox();
             }
         }
     };
@@ -842,7 +825,7 @@
             this._transformBox = data.transformBox;
 
             if (data.transformBox) {
-                this.updateSelectionTransformBox();
+                this._updateSelectionTransformBox();
             }
         }
     };
@@ -1438,6 +1421,22 @@
         }
 
         return selBBox;
+    };
+
+    IFEditor.prototype._updateSelectionTransformBox = function () {
+        var cx = null;
+        var cy = null;
+        if (this._transformBox) {
+            cx = this._transformBox.getProperty('cx');
+            cy = this._transformBox.getProperty('cy');
+        }
+        this._transformBox = null;
+        if (this.getSelection()) {
+            var selBBox = this._getSelectionBBox(false);
+            if (selBBox) {
+                this._transformBox = new IFTransformBox(selBBox, cx, cy);
+            }
+        }
     };
 
     /** @override */
