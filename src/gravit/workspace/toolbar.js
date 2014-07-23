@@ -113,7 +113,19 @@
                                 gApp.executeAction(GZoomOutAction.ID);
                             }))
                         .append($('<input>')
-                            .addClass('g-flat'))
+                            .addClass('g-flat')
+                            .on('click', function () {
+                                $(this).select();
+                            })
+                            .on('change', function () {
+                                var zoomLevel = parseInt($(this).val());
+                                if (!isNaN(zoomLevel) && zoomLevel !== 0) {
+                                    var view = gApp.getWindows().getActiveWindow().getView();
+                                    var newZoom = zoomLevel / 100.0;
+                                    var zoomPoint = view.getViewTransform().mapPoint(new GPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+                                    view.zoomAt(zoomPoint, newZoom);
+                                }
+                            }))
                         .append($('<button></button>')
                             .addClass('g-flat fa fa-plus')
                             .on('click', function () {
