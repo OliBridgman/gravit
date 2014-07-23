@@ -6,7 +6,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
     "category.window",
     "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export",
     "category.edit",
-    "category.modify",
+    "category.modify", "category.modify.layer-type",
     "category.arrange",
     "category.view", "category.view.magnification",
     "category.help"],
@@ -14,7 +14,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
         "Window",
         "File", "File/Open", "File/Save As", "File/Import", "File/Export",
         "Edit",
-        "Modify",
+        "Modify", "Modify/Layer Type",
         "Arrange",
         "View",
         "View/Magnification",
@@ -42,6 +42,7 @@ ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["
 ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
 ifLocale.setValues(GImportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
 ifLocale.setValues(GInvertSelectionAction, IFLocale.Language.English, ["title"], ["Invert Selection"]);
+ifLocale.setValues(GLayerTypeAction, IFLocale.Language.English, ["title"], ["%name% Layer"]);
 ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);

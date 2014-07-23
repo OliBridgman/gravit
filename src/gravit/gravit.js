@@ -232,6 +232,10 @@
             new GAddLayerAction(),
             new GAddLayerSetAction(),
 
+            new GLayerTypeAction(IFLayerBlock.Type.Output),
+            new GLayerTypeAction(IFLayerBlock.Type.Draft),
+            new GLayerTypeAction(IFLayerBlock.Type.Guide),
+
             // Arrange
             new GBringForwardAction(),
             new GAlignLeftAction(),

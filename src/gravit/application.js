@@ -53,6 +53,7 @@
     GApplication.CATEGORY_FILE_EXPORT = new IFLocale.Key(GApplication, "category.file.export");
     GApplication.CATEGORY_EDIT = new IFLocale.Key(GApplication, "category.edit");
     GApplication.CATEGORY_MODIFY = new IFLocale.Key(GApplication, "category.modify");
+    GApplication.CATEGORY_MODIFY_LAYERTYPE = new IFLocale.Key(GApplication, "category.modify.layer-type");
     GApplication.CATEGORY_ARRANGE = new IFLocale.Key(GApplication, "category.arrange");
     GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");
     GApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(GApplication, "category.view.magnification");
