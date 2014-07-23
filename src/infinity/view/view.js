@@ -7,7 +7,7 @@
      * @constructor
      */
     function IFView(scene) {
-        this._updateViewTransforms();
+        this._updateViewTransforms(true);
         GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
         this._scene = scene;
@@ -51,6 +51,31 @@
         maxZoomFactor: 512.0
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFView.TransformEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * An event whenever the view's transformation has changed
+     * @class IFView.TransformEvent
+     * @extends GEvent
+     * @constructor
+     */
+    IFView.TransformEvent = function () {
+    };
+    IFObject.inherit(IFView.TransformEvent, GEvent);
+
+    /** @override */
+    IFView.TransformEvent.prototype.toString = function () {
+        return "[Object IFView.TransformEvent]";
+    };
+
+    IFView.TRANSFORMEVENT = new IFView.TransformEvent();
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFView Class
+    // -----------------------------------------------------------------------------------------------------------------
+    
     /**
      * @type {IFScene}
      * @private
@@ -408,9 +433,10 @@
     /**
      * Update view transforms and update all other necessary things like
      * scrollbars and virtual space as well as do a repaint if anything has changed
+     * @param {Boolean} [noEvent] optional, specifies whether to send an event or not
      * @private
      */
-    IFView.prototype._updateViewTransforms = function () {
+    IFView.prototype._updateViewTransforms = function (noEvent) {
         // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
         // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
         this._scrollX = Math.round(this._scrollX);
@@ -422,6 +448,10 @@
             this._viewToWorldTransform = worldToViewTransform.inverted();
             // Invalidate everything
             this.invalidate();
+
+            if (!noEvent && this.hasEventListeners(IFView.TransformEvent)) {
+                this.trigger(IFView.TRANSFORMEVENT);
+            }
         }
     };
 

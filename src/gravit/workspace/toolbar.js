@@ -97,11 +97,30 @@
             var category = ifLocale.get(mainTool.category);
             if (category != lastCategory) {
                 // Add a divider, first
-                toolpanel.append(
-                    $("<div></div>")
-                        .addClass('divider')
-                        .text(category));
+                $("<div></div>")
+                    .addClass('divider')
+                    .text(category)
+                    .appendTo(toolpanel);
                 lastCategory = category;
+
+                // Do some custom handling for known categories
+                if (mainTool.category === GApplication.TOOL_CATEGORY_VIEW) {
+                    $('<div></div>')
+                        .addClass('zoom')
+                        .append($('<button></button>')
+                            .addClass('g-flat fa fa-minus')
+                            .on('click', function () {
+                                gApp.executeAction(GZoomOutAction.ID);
+                            }))
+                        .append($('<input>')
+                            .addClass('g-flat'))
+                        .append($('<button></button>')
+                            .addClass('g-flat fa fa-plus')
+                            .on('click', function () {
+                                gApp.executeAction(GZoomInAction.ID);
+                            }))
+                        .appendTo(toolpanel);
+                }
             }
 
             // Append our group button now
@@ -121,6 +140,9 @@
 
         // Subscribe to some events
         gApp.getToolManager().addEventListener(IFToolManager.ToolChangedEvent, this._toolChanged, this);
+        gApp.getWindows().addEventListener(GWindows.WindowEvent, this._windowEvent, this);
+
+        this._updateZoomFromWindow();
     };
 
     /**
@@ -142,6 +164,34 @@
 
         if (event.newTool) {
             this._updateGroupTool(event.newTool);
+        }
+    };
+
+    /**
+     * @param {IFWindows.WindowEvent} evt
+     * @private
+     */
+    GToolbar.prototype._windowEvent = function (evt) {
+        if (evt.type === GWindows.WindowEvent.Type.Activated) {
+            evt.window.getView().addEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
+        } else if (evt.type === GWindows.WindowEvent.Type.Deactivated && evt.window) {
+            evt.window.getView().removeEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
+        }
+
+        this._updateZoomFromWindow();
+    };
+
+    /** @private */
+    GToolbar.prototype._updateZoomFromWindow = function () {
+        var zoom = this._htmlElement.find('.toolpanel > .zoom');
+        var window = gApp.getWindows().getActiveWindow();
+
+        zoom
+            .find('*').prop('disabled', !window);
+
+        if (window) {
+            zoom
+                .find('input').val(Math.round(window.getView().getZoom() * 100) + '%');
         }
     };
 
