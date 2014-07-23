@@ -43,6 +43,13 @@
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M3.5,18.5v18l5-7h9L3.5,18.5z M7.5,27.5l-3,4.5V20.5l9,7H7.5z"/>\n</svg>'
             },
             {
+                instance: new IFLayerTool(),
+                title: 'Layer',
+                group: 'select',
+                keys: ['L'],
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -.5 18 18" width="18px" height="18px">\n<path stroke="none" d="M0.5,8.5 L0.5,10.5 L4.5,10.5 L4.5,8.5 L0.5,8.5 Z M10.5,8.5 L10.5,10.5 L12.5,10.5 L12.5,8.5 L10.5,8.5 Z M9.5,8.5 L9.5,9.5 L10.5,9.5 L10.5,8.5 L9.5,8.5 Z M0.5,0.5 L0.5,2.5 L12.5,2.5 L12.5,0.5 L0.5,0.5 Z M0.5,4.5 L0.5,6.5 L12.5,6.5 L12.5,4.5 L0.5,4.5 Z M5.5,7.5 L5.5,18.5 L9,14.5 L14.5,14.5 L5.5,7.5 Z"></path>\n</svg>'
+            },
+            {
                 instance: new IFPageTool(),
                 title: 'Page',
                 group: 'select',
