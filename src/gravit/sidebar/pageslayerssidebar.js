@@ -790,7 +790,7 @@
             // Append outline & color for layers
             if (layerOrItem instanceof IFLayerBlock) {
                 // Don't add outline for guide layers
-                if (layerOrItem.getProperty('tp') === IFLayerBlock.Type.Guide) {
+                if (layerOrItem.getProperty('tp') !== IFLayerBlock.Type.Guide) {
                     $('<span></span>')
                         .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
                         .toggleClass('layer-default', !isOutlined)
