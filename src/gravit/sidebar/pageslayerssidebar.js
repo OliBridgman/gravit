@@ -524,7 +524,14 @@
 
         if (treeNode) {
             // Call an update for the node
-            this._layersTree.tree('updateNode', treeNode, layerOrItem.getLabel());
+            var label = layerOrItem.getLabel();
+
+            // Mark draft layers
+            if (layerOrItem instanceof IFLayerBlock && layerOrItem.getProperty('tp') === IFLayerBlock.Type.Draft) {
+                label = '*' + label;
+            }
+
+            this._layersTree.tree('updateNode', treeNode, label);
         }
     };
 
@@ -705,10 +712,31 @@
                     .prependTo(container);
             }
 
-            // Prepend icon before title
+            // Figure an icon for the item if any
+            var icon = null;
             if (layerOrItem instanceof IFLayerSet) {
+                icon = layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder';
+            } else if (layerOrItem instanceof IFLayer) {
+                icon = 'navicon';
+            } else if (layerOrItem instanceof IFShape) {
+                if (layerOrItem instanceof IFText) {
+                    icon = 'font';
+                } else if (layerOrItem instanceof IFImage) {
+                    icon = 'image';
+                } else if (layerOrItem instanceof IFEllipse) {
+                    icon = 'circle';
+                } else if (layerOrItem instanceof IFRectangle) {
+                    icon = 'stop';
+                } else if (layerOrItem instanceof IFPath) {
+                    icon = 'pencil';
+                } else if (layerOrItem instanceof IFPolygon) {
+                    icon = 'star';
+                }
+            }
+
+            if (icon) {
                 $('<span></span>')
-                    .addClass('layer-folder fa fa-' + (layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder'))
+                    .addClass('layer-icon fa fa-' + icon)
                     .insertBefore(title);
             }
 
@@ -761,20 +789,23 @@
 
             // Append outline & color for layers
             if (layerOrItem instanceof IFLayerBlock) {
-                $('<span></span>')
-                    .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
-                    .toggleClass('layer-default', !isOutlined)
-                    // TODO : I18N
-                    .attr('title', 'Toggle Outline')
-                    .on('click', function () {
-                        if (!parentHidden) {
-                            // TODO : I18N
-                            IFEditor.tryRunTransaction(layerOrItem, function () {
-                                layerOrItem.setProperty('otl', !layerOrItem.getProperty('otl'));
-                            }, 'Toggle Layer Outline');
-                        }
-                    })
-                    .appendTo(container);
+                // Don't add outline for guide layers
+                if (layerOrItem.getProperty('tp') === IFLayerBlock.Type.Guide) {
+                    $('<span></span>')
+                        .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
+                        .toggleClass('layer-default', !isOutlined)
+                        // TODO : I18N
+                        .attr('title', 'Toggle Outline')
+                        .on('click', function () {
+                            if (!parentHidden) {
+                                // TODO : I18N
+                                IFEditor.tryRunTransaction(layerOrItem, function () {
+                                    layerOrItem.setProperty('otl', !layerOrItem.getProperty('otl'));
+                                }, 'Toggle Layer Outline');
+                            }
+                        })
+                        .appendTo(container);
+                }
 
                 $('<span></span>')
                     .addClass('layer-color')

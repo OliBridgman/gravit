@@ -374,7 +374,7 @@
                             });
                         }.bind(this)),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-square')
+                        .addClass('fa fa-fw fa-stop')
                         // TODO : I18N
                         .attr('title', 'Add Fill')
                         .on('click', function () {
