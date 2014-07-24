@@ -15,7 +15,8 @@
 
     /** @override */
     IFImageEditor.prototype.initialSetup = function () {
-        // Nothing to do as image has no style by default
+        // Add an empty style to images by default
+        this.getElement().getStyleSet().appendChild(new IFInlineStyle());
     };
 
     /** @override */
