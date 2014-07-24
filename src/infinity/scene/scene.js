@@ -527,8 +527,8 @@
 
     IFScene.prototype._calculatePaintBBox = function () {
         var bbox = IFElement.prototype._calculatePaintBBox.call(this);
-        if (this._editor && this._editor.isTransformBoxActive()) {
-            var transBBox = this._editor.getTransformBox()._calculatePaintBBox();
+        if (this.__editor__ && this.__editor__.isTransformBoxActive()) {
+            var transBBox = this.__editor__.getTransformBox()._calculatePaintBBox();
             if (transBBox && !transBBox.isEmpty()) {
                 bbox = bbox ? bbox.united(transBBox) : transBBox;
             }
@@ -538,8 +538,8 @@
 
     IFScene.prototype._calculateGeometryBBox = function () {
         var bbox = IFElement.prototype._calculateGeometryBBox.call(this);
-        if (this._editor && this._editor.isTransformBoxActive()) {
-            var transBBox = this._editor.getTransformBox()._calculatePaintBBox();
+        if (this.__editor__ && this.__editor__.isTransformBoxActive()) {
+            var transBBox = this.__editor__.getTransformBox()._calculatePaintBBox();
             if (transBBox && !transBBox.isEmpty()) {
                 bbox = bbox ? bbox.united(transBBox) : transBBox;
             }

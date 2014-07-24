@@ -101,6 +101,7 @@
     };
 
     IFSceneEditor.prototype._updateSelectionTransformBox = function (center) {
+        this.requestInvalidation();
         var cx = null;
         var cy = null;
         if (center) {
@@ -111,7 +112,6 @@
             cy = this._transformBox.getProperty('cy');
         }
         this._transformBox = null;
-        this.requestInvalidation();
         if (this._getGraphicEditor().getSelection()) {
             var selBBox = this._getGraphicEditor().getSelectionBBox(false);
             if (selBBox) {
