@@ -38,7 +38,6 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
 
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
-ifLocale.setValues(GAddLayerSetAction, IFLocale.Language.English, ["title"], ["Add Layer Set"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GAlignLeftAction, IFLocale.Language.English, ["title"], ["Align Left"]);
 ifLocale.setValues(GBringForwardAction, IFLocale.Language.English, ["title"], ["Bring Forward"]);
@@ -49,6 +48,7 @@ ifLocale.setValues(GCopyAction, IFLocale.Language.English, ["title"], ["Copy"]);
 ifLocale.setValues(GCopyAttributesAction, IFLocale.Language.English, ["title"], ["Copy Attributes"]);
 ifLocale.setValues(GCutAction, IFLocale.Language.English, ["title"], ["Cut"]);
 ifLocale.setValues(GDeleteAction, IFLocale.Language.English, ["title"], ["Delete"]);
+ifLocale.setValues(GDeleteLayerAction, IFLocale.Language.English, ["title"], ["Delete Layer"]);
 ifLocale.setValues(GDeletePageAction, IFLocale.Language.English, ["title"], ["Delete Page"]);
 ifLocale.setValues(GDuplicateAction, IFLocale.Language.English, ["title"], ["Duplicate"]);
 ifLocale.setValues(GExportAction, IFLocale.Language.English, ["title"], ["%name%..."]);

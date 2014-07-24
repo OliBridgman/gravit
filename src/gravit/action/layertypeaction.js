@@ -15,7 +15,7 @@
     GLayerTypeAction.TITLE = new IFLocale.Key(GLayerTypeAction, 'title');
 
     /**
-     * @type {IFLayerBlock.Type}
+     * @type {IFLayer.Type}
      * @private
      */
     GLayerTypeAction.prototype._layerType = null;
@@ -32,7 +32,7 @@
      */
     GLayerTypeAction.prototype.getTitle = function () {
         return ifLocale.get(GLayerTypeAction.TITLE).replace('%name%',
-            ifLocale.get(IFLayerBlock.TypeName[this._layerType]));
+            ifLocale.get(IFLayer.TypeName[this._layerType]));
     };
 
     /**

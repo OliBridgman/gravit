@@ -69,12 +69,6 @@
      * @type {JQuery}
      * @private
      */
-    GPagesLayersSidebar.prototype._layerSetAddControl = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
     GPagesLayersSidebar.prototype._layerDeleteControl = null;
 
     /** @override */
@@ -170,31 +164,14 @@
                     gApp.executeAction(GAddLayerAction.ID);
                 }.bind(this));
 
-        this._layerSetAddControl =
-            $('<button></button>')
-                .addClass('fa fa-folder')
-                // TODO : I18N
-                .attr('title', 'Add Layer Set')
-                .on('click', function () {
-                    gApp.executeAction(GAddLayerSetAction.ID);
-                }.bind(this));
-
         this._layerDeleteControl =
             $('<button></button>')
                 .addClass('fa fa-trash-o')
                 .css('margin-left', '5px')
                 // TODO : I18N
-                .attr('title', 'Delete Selected Layer')
+                .attr('title', 'Delete Layer')
                 .on('click', function () {
-                    /* TODO
-                     var swatch = this._swatchPanel.gSwatchPanel('value');
-                     var editor = this._document.getEditor();
-                     editor.beginTransaction();
-                     try {
-                     swatch.getParent().removeChild(swatch);
-                     } finally {
-                     editor.commitTransaction('Delete Swatch');
-                     }*/
+                    gApp.executeAction(GDeleteLayerAction.ID);
                 }.bind(this));
 
         $('<div></div>')
@@ -204,7 +181,6 @@
                 content: this._layersTree,
                 controls: [
                     this._layerAddControl,
-                    this._layerSetAddControl,
                     this._layerDeleteControl
                 ]
             })
@@ -454,7 +430,7 @@
             var activePage = this._document.getScene().getActivePage();
             if (activePage) {
                 for (var child = activePage.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFLayerBlock) {
+                    if (child instanceof IFLayer) {
                         this._insertLayer(child);
                     }
                 }
@@ -489,7 +465,7 @@
         // Iterate children and add them as well
         if (layerOrItem.hasMixin(IFNode.Container)) {
             for (var child = layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFLayerBlock || child instanceof IFItem) {
+                if (child instanceof IFLayer || child instanceof IFItem) {
                     this._insertLayer(child);
                 }
             }
@@ -519,7 +495,7 @@
             var label = layerOrItem.getLabel();
 
             // Mark draft layers
-            if (layerOrItem instanceof IFLayerBlock && layerOrItem.getProperty('tp') === IFLayerBlock.Type.Draft) {
+            if (layerOrItem instanceof IFLayer && layerOrItem.getProperty('tp') === IFLayer.Type.Draft) {
                 label = '*' + label;
             }
 
@@ -535,7 +511,7 @@
 
             // Visit to remove each mapping as well
             layerOrItem.accept(function (node) {
-                if (node instanceof IFLayerBlock || node instanceof IFItem) {
+                if (node instanceof IFLayer || node instanceof IFItem) {
                     for (var i = 0; i < this._layersTreeNodeMap.length; ++i) {
                         if (this._layersTreeNodeMap[i].node === node) {
                             this._layersTreeNodeMap.splice(i, 1);
@@ -554,7 +530,7 @@
     GPagesLayersSidebar.prototype._afterNodeInsert = function (event) {
         if (event.node instanceof IFPage) {
             this._insertPage(event.node);
-        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
+        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
             var activePage = this._document.getScene().getActivePage();
             if (event.node.getPage() === activePage) {
                 this._insertLayer(event.node);
@@ -569,16 +545,16 @@
     GPagesLayersSidebar.prototype._beforeNodeRemove = function (event) {
         if (event.node instanceof IFPage) {
             this._removePage(event.node);
-        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
+        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
             this._removeLayer(event.node);
 
             // If parent has no more children then update it accordingly
             var parent = event.node.getParent();
 
-            if (parent instanceof IFLayerBlock || parent instanceof IFItem) {
+            if (parent instanceof IFLayer || parent instanceof IFItem) {
                 var hasChildren = false;
                 for (var child = parent.getFirstChild(); child !== null; child = child.getNext()) {
-                    if ((child instanceof IFLayerBlock || child instanceof IFItem) && child !== event.node) {
+                    if ((child instanceof IFLayer || child instanceof IFItem) && child !== event.node) {
                         hasChildren = true;
                         break;
                     }
@@ -599,7 +575,7 @@
     GPagesLayersSidebar.prototype._afterPropertiesChange = function (event) {
         if (event.node instanceof IFPage) {
             this._updatePage(event.node);
-        } else if (event.node instanceof IFLayerBlock || event.node instanceof IFItem) {
+        } else if (event.node instanceof IFLayer || event.node instanceof IFItem) {
             this._updateLayer(event.node);
         }
     };
@@ -621,7 +597,7 @@
                 // Page activeness change requires clearing layers
                 this._clearLayers();
             }
-        } else if (event.node instanceof IFLayerBlock && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected || event.flag === IFNode.Flag.Expanded)) {
+        } else if (event.node instanceof IFLayer && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected || event.flag === IFNode.Flag.Expanded)) {
             this._updateLayer(event.node);
         } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
             this._updateLayer(event.node);
@@ -666,7 +642,7 @@
                 parentHidden = p.getProperty('visible') === false || parentHidden;
                 parentLocked = p.getProperty('locked') === true || parentLocked;
 
-                if (p instanceof IFLayerBlock) {
+                if (p instanceof IFLayer) {
                     parentOutlined = p.getProperty('otl') === true || parentOutlined;
                 }
 
@@ -675,7 +651,7 @@
 
             var isHidden = parentHidden || layerOrItem.getProperty('visible') === false;
             var isLocked = parentLocked || layerOrItem.getProperty('locked') === true;
-            var isOutlined = parentOutlined || (layerOrItem instanceof IFLayerBlock && layerOrItem.getProperty('otl'));
+            var isOutlined = parentOutlined || (layerOrItem instanceof IFLayer && layerOrItem.getProperty('otl'));
 
             // Gather a reference to the element container
             var container = li.find('div.jqtree-element');
@@ -706,10 +682,8 @@
 
             // Figure an icon for the item if any
             var icon = null;
-            if (layerOrItem instanceof IFLayerSet) {
+            if (layerOrItem instanceof IFLayer) {
                 icon = layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder';
-            } else if (layerOrItem instanceof IFLayer) {
-                icon = 'navicon';
             } else if (layerOrItem instanceof IFShape) {
                 if (layerOrItem instanceof IFText) {
                     icon = 'font';
@@ -780,9 +754,9 @@
             }
 
             // Append outline & color for layers
-            if (layerOrItem instanceof IFLayerBlock) {
+            if (layerOrItem instanceof IFLayer) {
                 // Don't add outline for guide layers
-                if (layerOrItem.getProperty('tp') !== IFLayerBlock.Type.Guide) {
+                if (layerOrItem.getProperty('tp') !== IFLayer.Type.Guide) {
                     $('<span></span>')
                         .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
                         .toggleClass('layer-default', !isOutlined)
@@ -815,7 +789,7 @@
                             // Apply color to all child layers recursively that
                             // do have the same color as our layer
                             layerOrItem.acceptChildren(function (node) {
-                                if (node instanceof IFLayerBlock) {
+                                if (node instanceof IFLayer) {
                                     var childColor = node.getProperty('cls');
                                     if (IFColor.equals(childColor, myColor)) {
                                         node.setProperty('cls', color);

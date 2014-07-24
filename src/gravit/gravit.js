@@ -253,11 +253,11 @@
             new GDeletePageAction(),
 
             new GAddLayerAction(),
-            new GAddLayerSetAction(),
+            new GDeleteLayerAction(),
 
-            new GLayerTypeAction(IFLayerBlock.Type.Output),
-            new GLayerTypeAction(IFLayerBlock.Type.Draft),
-            new GLayerTypeAction(IFLayerBlock.Type.Guide),
+            new GLayerTypeAction(IFLayer.Type.Output),
+            new GLayerTypeAction(IFLayer.Type.Draft),
+            new GLayerTypeAction(IFLayer.Type.Guide),
 
             // Arrange
             new GBringForwardAction(),
