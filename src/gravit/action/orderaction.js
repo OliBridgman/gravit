@@ -20,7 +20,7 @@
         SendToBack: 'send-back'
     };
 
-    GOrderAction.ID = 'arrange.arrange';
+    GOrderAction.ID = 'arrange.order';
 
     /** @type {GOrderAction.Type} */
     GOrderAction.prototype._type = null;
