@@ -36,13 +36,13 @@
     GDimensionsProperties.prototype._elements = null;
 
     /**
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     GDimensionsProperties.prototype._elementsBBox = null;
 
     /**
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     GDimensionsProperties.prototype._firstElementsBBox = null;
@@ -198,7 +198,7 @@
             }
 
             if (!this._elementsBBox) {
-                this._elementsBBox = new GRect(0, 0, 0, 0);
+                this._elementsBBox = new IFRect(0, 0, 0, 0);
                 this._firstElementsBBox = this._elementsBBox;
             }
         }
@@ -233,18 +233,18 @@
         var _getTransformation = function (bbox) {
             switch (dimension) {
                 case 'x':
-                    return new GTransform()
+                    return new IFTransform()
                         .translated(value - bbox.getX(), 0);
                 case 'y':
-                    return new GTransform()
+                    return new IFTransform()
                         .translated(0, value - bbox.getY());
                 case 'w':
-                    return new GTransform()
+                    return new IFTransform()
                         .translated(-bbox.getX(), -bbox.getY())
                         .scaled(value / bbox.getWidth(), 1)
                         .translated(bbox.getX(), bbox.getY());
                 case 'h':
-                    return new GTransform()
+                    return new IFTransform()
                         .translated(-bbox.getX(), -bbox.getY())
                         .scaled(1, value / bbox.getHeight())
                         .translated(bbox.getX(), bbox.getY());

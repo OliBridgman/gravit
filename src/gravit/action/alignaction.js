@@ -143,7 +143,7 @@
                 switch (this._type) {
                     case GAlignAction.Type.Left:
                         if (alignBBox.getX() !== bbox.getX()) {
-                            element.transform(new GTransform(1, 0, 0, 1, alignBBox.getX() - bbox.getX(), 0));
+                            element.transform(new IFTransform(1, 0, 0, 1, alignBBox.getX() - bbox.getX(), 0));
                         }
                         break;
                     // TODO:

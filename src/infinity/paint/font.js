@@ -274,7 +274,7 @@
             }
         }
 
-        return new IFVertexTransformer(outline, new GTransform(scale, 0, 0, scale, x, y));
+        return new IFVertexTransformer(outline, new IFTransform(scale, 0, 0, scale, x, y));
     };
 
 

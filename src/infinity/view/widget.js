@@ -24,7 +24,7 @@
      * Convert a DOM-Mouse-Event client position to internal coordinates
      * @param htmlElement
      * @param mouseEvent
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     GUIWidget.convertClientPositionFromMousePosition = function (htmlElement, mouseEvent) {
         var posX = null;
@@ -47,7 +47,7 @@
             posY = mouseEvent.pageY - (box.top + window.pageYOffset - document.documentElement.clientTop);
         }
 
-        return new GPoint(posX, posY);
+        return new IFPoint(posX, posY);
     };
 
     /**

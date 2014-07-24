@@ -29,7 +29,7 @@
 
     /**
      * The current selection area
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFSelectTool.prototype._selectArea = null;
@@ -67,14 +67,14 @@
 
     /**
      * The current key delta
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFSelectTool.prototype._keyDelta = null;
 
     /**
      * The start position of moving
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFSelectTool.prototype._moveStart = null;
@@ -82,7 +82,7 @@
 
     /**
      * The current position of moving
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFSelectTool.prototype._moveCurrent = null;
@@ -418,7 +418,7 @@
                 this.invalidateArea(this._selectArea);
             }
 
-            this._selectArea = GRect.fromPoints(event.clientStart, event.client);
+            this._selectArea = IFRect.fromPoints(event.clientStart, event.client);
 
             if (this._hasSelectArea()) {
                 this.invalidateArea(this._selectArea);
@@ -570,7 +570,7 @@
                         break;
                 }
 
-                this._keyDelta = this._keyDelta ? this._keyDelta.add(new GPoint(dx, dy)) : new GPoint(dx, dy);
+                this._keyDelta = this._keyDelta ? this._keyDelta.add(new IFPoint(dx, dy)) : new IFPoint(dx, dy);
                 this._editor.moveSelection(this._keyDelta, false);
             }
         }
@@ -692,7 +692,7 @@
 
     /**
      * Updates the editor under given mouse client coordinates
-     * @param {GPoint} mouse mouse client coordinates
+     * @param {IFPoint} mouse mouse client coordinates
      * @private
      */
     IFSelectTool.prototype._updateEditorUnderMouse = function (mouse) {

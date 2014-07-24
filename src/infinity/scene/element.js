@@ -190,22 +190,22 @@
     };
 
     /**
-     * @type {Object|GPoint}
+     * @type {Object|IFPoint}
      * @private
      */
-    IFElement.Pivot.prototype._pivot = GRect.Side.CENTER;
+    IFElement.Pivot.prototype._pivot = IFRect.Side.CENTER;
 
     /**
-     * @return {GPoint} the (absolute) pivot point
+     * @return {IFPoint} the (absolute) pivot point
      * @version 1.0
      */
     IFElement.Pivot.prototype.getPivotPoint = function () {
         var bbox = this.getGeometryBBox();
         if (bbox == null) {
-            bbox = new GRect(0, 0, 0, 0);
+            bbox = new IFRect(0, 0, 0, 0);
         }
 
-        if (this._pivot instanceof GPoint) {
+        if (this._pivot instanceof IFPoint) {
             // a pivot point is always relative to our bbox
             return this._pivot.translated(bbox.getX(), bbox.getY());
         } else {
@@ -232,7 +232,7 @@
 
     /**
      * Returns the actual transformation the element has
-     * @return {GTransform}
+     * @return {IFTransform}
      */
     IFElement.Transform.prototype.getTransform = function () {
         return null;
@@ -240,7 +240,7 @@
 
     /**
      * Assigns the actual transformation the element has
-     * @return {GTransform}
+     * @return {IFTransform}
      */
     IFElement.Transform.prototype.setTransform = function (transform) {
         throw new Error("Not Supported.");
@@ -251,14 +251,14 @@
      * including multiplication with the existing transformation
      * the element may already have. This will by default simply
      * apply the transformation to all direct children of the element if any
-     * @param {GTransform} transform the transformation to be applied
+     * @param {IFTransform} transform the transformation to be applied
      */
     IFElement.Transform.prototype.transform = function (transform) {
         this._transformChildren(transform);
     };
 
     /**
-     * @param {GTransform} transform the transformation to be applied
+     * @param {IFTransform} transform the transformation to be applied
      * @private
      */
     IFElement.Transform.prototype._transformChildren = function (transform) {
@@ -398,7 +398,7 @@
                     styleCanvas.resize(paintBBox.getWidth(), paintBBox.getHeight());
                     styleCanvas.prepare();
 
-                    var topLeft = paintBBox.getSide(GRect.Side.TOP_LEFT);
+                    var topLeft = paintBBox.getSide(IFRect.Side.TOP_LEFT);
                     styleCanvas.setOrigin(topLeft);
                     styleCanvas.setOffset(topLeft);
                 } else {
@@ -481,20 +481,20 @@
     // IFElement
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @type GRect
+     * @type IFRect
      * @private
      */
     IFElement.prototype._geometryBBbox = null;
 
     /**
-     * @type GRect
+     * @type IFRect
      * @private
      */
     IFElement.prototype._paintBBox = null;
 
     /**
      * Called to get the geometry bbox which usually is the bbox of the underlying shape
-     * @return {GRect} the geometry bbox, may never be null
+     * @return {IFRect} the geometry bbox, may never be null
      * @version 1.0
      */
     IFElement.prototype.getGeometryBBox = function () {
@@ -511,7 +511,7 @@
 
     /**
      * Called to get the united geometry bbox of all children of this node if this node is a container
-     * @return {GRect} the united geometry bbox of all children or empty rect if this node does not have
+     * @return {IFRect} the united geometry bbox of all children or empty rect if this node does not have
      * any children with valid geometry bboxes
      * @version 1.0
      */
@@ -539,7 +539,7 @@
     /**
      * Called to get the paint bbox for this node including all possible
      * artifacts like effects and the such
-     * @return {GRect} the paint bbox, may never be null
+     * @return {IFRect} the paint bbox, may never be null
      * @version 1.0
      */
     IFElement.prototype.getPaintBBox = function () {
@@ -556,7 +556,7 @@
 
     /**
      * Called to get the united paint bbox of all children of this node if this node is a container
-     * @return {GRect} the united paint bbox of all children or empty rect if this node does not have
+     * @return {IFRect} the united paint bbox of all children or empty rect if this node does not have
      * any children with valid paint bboxes
      * @version 1.0
      */
@@ -576,7 +576,7 @@
                     }
                 }
             }
-            return result ? result : new GRect(0, 0, 0, 0);
+            return result ? result : new IFRect(0, 0, 0, 0);
         }
         return null;
     };
@@ -598,9 +598,9 @@
     /**
      * Called whenever a hit-test should be made on this element. Note that
      * this should hit-test against it's sub-elements (bottom-up), first
-     * @param {GPoint} location the position to trigger the hit test at
+     * @param {IFPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
-     * @param {GTransform} transform the transformation of the scene
+     * @param {IFTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
@@ -883,7 +883,7 @@
 
     /**
      * Called whenever the underliny geometry bbox needs to be calculated
-     * @return {GRect} the calculated geometry bbox, may never be null
+     * @return {IFRect} the calculated geometry bbox, may never be null
      * @private
      */
     IFElement.prototype._calculateGeometryBBox = function () {
@@ -893,7 +893,7 @@
 
     /**
      * Called whenever the underlying paint bbox needs to be calculated
-     * @return {GRect} the calculated paint bbox, may never be null
+     * @return {IFRect} the calculated paint bbox, may never be null
      * @private
      */
     IFElement.prototype._calculatePaintBBox = function () {
@@ -911,9 +911,9 @@
      * Detail means that the caller has already checked against a valid
      * bounding area of this element as well as that the given location
      * falls within the bounding area.
-     * @param {GPoint} location the position to trigger the hit test at
+     * @param {IFPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
-     * @param {GTransform} transform the transformation of the scene
+     * @param {IFTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Number} tolerance a tolerance used for hit-testing
      * @param {Boolean} force if true, enforce hitting even if something is not visible
@@ -968,7 +968,7 @@
 
     /**
      * Called to request a invalidation for a given area
-     * @param {GRect} area the area of invalidation
+     * @param {IFRect} area the area of invalidation
      * @private
      */
     IFElement.prototype._requestInvalidationArea = function (area) {
@@ -1022,7 +1022,7 @@
 
                 if (this.isRenderable()) {
                     var newPaintBBox = this.getPaintBBox();
-                    if (!GRect.equals(newPaintBBox, this._savedPaintBBox)) {
+                    if (!IFRect.equals(newPaintBBox, this._savedPaintBBox)) {
 
                         // Deliver child geometry update to parent
                         if (this.getParent()) {

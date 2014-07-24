@@ -301,7 +301,7 @@
 
     /**
      * Updates position of edited point, takes into account shiftKey and mode
-     * @param {GPoint} clickPt - coordinates to be used for new position in view system
+     * @param {IFPoint} clickPt - coordinates to be used for new position in view system
      * @private
      */
     IFPathTool.prototype._updatePoint = function (clickPt) {
@@ -341,7 +341,7 @@
         if (this._pathEditor && !nativeCoord) {
             var transform = this._pathRef.getTransform();
             if (transform) {
-                var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                var location = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                 location = transform.inverted().mapPoint(location);
                 anchorPt.setProperties(['x', 'y'], [location.getX(), location.getY()]);
             }
@@ -543,12 +543,12 @@
     /**
      * If Shift key is pressed, finds the point, which should be used as a base to constrain location with,
      * and calculates a new location
-     * @param {GPoint} pt - original point
-     * @param {GTransform} transform - a transformation to apply to base point before using it for constraining
+     * @param {IFPoint} pt - original point
+     * @param {IFTransform} transform - a transformation to apply to base point before using it for constraining
      * @param {IFPath} path - a path to look for base point; used only if no orientation point is passed
      * @param {IFPathBase.AnchorPoint} orientPt - orientation anchor point to be used as a base to constrain location with,
      * may be null
-     * @returns {GPoint} - original or newly created bounded point
+     * @returns {IFPoint} - original or newly created bounded point
      * @private
      */
     IFPathTool.prototype._constrainIfNeeded = function (pt, transform, path, orientPt) {

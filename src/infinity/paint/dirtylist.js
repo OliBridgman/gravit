@@ -49,7 +49,7 @@
     };
 
     /**
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFDirtyList.Matcher.prototype._unitedArea = null;
@@ -62,7 +62,7 @@
 
     /**
      * Called to test whether a given rectangle is within the dirty area(s)
-     * @param {GRect} test [x, y, w, h] the rect to test against
+     * @param {IFRect} test [x, y, w, h] the rect to test against
      * @return {Boolean} true if rect is within the dirty area(s), false if not
      * @version 1.0
      */
@@ -87,7 +87,7 @@
 
     /**
      * Transform all dirty rectangles in this matcher with a given transformation
-     * @param {GTransform} transform
+     * @param {IFTransform} transform
      * @version 1.0
      */
     IFDirtyList.Matcher.prototype.transform = function (transform) {
@@ -106,7 +106,7 @@
      * Clips all dirty rectangles into a given clip area
      * or if there're no dirties, will add the clip area as
      * united dirty area
-     * @param {GRect} clipArea
+     * @param {IFRect} clipArea
      */
     IFDirtyList.Matcher.prototype.clip = function (clipArea) {
         if (this._rects && this._rects.length > 0) {
@@ -139,7 +139,7 @@
     /**
      * The actual area where dirty regions may take place. Anything
      * outside of this area will be ignored
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFDirtyList.prototype._area = null;
@@ -164,7 +164,7 @@
      * coordintes will never lay outside this area. Note that if
      * there're already dirty rectangles they'll be cut to fit
      * within the new area.
-     * @param {GRect} area
+     * @param {IFRect} area
      */
     IFDirtyList.prototype.setArea = function (area) {
         this._area = area;
@@ -172,7 +172,7 @@
 
     /**
      * Returns the currently active area
-     * @return {GRect}
+     * @return {IFRect}
      * @version 1.0
      */
     IFDirtyList.prototype.getArea = function () {
@@ -331,7 +331,7 @@
             for (var i = 0; i < this._numDirties; ++i) {
                 var rect = this._dirties[i];
                 if (rect && rect[2] > 0 && rect[3] > 0) {
-                    var newRect = new GRect(rect[0], rect[1], rect[2], rect[3]);
+                    var newRect = new IFRect(rect[0], rect[1], rect[2], rect[3]);
                     matcher._rects[index++] = newRect;
                     if (matcher._unitedArea == null) {
                         matcher._unitedArea = newRect;

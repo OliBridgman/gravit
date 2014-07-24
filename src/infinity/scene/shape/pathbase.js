@@ -244,16 +244,16 @@
     /**
      * Returns a transformed copy of an anchor point. Only the point coordinates and handles are transformed,
      * but not the shoulders lengths
-     * @param {GTransform} transform - a transform to apply
+     * @param {IFTransform} transform - a transform to apply
      * @returns {IFPathBase.AnchorPoint} - a transformed copy of an anchor point
      * @private
      */
     IFPathBase.AnchorPoint.prototype._getTransformedCopy = function (transform) {
         var pt = new IFPathBase.AnchorPoint();
 
-        var leftH = this.$hlx !== null ? transform.mapPoint(new GPoint(this.$hlx, this.$hly)) : null;
-        var rightH = this.$hrx !== null ? transform.mapPoint(new GPoint(this.$hrx, this.$hry)) : null;
-        var coord = transform.mapPoint(new GPoint(this.$x, this.$y));
+        var leftH = this.$hlx !== null ? transform.mapPoint(new IFPoint(this.$hlx, this.$hly)) : null;
+        var rightH = this.$hrx !== null ? transform.mapPoint(new IFPoint(this.$hrx, this.$hry)) : null;
+        var coord = transform.mapPoint(new IFPoint(this.$x, this.$y));
         pt.$x = coord.getX();
         pt.$y = coord.getY();
         pt.$hlx = leftH ? leftH.getX() : null;
@@ -272,7 +272,7 @@
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of right shoulder
-     * @returns {GPoint} a left shoulder point
+     * @returns {IFPoint} a left shoulder point
      */
     IFPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function (fictiveCorner) {
         if (this.getPath() && this.$cl && (fictiveCorner || this.$cr)) {
@@ -286,10 +286,10 @@
     /**
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
-     * @param {GTransform} transform - transform to apply
+     * @param {IFTransform} transform - transform to apply
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of right shoulder
-     * @returns {GPoint} a left shoulder point
+     * @returns {IFPoint} a left shoulder point
      */
     IFPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
@@ -308,7 +308,7 @@
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of left shoulder
-     * @returns {GPoint} a right shoulder point
+     * @returns {IFPoint} a right shoulder point
      */
     IFPathBase.AnchorPoint.prototype.getRightShoulderPoint = function (fictiveCorner) {
         if (this.getPath() && this.$cr && (fictiveCorner || this.$cl)) {
@@ -322,10 +322,10 @@
     /**
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
-     * @param {GTransform} transform - transform to apply
+     * @param {IFTransform} transform - transform to apply
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of left shoulder
-     * @returns {GPoint} a right shoulder point
+     * @returns {IFPoint} a right shoulder point
      */
     IFPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
@@ -342,7 +342,7 @@
 
     /**
      * Returns a point until which left shoulder may be extended.
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFPathBase.AnchorPoint.prototype.getLeftShoulderLimitPoint = function () {
         var limitPt = null;
@@ -357,7 +357,7 @@
 
     /**
      * Returns a point until which right shoulder may be extended.
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFPathBase.AnchorPoint.prototype.getRightShoulderLimitPoint = function () {
         var limitPt = null;
@@ -890,7 +890,7 @@
     /**
      * Called to generate vertices from this anchor points
      * @param {IFVertexContainer} target the target vertex container to put vertices into
-     * @param {GTransform} transform the transformation used for vertice generation, might be null
+     * @param {IFTransform} transform the transformation used for vertice generation, might be null
      * @param {Boolean} styled - indicates if vertices should be calculated for path with styled corners
      * @private
      */
@@ -980,8 +980,8 @@
      * Calculates and return the first vertex of the path, from which movement to the next point starts
      * Takes into account corner type
      * This function is supposed to be called only when the path is closed
-     * @param {GTransform} transform - a transformation to apply to anchor points before generating vertices
-     * @returns {GPoint} starting point of the path
+     * @param {IFTransform} transform - a transformation to apply to anchor points before generating vertices
+     * @returns {IFPoint} starting point of the path
      * @private
      */
     IFPathBase.AnchorPoints.prototype._getPathStartPt = function (transform) {
@@ -1005,7 +1005,7 @@
             ap.$tp == IFPathBase.AnchorPoint.Type.Mirror || !prevPt ||
             prevPt.$tp == IFPathBase.AnchorPoint.Type.Connector && prevPt.$x == ap.$x && prevPt.$y == ap.$y) {
 
-            return new GPoint(ap.$x, ap.$y);
+            return new IFPoint(ap.$x, ap.$y);
         }
 
         return this._getRightShoulderPoint(ap, nextPt);
@@ -1020,7 +1020,7 @@
      * @param {Number} [pt2x] - x-coordinate of the second point
      * @param {Number} [pt2y] - y-coordinate of the second point
      * @param {Number} [pt2s] - shoulder of the second point
-     * @return {GPoint} the shoulder end connected to the first point
+     * @return {IFPoint} the shoulder end connected to the first point
      * @private
      */
     IFPathBase.AnchorPoints.prototype._getShoulderPoint = function (pt1x, pt1y, pt1s, pt2x, pt2y, pt2s) {
@@ -1054,7 +1054,7 @@
      * @param {IFPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
      * @param {IFPathBase.AnchorPoint} [nextPt] an anchor point to be use as a near point at right
      * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
-     * @returns {GPoint} a left shoulder point
+     * @returns {IFPoint} a left shoulder point
      */
     IFPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt, maxLen) {
         // define corner end
@@ -1070,13 +1070,13 @@
         var pt;
         if (hx != null) {
             if (maxLen) {
-                pt = new GPoint(hx, hy);
+                pt = new IFPoint(hx, hy);
             } else {
                 pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
             }
         } else {
             if (maxLen) {
-                pt = new GPoint(nextPt.$x, nextPt.$y);
+                pt = new IFPoint(nextPt.$x, nextPt.$y);
             } else {
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
             }
@@ -1089,7 +1089,7 @@
      * @param {IFPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
      * @param {IFPathBase.AnchorPoint} [prevPt] an anchor point to be use as a near point at left
      * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
-     * @returns {GPoint} a left shoulder point
+     * @returns {IFPoint} a left shoulder point
      */
     IFPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt, maxLen) {
         // define corner end
@@ -1105,13 +1105,13 @@
         var pt;
         if (hx != null) {
             if (maxLen) {
-                pt = new GPoint(hx, hy);
+                pt = new IFPoint(hx, hy);
             } else {
                 pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
             }
         } else {
             if (maxLen) {
-                pt = new GPoint(prevPt.$x, prevPt.$y);
+                pt = new IFPoint(prevPt.$x, prevPt.$y);
             } else {
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
             }
@@ -1292,7 +1292,7 @@
      * Adds path end vertices to the _vertices container, used to finish path
      * This function is supposed to be called only when the path is NOT closed
      * @param {IFVertexContainer} target the target vertex container to put vertices into
-     * @param {GTransform} transform - a transformation to apply to anchor points before generating vertices
+     * @param {IFTransform} transform - a transformation to apply to anchor points before generating vertices
      * @private
      */
     IFPathBase.AnchorPoints.prototype._addPathEndVertices = function (target, transform) {

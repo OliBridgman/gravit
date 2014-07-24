@@ -28,10 +28,10 @@
     /** @override */
     IFTextTool.prototype._updateShape = function (shape, area, line, scene) {
         if (scene) {
-            shape.setProperty('trf', new GTransform(area.getWidth(), 0, 0, area.getHeight(), area.getX(), area.getY()));
+            shape.setProperty('trf', new IFTransform(area.getWidth(), 0, 0, area.getHeight(), area.getX(), area.getY()));
         } else {
             shape.setProperty('trf',
-                new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+                new IFTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
                     area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
         }
     };
@@ -56,7 +56,7 @@
         var transform = this._view.getViewTransform();
         var scenePoint = transform.mapPoint(position);
 
-        text.setProperty('trf', new GTransform(1, 0, 0, 1, scenePoint.getX(), scenePoint.getY()));
+        text.setProperty('trf', new IFTransform(1, 0, 0, 1, scenePoint.getX(), scenePoint.getY()));
 
         this._insertText(text);
     };

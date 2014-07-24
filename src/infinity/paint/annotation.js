@@ -23,8 +23,8 @@
     /**
      * Paint an annotation
      * @param {IFPaintContext} context the paint context to paint on
-     * @param {GTransform} transform the current transformation in use
-     * @param {GPoint} center the center point of the annotation
+     * @param {IFTransform} transform the current transformation in use
+     * @param {IFPoint} center the center point of the annotation
      * @param {IFAnnotation.AnnotType} annotation the annotation to be painted
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
@@ -51,7 +51,7 @@
         var sy = size / 2 / annotationTemplate.scaleFactor;
         var canvas = context.canvas;
 
-        var vertices = new IFVertexTransformer(annotationTemplate.vertices, new GTransform(sx, 0, 0, sy, cx, cy));
+        var vertices = new IFVertexTransformer(annotationTemplate.vertices, new IFTransform(sx, 0, 0, sy, cx, cy));
         //if (annotation != this.AnnotType.Circle) {
         //    vertices = new IFVertexPixelAligner(vertices);
         //}
@@ -66,8 +66,8 @@
 
     /**
      * Get bbox of an annotation
-     * @param {GTransform} transform the current transformation in use
-     * @param {GPoint} center the center point of the annotation
+     * @param {IFTransform} transform the current transformation in use
+     * @param {IFPoint} center the center point of the annotation
      * @param {Number} [size] the size of an anotation
      */
     IFAnnotation.prototype.getAnnotationBBox = function (transform, center, size) {
@@ -78,7 +78,7 @@
         var cx = Math.floor(center.getX()) + 0.5;
         var cy = Math.floor(center.getY()) + 0.5;
 
-        return new GRect(cx - size / 2 - 1, cy - size / 2 - 1, size + 2, size + 2);
+        return new IFRect(cx - size / 2 - 1, cy - size / 2 - 1, size + 2, size + 2);
     };
 
     IFAnnotation.prototype._getAnnotationTemplate = function (annotation) {

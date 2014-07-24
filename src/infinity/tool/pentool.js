@@ -160,7 +160,7 @@
                 otherPt = this._dpathRef.getAnchorPoints().getLastChild();
             }
 
-            var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+            var location = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
@@ -434,7 +434,7 @@
     /**
      * Constructs new point, specific to Pen Tool, with the given position
      * @param {GUIMouseEvent} event used to define pressed button
-     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @param {IFPoint} pt - coordinates to be used for new position in world system
      * @returns {IFPath.AnchorPoint} newly created anchor point
      * @private
      */
@@ -532,7 +532,7 @@
 
     /**
      * Sets shoulder length for styled corners equal to the distance between anchor point's position and passed position
-     * @param {GPoint} newPos - position, which should be used for shoulder length calculation in view coordinates
+     * @param {IFPoint} newPos - position, which should be used for shoulder length calculation in view coordinates
      * @private
      */
     IFPenTool.prototype._updateShoulders = function(newPos) {
@@ -547,7 +547,7 @@
             }
         } else {
             var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
-            var sourcePos = new GPoint(this._editPt.getProperty('x'), this._editPt.getProperty('y'));
+            var sourcePos = new IFPoint(this._editPt.getProperty('x'), this._editPt.getProperty('y'));
             sourcePos = transformToNewPos.mapPoint(sourcePos);
             var newVal = ifMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
 
@@ -563,8 +563,8 @@
      * This function should be called only if mouse dragging of a point is started.
      * It updates edited point's handles or shoulders to correspond to new position.
      * Position is constrained and snapped to guides if needed.
-     * @param {GPoint} clickPt - new position
-     * @returns {GPoint} - modified new position, if it was constrained or snapped to guides
+     * @param {IFPoint} clickPt - new position
+     * @returns {IFPoint} - modified new position, if it was constrained or snapped to guides
      * @private
      */
     IFPenTool.prototype._updatePointProperties = function(clickPt) {

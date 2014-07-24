@@ -1337,7 +1337,7 @@
      * @param {Boolean} exact if true, the bounding box will include exact
      * curve calculation, otherwise if false, the bounding box will include
      * the max. bbox also surrounding any curve control points
-     * @return {GRect} the calculated bounds rect, this might be null if
+     * @return {IFRect} the calculated bounds rect, this might be null if
      * there're no valid bounds available as well as this might be an
      * empty rectangle if segments are at the same position or too less.
      * @version 1.0
@@ -1526,7 +1526,7 @@
             }
 
             if (minX != null && minY != null) {
-                return new GRect(minX, minY, maxX != null ? maxX - minX : 0, maxY != null ? maxY - minY : 0);
+                return new IFRect(minX, minY, maxX != null ? maxX - minX : 0, maxY != null ? maxY - minY : 0);
             }
         }
         return null;

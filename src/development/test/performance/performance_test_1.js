@@ -16,9 +16,9 @@
             }
 
             var rect = new IFRectangle();
-            rect.setProperties(['trf'], [new GTransform(rectWidth, 0.0, 0.0, rectHeight, x, y)]);
+            rect.setProperties(['trf'], [new IFTransform(rectWidth, 0.0, 0.0, rectHeight, x, y)]);
 
-            rect.transform(new GTransform(1.0, 0.0, 0.0, 1.0, -(x + rectWidth/2), -(y + rectHeight/2))
+            rect.transform(new IFTransform(1.0, 0.0, 0.0, 1.0, -(x + rectWidth/2), -(y + rectHeight/2))
                 .rotated(ifMath.toRadians(rotate))
                 .translated(+(x + rectWidth/2), + (y + rectHeight/2)));
 

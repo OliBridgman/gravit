@@ -20,7 +20,7 @@
     IFEllipseTool.prototype._updateShape = function (shape, area, line) {
         // Original shape is a circle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
         shape.setProperty('trf',
-            new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+            new IFTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
                 area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
     };
 

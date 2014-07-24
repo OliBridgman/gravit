@@ -485,7 +485,7 @@
 
     /**
      * Move the selection
-     * @param {GPoint} delta the move delta
+     * @param {IFPoint} delta the move delta
      * @param {Boolean} align whether to automatically align or not
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [data] optional data of part that has started the transformation
@@ -496,11 +496,11 @@
 
             var transBBox = selBBox.translated(delta.getX(), delta.getY());
             this._guides.beginMap();
-            var tl = this._guides.mapPoint(transBBox.getSide(GRect.Side.TOP_LEFT));
-            delta = tl.subtract(selBBox.getSide(GRect.Side.TOP_LEFT));
+            var tl = this._guides.mapPoint(transBBox.getSide(IFRect.Side.TOP_LEFT));
+            delta = tl.subtract(selBBox.getSide(IFRect.Side.TOP_LEFT));
         }
 
-        this.transformSelection(new GTransform(1, 0, 0, 1, delta.getX(), delta.getY()), partId, partData);
+        this.transformSelection(new IFTransform(1, 0, 0, 1, delta.getX(), delta.getY()), partId, partData);
         if (align) {
             this._guides.finishMap();
         }
@@ -520,9 +520,9 @@
         var selBBox = this.getSelectionBBox(false);
         if (selBBox) {
             // TODO : Align support
-            var tl = selBBox.getSide(GRect.Side.TOP_LEFT);
-            var br = selBBox.getSide(GRect.Side.BOTTOM_RIGHT);
-            var cnt = selBBox.getSide(GRect.Side.CENTER);
+            var tl = selBBox.getSide(IFRect.Side.TOP_LEFT);
+            var br = selBBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+            var cnt = selBBox.getSide(IFRect.Side.CENTER);
             var tx, ty;
             if (dx < 0) {
                 tx = br.getX();
@@ -539,9 +539,9 @@
                 ty = cnt.getY();
             }
 
-            var transform = new GTransform(1, 0, 0, 1, -tx, -ty)
-                .multiplied(new GTransform(sx, 0, 0, sy, 0, 0))
-                .multiplied(new GTransform(1, 0, 0, 1, tx, ty));
+            var transform = new IFTransform(1, 0, 0, 1, -tx, -ty)
+                .multiplied(new IFTransform(sx, 0, 0, sy, 0, 0))
+                .multiplied(new IFTransform(1, 0, 0, 1, tx, ty));
 
             this.transformSelection(transform, partId, partData);
         }
@@ -549,7 +549,7 @@
 
     /**
      * Transform the selection
-     * @param {GTransform} transform the transform to be used
+     * @param {IFTransform} transform the transform to be used
      * @param {*} [part] optional id of part that has started the transformation
      * @param {*} [partId] optional data of part that has started the transformation
      */
@@ -720,8 +720,8 @@
     /**
      * Does various work when the mouse was pressed somewhere to update for
      * example the currently active page. Does nothing on single page mode
-     * @param {GPoint} position the mouse position
-     * @param {GTransform} transform optional transformation for the position
+     * @param {IFPoint} position the mouse position
+     * @param {IFTransform} transform optional transformation for the position
      */
     IFEditor.prototype.updateByMousePosition = function (position, transformation) {
         if (this._scene.getProperty('singlePage') === false) {

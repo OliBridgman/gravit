@@ -45,10 +45,10 @@
             // Pixel content canvas always renders at scale = 100%
             var elemsBBox = this._view.getScene().getChildrenPaintBBox();
             this._pixelContentCanvas.prepare([elemsBBox]);
-            var tl = elemsBBox.getSide(GRect.Side.TOP_LEFT);
+            var tl = elemsBBox.getSide(IFRect.Side.TOP_LEFT);
             var width = elemsBBox.getWidth();
             var height = elemsBBox.getHeight();
-            this._pixelContentCanvas.setTransform(new GTransform(1, 0, 0, 1, -tl.getX(), -tl.getY()));
+            this._pixelContentCanvas.setTransform(new IFTransform(1, 0, 0, 1, -tl.getX(), -tl.getY()));
             this._pixelContentCanvas.resize(width, height);
 
             // Save source canvas, exchange it with pixel content canvas and paint the scene
@@ -66,7 +66,7 @@
         } else {
             // Render regular vectors
             this._pixelContentCanvas = null;
-            context.canvas.setOrigin(new GPoint(this._view._scrollX, this._view._scrollY));
+            context.canvas.setOrigin(new IFPoint(this._view._scrollX, this._view._scrollY));
             context.canvas.setScale(this._view._zoom);
             this._view.getScene().render(context);
         }

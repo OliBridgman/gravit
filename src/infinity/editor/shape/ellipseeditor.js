@@ -161,12 +161,12 @@
         var transform = element.getTransform();
         var startA = element.getProperty('sa');
         var endA = element.getProperty('ea');
-        transform = transform ? transform : new GTransform(1, 0, 0, 1, 0, 0);
+        transform = transform ? transform : new IFTransform(1, 0, 0, 1, 0, 0);
         var itArgs = [
             {id: IFEllipseEditor.START_ANGLE_PART_ID,
-                position: transform.mapPoint(new GPoint(Math.cos(startA), Math.sin(startA)))},
+                position: transform.mapPoint(new IFPoint(Math.cos(startA), Math.sin(startA)))},
             {id: IFEllipseEditor.END_ANGLE_PART_ID,
-                position: transform.mapPoint(new GPoint(Math.cos(endA), Math.sin(endA)))}
+                position: transform.mapPoint(new IFPoint(Math.cos(endA), Math.sin(endA)))}
         ];
 
         for (var i = 0; i < itArgs.length; ++i) {

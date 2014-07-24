@@ -25,7 +25,7 @@
     IFObject.inherit(IFLassoTool._AreaSelector, IFMarqueeTool._AreaSelector);
 
     /**
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFLassoTool._AreaSelector.prototype._current = null;

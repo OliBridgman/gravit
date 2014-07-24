@@ -51,7 +51,7 @@
 
         for (var i = 0; i < 3; ++i) {
             var rect = new IFRectangle();
-            rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(rectWidth / 2, 0, 0, rectHeight / 2,
+            rect.setProperties(['tl_sx', 'trf'], [50, new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2,
                 x + rectWidth / 2, y + rectHeight / 2)]);
 
             var style = new IFInlineStyle();
@@ -72,7 +72,7 @@
             rect.getStyleSet().appendChild(style);
 
             var rect2 = new IFRectangle();
-            rect2.setProperties(['trf'], [new GTransform(rectWidth / 2, 0, 0, rectHeight / 2,
+            rect2.setProperties(['trf'], [new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2,
                 x + 20 + rectWidth / 2, y + rectHeight / 2)]);
             var style = new IFInlineStyle();
             var fill = new IFFillPaint();
@@ -91,7 +91,7 @@
 
         for (var i = 0; i < 3; ++i) {
             var rect = new IFRectangle();
-            rect.setProperties(['tl_sx', 'trf'], [50, new GTransform(rectWidth / 2, 0, 0, rectHeight / 2,
+            rect.setProperties(['tl_sx', 'trf'], [50, new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2,
                 x + rectWidth / 2, y + rectHeight / 2)]);
 
             var style = new IFLinkedStyle();
@@ -105,7 +105,7 @@
             rect.getStyleSet().appendChild(style);
 
             var rect2 = new IFRectangle();
-            rect2.setProperties(['trf'], [new GTransform(rectWidth / 2, 0, 0, rectHeight / 2,
+            rect2.setProperties(['trf'], [new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2,
                 x + 20 + rectWidth / 2, y + rectHeight / 2)]);
             var style = new IFLinkedStyle();
             style.setProperty('ref', sharedStyle_3.getReferenceId());

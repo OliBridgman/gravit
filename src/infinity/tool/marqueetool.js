@@ -39,7 +39,7 @@
 
     /**
      * Called when this selector should return it's selection area bounds
-     * @return {GRect} the area bounds
+     * @return {IFRect} the area bounds
      */
     IFMarqueeTool._AreaSelector.prototype.getAreaBounds = function () {
         return ifVertexInfo.calculateBounds(this._pixelTransformer, false);
@@ -61,7 +61,7 @@
 
     /**
      * Called when this selector should start on a given position
-     * @param {GPoint} pos the current position
+     * @param {IFPoint} pos the current position
      */
     IFMarqueeTool._AreaSelector.prototype.start = function (pos) {
         // NO-OP
@@ -69,7 +69,7 @@
 
     /**
      * Called when this selector should move on a given position
-     * @param {GPoint} pos the current position
+     * @param {IFPoint} pos the current position
      */
     IFMarqueeTool._AreaSelector.prototype.move = function (pos) {
         // NO-OP
@@ -98,7 +98,7 @@
 
     /**
      * The current area selector bounds
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFMarqueeTool.prototype._areaBounds = null;

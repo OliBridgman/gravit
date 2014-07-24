@@ -50,7 +50,7 @@
 
     /**
      * The position of the cursor in client (widget) -coordinates
-     * @type {GPoint}
+     * @type {IFPoint}
      * @version 1.0
      */
     GUIMouseEvent.prototype.client = 0;
@@ -262,14 +262,14 @@
 
     /**
      * The drag start position in client (widget) -coordinates
-     * @type {GPoint}
+     * @type {IFPoint}
      * @version 1.0
      */
     GUIMouseEvent.prototype.clientStart = 0;
 
     /**
      * The drag subtract (current to previous pos) in client (widget) -coordinates
-     * @type {GPoint}
+     * @type {IFPoint}
      * @version 1.0
      */
     GUIMouseEvent.prototype.clientDelta = 0;

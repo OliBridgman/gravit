@@ -78,7 +78,7 @@
         if (this.hasFlag(IFElementEditor.Flag.Selected) && this.hasFlag(IFElementEditor.Flag.Detail) && this._hasCenterCross()) {
             var element = this.getPaintElement();
             var sourceTransform = element.getTransform();
-            var targetTransform = sourceTransform ? sourceTransform : new GTransform(1, 0, 0, 1, 0, 0);
+            var targetTransform = sourceTransform ? sourceTransform : new IFTransform(1, 0, 0, 1, 0, 0);
             targetTransform = transform ? targetTransform.multiplied(transform) : targetTransform;
             var crossHalfSizeMax = IFElementEditor.OPTIONS.centerCrossSize * 2;
             var tMatrix = targetTransform.getMatrix();

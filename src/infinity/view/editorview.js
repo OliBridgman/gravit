@@ -85,7 +85,7 @@
 
     /**
      * Handle a drop on the editor
-     * @param {GPoint} position screen coordinates position
+     * @param {IFPoint} position screen coordinates position
      * @param {DataTransfer} dataTransfer the dataTransfer object
      * @private
      */
@@ -106,7 +106,7 @@
                     reader.onload = function (event) {
                         var image = new IFImage();
                         image.setProperties(['src'], [event.target.result]);
-                        image.transform(new GTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY()));
+                        image.transform(new IFTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY()));
                         this._editor.insertElements([image]);
                     }.bind(this)
                     reader.readAsDataURL(file);
@@ -159,7 +159,7 @@
                         if (type === IFElementEditor.DropType.Node && source instanceof IFElement) {
                             // Move the element to the drop-position
                             var elBBox = source.getGeometryBBox();
-                            source.transform(new GTransform(1, 0, 0, 1,
+                            source.transform(new IFTransform(1, 0, 0, 1,
                                 scenePosition.getX() - (elBBox ? elBBox.getX() : 0), scenePosition.getY() - (elBBox ? elBBox.getY() : 0)))
 
                             // Insert element and select it

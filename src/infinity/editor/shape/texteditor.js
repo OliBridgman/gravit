@@ -194,7 +194,7 @@
                     var cbox = this.getElement().getContentBBox();
 
                     if (bbox && cbox) {
-                        var transform = new GTransform()
+                        var transform = new IFTransform()
                             .translated(-bbox.getX(), -bbox.getY())
                             .scaled(newWidth ? cbox.getWidth() / bbox.getWidth() : 1, newHeight ? cbox.getHeight() / bbox.getHeight() : 1)
                             .translated(bbox.getX(), bbox.getY());
@@ -316,7 +316,7 @@
     IFTextEditor.prototype.adjustInlineEditForView = function (view) {
         var sceneBBox = this.getElement().getGeometryBBox();
         if (!sceneBBox) {
-            sceneBBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+            sceneBBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
             var transform = this.getElement().getTransform();
             if (transform) {
                 sceneBBox = transform.mapRect(sceneBBox);

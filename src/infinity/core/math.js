@@ -133,7 +133,7 @@
      * @param {Number} b1x, b1y, b2x, b2y coordinates of the end points of the second segment
      * @param {Array} [result] - if passed, intersection point between lines is calculated  even if segments don't
      * intersect and parameter values for both segments are written into this array
-     * @return {GPoint} an intersection point if the segments intersect, null otherwise
+     * @return {IFPoint} an intersection point if the segments intersect, null otherwise
      */
     IFMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
         // segments intersect when the system below has the only one solution (ta, tb):
@@ -156,7 +156,7 @@
                     result[1] = tb;
                 }
                 // segments intersect, find an intersection point
-                return new GPoint(a1x + ta * (a2x - a1x), a1y + ta * (a2y - a1y));
+                return new IFPoint(a1x + ta * (a2x - a1x), a1y + ta * (a2y - a1y));
             }
         }
 
@@ -209,7 +209,7 @@
      * @param {Number} xC2 - the second circle center X coordinate
      * @param {Number} yC2 - the second circle center Y coordinate
      * @param {Number} rC2 - the second circle radius
-     * @param {Array{GPoint}} result
+     * @param {Array{IFPoint}} result
      */
     IFMath.prototype.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
         // To find intersection points, the formulas from here are used:
@@ -224,13 +224,13 @@
             var x = (xC1 + xC2) / 2 + (xC2 - xC1) * tmp;
             var y = (yC1 + yC2) / 2 + (yC2 - yC1) * tmp;
             if (this.isEqualEps(dSqr, rSumSqr) || !this.isEqualEps(dSqr, 0) && this.isEqualEps(dSqr, rSqr)) {
-                result[0] = new GPoint(x, y);
+                result[0] = new IFPoint(x, y);
             } else if (rSqr < dSqr && dSqr < rSumSqr ) {
                 tmp = Math.sqrt((rSumSqr - dSqr) * (dSqr - rSqr)) / (2 * dSqr);
                 var xTmp = (yC2 - yC1) * tmp;
                 var yTmp = (xC1 - xC2) * tmp;
-                result[0] = new GPoint(x + xTmp, y + yTmp);
-                result[1] = new GPoint(x - xTmp, y - yTmp);
+                result[0] = new IFPoint(x + xTmp, y + yTmp);
+                result[1] = new IFPoint(x - xTmp, y - yTmp);
             }
         }
     };
@@ -240,7 +240,7 @@
      * Lines are given as: a1*x + b1*y +c1 = 0 and a2*x + b2*y +c2 = 0
      * @param {Number} a1, b1, c1 - coefficients of the first line
      * @param {Number} a2, b2, c2 - coefficients of the second line
-     * @return {GPoint} an intersection point if the lines intersection, null otherwise
+     * @return {IFPoint} an intersection point if the lines intersection, null otherwise
      * @version 1.0
      */
     IFMath.prototype.getLinesIntersection = function (a1, b1, c1, a2, b2, c2) {
@@ -248,7 +248,7 @@
         if (this.isEqualEps(d, 0)) {
             return null;
         }
-        return new GPoint((b1 * c2 - b2 * c1) / d, (c1 * a2 - c2 * a1) / d);
+        return new IFPoint((b1 * c2 - b2 * c1) / d, (c1 * a2 - c2 * a1) / d);
     };
 
     /**
@@ -260,7 +260,7 @@
      * @param {Number} y2 - coordinate of the second triangle vertex
      * @param {Number} x3 - coordinate of the third triangle vertex
      * @param {Number} y3 - coordinate of the third triangle vertex
-     * @returns {GPoint} - center coordinates
+     * @returns {IFPoint} - center coordinates
      * @version 1.0
      */
     IFMath.prototype.getCircumcircleCenter = function (x1, y1, x2, y2, x3, y3) {
@@ -279,7 +279,7 @@
      * Finds a point at some offset from a segment start,
      * @param {Number} x1, y1, x2, y2 coordinates of a segment end points
      * @param {Number} [offs] offset from a segment start point (x1, y1)
-     * @return {GPoint} a point at offset from the segment start, if offset appears between segment end points,
+     * @return {IFPoint} a point at offset from the segment start, if offset appears between segment end points,
      *  or the nearest to offset end-point otherwise
      * @version 1.0
      */
@@ -288,15 +288,15 @@
         var t;
 
         if (offs <= 0) {
-            return new GPoint(x1, y1);
+            return new IFPoint(x1, y1);
         }
 
         len = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         if (offs >= len) {
-            return new GPoint(x2, y2);
+            return new IFPoint(x2, y2);
         }
         t = offs / len; // len != 0 as  0 <= offs < len
-        return new GPoint(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
+        return new IFPoint(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
     };
 
     /**
@@ -493,10 +493,10 @@
 
     /**
      * Calculates and returns squared distance between two line segments
-     * @param {GPoint} pt11 - a start point of the first segment
-     * @param {GPoint} pt12 - an end point of the first segment
-     * @param {GPoint} pt21 - a start point of the second segment
-     * @param {GPoint} pt22 - an end point of the second segment
+     * @param {IFPoint} pt11 - a start point of the first segment
+     * @param {IFPoint} pt12 - an end point of the first segment
+     * @param {IFPoint} pt21 - a start point of the second segment
+     * @param {IFPoint} pt22 - an end point of the second segment
      * @return {Number} squared distance between two line segments
      */
     IFMath.prototype.getSegmToSegmSqrDist = function (pt11, pt12, pt21, pt22) {
@@ -535,7 +535,7 @@
      * @param {Number} x3 - x-coordinate of the point C
      * @param {Number} y3 - y-coordinate of the point C
      * @param {Boolean} positiveOnly indicates if only positive projection is needed
-     * @return (GPoint}
+     * @return (IFPoint}
      */
     IFMath.prototype.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
         var ax = x3 - x1;
@@ -548,15 +548,15 @@
         var norm = this.vDotProduct(bx, by, bx, by);
         var res;
         if (this.isEqualEps(norm, 0)) {
-            res = new GPoint(x3, y3);
+            res = new IFPoint(x3, y3);
         } else {
             var tmp = this.vDotProduct(ax, ay, bx, by) / norm;
 
             if (tmp <= 0.0 && positiveOnly) {
-                res  = new GPoint(x1, y1);
+                res  = new IFPoint(x1, y1);
             }
             else {
-                res  = new GPoint(bx * tmp + x1, by * tmp + y1);
+                res  = new IFPoint(bx * tmp + x1, by * tmp + y1);
             }
         }
 
@@ -593,7 +593,7 @@
             }
 
             if (this.isEqualEps(a11 * r1 + a12 * r2, b1) && this.isEqualEps(a21 * r1 + a22 * r2, b2)) {
-                res = new GPoint(r1, r2);
+                res = new IFPoint(r1, r2);
             }
         }
 
@@ -2132,7 +2132,7 @@
     };
 
     /**
-     * Construct GPoint so, that the segment from the previous point and the new point
+     * Construct IFPoint so, that the segment from the previous point and the new point
      * has the angle of 0 or 45 degrees with X or Y axis, and the new point has unchanged at least one of
      * originally supplied x and y coordinates (the one with the highest delta from previous point)
      * @param {Number} prevX - x coordinate of the previous point
@@ -2140,7 +2140,7 @@
      * @param {Number} origX - originally supplied x coordinate for the new point
      * @param {Number} origY - originally supplied y coordinate for the new point
      * @param {Number} rotation - if supplied, means angle in radians at which axes should be rotated before constraining
-     * @returns {GPoint} new point, making constrain segment with the previous point
+     * @returns {IFPoint} new point, making constrain segment with the previous point
      * @version 1.0
      */
     IFMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
@@ -2149,14 +2149,14 @@
         var tanPIdiv8 = 0.4142;
         var newY, newX;
 
-        var backTransform = new GTransform(1, 0, 0, 1, 0, 0);
+        var backTransform = new IFTransform(1, 0, 0, 1, 0, 0);
         if (rotation) {
             backTransform = backTransform.rotated(rotation);
         }
         backTransform = backTransform.translated(prevX, prevY);
         var transform = backTransform.inverted();
 
-        var origTransformed = transform.mapPoint(new GPoint(origX, origY));
+        var origTransformed = transform.mapPoint(new IFPoint(origX, origY));
         var origTrX = origTransformed.getX();
         var origTrY = origTransformed.getY();
         dx = Math.abs(origTrX);
@@ -2192,7 +2192,7 @@
             newY = origTrY;
         }
 
-        return backTransform.mapPoint(new GPoint(newX, newY));
+        return backTransform.mapPoint(new IFPoint(newX, newY));
     };
 
     _.ifMath = new IFMath();

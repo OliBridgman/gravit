@@ -42,7 +42,7 @@
 
     /**
      * Transform all vertices in this container with a given matrix
-     * @param {GTransform} transform
+     * @param {IFTransform} transform
      */
     IFVertexContainer.prototype.transformVertices = function (transform) {
         for (var i = 0; i < this._vertices.length; ++i) {

@@ -21,7 +21,7 @@
         // Catch the context menu event to show our own
         var contextMenu = this._createContextMenu();
         this._container.on("contextmenu", function (evt) {
-            this._contextMenuClientPosition = new GPoint(evt.clientX, evt.clientY);
+            this._contextMenuClientPosition = new IFPoint(evt.clientX, evt.clientY);
             contextMenu.open({x: evt.pageX, y: evt.pageY});
             return true;
         }.bind(this));
@@ -59,7 +59,7 @@
     /**
      * The current clientX/clientY position triggered
      * by the contextmenu DOM-Event
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     GWindow.prototype._contextMenuClientPosition = null;

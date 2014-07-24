@@ -88,7 +88,7 @@
         if (IFItem.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
-                    return GTransform.serialize(value);
+                    return IFTransform.serialize(value);
                 }
                 return value;
             });
@@ -102,7 +102,7 @@
         if (IFItem.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFShape.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
-                    return GTransform.deserialize(value);
+                    return IFTransform.deserialize(value);
                 }
                 return value;
             });
@@ -288,10 +288,10 @@
     /**
      * Returns a center of the shape in world coordinates. Shape's internal transformation is applied if needed
      * @param {Boolean} includeTransform - whether to apply shape's internal transformation
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFShape.prototype.getCenter = function (includeTransform) {
-        var center = new GPoint(0, 0);
+        var center = new IFPoint(0, 0);
         if (includeTransform && this.$trf) {
             center = this.$trf.mapPoint(center);
         }

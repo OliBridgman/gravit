@@ -3,11 +3,11 @@
     /**
      * A 2d affine transform, if no parameters are given then
      * this constructos an identity matrix. Note that this class is immutable.
-     * @class GTransform
+     * @class IFTransform
      * @constructor
      * @version 1.0
      */
-    function GTransform(sx, shy, shx, sy, tx, ty) {
+    function IFTransform(sx, shy, shx, sy, tx, ty) {
         this._sx = typeof sx === 'number' ? sx : 1.0;
         this._shy = typeof shy === 'number' ? shy : 0.0;
         this._shx = typeof shx === 'number' ? shx : 0.0;
@@ -20,7 +20,7 @@
      * Serializes a transformation into it's most simple form
      * @returns {Array} serialized array or empty array for identity
      */
-    GTransform.serialize = function (transform) {
+    IFTransform.serialize = function (transform) {
         var result = [];
         if (!ifMath.isEqualEps(transform._sx, 1.0) || !ifMath.isEqualEps(transform._sy, 1.0)) {
             result = result.concat(['S'], transform._sx, transform._sy);
@@ -37,9 +37,9 @@
     /**
      * Deserializes a transformation from an array
      * @param {Array} serialized array to deserialize from
-     * @return {GTransform}
+     * @return {IFTransform}
      */
-    GTransform.deserialize = function (array) {
+    IFTransform.deserialize = function (array) {
         // 0 = SX,SY | 1 = SHX,SHY | 2 = TX,TY
         var sx = 1, shy = 0, shx = 0, sy = 1, tx = 0, ty = 1;
         var mode = -1;
@@ -77,17 +77,17 @@
             }
         }
 
-        return new GTransform(sx, shy, shx, sy, tx, ty);
+        return new IFTransform(sx, shy, shx, sy, tx, ty);
     };
 
     /**
      * Compare two transforms for equality by their matrix. Also takes care of null parameters
-     * @param {GTransform} left left side transform
-     * @param {GTransform} right right side transform
+     * @param {IFTransform} left left side transform
+     * @param {IFTransform} right right side transform
      * @return {Boolean} true if left and right are equal (also if they're null!)
      * @version 1.0
      */
-    GTransform.equals = function (left, right) {
+    IFTransform.equals = function (left, right) {
         if (left && left == right) {
             return true;
         } else if (left && right) {
@@ -104,48 +104,48 @@
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._sx;
+    IFTransform.prototype._sx;
 
     /**
      * Vertical shear
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._shy;
+    IFTransform.prototype._shy;
 
     /**
      * Horizontal shear
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._shx;
+    IFTransform.prototype._shx;
 
     /**
      * Vertical scale
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._sy;
+    IFTransform.prototype._sy;
 
     /**
      * Horiontal offset
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._tx;
+    IFTransform.prototype._tx;
 
     /**
      * Vertical offset
      * @type Number
      * @version 1.0
      */
-    GTransform.prototype._ty;
+    IFTransform.prototype._ty;
 
     /**
      * @return {Boolean} whether this transform reprsents an identity matrix or not
      * @version 1.0
      */
-    GTransform.prototype.isIdentity = function () {
+    IFTransform.prototype.isIdentity = function () {
         return ifMath.isEqualEps(this._sx, 1.0) && ifMath.isEqualEps(this._shy, 0.0) &&
             ifMath.isEqualEps(this._shx, 0.0) && ifMath.isEqualEps(this._sy, 1.0) &&
             ifMath.isEqualEps(this._tx, 0.0) && ifMath.isEqualEps(this._ty, 0.0);
@@ -155,7 +155,7 @@
      * @return {Boolean} whether this is a valid transform or not
      * @version 1.0
      */
-    GTransform.prototype.isValid = function () {
+    IFTransform.prototype.isValid = function () {
         return Math.abs(this._sx) > ifMath.defaultEps && Math.abs(this._sy) > ifMath.defaultEps;
     };
 
@@ -163,7 +163,7 @@
      * Returns the underlying matrix [sx, shy, shx, sy, tx, ty]
      * @returns {Array}
      */
-    GTransform.prototype.getMatrix = function () {
+    IFTransform.prototype.getMatrix = function () {
         return [this._sx, this._shy, this._shx, this._sy, this._tx, this._ty];
     };
 
@@ -171,7 +171,7 @@
      * Returns the determinant of the matrix
      * @returns {Number}
      */
-    GTransform.prototype.getDeterminant = function () {
+    IFTransform.prototype.getDeterminant = function () {
         return this._sx * this._sy - this._shy * this._shx;
     };
 
@@ -179,23 +179,23 @@
      * Returns the reciprocal of the determinant of the matrix
      * @returns {Number}
      */
-    GTransform.prototype.getDeterminantReciprocal = function () {
+    IFTransform.prototype.getDeterminantReciprocal = function () {
         return 1.0 / (this._sx * this._sy - this._shy * this._shx);
     };
 
     /**
      * Returns the translation this transformation
-     * @return {GPoint}
+     * @return {IFPoint}
      */
-    GTransform.prototype.getTranslation = function () {
-        return new GPoint(this._tx, this._ty);
+    IFTransform.prototype.getTranslation = function () {
+        return new IFPoint(this._tx, this._ty);
     };
 
     /**
      * Returns the scale factor of this transformation
      * @return {Number}
      */
-    GTransform.prototype.getScaleFactor = function () {
+    IFTransform.prototype.getScaleFactor = function () {
         var x = 0.707106781 * this._sx + 0.707106781 * this._shx;
         var y = 0.707106781 * this._shy + 0.707106781 * this._sy;
         return Math.sqrt(x * x + y * y);
@@ -205,16 +205,16 @@
      * Returns the rotation factor of this transformation in radians
      * @return {Number}
      */
-    GTransform.prototype.getRotationFactor = function () {
+    IFTransform.prototype.getRotationFactor = function () {
         return Math.atan2(this._shx, this._sx);
     };
 
     /**
      * Returns a new, multiplied transformation
-     * @param {GTransform} other
-     * @return {GTransform}
+     * @param {IFTransform} other
+     * @return {IFTransform}
      */
-    GTransform.prototype.multiplied = function (other) {
+    IFTransform.prototype.multiplied = function (other) {
         var sx = this._sx, shy = this._shy, shx = this._shx,
             sy = this._sy, tx = this._tx, ty = this._ty;
 
@@ -227,29 +227,29 @@
         sx = t0;
         shx = t2;
         tx = t4;
-        return new GTransform(sx, shy, shx, sy, tx, ty);
+        return new IFTransform(sx, shy, shx, sy, tx, ty);
     };
 
     /**
      * Returns a new, pre-multiplied transformation
-     * @param {GTransform} other
-     * @return {GTransform}
+     * @param {IFTransform} other
+     * @return {IFTransform}
      */
-    GTransform.prototype.preMultiplied = function (other) {
+    IFTransform.prototype.preMultiplied = function (other) {
         var sx = other._sx * this._sx + other._shy * this._shx;
         var shy = other._sx * this._shy + other._shy * this._sy;
         var sy = other._shx * this._shy + other._sy * this._sy;
         var shx = other._shx * this._sx + other._sy * this._shx;
         var tx = other._tx * this._sx + other._ty * this._shx + this._tx;
         var ty = other._tx * this._shy + other._ty * this._sy + this._ty;
-        return new GTransform(sx, shy, shx, sy, tx, ty);
+        return new IFTransform(sx, shy, shx, sy, tx, ty);
     };
 
     /**
      * Returns a new, inverted transformation
-     * @return {GTransform}
+     * @return {IFTransform}
      */
-    GTransform.prototype.inverted = function () {
+    IFTransform.prototype.inverted = function () {
         var sx = this._sx, sy = this._sy,
             shx = this._shx, shy = this._shy,
             tx = this._tx, ty = this._ty;
@@ -267,46 +267,46 @@
         sx = t0;
         tx = t4;
 
-        return new GTransform(sx, shy, shx, sy, tx, ty);
+        return new IFTransform(sx, shy, shx, sy, tx, ty);
     };
 
     /**
      * Returns a new, rotated transformation
      * @param {Number} angle in radians
-     * @return {GTransform}
+     * @return {IFTransform}
      */
-    GTransform.prototype.rotated = function (angle) {
-        return this.multiplied(new GTransform(Math.cos(angle), Math.sin(angle), -Math.sin(angle), Math.cos(angle), 0.0, 0.0));
+    IFTransform.prototype.rotated = function (angle) {
+        return this.multiplied(new IFTransform(Math.cos(angle), Math.sin(angle), -Math.sin(angle), Math.cos(angle), 0.0, 0.0));
     };
 
     /**
      * Add translation to this transform and return the result
-     * @return {GTransform} this transform with translation applied
+     * @return {IFTransform} this transform with translation applied
      * @version 1.0
      */
-    GTransform.prototype.translated = function (tx, ty) {
-        return this.multiplied(new GTransform(1.0, 0.0, 0.0, 1.0, tx, ty));
+    IFTransform.prototype.translated = function (tx, ty) {
+        return this.multiplied(new IFTransform(1.0, 0.0, 0.0, 1.0, tx, ty));
     };
 
     /**
      * Returns a new, scaled transformation
      * @param {Number} sx
      * @param {Number} sy
-     * @return {GTransform}
+     * @return {IFTransform}
      */
-    GTransform.prototype.scaled = function (sx, sy) {
+    IFTransform.prototype.scaled = function (sx, sy) {
         if (!sy) sy = sx;
-        return this.multiplied(new GTransform(sx, 0.0, 0.0, sy, 0.0, 0.0));
+        return this.multiplied(new IFTransform(sx, 0.0, 0.0, sy, 0.0, 0.0));
     };
 
     /**
      * Returns a new, skewed transformation
      * @param {Number} sx
      * @param {Number} sy
-     * @return {GTransform}
+     * @return {IFTransform}
      */
-    GTransform.prototype.skewed = function (sx, sy) {
-        return this.multiplied(new GTransform(1.0, Math.tan(sy), Math.tan(sx), 1.0, 0.0, 0.0));
+    IFTransform.prototype.skewed = function (sx, sy) {
+        return this.multiplied(new IFTransform(1.0, Math.tan(sy), Math.tan(sx), 1.0, 0.0, 0.0));
     };
 
     /**
@@ -315,7 +315,7 @@
      * expected that the vertex has two properties called "x" and "y"!
      * @version 1.0
      */
-    GTransform.prototype.map = function (vertex) {
+    IFTransform.prototype.map = function (vertex) {
         if (!this.isIdentity()) {
             var x = vertex.x;
             vertex.x = x * this._sx + vertex.y * this._shx + this._tx;
@@ -325,11 +325,11 @@
 
     /**
      * Map a point into this transformation
-     * @param {GPoint} point the point to map
-     * @return {GPoint} a new point mapped into this transformation
+     * @param {IFPoint} point the point to map
+     * @return {IFPoint} a new point mapped into this transformation
      * @version 1.0
      */
-    GTransform.prototype.mapPoint = function (point) {
+    IFTransform.prototype.mapPoint = function (point) {
         // If identity nothing to transform so return
         if (this.isIdentity()) {
             return point;
@@ -340,34 +340,34 @@
 
         var x = px * this._sx + py * this._shx + this._tx;
         var y = px * this._shy + py * this._sy + this._ty;
-        return new GPoint(x, y);
+        return new IFPoint(x, y);
     };
 
     /**
      * Map a rectangle into this transformation
-     * @param {GRect} rect the rectangle to map
-     * @return {GRect} a new rect mapped into this transformation
+     * @param {IFRect} rect the rectangle to map
+     * @return {IFRect} a new rect mapped into this transformation
      * @version 1.0
      */
-    GTransform.prototype.mapRect = function (rect) {
+    IFTransform.prototype.mapRect = function (rect) {
         // If identity nothing to transform so return
         if (this.isIdentity() || rect == null) {
             return rect;
         }
 
-        var p1 = rect.getSide(GRect.Side.TOP_LEFT);
-        var p2 = rect.getSide(GRect.Side.TOP_RIGHT);
-        var p3 = rect.getSide(GRect.Side.BOTTOM_RIGHT);
-        var p4 = rect.getSide(GRect.Side.BOTTOM_LEFT);
+        var p1 = rect.getSide(IFRect.Side.TOP_LEFT);
+        var p2 = rect.getSide(IFRect.Side.TOP_RIGHT);
+        var p3 = rect.getSide(IFRect.Side.BOTTOM_RIGHT);
+        var p4 = rect.getSide(IFRect.Side.BOTTOM_LEFT);
 
-        return GRect.fromPoints(this.mapPoint(p1), this.mapPoint(p2), this.mapPoint(p3), this.mapPoint(p4));
+        return IFRect.fromPoints(this.mapPoint(p1), this.mapPoint(p2), this.mapPoint(p3), this.mapPoint(p4));
     };
 
     /** @override */
-    GTransform.prototype.toString = function () {
-        return "[Object GTransform(sx=" + this._sx.toString() + ", shy=" + this._shy.toString() +
+    IFTransform.prototype.toString = function () {
+        return "[Object IFTransform(sx=" + this._sx.toString() + ", shy=" + this._shy.toString() +
             ", shx=" + this._shx.toString() + ", sx=" + this._sx.toString() + ", tx=" + this._tx.toString() + ", ty=" + this._ty.toString() + ")]";
     };
 
-    _.GTransform = GTransform;
+    _.IFTransform = IFTransform;
 })(this);

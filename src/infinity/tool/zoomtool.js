@@ -40,7 +40,7 @@
     IFZoomTool.prototype._zoomMode = false;
 
     /**
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFZoomTool.prototype._dragArea = null;
@@ -120,7 +120,7 @@
                 this.invalidateArea(this._dragArea);
             }
 
-            this._dragArea = GRect.fromPoints(event.clientStart, event.client);
+            this._dragArea = IFRect.fromPoints(event.clientStart, event.client);
 
             if (this._hasDragArea()) {
                 this.invalidateArea(this._dragArea);

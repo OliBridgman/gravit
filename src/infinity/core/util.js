@@ -32,7 +32,7 @@
      * Compare two objects for equality by their values. Also takes care of null parameters.
      * If the function can not compare the type by value then it'll return false as if
      * the two parameters wouldn't be equal.
-     * Currently supported types: Object, Boolean, Number, String, Array, Date, GRect, GPoint, GTransform.
+     * Currently supported types: Object, Boolean, Number, String, Array, Date, IFRect, IFPoint, IFTransform.
      * For objects this will iterate only the object's own properties to an unnested deepness so
      * take care in using this function for highly complex object structures.
      * For numbers, the epsilon comparison will be used so that very small differences in numbers

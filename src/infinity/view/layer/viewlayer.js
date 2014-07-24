@@ -56,7 +56,7 @@
 
     /**
      * Called to invalidate this paint widget or only a part of it
-     * @param {GRect} [area] the area to invalidate. If null (default),
+     * @param {IFRect} [area] the area to invalidate. If null (default),
      * then this clears the whole dirty areas and requests a full repaint
      * @return {Boolean} true if an invalidation ocurred, false if not
      * @version 1.0
@@ -105,8 +105,8 @@
      * Called to update the view area
      */
     IFViewLayer.prototype.updateViewArea = function () {
-        var viewArea = new GRect(0, 0, this._view.getWidth(), this._view.getHeight());
-        if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
+        var viewArea = new IFRect(0, 0, this._view.getWidth(), this._view.getHeight());
+        if (!IFRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
             this.invalidate();
         }

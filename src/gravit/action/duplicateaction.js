@@ -63,7 +63,7 @@
         var editor = gApp.getActiveDocument().getEditor();
         editor.beginTransaction();
         try {
-            editor.moveSelection(new GPoint(10, 10), false);
+            editor.moveSelection(new IFPoint(10, 10), false);
             editor.applySelectionTransform(true, true);
         } finally {
             // TODO : I18N

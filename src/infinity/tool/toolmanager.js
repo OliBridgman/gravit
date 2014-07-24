@@ -278,7 +278,7 @@
 
     /**
      * Invalidate and request a repaint of active tool area
-     * @param {GRect} [area] the area of invalidation, if not provided
+     * @param {IFRect} [area] the area of invalidation, if not provided
      * or null, invalidates the whole area
      * @private
      */

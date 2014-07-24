@@ -297,7 +297,7 @@
 
     /**
      * Current transformation to be applied to the element in world coordinates
-     * @type {GTransform}
+     * @type {IFTransform}
      * @private
      */
     IFElementEditor.prototype._transform = null;
@@ -536,8 +536,8 @@
 
     /**
      * Called whenever information about a part at a given location shall be returned
-     * @param {GPoint} location the location to get a part for in view coordinates
-     * @param {GTransform} transform the current transformation of the view
+     * @param {IFPoint} location the location to get a part for in view coordinates
+     * @param {IFTransform} transform the current transformation of the view
      * @param {Function} [acceptor] optional callback function getting called
      * for a part and receiving the current editor as it's only parameter.
      * The function should return true to accept the editor or false for not.
@@ -578,7 +578,7 @@
 
     /**
      * Called whenever this editor should paint itself
-     * @param {GTransform} transform the transformation of the scene
+     * @param {IFTransform} transform the transformation of the scene
      * @param {IFPaintContext} context
      */
     IFElementEditor.prototype.paint = function (transform, context) {
@@ -593,8 +593,8 @@
      * specific editor. If the editor doesn't have a real bbox
      * like a group, null should be returned. The return bbox includes
      * the bbox margin already if any.
-     * @param {GTransform} transform the transformation of the scene
-     * @return {GRect} the bbox in view coordinates
+     * @param {IFTransform} transform the transformation of the scene
+     * @return {IFRect} the bbox in view coordinates
      */
     IFElementEditor.prototype.getBBox = function (transform) {
         if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
@@ -637,10 +637,10 @@
 
     /**
      * Returns bbox based on visible additional elements like annotations or center cross
-     * @param {GTransform} transform - the transformation to apply to points
+     * @param {IFTransform} transform - the transformation to apply to points
      * before calculating additional visible elements {usually world to view transformation}
      * @param {Boolean} includeEditorTransform - shows if editor internal transformation should be applied
-     * @return {GRect} the bbox in view coordinates
+     * @return {IFRect} the bbox in view coordinates
      */
     IFElementEditor.prototype.getCustomBBox = function (transform, includeEditorTransform) {
         return null;
@@ -663,10 +663,10 @@
 
     /**
      * Callback after an invalidation request
-     * @param {GTransform} transform the transformation of the scene
+     * @param {IFTransform} transform the transformation of the scene
      * @param {*} args optional args passed to the initial requestInvalidation
      * call. Maybe null which indicates to return this editor's bbox if any
-     * @return {GRect} the transformed area to be invalidated or null for none
+     * @return {IFRect} the transformed area to be invalidated or null for none
      */
     IFElementEditor.prototype.invalidate = function (transform, args) {
         // Default handling for no arguments
@@ -680,9 +680,9 @@
      * Called whenever a part of this editor shell be moved
      * @param {*} partId the id of the editor part to be moved
      * @param {*} partData the data of the editor part to be moved
-     * @param {GPoint} position the new position in view coordinates
+     * @param {IFPoint} position the new position in view coordinates
      * the part should be moved to
-     * @param {GTransform} viewToWorldTransform - the transformation to apply to position
+     * @param {IFTransform} viewToWorldTransform - the transformation to apply to position
      * @param {IFGuides} guides to snap is needed
      * @param {Boolean} shift whether shift key is hold or not
      * @param {Boolean} option whether option key is hold or not
@@ -719,7 +719,7 @@
 
     /**
      * Called whenever this editor shell be transformed
-     * @param {GTransform} transform the transformation to be used
+     * @param {IFTransform} transform the transformation to be used
      * @param {*} [partId] optional id of part that initiated the transform
      * @param {*} [partData] optional data of part that initialized the transform
      */
@@ -780,7 +780,7 @@
      * Called whenever something has been dropped on this editor.
      * If the editor is able to handle it, it should return true
      * to prevent any further handling.
-     * @param {GPoint} position the drop position in scene coordinates
+     * @param {IFPoint} position the drop position in scene coordinates
      * @param {IFElementEditor.DropType} type
      * @param {*} source the drop source, the type depends on type
      * @param {*} hitData the IFElement.HitResult.data that was gathered
@@ -936,8 +936,8 @@
      * Note that the caller is responsible for testing the bbox of this
      * editor for faster lookup as well as the caller is responsible for
      * iterating any sub editors as well.
-     * @param {GPoint} location the location to get a part for in view coordinates
-     * @param {GTransform} transform - the current transformation of the scene {worldToViewTransform}
+     * @param {IFPoint} location the location to get a part for in view coordinates
+     * @param {IFTransform} transform - the current transformation of the scene {worldToViewTransform}
      * @param {Number} tolerance tolerance for testing the location
      * @returns {*} null if no part is available or an editor-specific part
      */
@@ -989,8 +989,8 @@
     /**
      * Paint an annotation
      * @param {IFPaintContext} context the paint context to paint on
-     * @param {GTransform} transform the current transformation in use
-     * @param {GPoint} center the center point of the annotation
+     * @param {IFTransform} transform the current transformation in use
+     * @param {IFPoint} center the center point of the annotation
      * @param {IFElementEditor.Annotation} annotation the annotation to be painted
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
@@ -1004,8 +1004,8 @@
 
     /**
      * Get bbox of an annotation
-     * @param {GTransform} transform the current transformation in use
-     * @param {GPoint} center the center point of the annotation
+     * @param {IFTransform} transform the current transformation in use
+     * @param {IFPoint} center the center point of the annotation
      * @param {Boolean} [small] whether to paint small annotation or not
      */
     IFElementEditor.prototype._getAnnotationBBox = function (transform, center, small) {
@@ -1023,12 +1023,12 @@
 
     /**
      * Assign editor transformation and invalidate
-     * @param {GTransform} transform
+     * @param {IFTransform} transform
      * @private
      */
     IFElementEditor.prototype._setTransform = function (transform) {
         // By default we'll simply assign the transformation
-        if (!GTransform.equals(this._transform, transform)) {
+        if (!IFTransform.equals(this._transform, transform)) {
             if (!this.hasFlag(IFElementEditor.Flag.Outline)) {
                 this.setFlag(IFElementEditor.Flag.Outline);
             } else {

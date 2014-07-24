@@ -63,7 +63,7 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for an invalidation request event
-     * @param {GRect} [area] a repaint area, defaults to null means to repaint all
+     * @param {IFRect} [area] a repaint area, defaults to null means to repaint all
      * @class IFScene.InvalidationRequestEvent
      * @extends GEvent
      * @constructor
@@ -74,7 +74,7 @@
     };
     IFObject.inherit(IFScene.InvalidationRequestEvent, GEvent);
 
-    /** @type GRect */
+    /** @type IFRect */
     IFScene.InvalidationRequestEvent.prototype.area = null;
 
     /** @override */
@@ -273,7 +273,7 @@
      * This will return all elements that are either intersecting
      * with a given rectangle or are perfectly inside it. For testing,
      * the element's paint bbox will be used.
-     * @param {GRect} rect the rect to test against
+     * @param {IFRect} rect the rect to test against
      * @param {Boolean} inside if true, matches need to be fully
      * enclosed by the rect to be returned, otherwise it is enough
      * when they're intersecting with rect. Defaults to false.
@@ -361,26 +361,26 @@
 
     /**
      * Returns a point for a new page to be inserted
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFScene.prototype.getPageInsertPosition = function () {
         // TODO : Figure better way to avoid any potential intersection of the page with others
         for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
             if (child instanceof IFPage) {
-                return new GPoint(
+                return new IFPoint(
                     child.getProperty('x') + child.getProperty('w') + IFScene.PAGE_SPACING,
                     child.getProperty('y')
                 );
             }
         }
-        return new GPoint(0, 0);
+        return new IFPoint(0, 0);
     };
 
     /**
      * Checks and returns wether a given page will intersect with
      * any other page(s) with a given pageRect
      * @param {IFPage} page the page to test for intersection w/ others
-     * @param {GRect} pageRect the new page rect to test for intersection w/ others
+     * @param {IFRect} pageRect the new page rect to test for intersection w/ others
      */
     IFScene.prototype.willPageIntersectWithOthers = function (page, pageRect) {
         pageRect = pageRect.expanded(IFScene.PAGE_SPACING, IFScene.PAGE_SPACING, IFScene.PAGE_SPACING, IFScene.PAGE_SPACING);
@@ -502,7 +502,7 @@
 
     /**
      * Invalidate something
-     * @param {GRect} [area] optional dirty area, if null marks the whole scene as being dirty
+     * @param {IFRect} [area] optional dirty area, if null marks the whole scene as being dirty
      * @private
      */
     IFScene.prototype._invalidateArea = function (area) {

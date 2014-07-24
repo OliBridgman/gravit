@@ -200,8 +200,8 @@
                     var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
                     var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);
                     var dPt = transform.getTranslation();
-                    var apL = new GPoint(apLeftPreview.getProperty('x'), apLeftPreview.getProperty('y'));
-                    var apR = new GPoint(apRightPreview.getProperty('x'), apRightPreview.getProperty('y'));
+                    var apL = new IFPoint(apLeftPreview.getProperty('x'), apLeftPreview.getProperty('y'));
+                    var apR = new IFPoint(apRightPreview.getProperty('x'), apRightPreview.getProperty('y'));
 
                     if (!partData.fixedHDirLpt && !partData.fixedHDirRpt) {
                         // TODO: honor internal path transform here
@@ -495,8 +495,8 @@
                         newPartInfo = new IFElementEditor.PartInfo(
                             this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: IFPathEditor.SegmentData.Handles,
-                                cL: 4 / 3, apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
-                                cR: 4 / 3, apRhl: new GPoint(hlx, hly), fixedHDirRpt: false},
+                                cL: 4 / 3, apLhr: new IFPoint(hrx, hry), fixedHDirLpt: false,
+                                cR: 4 / 3, apRhl: new IFPoint(hlx, hly), fixedHDirRpt: false},
                             null, false, true);
 
                     } else if (apLeft.getProperty('hrx') === null || apLeft.getProperty('hry') === null) {
@@ -528,9 +528,9 @@
                             this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
-                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: false,
+                                apLhr: new IFPoint(hrx, hry), fixedHDirLpt: false,
                                 cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: true},
+                                apRhl: new IFPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     } else if (apRight.getProperty('hlx') === null || apRight.getProperty('hly') === null) {
                         var hrx = apLeftPreview.getProperty('hrx');
@@ -547,9 +547,9 @@
                             this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope) * (1 - pathHitResult.slope) * pathHitResult.slope,
-                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
+                                apLhr: new IFPoint(hrx, hry), fixedHDirLpt: true,
                                 cR: 3 * pathHitResult.slope * pathHitResult.slope * (1 - pathHitResult.slope),
-                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: false},
+                                apRhl: new IFPoint(hlx, hly), fixedHDirRpt: false},
                             false, true);
                     } else { // both handles exist
                         // If both handles existed before, their orientation remains
@@ -565,9 +565,9 @@
                             this, {type: IFPathEditor.PartType.Segment, point: null, apLeft: apLeft, apRight: apRight},
                             {type: IFPathEditor.SegmentData.Handles,
                                 cL: 3 * (1 - pathHitResult.slope),
-                                apLhr: new GPoint(hrx, hry), fixedHDirLpt: true,
+                                apLhr: new IFPoint(hrx, hry), fixedHDirLpt: true,
                                 cR: 3 * pathHitResult.slope,
-                                apRhl: new GPoint(hlx, hly), fixedHDirRpt: true},
+                                apRhl: new IFPoint(hlx, hly), fixedHDirRpt: true},
                             false, true);
                     }
                 }
@@ -605,8 +605,8 @@
     /**
      * Hit-test anchor point's annotation
      * @param {IFPathBase.AnchorPoint} anchorPt - anchor point to hit-test
-     * @param {GPoint} location
-     * @param {GTransform} [transform] a transformation to apply to anchor point's coordinates before hit-testing,
+     * @param {IFPoint} location
+     * @param {IFTransform} [transform] a transformation to apply to anchor point's coordinates before hit-testing,
      * defaults to null
      * @param {Number} [tolerance] optional tolerance for hit testing, defaults to zero
      * @returns {boolean} the result of hit-test
@@ -619,7 +619,7 @@
             }
 
             return this._getAnnotationBBox(
-                    transformToApply, new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
+                    transformToApply, new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y')), true)
                 .expanded(tolerance, tolerance, tolerance, tolerance)
                 .containsPoint(location);
         }
@@ -627,9 +627,9 @@
     };
 
     /**
-     * Calculates and returns GPoint in scene coordinates, corresponding to the given anchor point
+     * Calculates and returns IFPoint in scene coordinates, corresponding to the given anchor point
      * @param {IFPathBase.AnchorPoint} anchorPt - the given anchor point
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFPathEditor.prototype.getPointCoord = function (anchorPt) {
         var pt = null;
@@ -641,7 +641,7 @@
             }
             var xPos = anchorPt.getProperty('x');
             var yPos = anchorPt.getProperty('y');
-            pt = new GPoint(xPos, yPos);
+            pt = new IFPoint(xPos, yPos);
             var transform = element.getTransform();
             if (transform) {
                 pt = transform.mapPoint(pt);
@@ -804,10 +804,10 @@
 
     /**
      * Paint a handle
-     * @param {GTransform} transform
+     * @param {IFTransform} transform
      * @param {IFPaintContext} context
-     * @param {GPoint} from
-     * @param {GPoint} to
+     * @param {IFPoint} from
+     * @param {IFPoint} to
      * @private
      */
     IFPathEditor.prototype._paintHandle = function (transform, context, from, to) {
@@ -826,8 +826,8 @@
      * @param {Boolean} paintElement whether to take the paint element for iteration
      * or not (which will then take the source element}
      * @param {Function(args: {{type: IFPathBase.AnchorPoint.Type|IFPathBase.CornerType, anchorPoint: IFPathBase.AnchorPoint,
-     * position: GPoint, annotation: IFElementEditor.Annotation, leftHandlePosition: GPoint, rightHandlePosition: GPoint,
-     * leftShoulderPosition: GPoint, rightShoulderPosition: GPoint)}})} iterator may return true for stopping iteration
+     * position: IFPoint, annotation: IFElementEditor.Annotation, leftHandlePosition: IFPoint, rightHandlePosition: IFPoint,
+     * leftShoulderPosition: IFPoint, rightShoulderPosition: IFPoint)}})} iterator may return true for stopping iteration
      * @private
      */
     IFPathEditor.prototype._iteratePoints = function (paintElement, iterator) {
@@ -839,7 +839,7 @@
             var previousPt = anchorPoints.getPreviousPoint(anchorPoint);
             var nextPt = anchorPoints.getNextPoint(anchorPoint);
             var type = anchorPoint.getProperty('tp');
-            var position = new GPoint(anchorPoint.getProperty('x'), anchorPoint.getProperty('y'));
+            var position = new IFPoint(anchorPoint.getProperty('x'), anchorPoint.getProperty('y'));
 
             var itArgs = {
                 type: type,
@@ -861,14 +861,14 @@
             }
 
             if (anchorPoint.hasFlag(IFNode.Flag.Selected) || (previousPt && previousPt.hasFlag(IFNode.Flag.Selected))) {
-                var pt = new GPoint(anchorPoint.getProperty('hlx'), anchorPoint.getProperty('hly'));
+                var pt = new IFPoint(anchorPoint.getProperty('hlx'), anchorPoint.getProperty('hly'));
                 if (pt.getX() !== null && pt.getY() !== null) {
                     itArgs.leftHandlePosition = pt;
                 }
             }
 
             if (anchorPoint.hasFlag(IFNode.Flag.Selected) || (nextPt && nextPt.hasFlag(IFNode.Flag.Selected))) {
-                var pt = new GPoint(anchorPoint.getProperty('hrx'), anchorPoint.getProperty('hry'));
+                var pt = new IFPoint(anchorPoint.getProperty('hrx'), anchorPoint.getProperty('hry'));
                 if (pt.getX() !== null && pt.getY() !== null) {
                     itArgs.rightHandlePosition = pt;
                 }
@@ -1097,13 +1097,13 @@
 
     /**
      * Constrains position against base point with the step aliquot to 45% from scene constraint property
-     * @param {GPoint} position - original position to be constrained in view coordinates
-     * @param {GTransform} worldToViewTransform - current scene transformation
+     * @param {IFPoint} position - original position to be constrained in view coordinates
+     * @param {IFTransform} worldToViewTransform - current scene transformation
      * @param sourcePoint - a base point
-     * @returns {GPoint} - new constrained position
+     * @returns {IFPoint} - new constrained position
      */
     IFPathEditor.prototype.constrainPosition = function (position, worldToViewTransform, sourcePoint) {
-        var basePt = new GPoint(sourcePoint.getProperty('x'), sourcePoint.getProperty('y'));
+        var basePt = new IFPoint(sourcePoint.getProperty('x'), sourcePoint.getProperty('y'));
         var transformToApply = this._element.getTransform();
         transformToApply = transformToApply ? transformToApply.multiplied(worldToViewTransform) : worldToViewTransform;
 
@@ -1288,8 +1288,8 @@
 
     /**
      * Returns the combined transformation of the path internal transformation with the supplied
-     * @param {GTransform}transform
-     * @returns {GTransform}
+     * @param {IFTransform}transform
+     * @returns {IFTransform}
      */
     IFPathEditor.prototype.getTransformFromNative = function (transform) {
         var transformToNewPos = this._element.getTransform();
@@ -1297,7 +1297,7 @@
             transformToNewPos = transformToNewPos ? transformToNewPos.multiplied(transform) : transform;
         }
         if (!transformToNewPos) {
-            transformToNewPos = new GTransform();
+            transformToNewPos = new IFTransform();
         }
         return transformToNewPos;
     };
@@ -1307,8 +1307,8 @@
      * This function may be used for both preview or original path points. If the original path has a transform,
      * then it is used without any concern, if preview or original path point is moving.
      * @param {IFPathBase.AnchorPoint} anchorPoint - an anchor point to move to new position
-     * @param {GPoint} newPosition - new point's position
-     * @param {GTransform} transform - transformation to be applied to path points to make their coordinate system
+     * @param {IFPoint} newPosition - new point's position
+     * @param {IFTransform} transform - transformation to be applied to path points to make their coordinate system
      * the same in which new position is specified (usually worldToViewTransform)
      * @param {IFPathBase.AnchorPoint} origPoint - if present, this anchor point is used as a source point instead of
      * anchor point itself. Useful when dragging an existing point to not lose it's handles accuracy.
@@ -1329,19 +1329,19 @@
             var hry = srcPt.getProperty('hry');
             if (hlx != null && hly != null || hrx != null && hry != null) {
                 var origPos = transformToNewPos.mapPoint(
-                    new GPoint(srcPt.getProperty('x'), srcPt.getProperty('y')));
+                    new IFPoint(srcPt.getProperty('x'), srcPt.getProperty('y')));
                 var dx = newPosition.getX() - origPos.getX();
                 var dy = newPosition.getY() - origPos.getY();
 
                 if (hlx != null && hly != null) {
                     var pt = transformToNative.mapPoint(
-                        transformToNewPos.mapPoint(new GPoint(hlx, hly)).translated(dx, dy));
+                        transformToNewPos.mapPoint(new IFPoint(hlx, hly)).translated(dx, dy));
                     hlx = pt.getX();
                     hly = pt.getY();
                 }
                 if (hrx != null && hry != null) {
                     var pt = transformToNative.mapPoint(
-                        transformToNewPos.mapPoint(new GPoint(hrx, hry)).translated(dx, dy));
+                        transformToNewPos.mapPoint(new IFPoint(hrx, hry)).translated(dx, dy));
                     hrx = pt.getX();
                     hry = pt.getY();
                 }
@@ -1356,8 +1356,8 @@
      * @param {IFPathBase.AnchorPoint} sourcePoint
      * @param {String} xProperty
      * @param {String} yProperty
-     * @param {GPoint} position - a destination position in view coordinates
-     * @param {GTransform} viewToWorldTransform - the transformation to apply to destination position
+     * @param {IFPoint} position - a destination position in view coordinates
+     * @param {IFTransform} viewToWorldTransform - the transformation to apply to destination position
      * @param {Boolean} ratio
      * @private
      */
@@ -1375,14 +1375,14 @@
         newPos = guides.mapPoint(newPos);
         */
         var pathTransform = this._element.getTransform();
-        var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
+        var sourcePosition = new IFPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
 
         if (pathTransform) {
             sourcePosition = pathTransform.mapPoint(sourcePosition);
         }
 
         this._transformPreviewPointCoordinates(sourcePoint, xProperty, yProperty,
-            new GTransform(1, 0, 0, 1, newPos.getX() - sourcePosition.getX(), newPos.getY() - sourcePosition.getY()));
+            new IFTransform(1, 0, 0, 1, newPos.getX() - sourcePosition.getX(), newPos.getY() - sourcePosition.getY()));
 
         //guides.finishMap();
     };
@@ -1392,8 +1392,8 @@
      * @param {IFPathBase.AnchorPoint} sourcePoint
      * @param {String} xProperty
      * @param {String} yProperty
-     * @param {GTransform} transform
-     * @param {GPoint} sourcePos if present, used for source position
+     * @param {IFTransform} transform
+     * @param {IFPoint} sourcePos if present, used for source position
      * @private
      */
     IFPathEditor.prototype._transformPreviewPointCoordinates = function (sourcePoint, xProperty, yProperty, transform, sourcePos) {
@@ -1405,7 +1405,7 @@
                 var sourcePosition = sourcePos;
             } else {
                 // Map source point with transformation and apply it to preview point
-                var sourcePosition = new GPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
+                var sourcePosition = new IFPoint(sourcePoint.getProperty(xProperty), sourcePoint.getProperty(yProperty));
             }
 
             var transformToApply = transform;
@@ -1432,13 +1432,13 @@
     /**
      * Calculates and set the new values of shoulders making the projection of new mouse position to shoulder vector
      * @param {{type: partType, point: args.anchorPoint}} partId
-     * @param {GPoint} position - destination position
+     * @param {IFPoint} position - destination position
      * @param {Boolean} ratio - if true, modify both shoulders the same way
      * @private
      */
     IFPathEditor.prototype._movePreviewPointShoulders = function (partId, position, ratio) {
         var pathTransform = this._element.getTransform();
-        var sourcePosition = new GPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
+        var sourcePosition = new IFPoint(partId.point.getProperty('x'), partId.point.getProperty('y'));
 
         var shoulderLimitPt;
         if (partId.type == IFPathEditor.PartType.LeftShoulder) {

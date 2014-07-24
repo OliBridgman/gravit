@@ -74,8 +74,8 @@
 
     /**
      * Hit-tests the path for the location. Corner styles are not applied.
-     * @param {GPoint} location
-     * @param {GTransform} transform - a transformation to be applied to the path before hit-testing in addition to
+     * @param {IFPoint} location
+     * @param {IFTransform} transform - a transformation to be applied to the path before hit-testing in addition to
      * path internal transformation, if any
      * @param {Boolean} area - indicates if path inside should be tested
      * @param {Boolean} [tolerance] optional hit test tolerance, defaults to zero

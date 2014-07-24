@@ -38,11 +38,11 @@
             szWScene = szW / scale;
             szHScene = szH / scale;
             var vbox = this._view.getViewBox(true);
-            var tl = new GPoint(vbox.getX(), vbox.getY());
+            var tl = new IFPoint(vbox.getX(), vbox.getY());
             var tlScene = this._view.getViewTransform().mapPoint(tl);
             var startXScene = Math.ceil(tlScene.getX() / szWScene) * szWScene;
             var startYScene = Math.ceil(tlScene.getY() / szHScene) * szHScene;
-            var tlGridScene = new GPoint(startXScene, startYScene);
+            var tlGridScene = new IFPoint(startXScene, startYScene);
             var tlGrid = this._view.getWorldTransform().mapPoint(tlGridScene);
             for (var x = tlGrid.getX(); x - vbox.getX() < vbox.getWidth(); x += szW) {
                 context.canvas.fillRect(Math.round(x), vbox.getY(), 1, vbox.getHeight(), cl);

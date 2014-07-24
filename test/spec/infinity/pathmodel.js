@@ -27,12 +27,12 @@
 
         it('#setCType updates corner type and shoulders length for all anchor points in the path', function () {
             var path = new GXPath();
-            path.appendAnchorPoint(new GXPath.AnchorPoint(new GPoint(10, 10), null,
-                null, new GPoint(15, 0)));
-            path.appendAnchorPoint(new GXPath.AnchorPoint(new GPoint(50, 10), null,
-                new GPoint(15, -10), new GPoint(60, 20)));
-            path.appendAnchorPoint(new GXPath.AnchorPoint(new GPoint(50, 70)));
-            path.appendAnchorPoint(new GXPath.AnchorPoint(new GPoint(30, 100)));
+            path.appendAnchorPoint(new GXPath.AnchorPoint(new IFPoint(10, 10), null,
+                null, new IFPoint(15, 0)));
+            path.appendAnchorPoint(new GXPath.AnchorPoint(new IFPoint(50, 10), null,
+                new IFPoint(15, -10), new IFPoint(60, 20)));
+            path.appendAnchorPoint(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+            path.appendAnchorPoint(new GXPath.AnchorPoint(new IFPoint(30, 100)));
             var aCTypes = [
                 GXPath.AnchorPoint.CType.Regular,
                 GXPath.AnchorPoint.CType.Connector,
@@ -76,7 +76,7 @@
             var path = new GXPath();
             for (var i = 0; i < aCTypes.length; ++i) {
                 path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                    new GPoint(5*i, 10*i + i), aCTypes[i], new GPoint(0, 8*i), new GPoint(3*i, 0)));
+                    new IFPoint(5*i, 10*i + i), aCTypes[i], new IFPoint(0, 8*i), new IFPoint(3*i, 0)));
             }
 
             var anchorPoint;
@@ -134,7 +134,7 @@
                 expect(anchorPt.$ah).to.not.be.ok;
 
                 var x = 20, y = 30.5, hlx = 40, hly = 50.5, hrx = 60, hry = 60.5, cx = 10, cy = 15;
-                anchorPt = new GXPath.AnchorPoint(new GPoint(x, y), null, null, new GPoint(hrx, hry));
+                anchorPt = new GXPath.AnchorPoint(new IFPoint(x, y), null, null, new IFPoint(hrx, hry));
 
                 expect(anchorPt.$x).to.be.equal(x);
                 expect(anchorPt.$y).to.be.equal(y);
@@ -144,8 +144,8 @@
                 expect(anchorPt.$hry).to.be.equal(hry);
                 expect(anchorPt.$ctype).to.be.equal(GXPath.AnchorPoint.CType.Regular);
 
-                anchorPt = new GXPath.AnchorPoint(new GPoint(x, y), GXPath.AnchorPoint.CType.Connector,
-                    new GPoint(hlx, hly), new GPoint(hrx, hry));
+                anchorPt = new GXPath.AnchorPoint(new IFPoint(x, y), GXPath.AnchorPoint.CType.Connector,
+                    new IFPoint(hlx, hly), new IFPoint(hrx, hry));
 
                 expect(anchorPt.$hlx).to.be.equal(hlx);
                 expect(anchorPt.$hly).to.be.equal(hly);
@@ -153,7 +153,7 @@
                 expect(anchorPt.$hry).to.be.equal(hry);
                 expect(anchorPt.$ctype).to.be.equal(GXPath.AnchorPoint.CType.Connector);
 
-                anchorPt = new GXPath.AnchorPoint(new GPoint(x, y), GXPath.AnchorPoint.CType.Smooth, new GPoint(hlx, hly));
+                anchorPt = new GXPath.AnchorPoint(new IFPoint(x, y), GXPath.AnchorPoint.CType.Smooth, new IFPoint(hlx, hly));
 
                 expect(anchorPt.$ctype).to.be.equal(GXPath.AnchorPoint.CType.Smooth);
                 expect(anchorPt.$hlx).to.be.equal(hlx);
@@ -223,11 +223,11 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     var aPt = path.getAnchorPoints().getFirstChild();
@@ -244,11 +244,11 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
 
                     var aPt = path.getAnchorPoints().getFirstChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Connector);
@@ -263,12 +263,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1 + 5, y1), new GPoint(x1, y1 + 5)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1 + 5, y1), new IFPoint(x1, y1 + 5)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     var aPt = path.getAnchorPoints().getLastChild();
@@ -284,12 +284,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1 + 5, y1), new GPoint(x1, y1 + 5)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1 + 5, y1), new IFPoint(x1, y1 + 5)));
 
                     var aPt = path.getAnchorPoints().getLastChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Connector);
@@ -304,12 +304,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
 
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
@@ -327,11 +327,11 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, y2)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     var aPt = path.getAnchorPoints().getFirstChild();
@@ -348,11 +348,11 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, y2)));
 
                     var aPt = path.getAnchorPoints().getFirstChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Smooth);
@@ -367,12 +367,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 - 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 - 5, y1)));
 
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
@@ -389,12 +389,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 - 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 - 5, y1)));
 
                     var aPt = path.getAnchorPoints().getLastChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_CTYPE, GXPath.AnchorPoint.CType.Smooth);
@@ -410,12 +410,12 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, y2)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
 
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
@@ -473,12 +473,12 @@
                     var dx, dy;
 
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Smooth,
-                        new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Smooth,
+                        new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y2), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x4, y4)));
+                        new IFPoint(x2, y2), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x4, y4)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     aPt = path.getAnchorPoints().getFirstChild();
@@ -527,12 +527,12 @@
                     var hLen;
 
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Smooth,
-                        new GPoint(x1, y1 + 5), new GPoint(x1, y1 - 3)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Smooth,
+                        new IFPoint(x1, y1 + 5), new IFPoint(x1, y1 - 3)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, -10)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, -10)));
 
                     aPt = path.getAnchorPoints().getFirstChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
@@ -585,11 +585,11 @@
                     var dx, dy;
 
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), null, new GPoint(x1, y1 + 5), new GPoint(x1, y1 - 5)));
+                        new IFPoint(x1, y1), null, new IFPoint(x1, y1 + 5), new IFPoint(x1, y1 - 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y2), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x3, y3)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1 - 10, -10)));
+                        new IFPoint(x2, y2), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x3, y3)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1 - 10, -10)));
 
                     aPt = path.getAnchorPoints().getFirstChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
@@ -636,12 +636,12 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
-                        new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
+                        new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     var aPt = path.getAnchorPoints().getFirstChild();
@@ -658,12 +658,12 @@
                     var y2 = -10;
                     var x2 = 50;
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
-                        new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
+                        new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
 
                     var aPt = path.getAnchorPoints().getFirstChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
@@ -678,13 +678,13 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
-                        new GPoint(x1 + 5, y1), new GPoint(x1, y1 + 5)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
+                        new IFPoint(x1 + 5, y1), new IFPoint(x1, y1 + 5)));
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
                     var aPt = path.getAnchorPoints().getLastChild();
@@ -700,13 +700,13 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(60, 10), new GPoint(40, 5)));
+                        new IFPoint(x2, y1), null, new IFPoint(60, 10), new IFPoint(40, 5)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
-                        new GPoint(x1 + 5, y1), new GPoint(x1, y1 + 5)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
+                        new IFPoint(x1 + 5, y1), new IFPoint(x1, y1 + 5)));
 
                     var aPt = path.getAnchorPoints().getLastChild();
                     aPt.setProperty(GXPath.AnchorPoint.PROPERTY_AUTO_HANDLES, true);
@@ -721,13 +721,13 @@
                     var y1 = 0;
                     var y2 = -10;
                     var x2 = 50;
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(x1, y2)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(x1, y2)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
-                        new GPoint(x1, y1 + 5), new GPoint(x1 + 5, y1)));
+                        new IFPoint(x1, y1), GXPath.AnchorPoint.CType.Connector,
+                        new IFPoint(x1, y1 + 5), new IFPoint(x1 + 5, y1)));
                     path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(
-                        new GPoint(x2, y1), null, new GPoint(40, 5), new GPoint(60, 10)));
-                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new GPoint(50, 70)));
+                        new IFPoint(x2, y1), null, new IFPoint(40, 5), new IFPoint(60, 10)));
+                    path.getAnchorPoints().appendChild(new GXPath.AnchorPoint(new IFPoint(50, 70)));
 
                     path.setProperty(GXPath.PROPERTY_CLOSED, true);
 
@@ -771,7 +771,7 @@
                     var x = 10, y = 10;
 
                     var anchorPointOrig = new GXPath.AnchorPoint(
-                        new GPoint(brim, brim), null, null, new GPoint(brim + pathWidth / 2, 0));
+                        new IFPoint(brim, brim), null, null, new IFPoint(brim + pathWidth / 2, 0));
 
                     expect(container.getFirstChild(true)).to.be.null;
                     container.appendChild(anchorPointOrig);
@@ -783,10 +783,10 @@
                     expect(anchorPoint1.$y).to.equal(anchorPointOrig.$y);
                     expect(anchorPoint1.$ctype).to.equal(anchorPointOrig.$ctype);
 
-                    anchorPointOrig = new GXPath.AnchorPoint(new GPoint(brim + pathWidth, brim),
+                    anchorPointOrig = new GXPath.AnchorPoint(new IFPoint(brim + pathWidth, brim),
                         GXPath.AnchorPoint.CType.Inset,
-                        new GPoint(brim + pathWidth / 3 * 2, brim + pathHeight / 3),
-                        new GPoint(pathWidth + brim, boxHeight / 2) );
+                        new IFPoint(brim + pathWidth / 3 * 2, brim + pathHeight / 3),
+                        new IFPoint(pathWidth + brim, boxHeight / 2) );
 
                     expect(container.getLastChild(true)).to.equal(anchorPoint1);
                     container.appendChild(anchorPointOrig);

@@ -33,13 +33,13 @@
     };
 
     /**
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFShapeTool.prototype._dragStart = null;
 
     /**
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFShapeTool.prototype._dragCurrent = null;
@@ -63,13 +63,13 @@
     IFShapeTool.prototype._shape = null;
 
     /**
-     * @type {GRect}
+     * @type {IFRect}
      * @private
      */
     IFShapeTool.prototype._dragArea = null;
 
     /**
-     * @type {Array<GPoint>}
+     * @type {Array<IFPoint>}
      * @private
      */
     IFShapeTool.prototype._dragLine = null;
@@ -146,7 +146,7 @@
                 if (geometryBBox && !geometryBBox.isEmpty() &&
                     geometryBBox.getWidth() > crossSizeMax && geometryBBox.getHeight() > crossSizeMax) {
                     var cs = IFShapeTool.options.centerCrossSize / 2 + 0.5;
-                    var cp = geometryBBox.getSide(GRect.Side.CENTER);
+                    var cp = geometryBBox.getSide(IFRect.Side.CENTER);
                     var cx = Math.floor(cp.getX()) + 0.5;
                     var cy = Math.floor(cp.getY()) + 0.5;
 
@@ -271,7 +271,7 @@
      */
     IFShapeTool.prototype._invalidateShape = function () {
         if (this._dragStart && this._dragCurrent) {
-            if (GPoint.equals(this._dragStart, this._dragCurrent)) {
+            if (IFPoint.equals(this._dragStart, this._dragCurrent)) {
                 this._invalidateShapeArea();
             } else {
                 var x0 = this._dragStart.getX();
@@ -298,19 +298,19 @@
                     }
                 }
 
-                /** @type GRect */
+                /** @type IFRect */
                 var dragArea = null;
-                /** @type Array<GPoint> */
+                /** @type Array<IFPoint> */
                 var dragLine = null;
 
                 //if (this._fromCenter && ifPlatform.modifiers.shiftKey) {
                 if (this._fromCenter && ifPlatform.modifiers.optionKey) {
-                    dragArea = GRect.fromPoints(new GPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new GPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
-                    dragLine = [new GPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new GPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
+                    dragArea = IFRect.fromPoints(new IFPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new IFPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
+                    dragLine = [new IFPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new IFPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
                 }
                 else {
-                    dragArea = GRect.fromPoints(new GPoint(x0, y0), new GPoint(x1, y1));
-                    dragLine = [new GPoint(x0, y0), new GPoint(x2, y2)];
+                    dragArea = IFRect.fromPoints(new IFPoint(x0, y0), new IFPoint(x1, y1));
+                    dragLine = [new IFPoint(x0, y0), new IFPoint(x2, y2)];
                 }
 
                 this._dragArea = dragArea;
@@ -365,7 +365,7 @@
 
     /**
      * Called to create a shape manually as it has not yet been created via drag
-     * @param {GPoint} position the position to create the shape at
+     * @param {IFPoint} position the position to create the shape at
      * @private
      */
     IFShapeTool.prototype._createShapeManually = function (position) {
@@ -384,8 +384,8 @@
     /**
      * Called to update the shape of this tool
      * @param {IFShape} shape the shape to update
-     * @param {GRect} area the shape area
-     * @param {Array<GPoint>} line the shape line
+     * @param {IFRect} area the shape area
+     * @param {Array<IFPoint>} line the shape line
      * @param {Boolean} scene true if coordinates are in scene coordinates,
      * this usually is only the case before the shape gets appended
      * @private

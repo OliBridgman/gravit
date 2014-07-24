@@ -34,7 +34,7 @@
             var bbox = null;
 
             polygon.iterateSegments(function (point, inside, angle) {
-                var newBBox = new GRect(point.getX(), point.getY(), 1, 1);
+                var newBBox = new IFRect(point.getX(), point.getY(), 1, 1);
                 if (bbox) {
                     bbox = bbox.united(newBBox);
                 } else {
@@ -42,7 +42,7 @@
                 }
             }, true);
 
-            var tl = bbox.getSide(GRect.Side.TOP_LEFT);
+            var tl = bbox.getSide(IFRect.Side.TOP_LEFT);
             var width = bbox.getWidth();
             var height = bbox.getHeight();
             var num = width * height / 100 + 100;

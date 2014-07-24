@@ -61,7 +61,7 @@
     GOriginalViewAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var paintBBox = document.getScene().getPaintBBox();
-        document.getActiveWindow().getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(GRect.Side.CENTER) : new GPoint(0, 0), 1.0);
+        document.getActiveWindow().getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(IFRect.Side.CENTER) : new IFPoint(0, 0), 1.0);
     };
 
     /** @override */

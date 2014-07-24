@@ -18,7 +18,7 @@
         // Page transforms can be applied only if the page doesn't
         // intersect with any other page
         if (this._transform && !this._transform.isIdentity() && !this.getElement().hasFlag(IFElement.Flag.Locked)) {
-            var pageRect = this._transform.mapRect(new GRect(
+            var pageRect = this._transform.mapRect(new IFRect(
                 this._element.getProperty('x'), this._element.getProperty('y'),
                 this._element.getProperty('w'), this._element.getProperty('h')));
 
@@ -34,7 +34,7 @@
     /** @override */
     IFPageEditor.prototype.applyTransform = function () {
         if (this._transform && !this._transform.isIdentity()) {
-            var pageRect = this._transform.mapRect(new GRect(
+            var pageRect = this._transform.mapRect(new IFRect(
                 this._element.getProperty('x'), this._element.getProperty('y'),
                 this._element.getProperty('w'), this._element.getProperty('h')));
             this._element.setProperties(['x', 'y', 'w', 'h'], [pageRect.getX(), pageRect.getY(), pageRect.getWidth(), pageRect.getHeight()]);

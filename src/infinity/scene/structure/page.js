@@ -80,7 +80,7 @@
         var canvasTransform = context.canvas.resetTransform();
 
         // Get page rectangle and transform it into world space
-        var pageRect = new GRect(this.$x, this.$y, this.$w, this.$h);
+        var pageRect = new IFRect(this.$x, this.$y, this.$w, this.$h);
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
@@ -113,7 +113,7 @@
 
     /** @override */
     IFPage.prototype._calculateGeometryBBox = function () {
-        return new GRect(this.$x, this.$y, this.$w, this.$h);
+        return new IFRect(this.$x, this.$y, this.$w, this.$h);
     };
 
     /** @override */
@@ -157,7 +157,7 @@
                     var dy = yIndex >= 0 ? args.values[yIndex] - this.$y : 0;
 
                     if (dx !== 0 || dy !== 0) {
-                        var transform = new GTransform(1, 0, 0, 1, dx, dy);
+                        var transform = new IFTransform(1, 0, 0, 1, dx, dy);
                         for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
                             if (child instanceof IFElement && child.hasMixin(IFElement.Transform)) {
                                 child.transform(transform);

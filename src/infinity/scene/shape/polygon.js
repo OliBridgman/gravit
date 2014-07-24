@@ -44,7 +44,7 @@
 
     /**
      * Iterate all segments of the polygon
-     * @param {Function(point: GPoint, inside: Boolean, angle: Number)} iterator the
+     * @param {Function(point: IFPoint, inside: Boolean, angle: Number)} iterator the
      * iterator receiving the parameters. If this returns true then the iteration will be stopped.
      * @param {Boolean} [includeTransform] if true, includes the transformation of the polygon
      * if any in the returned coordinates. Defaults to false.
@@ -61,7 +61,7 @@
         // iterate backwards, as we have reflected Y axis; also for compatibility with MX
         for (var arc = this.$oa; arc < endArc - ACC; arc += stepArc) {
             // Outside
-            var point = new GPoint(this.$or * Math.cos(arc) + this.$cx, this.$or * Math.sin(arc) + this.$cy);
+            var point = new IFPoint(this.$or * Math.cos(arc) + this.$cx, this.$or * Math.sin(arc) + this.$cy);
 
             if (transform) {
                 point = transform.mapPoint(point);
@@ -72,7 +72,7 @@
             }
 
             // Inside
-            point = new GPoint(this.$ir * Math.cos(arc + deltaArc) + this.$cx, this.$ir * Math.sin(arc + deltaArc) + this.$cy);
+            point = new IFPoint(this.$ir * Math.cos(arc + deltaArc) + this.$cx, this.$ir * Math.sin(arc + deltaArc) + this.$cy);
 
             if (transform) {
                 point = transform.mapPoint(point);
@@ -138,7 +138,7 @@
 
     /** @override */
     IFPolygon.prototype.getCenter = function (includeTransform) {
-        var center = new GPoint(this.$cx, this.$cy);
+        var center = new IFPoint(this.$cx, this.$cy);
         if (includeTransform && this.$trf) {
             center = this.$trf.mapPoint(center);
         }

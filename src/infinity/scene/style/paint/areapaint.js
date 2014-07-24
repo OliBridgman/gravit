@@ -79,8 +79,8 @@
 
     /**
      * Returns the transformation for painting the pattern
-     * @param {GRect} bbox the bounding box to be used
-     * @returns {GTransform} null for no transform or a valid transformation
+     * @param {IFRect} bbox the bounding box to be used
+     * @returns {IFTransform} null for no transform or a valid transformation
      * @private
      */
     IFAreaPaint.prototype._getPaintPatternTransform = function (bbox) {
@@ -96,7 +96,7 @@
                     var tx = left + this.$tx * width;
                     var ty = top + this.$ty * height;
 
-                    return new GTransform()
+                    return new IFTransform()
                         .scaled(sx, sy)
                         .rotated(this.$rt)
                         .translated(tx, ty);

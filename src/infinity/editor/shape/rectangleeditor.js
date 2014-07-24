@@ -43,7 +43,7 @@
             }
 
             var sourceTransform = this._element.getTransform();
-            var sourcePosition = new GPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
+            var sourcePosition = new IFPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
             if (sourceTransform) {
                 sourcePosition = sourceTransform.mapPoint(sourcePosition);
             }
@@ -54,7 +54,7 @@
                     partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
 
                 var nearPt = this._element.getAnchorPoints().getPreviousPoint(partId.ap);
-                var nearLPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
+                var nearLPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearLPosition = sourceTransform ? sourceTransform.mapPoint(nearLPosition) : nearLPosition;
 
                 var newLShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
@@ -67,7 +67,7 @@
                     partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
 
                 var nearPt = this._element.getAnchorPoints().getNextPoint(partId.ap);
-                var nearRPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
+                var nearRPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearRPosition = sourceTransform ? sourceTransform.mapPoint(nearRPosition) : nearRPosition;
 
                 var newRShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
@@ -153,7 +153,7 @@
                         anchorPt.getLeftShoulderPoint(true);
 
                     if (!leftShoulder) {
-                        leftShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        leftShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         leftShoulder = sourceTransform ? sourceTransform.mapPoint(leftShoulder) : leftShoulder;
                     }
 
@@ -165,7 +165,7 @@
                         anchorPt.getRightShoulderPoint(true);
 
                     if (!rightShoulder) {
-                        rightShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        rightShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         rightShoulder = sourceTransform ? sourceTransform.mapPoint(rightShoulder) : rightShoulder;
                     }
 
@@ -204,7 +204,7 @@
                         anchorPt.getLeftShoulderPoint(true);
 
                     if (!leftShoulder) {
-                        leftShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        leftShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         leftShoulder = sourceTransform ? sourceTransform.mapPoint(leftShoulder) : leftShoulder;
                     }
 
@@ -222,7 +222,7 @@
                         anchorPt.getRightShoulderPoint(true);
 
                     if (!rightShoulder) {
-                        rightShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        rightShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         rightShoulder = sourceTransform ? sourceTransform.mapPoint(rightShoulder) : rightShoulder;
                     }
 

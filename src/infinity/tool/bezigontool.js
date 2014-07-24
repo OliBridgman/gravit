@@ -177,7 +177,7 @@
     /**
      * Constructs new point, specific to Bezigon Tool, with the given position
      * @param {GUIMouseEvent} event used to define pressed button
-     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @param {IFPoint} pt - coordinates to be used for new position in world system
      * @returns {IFPath.AnchorPoint} newly created anchor point
      * @private
      */
@@ -219,7 +219,7 @@
                 otherPt = this._pathRef.getAnchorPoints().getLastChild();
             }
 
-            var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+            var location = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 

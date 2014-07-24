@@ -126,14 +126,14 @@
 
     /**
      * World to view transformation
-     * @type {GTransform}
+     * @type {IFTransform}
      * @private
      */
     IFView.prototype._worldToViewTransform = null;
 
     /**
      * View to world transform
-     * @type {GTransform}
+     * @type {IFTransform}
      * @private
      */
     IFView.prototype._viewToWorldTransform = null;
@@ -250,7 +250,7 @@
     /**
      * Returns the current transformation used for transforming
      * world coordinates into view coordinates
-     * @returns {GTransform}
+     * @returns {IFTransform}
      */
     IFView.prototype.getWorldTransform = function () {
         return this._worldToViewTransform;
@@ -259,7 +259,7 @@
     /**
      * Returns the current transformation used for transforming
      * view coordinates into world coordinates
-     * @returns {GTransform}
+     * @returns {IFTransform}
      */
     IFView.prototype.getViewTransform = function () {
         return this._viewToWorldTransform;
@@ -269,12 +269,12 @@
      * Returns the actual viewBox honoring offset and optional margin
      * @param {Boolean} [noMargin] whether to ignore margin or not,
      * defaults to false (= include margin)
-     * @returns {GRect}
+     * @returns {IFRect}
      */
     IFView.prototype.getViewBox = function (noMargin) {
         var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
         var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
-        return new GRect(
+        return new IFRect(
             xOffset,
             yOffset,
             this.getWidth() - (this._viewOffset[2] + (!noMargin ? this._viewMargin[2] : 0) + xOffset),
@@ -297,22 +297,22 @@
 
     /**
      * Zoom and center to a given point
-     * @param {GPoint} center the center point for the view in world coordinates
+     * @param {IFPoint} center the center point for the view in world coordinates
      * which will become the new center point
      * @param {Number} [zoom] the new zoom, defaults to current zoom
      * @version 1.0
      */
     IFView.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
-        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
+        var viewCenter = this.getViewBox().getSide(IFRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
         var normalizedZoom = Math.min(IFView.options.maxZoomFactor, Math.max(zoom, IFView.options.minZoomFactor));
-        if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
+        if (normalizedZoom == this._zoom && IFPoint.equals(viewWorldCenter, viewCenter)) {
             return;
         }
 
         // Calculate new scroll position & zoom
-        var tmpTransform = new GTransform()
+        var tmpTransform = new IFTransform()
             .translated(-center.getX(), -center.getY())
             .scaled(normalizedZoom, normalizedZoom)
             .translated(viewCenter.getX(), viewCenter.getY());
@@ -327,32 +327,32 @@
 
     /**
      * Zoom at a specific point
-     * @param {GPoint} pos the point to zoom at in world coordinates
+     * @param {IFPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
      */
     IFView.prototype.zoomAt = function (pos, zoom) {
-        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
+        var viewCenter = this.getViewBox().getSide(IFRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
         var zoomDelta = zoom / this._zoom;
-        this.zoomAtCenter(new GPoint(pos.getX() + (deltaPos.getX() / zoomDelta), pos.getY() + (deltaPos.getY() / zoomDelta)), zoom);
+        this.zoomAtCenter(new IFPoint(pos.getX() + (deltaPos.getX() / zoomDelta), pos.getY() + (deltaPos.getY() / zoomDelta)), zoom);
     };
 
     /**
      * Zoom to fit all in a given rect whereas the center of the rect
      * becomes the new center of the view
-     * @param {GRect} rect
+     * @param {IFRect} rect
      * @param {Boolean} [reverse] if set, the reverse action will be taken so
      * that the view is zoomed out onto the given rect. Defaults to false
      */
     IFView.prototype.zoomAll = function (rect, reverse) {
-        var center = rect.getSide(GRect.Side.CENTER);
+        var center = rect.getSide(IFRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
         var vbox = this.getViewBox();
 
         if (reverse) {
-            var viewRect = this._worldToViewTransform.mapRect(new GRect(center.getX() - width / 2, center.getY() - height / 2, width, height));
+            var viewRect = this._worldToViewTransform.mapRect(new IFRect(center.getX() - width / 2, center.getY() - height / 2, width, height));
             var invZoom = this._zoom * Math.min(1.0, Math.max(viewRect.getWidth() / vbox.getWidth(), viewRect.getHeight() / vbox.getHeight()));
             this.zoomAtCenter(center, invZoom);
         } else {
@@ -376,7 +376,7 @@
 
     /**
      * Called to invalidate all layers
-     * @param {GRect} [area] the area to invalidate in view-
+     * @param {IFRect} [area] the area to invalidate in view-
      * coordinates. If null then this clears the whole dirty areas
      * and requests a full repaint. Defaults to null.
      * @return {Boolean} true if any invalidation ocurred, false if not
@@ -442,8 +442,8 @@
         this._scrollX = Math.round(this._scrollX);
         this._scrollY = Math.round(this._scrollY);
 
-        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-this._scrollX, -this._scrollY);
-        if (!GTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
+        var worldToViewTransform = new IFTransform().scaled(this._zoom, this._zoom).translated(-this._scrollX, -this._scrollY);
+        if (!IFTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
             this._worldToViewTransform = worldToViewTransform;
             this._viewToWorldTransform = worldToViewTransform.inverted();
             // Invalidate everything

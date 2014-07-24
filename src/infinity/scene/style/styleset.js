@@ -17,8 +17,8 @@
     /**
      * Returns the bounding box of the styleSet which is
      * the union of all visible style's bboxes
-     * @param {GRect} source the source bbox
-     * @returns {GRect}
+     * @param {IFRect} source the source bbox
+     * @returns {IFRect}
      */
     IFStyleSet.prototype.getBBox = function (source) {
         var result = source;
@@ -37,8 +37,8 @@
      * Makes a hit-test on each visible style until a hit was found.
      * Goes from top-to-bottom.
      * @parma {IFVertexSource} source
-     * @param {GPoint} location
-     * @param {GTransform} transform
+     * @param {IFPoint} location
+     * @param {IFTransform} transform
      * @param {Number} tolerance
      * @returns {IFStyle.HitResult}
      * @see IFStyle.hitTest

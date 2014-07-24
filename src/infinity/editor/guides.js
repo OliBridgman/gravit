@@ -28,8 +28,8 @@
 
     /**
      * Map a point to the current snapping options
-     * @param {GPoint} point the point to map
-     * @returns {GPoint} a mapped point
+     * @param {IFPoint} point the point to map
+     * @returns {IFPoint} a mapped point
      */
     IFGuides.prototype.mapPoint = function (point) {
         var result = point;
@@ -40,7 +40,7 @@
         if (this._scene.getProperty('gridActive')) {
             var gsx = this._scene.getProperty('gridSizeX');
             var gsy = this._scene.getProperty('gridSizeY');
-            result = new GPoint(Math.round(result.getX() / gsx) * gsx, Math.round(result.getY() / gsy) * gsy);
+            result = new IFPoint(Math.round(result.getX() / gsx) * gsx, Math.round(result.getY() / gsy) * gsy);
         }
 
         /** TODO :
@@ -59,7 +59,7 @@
                         y = pageBBox.getY();
                     }
 
-                    result = new GPoint(x, y);
+                    result = new IFPoint(x, y);
                 }
             }
         }*/

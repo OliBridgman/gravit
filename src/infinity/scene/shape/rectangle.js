@@ -45,18 +45,18 @@
 
     /**
      * Returns the property-prefix for a rectangle side
-     * @param {GRect.Side} side the side to get a prefix for
+     * @param {IFRect.Side} side the side to get a prefix for
      * @returns {string} the prefix for the given side
      */
     IFRectangle.getGeometryPropertiesSidePrefix = function (side) {
         switch (side) {
-            case GRect.Side.TOP_LEFT:
+            case IFRect.Side.TOP_LEFT:
                 return 'tl';
-            case GRect.Side.TOP_RIGHT:
+            case IFRect.Side.TOP_RIGHT:
                 return 'tr';
-            case GRect.Side.BOTTOM_RIGHT:
+            case IFRect.Side.BOTTOM_RIGHT:
                 return 'br';
-            case GRect.Side.BOTTOM_LEFT:
+            case IFRect.Side.BOTTOM_LEFT:
                 return 'bl';
             default:
                 throw new Error("Invalid side");
@@ -65,13 +65,13 @@
 
     /**
      * Rectangle sides in their correct order
-     * @type {Array<GRect.Side>}
+     * @type {Array<IFRect.Side>}
      */
-    IFRectangle.SIDES = [GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_RIGHT, GRect.Side.BOTTOM_LEFT];
+    IFRectangle.SIDES = [IFRect.Side.TOP_LEFT, IFRect.Side.TOP_RIGHT, IFRect.Side.BOTTOM_RIGHT, IFRect.Side.BOTTOM_LEFT];
 
     /**
      * Iterate all segments of the rectangle
-     * @param {Function(point: GPoint, side: GRect.Side, cornerType: IFPathBase.CornerType, leftShoulderLength: Number, rightShoulderLength: Number, idx: Number)} iterator
+     * @param {Function(point: IFPoint, side: IFRect.Side, cornerType: IFPathBase.CornerType, leftShoulderLength: Number, rightShoulderLength: Number, idx: Number)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
      * @param {Boolean} [includeTransform] if true, includes the transformation of the rectangle
      * if any in the returned coordinates. Defaults to false.
@@ -85,17 +85,17 @@
             var point = null;
 
             switch (side) {
-                case GRect.Side.TOP_LEFT:
-                    point = new GPoint(-1, -1);
+                case IFRect.Side.TOP_LEFT:
+                    point = new IFPoint(-1, -1);
                     break;
-                case GRect.Side.TOP_RIGHT:
-                    point = new GPoint(1, -1);
+                case IFRect.Side.TOP_RIGHT:
+                    point = new IFPoint(1, -1);
                     break;
-                case GRect.Side.BOTTOM_RIGHT:
-                    point = new GPoint(1, 1);
+                case IFRect.Side.BOTTOM_RIGHT:
+                    point = new IFPoint(1, 1);
                     break;
-                case GRect.Side.BOTTOM_LEFT:
-                    point = new GPoint(-1, 1);
+                case IFRect.Side.BOTTOM_LEFT:
+                    point = new IFPoint(-1, 1);
                     break;
             }
 

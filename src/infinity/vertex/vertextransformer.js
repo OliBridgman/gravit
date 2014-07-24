@@ -4,7 +4,7 @@
      * @class IFVertexTransformer
      * @extends IFVertexSource
      * @param {IFVertexSource} source the underyling vertex source to work on
-     * @param {GTransform} [transform] the transformation used to transform the vertices,
+     * @param {IFTransform} [transform] the transformation used to transform the vertices,
      * may be null to set it later on or ignore it
      * @version 1.0
      * @constructor
@@ -40,14 +40,14 @@
     IFVertexTransformer.prototype._source = null;
 
     /**
-     * @type {GTransform}
+     * @type {IFTransform}
      * @private
      */
     IFVertexTransformer.prototype._transform = null;
 
     /**
      * Get the current transform
-     * @return {GTransform}
+     * @return {IFTransform}
      * @version 1.0
      */
     IFVertexTransformer.prototype.getTransform = function () {
@@ -56,7 +56,7 @@
 
     /**
      * Assign a transform
-     * @param {GTransform} transform
+     * @param {IFTransform} transform
      * @version 1.0
      */
     IFVertexTransformer.prototype.setTransform = function (transform) {

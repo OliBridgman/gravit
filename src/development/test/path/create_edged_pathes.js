@@ -38,7 +38,7 @@
 
                 path.setProperty('closed', true);
 
-                var transform = new GTransform(1.0, 0.0, 0.0, 1.0, -pathWidth / 2, -pathHeight / 2);
+                var transform = new IFTransform(1.0, 0.0, 0.0, 1.0, -pathWidth / 2, -pathHeight / 2);
                 transform = transform.rotated(ifMath.toRadians(rotate));
                 transform = transform.translated(
                     page.getProperty('ml') + x + pathWidth / 2,

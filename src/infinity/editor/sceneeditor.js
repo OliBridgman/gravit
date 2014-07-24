@@ -49,7 +49,7 @@
     /**
      * Activates or deactivates the transform box
      * @param {Boolean} activate - when true or not set means activation is needed, when false - deactivation
-     * @param {GPoint} center - transform box center to set
+     * @param {IFPoint} center - transform box center to set
      */
     IFSceneEditor.prototype.setTransformBoxActive = function (activate, center) {
         if (activate || activate === null) {
@@ -87,7 +87,7 @@
         if (this._transformBox) {
             var cx = this._transformBox.getProperty('cx');
             var cy = this._transformBox.getProperty('cy');
-            return new GPoint(cx,cy);
+            return new IFPoint(cx,cy);
         }
         return null;
     };

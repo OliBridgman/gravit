@@ -90,7 +90,7 @@
     IFStyle.prototype.createPreviewImage = function (width, height) {
         // Create a temporary rectangle shape for preview painting
         var previewRect = new IFRectangle();
-        previewRect.setProperty('trf', new GTransform(width / 2, 0, 0, height / 2, width / 2, height / 2));
+        previewRect.setProperty('trf', new IFTransform(width / 2, 0, 0, height / 2, width / 2, height / 2));
 
         // Setup canvas and context for painting
         var canvas = new IFPaintCanvas();
@@ -107,20 +107,20 @@
         context.canvas.fillRect(0, 0, width, height, context.canvas.createTexture(PREVIEW_CHESSBOARD_FILL));
 
         // Calculate real bounding box
-        var bbox = this.getBBox(new GRect(0, 0, width, height));
+        var bbox = this.getBBox(new IFRect(0, 0, width, height));
 
         // Transform canvas to fit bounding box exactly
-        var bboxCenter = bbox.getSide(GRect.Side.CENTER);
-        var realCenter = new GPoint(width / 2, height / 2);
+        var bboxCenter = bbox.getSide(IFRect.Side.CENTER);
+        var realCenter = new IFPoint(width / 2, height / 2);
         var scaleX = 1.0 / (bbox.getWidth() / width);
         var scaleY = 1.0 / (bbox.getHeight() / height);
-        var matrix = new GTransform()
+        var matrix = new IFTransform()
             .translated(-bboxCenter.getX(), -bboxCenter.getY())
             .scaled(scaleX, scaleY)
             .translated(realCenter.getX(), realCenter.getY())
             .getMatrix();
 
-        canvas.setOrigin(new GPoint(-matrix[4], -matrix[5]));
+        canvas.setOrigin(new IFPoint(-matrix[4], -matrix[5]));
         canvas.setScale(scaleX);
 
         // Paint rectangle with this style
@@ -132,8 +132,8 @@
     /**
      * Returns the bounding box of the style. This includes only
      * visible style entries
-     * @param {GRect} source the source bbox
-     * @returns {GRect}
+     * @param {IFRect} source the source bbox
+     * @returns {IFRect}
      */
     IFStyle.prototype.getBBox = function (source) {
         var vEffectPadding = [0, 0, 0, 0];
@@ -213,9 +213,9 @@
      * effects in this style, they're applied to the source before hit-
      * testing takes place. Goes from top-to-bottom.
      * @parma {IFVertexSource} source the vertice source
-     * @param {GPoint} location the position to trigger the hit test at
+     * @param {IFPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
-     * @param {GTransform} transform the transformation of the scene
+     * @param {IFTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Number} tolerance a tolerance value for hit testing in view coordinates
      * @returns {IFStyle.HitResult} the hit result or null for none

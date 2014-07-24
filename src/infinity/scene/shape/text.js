@@ -643,7 +643,7 @@
     IFText.prototype._content = null;
 
     /**
-     * @type {GPoint}
+     * @type {IFPoint}
      * @private
      */
     IFText.prototype._size = null;
@@ -703,10 +703,10 @@
 
     /**
      * Returns the bounding box of the content
-     * @return {GRect} null if there's no bbox or a valid bbox
+     * @return {IFRect} null if there's no bbox or a valid bbox
      */
     IFText.prototype.getContentBBox = function () {
-        return this._size ? new GRect(0, 0, this._size.getX(), this._size.getY()) : null;
+        return this._size ? new IFRect(0, 0, this._size.getX(), this._size.getY()) : null;
     };
 
     /**
@@ -773,7 +773,7 @@
             this._runs = [];
 
             // Calculate our actual text box and line length
-            var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+            var textBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
             if (this.$trf) {
                 textBox = this.$trf.mapRect(textBox);
             }
@@ -810,7 +810,7 @@
             }.bind(this));
 
             // Assign calculated dimensions
-            this._size = maxWidth !== null && maxHeight !== null ? new GPoint(maxWidth, maxHeight) : null;
+            this._size = maxWidth !== null && maxHeight !== null ? new IFPoint(maxWidth, maxHeight) : null;
 
             // Calculate vertical shift depending on vbox
             var verticalShift = 0;
@@ -916,7 +916,7 @@
             return null;
         }
 
-        var textBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
+        var textBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
         if (this.$trf) {
             textBox = this.$trf.mapRect(textBox);
         }
@@ -924,7 +924,7 @@
         var width = !this.$aw ? textBox.getWidth() : this._size.getX();
         var height = this.$vb != IFText.VerticalBox.Auto ? textBox.getHeight() : this._size.getY();
 
-        return new GRect(textBox.getX(), textBox.getY(), width, height);
+        return new IFRect(textBox.getX(), textBox.getY(), width, height);
     };
 
     /** @override */
@@ -975,12 +975,12 @@
                  // the case we'll simply translate our existing vertices,
                  // otherwise we'll invalidate the vertices
                  var newTransform = args.values[transformIdx];
-                 var inverseTransform = this.$trf ? this.$trf.inverted() : new GTransform(1, 0, 0, 1, 0, 0);
+                 var inverseTransform = this.$trf ? this.$trf.inverted() : new IFTransform(1, 0, 0, 1, 0, 0);
                  var deltaTransform = newTransform.multiplied(inverseTransform);
                  if (deltaTransform.isIdentity(true)) {
                  if (this._vertices) {
                  var translation = deltaTransform.getTranslation();
-                 this._vertices.transformVertices(new GTransform(1, 0, 0, 1, translation.getX(), translation.getY()));
+                 this._vertices.transformVertices(new IFTransform(1, 0, 0, 1, translation.getX(), translation.getY()));
                  }
                  } else {
                  this._runsDirty = true;
@@ -994,7 +994,7 @@
     /**
      * Returns a clip-box if required, otherwise null
      * @param context
-     * @returns {GRect}
+     * @returns {IFRect}
      * @private
      */
     IFText.prototype._getClipBox = function (context) {
@@ -1003,7 +1003,7 @@
             ((!this.$aw && this._size.getX() >= bbox.getWidth()) ||
                 (this.$vb != IFText.VerticalBox.Auto && this._size.getY() >= bbox.getHeight()))) {
 
-            return new GRect(bbox.getX(), bbox.getY(),
+            return new IFRect(bbox.getX(), bbox.getY(),
                 !this.$aw ? bbox.getWidth() : context.canvas.getWidth(),
                 this.$vb != IFText.VerticalBox.Auto ? bbox.getHeight() : context.canvas.getHeight());
         }

@@ -61,9 +61,9 @@
 
             // Calculate horizontal factors
             switch (partData.side) {
-                case GRect.Side.TOP_LEFT:
-                case GRect.Side.LEFT_CENTER:
-                case GRect.Side.BOTTOM_LEFT:
+                case IFRect.Side.TOP_LEFT:
+                case IFRect.Side.LEFT_CENTER:
+                case IFRect.Side.BOTTOM_LEFT:
                     dx = partData.point.getX() - newPos.getX();
                     tx = -dx;
                     sx = (width + dx) / width;
@@ -71,9 +71,9 @@
                         sx += sx - 1;
                     }
                     break;
-                case GRect.Side.TOP_RIGHT:
-                case GRect.Side.RIGHT_CENTER:
-                case GRect.Side.BOTTOM_RIGHT:
+                case IFRect.Side.TOP_RIGHT:
+                case IFRect.Side.RIGHT_CENTER:
+                case IFRect.Side.BOTTOM_RIGHT:
                     dx = newPos.getX() - partData.point.getX();
                     sx = (width + dx) / width;
                     if (option) {
@@ -86,9 +86,9 @@
 
             // Calculate vertical factors
             switch (partData.side) {
-                case GRect.Side.TOP_LEFT:
-                case GRect.Side.TOP_CENTER:
-                case GRect.Side.TOP_RIGHT:
+                case IFRect.Side.TOP_LEFT:
+                case IFRect.Side.TOP_CENTER:
+                case IFRect.Side.TOP_RIGHT:
                     dy = partData.point.getY() - newPos.getY();
                     ty = -dy;
                     sy = (height + dy) / height;
@@ -96,9 +96,9 @@
                         sy += sy - 1;
                     }
                     break;
-                case GRect.Side.BOTTOM_LEFT:
-                case GRect.Side.BOTTOM_CENTER:
-                case GRect.Side.BOTTOM_RIGHT:
+                case IFRect.Side.BOTTOM_LEFT:
+                case IFRect.Side.BOTTOM_CENTER:
+                case IFRect.Side.BOTTOM_RIGHT:
                     dy = newPos.getY() - partData.point.getY();
                     sy = (height + dy) / height;
                     if (option) {
@@ -114,7 +114,7 @@
             var t2x = t1x + tx;
             var t2y = t1y + ty;
             if (option) {
-                var cnt = sourceBBox.getSide(GRect.Side.CENTER);
+                var cnt = sourceBBox.getSide(IFRect.Side.CENTER);
                 t1x = cnt.getX();
                 t1y = cnt.getY();
                 t2x = t1x;
@@ -124,10 +124,10 @@
             // Honor shift
             if (shift) {
                 switch (partData.side) {
-                    case GRect.Side.TOP_LEFT:
-                    case GRect.Side.TOP_RIGHT:
-                    case GRect.Side.BOTTOM_LEFT:
-                    case GRect.Side.BOTTOM_RIGHT:
+                    case IFRect.Side.TOP_LEFT:
+                    case IFRect.Side.TOP_RIGHT:
+                    case IFRect.Side.BOTTOM_LEFT:
+                    case IFRect.Side.BOTTOM_RIGHT:
                         // Make equal width / height for edge resize
                         var newWidth = Math.abs(sourceBBox.getWidth() * sx);
                         var newHeight = Math.abs(sourceBBox.getHeight() * sy);
@@ -137,13 +137,13 @@
                             sx = sx * newHeight / newWidth;
                         }
                         break;
-                    case GRect.Side.TOP_CENTER:
-                    case GRect.Side.BOTTOM_CENTER:
+                    case IFRect.Side.TOP_CENTER:
+                    case IFRect.Side.BOTTOM_CENTER:
                         // Make equal delta for center resize
                         sx = Math.abs(sy);
                         break;
-                    case GRect.Side.LEFT_CENTER:
-                    case GRect.Side.RIGHT_CENTER:
+                    case IFRect.Side.LEFT_CENTER:
+                    case IFRect.Side.RIGHT_CENTER:
                         // Make equal delta for center resize
                         sy = Math.abs(sx);
                         break;
@@ -151,21 +151,21 @@
                         break;
                 }
                 if (!option) {
-                    var tl = sourceBBox.getSide(GRect.Side.TOP_LEFT);
+                    var tl = sourceBBox.getSide(IFRect.Side.TOP_LEFT);
                     // Calculate horizontal shift
                     switch (partData.side) {
-                        case GRect.Side.TOP_LEFT:
-                        case GRect.Side.LEFT_CENTER:
-                        case GRect.Side.BOTTOM_LEFT:
+                        case IFRect.Side.TOP_LEFT:
+                        case IFRect.Side.LEFT_CENTER:
+                        case IFRect.Side.BOTTOM_LEFT:
                             t1x = tl.getX() + width;
                             break;
-                        case GRect.Side.TOP_RIGHT:
-                        case GRect.Side.RIGHT_CENTER:
-                        case GRect.Side.BOTTOM_RIGHT:
+                        case IFRect.Side.TOP_RIGHT:
+                        case IFRect.Side.RIGHT_CENTER:
+                        case IFRect.Side.BOTTOM_RIGHT:
                             t1x = tl.getX();
                             break;
-                        case GRect.Side.TOP_CENTER:
-                        case GRect.Side.BOTTOM_CENTER:
+                        case IFRect.Side.TOP_CENTER:
+                        case IFRect.Side.BOTTOM_CENTER:
                             t1x = tl.getX() + width / 2;
                             break;
                         default:
@@ -175,18 +175,18 @@
 
                     // Calculate vertical shift
                     switch (partData.side) {
-                        case GRect.Side.TOP_LEFT:
-                        case GRect.Side.TOP_CENTER:
-                        case GRect.Side.TOP_RIGHT:
+                        case IFRect.Side.TOP_LEFT:
+                        case IFRect.Side.TOP_CENTER:
+                        case IFRect.Side.TOP_RIGHT:
                             t1y = tl.getY() + height;
                             break;
-                        case GRect.Side.BOTTOM_LEFT:
-                        case GRect.Side.BOTTOM_CENTER:
-                        case GRect.Side.BOTTOM_RIGHT:
+                        case IFRect.Side.BOTTOM_LEFT:
+                        case IFRect.Side.BOTTOM_CENTER:
+                        case IFRect.Side.BOTTOM_RIGHT:
                             t1y = tl.getY();
                             break;
-                        case GRect.Side.LEFT_CENTER:
-                        case GRect.Side.RIGHT_CENTER:
+                        case IFRect.Side.LEFT_CENTER:
+                        case IFRect.Side.RIGHT_CENTER:
                             t1y = tl.getY() + height / 2;
                         default:
                             break;
@@ -195,9 +195,9 @@
                 }
             }
 
-            var transform = new GTransform(1, 0, 0, 1, -t1x, -t1y)
-                .multiplied(new GTransform(sx, 0, 0, sy, 0, 0))
-                .multiplied(new GTransform(1, 0, 0, 1, t2x, t2y));
+            var transform = new IFTransform(1, 0, 0, 1, -t1x, -t1y)
+                .multiplied(new IFTransform(sx, 0, 0, sy, 0, 0))
+                .multiplied(new IFTransform(1, 0, 0, 1, t2x, t2y));
 
             this.transform(transform);
         }
@@ -261,7 +261,7 @@
 
     /**
      * Called for subclasses to do some custom painting beneath of the outline
-     * @param {GTransform} transform the current transformation in use
+     * @param {IFTransform} transform the current transformation in use
      * @param {IFPaintContext} context the paint context to paint on
      * @private
      */
@@ -271,7 +271,7 @@
 
     /**
      * Called for subclasses to do some custom painting on top of the outline
-     * @param {GTransform} transform the current transformation in use
+     * @param {IFTransform} transform the current transformation in use
      * @param {IFPaintContext} context the paint context to paint on
      * @private
      */
@@ -289,7 +289,7 @@
 
     /**
      * Iterate all resize handles
-     * @param {Function(point: GPoint, side: GRect.Side)} iterator
+     * @param {Function(point: IFPoint, side: IFRect.Side)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
      */
     IFBlockEditor.prototype._iterateResizeHandles = function (iterator) {
@@ -299,11 +299,11 @@
             var sides = [];
 
             if (this.hasFlag(IFBlockEditor.Flag.ResizeEdges)) {
-                sides = sides.concat([GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_LEFT, GRect.Side.BOTTOM_RIGHT]);
+                sides = sides.concat([IFRect.Side.TOP_LEFT, IFRect.Side.TOP_RIGHT, IFRect.Side.BOTTOM_LEFT, IFRect.Side.BOTTOM_RIGHT]);
             }
 
             if (this.hasFlag(IFBlockEditor.Flag.ResizeCenters)) {
-                sides = sides.concat([GRect.Side.TOP_CENTER, GRect.Side.RIGHT_CENTER, GRect.Side.BOTTOM_CENTER, GRect.Side.LEFT_CENTER]);
+                sides = sides.concat([IFRect.Side.TOP_CENTER, IFRect.Side.RIGHT_CENTER, IFRect.Side.BOTTOM_CENTER, IFRect.Side.LEFT_CENTER]);
             }
 
             for (var i = 0; i < sides.length; ++i) {
@@ -318,7 +318,7 @@
 
     /**
      * Paint bbox outline of underlying element
-     * @param {GTransform} transform the current transformation in use
+     * @param {IFTransform} transform the current transformation in use
      * @param {IFPaintContext} context the paint context to paint on
      * @param {IFColor} [color] the color for the outline. If not provided,
      * uses either selection or highlight color depending on the current state.

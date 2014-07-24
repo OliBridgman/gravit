@@ -45,7 +45,7 @@
                     [brim / 2, pathHeight, anchorCType, pathRadiusX, pathRadiusY, true]);
                 path.getAnchorPoints().appendChild(ap);
 
-                var transform = new GTransform(0.3, 1.0, 0.0, 1.5, -boxWidth / 2, -boxHeight);
+                var transform = new IFTransform(0.3, 1.0, 0.0, 1.5, -boxWidth / 2, -boxHeight);
                 transform = transform.rotated(ifMath.toRadians(rotate));
                 transform = transform.translated(
                     page.getProperty('ml') + x + boxWidth / 2,

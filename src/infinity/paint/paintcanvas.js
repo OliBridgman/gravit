@@ -220,19 +220,19 @@
     IFPaintCanvas.prototype._canvasContext = null;
 
     /**
-     * @type GTransform
+     * @type IFTransform
      * @private
      */
     IFPaintCanvas.prototype._transform = null;
 
     /**
-     * @type GPoint
+     * @type IFPoint
      * @private
      */
     IFPaintCanvas.prototype._offset = null;
 
     /**
-     * @type GPoint
+     * @type IFPoint
      * @private
      */
     IFPaintCanvas.prototype._origin = null;
@@ -244,7 +244,7 @@
     IFPaintCanvas.prototype._scale = null;
 
     /**
-     * @type Array<GRect>
+     * @type Array<IFRect>
      * @private
      */
     IFPaintCanvas.prototype._areas = null;
@@ -303,7 +303,7 @@
 
     /**
      * Returns the offset of this canvas
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFPaintCanvas.prototype.getOffset = function () {
         return this._offset;
@@ -311,7 +311,7 @@
 
     /**
      * Assigns the offset of this canvas
-     * @param {GPoint} origin
+     * @param {IFPoint} origin
      */
     IFPaintCanvas.prototype.setOffset = function (offset) {
         this._offset = offset;
@@ -319,7 +319,7 @@
 
     /**
      * Returns the origin of this canvas
-     * @returns {GPoint}
+     * @returns {IFPoint}
      */
     IFPaintCanvas.prototype.getOrigin = function () {
         return this._origin;
@@ -328,10 +328,10 @@
     /**
      * Assigns the origin of this canvas. The origin
      * will always be premultiplied with any transformation.
-     * @param {GPoint} origin
+     * @param {IFPoint} origin
      */
     IFPaintCanvas.prototype.setOrigin = function (origin) {
-        if (!GPoint.equals(origin, this._origin)) {
+        if (!IFPoint.equals(origin, this._origin)) {
             this._origin = origin;
             this._updateTransform();
         }
@@ -348,7 +348,7 @@
     /**
      * Assigns the scalation of this canvas. The scalation
      * will always be premultiplied with any transformation.
-     * @param {GPoint} origin
+     * @param {IFPoint} origin
      */
     IFPaintCanvas.prototype.setScale = function (scale) {
         if (scale !== this._scale) {
@@ -362,7 +362,7 @@
      * @param {Boolean} [local] if provided, returns only the local
      * transformation which excludes the canvas' origin and scalation.
      * This parameter defaults to false, thus returns the global transform.
-     * @return {GTransform} current transform
+     * @return {IFTransform} current transform
      */
     IFPaintCanvas.prototype.getTransform = function (local) {
         var transform = this._transform;
@@ -370,22 +370,22 @@
             var tx = this._origin.getX();
             var ty = this._origin.getY();
             var s = this._scale;
-            transform = transform.multiplied(new GTransform().scaled(s, s).translated(-tx, -ty));
+            transform = transform.multiplied(new IFTransform().scaled(s, s).translated(-tx, -ty));
         }
         return transform;
     };
 
     /**
      * Assign a new transformation to the canvas
-     * @param {GTransform} transform the new transform to assign. If this
+     * @param {IFTransform} transform the new transform to assign. If this
      * is null, then the identiy transformation is used assigned instead
-     * @return {GTransform} the old transform before assignment
+     * @return {IFTransform} the old transform before assignment
      * @version 1.0
      */
     IFPaintCanvas.prototype.setTransform = function (transform) {
         if (transform == null) {
             // Use identity transform
-            transform = new GTransform();
+            transform = new IFTransform();
         }
         var oldTransform = this._transform;
         this._transform = transform;
@@ -396,7 +396,7 @@
 
     /**
      * Reset the transformation to the identity transformation
-     * @return {GTransform} the old transform before reset
+     * @return {IFTransform} the old transform before reset
      * @version 1.0
      */
     IFPaintCanvas.prototype.resetTransform = function () {
@@ -406,7 +406,7 @@
     /**
      * This needs to be called when the canvas should prepare
      * itself for painting.
-     * @param {Array<GRect>} areas an array of areas to be painted.
+     * @param {Array<IFRect>} areas an array of areas to be painted.
      * those will be used for clipping any painting as well for
      * clearing those regions before anything else. Note that you need
      * to enforce to provide integer based rectangles only as internally,
@@ -418,8 +418,8 @@
         this._canvasContext.save();
 
         // Reset some stuff
-        this._transform = new GTransform();
-        this._origin = new GPoint(0, 0);
+        this._transform = new IFTransform();
+        this._origin = new IFPoint(0, 0);
         this._scale = 1.0;
         this._areas = areas ? areas.slice() : null;
         this._updateTransform();
@@ -476,7 +476,7 @@
      * canvas will include a transformation so that the
      * extent's x/y coordinates are equal to 0,0. Temporary canvases
      * should never be used i.e. for effects as they might be cut off.
-     * @param {GRect} extents the extents for the requested canvas
+     * @param {IFRect} extents the extents for the requested canvas
      * Defaults to false.
      */
     IFPaintCanvas.prototype.createCanvas = function (extents, clipDirty) {
@@ -507,9 +507,9 @@
             height = this.getHeight() - top;
         }
 
-        var sceneExtents = this.getTransform(false).inverted().mapRect(new GRect(left, top, width, height));
+        var sceneExtents = this.getTransform(false).inverted().mapRect(new IFRect(left, top, width, height));
 
-        var finalExtents = new GRect(
+        var finalExtents = new IFRect(
             sceneExtents.getX() * this._scale,
             sceneExtents.getY() * this._scale,
             sceneExtents.getWidth() * this._scale,
@@ -531,7 +531,7 @@
         result.prepare(areas);
 
         // Set result's origin and scalation
-        var topLeft = finalExtents.getSide(GRect.Side.TOP_LEFT);
+        var topLeft = finalExtents.getSide(IFRect.Side.TOP_LEFT);
         result.setOrigin(topLeft);
         result.setOffset(topLeft);
         result.setScale(this._scale);
@@ -544,7 +544,7 @@
      * Clears the whole canvas to be fully transparent
      */
     IFPaintCanvas.prototype.clear = function () {
-        var clearRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
+        var clearRect = this.getTransform(false).inverted().mapRect(new IFRect(0, 0, this.getWidth(), this.getHeight()));
         this._canvasContext.clearRect(clearRect.getX(), clearRect.getY(), clearRect.getWidth(), clearRect.getHeight());
     };
 
@@ -798,7 +798,7 @@
      * @param {*} [fill] the fill, defaults to full opaque black
      */
     IFPaintCanvas.prototype.fillCanvas = function (fill) {
-        var fillRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
+        var fillRect = this.getTransform(false).inverted().mapRect(new IFRect(0, 0, this.getWidth(), this.getHeight()));
         this.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill);
     };
 
@@ -908,11 +908,11 @@
     /**
      * This is called to modify the image data
      * @param {Function} modifier the modifier function retrieving the image data, the width and the height
-     * @param {GRect} [extents] optional extents, if not provided or null,
+     * @param {IFRect} [extents] optional extents, if not provided or null,
      * takes the whole canvas by default
      */
     IFPaintCanvas.prototype.modifyPixels = function (modifier, extents) {
-        extents = extents || new GRect(0, 0, this.getWidth(), this.getHeight());
+        extents = extents || new IFRect(0, 0, this.getWidth(), this.getHeight());
 
         if (extents.isEmpty()) {
             return;
@@ -931,7 +931,7 @@
     /**
      * Blur the canvas or parts of it
      * @param {Number} radius the blur radius to be used
-     * @param {GRect} [extents] optional extents, if not provided or null,
+     * @param {IFRect} [extents] optional extents, if not provided or null,
      * takes the whole canvas by default
      */
     IFPaintCanvas.prototype.blur = function (radius, extents) {
@@ -1156,7 +1156,7 @@
      * Apply a color transformation on this canvas
      * @param {Array<Number>} multiplier the rgba multipliers
      * @param {Array<Number>} offsets the rgba offsets
-     * @param {GRect} [extents] optional extents, if not provided or null,
+     * @param {IFRect} [extents] optional extents, if not provided or null,
      * takes the whole canvas by default
      */
     IFPaintCanvas.prototype.colorTransform = function (multiplier, offsets, extents) {
@@ -1184,7 +1184,7 @@
      * |-A-| 0 | 0 | 0 | 1 |    0   |
      *
      * @param {Array<Number>} matrix the color matrix to be applied (4x5)
-     * @param {GRect} [extents] optional extents, if not provided or null,
+     * @param {IFRect} [extents] optional extents, if not provided or null,
      * takes the whole canvas by default
      */
     IFPaintCanvas.prototype.colorMatrix = function (matrix, extents) {

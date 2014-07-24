@@ -4,7 +4,7 @@
 
         for (var i = 0; i < 10; ++i) {
             var insertPos = scene.getPageInsertPosition();
-            var insertSize = new GPoint(800, 600);
+            var insertSize = new IFPoint(800, 600);
 
             var page = new IFPage();
 
@@ -30,7 +30,7 @@
             style.appendChild(new IFFillPaint());
 
             var textPaintBBox = text.getPaintBBox();
-            text.setProperties(['trf'], [new GTransform(1, 0, 0, 1,
+            text.setProperties(['trf'], [new IFTransform(1, 0, 0, 1,
                 insertPos.getX() + (insertSize.getX() - textPaintBBox.getWidth()) / 2,
                 insertPos.getY() + (insertSize.getY() - textPaintBBox.getHeight()) / 2)]);
 

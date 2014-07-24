@@ -111,7 +111,7 @@
     /**
      * Descendant classes should call this to invalidate and
      * request a repaint of a certain area
-     * @param {GRect} [area] the area of invalidation, if not provided
+     * @param {IFRect} [area] the area of invalidation, if not provided
      * or null, invalidates the whole area
      * @version 1.0
      */
