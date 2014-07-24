@@ -40,7 +40,6 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GAlignLeftAction, IFLocale.Language.English, ["title"], ["Align Left"]);
-ifLocale.setValues(GBringForwardAction, IFLocale.Language.English, ["title"], ["Bring Forward"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
@@ -63,6 +62,7 @@ ifLocale.setValues(GLayerTypeAction, IFLocale.Language.English, ["title"], ["%na
 ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
+ifLocale.setValues(GOrderAction, IFLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
 ifLocale.setValues(GOriginalViewAction, IFLocale.Language.English, ["title"], ["Original-View"]);
 ifLocale.setValues(GPaintModeAction, IFLocale.Language.English, ["title"], ["%name% View"]);
 ifLocale.setValues(GPasteAction, IFLocale.Language.English, ["title"], ["Paste"]);

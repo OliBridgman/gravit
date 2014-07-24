@@ -260,7 +260,10 @@
             new GLayerTypeAction(IFLayer.Type.Guide),
 
             // Arrange
-            new GBringForwardAction(),
+            new GOrderAction(GOrderAction.Type.SendToFront),
+            new GOrderAction(GOrderAction.Type.BringForward),
+            new GOrderAction(GOrderAction.Type.SendBackward),
+            new GOrderAction(GOrderAction.Type.SendToBack),
             new GAlignLeftAction(),
 
             // View
