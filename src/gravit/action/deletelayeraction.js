@@ -104,7 +104,7 @@
         // TODO : I18N
         IFEditor.tryRunTransaction(scene, function () {
             layer.getParent().removeChild(layer);
-        }, 'Delete Page');
+        }, ifLocale.get(this.getTitle()));
     };
 
     /** @override */

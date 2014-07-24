@@ -85,7 +85,7 @@
 
         if (!noUndo) {
             // TODO : I18N
-            IFEditor.tryRunTransaction(scene, addPageFunc, 'Add Page');
+            IFEditor.tryRunTransaction(scene, addPageFunc, ifLocale.get(this.getTitle()));
         } else {
             addPageFunc();
         }

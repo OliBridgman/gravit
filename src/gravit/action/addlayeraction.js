@@ -58,10 +58,10 @@
         // TODO : I18N
         IFEditor.tryRunTransaction(activePage, function () {
             var layer = new IFLayer();
-            layer.setProperty('name', 'Layer ' + scene.queryCount('layerSet').toString());
+            layer.setProperty('name', 'Layer ' + scene.queryCount('layer').toString());
             activePage.appendChild(layer);
             scene.setActiveLayer(layer);
-        }, 'Add Layer Set');
+        }, ifLocale.get(this.getTitle()));
     };
 
     /** @override */

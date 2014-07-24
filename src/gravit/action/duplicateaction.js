@@ -67,7 +67,7 @@
             editor.applySelectionTransform(true, true);
         } finally {
             // TODO : I18N
-            editor.commitTransaction('Duplicate Selection');
+            editor.commitTransaction(ifLocale.get(this.getTitle()));
         }
     };
 
