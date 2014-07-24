@@ -48,15 +48,12 @@
 
     /**
      * Activates or deactivates the transform box
-     * Note: activation/deactivation is not responsible for painting. To paint transform box
-     * the calling of this editor getTransformBox().paint(context, transform) is required
      * @param {Boolean} activate - when true or not set means activation is needed, when false - deactivation
+     * @param {GPoint} center - transform box center to set
      */
     IFSceneEditor.prototype.setTransformBoxActive = function (activate, center) {
         if (activate || activate === null) {
-            //if (!this._transformBox) {
-                this._updateSelectionTransformBox(center);
-            //}
+            this._updateSelectionTransformBox(center);
         } else {
             this.requestInvalidation();
             this._transformBox = null;
@@ -70,11 +67,6 @@
 
     IFSceneEditor.prototype.requestInvalidation = function(args) {
         this._getGraphicEditor().requestInvalidation(this, args);
-    };
-
-    IFSceneEditor.prototype.setTransformBox = function (transformBox) {
-        this._transformBox = transformBox;
-        this.requestInvalidation();
     };
 
     IFSceneEditor.prototype.hideTransformBox = function () {
@@ -98,6 +90,14 @@
             return new GPoint(cx,cy);
         }
         return null;
+    };
+
+    IFSceneEditor.prototype.applyTransformBoxTransform = function () {
+        if (this._transformBox) {
+            this._transformBox.applyTransform();
+            this.requestInvalidation();
+            this._updateSelectionTransformBox();
+        }
     };
 
     IFSceneEditor.prototype._updateSelectionTransformBox = function (center) {

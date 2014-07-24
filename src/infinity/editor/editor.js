@@ -22,8 +22,6 @@
         this._scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
 
-        this._sceneEditor = IFElementEditor.openEditor(this._scene);
-
         // Try to create internal selection for all selected nodes
         var selectedNodes = this._scene.queryAll(":selected");
         if (selectedNodes && selectedNodes.length) {
@@ -337,7 +335,6 @@
      * Called to close and detach this editor
      */
     IFEditor.prototype.close = function () {
-        this._sceneEditor = null;
         delete this._scene.__graphic_editor__;
 
         this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert);
@@ -658,10 +655,9 @@
                         this.updateSelection(false, clonedSelection);
                     }
 
-                    if (this._sceneEditor.isTransformBoxActive()) {
-                        this._sceneEditor.getTransformBox().applyTransform();
-                        this._sceneEditor.requestInvalidation();
-                        this._sceneEditor._updateSelectionTransformBox();
+                    var sceneEditor = IFElementEditor.getEditor(this._scene);
+                    if (sceneEditor && sceneEditor.isTransformBoxActive()) {
+                        sceneEditor.applyTransformBoxTransform();
                     }
                 } finally {
                     if (!noTransaction) {
@@ -760,10 +756,11 @@
         }
 
         if (!this._transaction) {
+            var sceneEditor = IFElementEditor.getEditor(this._scene);
             this._transaction = {
                 actions: [],
                 selection: this._saveSelection(),
-                transformBoxCenter: this._sceneEditor.getTransformBoxCenter()
+                transformBoxCenter: sceneEditor ? sceneEditor.getTransformBoxCenter() : null
             }
         }
     };
@@ -775,11 +772,12 @@
 
         this._loadSelection(data.newSelection);
 
-        if (data.newTransformBoxCenter || this._sceneEditor.isTransformBoxActive()) {
+        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        if (data.newTransformBoxCenter || sceneEditor && sceneEditor.isTransformBoxActive()) {
             if (data.newTransformBoxCenter) {
-                this._sceneEditor.setTransformBoxActive(true, data.newTransformBoxCenter);
+                sceneEditor.setTransformBoxActive(true, data.newTransformBoxCenter);
             } else {
-                this._sceneEditor.setTransformBoxActive(false);
+                sceneEditor.setTransformBoxActive(false);
             }
         }
     };
@@ -792,11 +790,12 @@
 
         this._loadSelection(data.selection);
 
-        if (data.transformBoxCenter || this._sceneEditor.isTransformBoxActive()) {
+        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        if (data.transformBoxCenter || sceneEditor && sceneEditor.isTransformBoxActive()) {
             if (data.transformBoxCenter) {
-                this._sceneEditor.setTransformBoxActive(true, data.transformBoxCenter);
+                sceneEditor.setTransformBoxActive(true, data.transformBoxCenter);
             } else {
-                this._sceneEditor.setTransformBoxActive(false);
+                sceneEditor.setTransformBoxActive(false);
             }
         }
     };
@@ -850,12 +849,13 @@
 
         if (this._transaction.actions.length > 0) {
             var transaction = this._transaction;
+            var sceneEditor = IFElementEditor.getEditor(this._scene);
             var data = {
                 actions: transaction.actions.slice(),
                 selection: transaction.selection ? transaction.selection.slice() : null,
                 newSelection: this._saveSelection(),
                 transformBoxCenter: transaction.transformBoxCenter,
-                newTransformBoxCenter: this._sceneEditor.getTransformBoxCenter()
+                newTransformBoxCenter: sceneEditor ? sceneEditor.getTransformBoxCenter() : null
             };
 
             this.pushState(name, this._transactionRedo.bind(this), this._transactionUndo.bind(this), data, this._transactionMerge.bind(this));
