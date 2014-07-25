@@ -264,6 +264,7 @@
             new GOrderAction(GOrderAction.Type.BringForward),
             new GOrderAction(GOrderAction.Type.SendBackward),
             new GOrderAction(GOrderAction.Type.SendToBack),
+
             new GAlignAction(GAlignAction.Type.AlignLeft),
             new GAlignAction(GAlignAction.Type.AlignCenter),
             new GAlignAction(GAlignAction.Type.AlignRight),
@@ -272,6 +273,9 @@
             new GAlignAction(GAlignAction.Type.AlignBottom),
             new GAlignAction(GAlignAction.Type.DistributeHorizontal),
             new GAlignAction(GAlignAction.Type.DistributeVertical),
+
+            new GSnapUnitAction(GSnapUnitAction.Type.FullUnit),
+            new GSnapUnitAction(GSnapUnitAction.Type.HalfUnit),
 
             // View
             new GOriginalViewAction(),

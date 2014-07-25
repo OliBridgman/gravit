@@ -76,6 +76,7 @@ ifLocale.setValues(GSaveAsAction, IFLocale.Language.English, ["title", "title-de
 ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Rulers"]);
 ifLocale.setValues(GSelectAllAction, IFLocale.Language.English, ["title"], ["Select All"]);
 ifLocale.setValues(GShowAllPagesAction, IFLocale.Language.English, ["title"], ["All Pages"]);
+ifLocale.setValues(GSnapUnitAction, IFLocale.Language.English, ["title.full", "title.half"], ["Snap to full units", "Snap to half units"]);
 ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungroup Selection"]);
 ifLocale.setValues(GZoomInAction, IFLocale.Language.English, ["title"], ["Zoom in"]);
