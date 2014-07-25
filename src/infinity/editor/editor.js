@@ -40,6 +40,7 @@
          * be merged into a previous undo step with the same
          * properties. This will only work if the current and
          * the previous undo steps do not include *any* other changes
+         * and when each step has the same action name
          */
         smartUndoPropertyMerge: true
     };
@@ -878,7 +879,7 @@
         // Try a merge, first
         if (merge && data && this._undoStates.length > 0) {
             var lastUndoState = this._undoStates[this._undoStates.length - 1];
-            if (lastUndoState.data) {
+            if (lastUndoState.data && lastUndoState.name === name) {
                 if (merge(lastUndoState.data, data)) {
                     // Merged so return here
                     return;
