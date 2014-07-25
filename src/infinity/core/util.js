@@ -239,7 +239,7 @@
     IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator) {
         decimalSeparator = decimalSeparator || ',';
         decimalPlaces = typeof decimalPlaces === 'number' ? decimalPlaces : 3;
-        return parseFloat(number.toFixed(decimalPlaces)).toString().replace('.', decimalSeparator);
+        return ifMath.round(number, false, decimalPlaces).toString().replace('.', decimalSeparator);
     };
 
     /**
