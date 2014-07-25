@@ -39,7 +39,6 @@
 
                 $('<button></button>')
                     .append($(sidebar.getIcon()))
-                    .addClass('g-flat')
                     .attr('title', ifLocale.get(sidebar.getTitle()))
                     .attr('data-sidebar-id', sidebar.getId())
                     .on('click', function () {
@@ -108,12 +107,12 @@
                     $('<div></div>')
                         .addClass('zoom')
                         .append($('<button></button>')
-                            .addClass('g-flat fa fa-minus')
+                            .addClass('fa fa-minus')
                             .on('click', function () {
                                 gApp.executeAction(GZoomOutAction.ID);
                             }))
                         .append($('<input>')
-                            .addClass('g-flat')
+                            .css('border', 'none')
                             .on('click', function () {
                                 $(this).select();
                             })
@@ -127,7 +126,7 @@
                                 }
                             }))
                         .append($('<button></button>')
-                            .addClass('g-flat fa fa-plus')
+                            .addClass('fa fa-plus')
                             .on('click', function () {
                                 gApp.executeAction(GZoomInAction.ID);
                             }))
@@ -137,7 +136,6 @@
 
             // Append our group button now
             var button = $("<button></button>")
-                .addClass('g-flat')
                 .attr('data-group', group)
                 .appendTo(toolpanel);
 
@@ -240,7 +238,7 @@
 
                         var _addSubToolButton = function (toolInfo) {
                             $("<button></button>")
-                                .addClass('g-flat toolbar-tool-button')
+                                .addClass('toolbar-tool-button')
                                 .append($('<span></span>')
                                     .addClass('fa fa-check fa-fw')
                                     .css('visibility', toolInfo.instance !== gApp.getToolManager().getActiveTool() ? 'hidden' : ''))

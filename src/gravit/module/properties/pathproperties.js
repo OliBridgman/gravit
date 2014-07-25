@@ -139,10 +139,8 @@
                             })));
             } else if (property === 'cu') {
                 return $('<button></button>')
-                    .addClass('g-flat')
                     .attr('data-point-property', property)
-                    .append($('<span></span>')
-                        .addClass('fa fa-lock fa-fw'))
+                    .addClass('fa fa-lock fa-fw')
                     .on('click', function () {
                         self._assignPointProperty(property, !$(this).hasClass('g-active'));
                         self._updatePointProperties();
@@ -196,7 +194,7 @@
                         // TODO : I18N
                         .attr('title', 'Clear Left Handle')
                         .append($('<span></span>')
-                            .addClass('fa fa-arrow-right fa-fw'))
+                            .addClass('fa fa-forward'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly'], [null, null]);
                         }.bind(this)))
@@ -204,7 +202,7 @@
                         // TODO : I18N
                         .attr('title', 'Clear Right Handle')
                         .append($('<span></span>')
-                            .addClass('fa fa-arrow-left fa-fw'))
+                            .addClass('fa fa-backward'))
                         .on('click', function () {
                             this._assignPointProperties(['hrx', 'hry'], [null, null]);
                         }.bind(this)))
@@ -212,7 +210,7 @@
                         // TODO : I18N
                         .attr('title', 'Clear Handles')
                         .append($('<span></span>')
-                            .addClass('fa fa-ban fa-fw'))
+                            .addClass('fa fa-times'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
                         }.bind(this))))

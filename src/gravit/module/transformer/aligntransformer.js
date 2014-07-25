@@ -120,13 +120,13 @@
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append($('<button></button>')
-                        .addClass('fa fa-align-left g-flat'))
+                        .addClass('fa fa-align-left'))
                     .append($('<button></button>')
-                        .addClass('fa fa-align-center g-flat'))
+                        .addClass('fa fa-align-center'))
                     .append($('<button></button>')
-                        .addClass('fa fa-align-right g-flat'))
+                        .addClass('fa fa-align-right'))
                     .append($('<button></button>')
-                        .addClass('fa fa-align-justify g-flat')
+                        .addClass('fa fa-align-justify')
                         .css('margin-left', '7px'))))
             .appendTo(panel);
     };

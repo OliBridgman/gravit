@@ -19,8 +19,8 @@ button, .g-button, input, textArea, select, .g-input {
 }
 
 button, .g-button {
-  padding: 2px 3px;
-  border: 1px solid $frameDarkColor;
+  border: none;
+  padding: 3px 4px;
 
   &, * {
     vertical-align: middle;
@@ -34,15 +34,13 @@ button, .g-button {
   }
 
   &:active, &.g-active {
-    background: $activeColor;
-
     &, * {
-      color: $activeTextColor;
+      color: $selectedColor;
     }
 
     svg {
-      fill: $activeTextColor;
-      stroke: $activeTextColor;
+      fill: $selectedColor;
+      stroke: $selectedColor;
     }
   }
 
@@ -56,31 +54,6 @@ button, .g-button {
     svg {
       fill: $disabledTextColor !important;
       stroke: $disabledTextColor !important;
-    }
-  }
-
-  &.g-flat {
-    border: 1px solid transparent;
-    border-radius: 0px;
-    box-shadow: none;
-    background: transparent;
-
-    &:active, &.g-active {
-      background: transparent;
-      border: 1px solid transparent;
-
-      &, * {
-        color: $selectedColor;
-      }
-
-      svg {
-        fill: $selectedColor;
-        stroke: $selectedColor;
-      }
-    }
-
-    &:disabled {
-      background: transparent !important;
     }
   }
 }
@@ -97,13 +70,6 @@ select, input, textArea, .g-input {
   &:focus {
     outline: none;
     border: 1px solid $selectedColor;
-  }
-
-  &.g-flat {
-    border: 1px solid transparent;
-    border-radius: 0px;
-    box-shadow: none;
-    background: transparent;
   }
 }
 

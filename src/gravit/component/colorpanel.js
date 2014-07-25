@@ -815,14 +815,12 @@
                         .append($('<div></div>')
                             .addClass('section-center')
                             .append($('<button></button>')
-                                .addClass('g-flat')
                                 .attr('data-activate-view', ViewType.Palette)
                                 // TODO : I18N
                                 .attr('title', 'Palette')
                                 .append($('<span></span>')
                                     .addClass('fa fa-th')))
                             .append($('<button></button>')
-                                .addClass('g-flat')
                                 .attr('data-activate-view', ViewType.Swatches)
                                 // TODO : I18N
                                 .attr('title', 'Swatches')
@@ -830,14 +828,12 @@
                                 .append($('<span></span>')
                                     .addClass('fa fa-bars')))
                             .append($('<button></button>')
-                                .addClass('g-flat')
                                 .attr('data-activate-view', ViewType.Trends)
                                 // TODO : I18N
                                 .attr('title', 'Trends')
                                 .append($('<span></span>')
                                     .addClass('fa fa-sliders')))
                             .append($('<button></button>')
-                                .addClass('g-flat')
                                 .attr('data-activate-view', ViewType.Image)
                                 // TODO : I18N
                                 .attr('title', 'From Image')

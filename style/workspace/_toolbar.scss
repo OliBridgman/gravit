@@ -44,14 +44,6 @@
     &.sidebars {
       border-bottom: 3px solid $frameDarkColor;
       padding: 0px;
-
-      button {
-        &:active, &.g-active {
-          * {
-            color: $selectedColor;
-          }
-        }
-      }
     }
 
     &.toolpanel {

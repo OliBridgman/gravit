@@ -130,9 +130,7 @@
                 .css('text-align', 'right')
                 .append($('<button></button>')
                     .attr('data-element', 'more')
-                    .addClass('g-flat')
-                    .append($('<span></span>')
-                        .addClass('fa fa-cog'))
+                    .addClass('fa fa-cog')
                     .on('click', function (evt) {
                         var $this = $(this);
                         var active = $this.hasClass('g-active');
