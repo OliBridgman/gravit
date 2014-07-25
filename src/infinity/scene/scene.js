@@ -163,13 +163,13 @@
      * @type {IFScene.StyleCollection}
      * @private
      */
-    IFScene._styleCollection = null;
+    IFScene.prototype._styleCollection = null;
 
     /**
      * @type {IFScene.SwatchCollection}
      * @private
      */
-    IFScene._swatchCollection = null;
+    IFScene.prototype._swatchCollection = null;
 
     /**
      * Returns the style-collection of this scene
