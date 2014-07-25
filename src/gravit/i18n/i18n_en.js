@@ -39,7 +39,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
-ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.left", "title.center", "title.right", "title.top", "title.middle", "title.bottom"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom"]);
+ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.align-left", "title.align-center", "title.align-right", "title.align-top", "title.align-middle", "title.align-bottom", "title.distribute-horizontal", "title.distribute-vertical"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom", "Distribute Horizontally", "Distribute Vertically"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);

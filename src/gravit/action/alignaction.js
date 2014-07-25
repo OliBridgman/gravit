@@ -6,30 +6,28 @@
      * @extends GAction
      * @constructor
      */
-    function GAlignAction(type, pageAlign) {
+    function GAlignAction(type) {
         this._type = type;
-        this._pageAlign = pageAlign;
         this._title = new IFLocale.Key(GAlignAction, 'title.' + type);
     };
     IFObject.inherit(GAlignAction, GAction);
 
     /** @enum */
     GAlignAction.Type = {
-        Left: 'left',
-        Center: 'center',
-        Right: 'right',
-        Top: 'top',
-        Middle: 'middle',
-        Bottom: 'bottom'
+        AlignLeft: 'align-left',
+        AlignCenter: 'align-center',
+        AlignRight: 'align-right',
+        AlignTop: 'align-top',
+        AlignMiddle: 'align-middle',
+        AlignBottom: 'align-bottom',
+        DistributeHorizontal: 'distribute-horizontal',
+        DistributeVertical: 'distribute-vertical'
     };
 
     GAlignAction.ID = 'arrange.align';
 
     /** @type {GAlignAction.Type} */
     GAlignAction.prototype._type = null;
-
-    /** @type {Boolean} */
-    GAlignAction.prototype._pageAlign = null;
 
     /** @type {IFLocale.Key} */
     GAlignAction.prototype._title = null;
@@ -38,7 +36,7 @@
      * @override
      */
     GAlignAction.prototype.getId = function () {
-        return GAlignAction.ID + '.' + (this._pageAlign ? 'page.' : '') + this._type;
+        return GAlignAction.ID + '.' + this._type;
     };
 
     /**
@@ -60,14 +58,17 @@
      */
     GAlignAction.prototype.getGroup = function () {
         switch (this._type) {
-            case GAlignAction.Type.Left:
-            case GAlignAction.Type.Center:
-            case GAlignAction.Type.Right:
+            case GAlignAction.Type.AlignLeft:
+            case GAlignAction.Type.AlignCenter:
+            case GAlignAction.Type.AlignRight:
                 return 'align_horizontal';
-            case GAlignAction.Type.Top:
-            case GAlignAction.Type.Middle:
-            case GAlignAction.Type.Bottom:
+            case GAlignAction.Type.AlignTop:
+            case GAlignAction.Type.AlignMiddle:
+            case GAlignAction.Type.AlignBottom:
                 return 'align_vertical';
+            case GAlignAction.Type.DistributeHorizontal:
+            case GAlignAction.Type.DistributeVertical:
+                return 'distribute';
         }
     };
 
@@ -81,12 +82,14 @@
     /**
      * @param {Array<IFElement>} [elements] optional elements, if not given
      * uses the selection
+     * @param {IFRect} [referenceBox] a reference box to align to, if not
+     * given uses the element's total bbox
      * @override
      */
-    GAlignAction.prototype.isEnabled = function (elements) {
+    GAlignAction.prototype.isEnabled = function (elements, referenceBox) {
         elements = elements || (gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor().getSelection() : null);
         if (elements) {
-            return this._pageAlign ? elements.length > 0 : elements.length > 1;
+            return referenceBox ? elements.length > 0 : elements.length > 1;
         }
         return false;
     };
@@ -94,11 +97,14 @@
     /**
      * @param {Array<IFElement>} [elements] optional elements, if not given
      * uses the selection
-     * @param {IFPage} [page] if page-aligned specifies the reference page,
-     * if not given, uses the active one
+     * @param {Boolean} [geometry] if provided, specifies whether to
+     * use geometry box for alignment, otherwise use paint box. Defaults
+     * to false.
+     * @param {IFRect} [referenceBox] a reference box to align to, if not
+     * given uses the element's total bbox
      * @override
      */
-    GAlignAction.prototype.execute = function (elements, page) {
+    GAlignAction.prototype.execute = function (elements, geometry, referenceBox) {
         var document = gApp.getActiveDocument();
         var scene = document.getScene();
 
@@ -108,13 +114,8 @@
 
         var alignBBox = null;
 
-        if (this._pageAlign) {
-            page = page || scene.getActivePage();
-            if (!page) {
-                return;
-            }
-
-            alignBBox = page.getPaintBBox();
+        if (referenceBox) {
+            alignBBox = referenceBox;
         } else {
             for (var i = 0; i < elements.length; ++i) {
                 var bbox = elements[i].getPaintBBox();
@@ -135,13 +136,13 @@
                 if (!element.hasMixin(IFElement.Transform)) {
                     continue;
                 }
-                var bbox = element.getPaintBBox();
+                var bbox = geometry ? element.getGeometryBBox() : element.getPaintBBox();
                 if (!bbox || bbox.isEmpty()) {
                     continue;
                 }
 
                 switch (this._type) {
-                    case GAlignAction.Type.Left:
+                    case GAlignAction.Type.AlignLeft:
                         if (alignBBox.getX() !== bbox.getX()) {
                             element.transform(new IFTransform(1, 0, 0, 1, alignBBox.getX() - bbox.getX(), 0));
                         }

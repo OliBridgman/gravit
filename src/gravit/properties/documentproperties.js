@@ -37,8 +37,26 @@
             if (property === 'unit') {
                 return $('<select></select>')
                     .attr('data-property', property)
-                    .css('width', '100%')
+                    //.css('width', '100%')
                     .gUnit()
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).val());
+                    });
+            } else if (property === 'unitSnap') {
+                return $('<select></select>')
+                    .attr('data-property', property)
+                    .append($('<option></option>')
+                        .attr('value', IFScene.UnitSnap.None)
+                        // TODO : I18N
+                        .text('None'))
+                    .append($('<option></option>')
+                        .attr('value', IFScene.UnitSnap.Full)
+                        // TODO : I18N
+                        .text('Full'))
+                    .append($('<option></option>')
+                        .attr('value', IFScene.UnitSnap.Half)
+                        // TODO : I18N
+                        .text('Half'))
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
@@ -125,10 +143,11 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Unit:'))
+                    .text('Unit/Snap:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
-                    .append(_createInput('unit'))))
+                    .append(_createInput('unit'))
+                    .append(_createInput('unitSnap'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -226,6 +245,7 @@
     GDocumentProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
         this._panel.find('select[data-property="unit"]').val(scene.getProperty('unit'));
+        this._panel.find('select[data-property="unitSnap"]').val(scene.getProperty('unitSnap'));
         this._panel.find('input[data-property="gridSizeX"]').val(scene.pointToString(scene.getProperty('gridSizeX')));
         this._panel.find('input[data-property="gridSizeY"]').val(scene.pointToString(scene.getProperty('gridSizeY')));
         this._panel.find('input[data-property="gridActive"]').prop('checked', scene.getProperty('gridActive'));
