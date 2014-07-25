@@ -2144,6 +2144,8 @@
      * @version 1.0
      */
     IFMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
+        // TODO : Move this somewhere else as this is not really but but uses IFTransform which
+        // actually is not part of the core
         var dx, dy;
         var tan;
         var tanPIdiv8 = 0.4142;
