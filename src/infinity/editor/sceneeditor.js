@@ -18,6 +18,12 @@
      */
     IFSceneEditor.prototype._transformBox = null;
 
+    IFSceneEditor.prototype._detach = function () {
+        if (this._transformBox) {
+            this.setTransformBoxActive(false);
+        }
+    };
+
     IFSceneEditor.prototype.paint = function (transform, context) {
         IFElementEditor.prototype.paint.call(this, transform, context);
         if (this._transformBox) {
@@ -53,11 +59,19 @@
      */
     IFSceneEditor.prototype.setTransformBoxActive = function (activate, center) {
         if (activate || activate === null) {
+            if (!this._transformBox) {
+                this._element.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+            }
+
             this._updateSelectionTransformBox(center);
         } else {
-            this.requestInvalidation();
-            this._transformBox = null;
-            this.requestInvalidation();
+            if (this._transformBox) {
+                this._element.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+
+                this.requestInvalidation();
+                this._transformBox = null;
+                this.requestInvalidation();
+            }
         }
     };
 
@@ -119,6 +133,10 @@
             }
         }
         this.requestInvalidation();
+    };
+
+    IFSceneEditor.prototype._geometryChange = function (evt) {
+       // this._updateSelectionTransformBox();
     };
 
     IFSceneEditor.prototype._getGraphicEditor = function () {
