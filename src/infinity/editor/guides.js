@@ -41,6 +41,17 @@
             var gsx = this._scene.getProperty('gridSizeX');
             var gsy = this._scene.getProperty('gridSizeY');
             result = new IFPoint(Math.round(result.getX() / gsx) * gsx, Math.round(result.getY() / gsy) * gsy);
+        } else {
+            // TODO : Get order etc. right
+            // Snap to units if desired
+            switch (this._scene.getProperty('unitSnap')) {
+                case IFScene.UnitSnap.Full:
+                    result = new IFPoint(Math.ceil(result.getX()), Math.ceil(result.getY()));
+                    break;
+                case IFScene.UnitSnap.Half:
+                    result = new IFPoint(Math.ceil(result.getX()) + 0.5, Math.ceil(result.getY()) + 0.5);
+                    break;
+            }
         }
 
         /** TODO :
