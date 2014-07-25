@@ -232,11 +232,14 @@
      * @param {Number} number the number to format
      * @param {Number} [decimalPlaces] the number of decimal places,
      * defaults to 3
+     * @param {String} [decimalSeparator] the decimal separator to use,
+     * if not provided defaults to ','
      * @returns {string}
      */
-    IFUtil.prototype.formatNumber = function (number, decimalPlaces) {
+    IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator) {
+        decimalSeparator = decimalSeparator || ',';
         decimalPlaces = typeof decimalPlaces === 'number' ? decimalPlaces : 3;
-        return parseFloat(number.toFixed(decimalPlaces)).toString();
+        return parseFloat(number.toFixed(decimalPlaces)).toString().replace('.', decimalSeparator);
     };
 
     /**
