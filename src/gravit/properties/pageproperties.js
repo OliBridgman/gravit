@@ -279,7 +279,7 @@
         // Special case: if only scene is in node selection,
         // then select the currently active page by default
         if (elements.length === 1 && elements[0] instanceof IFScene) {
-            var activePage = elements[0].querySingle('page:active');
+            var activePage = elements[0].getActivePage();
             if (activePage) {
                 this._pages.push(activePage);
             }

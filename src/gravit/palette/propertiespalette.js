@@ -131,19 +131,22 @@
     GPropertiesPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
+            var scene = this._document.getScene();
             var editor = this._document.getEditor();
 
-            // Subscribe to the editor's events
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
             this._updateFromSelection();
 
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var scene = this._document.getScene();
             var editor = this._document.getEditor();
 
             // Unsubscribe from the editor's events
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
             this._document = null;
             this._elements = null;
@@ -166,6 +169,18 @@
         }
 
         this._updatePropertyPanels();
+    };
+
+    /**
+     * @private
+     */
+    GPropertiesPalette.prototype._afterFlagChange = function (evt) {
+        // Special case - if element's consists of scene only and
+        // some element's activeness changes, trigger an update property
+        // panels as some panel do some special handling for this case
+        if (evt.flag === IFNode.Flag.Active && this._elements && this._elements.length === 1 && this._elements[0] instanceof IFScene) {
+            this._updatePropertyPanels();
+        }
     };
 
     /** @private */
