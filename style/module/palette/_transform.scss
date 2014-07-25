@@ -1,10 +1,10 @@
-@import '../variables';
+@import '../../variables';
 
-.palette-properties {
+.palette-transform {
   padding: 0px;
 
-  .properties-panels {
-    > .properties-panel-category {
+  .transform-panels {
+    > .transform-panel-category {
       @include box-sizing(border-box);
       display: table;
       width: 100%;
@@ -50,7 +50,7 @@
       }
     }
 
-    > .properties-panel-content {
+    > .transform-panel-content {
       padding: 5px 5px;
 
       &.last-visible {

@@ -168,6 +168,11 @@
             new GShadowEffectEntry()
         );
 
+        // Register default transformers
+        gravit.transformers.push(
+            new GAlignTransformer()
+        );
+
         // Register default actions
         gravit.actions = gravit.actions.concat(this._createDefaultActions());
     };

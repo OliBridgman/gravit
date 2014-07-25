@@ -1,7 +1,7 @@
 (function (_) {
 
     /**
-     * Object Palette
+     * Properties Palette
      * @class GPropertiesPalette
      * @extends GPalette
      * @constructor
@@ -30,7 +30,7 @@
     GPropertiesPalette.prototype._propertyPanels = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GPropertiesPalette.prototype._document = null;

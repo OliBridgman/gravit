@@ -52,7 +52,12 @@ var gravit = {
     /**
      * Array<GStyleEntry>
      */
-    styleEntries: []
+    styleEntries: [],
+
+    /**
+     * Array<GTransformer>
+     */
+    transformers: []
 };
 
 /**

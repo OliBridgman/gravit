@@ -1,27 +1,28 @@
 (function (_) {
 
     /**
-     * Base class for transform panels
-     * @class GTransform
+     * Base class for transformer panels
+     * @class GTransformer
      * @extends GEventTarget
      * @constructor
      */
-    function GTransform() {
+    function GTransformer() {
     };
 
     /**
      * Called to return the category of the panel
      * @return {String|IFLocale.Key}
      */
-    GTransform.prototype.getCategory = function () {
+    GTransformer.prototype.getCategory = function () {
         throw new Error("Not Supported.");
     };
 
     /**
      * Called to initialize the transform panel
      * @param {JQuery} panel the panel to init on
+     * @param {JQuery} controls the controls panel to init on
      */
-    GTransform.prototype.init = function (panel) {
+    GTransformer.prototype.init = function (panel, controls) {
         throw new Error("Not Supported.");
     };
 
@@ -31,14 +32,14 @@
      * @param {Array<IFElement>} elements array of transformable elements, contains at least one
      * @return {Boolean} true if this transform panel is available, false if not
      */
-    GTransform.prototype.update = function (document, elements) {
+    GTransformer.prototype.update = function (document, elements) {
         throw new Error("Not Supported.");
     };
 
     /** @override */
-    GTransform.prototype.toString = function () {
-        return "[Object GTransform]";
+    GTransformer.prototype.toString = function () {
+        return "[Object GTransformer]";
     };
 
-    _.GTransform = GTransform;
+    _.GTransformer = GTransformer;
 })(this);

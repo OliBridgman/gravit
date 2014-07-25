@@ -24,7 +24,10 @@
 @import 'workspace/windows';
 @import 'workspace/palettes';
 
-@import 'sidebar/pageslayerssidebar';
+// Gravit Module
 
-@import 'palette/properties';
-@import 'palette/style';
+@import 'module/sidebar/pageslayerssidebar';
+
+@import 'module/palette/properties';
+@import 'module/palette/style';
+@import 'module/palette/transform';

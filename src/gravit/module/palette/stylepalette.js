@@ -29,7 +29,7 @@
     GStylePalette.prototype._htmlElement = null;
 
     /**
-     * @type {EXDocument}
+     * @type {GDocument}
      * @private
      */
     GStylePalette.prototype._document = null;
