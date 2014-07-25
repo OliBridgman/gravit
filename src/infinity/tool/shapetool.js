@@ -33,24 +33,28 @@
     };
 
     /**
+     * Dragging start position in scene coordinates
      * @type {IFPoint}
      * @private
      */
     IFShapeTool.prototype._dragStart = null;
 
     /**
+     * Dragging current position in scene coordinates
      * @type {IFPoint}
      * @private
      */
     IFShapeTool.prototype._dragCurrent = null;
 
     /**
+     * Whether to keep ratio or not
      * @type {Boolean}
      * @private
      */
     IFShapeTool.prototype._keepRatio = false;
 
     /**
+     * Whether to calculate from center or not
      * @type {Boolean}
      * @private
      */
@@ -63,12 +67,14 @@
     IFShapeTool.prototype._shape = null;
 
     /**
+     * Current drag area in scene coordinates
      * @type {IFRect}
      * @private
      */
     IFShapeTool.prototype._dragArea = null;
 
     /**
+     * Current drag line in scene coordinates
      * @type {Array<IFPoint>}
      * @private
      */
@@ -183,11 +189,8 @@
      */
     IFShapeTool.prototype._mouseRelease = function (event) {
         if (!this._hasCreatedShape) {
-            this._editor.getGuides().beginMap();
-            var position = this._view.getWorldTransform().mapPoint(
-                this._editor.getGuides().mapPoint(
-                    this._view.getViewTransform().mapPoint(event.client)));
-            this._editor.getGuides().finishMap();
+            var position = this._view.getViewTransform().mapPoint(event.client);
+            position = this._editor.getGuides().mapPoint(position);
             this._createShapeManually(position);
         }
         this._hasCreatedShape = false;
@@ -199,16 +202,14 @@
      */
     IFShapeTool.prototype._mouseDragStart = function (event) {
         this._hasCreatedShape = false;
-        this._dragStart = event.client;
+        this._dragStart = this._view.getViewTransform().mapPoint(event.client);
         this._editor.getGuides().beginMap();
-        this._dragStart = this._view.getWorldTransform().mapPoint(
-            this._editor.getGuides().mapPoint(
-                this._view.getViewTransform().mapPoint(this._dragStart)));
+        this._dragStart = this._editor.getGuides().mapPoint(this._dragStart);
+        this._editor.getGuides().finishMap();
 
         // Create our shape when user started dragging
         this._shape = this._createShape();
         this._invalidateShape();
-        this._editor.getGuides().finishMap();
 
         this.updateCursor();
     };
@@ -218,13 +219,11 @@
      * @private
      */
     IFShapeTool.prototype._mouseDrag = function (event) {
-        this._dragCurrent = event.client;
+        this._dragCurrent = this._view.getViewTransform().mapPoint(event.client);
         this._editor.getGuides().beginMap();
-        this._dragCurrent = this._view.getWorldTransform().mapPoint(
-            this._editor.getGuides().mapPoint(
-                this._view.getViewTransform().mapPoint(this._dragCurrent)));
-        this._invalidateShape();
+        this._dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
         this._editor.getGuides().finishMap();
+        this._invalidateShape();
     };
 
     /**
@@ -261,7 +260,6 @@
     IFShapeTool.prototype._modifiersChanged = function (event) {
         if ((this._keepRatio && event.changed.shiftKey) ||
             (this._fromCenter && event.changed.optionKey)) {
-            //(this._fromCenter && event.changed.shiftKey)) {
             this._invalidateShape();
         }
     };
@@ -303,7 +301,6 @@
                 /** @type Array<IFPoint> */
                 var dragLine = null;
 
-                //if (this._fromCenter && ifPlatform.modifiers.shiftKey) {
                 if (this._fromCenter && ifPlatform.modifiers.optionKey) {
                     dragArea = IFRect.fromPoints(new IFPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new IFPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
                     dragLine = [new IFPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new IFPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
@@ -313,11 +310,17 @@
                     dragLine = [new IFPoint(x0, y0), new IFPoint(x2, y2)];
                 }
 
+                // Assign area and line in scene coordinates
                 this._dragArea = dragArea;
                 this._dragLine = dragLine;
 
+                // Convert area and line into view coordinates before updating the shape
+                var worldTransform = this._view.getWorldTransform();
+                var dragAreaView = worldTransform.mapRect(dragArea);
+                var dragLineView = [worldTransform.mapPoint(dragLine[0]), worldTransform.mapPoint(dragLine[1])];
+
                 this._invalidateShapeArea();
-                this._updateShape(this._shape, dragArea, dragLine);
+                this._updateShape(this._shape, dragAreaView, dragLineView, false);
                 this._invalidateShapeArea();
             }
         }
@@ -329,13 +332,8 @@
      * @private
      */
     IFShapeTool.prototype._prepareShapeForAppend = function (shape) {
-        // Let the tool calculate the parameters in scene coordinates
-        var transform = this._view.getViewTransform();
-        var dragArea = transform.mapRect(this._dragArea);
-        var dragLine = [transform.mapPoint(this._dragLine[0]), transform.mapPoint(this._dragLine[1])];
-
-        // Update shape with scene coordinates
-        this._updateShape(shape, dragArea, dragLine, true);
+        // Update shape with scene coordinates before appending
+        this._updateShape(shape, this._dragArea, this._dragLine, true);
     };
 
     /**
@@ -365,7 +363,7 @@
 
     /**
      * Called to create a shape manually as it has not yet been created via drag
-     * @param {IFPoint} position the position to create the shape at
+     * @param {IFPoint} position the position to create the shape at in scene coordinates
      * @private
      */
     IFShapeTool.prototype._createShapeManually = function (position) {
@@ -387,7 +385,8 @@
      * @param {IFRect} area the shape area
      * @param {Array<IFPoint>} line the shape line
      * @param {Boolean} scene true if coordinates are in scene coordinates,
-     * this usually is only the case before the shape gets appended
+     * this usually is only the case before the shape gets appended, otherwise
+     * if false, the coordinates are in view coordinates
      * @private
      */
     IFShapeTool.prototype._updateShape = function (shape, area, line, scene) {

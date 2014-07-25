@@ -53,11 +53,7 @@
     /** @override */
     IFTextTool.prototype._createShapeManually = function (position) {
         var text = new IFText();
-        var transform = this._view.getViewTransform();
-        var scenePoint = transform.mapPoint(position);
-
-        text.setProperty('trf', new IFTransform(1, 0, 0, 1, scenePoint.getX(), scenePoint.getY()));
-
+        text.setProperty('trf', new IFTransform(1, 0, 0, 1, position.getX(), position.getY()));
         this._insertText(text);
     };
 

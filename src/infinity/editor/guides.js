@@ -18,10 +18,19 @@
      */
     IFGuides.prototype._scene = null;
 
+    /**
+     * Call this if you want to start mapping. This needs
+     * to be followed by a closing call to finishMap. If
+     * you just want to map without any visual guides,
+     * you don't need to call this.
+     */
     IFGuides.prototype.beginMap = function () {
         // TODO
     };
 
+    /**
+     * Finish mapping. See beginMap description.
+     */
     IFGuides.prototype.finishMap = function () {
         // TODO
     };
