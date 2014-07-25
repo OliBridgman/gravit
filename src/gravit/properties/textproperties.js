@@ -356,7 +356,7 @@
     };
 
     /** @override */
-    GTextProperties.prototype.updateFromNode = function (document, elements) {
+    GTextProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document.getEditor().removeEventListener(IFEditor.InlineEditorEvent, this._inlineEditorEvent);

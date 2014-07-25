@@ -189,7 +189,7 @@
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];
             var available = !this._elements || this._elements.length === 0 ?
-                false : propertyPanel.properties.updateFromNode(this._document, this._elements);
+                false : propertyPanel.properties.update(this._document, this._elements);
 
             propertyPanel.panel.removeClass('last-visible');
             if (available) {

@@ -27,12 +27,12 @@
     };
 
     /**
-     * Called to update from nodes.
+     * Called to update
      * @param {GDocument} document the document to work on
      * @param {Array<IFElement>} elements array of elements, contains at least one
      * @return {Boolean} true if this properties panel is available, false if not
      */
-    GProperties.prototype.updateFromNode = function (document, elements) {
+    GProperties.prototype.update = function (document, elements) {
         throw new Error("Not Supported.");
     };
 

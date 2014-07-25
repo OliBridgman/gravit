@@ -255,7 +255,7 @@
     };
 
     /** @override */
-    GPathProperties.prototype.updateFromNode = function (document, elements) {
+    GPathProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document.getScene().removeEventListener(IFElement.AfterFlagChangeEvent, this._afterFlagChange);

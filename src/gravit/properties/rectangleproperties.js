@@ -165,7 +165,7 @@
     };
 
     /** @override */
-    GRectangleProperties.prototype.updateFromNode = function (document, elements) {
+    GRectangleProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;

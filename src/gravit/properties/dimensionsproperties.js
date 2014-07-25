@@ -130,7 +130,7 @@
     };
 
     /** @override */
-    GDimensionsProperties.prototype.updateFromNode = function (document, elements) {
+    GDimensionsProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
             this._document = null;
