@@ -93,13 +93,20 @@
     /**
      * Round a given number with a given precision
      * @param {Number} value the number to round
-     * @param {Number} precision the precision to use
+     * @param {Boolean} [halfDown] If set to true, rounds
+     * half down (i.e. 1.5 becomes 1) else rounds half up (default)
+     * @param {Number} [precision] the precision of decimal numbers
+     * to use. A value of zero (default) rounds to integers
      * @returns {Number}
      */
-    IFMath.prototype.round = function (value, precision) {
-        precision = Math.abs(parseInt(precision)) || 0;
-        var coefficient = Math.pow(10, precision);
-        return Math.round(value * coefficient) / coefficient;
+    IFMath.prototype.round = function (value, halfDown, precision) {
+        precision = Math.abs(precision) || 0;
+        var coefficient = precision ? Math.pow(10, precision) : 1;
+        if (halfDown) {
+            return Math.ceil(value * coefficient - 0.5) / coefficient;
+        } else {
+            return Math.round(value * coefficient) / coefficient;
+        }
     };
 
     /**
