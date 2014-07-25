@@ -255,16 +255,11 @@
     };
 
     /** @override */
-    GPathProperties.prototype.updateFromNode = function (document, elements, node) {
+    GPathProperties.prototype.updateFromNode = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document.getScene().removeEventListener(IFElement.AfterFlagChangeEvent, this._afterFlagChange);
             this._document = null;
-        }
-
-        // We'll work on elements, only
-        if (node) {
-            return false;
         }
 
         // Collect all path elements and their selected anchor points

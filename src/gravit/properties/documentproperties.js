@@ -208,15 +208,10 @@
     };
 
     /** @override */
-    GDocumentProperties.prototype.updateFromNode = function (document, elements, node) {
+    GDocumentProperties.prototype.updateFromNode = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
-        }
-
-        // We'll work on elements, only
-        if (node) {
-            return false;
         }
 
         if (elements.length === 1 && elements[0] instanceof IFScene) {

@@ -106,15 +106,10 @@
     };
 
     /** @override */
-    GEllipseProperties.prototype.updateFromNode = function (document, elements, node) {
+    GEllipseProperties.prototype.updateFromNode = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
-        }
-
-        // We'll work on elements, only
-        if (node) {
-            return false;
         }
 
         // Collect all ellipse elements

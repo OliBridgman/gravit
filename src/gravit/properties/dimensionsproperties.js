@@ -130,15 +130,10 @@
     };
 
     /** @override */
-    GDimensionsProperties.prototype.updateFromNode = function (document, elements, node) {
+    GDimensionsProperties.prototype.updateFromNode = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
             this._document = null;
-        }
-
-        // We'll work on elements, only
-        if (node) {
-            return false;
         }
 
         // Collect all transformable elements

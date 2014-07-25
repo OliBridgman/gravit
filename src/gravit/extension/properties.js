@@ -1,14 +1,13 @@
 (function (_) {
 
     /**
-     * Base class for properties
+     * Base class for property panels
      * @class GProperties
      * @extends GEventTarget
      * @constructor
      */
     function GProperties() {
     };
-    IFObject.inherit(GProperties, GEventTarget);
 
     /**
      * Called to return the category of the panel
@@ -19,7 +18,7 @@
     };
 
     /**
-     * Called to initialize the properties
+     * Called to initialize the properties panel
      * @param {JQuery} panel the panel to init on
      * @param {JQuery} controls the controls panel to init on
      */
@@ -28,12 +27,12 @@
     };
 
     /**
-     * Called to update from an active node.
+     * Called to update from nodes.
      * @param {GDocument} document the document to work on
      * @param {Array<IFElement>} elements array of elements, contains at least one
-     * @param {IFNode} node the active node. May be null to indicate to work on elements
+     * @return {Boolean} true if this properties panel is available, false if not
      */
-    GProperties.prototype.updateFromNode = function (document, elements, node) {
+    GProperties.prototype.updateFromNode = function (document, elements) {
         throw new Error("Not Supported.");
     };
 
