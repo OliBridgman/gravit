@@ -46,10 +46,10 @@
             // Snap to units if desired
             switch (this._scene.getProperty('unitSnap')) {
                 case IFScene.UnitSnap.Full:
-                    result = new IFPoint(Math.ceil(result.getX()), Math.ceil(result.getY()));
+                    result = new IFPoint(Math.round(result.getX()), Math.round(result.getY()));
                     break;
                 case IFScene.UnitSnap.Half:
-                    result = new IFPoint(Math.ceil(result.getX()) + 0.5, Math.ceil(result.getY()) + 0.5);
+                    result = new IFPoint(Math.round(result.getX()) + 0.5, Math.round(result.getY()) + 0.5);
                     break;
             }
         }
