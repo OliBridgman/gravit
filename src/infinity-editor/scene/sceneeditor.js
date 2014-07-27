@@ -18,6 +18,10 @@
      */
     IFSceneEditor.prototype._transformBox = null;
 
+    /**
+     * The possible modes of transform box functionality
+     * @type {{NA: number, PASSIVE: number, TBOXMOVE: number, CNTRMOVE: number, ROTATE: number, RESIZE: number, SKEW: number}}
+     */
     IFSceneEditor.TBoxMode = {
         NA : 0,
         PASSIVE: 1,
@@ -138,15 +142,13 @@
 
     IFSceneEditor.prototype.getTransformBoxCenter = function () {
         if (this._transformBox) {
-            var cx = this._transformBox.getProperty('cx');
-            var cy = this._transformBox.getProperty('cy');
-            return new IFPoint(cx,cy);
+            return new IFPoint(this._transformBox.cx, this._transformBox.cy);
         }
         return null;
     };
 
     IFSceneEditor.prototype._applyTBoxCenterTransform = function () {
-        if (this._transformBox && (this._transformBox.getProperty('trf') || this._transformBox.getProperty('cTrf'))) {
+        if (this._transformBox && (this._transformBox.trf || this._transformBox.cTrf)) {
             this._getGraphicEditor().beginTransaction();
             try {
                 this._transformBox.applyCenterTransform();
@@ -286,8 +288,8 @@
             cx = center.getX();
             cy = center.getY();
         } else if (this._transformBox) {
-            cx = this._transformBox.getProperty('cx');
-            cy = this._transformBox.getProperty('cy');
+            cx = this._transformBox.cx;
+            cy = this._transformBox.cy;
         }
         this._transformBox = null;
         if (this._getGraphicEditor().getSelection()) {
@@ -311,7 +313,7 @@
         if (this._transformBox && evt.type == IFElement.GeometryChangeEvent.Type.After &&
                 evt.element.hasFlag(IFNode.Flag.Selected)) {
 
-            if (this._transformBox.getProperty('trf') || this._transformBox.getProperty('cTrf')) {
+            if (this._transformBox.trf || this._transformBox.cTrf) {
                 this._transformBox.applyCenterTransform();
             }
             this._updateSelectionTransformBox();

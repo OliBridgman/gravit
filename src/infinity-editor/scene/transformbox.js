@@ -13,43 +13,22 @@
      * @constructor
      */
     function IFTransformBox(bbox, cx, cy) {
-        IFItem.call(this);
-        this._setDefaultProperties(IFTransformBox.GeometryProperties);
         var tl = bbox.getSide(IFRect.Side.TOP_LEFT);
-        this.$tlx = tl.getX();
-        this.$tly = tl.getY();
+        this.tlx = tl.getX();
+        this.tly = tl.getY();
         var tr = bbox.getSide(IFRect.Side.TOP_RIGHT);
-        this.$trx = tr.getX();
-        this.$try = tr.getY();
+        this.trx = tr.getX();
+        this.try = tr.getY();
         var br = bbox.getSide(IFRect.Side.BOTTOM_RIGHT);
-        this.$brx = br.getX();
-        this.$bry = br.getY();
+        this.brx = br.getX();
+        this.bry = br.getY();
         var bl = bbox.getSide(IFRect.Side.BOTTOM_LEFT);
-        this.$blx = bl.getX();
-        this.$bly = bl.getY();
+        this.blx = bl.getX();
+        this.bly = bl.getY();
         this._vertices = new IFVertexContainer();
-        this.$cx = cx ? cx : (this.$tlx + this.$brx) / 2;
-        this.$cy = cy ? cy : (this.$tly + this.$bry) / 2;
+        this.cx = cx ? cx : (this.tlx + this.brx) / 2;
+        this.cy = cy ? cy : (this.tly + this.bry) / 2;
     }
-    IFObject.inherit(IFTransformBox, IFItem);
-
-    /**
-     * The geometry properties of a shape with their default values
-     */
-    IFTransformBox.GeometryProperties = {
-        trf: null,
-        tlx: null,
-        tly: null,
-        trx: null,
-        try: null,
-        brx: null,
-        bry: null,
-        blx: null,
-        bly: null,
-        cx: null,
-        cy: null,
-        cTrf: null
-    };
 
     /**
      * The size of the transform box annotation
@@ -91,6 +70,22 @@
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * The geometry properties of a shape with their default values
+     */
+    IFTransformBox.prototype.tlx = null;
+    IFTransformBox.prototype.tly = null;
+    IFTransformBox.prototype.trx = null;
+    IFTransformBox.prototype.try = null;
+    IFTransformBox.prototype.brx = null;
+    IFTransformBox.prototype.bry = null;
+    IFTransformBox.prototype.blx = null;
+    IFTransformBox.prototype.bly = null;
+    IFTransformBox.prototype.cx = null;
+    IFTransformBox.prototype.cy = null;
+    IFTransformBox.prototype.trf = null;
+    IFTransformBox.prototype.cTrf = null;
+
+    /**
      * @type {IFVertexContainer}
      * @private
      */
@@ -104,20 +99,17 @@
      */
     IFTransformBox.prototype._extTransform = null;
 
-    /** @override */
     IFTransformBox.prototype.getTransform = function () {
-        return this.$trf;
+        return this.trf;
     };
 
-    /** @override */
     IFTransformBox.prototype.setTransform = function (transform) {
-        this.setProperty('trf', transform);
+        this.trf = transform;
     };
 
-    /** @override */
     IFTransformBox.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
-            this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
+            this.trf = this.trf ? this.trf.multiplied(transform) : transform;
         }
     };
 
@@ -138,7 +130,6 @@
 
     /** @override */
     IFTransformBox.prototype._calculateGeometryBBox = function () {
-        //return ifVertexInfo.calculateBounds(this, true);
         var ct = this._getPoint(IFTransformBox.Handles.ROTATION_CENTER);
         var xMin = ct.getX();
         var xMax = xMin;
@@ -183,15 +174,6 @@
         return null;
     };
 
-    /** @override */
-    IFTransformBox.prototype._handleChange = function (change, args) {
-        this._handleGeometryChangeForProperties(change, args, IFTransformBox.GeometryProperties);
-        if (change == IFNode._Change.AfterPropertiesChange) {
-            this._verticesDirty = true;
-        }
-        IFItem.prototype._handleChange.call(this, change, args);
-    };
-
     /**
      * Paints the transform box and it's handles
      * @param {IFTransform} transform
@@ -204,11 +186,6 @@
         var canvasTransform = context.canvas.resetTransform();
         this._extTransform = transform ? canvasTransform.multiplied(transform) : canvasTransform;
         this._verticesDirty = true;
-
-        if (!this._preparePaint(context)) {
-            return;
-        }
-
 
         if (!this._centerOnly) {
             if (!this.rewindVertices(0)) {
@@ -229,7 +206,6 @@
             ifAnnotation.AnnotType.Circle, true, IFTransformBox.ANNOT_SIZE);
         context.canvas.setTransform(canvasTransform);
 
-        this._finishPaint(context);
         this._extTransform = null;
     };
 
@@ -252,7 +228,7 @@
      * @param {IFTransform} transform
      */
     IFTransformBox.prototype.setCenterTransform = function (transform) {
-        this.setProperty('cTrf', transform);
+        this.cTrf = transform;
     };
 
     /**
@@ -311,7 +287,7 @@
      */
     IFTransformBox.prototype.getRotationSegment = function (location, transform) {
         var rotSegm = 0;
-        var cntr = transform.mapPoint(new IFPoint(this.$cx, this.$cy));
+        var cntr = transform.mapPoint(new IFPoint(this.cx, this.cy));
         var angle = Math.atan2(location.getY() - cntr.getY(), location.getX() - cntr.getX()) + Math.PI * 7 / 8;
         if (angle < 0) {
             angle += ifMath.PI2;
@@ -355,104 +331,104 @@
         if (partInfo.id < 8) {
             var transform1 = null;
             var transform3 = null;
-            var width = this.$brx - this.$tlx;
-            var height = this.$bry - this.$tly;
+            var width = this.brx - this.tlx;
+            var height = this.bry - this.tly;
 
             switch (partInfo.id) {
                 case IFTransformBox.Handles.TOP_LEFT:
-                    _snap(this.$tlx, this.$tly, true, true);
-                    width = this.$brx - this.$tlx - dx;
-                    height = this.$bry - this.$tly - dy;
+                    _snap(this.tlx, this.tly, true, true);
+                    width = this.brx - this.tlx - dx;
+                    height = this.bry - this.tly - dy;
                     if (!option) {
-                        var tlxNew = this.$tlx + dx;
-                        var tlyNew = this.$tly + dy;
+                        var tlxNew = this.tlx + dx;
+                        var tlyNew = this.tly + dy;
 
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.$brx, -this.$bry);
+                        transform1 = new IFTransform(1, 0, 0, 1, -this.brx, -this.bry);
                         transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
                     }
                     break;
                 case IFTransformBox.Handles.TOP_CENTER:
-                    _snap(this.$tlx, this.$tly, false, true);
-                    height = this.$bry - this.$tly - dy;
+                    _snap(this.tlx, this.tly, false, true);
+                    height = this.bry - this.tly - dy;
                     if (!option) {
-                        var tlyNew = this.$tly + dy;
-                        var botCenter = new IFPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2);
+                        var tlyNew = this.tly + dy;
+                        var botCenter = new IFPoint((this.blx + this.brx) / 2, (this.bly + this.bry) / 2);
                         transform1 = new IFTransform(1, 0, 0, 1, -botCenter.getX(), -botCenter.getY());
                         transform3 = new IFTransform(1, 0, 0, 1, botCenter.getX(), tlyNew + height);
                     }
                     break;
                 case IFTransformBox.Handles.TOP_RIGHT:
-                    _snap(this.$trx, this.$try, true, true);
+                    _snap(this.trx, this.try, true, true);
                     width = width + dx;
                     height = height - dy;
                     if (!option) {
-                        var tlxNew = this.$tlx;
-                        var tlyNew = this.$tly + dy;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.$blx, -this.$bly);
+                        var tlxNew = this.tlx;
+                        var tlyNew = this.tly + dy;
+                        transform1 = new IFTransform(1, 0, 0, 1, -this.blx, -this.bly);
                         transform3 = new IFTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
                     }
                     break;
                 case IFTransformBox.Handles.RIGHT_CENTER:
-                    _snap(this.$trx, this.$try, true, false);
+                    _snap(this.trx, this.try, true, false);
                     width = width + dx;
                     if (!option) {
-                        var tlxNew = this.$tlx;
-                        var leftCenter = new IFPoint((this.$blx + this.$tlx) / 2, (this.$bly + this.$tly) / 2);
+                        var tlxNew = this.tlx;
+                        var leftCenter = new IFPoint((this.blx + this.tlx) / 2, (this.bly + this.tly) / 2);
                         transform1 = new IFTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
                         transform3 = new IFTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
                     }
                     break;
                 case IFTransformBox.Handles.BOTTOM_RIGHT:
-                    _snap(this.$brx, this.$bry, true, true);
+                    _snap(this.brx, this.bry, true, true);
                     width = width + dx;
                     height = height + dy;
                     if (!option) {
-                        var tlxNew = this.$tlx;
-                        var tlyNew = this.$tly;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.$tlx, -this.$tly);
+                        var tlxNew = this.tlx;
+                        var tlyNew = this.tly;
+                        transform1 = new IFTransform(1, 0, 0, 1, -this.tlx, -this.tly);
                         transform3 = new IFTransform(1, 0, 0, 1, tlxNew, tlyNew);
                     }
                     break;
                 case IFTransformBox.Handles.BOTTOM_CENTER:
-                    _snap(this.$brx, this.$bry, false, true);
+                    _snap(this.brx, this.bry, false, true);
                     height = height + dy;
                     if (!option) {
-                        var tlyNew = this.$tly;
-                        var topCenter = new IFPoint((this.$trx + this.$tlx) / 2, (this.$try + this.$tly) / 2);
+                        var tlyNew = this.tly;
+                        var topCenter = new IFPoint((this.trx + this.tlx) / 2, (this.try + this.tly) / 2);
                         transform1 = new IFTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
                         transform3 = new IFTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
                     }
                     break;
                 case IFTransformBox.Handles.BOTTOM_LEFT:
-                    _snap(this.$blx, this.$bly, true, true);
+                    _snap(this.blx, this.bly, true, true);
                     width = width - dx;
                     height = height + dy;
                     if (!option) {
-                        var tlxNew = this.$tlx + dx;
-                        var tlyNew = this.$tly;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.$trx, -this.$try);
+                        var tlxNew = this.tlx + dx;
+                        var tlyNew = this.tly;
+                        transform1 = new IFTransform(1, 0, 0, 1, -this.trx, -this.try);
                         transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
                     }
                     break;
                 case IFTransformBox.Handles.LEFT_CENTER:
-                    _snap(this.$blx, this.$bly, true, false);
+                    _snap(this.blx, this.bly, true, false);
                     width = width - dx;
                     if (!option) {
                         var dxNew = dx;
-                        var tlxNew = this.$tlx + dxNew;
-                        var rightCenter = new IFPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2);
+                        var tlxNew = this.tlx + dxNew;
+                        var rightCenter = new IFPoint((this.trx + this.brx) / 2, (this.try + this.bry) / 2);
                         transform1 = new IFTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
                         transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());
                     }
                     break;
             }
 
-            var scaleX = width / (this.$brx - this.$tlx);
-            var scaleY = height / (this.$bry - this.$tly);
+            var scaleX = width / (this.brx - this.tlx);
+            var scaleY = height / (this.bry - this.tly);
             if (option) {
                 scaleX += scaleX - 1;
                 scaleY += scaleY - 1;
-                var cnt = new IFPoint((this.$tlx + this.$brx) / 2, (this.$tly + this.$bry) / 2);
+                var cnt = new IFPoint((this.tlx + this.brx) / 2, (this.tly + this.bry) / 2);
                 transform1 = new IFTransform(1, 0, 0, 1, -cnt.getX(), -cnt.getY());
                 transform3 = new IFTransform(1, 0, 0, 1, cnt.getX(), cnt.getY());
             }
@@ -489,13 +465,13 @@
 
             return transform1.multiplied(transform2).multiplied(transform3);
         } else if (partInfo.id == IFTransformBox.Handles.ROTATION_CENTER) {
-            _snap(this.$cx, this.$cy, true, true);
+            _snap(this.cx, this.cy, true, true);
             return new IFTransform(1, 0, 0, 1, dx, dy);
         } else if (partInfo.id == IFTransformBox.OUTSIDE) {
-            transform1 = new IFTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
-            transform3 = new IFTransform(1, 0, 0, 1, this.$cx, this.$cy);
-            var angle1 = Math.atan2(startPtTr.getY() - this.$cy, startPtTr.getX() - this.$cx);
-            var angle2 = Math.atan2(endPtTr.getY() - this.$cy, endPtTr.getX() - this.$cx);
+            transform1 = new IFTransform(1, 0, 0, 1, -this.cx, -this.cy);
+            transform3 = new IFTransform(1, 0, 0, 1, this.cx, this.cy);
+            var angle1 = Math.atan2(startPtTr.getY() - this.cy, startPtTr.getX() - this.cx);
+            var angle2 = Math.atan2(endPtTr.getY() - this.cy, endPtTr.getX() - this.cx);
             var angleDelta = angle1 - angle2;
             // Lock angle to 15° if desired
             if (ratio) {
@@ -507,8 +483,8 @@
             var transform2 = new IFTransform(cosA, -sinA, sinA, cosA, 0, 0);
             return transform1.multiplied(transform2).multiplied(transform3);
         } else if (partInfo.id == IFTransformBox.OUTLINE) {
-            transform1 = new IFTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
-            transform3 = new IFTransform(1, 0, 0, 1, this.$cx, this.$cy);
+            transform1 = new IFTransform(1, 0, 0, 1, -this.cx, -this.cy);
+            transform3 = new IFTransform(1, 0, 0, 1, this.cx, this.cy);
 
             if (ratio && ratioStep) {
                 var step = ratioStep ? ratioStep : 20;
@@ -517,25 +493,28 @@
             }
 
             var transform2 = new IFTransform(
-                1, dy * 2 / (this.$brx - this.$tlx), -dx * 2 / (this.$bry - this.$tly), 1, 0, 0);
+                1, dy * 2 / (this.brx - this.tlx), -dx * 2 / (this.bry - this.tly), 1, 0, 0);
 
             return transform1.multiplied(transform2).multiplied(transform3);
         } else {
-            _snap(this.$tlx, this.$tly, true, true);
+            _snap(this.tlx, this.tly, true, true);
             return new IFTransform(1, 0, 0, 1, dx, dy);
         }
     };
 
     /**
-     * Permanently applies transform from $trf or $cTrf property to the transform box center
+     * Permanently applies transform from trf or cTrf property to the transform box center
      */
     IFTransformBox.prototype.applyCenterTransform = function () {
         // Transform is applied to center only, as transform box itself should always stay rectangular.
         // So the transform box itself should be recalculated after transformation is applied to the selection
-        if (this.$trf || this.$cTrf) {
-            var trf = this.$trf ? this.$trf : this.$cTrf;
-            var cntr = trf.mapPoint(new IFPoint(this.$cx, this.$cy));
-            this.setProperties(['cTrf', 'trf', 'cx', 'cy'], [null, null, cntr.getX(), cntr.getY()]);
+        if (this.trf || this.cTrf) {
+            var trf = this.trf ? this.trf : this.cTrf;
+            var cntr = trf.mapPoint(new IFPoint(this.cx, this.cy));
+            this.cTrf = null;
+            this.trf = null;
+            this.cx = cntr.getX();
+            this.cy = cntr.getY();
         }
     };
 
@@ -574,7 +553,7 @@
         var pt = null;
 
         var _transform = function (pt, trans) {
-            var objTrans = trans ? trans : this.$trf;
+            var objTrans = trans ? trans : this.trf;
             var targTrans = this._extTransform;
             if (objTrans && !noTransform) {
                 targTrans = targTrans ? objTrans.multiplied(targTrans) : objTrans;
@@ -589,39 +568,39 @@
 
         switch (side) {
             case IFTransformBox.Handles.TOP_LEFT:
-                pt = _transform(new IFPoint(this.$tlx, this.$tly));
+                pt = _transform(new IFPoint(this.tlx, this.tly));
                 pt = new IFPoint(pt.getX() - IFTransformBox.TRANSFORM_MARGIN, pt.getY() - IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.TOP_CENTER:
-                pt = _transform(new IFPoint((this.$tlx + this.$trx) / 2, (this.$tly + this.$try) / 2));
+                pt = _transform(new IFPoint((this.tlx + this.trx) / 2, (this.tly + this.try) / 2));
                 pt = new IFPoint(pt.getX(), pt.getY() - IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.TOP_RIGHT:
-                pt = _transform(new IFPoint(this.$trx, this.$try));
+                pt = _transform(new IFPoint(this.trx, this.try));
                 pt = new IFPoint(pt.getX() + IFTransformBox.TRANSFORM_MARGIN, pt.getY() - IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.RIGHT_CENTER:
-                pt = _transform(new IFPoint((this.$trx + this.$brx) / 2, (this.$try + this.$bry) / 2));
+                pt = _transform(new IFPoint((this.trx + this.brx) / 2, (this.try + this.bry) / 2));
                 pt = new IFPoint(pt.getX() + IFTransformBox.TRANSFORM_MARGIN, pt.getY());
                 break;
             case IFTransformBox.Handles.BOTTOM_RIGHT:
-                pt = _transform(new IFPoint(this.$brx, this.$bry));
+                pt = _transform(new IFPoint(this.brx, this.bry));
                 pt = new IFPoint(pt.getX() + IFTransformBox.TRANSFORM_MARGIN, pt.getY() + IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.BOTTOM_CENTER:
-                pt = _transform(new IFPoint((this.$blx + this.$brx) / 2, (this.$bly + this.$bry) / 2));
+                pt = _transform(new IFPoint((this.blx + this.brx) / 2, (this.bly + this.bry) / 2));
                 pt = new IFPoint(pt.getX(), pt.getY() + IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.BOTTOM_LEFT:
-                pt = _transform(new IFPoint(this.$blx, this.$bly));
+                pt = _transform(new IFPoint(this.blx, this.bly));
                 pt = new IFPoint(pt.getX() - IFTransformBox.TRANSFORM_MARGIN, pt.getY() + IFTransformBox.TRANSFORM_MARGIN);
                 break;
             case IFTransformBox.Handles.LEFT_CENTER:
-                pt = _transform(new IFPoint((this.$tlx + this.$blx) / 2, (this.$tly + this.$bly) / 2));
+                pt = _transform(new IFPoint((this.tlx + this.blx) / 2, (this.tly + this.bly) / 2));
                 pt = new IFPoint(pt.getX() - IFTransformBox.TRANSFORM_MARGIN, pt.getY());
                 break;
             case IFTransformBox.Handles.ROTATION_CENTER:
-                pt = _transform(new IFPoint(this.$cx, this.$cy), this.$cTrf);
+                pt = _transform(new IFPoint(this.cx, this.cy), this.cTrf);
                 break;
         }
 
