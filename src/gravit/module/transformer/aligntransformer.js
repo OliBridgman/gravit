@@ -48,7 +48,7 @@
     /** @override */
     GAlignTransformer.prototype.getCategory = function () {
         // TODO : I18N
-        return 'Alignment';
+        return 'Align';
     };
 
     /** @override */
