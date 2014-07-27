@@ -3,7 +3,7 @@
     /**
      * Align transform panel
      * @class GAlignTransformer
-     * @extends GProperties
+     * @extends GTransformer
      * @constructor
      */
     function GAlignTransformer() {

@@ -170,7 +170,8 @@
 
         // Register default transformers
         gravit.transformers.push(
-            new GAlignTransformer()
+            new GAlignTransformer(),
+            new GAdjustTransformer()
         );
 
         // Register default actions
