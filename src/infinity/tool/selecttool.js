@@ -103,47 +103,7 @@
 
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
-        var cursor = IFCursor.Select;
-        if (this._editorUnderMouseInfo) {
-            if (this._mode == IFSelectTool._Mode.Transforming) {
-                var sceneEditor = IFElementEditor.getEditor(this._scene);
-                if (sceneEditor && sceneEditor.isTransformBoxActive()) {
-                    switch (this._editorUnderMouseInfo.id) {
-                        case IFTransformBox.INSIDE:
-                            cursor = IFCursor.SelectCross;
-                            break;
-                        case IFTransformBox.OUTSIDE:
-                            cursor = IFCursor.SelectRotate[this._editorUnderMouseInfo.data];
-                            break;
-                        case IFTransformBox.OUTLINE:
-                            cursor = this._editorUnderMouseInfo.data ? IFCursor.SelectSkewHoriz : IFCursor.SelectSkewVert;
-                            break;
-                        case IFTransformBox.Handles.TOP_CENTER:
-                        case IFTransformBox.Handles.BOTTOM_CENTER:
-                            cursor = IFCursor.SelectResizeVert;
-                            break;
-                        case IFTransformBox.Handles.LEFT_CENTER:
-                        case IFTransformBox.Handles.RIGHT_CENTER:
-                            cursor = IFCursor.SelectResizeHoriz;
-                            break;
-                        case IFTransformBox.Handles.TOP_LEFT:
-                        case IFTransformBox.Handles.BOTTOM_RIGHT:
-                            cursor = IFCursor.SelectResizeUpLeftDownRight;
-                            break;
-                        case IFTransformBox.Handles.TOP_RIGHT:
-                        case IFTransformBox.Handles.BOTTOM_LEFT:
-                            cursor = IFCursor.SelectResizeUpRightDownLeft;
-                            break;
-                        case IFTransformBox.Handles.ROTATION_CENTER:
-                            cursor = IFCursor.SelectArrowOnly;
-                            break;
-                    }
-                }
-            } else {
-                cursor = IFCursor.SelectDot;
-            }
-        }
-        return cursor;
+        return this._editorUnderMouseInfo ? IFCursor.SelectDot : IFCursor.Select;
     };
 
     /** @override */
@@ -236,7 +196,7 @@
                 this._updateMode(IFSelectTool._Mode.Transforming);
             }
             // Transform box always returns non-null partInfo
-            this._editorMovePartInfo = sceneEditor.getTransformBox().getPartInfoAt(event.client,
+            this._editorMovePartInfo = sceneEditor.getTBoxPartInfoAt(event.client,
                 this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
         } else {
             // Reset to select mode here
@@ -391,7 +351,7 @@
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
-            sceneEditor.hideTransformBox();
+            sceneEditor.startTBoxTransform(this._editorMovePartInfo);
         }
     };
 
@@ -478,24 +438,10 @@
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming) {
             var sceneEditor = IFElementEditor.getEditor(this._scene);
-            if (ifPlatform.modifiers.optionKey && !(this._editorMovePartInfo.id >= 0 && this._editorMovePartInfo.id < 9)) {
-
-                this._editor.applySelectionTransform(true);
-            } else if (this._editorMovePartInfo.id == IFTransformBox.Handles.ROTATION_CENTER && sceneEditor &&
-                    sceneEditor.isTransformBoxActive()){
-
-                this._editor.beginTransaction();
-                try {
-                    sceneEditor.applyTransformBoxTransform();
-                    sceneEditor.showTransformBox();
-                } finally {
-                    // TODO : I18N
-                    this._editor.commitTransaction('Move');
-                }
-            } else {
-                this._editor.applySelectionTransform();
+            if (sceneEditor && sceneEditor.isTransformBoxActive()) {
+                sceneEditor.applyTBoxTransform(ifPlatform.modifiers.optionKey);
+                this.invalidateArea();
             }
-            this.invalidateArea();
         }
     };
 
@@ -512,6 +458,7 @@
             this._updateMode(null);
             this.invalidateArea();
             openTransformBox = false;
+            this.updateCursor();
         }
 
         // Check whether to start inline editing
@@ -660,22 +607,11 @@
             var sceneEditor = IFElementEditor.getEditor(this._scene);
             if (sceneEditor && sceneEditor.isTransformBoxActive() && this._moveStart) {
                 var moveCurrentTransformed = this._view.getViewTransform().mapPoint(this._moveCurrent);
-                this._editor.getGuides().beginMap();
-                var transform = sceneEditor.getTransformBox().calculateTransformation(this._editorMovePartInfo,
-                    this._moveStartTransformed, moveCurrentTransformed, this._editor.getGuides(),
+                sceneEditor.transformTBox(this._moveStartTransformed, moveCurrentTransformed,
                     ifPlatform.modifiers.optionKey, ifPlatform.modifiers.shiftKey);
 
-                if (this._editorMovePartInfo.id != IFTransformBox.Handles.ROTATION_CENTER) {
-                    sceneEditor.getTransformBox().setTransform(transform);
-                    sceneEditor.requestInvalidation();
-                    this._editor.transformSelection(transform, null, null);
-                } else {
-                    sceneEditor.getTransformBox().setCenterTransform(transform);
-                    sceneEditor.requestInvalidation();
-                }
-                this._editor.getGuides().finishMap();
+                this.invalidateArea();
             }
-            this.invalidateArea();
         }
     };
 
@@ -701,24 +637,10 @@
         if (this._mode == IFSelectTool._Mode.Transforming) {
             var sceneEditor = IFElementEditor.getEditor(this._scene);
             if (sceneEditor && sceneEditor.isTransformBoxActive()) {
-                var partInfo;
-                if (this._editorMovePartInfo) {
-                    partInfo = new IFElementEditor.PartInfo(this._editorMovePartInfo.editor, this._editorMovePartInfo.id,
-                        this._editorMovePartInfo.data);
-                } else {
-                    partInfo = sceneEditor.getTransformBox().getPartInfoAt(mouse,
-                        this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+                if (this._editorUnderMouseInfo) {
+                    this._editorUnderMouseInfo = null;
                 }
-                if (partInfo.id  == IFTransformBox.OUTSIDE) {
-                    partInfo.data = sceneEditor.getTransformBox().getRotationSegment(
-                        mouse, this._view.getWorldTransform());
-                }
-                if (!this._editorUnderMouseInfo || this._editorUnderMouseInfo.id !== partInfo.id ||
-                    this._editorUnderMouseInfo.data !== partInfo.data) {
-
-                    this._editorUnderMouseInfo = partInfo;
-                    this.updateCursor();
-                }
+                sceneEditor.updateTBoxCursorForView(mouse, this._view.getWorldTransform(), this._view);
                 hasEditorInfoUnderMouse = true;
             } else {
                 this._updateMode(null);

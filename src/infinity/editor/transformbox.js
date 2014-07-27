@@ -294,9 +294,8 @@
                     result = new IFElementEditor.PartInfo(null, IFTransformBox.INSIDE, null);
                 }
             } else {
-                // PartInfo.data field is set to null here, however, later it will contain a rotation sector number
-                // for each mouse position
-                result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTSIDE, null);
+                var rotSegm = this.getRotationSegment(location, transform);
+                result = new IFElementEditor.PartInfo(null, IFTransformBox.OUTSIDE, rotSegm);
             }
         }
 
@@ -517,7 +516,7 @@
     /**
      * Permanently applies transform from $trf or $cTrf property to the transform box center
      */
-    IFTransformBox.prototype.applyTransform = function () {
+    IFTransformBox.prototype.applyCenterTransform = function () {
         // Transform is applied to center only, as transform box itself should always stay rectangular.
         // So the transform box itself should be recalculated after transformation is applied to the selection
         if (this.$trf || this.$cTrf) {
