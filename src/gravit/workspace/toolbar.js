@@ -223,7 +223,7 @@
         groupButton
             .empty()
             .toggleClass('g-active', toolInstance == gApp.getToolManager().getActiveTool())
-            .attr('title', this._getToolInfo(toolInfo))
+            .attr('title', this._getToolTitle(toolInfo))
             .append($(toolInfo.icon).attr('width', '18px').attr('height', '18px'))
             .off('mousedown')
             .on('mousedown', function (evt) {

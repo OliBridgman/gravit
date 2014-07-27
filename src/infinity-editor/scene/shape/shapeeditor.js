@@ -64,11 +64,7 @@
             context.canvas.putVertices(new IFVertexPixelAligner(transformer));
 
             // Paint either outlined or highlighted (highlighted has a higher precedence)
-            if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-                context.canvas.strokeVertices(context.highlightOutlineColor, 2);
-            } else {
-                context.canvas.strokeVertices(context.selectionOutlineColor, 1);
-            }
+            context.canvas.strokeVertices(this.hasFlag(IFElementEditor.Flag.Highlighted) ? context.highlightOutlineColor : context.selectionOutlineColor, 1);
         }
     };
 

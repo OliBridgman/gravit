@@ -382,11 +382,7 @@
                 var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
                 var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
 
-                if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-                    context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
-                } else {
-                    context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
-                }
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, this.hasFlag(IFElementEditor.Flag.Highlighted) ? context.highlightOutlineColor : context.selectionOutlineColor);
             }
         }
     };

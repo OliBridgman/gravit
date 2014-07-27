@@ -739,19 +739,17 @@
 
 
             // Add highlighter if item
-            if (layerOrItem instanceof IFItem) {
-                visibleContainer
-                    .on('mouseenter', function (evt) {
-                        if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
-                            layerOrItem.setFlag(IFNode.Flag.Highlighted);
-                        }
-                    })
-                    .on('mouseleave', function (evt) {
-                        if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
-                            layerOrItem.removeFlag(IFNode.Flag.Highlighted);
-                        }
-                    });
-            }
+            visibleContainer
+                .on('mouseenter', function (evt) {
+                    if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
+                        layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                    }
+                })
+                .on('mouseleave', function (evt) {
+                    if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
+                        layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                    }
+                });
 
             // Append outline & color for layers
             if (layerOrItem instanceof IFLayer) {

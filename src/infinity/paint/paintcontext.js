@@ -50,6 +50,12 @@
     IFPaintContext.prototype.highlightOutlineColor = IFColor.HIGHLIGHT_OUTLINE;
 
     /**
+     * The current outline color for the guides
+     * @type IFColor
+     */
+    IFPaintContext.prototype.guideOutlineColor = IFColor.GUIDE_OUTLINE;
+
+    /**
      * Returns whether the paint context is in outline/wireframe mode or not
      * @return {boolean}
      */

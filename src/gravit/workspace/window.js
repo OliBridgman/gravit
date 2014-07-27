@@ -147,8 +147,10 @@
                 for (var i = 0; i < elementHits.length; ++i) {
                     var self = this;
                     var stackItem = new GUIMenuItem();
-                    stackItem.element = elementHits[i].element;
-                    stackItem.setCaption((i + 1).toString() + '. ' + elementHits[i].element.getNodeNameTranslated());
+                    var element = elementHits[i].element;
+                    stackItem.element = element;
+                    var name = element instanceof IFBlock ? element.getLabel() : element.getNodeNameTranslated();
+                    stackItem.setCaption((i + 1).toString() + '. ' + name);
                     stackItem.addEventListener(GUIMenuItem.EnterEvent, function () {
                         this.element.setFlag(IFNode.Flag.Highlighted);
                     });

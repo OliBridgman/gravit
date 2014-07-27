@@ -338,13 +338,13 @@
 
         if (!color) {
             if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 2, context.highlightOutlineColor);
+                color = context.highlightOutlineColor;
             } else {
-                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, context.selectionOutlineColor);
+                color = context.selectionOutlineColor;
             }
-        } else {
-            context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, color);
         }
+
+        context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, color);
     };
 
     /** @override */

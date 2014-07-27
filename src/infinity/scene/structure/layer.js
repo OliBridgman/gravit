@@ -147,6 +147,11 @@
     };
 
     /** @override */
+    IFLayer.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        return new IFBlock.HitResult(this);
+    };
+
+    /** @override */
     IFLayer.prototype._handleChange = function (change, args) {
         this._handleVisualChangeForProperties(change, args, IFLayer.VisualProperties);
 

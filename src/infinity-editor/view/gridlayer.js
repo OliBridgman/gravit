@@ -16,6 +16,8 @@
 
     /** @override */
     IFGridLayer.prototype.paint = function (context) {
+        this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
+
         var scene = this._view.getScene();
         if (scene.getProperty('gridActive')) {
             var cl = IFColor.parseCSSColor('rgba(0, 0, 0, 0.125)');

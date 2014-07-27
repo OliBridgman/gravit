@@ -17,5 +17,10 @@
         return parent instanceof IFLayer || parent instanceof IFShapeSet;
     };
 
+    /** @override */
+    IFShapeSet.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        return new IFBlock.HitResult(this);
+    };
+
     _.IFShapeSet = IFShapeSet;
 })(this);
