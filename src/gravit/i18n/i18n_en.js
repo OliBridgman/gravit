@@ -8,7 +8,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
     "category.file", "category.file.open", "category.file.saveas", "category.file.import", "category.file.export",
     "category.edit",
     "category.modify", "category.modify.layer-type",
-    "category.arrange",
+    "category.arrange", "category.arrange.transform",
     "category.view", "category.view.magnification",
     "category.help",
     // Tools
@@ -24,7 +24,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
         "File", "File/Open", "File/Save As", "File/Import", "File/Export",
         "Edit",
         "Modify", "Modify/Layer Type",
-        "Arrange",
+        "Arrange", "Arrange/Transform",
         "View",
         "View/Magnification",
         "Help",

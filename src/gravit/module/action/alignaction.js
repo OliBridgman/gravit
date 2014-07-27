@@ -146,7 +146,6 @@
             return;
         }
 
-        // TODO : I18N
         IFEditor.tryRunTransaction(scene, function () {
             if (this._type === GAlignAction.Type.DistributeHorizontal ||
                 this._type === GAlignAction.Type.DistributeVertical) {

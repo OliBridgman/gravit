@@ -271,6 +271,15 @@
             new GOrderAction(GOrderAction.Type.SendBackward),
             new GOrderAction(GOrderAction.Type.SendToBack),
 
+            new GTransformAction(GTransformAction.Type.Rotate45Left),
+            new GTransformAction(GTransformAction.Type.Rotate90Left),
+            new GTransformAction(GTransformAction.Type.Rotate180Left),
+            new GTransformAction(GTransformAction.Type.Rotate45Right),
+            new GTransformAction(GTransformAction.Type.Rotate90Right),
+            new GTransformAction(GTransformAction.Type.Rotate180Right),
+            new GTransformAction(GTransformAction.Type.FlipVertical),
+            new GTransformAction(GTransformAction.Type.FlipHorizontal),
+
             new GAlignAction(GAlignAction.Type.AlignLeft),
             new GAlignAction(GAlignAction.Type.AlignCenter),
             new GAlignAction(GAlignAction.Type.AlignRight),
