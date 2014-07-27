@@ -115,20 +115,22 @@
                         break;
                     case GArrangeAction.Type.BringForward:
                         if (element.getNext() !== null) {
+                            var posElement = element.getNext() ? element.getNext().getNext() : null;
                             parent.removeChild(element);
-                            parent.insertBefore(element.getNext().getNext());
+                            parent.insertChild(element, posElement);
                         }
                         break;
                     case GArrangeAction.Type.SendBackward:
                         if (element.getPrevious() !== null) {
+                            var posElement = element.getPrevious() ? element.getPrevious() : parent.getFirstChild();
                             parent.removeChild(element);
-                            parent.insertBefore(element, parent.getFirstChild());
+                            parent.insertChild(element, posElement);
                         }
                         break;
                     case GArrangeAction.Type.SendToBack:
                         if (element.getPrevious() !== null) {
                             parent.removeChild(element);
-                            parent.insertBefore(element.getPrevious().getPrevious());
+                            parent.insertChild(element, parent.getFirstChild());
                         }
                         break;
                 }
