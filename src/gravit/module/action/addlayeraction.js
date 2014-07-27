@@ -31,14 +31,14 @@
      * @override
      */
     GAddLayerAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY_LAYER;
     };
 
     /**
      * @override
      */
     GAddLayerAction.prototype.getGroup = function () {
-        return "layer";
+        return "structure/modify";
     };
 
     /**

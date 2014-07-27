@@ -31,14 +31,14 @@
      * @override
      */
     GDeleteLayerAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY_LAYER;
     };
 
     /**
      * @override
      */
     GDeleteLayerAction.prototype.getGroup = function () {
-        return "layer";
+        return "structure/modify";
     };
 
     /**

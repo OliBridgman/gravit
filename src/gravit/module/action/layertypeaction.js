@@ -39,12 +39,12 @@
      * @override
      */
     GLayerTypeAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY_LAYERTYPE;
+        return GApplication.CATEGORY_MODIFY_LAYER;
     };
 
     /** @override */
     GLayerTypeAction.prototype.getGroup = function () {
-        return "layer/type";
+        return "structure/type";
     };
 
     /** @override */

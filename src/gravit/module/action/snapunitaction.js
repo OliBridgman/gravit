@@ -44,14 +44,14 @@
      * @override
      */
     GSnapUnitAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_ARRANGE;
+        return GApplication.CATEGORY_MODIFY_ALIGN;
     };
 
     /**
      * @override
      */
     GSnapUnitAction.prototype.getGroup = function () {
-        return 'snap-unit';
+        return 'arrange/snap-unit';
     };
 
     /**

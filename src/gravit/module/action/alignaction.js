@@ -50,26 +50,33 @@
      * @override
      */
     GAlignAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_ARRANGE;
+        return GApplication.CATEGORY_MODIFY_ALIGN;
     };
 
     /**
      * @override
      */
     GAlignAction.prototype.getGroup = function () {
+        var result = '';
+
         switch (this._type) {
             case GAlignAction.Type.AlignLeft:
             case GAlignAction.Type.AlignCenter:
             case GAlignAction.Type.AlignRight:
-                return 'align_horizontal';
+                result = 'horizontal';
+                break;
             case GAlignAction.Type.AlignTop:
             case GAlignAction.Type.AlignMiddle:
             case GAlignAction.Type.AlignBottom:
-                return 'align_vertical';
+                result = 'vertical';
+                break;
             case GAlignAction.Type.DistributeHorizontal:
             case GAlignAction.Type.DistributeVertical:
-                return 'distribute';
+                result = 'distribute';
+                break;
         }
+
+        return 'arrange/align-' + result;
     };
 
     /**

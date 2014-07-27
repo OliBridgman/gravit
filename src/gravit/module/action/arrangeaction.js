@@ -2,72 +2,72 @@
 
     /**
      * Action for ordering
-     * @class GOrderAction
+     * @class GArrangeAction
      * @extends GAction
      * @constructor
      */
-    function GOrderAction(type) {
+    function GArrangeAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GOrderAction, 'title.' + type);
+        this._title = new IFLocale.Key(GArrangeAction, 'title.' + type);
     };
-    IFObject.inherit(GOrderAction, GAction);
+    IFObject.inherit(GArrangeAction, GAction);
 
     /** @enum */
-    GOrderAction.Type = {
+    GArrangeAction.Type = {
         SendToFront: 'send-front',
         BringForward: 'bring-forward',
         SendBackward: 'send-backward',
         SendToBack: 'send-back'
     };
 
-    GOrderAction.ID = 'arrange.order';
+    GArrangeAction.ID = 'arrange.order';
 
-    /** @type {GOrderAction.Type} */
-    GOrderAction.prototype._type = null;
+    /** @type {GArrangeAction.Type} */
+    GArrangeAction.prototype._type = null;
 
     /** @type {IFLocale.Key} */
-    GOrderAction.prototype._title = null;
+    GArrangeAction.prototype._title = null;
 
     /**
      * @override
      */
-    GOrderAction.prototype.getId = function () {
-        return GOrderAction.ID + '.' + this._type;
+    GArrangeAction.prototype.getId = function () {
+        return GArrangeAction.ID + '.' + this._type;
     };
 
     /**
      * @override
      */
-    GOrderAction.prototype.getTitle = function () {
+    GArrangeAction.prototype.getTitle = function () {
         return this._title;
     };
 
     /**
      * @override
      */
-    GOrderAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_ARRANGE;
+    GArrangeAction.prototype.getCategory = function () {
+        return GApplication.CATEGORY_MODIFY_ARRANGE;
     };
 
     /**
      * @override
      */
-    GOrderAction.prototype.getGroup = function () {
-        return "order";
+    GArrangeAction.prototype.getGroup = function () {
+        return "arrange/arrange";
     };
 
     /**
      * @override
      */
-    GOrderAction.prototype.getShortcut = function () {
+    GArrangeAction.prototype.getShortcut = function () {
         switch (this._type) {
-            case GOrderAction.Type.SendToFront:
+            case GArrangeAction.Type.SendToFront:
                 return [IFKey.Constant.SHIFT, IFKey.Constant.META, IFKey.Constant.UP];
-            case GOrderAction.Type.BringForward:
+            case GArrangeAction.Type.BringForward:
                 return [IFKey.Constant.META, IFKey.Constant.UP];
-            case GOrderAction.Type.SendBackward:
+            case GArrangeAction.Type.SendBackward:
                 return [IFKey.Constant.META, IFKey.Constant.DOWN];
-            case GOrderAction.Type.SendToBack:
+            case GArrangeAction.Type.SendToBack:
                 return [IFKey.Constant.SHIFT, IFKey.Constant.META, IFKey.Constant.DOWN];
         }
         return null;
@@ -78,7 +78,7 @@
      * uses the selection
      * @override
      */
-    GOrderAction.prototype.isEnabled = function (elements) {
+    GArrangeAction.prototype.isEnabled = function (elements) {
         elements = elements || (gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor().getSelection() : null);
         return elements && elements.length > 0;
     };
@@ -88,7 +88,7 @@
      * uses the selection
      * @override
      */
-    GOrderAction.prototype.execute = function (elements) {
+    GArrangeAction.prototype.execute = function (elements) {
         var document = gApp.getActiveDocument();
         var scene = document.getScene();
         var selection = null;
@@ -107,25 +107,25 @@
                 var parent = element.getParent();
 
                 switch (this._type) {
-                    case GOrderAction.Type.SendToFront:
+                    case GArrangeAction.Type.SendToFront:
                         if (element.getNext() !== null) {
                             parent.removeChild(element);
                             parent.appendChild(element);
                         }
                         break;
-                    case GOrderAction.Type.BringForward:
+                    case GArrangeAction.Type.BringForward:
                         if (element.getNext() !== null) {
                             parent.removeChild(element);
                             parent.insertBefore(element.getNext().getNext());
                         }
                         break;
-                    case GOrderAction.Type.SendBackward:
+                    case GArrangeAction.Type.SendBackward:
                         if (element.getPrevious() !== null) {
                             parent.removeChild(element);
                             parent.insertBefore(element, parent.getFirstChild());
                         }
                         break;
-                    case GOrderAction.Type.SendToBack:
+                    case GArrangeAction.Type.SendToBack:
                         if (element.getPrevious() !== null) {
                             parent.removeChild(element);
                             parent.insertBefore(element.getPrevious().getPrevious());
@@ -141,9 +141,9 @@
     };
 
     /** @override */
-    GOrderAction.prototype.toString = function () {
-        return "[Object GOrderAction]";
+    GArrangeAction.prototype.toString = function () {
+        return "[Object GArrangeAction]";
     };
 
-    _.GOrderAction = GOrderAction;
+    _.GArrangeAction = GArrangeAction;
 })(this);

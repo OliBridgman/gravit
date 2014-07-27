@@ -31,14 +31,14 @@
      * @override
      */
     GDeletePageAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY_PAGE;
     };
 
     /**
      * @override
      */
     GDeletePageAction.prototype.getGroup = function () {
-        return "page";
+        return "structure/modify";
     };
 
     /**

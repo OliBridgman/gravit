@@ -31,14 +31,14 @@
      * @override
      */
     GAddPageAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY_PAGE;
     };
 
     /**
      * @override
      */
     GAddPageAction.prototype.getGroup = function () {
-        return "page";
+        return "structure/modify";
     };
 
     /**

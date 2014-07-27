@@ -24,7 +24,7 @@ ifLocale.setValues(GLayerTypeAction, IFLocale.Language.English, ["title"], ["%na
 ifLocale.setValues(GNewAction, IFLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, IFLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, IFLocale.Language.English, ["title", "title-default"], ["From %name%...", "Open..."]);
-ifLocale.setValues(GOrderAction, IFLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
+ifLocale.setValues(GArrangeAction, IFLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
 ifLocale.setValues(GOriginalViewAction, IFLocale.Language.English, ["title"], ["Original-View"]);
 ifLocale.setValues(GPaintModeAction, IFLocale.Language.English, ["title"], ["%name% View"]);
 ifLocale.setValues(GPasteAction, IFLocale.Language.English, ["title"], ["Paste"]);

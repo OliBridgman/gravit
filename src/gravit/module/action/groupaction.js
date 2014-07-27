@@ -38,7 +38,7 @@
      * @override
      */
     GGroupAction.prototype.getGroup = function () {
-        return "structure";
+        return "structure-group";
     };
 
     /**

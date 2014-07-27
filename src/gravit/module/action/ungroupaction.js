@@ -38,7 +38,7 @@
      * @override
      */
     GUngroupAction.prototype.getGroup = function () {
-        return "structure";
+        return "structure-group";
     };
 
     /**

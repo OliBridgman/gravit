@@ -50,7 +50,7 @@
      * @override
      */
     GTransformAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_ARRANGE_TRANSFORM;
+        return GApplication.CATEGORY_MODIFY_TRANSFORM;
     };
 
     /**
@@ -63,12 +63,12 @@
             case GTransformAction.Type.Rotate45Left:
             case GTransformAction.Type.Rotate90Left:
             case GTransformAction.Type.Rotate180Left:
-                result = 'rotate_left';
+                result = 'rotate-left';
                 break;
             case GTransformAction.Type.Rotate45Right:
             case GTransformAction.Type.Rotate90Right:
             case GTransformAction.Type.Rotate180Right:
-                result = 'rotate_right';
+                result = 'rotate-right';
                 break;
             case GTransformAction.Type.FlipVertical:
             case GTransformAction.Type.FlipHorizontal:
@@ -76,7 +76,7 @@
                 break;
         }
 
-        return 'transform/' + result;
+        return 'arrange/transform-' + result;
     };
 
     /**
