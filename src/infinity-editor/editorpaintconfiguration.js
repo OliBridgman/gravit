@@ -11,6 +11,12 @@
     IFObject.inherit(IFEditorPaintConfiguration, IFScenePaintConfiguration);
 
     /**
+     * Whether to render pages or not
+     * @type {Boolean}
+     */
+    IFEditorPaintConfiguration.prototype.pagesVisible = true;
+
+    /**
      * Whether to render the grid or not if it is active
      * @type {Boolean}
      */

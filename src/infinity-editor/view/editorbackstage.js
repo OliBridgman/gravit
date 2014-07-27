@@ -18,17 +18,19 @@
 
     /** @override */
     IFEditorBackStage.prototype.paint = function (context) {
+        // View painting
+
+        //
+        // Scene painting
+        //
+
+        // Transform dirty areas into scene
         if (context.dirtyMatcher) {
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
 
-        // We'll leave our canvas in view coordinates for the background
-        var singlePage = this._view.getScene().getProperty('singlePage');
-        var transform = this._view.getWorldTransform();
-        for (var node = this._view.getScene().getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof IFPage && node.isRenderable(context) && (!singlePage || node.hasFlag(IFNode.Flag.Active))) {
-                this._renderPage(context, transform, node);
-            }
+        if (context.configuration.pagesVisible) {
+            this._renderPages(context);
         }
     };
 
@@ -47,6 +49,27 @@
         this.invalidate(area);
     };
 
+    /**
+     * @param context
+     * @private
+     */
+    IFEditorBackStage.prototype._renderPages = function (context) {
+        // We'll leave our canvas in view coordinates for the background
+        var singlePage = this._view.getScene().getProperty('singlePage');
+        var transform = this._view.getWorldTransform();
+        for (var node = this._view.getScene().getFirstChild(); node !== null; node = node.getNext()) {
+            if (node instanceof IFPage && node.isRenderable(context) && (!singlePage || node.hasFlag(IFNode.Flag.Active))) {
+                this._renderPage(context, transform, node);
+            }
+        }
+    };
+
+    /**
+     * @param context
+     * @param transform
+     * @param page
+     * @private
+     */
     IFEditorBackStage.prototype._renderPage = function (context, transform, page) {
         // Get page rectangle and transform it into world space
         var pageRect = new IFRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
