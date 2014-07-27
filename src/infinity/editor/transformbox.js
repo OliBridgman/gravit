@@ -333,9 +333,11 @@
      * @param {Boolean} option - if true and one of resize handles is moved,
      * update transform box symmetrically to center
      * @param {Boolean} ratio - if true and one of resize handles is moved, make equal scaling for width and height
+     * @param {Number} ratioStep
      * @returns {IFTransform}
      */
-    IFTransformBox.prototype.calculateTransformation = function (partInfo, startPtTr, endPtTr, guides, option, ratio) {
+    IFTransformBox.prototype.calculateTransformation = function (partInfo, startPtTr, endPtTr, guides, option, ratio,
+                                                                 ratioStep) {
         var deltaTr = endPtTr.subtract(startPtTr);
         var dx = deltaTr.getX();
         var dy = deltaTr.getY();
@@ -495,6 +497,11 @@
             var angle1 = Math.atan2(startPtTr.getY() - this.$cy, startPtTr.getX() - this.$cx);
             var angle2 = Math.atan2(endPtTr.getY() - this.$cy, endPtTr.getX() - this.$cx);
             var angleDelta = angle1 - angle2;
+            // Lock angle to 15° if desired
+            if (ratio) {
+                var step = ratioStep ? ratioStep : Math.PI / 12;
+                angleDelta = Math.round(angleDelta * step) * step;
+            }
             var cosA = Math.cos(angleDelta);
             var sinA = Math.sin(angleDelta);
             var transform2 = new IFTransform(cosA, -sinA, sinA, cosA, 0, 0);
@@ -502,6 +509,12 @@
         } else if (partInfo.id == IFTransformBox.OUTLINE) {
             transform1 = new IFTransform(1, 0, 0, 1, -this.$cx, -this.$cy);
             transform3 = new IFTransform(1, 0, 0, 1, this.$cx, this.$cy);
+
+            if (ratio && ratioStep) {
+                var step = ratioStep ? ratioStep : 20;
+                dx = Math.round(dx / step) * step;
+                dy = Math.round(dy / step) * step;
+            }
 
             var transform2 = new IFTransform(
                 1, dy * 2 / (this.$brx - this.$tlx), -dx * 2 / (this.$bry - this.$tly), 1, 0, 0);

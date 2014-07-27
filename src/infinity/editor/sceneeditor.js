@@ -34,15 +34,19 @@
      */
     IFSceneEditor.prototype._tBoxMode = IFSceneEditor.TBoxMode.NA;
 
+    /**
+     * @type {IFElementEditor.PartInfo}
+     * @private
+     */
     IFSceneEditor.prototype._tBoxData = null;
+
+    /**
+     * @type {IFElementEditor.PartInfo}
+     * @private
+     */
     IFSceneEditor.prototype._mouseInfo = null;
 
-    IFSceneEditor.prototype._detach = function () {
-        if (this._transformBox) {
-            this.setTransformBoxActive(false);
-        }
-    };
-
+    /** override */
     IFSceneEditor.prototype.paint = function (transform, context) {
         IFElementEditor.prototype.paint.call(this, transform, context);
         if (this._transformBox) {
@@ -50,6 +54,7 @@
         }
     };
 
+    /** override */
     IFSceneEditor.prototype.getBBox = function (transform) {
         var bbox = IFElementEditor.prototype.getBBox.call(this, transform);
         if (this._transformBox) {
@@ -61,6 +66,13 @@
             }
         }
         return bbox;
+    };
+
+    /** override */
+    IFSceneEditor.prototype._detach = function () {
+        if (this._transformBox) {
+            this.setTransformBoxActive(false);
+        }
     };
 
     /**
@@ -223,12 +235,25 @@
         this.hideTransformBox();
     };
 
-    IFSceneEditor.prototype.transformTBox = function (startPos, curPos, option, ratio) {
+    /**
+     * Calculates and makes the on-going transformation of the selection and transform box based on pre-set
+     * transform mode, start position of movement and the current position
+     * @param {IFPoint} startPos - the start position of movement
+     * @param {IFPoint} curPos - the current position
+     * @param {Boolean} option - when set and resizing, the resize is center-symmetric
+     * @param {Boolean} ratio - when set and rotate/skew - keep ratioStep, when resize - the scale for X and Y are the same
+     * @param {Number} ratioStep - when set and ratio, then this step is used for constraint
+     */
+    IFSceneEditor.prototype.transformTBox = function (startPos, curPos, option, ratio, ratioStep) {
         if (this._tBoxMode != IFSceneEditor.TBoxMode.PASSIVE && this._tBoxMode != IFSceneEditor.TBoxMode.NA) {
             var guides = this._getGraphicEditor().getGuides();
             guides.beginMap();
+            var rStep = ratioStep;
+            if (!rStep && this._tBoxMode == IFSceneEditor.TBoxMode.SKEW) {
+                rStep = this._element.getProperty('gridSizeX');
+            }
             var transform = this._transformBox.calculateTransformation(this._tBoxData,
-                startPos, curPos, guides, option, ratio);
+                startPos, curPos, guides, option, ratio, rStep);
 
             if (this._tBoxMode != IFSceneEditor.TBoxMode.CNTRMOVE) {
                 this._transformBox.setTransform(transform);
@@ -283,7 +308,9 @@
     };
 
     IFSceneEditor.prototype._geometryChange = function (evt) {
-        if (this._transformBox) {
+        if (this._transformBox && evt.type == IFElement.GeometryChangeEvent.Type.After &&
+                evt.element.hasFlag(IFNode.Flag.Selected)) {
+
             if (this._transformBox.getProperty('trf') || this._transformBox.getProperty('cTrf')) {
                 this._transformBox.applyCenterTransform();
             }
