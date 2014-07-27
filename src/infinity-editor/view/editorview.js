@@ -47,10 +47,10 @@
     IFEditorView.prototype._editor = null;
 
     /**
-     * @type {IFToolLayer}
+     * @type {IFEditorToolStage}
      * @private
      */
-    IFEditorView.prototype._toolLayer = null;
+    IFEditorView.prototype._toolStage = null;
 
     /**
      * Return the editor this view is rendering
@@ -61,20 +61,20 @@
     };
 
     /**
-     * Return the editor's tool layer
-     * @returns {IFToolLayer}
+     * Return the editor's tool stage
+     * @returns {IFEditorToolStage}
      */
-    IFEditorView.prototype.getToolLayer = function () {
-        return this._toolLayer;
+    IFEditorView.prototype.getToolStage = function () {
+        return this._toolStage;
     };
 
     /** @override */
-    IFEditorView.prototype._initLayers = function () {
-        this.addLayer(new IFBackgroundLayer(this));
-        this.addLayer(new IFSceneLayer(this));
-        this.addLayer(new IFGridLayer(this));
-        this.addLayer(new IFEditorLayer(this));
-        this._toolLayer = this.addLayer(new IFToolLayer(this));
+    IFEditorView.prototype._initStages = function () {
+        this.addStage(new IFEditorBackStage(this));
+        this.addStage(new IFSceneStage(this));
+        this.addStage(new IFEditorFrontStage(this));
+        this.addStage(new IFEditorSceneStage(this));
+        this._toolStage = this.addStage(new IFEditorToolStage(this));
     };
 
     /** @override */

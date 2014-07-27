@@ -1,19 +1,19 @@
 (function (_) {
     /**
-     * A layer for rendering editors
+     * A stage for rendering the scene editors
      * @param {IFEditorView} view
-     * @class IFEditorLayer
-     * @extends IFViewLayer
+     * @class IFEditorSceneStage
+     * @extends IFStage
      * @constructor
      */
-    function IFEditorLayer(view) {
-        IFViewLayer.call(this, view);
+    function IFEditorSceneStage(view) {
+        IFStage.call(this, view);
         view.getEditor().addEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
     }
-    IFObject.inherit(IFEditorLayer, IFViewLayer);
+    IFObject.inherit(IFEditorSceneStage, IFStage);
 
     /** @override */
-    IFEditorLayer.prototype.paint = function (context) {
+    IFEditorSceneStage.prototype.paint = function (context) {
         var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
         if (sceneEditor) {
             sceneEditor.paint(this._view.getWorldTransform(), context);
@@ -25,7 +25,7 @@
      * @param {IFEditor.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    IFEditorLayer.prototype._editorInvalidationRequest = function (event) {
+    IFEditorSceneStage.prototype._editorInvalidationRequest = function (event) {
         if (event.editor) {
             var area = event.editor.invalidate(this._view.getWorldTransform(), event.args);
             if (area) {
@@ -35,9 +35,9 @@
     };
 
     /** @override */
-    IFEditorLayer.prototype.toString = function () {
-        return "[Object IFEditorLayer]";
+    IFEditorSceneStage.prototype.toString = function () {
+        return "[Object IFEditorSceneStage]";
     };
 
-    _.IFEditorLayer = IFEditorLayer;
+    _.IFEditorSceneStage = IFEditorSceneStage;
 })(this);

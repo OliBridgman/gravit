@@ -1,26 +1,26 @@
 (function (_) {
     /**
-     * A layer for rendering a scene
+     * The scene stage
      * @param {IFView} view
-     * @class IFSceneLayer
-     * @extends IFViewLayer
+     * @class IFSceneStage
+     * @extends IFStage
      * @constructor
      */
-    function IFSceneLayer(view) {
-        IFViewLayer.call(this, view);
+    function IFSceneStage(view) {
+        IFStage.call(this, view);
         view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
-    IFObject.inherit(IFSceneLayer, IFViewLayer);
+    IFObject.inherit(IFSceneStage, IFStage);
 
     /**
      * @type {IFPaintCanvas}
      * @private
      */
-    IFSceneLayer.prototype._pixelContentCanvas = null;
+    IFSceneStage.prototype._pixelContentCanvas = null;
 
     /** @override */
-    IFSceneLayer.prototype.resize = function (width, height) {
-        IFViewLayer.prototype.resize.call(this, width, height);
+    IFSceneStage.prototype.resize = function (width, height) {
+        IFStage.prototype.resize.call(this, width, height);
 
         // Resize pixel content canvas if any
         if (this._pixelContentCanvas) {
@@ -29,7 +29,7 @@
     };
 
     /** @override */
-    IFSceneLayer.prototype.paint = function (context) {
+    IFSceneStage.prototype.paint = function (context) {
         if (context.dirtyMatcher) {
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
@@ -77,7 +77,7 @@
      * @param {IFScene.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    IFSceneLayer.prototype._sceneInvalidationRequest = function (event) {
+    IFSceneStage.prototype._sceneInvalidationRequest = function (event) {
         var area = event.area;
         if (area) {
             // Ensure to map the scene area into view coordinates, first
@@ -88,9 +88,9 @@
     };
 
     /** @override */
-    IFSceneLayer.prototype.toString = function () {
-        return "[Object IFSceneLayer]";
+    IFSceneStage.prototype.toString = function () {
+        return "[Object IFSceneStage]";
     };
 
-    _.IFSceneLayer = IFSceneLayer;
+    _.IFSceneStage = IFSceneStage;
 })(this);

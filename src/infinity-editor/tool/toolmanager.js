@@ -72,10 +72,10 @@
     IFToolManager.prototype._view = null;
 
     /**
-     * @type {IFViewLayer}
+     * @type {IFStage}
      * @private
      */
-    IFToolManager.prototype._viewLayer = null;
+    IFToolManager.prototype._viewStage = null;
 
     /**
      * @type {IFTool}
@@ -188,20 +188,20 @@
                 // Remove active tool
                 this._removeActiveToolFromView();
                 // Remove ourself from the view tool layer's paint
-                this._viewLayer.paint = null;
+                this._viewStage.paint = null;
                 // Unregister ourself from global modifiers change event
                 ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
             }
 
             this._view = view;
 
-            this._viewLayer = view ? view.getToolLayer() : null;
+            this._viewStage = view ? view.getToolStage() : null;
 
             if (this._view) {
                 // Add active tool
                 this._addActiveToolToView();
                 // Assign ourself to the view tool layer's paint
-                this._viewLayer.paint = this._paintLink;
+                this._viewStage.paint = this._paintLink;
                 // Register ourself to global modifiers change event
                 ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
             }
@@ -284,7 +284,7 @@
      */
     IFToolManager.prototype._invalidateActiveToolArea = function (area) {
         if (this._activeTool && this._view) {
-            this._viewLayer.invalidate(area);
+            this._viewStage.invalidate(area);
         }
     };
 

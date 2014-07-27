@@ -15,13 +15,13 @@
 
         function VertexWidget(container, vertexSource) {
             var viewN = new IFView(scene, container);
-            IFViewLayer.call(this, viewN); //, container.lastChild.firstChild);
+            IFStage.call(this, viewN); //, container.lastChild.firstChild);
             this._paintContext.canvas._canvasContext = container.lastChild.firstChild.getContext("2d");
 
             this._vertexSource = vertexSource;
         }
 
-        IFObject.inherit(VertexWidget, IFViewLayer);
+        IFObject.inherit(VertexWidget, IFStage);
 
         /** override */
         VertexWidget.prototype.paint = function (context) {

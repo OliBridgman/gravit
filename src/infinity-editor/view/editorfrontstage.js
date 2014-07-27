@@ -1,21 +1,21 @@
 (function (_) {
     /**
-     * A layer for rendering a grid if any
+     * A stage for rendering the editor foreground
      * @param {IFView} view
-     * @class IFGridLayer
-     * @extends IFViewLayer
+     * @class IFEditorFrontStage
+     * @extends IFStage
      * @constructor
      */
-    function IFGridLayer(view) {
-        IFViewLayer.call(this, view);
+    function IFEditorFrontStage(view) {
+        IFStage.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
     }
-    IFObject.inherit(IFGridLayer, IFViewLayer);
+    IFObject.inherit(IFEditorFrontStage, IFStage);
 
-    IFGridLayer.MIN_CELL_SPACE = 10;
+    IFEditorFrontStage.MIN_CELL_SPACE = 10;
 
     /** @override */
-    IFGridLayer.prototype.paint = function (context) {
+    IFEditorFrontStage.prototype.paint = function (context) {
         this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
 
         var scene = this._view.getScene();
@@ -30,11 +30,11 @@
             var szH = szHScene * scale;
 
             // Limit mininum. grid size to be optically comfortable.
-            if (szW < IFGridLayer.MIN_CELL_SPACE) {
-                szW *= 1. + Math.floor(IFGridLayer.MIN_CELL_SPACE / szW);
+            if (szW < IFEditorFrontStage.MIN_CELL_SPACE) {
+                szW *= 1. + Math.floor(IFEditorFrontStage.MIN_CELL_SPACE / szW);
             }
-            if (szH < IFGridLayer.MIN_CELL_SPACE){
-                szH *= 1. + Math.floor(IFGridLayer.MIN_CELL_SPACE / szH);
+            if (szH < IFEditorFrontStage.MIN_CELL_SPACE){
+                szH *= 1. + Math.floor(IFEditorFrontStage.MIN_CELL_SPACE / szH);
             }
 
             szWScene = szW / scale;
@@ -55,7 +55,7 @@
         }
     };
 
-    IFGridLayer.prototype._sceneAfterPropertiesChanged = function (event) {
+    IFEditorFrontStage.prototype._sceneAfterPropertiesChanged = function (event) {
         if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
             event.properties.indexOf('gridActive') >= 0) {
             this.invalidate();
@@ -63,9 +63,9 @@
     };
 
     /** @override */
-    IFGridLayer.prototype.toString = function () {
-        return "[Object IFGridLayer]";
+    IFEditorFrontStage.prototype.toString = function () {
+        return "[Object IFEditorFrontStage]";
     };
 
-    _.IFGridLayer = IFGridLayer;
+    _.IFEditorFrontStage = IFEditorFrontStage;
 })(this);

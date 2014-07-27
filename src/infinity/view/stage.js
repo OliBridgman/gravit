@@ -1,11 +1,11 @@
 (function (_) {
     /**
-     * A layer within a scene view
+     * A stage (layer) within a view
      * @param {IFView} view
-     * @class IFViewLayer
+     * @class IFStage
      * @constructor
      */
-    function IFViewLayer(view) {
+    function IFStage(view) {
         this._view = view;
         this._canvas = new IFPaintCanvas();
         this._paintContext = new IFPaintContext();
@@ -19,38 +19,38 @@
      * @type {IFView}
      * @private
      */
-    IFViewLayer.prototype._view = null;
+    IFStage.prototype._view = null;
 
     /**
      * @type {IFPaintCanvas}
      * @private
      */
-    IFViewLayer.prototype._canvas = null;
+    IFStage.prototype._canvas = null;
 
     /**
      * @type {IFPaintContext}
      * @private
      */
-    IFViewLayer.prototype._paintContext = null;
+    IFStage.prototype._paintContext = null;
 
     /**
      * @type IFDirtyList
      * @private
      */
-    IFViewLayer.prototype._dirtyList = null;
+    IFStage.prototype._dirtyList = null;
 
     /**
      * Id of next frame for repainting
      * @type {Number}
      * @private
      */
-    IFViewLayer.prototype._repaintRequestFrameId = null;
+    IFStage.prototype._repaintRequestFrameId = null;
 
-    IFViewLayer.prototype.show = function () {
+    IFStage.prototype.show = function () {
         this._canvas._canvasContext.canvas.style.visibility = '';
     };
 
-    IFViewLayer.prototype.hide = function () {
+    IFStage.prototype.hide = function () {
         this._canvas._canvasContext.canvas.style.visibility = 'hidden';
     };
 
@@ -61,7 +61,7 @@
      * @return {Boolean} true if an invalidation ocurred, false if not
      * @version 1.0
      */
-    IFViewLayer.prototype.invalidate = function (area) {
+    IFStage.prototype.invalidate = function (area) {
         if (!area || area.isEmpty()) {
             // reset any previous dirty areas and add the whole view area
             this._dirtyList.reset();
@@ -87,7 +87,7 @@
      * @param {IFPaintContext} context the paint context to paint into
      * @private
      */
-    IFViewLayer.prototype.paint = function (context) {
+    IFStage.prototype.paint = function (context) {
         // NO-OP by default
     };
 
@@ -96,7 +96,7 @@
      * @param {Number} width
      * @param {Number} height
      */
-    IFViewLayer.prototype.resize = function (width, height) {
+    IFStage.prototype.resize = function (width, height) {
         this._canvas.resize(width, height);
         this.updateViewArea();
     };
@@ -104,7 +104,7 @@
     /**
      * Called to update the view area
      */
-    IFViewLayer.prototype.updateViewArea = function () {
+    IFStage.prototype.updateViewArea = function () {
         var viewArea = new IFRect(0, 0, this._view.getWidth(), this._view.getHeight());
         if (!IFRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
@@ -116,7 +116,7 @@
      * Called to repaint all dirty regions
      * @private
      */
-    IFViewLayer.prototype._repaint = function () {
+    IFStage.prototype._repaint = function () {
         // Get and flush existing dirty areas
         var dirtyListMatcher = this._dirtyList.flush();
         if (dirtyListMatcher != null) {
@@ -140,9 +140,9 @@
     };
 
     /** @override */
-    IFViewLayer.prototype.toString = function () {
-        return "[Object IFViewLayer]";
+    IFStage.prototype.toString = function () {
+        return "[Object IFStage]";
     };
 
-    _.IFViewLayer = IFViewLayer;
+    _.IFStage = IFStage;
 })(this);

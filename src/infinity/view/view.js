@@ -20,8 +20,8 @@
             this._viewConfiguration = new IFScenePaintConfiguration();
         }
 
-        // Initialize our layers
-        this._initLayers();
+        // Initialize our stages
+        this._initStages();
 
         // Subscribe to some scene events
         scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
@@ -83,11 +83,11 @@
     IFView.prototype._scene = null;
 
     /**
-     * An array of layers
-     * @type {Array<IFViewLayer>}
+     * An array of stages
+     * @type {Array<IFStage>}
      * @private
      */
-    IFView.prototype._layers = null;
+    IFView.prototype._stages = null;
 
     /**
      * Left, top, right, bottom offsets
@@ -148,10 +148,10 @@
     IFView.prototype.resize = function (width, height) {
         GUIWidget.prototype.resize.call(this, width, height);
 
-        // Resize layers if any
-        if (this._layers) {
-            for (var i = 0; i < this._layers.length; ++i) {
-                this._layers[i].resize(this.getWidth(), this.getHeight());
+        // Resize stages if any
+        if (this._stages) {
+            for (var i = 0; i < this._stages.length; ++i) {
+                this._stages[i].resize(this.getWidth(), this.getHeight());
             }
         }
     };
@@ -190,10 +190,10 @@
                 this._viewOffset[i] = offset[i];
             }
 
-            // Let each layer update it's view area
-            if (this._layers) {
-                for (var i = 0; i < this._layers.length; ++i) {
-                    this._layers[i].updateViewArea();
+            // Let each stage update it's view area
+            if (this._stages) {
+                for (var i = 0; i < this._stages.length; ++i) {
+                    this._stages[i].updateViewArea();
                 }
             }
         }
@@ -375,7 +375,7 @@
     };
 
     /**
-     * Called to invalidate all layers
+     * Called to invalidate all stages
      * @param {IFRect} [area] the area to invalidate in view-
      * coordinates. If null then this clears the whole dirty areas
      * and requests a full repaint. Defaults to null.
@@ -384,46 +384,46 @@
      */
     IFView.prototype.invalidate = function (area) {
         var result = false;
-        if (this._layers) {
-            for (var i = 0; i < this._layers.length; ++i) {
-                result = this._layers[i].invalidate(area) || result;
+        if (this._stages) {
+            for (var i = 0; i < this._stages.length; ++i) {
+                result = this._stages[i].invalidate(area) || result;
             }
         }
         return result;
     };
 
     /**
-     * Add a layer
-     * @param {IFViewLayer} layer
-     * @returns {IFViewLayer} the provided layer
+     * Add a stage
+     * @param {IFStage} stage
+     * @returns {IFStage} the provided stage
      * @private
      */
-    IFView.prototype.addLayer = function (layer) {
-        if (this._layers == null) {
-            this._layers = [];
+    IFView.prototype.addStage = function (stage) {
+        if (this._stages == null) {
+            this._stages = [];
         }
 
-        this._layers.push(layer);
+        this._stages.push(stage);
 
-        var layerElement = layer._canvas._canvasContext.canvas;
-        layerElement.style.position = 'absolute';
-        layerElement.style.cursor = 'inherit';
-        layer.resize(this.getWidth(), this.getHeight());
-        this._htmlElement.appendChild(layerElement);
+        var stageElement = stage._canvas._canvasContext.canvas;
+        stageElement.style.position = 'absolute';
+        stageElement.style.cursor = 'inherit';
+        stage.resize(this.getWidth(), this.getHeight());
+        this._htmlElement.appendChild(stageElement);
 
-        return layer;
+        return stage;
     };
 
     /**
-     * Retrieve a layer
-     * @param {IFViewLayer} layerClass
-     * @returns {IFViewLayer}
+     * Retrieve a stage
+     * @param {IFStage} stageClass
+     * @returns {IFStage}
      */
-    IFView.prototype.getLayer = function (layerClass) {
-        if (this._layers) {
-            for (var i = 0; i < this._layers.length; ++i) {
-                if (layerClass.prototype.isPrototypeOf(this._layers[i])) {
-                    return this._layers[i];
+    IFView.prototype.getStage = function (stageClass) {
+        if (this._stages) {
+            for (var i = 0; i < this._stages.length; ++i) {
+                if (stageClass.prototype.isPrototypeOf(this._stages[i])) {
+                    return this._stages[i];
                 }
             }
         }
@@ -456,11 +456,11 @@
     };
 
     /**
-     * Called to init/add all layers
+     * Called to init/add all stages
      * @private
      */
-    IFView.prototype._initLayers = function () {
-        this.addLayer(new IFSceneLayer(this));
+    IFView.prototype._initStages = function () {
+        this.addStage(new IFSceneStage(this));
     };
 
     /**

@@ -2,22 +2,22 @@
     var PAGE_CHESSBOARD_FILL = null;
 
     /**
-     * A layer for rendering the background
+     * A stage for rendering the editor background
      * @param {IFView} view
-     * @class IFBackgroundLayer
-     * @extends IFViewLayer
+     * @class IFEditorBackStage
+     * @extends IFStage
      * @constructor
      */
-    function IFBackgroundLayer(view) {
-        IFViewLayer.call(this, view);
+    function IFEditorBackStage(view) {
+        IFStage.call(this, view);
         view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
 
-    IFObject.inherit(IFBackgroundLayer, IFViewLayer);
+    IFObject.inherit(IFEditorBackStage, IFStage);
 
 
     /** @override */
-    IFBackgroundLayer.prototype.paint = function (context) {
+    IFEditorBackStage.prototype.paint = function (context) {
         if (context.dirtyMatcher) {
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
@@ -37,7 +37,7 @@
      * @param {IFScene.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    IFBackgroundLayer.prototype._sceneInvalidationRequest = function (event) {
+    IFEditorBackStage.prototype._sceneInvalidationRequest = function (event) {
         var area = event.area;
         if (area) {
             // Ensure to map the scene area into view coordinates, first
@@ -47,7 +47,7 @@
         this.invalidate(area);
     };
 
-    IFBackgroundLayer.prototype._renderPage = function (context, transform, page) {
+    IFEditorBackStage.prototype._renderPage = function (context, transform, page) {
         // Get page rectangle and transform it into world space
         var pageRect = new IFRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
         var marginRect = pageRect.expanded(-page.getProperty('ml'), -page.getProperty('mt'), -page.getProperty('mr'), -page.getProperty('mb'));
@@ -78,9 +78,9 @@
     };
 
     /** @override */
-    IFBackgroundLayer.prototype.toString = function () {
-        return "[Object IFBackgroundLayer]";
+    IFEditorBackStage.prototype.toString = function () {
+        return "[Object IFEditorBackStage]";
     };
 
-    _.IFBackgroundLayer = IFBackgroundLayer;
+    _.IFEditorBackStage = IFEditorBackStage;
 })(this);
