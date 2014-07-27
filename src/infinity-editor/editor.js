@@ -655,11 +655,6 @@
                     if (clonedSelection.length > 0) {
                         this.updateSelection(false, clonedSelection);
                     }
-
-                    var sceneEditor = IFElementEditor.getEditor(this._scene);
-                    if (sceneEditor && sceneEditor.isTransformBoxActive()) {
-                        sceneEditor.applyTransformBoxTransform();
-                    }
                 } finally {
                     if (!noTransaction) {
                         // TODO : I18N
