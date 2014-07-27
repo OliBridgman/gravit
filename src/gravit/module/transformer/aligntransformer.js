@@ -62,7 +62,7 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('ALign To:'))
+                    .text('Align To:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append($('<select></select>')
