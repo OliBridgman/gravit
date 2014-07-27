@@ -2,7 +2,7 @@
 
 #toolbar {
   position: absolute;
-  width: 56px;
+  width: 60px;
   background: $frameColor;
   border-right: 1px solid $frame3DShadowColor;
 
@@ -11,6 +11,7 @@
   }
 
   > div.section {
+    padding: 0px 2px;
 
     > button {
       position: relative;
@@ -21,9 +22,10 @@
 
       > .fa-caret-down {
         position: absolute;
-        bottom: -2px;
-        right: 0px;
-        font-size: 8px;
+        bottom: 0.5px;
+        right: 0.5px;
+        font-size: 10px;
+        transform: rotate(-45deg);
       }
     }
 
@@ -43,7 +45,6 @@
 
     &.sidebars {
       border-bottom: 3px solid $frameDarkColor;
-      padding: 0px;
     }
 
     &.toolpanel {
