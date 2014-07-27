@@ -19,7 +19,7 @@
         this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
 
         var scene = this._view.getScene();
-        if (scene.getProperty('gridActive')) {
+        if (scene.getProperty('gridActive') && context.configuration.gridVisible) {
             var cl = IFColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
 
             // Calculate optical cell-size

@@ -307,6 +307,7 @@
             new GPixelPreviewAction(),
             new GShowAllPagesAction(),
 
+            new GShowGridAction(),
             new GShowRulersAction(),
 
             // Window

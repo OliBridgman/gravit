@@ -38,7 +38,7 @@
      * @override
      */
     GPixelPreviewAction.prototype.getGroup = function () {
-        return "view-render";
+        return "render";
     };
 
     /** @override */

@@ -38,7 +38,7 @@
      * @override
      */
     GShowAllPagesAction.prototype.getGroup = function () {
-        return "show";
+        return "render";
     };
 
     /** @override */
