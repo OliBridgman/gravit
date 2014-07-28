@@ -25,22 +25,18 @@
 
     /** @override */
     GWebShell.prototype.isDevelopment = function () {
-        var argv = gui.App.argv;
-        return argv.indexOf('-dev') >= 0;
+        // TODO : Check console arguments
     };
 
     /** @override */
     GWebShell.prototype.prepareLoad = function () {
         // Init shell-specific stuff here
-        gravit.storages.push(new GNativeStorage());
-
+        // TODO: re-enable storage
+        //gravit.storages.push(new GNativeStorage());
     };
 
     /** @override */
     GWebShell.prototype.finishLoad = function () {
-        initWindowState();
-        var win = gui.Window.get();
-
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -51,10 +47,13 @@
         $("#gravit-loader").remove();
 
         // Open dev console if desired
+        // TODO : re-enable dev console
+        /*
         var argv = gui.App.argv;
         if (this.isDevelopment() || argv.indexOf('-console') >= 0) {
             win.showDevTools();
         }
+        */
     };
 
     /** @override */
