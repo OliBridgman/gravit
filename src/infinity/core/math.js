@@ -16,6 +16,13 @@
     IFMath.prototype.PI2 = 2 * Math.PI;
 
     /**
+     * 0.5 * Math.PI
+     * @type {Number}
+     * @version 1.0
+     */
+    IFMath.prototype.PIHALF = 0.5 * Math.PI;
+
+    /**
      * The default epsilon to compare, defaults to 1.0e-14
      */
     IFMath.prototype.defaultEps = 1e-14;

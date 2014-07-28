@@ -138,7 +138,7 @@
                         // TODO : I18N
                         .attr('title', 'Equal Spaces')
                         .attr('data-align', GAlignAction.Type.DistributeHorizontal)
-                        .addClass('fa fa-align-justify fa-rotate-270')
+                        .addClass('fa fa-reorder fa-rotate-270')
                         .css('margin-left', '7px'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
@@ -166,7 +166,7 @@
                         // TODO : I18N
                         .attr('title', 'Equal Spaces')
                         .attr('data-align', GAlignAction.Type.DistributeVertical)
-                        .addClass('fa fa-align-justify')
+                        .addClass('fa fa-reorder')
                         .css('margin-left', '7px'))))
             .appendTo(panel);
 

@@ -25,65 +25,48 @@
     IFRect.Side = {
         /**
          * Constant defining the top-left side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        TOP_LEFT: 0,
+        TOP_LEFT: 'tl',
 
         /**
          * Constant defining the top-center side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        TOP_CENTER: 1,
+        TOP_CENTER: 'tc',
 
         /**
          * Constant defining the top-right side of a rectangle
-         * @type {Number}
          */
-        TOP_RIGHT: 2,
+        TOP_RIGHT: 'tr',
 
         /**
          * Constant defining the right-center side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        RIGHT_CENTER: 3,
+        RIGHT_CENTER: 'rc',
 
         /**
          * Constant defining the bottom-right side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        BOTTOM_RIGHT: 4,
+        BOTTOM_RIGHT: 'br',
 
         /**
          * Constant defining the bottom-center side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        BOTTOM_CENTER: 5,
+        BOTTOM_CENTER: 'bc',
 
         /**
          * Constant defining the bottom-left side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        BOTTOM_LEFT: 6,
+        BOTTOM_LEFT: 'bl',
 
         /**
          * Constant defining the left-center side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        LEFT_CENTER: 7,
+        LEFT_CENTER: 'lc',
 
         /**
          * Constant defining the center side of a rectangle
-         * @type {Number}
-         * @version 1.0
          */
-        CENTER: 8
+        CENTER: 'cc'
     };
 
     /**

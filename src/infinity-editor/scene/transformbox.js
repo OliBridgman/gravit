@@ -8,7 +8,6 @@
      * @class IFTransformBox
      * @extends IFElement
      * @mixes IFElement.Transform
-     * @mixes IFElement.Pivot
      * @mixes IFVertexSource
      * @constructor
      */

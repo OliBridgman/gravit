@@ -177,48 +177,6 @@
     IFElement.HitResult.prototype.data = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.Pivot Mixin
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * Marks an element to contain a pivot point
-     * @class IFElement.Pivot
-     * @constructor
-     * @mixin
-     * @version 1.0
-     */
-    IFElement.Pivot = function () {
-    };
-
-    /**
-     * @type {Object|IFPoint}
-     * @private
-     */
-    IFElement.Pivot.prototype._pivot = IFRect.Side.CENTER;
-
-    /**
-     * @return {IFPoint} the (absolute) pivot point
-     * @version 1.0
-     */
-    IFElement.Pivot.prototype.getPivotPoint = function () {
-        var bbox = this.getGeometryBBox();
-        if (bbox == null) {
-            bbox = new IFRect(0, 0, 0, 0);
-        }
-
-        if (this._pivot instanceof IFPoint) {
-            // a pivot point is always relative to our bbox
-            return this._pivot.translated(bbox.getX(), bbox.getY());
-        } else {
-            return bbox.getSide(this._pivot);
-        }
-    };
-
-    /** @override */
-    IFElement.Pivot.prototype.toString = function () {
-        return "[Mixin IFElement.Pivot]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
     // IFElement.Transform Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
