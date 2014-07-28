@@ -351,7 +351,7 @@
 
                     if (copies > 0) {
                         var parent = element.getParent();
-                        var insertReference = element.getNext();
+                        var insertReference = element.getNext() ? element.getNext() : null;
                         for (var c = 0; c < copies; ++c) {
                             var clone = element.clone();
                             parent.insertChild(clone, insertReference);
