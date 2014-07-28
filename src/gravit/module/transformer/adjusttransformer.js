@@ -330,14 +330,20 @@
             }
         } else if (this._transformMode === GAdjustTransformer._TransformMode.Reflect) {
             var angle = parseFloat(transformRows.find('[data-property="axis"]').val()) || 0;
-            var axis = angle === 90 ? 0 : Math.tan(ifMath.toRadians(angle)) || 0;
+            //var axis = angle === 90 ? 0 : Math.tan(ifMath.toRadians(angle)) || 0;
+            angle = ifMath.toRadians(-angle);
+            var cosA = Math.cos(angle);
+            var sinA = Math.sin(angle);
 
             transformFunc = function (step, element) {
                 var origin = element.getGeometryBBox().getSide(pivot);
                 element.transform(new IFTransform()
                     .translated(-origin.getX(), -origin.getY())
+                    .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
+                    .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
+                    .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
                     // TODO : HONOR step as well here!!
-                    .multiplied(new IFTransform(1-axis*axis, 2*axis, 2*axis, axis*axis-1, 0, 0))
+                    //.multiplied(new IFTransform(1-axis*axis, 2*axis, 2*axis, axis*axis-1, 0, 0))
                     .translated(origin.getX(), origin.getY()));
             }
         }
@@ -357,7 +363,6 @@
                             var clone = element.clone();
                             parent.insertChild(clone, insertReference);
                             elementElements.push(clone);
-                            ;
                         }
                     }
                     transformElements.push(elementElements);
