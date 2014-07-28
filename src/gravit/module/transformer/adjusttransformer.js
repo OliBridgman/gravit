@@ -299,7 +299,7 @@
                     var origin = element.getGeometryBBox().getSide(pivot);
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
-                        .scaled(sx  * step, sy * step)
+                        .scaled(sx + (sx - 1) * (step - 1), sy + (sy - 1) * (step - 1))
                         .translated(origin.getX(), origin.getY()));
                 }
             }
