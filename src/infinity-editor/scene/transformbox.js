@@ -33,13 +33,13 @@
      * The size of the transform box annotation
      * @type {Number}
      */
-    IFTransformBox.ANNOT_SIZE = 8;
+    IFTransformBox.ANNOT_SIZE = 6;
 
     /**
      * The margin at which the painted box located from exact transform box around selection
      * @type {Number}
      */
-    IFTransformBox.TRANSFORM_MARGIN = 10;
+    IFTransformBox.TRANSFORM_MARGIN = 0;
 
     /**
      * The identifiers of transform box handles
@@ -194,15 +194,15 @@
             //context.canvas.setLineDash([5]);
             // TODO: draw dashed line
             context.canvas.putVertices(new IFVertexPixelAligner(this));
-            context.canvas.strokeVertices(context.selectionOutlineColor, 1);
+            context.canvas.strokeVertices(IFColor.BLACK, 1);
             for (var side = 0; side < 8 ; ++side) {
                 var pt = this._getPoint(side);
                 ifAnnotation.paintAnnotation(context, null, pt, ifAnnotation.AnnotType.Rectangle,
-                    true, IFTransformBox.ANNOT_SIZE);
+                    false, IFTransformBox.ANNOT_SIZE, IFColor.WHITE, IFColor.BLACK);
             }
         }
         ifAnnotation.paintAnnotation(context, null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
-            ifAnnotation.AnnotType.Circle, true, IFTransformBox.ANNOT_SIZE);
+            ifAnnotation.AnnotType.Circle, false, IFTransformBox.ANNOT_SIZE, IFColor.WHITE, IFColor.BLACK);
         context.canvas.setTransform(canvasTransform);
 
         this._extTransform = null;

@@ -29,8 +29,10 @@
      * @param {Boolean} [selected] whether the annotation should be painted
      * selected or not. Defaults to false.
      * @param {Number} [size] annotation size
+     * @param {IFColor} [stroke] annotation stroke color, if not provided uses defaults
+     * @param {IFColor} [fill] annotation fill color, if not provided uses defaults
      */
-    IFAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size) {
+    IFAnnotation.prototype.paintAnnotation = function (context, transform, center, annotation, selected, size, stroke, fill) {
         var annotationTemplate = this._getAnnotationTemplate(annotation);
 
         // Now paint our annotation
@@ -38,27 +40,24 @@
             center = transform.mapPoint(center);
         }
 
-        var fillColor = context.selectionOutlineColor;
-        var strokeColor = IFColor.WHITE;
+        var fillColor = fill ? fill : context.selectionOutlineColor;
+        var strokeColor = stroke ? stroke : null;
         if (selected) {
-            fillColor = strokeColor;
-            strokeColor = context.selectionOutlineColor;
+            strokeColor = fillColor;
+            fillColor = IFColor.WHITE;
         }
 
-        var cx = Math.floor(center.getX()) + (selected ? 0.5 : 0);
-        var cy = Math.floor(center.getY()) + (selected ? 0.5 : 0);
+        var cx = Math.floor(center.getX()) + (strokeColor ? 0.5 : 0);
+        var cy = Math.floor(center.getY()) + (strokeColor ? 0.5 : 0);
         var sx = size / 2 / annotationTemplate.scaleFactor;
         var sy = size / 2 / annotationTemplate.scaleFactor;
         var canvas = context.canvas;
 
         var vertices = new IFVertexTransformer(annotationTemplate.vertices, new IFTransform(sx, 0, 0, sy, cx, cy));
-        //if (annotation != this.AnnotType.Circle) {
-        //    vertices = new IFVertexPixelAligner(vertices);
-        //}
         canvas.putVertices(vertices);
         canvas.fillVertices(fillColor);
         // TODO : Transform and fill with stroke first, then fill to avoid expensive stroke operations for annotations at all
-        if (selected) {
+        if (strokeColor) {
             canvas.strokeVertices(strokeColor, 1);
         }
     };
