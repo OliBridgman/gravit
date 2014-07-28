@@ -299,7 +299,7 @@
                     var origin = element.getGeometryBBox().getSide(pivot);
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
-                        .scaled(sx, sy)
+                        .scaled(sx  * step, sy * step)
                         .translated(origin.getX(), origin.getY()));
                 }
             }
@@ -311,7 +311,7 @@
                     var origin = element.getGeometryBBox().getSide(pivot);
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
-                        .rotated(angle)
+                        .rotated(angle * step)
                         .translated(origin.getX(), origin.getY()));
                 }
             }
@@ -324,7 +324,7 @@
                     var origin = element.getGeometryBBox().getSide(pivot);
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
-                        .skewed(sx, sy)
+                        .skewed(sx * step, sy * step)
                         .translated(origin.getX(), origin.getY()));
                 }
             }
@@ -336,6 +336,7 @@
                 var origin = element.getGeometryBBox().getSide(pivot);
                 element.transform(new IFTransform()
                     .translated(-origin.getX(), -origin.getY())
+                    // TODO : HONOR step as well here!!
                     .multiplied(new IFTransform(1-axis*axis, 2*axis, 2*axis, axis*axis-1, 0, 0))
                     .translated(origin.getX(), origin.getY()));
             }
