@@ -124,74 +124,29 @@
             // Honor shift
             if (shift) {
                 switch (partData.side) {
-                    case IFRect.Side.TOP_LEFT:
-                    case IFRect.Side.TOP_RIGHT:
-                    case IFRect.Side.BOTTOM_LEFT:
-                    case IFRect.Side.BOTTOM_RIGHT:
-                        // Make equal width / height for edge resize
-                        var newWidth = Math.abs(sourceBBox.getWidth() * sx);
-                        var newHeight = Math.abs(sourceBBox.getHeight() * sy);
-                        if (newWidth > newHeight) {
-                            sy = sy * newWidth / newHeight;
-                        } else {
-                            sx = sx * newHeight / newWidth;
-                        }
-                        break;
                     case IFRect.Side.TOP_CENTER:
                     case IFRect.Side.BOTTOM_CENTER:
-                        // Make equal delta for center resize
                         sx = Math.abs(sy);
                         break;
                     case IFRect.Side.LEFT_CENTER:
                     case IFRect.Side.RIGHT_CENTER:
-                        // Make equal delta for center resize
                         sy = Math.abs(sx);
                         break;
                     default:
+                        if (Math.abs(sx) > Math.abs(sy)) {
+                            if (ifMath.isEqualEps(sy, 0)) {
+                                sy = sx;
+                            } else {
+                                sy = sy * Math.abs(sx) / Math.abs(sy);
+                            }
+                        } else {
+                            if (ifMath.isEqualEps(sx, 0)) {
+                                sx = sy;
+                            } else {
+                                sx = sx * Math.abs(sy) / Math.abs(sx);
+                            }
+                        }
                         break;
-                }
-                if (!option) {
-                    var tl = sourceBBox.getSide(IFRect.Side.TOP_LEFT);
-                    // Calculate horizontal shift
-                    switch (partData.side) {
-                        case IFRect.Side.TOP_LEFT:
-                        case IFRect.Side.LEFT_CENTER:
-                        case IFRect.Side.BOTTOM_LEFT:
-                            t1x = tl.getX() + width;
-                            break;
-                        case IFRect.Side.TOP_RIGHT:
-                        case IFRect.Side.RIGHT_CENTER:
-                        case IFRect.Side.BOTTOM_RIGHT:
-                            t1x = tl.getX();
-                            break;
-                        case IFRect.Side.TOP_CENTER:
-                        case IFRect.Side.BOTTOM_CENTER:
-                            t1x = tl.getX() + width / 2;
-                            break;
-                        default:
-                            break;
-                    }
-                    t2x = t1x;
-
-                    // Calculate vertical shift
-                    switch (partData.side) {
-                        case IFRect.Side.TOP_LEFT:
-                        case IFRect.Side.TOP_CENTER:
-                        case IFRect.Side.TOP_RIGHT:
-                            t1y = tl.getY() + height;
-                            break;
-                        case IFRect.Side.BOTTOM_LEFT:
-                        case IFRect.Side.BOTTOM_CENTER:
-                        case IFRect.Side.BOTTOM_RIGHT:
-                            t1y = tl.getY();
-                            break;
-                        case IFRect.Side.LEFT_CENTER:
-                        case IFRect.Side.RIGHT_CENTER:
-                            t1y = tl.getY() + height / 2;
-                        default:
-                            break;
-                    }
-                    t2y = t1y;
                 }
             }
 
