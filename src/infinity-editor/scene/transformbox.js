@@ -475,7 +475,7 @@
             // Lock angle to 15° if desired
             if (ratio) {
                 var step = ratioStep ? ratioStep : Math.PI / 12;
-                angleDelta = Math.round(angleDelta * step) * step;
+                angleDelta = Math.round(angleDelta / step) * step;
             }
             var cosA = Math.cos(angleDelta);
             var sinA = Math.sin(angleDelta);
