@@ -17,10 +17,6 @@
         document.addEventListener("touchend", this._touchHandler, true);
         document.addEventListener("touchcancel", this._touchHandler, true);
 
-        window.onerror = function(message, url, line) {
-            prompt('Sorry, an error ocurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
-        };
-
         // This is a hack to focus our active window
         // whenever a key is hit down (in capture phase) and
         // if not an editable element is active!

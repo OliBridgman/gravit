@@ -83,12 +83,14 @@ module.exports = function (grunt) {
             },
             dev: {
                 options: {
-                    debugInfo: true
+                    debugInfo: true,
+                    environment: 'development'
                 }
             },
             make: {
                 options: {
                     debugInfo: false,
+                    environment: 'production',
                     generatedImagesDir: '<%= cfg.build %>/source/image/generated'
                 }
             }
@@ -153,12 +155,6 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/desktop/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/desktop/',
                         dest: '<%= cfg.build %>/desktop/',
                         src: ['**']
                     },
@@ -253,7 +249,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('pck', function (target) {
         grunt.task.run([
-            'test',
             'build',
             'clean:pck',
             'copy:pck'

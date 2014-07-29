@@ -8,6 +8,10 @@
     function GWebShell() {
         this._menuBar = new GUIMenuBar();
         this._clipboardMimeTypes = {};
+
+        window.onerror = function(message, url, line) {
+            prompt('Sorry, an error ocurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
+        };
     };
     IFObject.inherit(GWebShell, GShell);
 

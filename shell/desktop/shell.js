@@ -1,84 +1,122 @@
 (function (_) {
+    var remote = require('remote');
+    var Menu = remote.require('menu');
+    var MenuItem = remote.require('menu-item');
+
     /**
-     * The web shell
-     * @class GWebShell
+     * The desktop shell
+     * @class GDesktopShell
      * @extends GShell
      * @constructor
      */
-    function GWebShell() {
-        this._menuBar = new GUIMenuBar();
+    function GDesktopShell() {
         this._clipboardMimeTypes = {};
+
+        window.onerror = function(message, url, line) {
+            console('Sorry, an error ocurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
+        };
+
+        var menu = new Menu();
+
+        menu.append(new MenuItem({ label: 'MenuItem1', click: function () {
+            console.log('item 1 clicked');
+        } }));
+        menu.append(new MenuItem({ type: 'separator' }));
+        menu.append(new MenuItem({ label: 'MenuItem2', type: 'checkbox', checked: true }));
+
+
+        this._menu = new Menu();
+        this._menu.append(new MenuItem({label: 'TEST', submenu: menu}));
+
+
     };
-    IFObject.inherit(GWebShell, GShell);
+    IFObject.inherit(GDesktopShell, GShell);
 
     /**
-     * @type {GUIMenuBar}
+     * @type {Menu}
      * @private
      */
-    GWebShell.prototype._menuBar = null;
+    GDesktopShell.prototype._menu = null;
 
     /**
      * @type {*}
      * @private
      */
-    GWebShell.prototype._clipboardMimeTypes = null;
+    GDesktopShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GWebShell.prototype.isDevelopment = function () {
+    GDesktopShell.prototype.isDevelopment = function () {
         // TODO : Check console arguments
     };
 
     /** @override */
-    GWebShell.prototype.prepareLoad = function () {
+    GDesktopShell.prototype.prepareLoad = function () {
         // Init shell-specific stuff here
         // TODO: re-enable storage
         //gravit.storages.push(new GNativeStorage());
     };
 
     /** @override */
-    GWebShell.prototype.finishLoad = function () {
-        // Append our menu bar element as first child of header
-        var menuElement = this._menuBar._htmlElement;
-        menuElement
-            .css('height', '100%')
-            .prependTo($('#header'));
-
-        // Remove loader
-        $("#gravit-loader").remove();
+    GDesktopShell.prototype.finishLoad = function () {
+        // TODO : Check for mac / window
+        //Menu.setApplicationMenu(this._menu);
 
         // Open dev console if desired
         // TODO : re-enable dev console
         /*
-        var argv = gui.App.argv;
-        if (this.isDevelopment() || argv.indexOf('-console') >= 0) {
-            win.showDevTools();
-        }
-        */
+         var argv = gui.App.argv;
+         if (this.isDevelopment() || argv.indexOf('-console') >= 0) {
+         win.showDevTools();
+         }
+         */
+
+        // Callback
+        gShellFinished();
     };
 
     /** @override */
-    GWebShell.prototype.addMenu = function (parentMenu, title, callback) {
-        parentMenu = parentMenu || this._menuBar.getMenu();
-        var item = new GUIMenuItem(GUIMenuItem.Type.Menu);
-        item.setCaption(title);
-        parentMenu.addItem(item);
+    GDesktopShell.prototype.addMenu = function (parentMenu, title, callback) {
+        parentMenu = parentMenu || this._menu;
+        var menu = new Menu();
 
-        if (callback) {
-            item.getMenu().addEventListener(GUIMenu.OpenEvent, callback);
+        parentMenu.append(new MenuItem({label: title, submenu: menu}));
+
+        //if (callback) {
+            var oldDelegate = menu.delegate.menuWillShow;
+        //console.log(menu.delegate.menuWillShow);
+            var newDelegate = function () {
+                console.log('MENU WILL SHOW');
+                oldDelegate();
+          //      callback();
+                console.log('MENU WILL SHOW DONE');
+            }
+        //}
+
+        menu.delegate.menuWillShow = newDelegate;
+
+        //newDelegate();
+        menu.delegate.menuWillShow();
+
+        menu.delegate.isCommandIdEnabled = function (id) {
+            return false;
         }
 
-        return item.getMenu();
+        return menu;
     };
 
     /** @override */
-    GWebShell.prototype.addMenuSeparator = function (parentMenu) {
-        var item = new GUIMenuItem(GUIMenuItem.Type.Divider);
-        parentMenu.addItem(item);
+    GDesktopShell.prototype.addMenuSeparator = function (parentMenu) {
+        var item = new MenuItem({type: 'separator'});
+        parentMenu.append(item);
         return item;
     };
 
     /** @override */
-    GWebShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GDesktopShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+        var item = new MenuItem({label: title, click: callback});
+
+        /*
+
         var item = new GUIMenuItem(GUIMenuItem.Type.Item);
         if (callback) {
             item.addEventListener(GUIMenuItem.ActivateEvent, callback);
@@ -95,27 +133,33 @@
         this.updateMenuItem(item, title, true, false);
         parentMenu.addItem(item);
         return item;
+        */
+
+        parentMenu.append(item);
+        return item;
     };
 
     /** @override */
-    GWebShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
-        item.setCaption(title);
-        item.setEnabled(enabled);
-        item.setChecked(checked);
+    GDesktopShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+        item.label = title;
+        item.enabled = enabled;
+        //item.setCaption(title);
+        //item.setEnabled(enabled);
+        //item.setChecked(checked);
     };
 
     /** @override */
-    GWebShell.prototype.removeMenuItem = function (parentMenu, child) {
-        parentMenu.removeItem(parentMenu.indexOf(child));
+    GDesktopShell.prototype.removeMenuItem = function (parentMenu, child) {
+        //parentMenu.removeItem(parentMenu.indexOf(child));
     };
 
     /** @override */
-    GWebShell.prototype.getClipboardMimeTypes = function () {
+    GDesktopShell.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GWebShell.prototype.getClipboardContent = function (mimeType) {
+    GDesktopShell.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -123,9 +167,9 @@
     };
 
     /** @override */
-    GWebShell.prototype.setClipboardContent = function (mimeType, content) {
+    GDesktopShell.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GWebShell;
+    _.gShell = new GDesktopShell;
 })(this);
