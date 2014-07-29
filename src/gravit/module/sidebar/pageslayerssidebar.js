@@ -601,6 +601,8 @@
             this._updateLayer(event.node);
         } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
             this._updateLayer(event.node);
+        } else if ((event.node instanceof IFLayer || event.node instanceof IFItem) && (event.flag === IFElement.Flag.Hidden || event.flag === IFElement.Flag.Locked)) {
+            this._updateLayer(event.node);
         }
     };
 
@@ -729,17 +731,24 @@
                 .attr('title', 'Toggle Visibility')
                 .on('click', function () {
                     if (!parentHidden) {
+                        var show = !layerOrItem.getProperty('visible');
+
+                        // Remove highlight when made invisible
+                        if (!show) {
+                            layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                        }
+
                         // TODO : I18N
                         IFEditor.tryRunTransaction(layerOrItem, function () {
-                            layerOrItem.setProperty('visible', !layerOrItem.getProperty('visible'));
+                            layerOrItem.setProperty('visible', show);
                         }, 'Toggle Layer Visibility');
+
+                        // Show highlight when made visible
+                        if (show) {
+                            layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                        }
                     }
                 })
-                .prependTo(container);
-
-
-            // Add highlighter if item
-            visibleContainer
                 .on('mouseenter', function (evt) {
                     if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
                         layerOrItem.setFlag(IFNode.Flag.Highlighted);
@@ -749,7 +758,8 @@
                     if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
                         layerOrItem.removeFlag(IFNode.Flag.Highlighted);
                     }
-                });
+                })
+                .prependTo(container);
 
             // Append outline & color for layers
             if (layerOrItem instanceof IFLayer) {
