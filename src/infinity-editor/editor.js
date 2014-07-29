@@ -214,6 +214,12 @@
     IFEditor.prototype._lastCloneSelection = null;
 
     /**
+     * @type {number}
+     * @private
+     */
+    IFEditor.prototype._selectionUpdateCounter = 0;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -466,7 +472,13 @@
             }
 
             try {
-                var orderedSelection = IFNode.order(this._selection, true);
+                // copy and order selection
+                var orderedSelection = IFNode.order(this._selection.slice(), true);
+
+                // clear selection before deleting it
+                this.clearSelection();
+
+                // now delete
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
                     if (selElement instanceof IFItem && !selElement.hasFlag(IFElement.Flag.Locked)) {
@@ -491,30 +503,35 @@
      * @param {Array<IFElement>} selection the new array of nodes to be selected
      */
     IFEditor.prototype.updateSelection = function (toggle, selection) {
-        if (!toggle) {
-            // Select new selection if any
-            if (selection && selection.length > 0) {
-                for (var i = 0; i < selection.length; ++i) {
-                    selection[i].setFlag(IFNode.Flag.Selected);
-                }
-            }
-
-            // Clear selection except for the selected ones
-            this.clearSelection(selection);
-        } else {
-            // We do toggle the current selection here which
-            // means to either add to current selection or remove
-            // from it
-            if (selection && selection.length) {
-                for (var i = 0; i < selection.length; ++i) {
-                    // Simply invert our selection flag at this point
-                    if (selection[i].hasFlag(IFNode.Flag.Selected)) {
-                        selection[i].removeFlag(IFNode.Flag.Selected);
-                    } else {
+        this._beginSelectionUpdate();
+        try {
+            if (!toggle) {
+                // Select new selection if any
+                if (selection && selection.length > 0) {
+                    for (var i = 0; i < selection.length; ++i) {
                         selection[i].setFlag(IFNode.Flag.Selected);
                     }
                 }
+
+                // Clear selection except for the selected ones
+                this.clearSelection(selection);
+            } else {
+                // We do toggle the current selection here which
+                // means to either add to current selection or remove
+                // from it
+                if (selection && selection.length) {
+                    for (var i = 0; i < selection.length; ++i) {
+                        // Simply invert our selection flag at this point
+                        if (selection[i].hasFlag(IFNode.Flag.Selected)) {
+                            selection[i].removeFlag(IFNode.Flag.Selected);
+                        } else {
+                            selection[i].setFlag(IFNode.Flag.Selected);
+                        }
+                    }
+                }
             }
+        } finally {
+            this._finishSelectionUpdate();
         }
     };
 
@@ -524,13 +541,18 @@
      * from the selection or null for none
      */
     IFEditor.prototype.clearSelection = function (exclusion) {
-        var index = 0;
-        while (this._selection && index < this._selection.length) {
-            if (exclusion && exclusion.indexOf(this._selection[index]) >= 0) {
-                index++;
-                continue;
+        this._beginSelectionUpdate();
+        try {
+            var index = 0;
+            while (this._selection && index < this._selection.length) {
+                if (exclusion && exclusion.indexOf(this._selection[index]) >= 0) {
+                    index++;
+                    continue;
+                }
+                this._selection[index].removeFlag(IFNode.Flag.Selected);
             }
-            this._selection[index].removeFlag(IFNode.Flag.Selected);
+        } finally {
+            this._finishSelectionUpdate();
         }
     };
 
@@ -1073,6 +1095,24 @@
     };
 
     /**
+     * @param {Boolean} paintBBox
+     * @returns {IFRect}
+     */
+    IFEditor.prototype.getSelectionBBox = function (paintBBox) {
+        var selBBox = null;
+        if (this.getSelection()) {
+            for (var i = 0; i < this.getSelection().length; ++i) {
+                var bbox = paintBBox ? this.getSelection()[i].getPaintBBox() : this.getSelection()[i].getGeometryBBox();
+                if (bbox && !bbox.isEmpty()) {
+                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
+                }
+            }
+        }
+
+        return selBBox;
+    };
+
+    /**
      * @param {IFNode.AfterInsertEvent} evt
      * @private
      */
@@ -1240,13 +1280,31 @@
     /**
      * @private
      */
-    IFEditor.prototype._updatedSelection = function () {
-        // Clear last clone selection
-        this._lastCloneSelection = null;
+    IFEditor.prototype._beginSelectionUpdate = function () {
+        this._selectionUpdateCounter += 1;
+    };
 
-        // Trigger selection change event
-        if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
-            this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
+    /**
+     * @private
+     */
+    IFEditor.prototype._finishSelectionUpdate = function () {
+        if (--this._selectionUpdateCounter === 0) {
+            this._updatedSelection();
+        }
+    };
+
+    /**
+     * @private
+     */
+    IFEditor.prototype._updatedSelection = function () {
+        if (this._selectionUpdateCounter === 0) {
+            // Clear last clone selection
+            this._lastCloneSelection = null;
+
+            // Trigger selection change event
+            if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
+                this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
+            }
         }
     };
 
@@ -1425,20 +1483,6 @@
                 }
             }
         }
-    };
-
-    IFEditor.prototype.getSelectionBBox = function (paintBBox) {
-        var selBBox = null;
-        if (this.getSelection()) {
-            for (var i = 0; i < this.getSelection().length; ++i) {
-                var bbox = paintBBox ? this.getSelection()[i].getPaintBBox() : this.getSelection()[i].getGeometryBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
-                }
-            }
-        }
-
-        return selBBox;
     };
 
     /** @override */
