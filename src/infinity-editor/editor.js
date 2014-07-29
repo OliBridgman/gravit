@@ -42,7 +42,12 @@
          * the previous undo steps do not include *any* other changes
          * and when each step has the same action name
          */
-        smartUndoPropertyMerge: true
+        smartUndoPropertyMerge: true,
+
+        /**
+         * The default units to shift when cloning the selection
+         */
+        cloneShift: 10
     };
 
     /**
@@ -203,6 +208,12 @@
     IFEditor.prototype._selection = null;
 
     /**
+     * @type {Array<IFElement>}
+     * @private
+     */
+    IFEditor.prototype._lastCloneSelection = null;
+
+    /**
      * @type {boolean}
      * @private
      */
@@ -358,45 +369,84 @@
     };
 
     /**
-     * Clone current selection (if any) and make it the new selection
-     * @param {Boolean} [noTransaction] if true, will not create a
-     * transaction (undo/redo), defaults to false
+     * Clone current selection (if any) and make it the new selection. Note that
+     * this will not create an undo step, this would have to be done manually.
+     * @param {Boolean} [shift] if true, shifts the new selection a bit from
+     * the original source
+     * @param {Boolean} [history] if set to true (defaults to false), will re-apply
+     * the transformation done on a previous cloned selection if the current selection
+     * is still the same as the previous one and has not been cleared in the meantime
      * @return {Array<IFElement>} the array of clones or null for no clones
      */
-    IFEditor.prototype.cloneSelection = function (noTransaction) {
+    IFEditor.prototype.cloneSelection = function (shift, history) {
         if (this._selection && this._selection.length > 0) {
-            if (!noTransaction) {
-                this.beginTransaction();
+            /** Array<{{element: IFElement, transform: IFTransform}}> */
+            var elementsToClone = [];
+
+            for (var i = 0; i < this._selection.length; ++i) {
+                var element = this._selection[i];
+                if (element.hasMixin(IFNode.Store)) {
+                    elementsToClone.push({
+                        element: element,
+                        transform: shift ? new IFTransform(1, 0, 0, 1, IFEditor.options.cloneShift, IFEditor.options.cloneShift) : null
+                    });
+                }
             }
 
-            try {
-                var clonedSelection = [];
+            var clonedSelection = [];
 
-                for (var i = 0; i < this._selection.length; ++i) {
-                    var selElement = this._selection[i];
-                    if (selElement.hasMixin(IFNode.Store)) {
-                        var clone = selElement.clone();
-                        if (clone) {
-                            // Append clone to parent of selected item
-                            this._selection[i].getParent().appendChild(clone);
-
-                            // Add clone to new selection
-                            clonedSelection.push(clone);
+            if (history) {
+                if (this._lastCloneSelection) {
+                    for (var i = 0; i < this._lastCloneSelection.length; ++i) {
+                        var source = this._lastCloneSelection[i];
+                        var target = elementsToClone[i].element;
+                        if (source.hasMixin(IFElement.Transform) && target.hasMixin(IFElement.Transform)) {
+                            var sourceTransform = source.getTransform();
+                            var targetTransform = target.getTransform();
+                            if (targetTransform) {
+                                var newTransform = sourceTransform ? targetTransform.preMultiplied(sourceTransform.inverted()) : targetTransform;
+                                if (!newTransform.isIdentity()) {
+                                    elementsToClone[i].transform = newTransform;
+                                }
+                            }
                         }
                     }
                 }
+            }
 
-                // Update current selection if any
-                if (clonedSelection.length > 0) {
-                    this.updateSelection(false, clonedSelection);
-                    return clonedSelection;
-                }
-            } finally {
-                if (!noTransaction) {
-                    // TODO : I18N
-                    this.commitTransaction('Clone Selection');
+
+            for (var i = 0; i < elementsToClone.length; ++i) {
+                var element = elementsToClone[i].element;
+                var transform = elementsToClone[i].transform;
+
+                var clone = element.clone();
+                if (clone) {
+                    // Append clone to parent of selected item
+                    element.getParent().appendChild(clone);
+
+                    // Transform clone if desired
+                    if (transform && clone.hasMixin(IFElement.Transform)) {
+                        clone.transform(transform);
+                    }
+
+                    // Add clone to new selection
+                    clonedSelection.push(clone);
                 }
             }
+
+            // Update current selection if any
+            if (clonedSelection.length > 0) {
+                this.updateSelection(false, clonedSelection);
+            }
+
+            if (history) {
+                this._lastCloneSelection = [];
+                for (var i = 0; i < elementsToClone.length; ++i) {
+                    this._lastCloneSelection.push(elementsToClone[i].element);
+                }
+            }
+
+            return clonedSelection;
         }
         return null;
     };
@@ -1188,6 +1238,19 @@
     };
 
     /**
+     * @private
+     */
+    IFEditor.prototype._updatedSelection = function () {
+        // Clear last clone selection
+        this._lastCloneSelection = null;
+
+        // Trigger selection change event
+        if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
+            this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
+        }
+    };
+
+    /**
      * Try to add a node to internal selection if it is selected
      * @param {IFNode} node
      * @private
@@ -1211,10 +1274,7 @@
                 }
                 this._selection.push(node);
 
-                // Trigger selection change event
-                if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
-                    this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
-                }
+                this._updatedSelection();
             }
         }
     };
@@ -1253,16 +1313,7 @@
                 if (this._selection.length == 0) {
                     this._selection = null;
                 }
-
-                // Trigger selection change event
-                if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
-                    this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
-                }
-            }
-        } else if (node instanceof IFNode && node.hasFlag(IFNode.Flag.Selected)) {
-            // Trigger selection change event
-            if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
-                this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
+                this._updatedSelection();
             }
         }
     };

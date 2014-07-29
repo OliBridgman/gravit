@@ -61,12 +61,11 @@
      */
     GDuplicateAction.prototype.execute = function () {
         var editor = gApp.getActiveDocument().getEditor();
+
         editor.beginTransaction();
         try {
-            editor.moveSelection(new IFPoint(10, 10), false);
-            editor.applySelectionTransform(true, true);
+            editor.cloneSelection(true, true);
         } finally {
-            // TODO : I18N
             editor.commitTransaction(ifLocale.get(this.getTitle()));
         }
     };

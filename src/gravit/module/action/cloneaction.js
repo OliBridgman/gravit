@@ -60,7 +60,14 @@
      * @override
      */
     GCloneAction.prototype.execute = function () {
-        gApp.getActiveDocument().getEditor().cloneSelection();
+        var editor = gApp.getActiveDocument().getEditor();
+
+        editor.beginTransaction();
+        try {
+            editor.cloneSelection();
+        } finally {
+            editor.commitTransaction(ifLocale.get(this.getTitle()));
+        }
     };
 
     /** @override */
