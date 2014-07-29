@@ -286,7 +286,7 @@
             var ty = scene.stringToPoint(transformRows.find('[data-property="y"]').val()) || 0;
 
             if (tx !== 0 || ty !== 0) {
-                transformFunc = function (step, element) {
+                transformFunc = function (step, element, origin) {
                     element.transform(new IFTransform(1, 0, 0, 1, tx * step, ty * step));
                 }
             }
@@ -295,8 +295,7 @@
             var sy = parseFloat(transformRows.find('[data-property="h"]').val()) / 100.0 || 1;
 
             if (sx !== 1 || sy !== 1) {
-                transformFunc = function (step, element) {
-                    var origin = element.getGeometryBBox().getSide(pivot);
+                transformFunc = function (step, element, origin) {
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
                         .scaled(sx + (sx - 1) * (step - 1), sy + (sy - 1) * (step - 1))
@@ -307,11 +306,10 @@
             var angle = ifMath.toRadians(parseFloat(transformRows.find('[data-property="angle"]').val())) || 0;
 
             if (angle !== 0) {
-                transformFunc = function (step, element) {
-                    var origin = element.getGeometryBBox().getSide(pivot);
+                transformFunc = function (step, element, origin) {
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
-                        .rotated(angle * step)
+                        .rotated(-angle * step)
                         .translated(origin.getX(), origin.getY()));
                 }
             }
@@ -320,8 +318,7 @@
             var sy = ifMath.toRadians(parseFloat(transformRows.find('[data-property="y"]').val())) || 0;
 
             if ((sx !== 0 || sy !== 0) && (sx > -ifMath.PIHALF && sy > -ifMath.PIHALF && sx < ifMath.PIHALF && sy < ifMath.PIHALF)) {
-                transformFunc = function (step, element) {
-                    var origin = element.getGeometryBBox().getSide(pivot);
+                transformFunc = function (step, element, origin) {
                     element.transform(new IFTransform()
                         .translated(-origin.getX(), -origin.getY())
                         .skewed(sx * step, sy * step)
@@ -335,16 +332,15 @@
             var cosA = Math.cos(angle);
             var sinA = Math.sin(angle);
 
-            transformFunc = function (step, element) {
-                var origin = element.getGeometryBBox().getSide(pivot);
-                element.transform(new IFTransform()
-                    .translated(-origin.getX(), -origin.getY())
-                    .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
-                    .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
-                    .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
-                    // TODO : HONOR step as well here!!
-                    //.multiplied(new IFTransform(1-axis*axis, 2*axis, 2*axis, axis*axis-1, 0, 0))
-                    .translated(origin.getX(), origin.getY()));
+            transformFunc = function (step, element, origin) {
+                if (step % 2) {
+                    element.transform(new IFTransform()
+                        .translated(-origin.getX(), -origin.getY())
+                        .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
+                        .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
+                        .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
+                        .translated(origin.getX(), origin.getY()));
+                }
             }
         }
 
@@ -352,8 +348,12 @@
             // TODO : I18N
             IFEditor.tryRunTransaction(scene, function () {
                 var transformElements = [];
+                var bbox = null;
                 for (var i = 0; i < this._elements.length; ++i) {
                     var element = this._elements[i];
+                    if (pivot) {
+                        bbox = bbox ? bbox.united(element.getGeometryBBox()) : element.getGeometryBBox();
+                    }
                     var elementElements = [element];
 
                     if (copies > 0) {
@@ -368,10 +368,14 @@
                     transformElements.push(elementElements);
                 }
 
+                var pivotPt = null;
+                if (bbox && !bbox.isEmpty()) {
+                    pivotPt = bbox.getSide(pivot);
+                }
                 for (var i = 0; i < transformElements.length; ++i) {
                     var elementElements = transformElements[i];
                     for (var step = 1; step <= elementElements.length; ++step) {
-                        transformFunc(step, elementElements[step - 1]);
+                        transformFunc(step, elementElements[step - 1], pivotPt);
                     }
                 }
             }.bind(this), 'Adjust Transformation');
