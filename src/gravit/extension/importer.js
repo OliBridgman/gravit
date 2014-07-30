@@ -41,15 +41,15 @@
     };
 
     /**
-     * Called when this importer should import a given blob. In this stage,
+     * Called when this importer should import a given url. In this stage,
      * the importer may show an additional options dialog and create new
      * documents or push something into the active document, it is all
      * up to the importer.
-     * @param {Blob} blob the blob the import data should be read from
+     * @param {String} url the url the import data should be read from
      * @param {Function} done the callback function called with the
      * boolean result of the import (true/false)
      */
-    GImporter.prototype.import = function (blob, done) {
+    GImporter.prototype.import = function (url, done) {
         throw new Error('Not Supported.');
     };
 

@@ -17,7 +17,7 @@
         document.addEventListener("touchend", this._touchHandler, true);
         document.addEventListener("touchcancel", this._touchHandler, true);
 
-        window.onerror = function(message, url, line) {
+        window.onerror = function (message, url, line) {
             prompt('Sorry, an error ocurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
         };
 
@@ -116,7 +116,7 @@
         Removed: 1,
         Deactivated: 10,
         Activated: 11,
-        BlobUpdated: 12
+        UrlUpdated: 12
     };
 
     /**
@@ -346,55 +346,79 @@
     };
 
     /**
+     * Returns the storage for a given url by it's protocol
+     * @param {String} url
+     * @return {GStorage}
+     */
+    GApplication.prototype.getStorage = function (url) {
+        var protocol = url.substr(0, url.indexOf(':'));
+        if (protocol && protocol.length) {
+            for (var i = 0; i < gravit.storages.length; ++i) {
+                if (gravit.storages[i].getProtocol() === protocol) {
+                    return gravit.storages[i];
+                }
+            }
+        }
+        return null;
+    };
+
+    /**
      * Add a new document and open up a window for it
      * and mark the view as being active
      * @param {IFScene} scene the scene to add the document from it
      * @param {String} [temporaryTitle] optional temporary title to be used
-     * for the document if no blob is assigned, defaults to null to use
+     * for the document if no url is assigned, defaults to null to use
      * the default naming scheme
      */
     GApplication.prototype.addDocument = function (scene, temporaryTitle) {
-        this._addDocument(scene, null, temporaryTitle);
+        // TODO : I18N
+        var document = new GDocument(scene, null, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
+        this._addDocument(document);
     };
 
     /**
      * Open a document and open up a window for it
      * and mark the view as being active
-     * @param {GBlob} blob the blob to open the document from
+     * @param {String} url the url to open the document from
      */
-    GApplication.prototype.openDocument = function (blob) {
+    GApplication.prototype.openDocument = function (url) {
         // Iterate all documents first and look if the given
-        // blob is already opened and if so, activate the
+        // url is already opened and if so, activate the
         // document's last view
         var documentAlreadyOpened = false;
         for (var i = 0; i < this._documents.length; ++i) {
             var document = this._documents[i];
-            if (document.getBlob() === blob) {
+            if (document.getUrl() === url) {
                 this.activateDocument(document);
                 documentAlreadyOpened = true;
             }
         }
 
         if (!documentAlreadyOpened) {
-            blob.restore(true, function (data) {
-                var scene = null;
-                try {
-                    data = pako.inflate(new Uint8Array(data), { to: 'string' });
-
-                    scene = IFNode.deserialize(data);
-
-                    if (!scene) {
-                        throw new Error('Failure.');
+            var storage = this.getStorage(url);
+            if (storage) {
+                storage.load(url, true, function (data, name) {
+                    var scene = new IFScene();
+                    var document = new GDocument(scene, url, name);
+                    try {
+                        var source = pako.inflate(new Uint8Array(data), { to: 'string' });
+                        var blob = JSON.parse(source);
+                        if (!scene.restore(blob)) {
+                            throw new Error('Failure.');
+                        }
+                    } catch (e) {
+                        document.close();
+                        scene = null;
+                        document = null;
+                        console.log(e);
+                        alert('An error has ocurred while trying to open the document.');
                     }
-                } catch (e) {
-                    console.log(e);
-                    alert('An error has ocurred while trying to open the document.');
-                }
 
-                if (scene) {
-                    this._addDocument(scene, blob);
-                }
-            }.bind(this));
+                    if (document) {
+                        this._addDocument(document);
+                    }
+                }.bind(this));
+            }
         }
     };
 
@@ -409,8 +433,8 @@
 
         if (document) {
             // TODO : Set first parameter 'reference'
-            storage.saveBlobPrompt(null, document.getTitle(), 'gravit', function (blob) {
-                document.setBlob(blob);
+            storage.savePrompt(null, document.getTitle(), 'gravit', function (url) {
+                document.setUrl(url)
                 document.save();
 
                 // Update all view window menu items
@@ -421,7 +445,7 @@
 
                 // Trigger event
                 if (this.hasEventListeners(GApplication.DocumentEvent)) {
-                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.BlobUpdated, this));
+                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.UrlUpdated, this));
                 }
             }.bind(this));
         }
@@ -487,6 +511,9 @@
 
             // Release document editor
             document.getEditor().close();
+
+            // Release document
+            document.close();
 
             // Remove and trigger event
             this._documents.splice(this._documents.indexOf(document), 1);
@@ -709,16 +736,10 @@
 
     /**
      * Add a new document
-     * @param {IFScene} scene
-     * @param {GBlob} blob
-     * @param {String} [temporaryTitle]
+     * @param {GDocument} document
      * @private
      */
-    GApplication.prototype._addDocument = function (scene, blob, temporaryTitle) {
-        // Initiate a new document instance
-        // TODO : I18N
-        var document = new GDocument(scene, blob, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
-
+    GApplication.prototype._addDocument = function (document) {
         // Send an event
         if (this.hasEventListeners(GApplication.DocumentEvent)) {
             this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.Added, document));

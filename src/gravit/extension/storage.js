@@ -16,7 +16,7 @@
     };
 
     /**
-     * Returns whether this storage can also save blobs or not (open only)
+     * Returns whether this storage can also save urls or not (load only)
      * @return {Boolean}
      */
     GStorage.prototype.isSaving = function () {
@@ -58,51 +58,54 @@
     };
 
     /**
-     * Prompt for opening a blob and open it
-     * @param {GBlob} reference a reference blob to set i.e.
+     * Prompt for opening an url
+     * @param {String} reference a reference url to set i.e.
      * the current working directory from, defaults to null
      * @param {Array<String>} extensions array of extensions to limit
      * the selection to, can be null for all
-     * @param {Function} done called with the blob for
-     * restoring
+     * @param {Function} done called with the url
      */
-    GStorage.prototype.openBlobPrompt = function (reference, extensions, done) {
+    GStorage.prototype.openPrompt = function (reference, extensions, done) {
         throw new Error('Not supported.');
     };
 
     /**
-     * Prompt for saving a blob
-     * @param {GBlob} reference a reference blob to set i.e.
+     * Prompt for saving to an url
+     * @param {String} reference a reference url to set i.e.
      * the current working directory from, defaults to null
      * @param {String} proposedName the proposed default name,
      * maybe null for none
      * @param {String} extension the desired extension to be
-     * used for the blob resource, can be null
-     * @param {Function} done called with the blob for
-     * storing
+     * used for the url resource, can be null
+     * @param {Function} done called with the url
      */
-    GStorage.prototype.saveBlobPrompt = function (reference, proposedName, extension, done) {
+    GStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
         throw new Error('Not supported.');
     };
 
     /**
-     * Open a blob from a given location
-     * @param {String} location the blob-specific location
-     * @param {Function} done called with the blob for
-     * restoring
+     * Load from an url
+     * @param {String} url the url to load from
+     * @param {Boolean} binary if true, the data is read as binary,
+     * otherwise it is read as String
+     * @param {Function} callback called with the data restored which
+     * is either an ArrayBuffer for binary or a String and the name
+     * @return {String}
      */
-    GStorage.prototype.openBlob = function (location, done) {
-        throw new Error('Not supported.');
+    GStorage.prototype.load = function (url, binary, done) {
+        throw new Error('Not Supported.');
     };
 
     /**
-     * Save a blob to a given location
-     * @param {String} location the blob-specific location
-     * @param {Function} [done] called with the blob for
-     * storing
+     * Save data to an url
+     * @param {String} url the url to save to
+     * @param {ArrayBuffer|String} data the data to store. If
+     * binary is set to true, an ArrayBuffer is expected, otherwise a string
+     * @param {Boolean} binary whether the data is binary or not
+     * @param {Function} callback called when data was stored with the name
      */
-    GStorage.prototype.saveBlob = function (location, done) {
-        throw new Error('Not supported.');
+    GStorage.prototype.save = function (url, data, binary, done) {
+        throw new Error('Not Supported.');
     };
 
     _.GStorage = GStorage;

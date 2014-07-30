@@ -57,11 +57,13 @@
      */
     GPlaceImageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
-        document.getBlob().getStorage().openBlobPrompt(document.getBlob(), ['jpg', 'jpeg', 'png', 'gif'], function (blob) {
-            var activePageCenter = document.getScene().getActivePage().getGeometryBBox().getSide(IFRect.Side.CENTER);
-
+        document.getStorage().openPrompt(document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
+            var imagePos = document.getScene().getActivePage().getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
             var image = new IFImage();
-            image.setProperties(['src', 'transform'], [blob.getLocation(), new IFTransform(1, 0, 0, 1, activePageCenter.getX(), activePageCenter.getY())]);
+
+            // TODO : Make url relative to document if it has any url
+
+            image.setProperties(['url', 'transform'], [url, new IFTransform(1, 0, 0, 1, imagePos.getX(), imagePos.getY())]);
             image.transform();
             document.getEditor().insertElements([image]);
         });

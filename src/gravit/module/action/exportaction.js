@@ -47,15 +47,7 @@
      * @override
      */
     GExportAction.prototype.execute = function () {
-        // TODO : Handle progress dialog
-
-        var document = gApp.getActiveDocument();
-
-        this._export.export(document.getScene(), function (blob) {
-            if (blob) {
-                saveAs(blob, document.getTitle() + '.' + this._export.getExtension());
-            }
-        }.bind(this));
+        // TODO
     };
 
     /** @override */

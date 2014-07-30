@@ -16,67 +16,19 @@
                     var location = file.path;
 
                     if (this._fileInputMode === 'open') {
-                        this.openBlob(location, this._fileInputCallback);
+                        this._fileInputCallback(this.getProtocol() + ':' + location);
                     } else if (this._fileInputMode === 'save') {
                         var extension = this._fileInput.attr('data-extension');
                         if (extension && !location.match("\\." + extension + "$")) {
                             location += "." + extension;
                         }
-                        this.saveBlob(location, this._fileInputCallback);
+                        this._fileInputCallback(this.getProtocol() + ':' + location);
                     }
                 }
             }.bind(this))
             .appendTo($('body'));
     };
     IFObject.inherit(GNativeStorage, GStorage);
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GNativeStorage._Blob Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @class GNativeStorage._Blob
-     * @extends GBlob
-     * @private
-     */
-    GNativeStorage._Blob = function (storage, location, name) {
-        GBlob.call(this, storage, location, name);
-    };
-    IFObject.inherit(GNativeStorage._Blob, GBlob);
-
-    /** @override */
-    GNativeStorage._Blob.prototype.restore = function (binary, done) {
-        var buffer = fs.readFileSync(this._location, binary ? null : 'utf8');
-
-        if (buffer) {
-            if (binary) {
-                var ab = new ArrayBuffer(buffer.length);
-                var view = new Uint8Array(ab);
-                for (var i = 0; i < buffer.length; ++i) {
-                    view[i] = buffer[i];
-                }
-                buffer = ab;
-            }
-
-            done(buffer);
-        }
-    };
-
-    /** @override */
-    GNativeStorage._Blob.prototype.store = function (data, binary, done) {
-        if (binary) {
-            data = new Buffer(new Uint8Array(data));
-        }
-
-        fs.writeFileSync(this._location, data, binary ? null : 'utf8');
-
-        if (done) {
-            done();
-        }
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GNativeStorage Class
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {String}
@@ -122,7 +74,7 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.openBlobPrompt = function (reference, extensions, done) {
+    GNativeStorage.prototype.openPrompt = function (reference, extensions, done) {
         var filter = "*.*";
         if (extensions) {
             filter = "";
@@ -145,7 +97,7 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.saveBlobPrompt = function (reference, proposedName, extension, done) {
+    GNativeStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
         this._fileInputMode = 'save';
         this._fileInputCallback = done;
         this._fileInput
@@ -157,15 +109,37 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.openBlob = function (location, done) {
-        // TODO : Check if location exists
-        done(new GNativeStorage._Blob(this, location, this._extractFileName(location)));
+    GNativeStorage.prototype.load = function (url, binary, done) {
+        var location = url.substr(this.getProtocol().length + 1);
+        var buffer = fs.readFileSync(location, binary ? null : 'utf8');
+
+        if (buffer) {
+            if (binary) {
+                var ab = new ArrayBuffer(buffer.length);
+                var view = new Uint8Array(ab);
+                for (var i = 0; i < buffer.length; ++i) {
+                    view[i] = buffer[i];
+                }
+                buffer = ab;
+            }
+
+            done(buffer, this._extractFileName(location));
+        }
     };
 
     /** @override */
-    GNativeStorage.prototype.saveBlob = function (location, done) {
-        // TODO : Check if location is writeable
-        done(new GNativeStorage._Blob(this, location, this._extractFileName(location)));
+    GNativeStorage.prototype.save = function (url, data, binary, done) {
+        var location = url.substr(this.getProtocol().length + 1);
+
+        if (binary) {
+            data = new Buffer(new Uint8Array(data));
+        }
+
+        fs.writeFileSync(location, data, binary ? null : 'utf8');
+
+        if (done) {
+            done(this._extractFileName(location));
+        }
     };
 
     /**

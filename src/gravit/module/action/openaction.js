@@ -60,8 +60,8 @@
      */
     GOpenAction.prototype.execute = function () {
         // TODO : Set first parameter 'reference'
-        this._storage.openBlobPrompt(null, ['gravit'], function (blob) {
-            gApp.openDocument(blob);
+        this._storage.openPrompt(null, ['gravit'], function (url) {
+            gApp.openDocument(url);
 
             // Center page
             gApp.executeAction(GOriginalViewAction.ID);
