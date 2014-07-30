@@ -229,6 +229,8 @@
             importActions,
             exportActions,
 
+            new GPlaceImageAction(),
+
             new GCloseAction(),
             new GCloseAllAction(),
 

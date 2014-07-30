@@ -10,7 +10,7 @@ var gravit = {
     storages: [],
 
     /**
-     * Array<GImport>
+     * Array<GImporter>
      */
     importers: [],
 

@@ -18,6 +18,7 @@ ifLocale.setValues(GFitCurrentLayerAction, IFLocale.Language.English, ["title"],
 ifLocale.setValues(GFitCurrentPageAction, IFLocale.Language.English, ["title"], ["Fit Page"]);
 ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["Fit Selection"]);
 ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
+ifLocale.setValues(GPlaceImageAction, IFLocale.Language.English, ["title"], ["Place Image..."]);
 ifLocale.setValues(GImportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
 ifLocale.setValues(GInvertSelectionAction, IFLocale.Language.English, ["title"], ["Invert Selection"]);
 ifLocale.setValues(GLayerTypeAction, IFLocale.Language.English, ["title"], ["%name% Layer"]);
