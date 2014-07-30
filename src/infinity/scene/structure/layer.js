@@ -77,6 +77,12 @@
                 return value;
             });
             this.storeProperties(blob, IFLayer.MetaProperties);
+
+            // Store activeness flag which is special to pages and layers
+            if (this.hasFlag(IFNode.Flag.Active)) {
+                blob.__active = true;
+            }
+
             return true;
         }
         return false;
@@ -92,6 +98,12 @@
                 return value;
             });
             this.restoreProperties(blob, IFLayer.MetaProperties);
+
+            // Restore activeness flag which is special to pages and layers
+            if (blob.__active) {
+                this.setFlag(IFNode.Flag.Active);
+            }
+
             return true;
         }
         return false;

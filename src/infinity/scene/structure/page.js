@@ -47,6 +47,12 @@
         if (IFBlock.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFPage.GeometryProperties);
             this.storeProperties(blob, IFPage.VisualProperties);
+
+            // Store activeness flag which is special to pages and layers
+            if (this.hasFlag(IFNode.Flag.Active)) {
+                blob.__active = true;
+            }
+
             return true;
         }
         return false;
@@ -57,6 +63,12 @@
         if (IFBlock.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFPage.GeometryProperties);
             this.restoreProperties(blob, IFPage.VisualProperties);
+
+            // Restore activeness flag which is special to pages and layers
+            if (blob.__active) {
+                this.setFlag(IFNode.Flag.Active);
+            }
+
             return true;
         }
         return false;
