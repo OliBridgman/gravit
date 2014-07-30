@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * Guides for managing guides like grid, smart guides etc.
+     * The guide manager
      * @param {IFScene} scene
      * @class IFGuides
      * @extend GEventTarget
@@ -8,6 +8,11 @@
      */
     function IFGuides(scene) {
         this._scene = scene;
+        this._guides = [];
+
+        // guides go from last to first
+        this.addGuide(new IFUnitGuide(this));
+        this.addGuide(new IFGridGuide(this));
     }
 
     IFObject.inherit(IFGuides, GEventTarget);
@@ -17,6 +22,12 @@
      * @private
      */
     IFGuides.prototype._scene = null;
+
+    /**
+     * @type {Array<IFGuide>}
+     * @private
+     */
+    IFGuides.prototype._guides = null;
 
     /**
      * Call this if you want to start mapping. This needs
@@ -87,18 +98,22 @@
         return result;
     };
 
-    IFGuides.prototype.mapRect = function (rect) {
-        // TODO
-    };
-
     /**
      * Called whenever the guides should paint itself
      * @param {IFTransform} transform the transformation of the scene
      * @param {IFPaintContext} context
      */
     IFGuides.prototype.paint = function (transform, context) {
-        //var fillRect = context.canvas.getTransform(false).inverted().mapRect(new IFRect(0, 150.5, context.canvas.getWidth(), context.canvas.getHeight()));
-        //context.canvas.strokeLine(fillRect.getX(), fillRect.getY(), fillRect.getX() + fillRect.getWidth(), fillRect.getY(), 1, context.guideOutlineColor);
+        var fillRect = context.canvas.getTransform(false).inverted().mapRect(new IFRect(0, 150.5, context.canvas.getWidth(), context.canvas.getHeight()));
+        context.canvas.strokeLine(fillRect.getX(), fillRect.getY(), fillRect.getX() + fillRect.getWidth(), fillRect.getY(), 1, context.guideOutlineColor);
+    };
+
+    /**
+     * Add a guide to this manager
+     * @param {IFGuide} guide
+     */
+    IFGuides.prototype.addGuide = function (guide) {
+        this._guides.push(guide);
     };
 
     /** @override */
