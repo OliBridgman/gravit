@@ -9,7 +9,8 @@
         "opentype.js": "git://github.com/nodebox/opentype.js.git#latest",
         "pako": "latest",
         "rangy": "latest",
-        "color-thief": "latest"
+        "color-thief": "latest",
+        "uri.js": "latest"
     },
     "devDependencies": {},
     "private": true
