@@ -58,7 +58,10 @@ module.exports = function (grunt) {
         clean: {
             dev: '<%= cfg.tmp %>',
             make: '<%= cfg.build %>',
-            pck: '<%= cfg.pck %>'
+            pck: {
+                src: ['<%= cfg.pck %>/**', '!<%= cfg.pck %>/desktop/cache/**/*'],
+                filter: 'isFile'
+            }
         },
         mocha: {
             all: {
@@ -96,8 +99,8 @@ module.exports = function (grunt) {
         concat: {
             make: {
                 files: {
-                    '<%= cfg.build %>/desktop/gravit-shell.js': ['shell/desktop/nativestorage.js', 'shell/desktop/shell.js'],
-                    '<%= cfg.build %>/web/gravit-shell.js': ['shell/web/shell.js']
+                    '<%= cfg.build %>/desktop/gravit-shell.js': ['shell/desktop/*.js'],
+                    '<%= cfg.build %>/web/gravit-shell.js': ['shell/web/*.js']
                 }
             }
         },
@@ -166,15 +169,8 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'shell/desktop/',
                         dest: '<%= cfg.build %>/desktop/',
-                        src: ['index.html', 'package.json', 'main.js']
+                        src: ['index.html', 'package.json']
                     },
-                    {
-                        expand: true,
-                        cwd: 'bower_components/jquery/',
-                        dest: '<%= cfg.build %>/desktop/',
-                        src: ['jquery.min.js']
-                    },
-
                     // Web
                     {
                         expand: true,
@@ -215,6 +211,22 @@ module.exports = function (grunt) {
             },
             html: ['<%= cfg.build %>/source/{,*/}*.html'],
             css: ['<%= cfg.build %>/source/{,*/}*.css']
+        },
+        nodewebkit: {
+            options: {
+                //download_url: 'http://s3.amazonaws.com/quasado-node-webkit/',
+                //version: '0.10.0-rc1',
+                build_dir: '<%= cfg.pck %>/desktop',
+                mac: true,
+                win: true,
+                linux32: true,
+                linux64: true,
+                mac_icns: 'shell/desktop/appicon.icns',
+                zip: false,
+                app_name: '<%= pkg.name %>',
+                app_version: '<%= pkg.version %>'
+            },
+            src: '<%= cfg.build %>/desktop/**/*'
         }
     });
 
@@ -256,7 +268,8 @@ module.exports = function (grunt) {
             'test',
             'build',
             'clean:pck',
-            'copy:pck'
+            'copy:pck',
+            'nodewebkit'
         ]);
     });
 

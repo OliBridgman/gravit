@@ -8,21 +8,7 @@
     <link rel="stylesheet" href="gravit.css">
 </head>
 <body>
-
-<!-- EVIL HACK to force our libraries to load into Browser-Window not Node -->
-<script type="text/javascript">
-    var oldExports = module.exports;
-    delete module.exports;
-</script>
-
-<script src="jquery.min.js"></script>
 <script src="gravit-libraries.js"></script>
-
-<!-- EVIL HACK END -->
-<script type="text/javascript">
-    module.exports = oldExports;
-</script>
-
 <script src="gravit-infinity.js"></script>
 <script src="gravit-infinity-editor.js"></script>
 <script src="gravit.js"></script>
