@@ -78,7 +78,7 @@
                 .attr('title', hint)
                 .attr('data-apply', apply)
                 .append($('<span></span>')
-                    .addClass('fa fa-' + (apply === 'selection' ? 'th-large' : 'square')))
+                    .addClass('fa fa-' + (apply === 'selection' ? 'square' : 'th-large')))
                 .on('click', function () {
                     if (!$(this).hasClass('g-active')) {
                         if (apply === 'selection') {

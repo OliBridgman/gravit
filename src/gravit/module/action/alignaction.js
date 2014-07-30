@@ -89,6 +89,8 @@
     /**
      * @param {Array<IFElement>} [elements] optional elements, if not given
      * uses the selection
+     * @param {Boolean} [compound] if provided, aligns the whole element's bbox,
+     * otherwise if false (default), aligns each element individually
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for alignment, otherwise use paint box. Defaults
      * to false.
@@ -96,7 +98,7 @@
      * given uses the element's total bbox
      * @override
      */
-    GAlignAction.prototype.isEnabled = function (elements, geometry, referenceBox) {
+    GAlignAction.prototype.isEnabled = function (elements, compound, geometry, referenceBox) {
         elements = elements || (gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor().getSelection() : null);
         if (elements) {
             return referenceBox ? elements.length > 0 : elements.length > 1;
@@ -107,6 +109,8 @@
     /**
      * @param {Array<IFElement>} [elements] optional elements, if not given
      * uses the selection
+     * @param {Boolean} [compound] if provided, aligns the whole element's bbox,
+     * otherwise if false (default), aligns each element individually
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for alignment, otherwise use paint box. Defaults
      * to false.
@@ -114,7 +118,7 @@
      * given uses the element's total bbox
      * @override
      */
-    GAlignAction.prototype.execute = function (elements, geometry, referenceBox) {
+    GAlignAction.prototype.execute = function (elements, compound, geometry, referenceBox) {
         var document = gApp.getActiveDocument();
         var scene = document.getScene();
 
@@ -125,6 +129,7 @@
         var tmpElements = elements;
         var elements = [];
 
+        var elementsBBox = null;
         for (var i = 0; i < tmpElements.length; ++i) {
             var element = tmpElements[i];
             if (element.hasMixin(IFElement.Transform)) {
@@ -132,6 +137,8 @@
                 if (!bbox || bbox.isEmpty()) {
                     continue;
                 }
+
+                elementsBBox = !elementsBBox ? bbox : elementsBBox.united(bbox);
 
                 elements.push({
                     bbox: bbox,
@@ -197,7 +204,7 @@
 
             } else {
                 for (var i = 0; i < elements.length; ++i) {
-                    var bbox = elements[i].bbox;
+                    var bbox = compound ? elementsBBox : elements[i].bbox;
                     var element = elements[i].element;
 
                     switch (this._type) {

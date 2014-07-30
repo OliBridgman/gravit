@@ -34,6 +34,12 @@
     GAlignTransformer.prototype._panel = null;
 
     /**
+     * @type {JQuery}
+     * @private
+     */
+    GAlignTransformer.prototype._controls = null;
+
+    /**
      * @type {GDocument}
      * @private
      */
@@ -54,6 +60,7 @@
     /** @override */
     GAlignTransformer.prototype.init = function (panel, controls) {
         this._panel = panel;
+        this._controls = controls;
 
         $('<table></table>')
             .addClass('g-form')
@@ -90,7 +97,10 @@
                         .append($('<option></option>')
                             .attr('value', GAlignTransformer._AlignTo.LastElement)
                             // TODO : I18N
-                            .text('Last Selected Element')))))
+                            .text('Last Selected Element'))
+                        .on('change', function () {
+                            this._updateControls();
+                        }.bind(this)))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -170,6 +180,34 @@
                         .css('margin-left', '7px'))))
             .appendTo(panel);
 
+        var _createApplyButton = function (apply) {
+            var self = this;
+            // TODO : I18N
+            var hint = apply === 'selection' ? 'Apply to selection' : 'Apply to individual objects';
+            return $('<button></button>')
+                .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
+                .attr('title', hint)
+                .attr('data-apply', apply)
+                .append($('<span></span>')
+                    .addClass('fa fa-' + (apply === 'selection' ? 'square' : 'th-large')))
+                .on('click', function () {
+                    if (!$(this).hasClass('g-active')) {
+                        if (apply === 'selection') {
+                            self._controls.find('button[data-apply="objects"]').removeClass('g-active');
+                            self._controls.find('button[data-apply="selection"]').addClass('g-active');
+                        } else {
+                            self._controls.find('button[data-apply="selection"]').removeClass('g-active');
+                            self._controls.find('button[data-apply="objects"]').addClass('g-active');
+                        }
+                    }
+                });
+        }.bind(this);
+
+        // Init controls
+        controls
+            .append(_createApplyButton('selection'))
+            .append(_createApplyButton('objects'));
+
         var alignHandler = function (evt) {
             this._align($(evt.target).attr('data-align'))
         }.bind(this);
@@ -183,6 +221,9 @@
     GAlignTransformer.prototype.update = function (document, elements) {
         this._document = document;
         this._elements = elements;
+
+        this._updateControls();
+
         return true;
     };
 
@@ -197,8 +238,9 @@
         var scene = this._document.getScene();
         var activePage = scene.getActivePage();
         var activeLayer = scene.getActiveLayer();
+        var alignTo = this._panel.find('select[data-option="align-to"]').val();
 
-        switch (this._panel.find('select[data-option="align-to"]').val()) {
+        switch (alignTo) {
             case GAlignTransformer._AlignTo.Layer:
                 referenceBox = activeLayer.getPaintBBox();
                 break;
@@ -224,10 +266,20 @@
 
         if (elements.length > 0) {
             var geometry = this._panel.find('select[data-option="align-on"]').val() === GAlignTransformer._AlignOn.Geometry;
+            var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._controls.find('button[data-apply="selection"]').hasClass('g-active') : false;
 
             // Execute align action now
-            gApp.executeAction(GAlignAction.ID + '.' + type, [elements, geometry, referenceBox]);
+            gApp.executeAction(GAlignAction.ID + '.' + type, [elements, compound, geometry, referenceBox]);
         }
+    };
+
+    /** @private */
+    GAlignTransformer.prototype._updateControls = function () {
+        var alignTo = this._panel.find('select[data-option="align-to"]').val();
+        var compoundCtrlsVisible = alignTo !== GAlignTransformer._AlignTo.Selection && this._elements.length > 1;
+
+        this._controls.find('button[data-apply="selection"]').css('display', compoundCtrlsVisible ? '' : 'none');
+        this._controls.find('button[data-apply="objects"]').css('display', compoundCtrlsVisible ? '' : 'none');
     };
 
     /** @override */
