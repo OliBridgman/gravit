@@ -61,7 +61,7 @@
             var activePageCenter = document.getScene().getActivePage().getGeometryBBox().getSide(IFRect.Side.CENTER);
 
             var image = new IFImage();
-            image.setProperties(['src', 'transform'], ['#', new IFTransform(1, 0, 0, 1, activePageCenter.getX(), activePageCenter.getY())]);
+            image.setProperties(['src', 'transform'], [blob.getLocation(), new IFTransform(1, 0, 0, 1, activePageCenter.getX(), activePageCenter.getY())]);
             image.transform();
             document.getEditor().insertElements([image]);
         });

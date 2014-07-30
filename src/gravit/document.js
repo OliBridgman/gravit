@@ -14,6 +14,11 @@
         this._activeWindow = null;
         // TODO : I18N
         this._temporaryTitle = temporaryTitle;
+
+        // Provide an url resolver to our scene
+        this._scene.addEventListener(IFScene.ResolveUrlEvent, function (evt) {
+            console.log('RESOLVE_URL: ' + evt.url);
+        });
     };
     IFObject.inherit(GDocument, GEventTarget);
 

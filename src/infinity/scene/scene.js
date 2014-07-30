@@ -103,6 +103,35 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFScene.ResolveUrlEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event for resolving a given url. If one handles this event,
+     * it should call the resolved callback with the resolved url
+     * @param {String} url
+     * @param {Function} resolved
+     * @class IFScene.ResolveUrlEvent
+     * @extends GEvent
+     * @constructor
+     */
+    IFScene.ResolveUrlEvent = function (url, resolved) {
+        this.url = url;
+        this.resolved = resolved;
+    };
+    IFObject.inherit(IFScene.ResolveUrlEvent, GEvent);
+
+    /** @type String */
+    IFScene.ResolveUrlEvent.prototype.url = null;
+
+    /** @type Function */
+    IFScene.ResolveUrlEvent.prototype.resolved = null;
+
+    /** @override */
+    IFScene.ResolveUrlEvent.prototype.toString = function () {
+        return "[Event IFScene.ResolveUrlEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFScene.StyleCollection Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -505,6 +534,24 @@
             return this._references[referenceId];
         }
         return null;
+    };
+
+    /**
+     * Try to resolve a given url. This is asynchron.
+     * If the url is null or empty or a data url, it
+     * is returned as is. Otherwise, if it was resolved,
+     * the given resolved function containing the resolved
+     * url as parameter will be called.
+     * @param {String} url
+     * @param {Function} resolved
+     * @return {String}
+     */
+    IFScene.prototype.resolveUrl = function (url, resolved) {
+        if (!url || url.indexOf('data:') === 0) {
+            resolved(url);
+        } else if (this.hasEventListeners(IFScene.ResolveUrlEvent)) {
+            this.trigger(new IFScene.ResolveUrlEvent(url, resolved));
+        }
     };
 
     /** @override */

@@ -22,7 +22,7 @@
      * Visual properties of an image
      */
     IFImage.VisualProperties = {
-        src: null
+        url: null
     };
 
     /**
@@ -30,8 +30,10 @@
      */
     IFImage.ImageStatus = {
         Loaded: 0,
-        Loading: 1,
-        Error: 2
+        Resolving: 1,
+        Loading: 2,
+        Delayed: 3,
+        Error: 10
     };
 
     /**
@@ -115,7 +117,7 @@
     IFImage.prototype.restore = function (blob) {
         if (IFShape.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFImage.VisualProperties);
-            this._updatedImage();
+            this._updateImage();
             return true;
         }
         return false;
@@ -185,8 +187,7 @@
                     context.canvas.drawImage(this._image);
                     break;
 
-                case IFImage.ImageStatus.Loading:
-                case IFImage.ImageStatus.Error:
+                default:
                     var width = this._getWidth();
                     var height = this._getHeight();
 
@@ -199,9 +200,6 @@
                         context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
                         context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
                     }
-                    break;
-
-                default:
                     break;
             }
 
@@ -221,12 +219,20 @@
     /** @override */
     IFImage.prototype._handleChange = function (change, args) {
         if (change == IFNode._Change.AfterPropertiesChange) {
-            if (args.properties.indexOf('src') >= 0) {
+            if (args.properties.indexOf('url') >= 0) {
                 this._updateImage();
             }
         }
 
         IFShape.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
+    IFImage.prototype._setScene = function (scene) {
+        IFShape.prototype._setScene.call(this, scene);
+        if (this._scene && this._status === IFImage.ImageStatus.Delayed) {
+            this._updateImage();
+        }
     };
 
     /**
@@ -256,16 +262,28 @@
     };
 
     /**
-     * Called to update the src of our image
+     * Called to update the url of our image
      * @private
      */
     IFImage.prototype._updateImage = function () {
+        if (!this.isAttached()) {
+            this._setStatus(IFImage.ImageStatus.Delayed);
+        } else {
+            this._setStatus(IFImage.ImageStatus.Resolving);
+            this._scene.resolveUrl(this.$url, this._resolvedImage.bind(this));
+        }
+    };
+    /**
+     * Called to load the image when an url is resolved
+     * @private
+     */
+    IFImage.prototype._resolvedImage = function (url) {
         this._setStatus(IFImage.ImageStatus.Loading);
 
         this._notifyChange(IFElement._Change.InvalidationRequest);
         this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
 
-        this._image.src = this.$src;
+        this._image.src = url;
     };
 
     /**
