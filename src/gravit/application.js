@@ -351,7 +351,7 @@
      * @return {GStorage}
      */
     GApplication.prototype.getStorage = function (url) {
-        var protocol = url.substr(0, url.indexOf(':'));
+        var protocol = new URI(url).protocol();
         if (protocol && protocol.length) {
             for (var i = 0; i < gravit.storages.length; ++i) {
                 if (gravit.storages[i].getProtocol() === protocol) {

@@ -16,13 +16,13 @@
                     var location = file.path;
 
                     if (this._fileInputMode === 'open') {
-                        this._fileInputCallback(this.getProtocol() + ':' + location);
+                        this._fileInputCallback(this.getProtocol() + '://' + location);
                     } else if (this._fileInputMode === 'save') {
                         var extension = this._fileInput.attr('data-extension');
                         if (extension && !location.match("\\." + extension + "$")) {
                             location += "." + extension;
                         }
-                        this._fileInputCallback(this.getProtocol() + ':' + location);
+                        this._fileInputCallback(this.getProtocol() + '://' + location);
                     }
                 }
             }.bind(this))
@@ -110,7 +110,7 @@
 
     /** @override */
     GNativeStorage.prototype.load = function (url, binary, done) {
-        var location = url.substr(this.getProtocol().length + 1);
+        var location = new URI(url).path();
         var buffer = fs.readFileSync(location, binary ? null : 'utf8');
 
         if (buffer) {
@@ -129,7 +129,7 @@
 
     /** @override */
     GNativeStorage.prototype.save = function (url, data, binary, done) {
-        var location = url.substr(this.getProtocol().length + 1);
+        var location = new URI(url).path();
 
         if (binary) {
             data = new Buffer(new Uint8Array(data));
@@ -140,6 +140,13 @@
         if (done) {
             done(this._extractFileName(location));
         }
+    };
+
+    /** @override */
+    GStorage.prototype.resolveUrl = function (url, resolved) {
+        // Our file:/// protocol is understandable by the browser
+        // so just use the source url
+        resolved(url);
     };
 
     /**

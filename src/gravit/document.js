@@ -179,14 +179,18 @@
      * @private
      */
     GDocument.prototype._resolveUrl = function (evt) {
-        //if (this._storage) {
-        //    this._storage.resolve
-        //}
-        //alert('RESOLVE_URL: ' + evt.url);
+        var uri = new URI(evt.url);
+        if (uri.protocol().length === 0) {
+            // make absolute to ourself first
+            uri = uri.absoluteTo(this._url);
+        }
 
-        // TODO : Make url absolute to document url if any
-
-        evt.resolved(evt.url);
+        if (uri.protocol().length > 0) {
+            var storage = gApp.getStorage(uri.protocol() + ':');
+            if (storage) {
+                storage.resolveUrl(uri.toString(), evt.resolved);
+            }
+        }
     };
 
     _.GDocument = GDocument;

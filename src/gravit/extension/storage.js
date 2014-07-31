@@ -108,5 +108,17 @@
         throw new Error('Not Supported.');
     };
 
+    /**
+     * Resolve an url in the format of this storage in a real-world
+     * url that is understandable and reachable. If the url may require
+     * some authentication this can be done here and when done, the
+     * callback function should be fired.
+     * @param {String} url the url in this storage format to resolve
+     * @param {Function} resolved callback retrieving the final url
+     */
+    GStorage.prototype.resolveUrl = function (url, resolved) {
+        throw new Error('Not Supported.');
+    };
+
     _.GStorage = GStorage;
 })(this);

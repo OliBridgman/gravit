@@ -99,14 +99,18 @@
 
             for (var i = 0; i < dataTransfer.files.length; ++i) {
                 var file = dataTransfer.files[i];
+                var name = file.name;
+                if (name.lastIndexOf('.') > 0) {
+                    name = name.substr(0, name.lastIndexOf('.'));
+                }
 
                 // Check for image files
                 if (file.type.match(imageType)) {
                     var reader = new FileReader();
                     reader.onload = function (event) {
                         var image = new IFImage();
-                        image.setProperties(['url'], [event.target.result]);
-                        image.transform(new IFTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY()));
+                        image.setProperties(['name', 'url', 'transform'],
+                            [name, event.target.result, new IFTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY())]);
                         this._editor.insertElements([image]);
                     }.bind(this)
                     reader.readAsDataURL(file);
