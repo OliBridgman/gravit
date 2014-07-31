@@ -61,16 +61,24 @@
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event called when the status of this image changes
+     * @param {IFImage} image the image
      * @param {IFImage.ImageStatus} status the status
      * @class IFImage.StatusEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFImage.StatusEvent = function (status) {
+    IFImage.StatusEvent = function (image, status) {
+        this.image = image;
         this.status = status;
     };
     IFObject.inherit(IFImage.StatusEvent, GEvent);
+
+    /**
+     * The status
+     * @type IFImage
+     */
+    IFImage.StatusEvent.prototype.image = null;
 
     /**
      * The status
@@ -103,6 +111,22 @@
      * @private
      */
     IFImage.prototype._vertexIterator = 0;
+
+    /**
+     * Returns the status of the image
+     * @return {IFImage.ImageStatus}
+     */
+    IFImage.prototype.getStatus = function () {
+        return this._status;
+    };
+
+    /**
+     * Returns the underlying image
+     * return {Image}
+     */
+    IFImage.prototype.getImage = function () {
+        return this._image;
+    };
 
     /** @override */
     IFImage.prototype.store = function (blob) {
@@ -308,7 +332,7 @@
         if (status !== this._status) {
             this._status = status;
             if (this.isAttached() && this._scene.hasEventListeners(IFImage.StatusEvent)) {
-                this._scene.trigger(new IFImage.StatusEvent(this._status));
+                this._scene.trigger(new IFImage.StatusEvent(this, this._status));
             }
         }
     };

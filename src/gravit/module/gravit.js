@@ -156,6 +156,7 @@
             new GRectangleProperties(),
             new GEllipseProperties(),
             new GTextProperties(),
+            new GImageProperties(),
             new GPageProperties()
         );
 
