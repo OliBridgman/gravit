@@ -214,8 +214,7 @@ module.exports = function (grunt) {
         },
         nodewebkit: {
             options: {
-                //download_url: 'http://s3.amazonaws.com/quasado-node-webkit/',
-                //version: '0.10.0-rc1',
+                version: '0.10.1',
                 build_dir: '<%= cfg.pck %>/desktop',
                 mac: true,
                 win: true,

@@ -1,3 +1,5 @@
+(function (_) {
+
 /**
  * Cross-platform window state preservation.
  * Yes this code is quite complicated, but this is the best I came up with for
@@ -33,7 +35,7 @@ var deltaHeight = (function () {
 })();
 
 
-function initWindowState(callback) {
+_.initWindowState = function (callback) {
     winState = localStorage.getItem('windowState');
     winState = JSON.parse(winState && winState !== "" ? winState : 'null');
 
@@ -163,3 +165,4 @@ win.window.addEventListener('resize', function () {
 win.on('move', function () {
     saveWindowState();
 });
+})(this);

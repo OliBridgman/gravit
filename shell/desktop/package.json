@@ -1,7 +1,7 @@
 {
     "name": "Gravit",
-    "version": "0",
     "main": "index.html",
+    "version": "0",
     "window": {
         "toolbar": false,
         "resizable": true,
@@ -9,8 +9,6 @@
         "frame": true,
         "width": 1024,
         "height": 786,
-        "show": false
-    },
-    "no-edit-menu": true,
-    "no-window-menu": true
+        "show": true
+    }
 }
