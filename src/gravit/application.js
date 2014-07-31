@@ -1080,9 +1080,6 @@
                     case IFKey.Constant.DELETE:
                         result += "del";
                         break;
-                    case IFKey.Constant.ESCAPE:
-                        result += "esc";
-                        break;
                     case IFKey.Constant.COMMAND:
                         result += "meta";
                         break;

@@ -122,12 +122,6 @@
         DELETE: 17,
 
         /**
-         * Escape key
-         * @version 1.0
-         */
-        ESCAPE: 18,
-
-        /**
          * Command key
          * @version 1.0
          */
@@ -267,9 +261,6 @@
             case 46 :
                 result = IFKey.Constant.DELETE;
                 break;
-            case 27 :
-                result = IFKey.Constant.ESCAPE;
-                break;
             case 112 :
                 result = IFKey.Constant.F1;
                 break;
@@ -345,9 +336,7 @@
     IFKey.prototype.toLocalizedShort = function (keyCode) {
         // Handle special chars on mac
         if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
-            if (keyCode == IFKey.Constant.ESCAPE) {
-                return '\u238B';
-            } else if (keyCode == IFKey.Constant.TAB) {
+            if (keyCode == IFKey.Constant.TAB) {
                 return '\u21E5';
             } else if (keyCode == IFKey.Constant.OPTION || keyCode == IFKey.Constant.ALT) {
                 return '\u2325';

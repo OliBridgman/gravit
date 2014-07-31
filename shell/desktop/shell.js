@@ -181,10 +181,13 @@
                         break;
 
                     case IFKey.Constant.LEFT:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF702);
+                        } else {
+                            result.key = "LEFT";
+                        }
                         break;
                     case IFKey.Constant.UP:
-                        // TODO
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF700);
                         } else {
@@ -192,68 +195,144 @@
                         }
                         break;
                     case IFKey.Constant.RIGHT:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF703);
+                        } else {
+                            result.key = "RIGHT";
+                        }
                         break;
                     case IFKey.Constant.DOWN:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF701);
+                        } else {
+                            result.key = "DOWN";
+                        }
                         break;
                     case IFKey.Constant.PAGE_UP:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF72C);
+                        } else {
+                            result.key = "PAGEUP";
+                        }
                         break;
                     case IFKey.Constant.PAGE_DOWN:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF72D);
+                        } else {
+                            result.key = "PAGEDOWN";
+                        }
                         break;
                     case IFKey.Constant.HOME:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF729);
+                        } else {
+                            result.key = "HOME";
+                        }
                         break;
                     case IFKey.Constant.END:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF72B);
+                        } else {
+                            result.key = "END";
+                        }
                         break;
                     case IFKey.Constant.INSERT:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF727);
+                        } else {
+                            result.key = "INSERT";
+                        }
                         break;
                     case IFKey.Constant.DELETE:
-                        // TODO
-                        result.key = String.fromCharCode(0x7F);
-                        break;
-                    case IFKey.Constant.ESCAPE:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF728);
+                        } else {
+                            result.key = "DELETE";
+                        }
                         break;
                     case IFKey.Constant.F1:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF704);
+                        } else {
+                            result.key = "F1";
+                        }
                         break;
                     case IFKey.Constant.F2:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF705);
+                        } else {
+                            result.key = "F2";
+                        }
                         break;
                     case IFKey.Constant.F3:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF706);
+                        } else {
+                            result.key = "F3";
+                        }
                         break;
                     case IFKey.Constant.F4:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF707);
+                        } else {
+                            result.key = "F4";
+                        }
                         break;
                     case IFKey.Constant.F5:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF708);
+                        } else {
+                            result.key = "F5";
+                        }
                         break;
                     case IFKey.Constant.F6:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF709);
+                        } else {
+                            result.key = "F6";
+                        }
                         break;
                     case IFKey.Constant.F7:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70A);
+                        } else {
+                            result.key = "F7";
+                        }
                         break;
                     case IFKey.Constant.F8:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70B);
+                        } else {
+                            result.key = "F8";
+                        }
                         break;
                     case IFKey.Constant.F9:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70C);
+                        } else {
+                            result.key = "F9";
+                        }
                         break;
                     case IFKey.Constant.F10:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70D);
+                        } else {
+                            result.key = "F10";
+                        }
                         break;
                     case IFKey.Constant.F11:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70E);
+                        } else {
+                            result.key = "F11";
+                        }
                         break;
                     case IFKey.Constant.F12:
-                        // TODO
+                        if (process.platform === 'darwin') {
+                            result.key = String.fromCharCode(0xF70F);
+                        } else {
+                            result.key = "F12";
+                        }
                         break;
                     default:
                         throw new Error("Unknown key code");
