@@ -193,45 +193,41 @@
     };
 
     /** @overide */
-    IFImage.prototype._paintBackground = function (context) {
-        // We'll be painting our image before any other contents
-        // but only, if we're not painting outline only!
-
-        if (!context.configuration.isOutline(context)) {
-            // Apply our transformation (if any) before the canvas transformation
-            var canvasTransform = context.canvas.getTransform(true);
-            if (this.$trf) {
-                var tmpTransform = canvasTransform.preMultiplied(this.$trf);
-                context.canvas.setTransform(tmpTransform);
-            }
-
-            // Paint depending on our status
-            switch (this._status) {
-                case IFImage.ImageStatus.Loaded:
-                    context.canvas.drawImage(this._image);
-                    break;
-
-                default:
-                    var width = this._getWidth();
-                    var height = this._getHeight();
-
-                    context.canvas.fillRect(0, 0, width, height, IFImage.NO_IMAGE_BACKGROUND);
-
-                    // TODO : Paint some loading indicator!?
-
-                    if (this._status === IFImage.ImageStatus.Error) {
-                        // Paint red cross
-                        context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
-                        context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
-                    }
-                    break;
-            }
-
-            // Reset original transform
-            context.canvas.setTransform(canvasTransform);
+    IFImage.prototype._paintBackground = function (context, style, styleIndex) {
+        // Only paint for no style and no outline, otherwise this will be done in _paintStyle
+        if (!style && !context.configuration.isOutline(context)) {
+            this._paintImage(context);
         }
 
         IFShape.prototype._paintBackground.call(this, context);
+    };
+
+    /** @override */
+    IFImage.prototype._paintStyle = function (context, style, styleIndex) {
+        if (this._status === IFImage.ImageStatus.Loaded) {
+            // Image styles are painted on temporary canvas and then clipped against the image
+            var sourceCanvas = context.canvas;
+            context.canvas = sourceCanvas.createCanvas(style.getBBox(this.getGeometryBBox()));
+
+            // Paint image contents now (for first style, only)
+            if (styleIndex === 0) {
+                this._paintImage(context);
+            }
+
+            try {
+                IFShape.prototype._paintStyle.call(this, context, style, styleIndex);
+            } finally {
+                // Paint image contents now again but cut it out
+                this._paintImage(context, IFPaintCanvas.CompositeOperator.DestinationIn)
+
+                // Paint canvas back and swap again
+                sourceCanvas.drawCanvas(context.canvas);
+                context.canvas = sourceCanvas;
+            }
+        } else {
+            this._paintImage(context);
+            IFShape.prototype._paintStyle.call(this, context, style, styleIndex);
+        }
     };
 
     /** @override */
@@ -257,6 +253,44 @@
         if (this._scene && this._status === IFImage.ImageStatus.Delayed) {
             this._updateImage();
         }
+    };
+
+    /**
+     * @param {IFPaintContext} context
+     * @private
+     */
+    IFImage.prototype._paintImage = function (context, cmpOrBlend) {
+        // Apply our transformation (if any) before the canvas transformation
+        var canvasTransform = context.canvas.getTransform(true);
+        if (this.$trf) {
+            var tmpTransform = canvasTransform.preMultiplied(this.$trf);
+            context.canvas.setTransform(tmpTransform);
+        }
+
+        // Paint depending on our status
+        switch (this._status) {
+            case IFImage.ImageStatus.Loaded:
+                context.canvas.drawImage(this._image, 0, 0, false, 1, cmpOrBlend);
+                break;
+
+            default:
+                var width = this._getWidth();
+                var height = this._getHeight();
+
+                context.canvas.fillRect(0, 0, width, height, IFImage.NO_IMAGE_BACKGROUND);
+
+                // TODO : Paint some loading indicator!?
+
+                if (this._status === IFImage.ImageStatus.Error) {
+                    // Paint red cross
+                    context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
+                    context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
+                }
+                break;
+        }
+
+        // Reset original transform
+        context.canvas.setTransform(canvasTransform);
     };
 
     /**

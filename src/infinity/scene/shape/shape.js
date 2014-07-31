@@ -117,7 +117,7 @@
         }
 
         // Paint our background before anything else
-        this._paintBackground(context);
+        this._paintBackground(context, style, styleIndex);
 
         // Handle different painting routes depending on outline mode
         if (context.configuration.isOutline(context)) {
@@ -131,53 +131,13 @@
             context.canvas.setTransform(transform);
 
             // Paint contents
-            this._paintContents(context);
+            this._paintContents(context, style, styleIndex);
         } else if (style) {
-            // Iterate all (visible) paints
-            var paints = null;
-            for (var entry = style.getActualStyle().getFirstChild(); entry !== null; entry = entry.getNext()) {
-                if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
-                    if (!paints) {
-                        paints = [];
-                    }
-                    paints.push(entry);
-                }
-            }
-
-            if (paints) {
-                // Create vertex source and put 'em onto canvas
-                var vertexSource = style.createVertexSource(this);
-                context.canvas.putVertices(vertexSource);
-
-                var paintBBox = style.getBBox(this.getGeometryBBox());
-
-                // Paint all paints npw
-                for (var i = 0; i < paints.length; ++i) {
-                    var paint = paints[i];
-
-                    // Check whether to create a separate canvas
-                    if (paint.isSeparate()) {
-                        // Create temporary canvas
-                        var paintCanvas = context.canvas.createCanvas(paintBBox);
-
-                        // Put our vertex source onto it
-                        paintCanvas.putVertices(vertexSource);
-
-                        // Paint
-                        paint.paint(paintCanvas, paintBBox);
-
-                        // Draw the temporary canvas back
-                        context.canvas.drawCanvas(paintCanvas, 0, 0, paint.getPaintOpacity(), paint.getPaintCmpOrBlend());
-                    } else {
-                        // Regular painting on main canvas
-                        paint.paint(context.canvas, paintBBox);
-                    }
-                }
-            }
+            this._paintStyle(context, style, styleIndex);
         }
 
         // Paint our foreground
-        this._paintForeground(context);
+        this._paintForeground(context, style, styleIndex);
     };
 
     /**
@@ -186,7 +146,7 @@
      * @param {IFPaintContext} context
      * @private
      */
-    IFShape.prototype._paintBackground = function (context) {
+    IFShape.prototype._paintBackground = function (context, style, styleIndex) {
         // NO-OP
     };
 
@@ -196,7 +156,59 @@
      * @param {IFPaintContext} context
      * @private
      */
-    IFShape.prototype._paintForeground = function (context) {
+    IFShape.prototype._paintForeground = function (context, style, styleIndex) {
+    };
+
+
+    /**
+     * Called to paint with a given style
+     * @param {IFPaintContext} context
+     * @param {IFStyle} style
+     * @param {Number} styleIndex
+     * @private
+     */
+    IFShape.prototype._paintStyle = function (context, style, styleIndex) {
+        // Iterate all (visible) paints
+        var paints = null;
+        for (var entry = style.getActualStyle().getFirstChild(); entry !== null; entry = entry.getNext()) {
+            if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
+                if (!paints) {
+                    paints = [];
+                }
+                paints.push(entry);
+            }
+        }
+
+        if (paints) {
+            // Create vertex source and put 'em onto canvas
+            var vertexSource = style.createVertexSource(this);
+            context.canvas.putVertices(vertexSource);
+
+            var paintBBox = style.getBBox(this.getGeometryBBox());
+
+            // Paint all paints npw
+            for (var i = 0; i < paints.length; ++i) {
+                var paint = paints[i];
+
+                // Check whether to create a separate canvas
+                if (paint.isSeparate()) {
+                    // Create temporary canvas
+                    var paintCanvas = context.canvas.createCanvas(paintBBox);
+
+                    // Put our vertex source onto it
+                    paintCanvas.putVertices(vertexSource);
+
+                    // Paint
+                    paint.paint(paintCanvas, paintBBox);
+
+                    // Draw the temporary canvas back
+                    context.canvas.drawCanvas(paintCanvas, 0, 0, paint.getPaintOpacity(), paint.getPaintCmpOrBlend());
+                } else {
+                    // Regular painting on main canvas
+                    paint.paint(context.canvas, paintBBox);
+                }
+            }
+        }
     };
 
     /**
@@ -204,7 +216,7 @@
      * @param {IFPaintContext} context
      * @private
      */
-    IFShape.prototype._paintContents = function (context) {
+    IFShape.prototype._paintContents = function (context, style, styleIndex) {
         // Paint our contents if any and clip 'em to ourself
         var oldContentsCanvas = null;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
@@ -224,6 +236,7 @@
             context.canvas.putVertices(this);
             context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
             oldContentsCanvas.drawCanvas(context.canvas);
+            context.canvas.finish();
             context.canvas = oldContentsCanvas;
         }
     };
