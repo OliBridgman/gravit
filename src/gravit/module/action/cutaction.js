@@ -52,26 +52,37 @@
      * @override
      */
     GCutAction.prototype.isEnabled = function () {
-        var document = gApp.getActiveDocument();
-        return document && !!document.getEditor().getSelection();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+        }
+
+        if (gApp.getActiveDocument() && !!gApp.getActiveDocument().getEditor().getSelection()) {
+            return true;
+        }
+
+        return false;
     };
 
     /**
      * @override
      */
     GCutAction.prototype.execute = function () {
-        var editor = gApp.getActiveDocument().getEditor();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('cut');
+        } else {
+            var editor = gApp.getActiveDocument().getEditor();
 
-        // Run copy action, first
-        gApp.executeAction(GCopyAction.ID);
+            // Run copy action, first
+            gApp.executeAction(GCopyAction.ID);
 
-        // Delete selection now
-        editor.beginTransaction();
-        try {
-            editor.deleteSelection(true);
-        } finally {
-            // TODO : I18N
-            editor.commitTransaction('Cut Selection');
+            // Delete selection now
+            editor.beginTransaction();
+            try {
+                editor.deleteSelection(true);
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Cut Selection');
+            }
         }
     };
 

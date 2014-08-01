@@ -57,15 +57,27 @@
      * @override
      */
     GUndoAction.prototype.isEnabled = function () {
-        var document = gApp.getActiveDocument();
-        return (document && document.getEditor().hasUndoState());
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+
+        }
+
+        if (gApp.getActiveDocument() && gApp.getActiveDocument().getEditor().hasUndoState()) {
+            return true;
+        }
+
+        return false;
     };
 
     /**
      * @override
      */
     GUndoAction.prototype.execute = function () {
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('undo');
+        } else {
         gApp.getActiveDocument().getEditor().undoState();
+        }/**/
     };
 
     /** @override */

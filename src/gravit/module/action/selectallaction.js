@@ -52,31 +52,43 @@
      * @override
      */
     GSelectAllAction.prototype.isEnabled = function () {
-        return !!gApp.getActiveDocument();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+        }
+
+        if (gApp.getActiveDocument()) {
+            return true;
+        }
+
+        return false;
     };
 
     /**
      * @override
      */
     GSelectAllAction.prototype.execute = function () {
-        var document = gApp.getActiveDocument();
-        var scene = document.getScene();
-
-        var source = null;
-        if (scene.getProperty('singlePage')) {
-            source = scene.getActivePage();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('selectAll');
         } else {
-            source = scene;
-        }
+            var editor = gApp.getActiveDocument().getEditor();
+            var scene = gApp.getActiveDocument().getScene();
 
-        var selection = [];
-        source.accept(function (node) {
-            if (node instanceof IFItem && node.getParent() instanceof IFLayer) {
-                selection.push(node);
+            var source = null;
+            if (scene.getProperty('singlePage')) {
+                source = scene.getActivePage();
+            } else {
+                source = scene;
             }
-        });
 
-        document.getEditor().updateSelection(false, selection);
+            var selection = [];
+            source.accept(function (node) {
+                if (node instanceof IFItem && node.getParent() instanceof IFLayer) {
+                    selection.push(node);
+                }
+            });
+
+            document.getEditor().updateSelection(false, selection);
+        }
     };
 
     /** @override */

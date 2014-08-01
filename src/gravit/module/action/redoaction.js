@@ -57,15 +57,26 @@
      * @override
      */
     GRedoAction.prototype.isEnabled = function () {
-        var document = gApp.getActiveDocument();
-        return (document && document.getEditor().hasRedoState());
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+        }
+
+        if (gApp.getActiveDocument() && gApp.getActiveDocument().getEditor().hasRedoState()) {
+            return true;
+        }
+
+        return false;
     };
 
     /**
      * @override
      */
     GRedoAction.prototype.execute = function () {
-        gApp.getActiveDocument().getEditor().redoState();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('redo');
+        } else {
+            gApp.getActiveDocument().getEditor().redoState();
+        }
     };
 
     /** @override */

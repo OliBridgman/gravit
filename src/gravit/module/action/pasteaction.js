@@ -52,10 +52,15 @@
      * @override
      */
     GPasteAction.prototype.isEnabled = function () {
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+        }
+
         var cpMimeTypes = gShell.getClipboardMimeTypes();
         if (cpMimeTypes && cpMimeTypes.indexOf(IFNode.MIME_TYPE) >= 0) {
             return !!gApp.getActiveDocument();
         }
+
         return false;
     };
 
@@ -63,24 +68,28 @@
      * @override
      */
     GPasteAction.prototype.execute = function () {
-        // TODO : Support pasting other formats like raster images
-        var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
-        if (nodes && nodes.length > 0) {
-            var elements = [];
-            for (var i = 0; i < nodes.length; ++i) {
-                if (nodes[i] instanceof IFElement) {
-                    elements.push(nodes[i]);
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('paste');
+        } else {
+            // TODO : Support pasting other formats like raster images
+            var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
+            if (nodes && nodes.length > 0) {
+                var elements = [];
+                for (var i = 0; i < nodes.length; ++i) {
+                    if (nodes[i] instanceof IFElement) {
+                        elements.push(nodes[i]);
+                    }
                 }
-            }
 
-            if (elements.length > 0) {
-                var editor = gApp.getActiveDocument().getEditor();
-                editor.beginTransaction();
-                try {
-                    editor.insertElements(elements, true, true);
-                } finally {
-                    // TODO : I18N
-                    editor.commitTransaction('Paste');
+                if (elements.length > 0) {
+                    var editor = gApp.getActiveDocument().getEditor();
+                    editor.beginTransaction();
+                    try {
+                        editor.insertElements(elements, true, true);
+                    } finally {
+                        // TODO : I18N
+                        editor.commitTransaction('Paste');
+                    }
                 }
             }
         }

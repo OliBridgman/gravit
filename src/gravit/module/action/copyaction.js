@@ -52,22 +52,33 @@
      * @override
      */
     GCopyAction.prototype.isEnabled = function () {
-        var document = gApp.getActiveDocument();
-        return document && !!document.getEditor().getSelection();
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            return true;
+        }
+
+        if (gApp.getActiveDocument() && !!gApp.getActiveDocument().getEditor().getSelection()) {
+            return true;
+        }
+
+        return false;
     };
 
     /**
      * @override
      */
     GCopyAction.prototype.execute = function () {
-        // TODO : Support multiple clipboards internally
-        // TODO : Support copy into system clipboard with
-        // intern format, rasterized and as svg format
+        if (document.activeElement && $(document.activeElement).is(":editable")) {
+            document.execCommand('copy');
+        } else {
+            // TODO : Support multiple clipboards internally
+            // TODO : Support copy into system clipboard with
+            // intern format, rasterized and as svg format
 
-        // Make sure to serialize ordered
-        var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelection());
-        var serializedSelection = IFNode.serialize(selection);
-        gShell.setClipboardContent(IFNode.MIME_TYPE, serializedSelection);
+            // Make sure to serialize ordered
+            var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelection());
+            var serializedSelection = IFNode.serialize(selection);
+            gShell.setClipboardContent(IFNode.MIME_TYPE, serializedSelection);
+        }
     };
 
     /** @override */
