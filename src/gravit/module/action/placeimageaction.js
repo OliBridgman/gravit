@@ -60,6 +60,9 @@
         document.getStorage().openPrompt(document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
             var uri = new URI(url);
 
+            alert('uri: ' + uri.toString());
+            alert('make_relative_to: ' + document.getUrl());
+
             // make url relative to document
             url = uri.relativeTo(document.getUrl()).toString();
 

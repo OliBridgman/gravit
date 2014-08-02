@@ -346,13 +346,12 @@
 
 <!-- Include the proper shell for development -->
 <script type="text/javascript">
-    console.log('add shell script');
     if (this['process'] && this['require']) {
-        document.writeln("<script src=\"/shell/desktop/nativestorage.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/desktop/winstate.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/desktop/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"/shell/system/nativestorage.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"/shell/system/winstate.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"/shell/system/shell.js\" type=\"text\/javascript\"><\/script>");
     } else {
-        document.writeln("<script src=\"/shell/web/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"/shell/browser/shell.js\" type=\"text\/javascript\"><\/script>");
     }
 </script>
 </body>

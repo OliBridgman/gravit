@@ -1,35 +1,35 @@
 (function (_) {
     /**
-     * The web shell
-     * @class GWebShell
+     * The browser shell
+     * @class GBrowserShell
      * @extends GShell
      * @constructor
      */
-    function GWebShell() {
+    function GBrowserShell() {
         this._menuBar = new GUIMenuBar();
         this._clipboardMimeTypes = {};
     };
-    IFObject.inherit(GWebShell, GShell);
+    IFObject.inherit(GBrowserShell, GShell);
 
     /**
      * @type {GUIMenuBar}
      * @private
      */
-    GWebShell.prototype._menuBar = null;
+    GBrowserShell.prototype._menuBar = null;
 
     /**
      * @type {*}
      * @private
      */
-    GWebShell.prototype._clipboardMimeTypes = null;
+    GBrowserShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GWebShell.prototype.isDevelopment = function () {
+    GBrowserShell.prototype.isDevelopment = function () {
         return document.location.hostname === 'localhost' || document.location.hostname === '127.0.0.1';
     };
 
     /** @override */
-    GWebShell.prototype.prepareLoad = function () {
+    GBrowserShell.prototype.prepareLoad = function () {
         // Add Gravit Loader
         $('<div></div>')
             .attr('id', 'gravit-loader')
@@ -55,7 +55,7 @@
     };
 
     /** @override */
-    GWebShell.prototype.finishLoad = function () {
+    GBrowserShell.prototype.finishLoad = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -70,7 +70,7 @@
     };
 
     /** @override */
-    GWebShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GBrowserShell.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar.getMenu();
         var item = new GUIMenuItem(GUIMenuItem.Type.Menu);
         item.setCaption(title);
@@ -84,14 +84,14 @@
     };
 
     /** @override */
-    GWebShell.prototype.addMenuSeparator = function (parentMenu) {
+    GBrowserShell.prototype.addMenuSeparator = function (parentMenu) {
         var item = new GUIMenuItem(GUIMenuItem.Type.Divider);
         parentMenu.addItem(item);
         return item;
     };
 
     /** @override */
-    GWebShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GBrowserShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var item = new GUIMenuItem(GUIMenuItem.Type.Item);
         if (callback) {
             item.addEventListener(GUIMenuItem.ActivateEvent, callback);
@@ -111,24 +111,24 @@
     };
 
     /** @override */
-    GWebShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GBrowserShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.setCaption(title);
         item.setEnabled(enabled);
         item.setChecked(checked);
     };
 
     /** @override */
-    GWebShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GBrowserShell.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.removeItem(parentMenu.indexOf(child));
     };
 
     /** @override */
-    GWebShell.prototype.getClipboardMimeTypes = function () {
+    GBrowserShell.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GWebShell.prototype.getClipboardContent = function (mimeType) {
+    GBrowserShell.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -136,9 +136,9 @@
     };
 
     /** @override */
-    GWebShell.prototype.setClipboardContent = function (mimeType, content) {
+    GBrowserShell.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GWebShell;
+    _.gShell = new GBrowserShell;
 })(this);

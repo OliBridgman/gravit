@@ -2,12 +2,12 @@
     var gui = require('nw.gui');
 
     /**
-     * The desktop shell
-     * @class GDesktopShell
+     * The system shell
+     * @class GSystemShell
      * @extends GShell
      * @constructor
      */
-    function GDesktopShell() {
+    function GSystemShell() {
         this._menuBar = new gui.Menu({ type: "menubar" });
 
         if (process.platform === 'darwin') {
@@ -19,34 +19,34 @@
 
         this._clipboardMimeTypes = {};
     };
-    IFObject.inherit(GDesktopShell, GShell);
+    IFObject.inherit(GSystemShell, GShell);
 
     /**
      * @type {gui.Menu}
      * @private
      */
-    GDesktopShell.prototype._menuBar = null;
+    GSystemShell.prototype._menuBar = null;
 
     /**
      * @type {*}
      * @private
      */
-    GDesktopShell.prototype._clipboardMimeTypes = null;
+    GSystemShell.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GDesktopShell.prototype.isDevelopment = function () {
+    GSystemShell.prototype.isDevelopment = function () {
         var argv = gui.App.argv;
         return argv.indexOf('-dev') >= 0;
     };
 
     /** @override */
-    GDesktopShell.prototype.prepareLoad = function () {
+    GSystemShell.prototype.prepareLoad = function () {
         // Init shell-specific stuff here
-        gravit.storages.push(new GNativeStorage());
+        gravit.storages.push(new GFileStorage());
     };
 
     /** @override */
-    GDesktopShell.prototype.finishLoad = function () {
+    GSystemShell.prototype.finishLoad = function () {
         initWindowState();
         var win = gui.Window.get();
         win.menu = this._menuBar;
@@ -62,7 +62,7 @@
     };
 
     /** @override */
-    GDesktopShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GSystemShell.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar;
         var item = new gui.MenuItem({
             label: title,
@@ -78,14 +78,14 @@
     };
 
     /** @override */
-    GDesktopShell.prototype.addMenuSeparator = function (parentMenu) {
+    GSystemShell.prototype.addMenuSeparator = function (parentMenu) {
         var item = new gui.MenuItem({ type: 'separator' });
         parentMenu.append(item);
         return item;
     };
 
     /** @override */
-    GDesktopShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GSystemShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var shortcut = shortcut ? this._shortcutToShellShortcut(shortcut) : null;
 
         var item = new gui.MenuItem({
@@ -101,24 +101,24 @@
     };
 
     /** @override */
-    GDesktopShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GSystemShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.label = title;
         item.enabled = enabled;
         item.checked = checked;
     };
 
     /** @override */
-    GDesktopShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GSystemShell.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.remove(child);
     };
 
     /** @override */
-    GDesktopShell.prototype.getClipboardMimeTypes = function () {
+    GSystemShell.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GDesktopShell.prototype.getClipboardContent = function (mimeType) {
+    GSystemShell.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -126,7 +126,7 @@
     };
 
     /** @override */
-    GDesktopShell.prototype.setClipboardContent = function (mimeType, content) {
+    GSystemShell.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
@@ -135,7 +135,7 @@
      * @param {Array<*>} shortcut
      * @returns {{key: String, modifiers: String}}
      */
-    GDesktopShell.prototype._shortcutToShellShortcut = function (shortcut) {
+    GSystemShell.prototype._shortcutToShellShortcut = function (shortcut) {
         var result = {
             key: null,
             modifiers: ''
@@ -349,5 +349,5 @@
         return result.key !== null ? result : null;
     };
 
-    _.gShell = new GDesktopShell;
+    _.gShell = new GSystemShell;
 })(this);

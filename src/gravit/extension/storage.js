@@ -109,6 +109,16 @@
     };
 
     /**
+     * Release an url that has previously been gathered via open- or
+     * save-prompt. After this call, neither load nor save should be
+     * used on the url any longer.
+     * @param {String} url the url to be released
+     */
+    GStorage.prototype.releaseUrl = function (url) {
+        // NO-OP by default
+    };
+
+    /**
      * Resolve an url in the format of this storage in a real-world
      * url that is understandable and reachable. If the url may require
      * some authentication this can be done here and when done, the

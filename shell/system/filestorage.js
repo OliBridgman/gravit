@@ -2,10 +2,10 @@
     var fs = require('fs');
 
     /**
-     * The native storage class using the host for storing
+     * The file storage class for the system
      * @constructor
      */
-    function GNativeStorage() {
+    function GFileStorage() {
         this._fileInput = $('<input/>')
             .css('display', 'none')
             .attr('type', 'file')
@@ -13,7 +13,9 @@
                 var files = this._fileInput[0].files;
                 if (files && files.length > 0) {
                     var file = this._fileInput[0].files[0];
-                    var location = file.path;
+                    var location = ifUtil.replaceAll(file.path, '\\', '/');
+
+                    alert('location: ' + location);
 
                     if (this._fileInputMode === 'open') {
                         this._fileInputCallback(this.getProtocol() + '://' + location);
@@ -28,53 +30,53 @@
             }.bind(this))
             .appendTo($('body'));
     };
-    IFObject.inherit(GNativeStorage, GStorage);
+    IFObject.inherit(GFileStorage, GStorage);
 
     /**
      * @type {String}
      * @private
      */
-    GNativeStorage.prototype._fileInputMode = null;
+    GFileStorage.prototype._fileInputMode = null;
 
     /**
      * @type {Function}
      * @private
      */
-    GNativeStorage.prototype._fileInputCallback = null;
+    GFileStorage.prototype._fileInputCallback = null;
 
     /** @override */
-    GNativeStorage.prototype.isAvailable = function () {
+    GFileStorage.prototype.isAvailable = function () {
         return true;
     };
 
     /** @override */
-    GNativeStorage.prototype.isSaving = function () {
+    GFileStorage.prototype.isSaving = function () {
         return true;
     };
 
     /** @override */
-    GNativeStorage.prototype.isPrompting = function () {
+    GFileStorage.prototype.isPrompting = function () {
         return true;
     };
 
     /** @override */
-    GNativeStorage.prototype.getProtocol = function () {
+    GFileStorage.prototype.getProtocol = function () {
         return 'file';
     };
 
     /** @override */
-    GNativeStorage.prototype.getMimeTypes = function () {
+    GFileStorage.prototype.getMimeTypes = function () {
         return null;
     };
 
     /** @override */
-    GNativeStorage.prototype.getName = function () {
+    GFileStorage.prototype.getName = function () {
         // TODO : I18N
         return 'File';
     };
 
     /** @override */
-    GNativeStorage.prototype.openPrompt = function (reference, extensions, done) {
+    GFileStorage.prototype.openPrompt = function (reference, extensions, done) {
         var filter = "*.*";
         if (extensions) {
             filter = "";
@@ -97,7 +99,7 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
+    GFileStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
         this._fileInputMode = 'save';
         this._fileInputCallback = done;
         this._fileInput
@@ -109,7 +111,7 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.load = function (url, binary, done) {
+    GFileStorage.prototype.load = function (url, binary, done) {
         var location = new URI(url).path();
         var buffer = fs.readFileSync(location, binary ? null : 'utf8');
 
@@ -128,7 +130,7 @@
     };
 
     /** @override */
-    GNativeStorage.prototype.save = function (url, data, binary, done) {
+    GFileStorage.prototype.save = function (url, data, binary, done) {
         var location = new URI(url).path();
 
         if (binary) {
@@ -152,7 +154,7 @@
     /**
      * @private
      */
-    GNativeStorage.prototype._extractFileName = function (path) {
+    GFileStorage.prototype._extractFileName = function (path) {
         var lastSlash = path.lastIndexOf('/');
         if (lastSlash < 0) {
             lastSlash = path.lastIndexOf('\\');
@@ -167,5 +169,5 @@
         }
     };
 
-    _.GNativeStorage = GNativeStorage;
+    _.GFileStorage = GFileStorage;
 })(this);

@@ -1,13 +1,15 @@
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
+    var pgk = grunt.file.readJSON('package.json');
+
     grunt.initConfig({
         cfg: {
             build: 'build',
-            pck: 'package',
+            dist: 'dist',
             tmp: 'tmp'
         },
-        pkg: grunt.file.readJSON('package.json'),
+        pkg: pgk,
 
         watch: {
             compass: {
@@ -57,11 +59,8 @@ module.exports = function (grunt) {
         },
         clean: {
             dev: '<%= cfg.tmp %>',
-            make: '<%= cfg.build %>',
-            pck: {
-                src: ['<%= cfg.pck %>/**', '!<%= cfg.pck %>/desktop/cache/**/*'],
-                filter: 'isFile'
-            }
+            build: '<%= cfg.build %>',
+            dist: '<%= cfg.dist %>'
         },
         mocha: {
             all: {
@@ -89,7 +88,7 @@ module.exports = function (grunt) {
                     debugInfo: true
                 }
             },
-            make: {
+            build: {
                 options: {
                     debugInfo: false,
                     generatedImagesDir: '<%= cfg.build %>/source/image/generated'
@@ -97,18 +96,20 @@ module.exports = function (grunt) {
             }
         },
         concat: {
-            make: {
+            build: {
                 files: {
-                    '<%= cfg.build %>/desktop/gravit-shell.js': ['shell/desktop/*.js'],
-                    '<%= cfg.build %>/web/gravit-shell.js': ['shell/web/*.js']
+                    '<%= cfg.build %>/browser/gravit-shell.js': ['shell/browser/*.js'],
+                    '<%= cfg.build %>/chrome/gravit-shell.js': ['shell/chrome/*.js', '!shell/chrome/background.js'],
+                    '<%= cfg.build %>/system/gravit-shell.js': ['shell/system/*.js']
                 }
             }
         },
         uglify: {
-            make: {
+            build: {
                 files: {
-                    '<%= cfg.build %>/desktop/gravit-shell.js': ['<%= cfg.build %>/desktop/gravit-shell.js'],
-                    '<%= cfg.build %>/web/gravit-shell.js': ['<%= cfg.build %>/web/gravit-shell.js']
+                    '<%= cfg.build %>/browser/gravit-shell.js': ['<%= cfg.build %>/browser/gravit-shell.js'],
+                    '<%= cfg.build %>/chrome/gravit-shell.js': ['<%= cfg.build %>/chrome/gravit-shell.js'],
+                    '<%= cfg.build %>/system/gravit-shell.js': ['<%= cfg.build %>/system/gravit-shell.js']
                 }
             }
         },
@@ -124,7 +125,7 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            make: {
+            preBuild: {
                 files: [
                     // Source Assets
                     {
@@ -150,51 +151,97 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            pck: {
+            build: {
                 files: [
-                    // Desktop
+                    // Browser
                     {
                         expand: true,
                         cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/desktop/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/desktop/',
-                        dest: '<%= cfg.build %>/desktop/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: 'shell/desktop/',
-                        dest: '<%= cfg.build %>/desktop/',
-                        src: ['index.html', 'package.json']
-                    },
-                    // Web
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.pck %>/web/',
-                        src: ['**']
+                        dest: '<%= cfg.build %>/browser/',
+                        src: '{,*/}*.*'
                     },
                     {
                         expand: true,
                         cwd: 'assets/icon/',
-                        dest: '<%= cfg.pck %>/web/icon',
+                        dest: '<%= cfg.build %>/browser/icon',
                         src: ['**']
                     },
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/web/',
-                        dest: '<%= cfg.pck %>/web/',
+                        cwd: '<%= cfg.build %>/browser/',
+                        dest: '<%= cfg.build %>/browser/',
                         src: ['**']
                     },
                     {
                         expand: true,
-                        cwd: 'shell/web/',
-                        dest: '<%= cfg.pck %>/web/',
+                        cwd: 'shell/browser/',
+                        dest: '<%= cfg.build %>/browser/',
                         src: ['index.html']
+                    },
+
+                    // Chrome
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/chrome/',
+                        dest: '<%= cfg.build %>/chrome/',
+                        src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/source/',
+                        dest: '<%= cfg.build %>/chrome/',
+                        src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'shell/chrome/',
+                        dest: '<%= cfg.build %>/chrome/',
+                        src: ['index.html', 'manifest.json', 'background.js']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'assets/icon/',
+                        dest: '<%= cfg.build %>/chrome/icon',
+                        src: ['**']
+                    },
+
+                    // System
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/source/',
+                        dest: '<%= cfg.build %>/system/',
+                        src: ['**']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'shell/system/',
+                        dest: '<%= cfg.build %>/system/',
+                        src: ['index.html', 'package.json']
+                    }
+                ]
+            },
+            dist: {
+                files: [
+                    // ..
+                ]
+            }
+        },
+        replace: {
+            build: {
+                src: ['<%= cfg.build %>/system/package.json', '<%= cfg.build %>/chrome/manifest.json'],
+                overwrite: true,
+                replacements: [
+                    {
+                        from: '%name%',
+                        to: '<%= pkg.name %>'
+                    },
+                    {
+                        from: '%description%',
+                        to: '<%= pkg.description %>'
+                    },
+                    {
+                        from: '%version%',
+                        to: '<%= pkg.version %>'
                     }
                 ]
             }
@@ -215,17 +262,26 @@ module.exports = function (grunt) {
         nodewebkit: {
             options: {
                 version: '0.10.1',
-                build_dir: '<%= cfg.pck %>/desktop',
-                mac: true,
-                win: true,
-                linux32: true,
-                linux64: true,
-                mac_icns: 'shell/desktop/appicon.icns',
-                zip: false,
-                app_name: '<%= pkg.name %>',
-                app_version: '<%= pkg.version %>'
+                platforms: ['win', 'osx', 'linux64'],
+                cacheDir: './node-webkit',
+                buildDir: '<%= cfg.build %>/system_',
+                macIcns: 'shell/system/appicon.icns',
+                macZip: false/*,
+                 winIco: 'shell/system/appicon.ico'*/
             },
-            src: '<%= cfg.build %>/desktop/**/*'
+            src: '<%= cfg.build %>/system/**/*'
+        },
+        compress: {
+            dist: {
+                options: {
+                    mode: 'zip',
+                    archive: '<%= cfg.dist %>/gravit-chrome.zip'
+                },
+                expand: true,
+                cwd: '<%= cfg.build %>/chrome',
+                src: ['**/**'],
+                dest: '/'
+            }
         }
     });
 
@@ -251,24 +307,27 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', function (target) {
         grunt.task.run([
-            'clean:make',
+            'clean:build',
             'useminPrepare',
-            'compass:make',
+            'compass:build',
             'concat',
             'cssmin',
             'uglify',
             'usemin',
-            'copy:make'
+            'copy:preBuild',
+            'copy:build',
+            'replace:build',
+            'nodewebkit'
         ]);
     });
 
-    grunt.registerTask('pck', function (target) {
+    grunt.registerTask('dist', function (target) {
         grunt.task.run([
             'test',
             'build',
-            'clean:pck',
-            'copy:pck',
-            'nodewebkit'
+            'clean:dist',
+            'copy:dist',
+            'compress:dist'
         ]);
     });
 

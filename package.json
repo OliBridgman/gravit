@@ -6,9 +6,8 @@
     "private": true,
     "devDependencies": {
         "grunt": "~0.4.1",
-        "grunt-contrib-copy": "~0.4.1",
+        "grunt-contrib-copy": "~0.5.0",
         "grunt-contrib-concat": "~0.3.0",
-        "grunt-contrib-coffee": "~0.7.0",
         "grunt-contrib-uglify": "~0.2.0",
         "grunt-contrib-compass": "~0.5.0",
         "grunt-contrib-jshint": "~0.6.3",
@@ -25,8 +24,9 @@
         "grunt-mocha": "~0.4.0",
         "grunt-svgmin": "~0.2.0",
         "grunt-concurrent": "~0.3.0",
-        "grunt-replace": "~0.4.4",
-        "grunt-node-webkit-builder": "bastimeyer/grunt-node-webkit-builder#patch-1",
+        "grunt-text-replace": "~0.3.12",
+        "grunt-node-webkit-builder": "0.2.0",
+        "grunt-contrib-compress": "~0.9.1",
         "load-grunt-tasks": "~0.1.0",
         "time-grunt": "~0.1.1"
     }

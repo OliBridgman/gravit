@@ -1,7 +1,8 @@
 {
-    "name": "Gravit",
+    "name": "%name%",
+    "description": "%description%",
+    "version": "%version%",
     "main": "index.html",
-    "version": "0",
     "window": {
         "toolbar": false,
         "resizable": true,

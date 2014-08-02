@@ -119,11 +119,6 @@ $(document).ready(function () {
     gShell.prepareLoad();
 });
 
-// Add dummy error handler
-window.onerror = function (message, url, line) {
-    prompt('Sorry, an error has occurred, please report the error below and restart the application:', url + ':' + line + ':' + message);
-};
-
 // Init when everything is finally loaded
 $(window).load(function () {
     rangy.init();

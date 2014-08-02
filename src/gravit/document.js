@@ -91,6 +91,10 @@
      */
     GDocument.prototype.setUrl = function (url) {
         if (url !== this._url) {
+            if (this._storage) {
+                this._storage.releaseUrl(this._url);
+            }
+
             this._url = url;
             this._storage = url ? gApp.getStorage(url) : null;
         }
@@ -172,6 +176,10 @@
      */
     GDocument.prototype.close = function () {
         this._scene.removeEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
+
+        if (this._storage) {
+            this._storage.releaseUrl(this._url);
+        }
     };
 
     /**
