@@ -35,13 +35,13 @@
                 for (var i = 0; i < sides.length; ++i) {
                     var pivot = pageBBox.getSide(sides[i]);
                     if (resX === null && Math.abs(x - pivot.getX()) <= snapDistance) {
-                        resX = pageBBox.getX();
+                        resX = pivot.getX();
                         if (sides[i] == IFRect.Side.CENTER) {
                             visualX = true;
                         }
                     }
                     if (resY === null && Math.abs(y - pivot.getY()) <= snapDistance) {
-                        resY = pageBBox.getY();
+                        resY = pivot.getY();
                         if (sides[i] == IFRect.Side.CENTER) {
                             visualY = true;
                         }

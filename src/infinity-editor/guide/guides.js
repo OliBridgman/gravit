@@ -76,8 +76,8 @@
      * @returns {IFPoint} a mapped point
      */
     IFGuides.prototype.mapPoint = function (point) {
-        var resX = null; point.getX();
-        var resY = null; point.getY();
+        var resX = null;
+        var resY = null;
 
         var guide;
         var res = null;
@@ -98,11 +98,11 @@
         }
 
         if (resX === null) {
-            resX = res.x.value;
+            resX = point.getX();
         }
 
         if (resY === null) {
-            resY = res.y.value;
+            resY = point.getY();
         }
 
         return new IFPoint(resX, resY);
