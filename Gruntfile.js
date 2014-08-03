@@ -1,14 +1,18 @@
+var exec = require('child_process').exec;
+
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
     var pgk = grunt.file.readJSON('package.json');
 
+    var cfg = {
+        build: 'build',
+        dist: 'dist',
+        tmp: 'tmp'
+    };
+
     grunt.initConfig({
-        cfg: {
-            build: 'build',
-            dist: 'dist',
-            tmp: 'tmp'
-        },
+        cfg: cfg,
         pkg: pgk,
 
         watch: {
@@ -264,10 +268,10 @@ module.exports = function (grunt) {
                 version: '0.10.1',
                 platforms: ['win', 'osx', 'linux64'],
                 cacheDir: './node-webkit',
-                buildDir: '<%= cfg.build %>/system_',
+                buildDir: '<%= cfg.build %>/system-binaries',
                 macIcns: 'shell/system/appicon.icns',
-                macZip: false/*,
-                 winIco: 'shell/system/appicon.ico'*/
+                macZip: false,
+                winIco: 'shell/system/appicon.ico'
             },
             src: '<%= cfg.build %>/system/**/*'
         },
@@ -285,6 +289,29 @@ module.exports = function (grunt) {
         }
     });
 
+    // Private tasks
+    grunt.registerTask('_packagemac', function () {
+        './macsign.sh ./build/system-binaries/Gravit/osx/Gravit.app Gravit com.quasado.gravit "3rd Party Mac Developer Application: Alexander Adam (8L5L5DS5WW)" ./build/system-osx';
+
+
+
+        'codesign --deep -s "3rd Party Mac Developer Application: Alexander Adam (8L5L5DS5WW)" -i com.quasado.gravit --entitlements /tmp/entitlements.child "./dist/system-osx/Gravit.app/Contents/Frameworks/node-webkit Helper.app"'
+
+        var done = this.async();
+        var cmdLine = 'hdiutil create -format UDZO -srcfolder ' + cfg.build + '/system-binaries/Gravit/osx/Gravit.app ' + cfg.dist + '/system/osx/Gravit.dmg';
+        console.log('creating mac disk image...', cmdLine);
+
+        exec(cmdLine, function (error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            done();
+        });
+    })
+
+    // Public tasks
     grunt.registerTask('dev', function (target) {
         grunt.task.run([
             'clean:dev',
@@ -327,7 +354,8 @@ module.exports = function (grunt) {
             'build',
             'clean:dist',
             'copy:dist',
-            'compress:dist'
+            'compress:dist',
+            '_packagemac'
         ]);
     });
 
