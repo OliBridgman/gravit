@@ -9,7 +9,9 @@
     function IFEditorFrontStage(view) {
         IFStage.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
-        view.getEditor().addEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+
+        this._view.getEditor().getGuides().addEventListener(
+            IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
     }
     IFObject.inherit(IFEditorFrontStage, IFStage);
 

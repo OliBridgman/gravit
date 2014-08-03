@@ -284,22 +284,24 @@
         var sourceRect = this._element.getGeometryBBox();
         var transformedRect = transform.mapRect(sourceRect);
 
-        // Ensure to pixel-align the rect
-        var x = Math.floor(transformedRect.getX());
-        var y = Math.floor(transformedRect.getY());
-        var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
-        var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
+        if (transformedRect && !transformedRect.isEmpty()) {
+            // Ensure to pixel-align the rect
+            var x = Math.floor(transformedRect.getX());
+            var y = Math.floor(transformedRect.getY());
+            var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
+            var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
 
 
-        if (!color) {
-            if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
-                color = context.highlightOutlineColor;
-            } else {
-                color = context.selectionOutlineColor;
+            if (!color) {
+                if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+                    color = context.highlightOutlineColor;
+                } else {
+                    color = context.selectionOutlineColor;
+                }
             }
-        }
 
-        context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, color);
+            context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, color);
+        }
     };
 
     /** @override */

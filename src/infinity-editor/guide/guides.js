@@ -13,6 +13,7 @@
         // guides go from last to first
         this.addGuide(new IFUnitGuide(this));
         this.addGuide(new IFGridGuide(this));
+        this.addGuide(new IFPageGuide(this));
     }
 
     IFObject.inherit(IFGuides, GEventTarget);
@@ -75,40 +76,36 @@
      * @returns {IFPoint} a mapped point
      */
     IFGuides.prototype.mapPoint = function (point) {
-        var result = point;
+        var resX = null; point.getX();
+        var resY = null; point.getY();
 
         var guide;
         var res = null;
-        for (var i = 0; i < this._guides.length && !res; ++i) {
+        for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
             res = guide.map(point.getX(), point.getY());
             if (res) {
-                result = res;
-            }
-        }
-
-        /** TODO :
-        // Snap to pages
-        for (var child = this._scene.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFPage) {
-                var pageBBox = child.getGeometryBBox();
-                if (pageBBox && !pageBBox.isEmpty()) {
-                    var x = result.getX();
-                    var y = result.getY();
-
-                    if (Math.abs(x - pageBBox.getX()) <= snapDistance) {
-                        x = pageBBox.getX();
-                    }
-                    if (Math.abs(y - pageBBox.getY()) <= snapDistance) {
-                        y = pageBBox.getY();
-                    }
-
-                    result = new IFPoint(x, y);
+                if (res.x && resX === null) {
+                    resX = res.x.value;
+                    // TODO: if visual is true and beginMap has been called, then paint
+                }
+                if (res.y && resY === null) {
+                    resY = res.y.value;
+                    // TODO: if visual is true and beginMap has been called, then paint
                 }
             }
-        }*/
+            res = null;
+        }
 
-        return result;
+        if (resX === null) {
+            resX = res.x.value;
+        }
+
+        if (resY === null) {
+            resY = res.y.value;
+        }
+
+        return new IFPoint(resX, resY);
     };
 
     /**
