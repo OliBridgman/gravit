@@ -76,9 +76,6 @@ rm -rf $OUTDIRECTORY/$NAME.app
 cp -p -a $SOURCE $OUTDIRECTORY/$NAME.app
 
 echo "==Signing Code=="
-
-echo codesign --deep -s $IDENTITY -i $BUNDLEID --entitlements /tmp/entitlements.child "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper.app"
-
 codesign --deep -s $IDENTITY -i $BUNDLEID --entitlements /tmp/entitlements.child "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper.app"
 codesign --deep -s $IDENTITY -i $BUNDLEID --entitlements /tmp/entitlements.child "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper EH.app"
 codesign --deep -s $IDENTITY -i $BUNDLEID --entitlements /tmp/entitlements.child "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper NP.app"
@@ -86,10 +83,10 @@ codesign --deep -s $IDENTITY -i $BUNDLEID --entitlements /tmp/entitlements.paren
 
 # validate entitlements
 echo "==Validating entitlements and Mac App Store needs=="
-codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/$NAME Helper.app/Contents/MacOS/node-webkit Helper"
-codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/$NAME Helper EH.app/Contents/MacOS/node-webkit Helper EH"
-codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/$NAME Helper NP.app/Contents/MacOS/node-webkit Helper NP"
-codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/MacOS/$NAME"
+codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper.app/Contents/MacOS/node-webkit Helper"
+codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper EH.app/Contents/MacOS/node-webkit Helper EH"
+codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/Frameworks/node-webkit Helper NP.app/Contents/MacOS/node-webkit Helper NP"
+codesign -dvvv --entitlements :- "$OUTDIRECTORY/$NAME.app/Contents/MacOS/node-webkit"
 
 # validate code signatures
 echo "==Validating code signature and subsequent resources=="

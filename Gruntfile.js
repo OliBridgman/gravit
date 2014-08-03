@@ -291,7 +291,7 @@ module.exports = function (grunt) {
 
     // Private tasks
     grunt.registerTask('_packagemac', function () {
-        './macsign.sh ./build/system-binaries/Gravit/osx/Gravit.app Gravit com.quasado.gravit "3rd Party Mac Developer Application: Alexander Adam (8L5L5DS5WW)" ./build/system-osx';
+        './macsign.sh ./build/system-binaries/Gravit/osx/Gravit.app Gravit com.quasado.gravit A6B47158C91A04669297A547BD8AA674359D8197 ./build/system-osx';
 
 
 
