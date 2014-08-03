@@ -68,7 +68,7 @@
      * Called to let this guide map horizontal and vertical coordinates
      * @param {Number} x
      * @param {Number} y
-     * @return {{x: {value: Number, target: Number}, y: {value: Number, target: Number}}}
+     * @return {{x: {value: Number, visual: Boolean}, y: {value: Number, visual: Boolean}}}
      */
     IFGuide.Map.prototype.map = function (x, y) {
         // NO-OP
