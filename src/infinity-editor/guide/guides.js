@@ -17,6 +17,29 @@
 
     IFObject.inherit(IFGuides, GEventTarget);
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFGuides.InvalidationRequestEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event for an invalidation request event
+     * @param {IFRect} [area] the area to invalidate
+     * @class IFGuides.InvalidationRequestEvent
+     * @extends GEvent
+     * @constructor
+     */
+    IFGuides.InvalidationRequestEvent = function (area) {
+        this.area = area;
+    };
+    IFObject.inherit(IFGuides.InvalidationRequestEvent, GEvent);
+
+    /** @type {IFRect} */
+    IFGuides.InvalidationRequestEvent.prototype.area = null;
+
+    /** @override */
+    IFGuides.InvalidationRequestEvent.prototype.toString = function () {
+        return "[Event IFGuides.InvalidationRequestEvent]";
+    };
+
     /**
      * @type {IFScene}
      * @private
@@ -54,23 +77,13 @@
     IFGuides.prototype.mapPoint = function (point) {
         var result = point;
 
-        var snapDistance = this._scene.getProperty('snapDist');
-
-        // Snap to grid
-        if (this._scene.getProperty('gridActive')) {
-            var gsx = this._scene.getProperty('gridSizeX');
-            var gsy = this._scene.getProperty('gridSizeY');
-            result = new IFPoint(Math.round(result.getX() / gsx) * gsx, Math.round(result.getY() / gsy) * gsy);
-        } else {
-            // TODO : Get order etc. right
-            // Snap to units if desired
-            switch (this._scene.getProperty('unitSnap')) {
-                case IFScene.UnitSnap.Full:
-                    result = new IFPoint(ifMath.round(result.getX(), true), ifMath.round(result.getY(), true));
-                    break;
-                case IFScene.UnitSnap.Half:
-                    result = new IFPoint(ifMath.round(result.getX(), true) + 0.5, ifMath.round(result.getY(), true) + 0.5);
-                    break;
+        var guide;
+        var res = null;
+        for (var i = 0; i < this._guides.length && !res; ++i) {
+            guide = this._guides[i];
+            res = guide.map(point.getX(), point.getY());
+            if (res) {
+                result = res;
             }
         }
 
@@ -106,6 +119,20 @@
     IFGuides.prototype.paint = function (transform, context) {
         var fillRect = context.canvas.getTransform(false).inverted().mapRect(new IFRect(0, 150.5, context.canvas.getWidth(), context.canvas.getHeight()));
         context.canvas.strokeLine(fillRect.getX(), fillRect.getY(), fillRect.getX() + fillRect.getWidth(), fillRect.getY(), 1, context.guideOutlineColor);
+
+        var guide;
+        for (var i = 0; i < this._guides.length; ++i) {
+            guide = this._guides[i];
+            if (guide.hasMixin(IFGuide.Visual)) {
+                guide.paint(transform, context);
+            }
+        }
+    };
+
+    IFGuides.prototype.invalidate = function (area) {
+        if (area && !area.isEmpty()) {
+            this.trigger(new IFGuides.InvalidationRequestEvent(area));
+        }
     };
 
     /**

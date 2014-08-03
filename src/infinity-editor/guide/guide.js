@@ -10,6 +10,8 @@
         this._scene = guides._scene;
     }
 
+    IFObject.inherit(IFGuide, IFObject);
+
     /**
      * @type {IFGuides}
      * @private

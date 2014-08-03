@@ -15,15 +15,19 @@
 
     /** @override */
     IFUnitGuide.prototype.map = function (x, y) {
+        var result = null;
+
         // Snap to units if desired
         switch (this._scene.getProperty('unitSnap')) {
             case IFScene.UnitSnap.Full:
-                result = new IFPoint(ifMath.round(result.getX(), true), ifMath.round(result.getY(), true));
+                result = new IFPoint(ifMath.round(x, true), ifMath.round(y, true));
                 break;
             case IFScene.UnitSnap.Half:
-                result = new IFPoint(ifMath.round(result.getX(), true) + 0.5, ifMath.round(result.getY(), true) + 0.5);
+                result = new IFPoint(ifMath.round(x, true) + 0.5, ifMath.round(y, true) + 0.5);
                 break;
         }
+
+        return result;
     };
 
     /** @override */
