@@ -313,7 +313,7 @@ module.exports = function (grunt) {
     });
 
     // Private tasks
-    grunt.registerTask('_sign_osx', function () {
+    grunt.registerTask('_dist_osx', function () {
         var done = this.async();
 
         var gravitAppDir = cfg.build + '/system-binaries/Gravit/osx/Gravit.app';
@@ -329,30 +329,51 @@ module.exports = function (grunt) {
             'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
             'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
             'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '"'
+            'spctl --assess -vvvv "' + gravitAppDir + '"',
+
+            // package
+            'test -f ./dist/gravit-osx.dmg && rm ./dist/gravit-osx.dmg',
+            'mkdir ./dist',
+            './shell/system/package/osx/create-dmg \
+  --volname "Gravit" \
+  --volicon "./shell/system/appicon.icns" \
+  --background "./shell/system/package/osx/background.tiff" \
+  --window-size 626 313 \
+  --icon-size 120 \
+  --icon Gravit.app 284 0 \
+  --hide-extension Gravit.app \
+  --app-drop-link 483 0 \
+  ./dist/gravit-osx.dmg \
+  ./build/system-binaries/Gravit/osx/'
         ];
 
-        console.log('Sign Code & Validate for OS-X');
+        console.log('Sign & Package for OS-X');
 
         var index = 0;
 
-        var _sign = function () {
+        var _exec = function () {
             exec(commands[index], function (error, stdout, stderr) {
                 if (stdout) console.log(stdout);
                 if (stderr) console.log(stderr);
                 if (error !== null) {
-                    console.log('sign error: ' + error);
+                    console.log('exec error: ' + error);
                 }
 
                 if (++index < commands.length) {
-                    _sign();
+                    _exec();
                 } else {
                     done();
                 }
             });
         }
 
-        _sign();
+        _exec();
+    })
+
+    grunt.registerTask('_dist_win', function () {
+        var done = this.async();
+        // TODO
+        done();
     })
 
     // Public tasks
@@ -393,19 +414,13 @@ module.exports = function (grunt) {
         ]);
     });
 
-    grunt.registerTask('sign', function (target) {
-        grunt.task.run([
-            '_sign_osx'
-        ]);
-    });
-
     grunt.registerTask('dist', function (target) {
         grunt.task.run([
             'test',
             'build',
             'clean:dist',
             'copy:dist',
-            'sign',
+            '_dist_osx',
             'compress:dist'
         ]);
     });
