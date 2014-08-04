@@ -57,6 +57,7 @@
             }
         }
     };
+
     /** @override */
     IFGridGuide.prototype.map = function (x, y) {
         var result = null;
@@ -64,7 +65,9 @@
         if (this._scene.getProperty('gridActive')) {
             var gsx = this._scene.getProperty('gridSizeX');
             var gsy = this._scene.getProperty('gridSizeY');
-            result = new IFPoint(Math.round(x / gsx) * gsx, Math.round(y / gsy) * gsy);
+            result = {
+                x: {value: Math.round(x / gsx) * gsx, visual: false},
+                y: {value: Math.round(y / gsy) * gsy, visual: false}};
         }
 
         return result;
