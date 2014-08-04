@@ -14,6 +14,12 @@
     IFObject.inherit(IFEditorFrontStage, IFStage);
 
     /** @override */
+    IFEditorFrontStage.prototype.release = function () {
+        this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+        this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+    };
+
+    /** @override */
     IFEditorFrontStage.prototype.paint = function (context) {
         this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
     };

@@ -29,44 +29,12 @@
     };
 
     /** @override */
-    GBrowserShell.prototype.prepareLoad = function () {
-        // Add Gravit Loader
-        $('<div></div>')
-            .attr('id', 'gravit-loader')
-            .css('position', 'absolute')
-            .css('display', 'table')
-            .css('width', '100%')
-            .css('height', '100%')
-            .append($('<div></div>')
-                .css('display', 'table-cell')
-                .css('vertical-align', 'middle')
-                .css('text-align', 'center')
-                .css('width', '100%')
-                .css('height', '100%')
-                .append($('<img>')
-                    .attr('src', 'icon/icon_114x114.png'))
-                .append($('<p></p>')
-                    .css('line-height', '1.5em')
-                    .css('color', 'gray')
-                    .css('padding-top', '10px')
-                    .html('I am preparing for your pleasure,<br/>please bear with me for a second or two.')))
-            .appendTo($('body'));
-
-    };
-
-    /** @override */
-    GBrowserShell.prototype.finishLoad = function () {
+    GBrowserShell.prototype.prepare = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
             .css('height', '100%')
             .prependTo($('#header'));
-
-        // Remove loader
-        $("#gravit-loader").remove();
-
-        // Callback
-        gShellFinished();
     };
 
     /** @override */
@@ -141,4 +109,12 @@
     };
 
     _.gShell = new GBrowserShell;
+
+    $(document).ready(function () {
+        gShellReady();
+    });
+
+    $(window).load(function () {
+        gShellFinished();
+    });
 })(this);

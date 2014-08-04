@@ -96,13 +96,6 @@
     };
 
     /**
-     * Closes this window
-     */
-    GWindow.prototype.close = function () {
-        this._document.closeWindow(this);
-    };
-
-    /**
      * Called before this document gets activated
      */
     GWindow.prototype.activate = function () {
@@ -116,6 +109,13 @@
         // Always finish inline editing of editor if any
         // when a view gets deactivated
         this._document.getEditor().closeInlineEditor();
+    };
+
+    /**
+     * Called when this window gets released
+     */
+    GWindow.prototype.release = function () {
+        this._view.release();
     };
 
     /**

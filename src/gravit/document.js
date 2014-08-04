@@ -158,6 +158,52 @@
     };
 
     /**
+     * Create and returns a new page
+     * @param {Boolean} [noUndo] if set, no undo takes place for adding the page
+     * @return {IFPage}
+     */
+    GDocument.prototype.createNewPage = function (noUndo) {
+        var scene = this._scene;
+        var insertPos = this._scene.getPageInsertPosition();
+
+        // Create page
+        var page = new IFPage();
+        page.setProperties([
+            'name',
+            'x',
+            'y',
+            'w',
+            'h'
+        ], [
+            'Page ' + (scene.queryCount('> page') + 1).toString(),
+            insertPos.getX(),
+            insertPos.getY(),
+            800,
+            600
+        ]);
+
+        // Add default layer
+        var layer = new IFLayer();
+        // TODO : I18N
+        layer.setProperties(['name'], ['Background']);
+        page.appendChild(layer);
+
+        var addPageFunc = function () {
+            scene.appendChild(page);
+            scene.setActiveLayer(layer);
+        }
+
+        if (!noUndo) {
+            // TODO : I18N
+            IFEditor.tryRunTransaction(scene, addPageFunc, 'Add new Page');
+        } else {
+            addPageFunc();
+        }
+
+        return page;
+    };
+
+    /**
      * Called before this document gets activated
      */
     GDocument.prototype.activate = function () {
@@ -172,9 +218,9 @@
     };
 
     /**
-     * Called when this document gets closed
+     * Called when this document gets released
      */
-    GDocument.prototype.close = function () {
+    GDocument.prototype.release = function () {
         this._scene.removeEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
 
         if (this._storage) {

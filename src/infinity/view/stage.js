@@ -55,6 +55,13 @@
     };
 
     /**
+     * Called to release the stage
+     */
+    IFStage.prototype.release = function () {
+        // NO-OP
+    };
+
+    /**
      * Called to invalidate this paint widget or only a part of it
      * @param {IFRect} [area] the area to invalidate. If null (default),
      * then this clears the whole dirty areas and requests a full repaint

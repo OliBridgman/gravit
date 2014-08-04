@@ -14,6 +14,7 @@
 
         this._viewOffset = [0, 0, 0, 0];
         this._viewMargin = [0, 0, 0, 0];
+        this._pageConfigurations = [];
 
         // TODO : Move all transformation / view stuff into viewConfiguration!!
         if (!this._viewConfiguration) {
@@ -26,6 +27,7 @@
         // Subscribe to some scene events
         scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
     }
 
     IFObject.inherit(IFView, GUIWidget);
@@ -48,7 +50,14 @@
          * @type {Number}
          * @version 1.0
          */
-        maxZoomFactor: 512.0
+        maxZoomFactor: 512.0,
+
+        /**
+         * Either fit's the active page in screen (true)
+         * or just centers it at 100% when there's no
+         * saved view configuration for the page
+         */
+        defaultFitActivePage: false
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -75,7 +84,7 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFView Class
     // -----------------------------------------------------------------------------------------------------------------
-    
+
     /**
      * @type {IFScene}
      * @private
@@ -143,6 +152,12 @@
      * @private
      */
     IFView.prototype._viewConfiguration = null;
+
+    /**
+     * @type {Array<*>}
+     * @private
+     */
+    IFView.prototype._pageConfigurations = null;
 
     /** @override */
     IFView.prototype.resize = function (width, height) {
@@ -361,6 +376,33 @@
     };
 
     /**
+     * Zoom to the active page if any. This will either reload
+     * a saved view configuration for the page or it will fit
+     * it into the screen depending on the options
+     */
+    IFView.prototype.zoomActivePage = function () {
+        var activePage = this._scene.getActivePage();
+        if (activePage) {
+            // Look for an existing configuration
+            var pageConfig = this._getOrCreatePageConfig(activePage, false);
+            if (pageConfig) {
+                // ok, restore and return
+                this.transform(pageConfig.scrollX, pageConfig.scrollY, pageConfig.zoom);
+            } else {
+                // Coming here means we'll do a default action
+                var pageBBox = activePage.getPaintBBox();
+                if (pageBBox && !pageBBox.isEmpty()) {
+                    if (IFView.options.defaultFitActivePage) {
+                        this.zoomAll(pageBBox, false);
+                    } else {
+                        this.zoomAtCenter(pageBBox.getSide(IFRect.Side.CENTER), 1.0);
+                    }
+                }
+            }
+        }
+    };
+
+    /**
      * Scroll the view by a given subtract value
      * @param {Number} dx horizontal subtract
      * @param {Number} dy vertical subtract
@@ -431,6 +473,21 @@
     };
 
     /**
+     * Called to release this view
+     */
+    IFView.prototype.release = function () {
+        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        this._scene.removeEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
+
+        if (this._stages) {
+            for (var i = 0; i < this._stages.length; ++i) {
+                this._stages[i].release();
+            }
+        }
+    };
+
+    /**
      * Update view transforms and update all other necessary things like
      * scrollbars and virtual space as well as do a repaint if anything has changed
      * @param {Boolean} [noEvent] optional, specifies whether to send an event or not
@@ -464,26 +521,27 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param page
+     * @param autoCreate
      * @private
      */
-    IFView.prototype._afterPropertiesChange = function (event) {
-        // Handle single page mode change
-        if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
-            // Zoom active page if set to singlePage
-            if (this._scene.getProperty('singlePage')) {
-                var activePage = this._scene.getActivePage();
-                if (activePage) {
-                    var pageBBox = activePage.getPaintBBox();
-                    if (pageBBox && !pageBBox.isEmpty()) {
-                        this.zoomAll(pageBBox, false);
-                    }
-                }
+    IFView.prototype._getOrCreatePageConfig = function (page, autoCreate) {
+        var result = null;
+        for (var i = 0; i < this._pageConfigurations.length; ++i) {
+            if (this._pageConfigurations[i].page === page) {
+                result = this._pageConfigurations[i];
+                break;
             }
-
-            // Invalidate all in any case
-            this.invalidate();
         }
+
+        if (!result && autoCreate) {
+            result = {
+                page: page
+            };
+            this._pageConfigurations.push(result);
+        }
+
+        return result;
     };
 
     /**
@@ -492,15 +550,48 @@
      */
     IFView.prototype._afterFlagChange = function (event) {
         // Handle single page mode and active page changing
-        if (this._scene.getProperty('singlePage') === true) {
+        if (this._scene.getProperty('singlePage')) {
             if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active) {
                 this.invalidate();
 
                 if (event.set) {
-                    var pageBBox = event.node.getPaintBBox();
-                    if (pageBBox && !pageBBox.isEmpty()) {
-                        this.zoomAll(pageBBox, false);
-                    }
+                    this.zoomActivePage();
+                } else {
+                    // save existing page configuration before changing to another one
+                    var pageConfig = this._getOrCreatePageConfig(event.node, true);
+                    pageConfig.scrollX = this._scrollX;
+                    pageConfig.scrollY = this._scrollY;
+                    pageConfig.zoom = this._zoom;
+                }
+            }
+        }
+    };
+
+    /**
+     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @private
+     */
+    IFView.prototype._afterPropertiesChange = function (event) {
+        // Handle single page mode change
+        if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
+            this.zoomActivePage();
+
+            // Invalidate all in any case
+            this.invalidate();
+        }
+    };
+
+    /**
+     * @param {IFNode.AfterRemoveEvent} event
+     * @private
+     */
+    IFView.prototype._afterRemove = function (event) {
+        // Removing page must clear our page configuration for it
+        if (event.node instanceof IFPage) {
+            for (var i = 0; i < this._pageConfigurations.length; ++i) {
+                if (this._pageConfigurations[i].page === event.node) {
+                    this._pageConfigurations.splice(i, 1);
+                    break;
                 }
             }
         }

@@ -169,6 +169,9 @@
             var sourceView = source.getView();
             // TODO : Serialize/deserialize window settings instead
             window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom());
+        } else {
+            // Otherwise let view zoom the active page
+            window.getView().zoomActivePage();
         }
 
         return window;
@@ -209,6 +212,9 @@
         if (this.hasEventListeners(GWindows.WindowEvent)) {
             this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Removed, window));
         }
+
+        // Release window
+        window.release();
 
         // If this was the only window for the document left,
         // then remove/close our document now

@@ -8,7 +8,9 @@ module.exports = function (grunt) {
     var cfg = {
         build: 'build',
         dist: 'dist',
-        tmp: 'tmp'
+        tmp: 'tmp',
+        macBundleId: 'com.quasado.gravit',
+        macSignIdentity: '1269B5CE3B0DCC676DA70011A618EB6FA95F8F50'
     };
 
     grunt.initConfig({
@@ -155,6 +157,23 @@ module.exports = function (grunt) {
                     }
                 ]
             },
+            postBuild: {
+                files: [
+                    // Copy some files for mac binary
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/system/',
+                        dest: '<%= cfg.build %>/system-binaries/Gravit/osx/Gravit.app/Contents/',
+                        src: ['Info.plist']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'shell/system/',
+                        dest: '<%= cfg.build %>/system-binaries/Gravit/osx/Gravit.app/Contents/Resources/',
+                        src: ['doc.icns']
+                    }
+                ]
+            },
             build: {
                 files: [
                     // Browser
@@ -220,7 +239,7 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'shell/system/',
                         dest: '<%= cfg.build %>/system/',
-                        src: ['index.html', 'package.json']
+                        src: ['index.html', 'package.json', 'Info.plist']
                     }
                 ]
             },
@@ -232,7 +251,7 @@ module.exports = function (grunt) {
         },
         replace: {
             build: {
-                src: ['<%= cfg.build %>/system/package.json', '<%= cfg.build %>/chrome/manifest.json'],
+                src: ['<%= cfg.build %>/system/package.json', '<%= cfg.build %>/system/Info.plist', '<%= cfg.build %>/chrome/manifest.json'],
                 overwrite: true,
                 replacements: [
                     {
@@ -246,6 +265,10 @@ module.exports = function (grunt) {
                     {
                         from: '%version%',
                         to: '<%= pkg.version %>'
+                    },
+                    {
+                        from: '%mac-bundle-id%',
+                        to: '<%= cfg.macBundleId %>'
                     }
                 ]
             }
@@ -290,25 +313,46 @@ module.exports = function (grunt) {
     });
 
     // Private tasks
-    grunt.registerTask('_packagemac', function () {
-        './macsign.sh ./build/system-binaries/Gravit/osx/Gravit.app Gravit com.quasado.gravit A6B47158C91A04669297A547BD8AA674359D8197 ./build/system-osx';
-
-
-
-        'codesign --deep -s "3rd Party Mac Developer Application: Alexander Adam (8L5L5DS5WW)" -i com.quasado.gravit --entitlements /tmp/entitlements.child "./dist/system-osx/Gravit.app/Contents/Frameworks/node-webkit Helper.app"'
-
+    grunt.registerTask('_sign_osx', function () {
         var done = this.async();
-        var cmdLine = 'hdiutil create -format UDZO -srcfolder ' + cfg.build + '/system-binaries/Gravit/osx/Gravit.app ' + cfg.dist + '/system/osx/Gravit.dmg';
-        console.log('creating mac disk image...', cmdLine);
 
-        exec(cmdLine, function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
-            if (error !== null) {
-                console.log('exec error: ' + error);
-            }
-            done();
-        });
+        var gravitAppDir = cfg.build + '/system-binaries/Gravit/osx/Gravit.app';
+
+        var commands = [
+            // sign
+            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '"',
+
+            // verify
+            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+            'spctl --assess -vvvv "' + gravitAppDir + '"'
+        ];
+
+        console.log('Sign Code & Validate for OS-X');
+
+        var index = 0;
+
+        var _sign = function () {
+            exec(commands[index], function (error, stdout, stderr) {
+                if (stdout) console.log(stdout);
+                if (stderr) console.log(stderr);
+                if (error !== null) {
+                    console.log('sign error: ' + error);
+                }
+
+                if (++index < commands.length) {
+                    _sign();
+                } else {
+                    done();
+                }
+            });
+        }
+
+        _sign();
     })
 
     // Public tasks
@@ -344,7 +388,14 @@ module.exports = function (grunt) {
             'copy:preBuild',
             'copy:build',
             'replace:build',
-            'nodewebkit'
+            'nodewebkit',
+            'copy:postBuild'
+        ]);
+    });
+
+    grunt.registerTask('sign', function (target) {
+        grunt.task.run([
+            '_sign_osx'
         ]);
     });
 
@@ -354,8 +405,8 @@ module.exports = function (grunt) {
             'build',
             'clean:dist',
             'copy:dist',
-            'compress:dist',
-            '_packagemac'
+            'sign',
+            'compress:dist'
         ]);
     });
 

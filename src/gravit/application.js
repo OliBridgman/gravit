@@ -359,6 +359,17 @@
     };
 
     /**
+     * Create a new document and add it
+     */
+    GApplication.prototype.createNewDocument = function () {
+        // Create scene, add it and call add page to insert a default page
+        var scene = new IFScene();
+        scene.setProperty('unit', IFLength.Unit.PX);
+        var document = this.addDocument(scene);
+        document.createNewPage(true/*no-undo*/);
+    };
+
+    /**
      * Add a new document and open up a window for it
      * and mark the view as being active
      * @param {IFScene} scene the scene to add the document from it
@@ -370,6 +381,7 @@
         // TODO : I18N
         var document = new GDocument(scene, null, temporaryTitle ? temporaryTitle : 'Untitled-' + (++this._documentUntitledCount).toString());
         this._addDocument(document);
+        return document;
     };
 
     /**
@@ -509,7 +521,7 @@
             document.getEditor().close();
 
             // Release document
-            document.close();
+            document.release();
 
             // Remove and trigger event
             this._documents.splice(this._documents.indexOf(document), 1);
@@ -559,6 +571,7 @@
 
         this._view = $("<div></div>")
             .attr('id', 'workspace')
+            .css('display', 'none')
             .prependTo(body);
 
         // Windows-Part
@@ -665,11 +678,11 @@
         // Hide sidebars by default - TODO : Load & save view configuration here
         this.setPartVisible(GApplication.Part.Sidebars, false);
 
+        // Make workspace visible & make initial layout
+        this._view.css('display', '');
+
         // Mark initialized
         this._initialized = true;
-
-        // Manual call to relayout
-        this.relayout();
 
         // Subscribe to window events
         this._windows.addEventListener(GWindows.WindowEvent, this._windowEvent, this);

@@ -62,9 +62,6 @@
         // TODO : Set first parameter 'reference'
         this._storage.openPrompt(null, ['gravit'], function (url) {
             gApp.openDocument(url);
-
-            // Center page
-            gApp.executeAction(GOriginalViewAction.ID);
         });
     };
 

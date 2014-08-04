@@ -15,6 +15,10 @@
 
     IFObject.inherit(IFEditorBackStage, IFStage);
 
+    /** @override */
+    IFEditorBackStage.prototype.release = function () {
+        this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    };
 
     /** @override */
     IFEditorBackStage.prototype.paint = function (context) {

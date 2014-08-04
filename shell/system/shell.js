@@ -1,6 +1,12 @@
 (function (_) {
     var gui = require('nw.gui');
 
+    gui.App.on('open', function (cmdline) {
+        if (cmdline && cmdline.length > 0) {
+            gApp.openDocument('file://' + cmdline);
+        }
+    });
+
     /**
      * The system shell
      * @class GSystemShell
@@ -40,25 +46,21 @@
     };
 
     /** @override */
-    GSystemShell.prototype.prepareLoad = function () {
-        // Init shell-specific stuff here
-        gravit.storages.push(new GFileStorage());
-    };
-
-    /** @override */
-    GSystemShell.prototype.finishLoad = function () {
-        initWindowState();
-        var win = gui.Window.get();
-        win.menu = this._menuBar;
-
-        // Open dev console if desired
+    GSystemShell.prototype.start = function () {
+        var hasOpenedDocuments = false;
         var argv = gui.App.argv;
-        if (this.isDevelopment() || argv.indexOf('-console') >= 0) {
-            win.showDevTools();
+        if (argv && argv.length) {
+            for (var i = 0; i < argv.length; ++i) {
+                if (argv[i].charAt(0) !== '-') {
+                    gApp.openDocument('file://' + argv[i]);
+                    hasOpenedDocuments = true;
+                }
+            }
         }
 
-        // Focus window
-        win.focus();
+        if (!hasOpenedDocuments) {
+            GShell.prototype.start.call(this);
+        }
     };
 
     /** @override */
@@ -350,4 +352,25 @@
     };
 
     _.gShell = new GSystemShell;
+
+    $(document).ready(function () {
+        var win = gui.Window.get();
+        win.menu = _.gShell._menuBar;
+
+        // Open dev console if desired
+        var argv = gui.App.argv;
+        if (_.gShell.isDevelopment() || argv.indexOf('-console') >= 0) {
+            win.showDevTools();
+        }
+
+        gShellReady();
+    });
+
+    $(window).load(function () {
+        gravit.storages.push(new GFileStorage());
+        var win = gui.Window.get();
+        win.show();
+        win.focus();
+        gShellFinished();
+    });
 })(this);

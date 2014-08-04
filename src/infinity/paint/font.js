@@ -280,7 +280,4 @@
 
     _.IFFont = IFFont;
     _.ifFont = new IFFont();
-
-
-
 })(this);

@@ -19,6 +19,11 @@
     IFSceneStage.prototype._pixelContentCanvas = null;
 
     /** @override */
+    IFSceneStage.prototype.release = function () {
+        this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    };
+
+    /** @override */
     IFSceneStage.prototype.resize = function (width, height) {
         IFStage.prototype.resize.call(this, width, height);
 

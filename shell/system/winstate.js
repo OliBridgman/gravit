@@ -1,5 +1,3 @@
-(function (_) {
-
 /**
  * Cross-platform window state preservation.
  * Yes this code is quite complicated, but this is the best I came up with for
@@ -31,19 +29,18 @@ var isMaximizationEvent = false;
 
 // extra height added in linux x64 gnome-shell env, use it as workaround
 var deltaHeight = (function () {
-    return true;
+    // use deltaHeight only in windows with frame enabled
+    if (gui.App.manifest.window.frame) return true; else return 'disabled';
 })();
 
 
-_.initWindowState = function (callback) {
-    winState = localStorage.getItem('windowState');
-    winState = JSON.parse(winState && winState !== "" ? winState : 'null');
+function initWindowState() {
+    winState = JSON.parse(localStorage.windowState || 'null');
 
     if (winState) {
         currWinMode = winState.mode;
         if (currWinMode === 'maximized') {
             win.maximize();
-            _check_win_first_time_resize();
         } else {
             restoreWindowState();
         }
@@ -51,7 +48,6 @@ _.initWindowState = function (callback) {
         currWinMode = 'normal';
         if (deltaHeight !== 'disabled') deltaHeight = 0;
         dumpWindowState();
-        _check_win_first_time_resize();
     }
 }
 
@@ -83,6 +79,7 @@ function dumpWindowState() {
 }
 
 function restoreWindowState() {
+    console.log('restore_window_state');
     // deltaHeight already saved, so just restore it and adjust window height
     if (deltaHeight !== 'disabled' && typeof winState.deltaHeight !== 'undefined') {
         deltaHeight = winState.deltaHeight
@@ -95,44 +92,30 @@ function restoreWindowState() {
 
 function saveWindowState() {
     dumpWindowState();
-    localStorage.setItem('windowState', JSON.stringify(winState));
+    localStorage.windowState = JSON.stringify(winState);
 }
+
+initWindowState();
 
 win.on('maximize', function () {
     isMaximizationEvent = true;
     currWinMode = 'maximized';
-    saveWindowState();
 });
 
 win.on('unmaximize', function () {
     currWinMode = 'normal';
     restoreWindowState();
-    saveWindowState();
 });
 
 win.on('minimize', function () {
     currWinMode = 'minimized';
-    saveWindowState();
 });
 
 win.on('restore', function () {
     currWinMode = 'normal';
-    saveWindowState();
 });
 
-var isFirstTimeResize = false;
-
-function _check_win_first_time_resize() {
-    if (!isFirstTimeResize) {
-        isFirstTimeResize = true;
-        win.show();
-        gShellFinished();
-    }
-}
-
 win.window.addEventListener('resize', function () {
-    _check_win_first_time_resize();
-
     // resize event is fired many times on one resize action,
     // this hack with setTiemout forces it to fire only once
     clearTimeout(resizeTimeout);
@@ -158,11 +141,12 @@ win.window.addEventListener('resize', function () {
             }
         }
 
-        saveWindowState();
+        dumpWindowState();
+
     }, 500);
 }, false);
 
-win.on('move', function () {
+win.on('close', function () {
     saveWindowState();
+    this.close(true);
 });
-})(this);

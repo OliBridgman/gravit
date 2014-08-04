@@ -8,7 +8,7 @@
         "frame": true,
         "width": 1024,
         "height": 786,
-        "show": true
+        "show": false
     },
     "node-remote": "*"
 }

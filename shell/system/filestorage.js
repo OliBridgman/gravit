@@ -15,8 +15,6 @@
                     var file = this._fileInput[0].files[0];
                     var location = ifUtil.replaceAll(file.path, '\\', '/');
 
-                    alert('location: ' + location);
-
                     if (this._fileInputMode === 'open') {
                         this._fileInputCallback(this.getProtocol() + '://' + location);
                     } else if (this._fileInputMode === 'save') {

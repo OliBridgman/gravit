@@ -13,6 +13,11 @@
     IFObject.inherit(IFEditorSceneStage, IFStage);
 
     /** @override */
+    IFEditorSceneStage.prototype.release = function () {
+        this._view.getEditor().removeEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
+    };
+
+    /** @override */
     IFEditorSceneStage.prototype.paint = function (context) {
         var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
         if (sceneEditor) {

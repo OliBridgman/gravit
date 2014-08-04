@@ -14,21 +14,24 @@
      * @return {Boolean}
      */
     GShell.prototype.isDevelopment = function () {
-        throw new Error("Not Supported.");
+        return false;
     };
 
     /**
-     * Called to prepare loading of the shell
+     * Called to let the shell prepare itself. This is called
+     * *after* the app has been initialized.
      */
-    GShell.prototype.prepareLoad = function () {
-        throw new Error("Not Supported.");
+    GShell.prototype.prepare = function () {
+        // NO-OP
     };
 
     /**
-     * Called to finish loading of the shell
+     * Called to let the shell start. This is the last
+     * point in the startup sequence and by default
+     * this will simply create a new document
      */
-    GShell.prototype.finishLoad = function () {
-        throw new Error("Not Supported.");
+    GShell.prototype.start = function () {
+        gApp.createNewDocument();
     };
 
     /**
