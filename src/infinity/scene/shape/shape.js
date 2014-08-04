@@ -217,6 +217,8 @@
      * @private
      */
     IFShape.prototype._paintContents = function (context, style, styleIndex) {
+        // TODO : Check intersection of children paintbbox and if it is
+        // fully contained by this shape then don't clip
         // Paint our contents if any and clip 'em to ourself
         var oldContentsCanvas = null;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
