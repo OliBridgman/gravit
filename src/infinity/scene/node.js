@@ -984,30 +984,30 @@
         this._notifyChange(IFNode._Change.BeforeChildInsert, child);
 
         // Link our new child now
-        child._parent = this;
+        child._setParent(this);
         if (reference != null) {
-            child._next = reference;
-            child._previous = reference._previous;
-            reference._previous = child;
+            child._setNext(reference);
+            child._setPrevious(reference._previous);
+            reference._setPrevious(child);
             if (child._previous == null) {
                 this._firstChild = child;
             } else {
-                child._previous._next = child;
+                child._previous._setNext(child);
             }
         }
         else {
             if (this._lastChild != null) {
-                child._previous = this._lastChild;
-                this._lastChild._next = child;
+                child._setPrevious(this._lastChild);
+                this._lastChild._setNext(child);
                 this._lastChild = child;
             }
-            child._next = null;
+            child._setNext(null);
         }
 
         if (this._firstChild == null) {
             this._firstChild = child;
-            child._previous = null;
-            child._next = null;
+            child._setPrevious(null);
+            child._setNext(null);
         }
 
         if (child._next == null) {
@@ -1050,15 +1050,15 @@
             this._lastChild = child._previous;
         }
         if (child._previous != null) {
-            child._previous._next = child._next;
+            child._previous._setNext(child._next);
         }
         if (child._next != null) {
-            child._next._previous = child._previous;
+            child._next._setPrevious(child._previous);
         }
 
-        child._parent = null;
-        child._previous = null;
-        child._next = null;
+        child._setParent(null);
+        child._setPrevious(null);
+        child._setNext(null);
 
         // If attached, detach all children recursively
         if (this.isAttached()) {
@@ -1068,7 +1068,6 @@
                 }, true);
             }
         }
-
 
         this._notifyChange(IFNode._Change.AfterChildRemove, child);
     };
@@ -1753,6 +1752,30 @@
 
             this._scene = scene;
         }
+    };
+
+    /**
+     * @param {IFNode} parent
+     * @private
+     */
+    IFNode.prototype._setParent = function (parent) {
+        this._parent = parent;
+    };
+
+    /**
+     * @param {IFNode} previous
+     * @private
+     */
+    IFNode.prototype._setPrevious = function (previous) {
+        this._previous = previous;
+    };
+
+    /**
+     * @param {IFNode} next
+     * @private
+     */
+    IFNode.prototype._setNext = function (next) {
+        this._next = next;
     };
 
     /**

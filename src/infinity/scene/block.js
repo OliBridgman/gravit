@@ -11,6 +11,7 @@
         IFElement.call(this);
         this._setDefaultProperties(IFBlock.VisualProperties, IFBlock.MetaProperties);
     }
+
     IFObject.inheritAndMix(IFBlock, IFElement, [IFNode.Properties, IFNode.Store]);
 
     /**
@@ -29,6 +30,27 @@
     };
 
     /**
+     * The containting owner layer
+     * @type {IFLayer}
+     * @private
+     */
+    IFBlock.prototype._ownerLayer = null;
+
+    /**
+     * The containting root layer
+     * @type {IFLayer}
+     * @private
+     */
+    IFBlock.prototype._rootLayer = null;
+
+    /**
+     * The containting page
+     * @type {IFPage}
+     * @private
+     */
+    IFBlock.prototype._page = null;
+
+    /**
      * Returns the label of the block which is either the name
      * of the block if it has one or the name of the block's type
      * @return {String}
@@ -41,29 +63,27 @@
     };
 
     /**
+     * Returns the owner layer of this block if any
+     * @return {IFLayer}
+     */
+    IFBlock.prototype.getOwnerLayer = function () {
+        return this._ownerLayer;
+    };
+
+    /**
+     * Returns the root layer of this block if any
+     * @return {IFLayer}
+     */
+    IFBlock.prototype.getRootLayer = function () {
+        return this._rootLayer;
+    };
+
+    /**
      * Returns the owner page of this block if any
      * @return {IFPage}
      */
     IFBlock.prototype.getPage = function () {
-        for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
-            if (parent instanceof IFPage) {
-                return parent;
-            }
-        }
-        return null;
-    };
-
-    /**
-     * Returns the owner layer of this block if any
-     * @return {IFLayer}
-     */
-    IFBlock.prototype.getLayer = function () {
-        for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
-            if (parent instanceof IFLayer) {
-                return parent;
-            }
-        }
-        return null;
+        return this._page;
     };
 
     /** @override */
@@ -84,6 +104,22 @@
             return true;
         }
         return false;
+    };
+
+    /** @override */
+    IFBlock.prototype._setParent = function (parent) {
+        IFElement.prototype._setParent.call(this, parent);
+
+        // update rootLayer, layer, page
+        if (parent) {
+            this._ownerLayer = parent instanceof IFLayer ? parent : parent instanceof IFBlock ? parent.getOwnerLayer() : null;
+            this._rootLayer = parent instanceof IFLayer && !parent.getOwnerLayer() ? parent : parent instanceof IFBlock ? parent.getRootLayer() : null;
+            this._page = parent instanceof IFPage ? parent : parent instanceof IFBlock ? parent.getPage() : null;
+        } else {
+            this._ownerLayer = null;
+            this._rootLayer = null;
+            this._page = null;
+        }
     };
 
     /** @override */
