@@ -17,6 +17,8 @@
      * The geometry properties of a page with their default values
      */
     IFPage.GeometryProperties = {
+        /** Master-Page reference */
+        msref: null,
         /** Page position */
         x: 0,
         y: 0,
@@ -42,6 +44,22 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFPage Class
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Returns the master page if attached and the page has a master
+     * @returns {IFNode.Reference}
+     */
+    IFPage.prototype.getMasterPage = function () {
+        var result = this.$msref && this.isAttached() ? this.getScene().getReference(this.$msref) : null;
+
+        // try to avoid returning ourself
+        if (result === this) {
+            return null;
+        }
+
+        return result;
+    };
+
     /** @override */
     IFPage.prototype.store = function (blob) {
         if (IFBlock.prototype.store.call(this, blob)) {
@@ -75,9 +93,12 @@
     };
 
     /** @override */
-    IFPage.prototype._paint = function (context, style, styleIndex) {
+    IFPage.prototype._paint = function (context) {
+        // Paint master page if we have any
+        var masterPage = this.getMasterPage();
+
         // Indicates whether page clipped it's contents
-        var hasClipped = false;
+        var isClipped = false;
 
         // Figure if we have any contents
         var hasContents = false;
@@ -97,15 +118,38 @@
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
         // If we have contents and are in output mode we'll clip to our page extents
-        if (hasContents && context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
+        if (hasContents && masterPage || context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
             context.canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);
-            hasClipped = true;
+            isClipped = true;
         }
 
         // Assign original transform again
         context.canvas.setTransform(canvasTransform);
+
+        // Render master page if any
+        if (masterPage) {
+            var canvasTransform = context.canvas.getTransform(true);
+            var mx = masterPage.getProperty('x');
+            var my = masterPage.getProperty('y');
+            var dx = this.$x - mx;
+            var dy = this.$y - my;
+            var masterTransform = new IFTransform(1, 0, 0, 1, dx, dy);
+
+            // Prepare master paint:
+            // 1.) Translate canvas to our own x,y coordinates
+            // 2.) Reverse translate dirty areas with our own x,y coordinates
+            context.canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
+            context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
+
+            // Let our master render now
+            masterPage.render(context);
+
+            // Restore in reverse order of preparation
+            context.dirtyMatcher.transform(masterTransform);
+            context.canvas.setTransform(canvasTransform);
+        }
 
         // Render contents if any
         if (hasContents) {
@@ -113,7 +157,7 @@
         }
 
         // Reset clipping if we've clipped
-        if (hasClipped) {
+        if (isClipped) {
             context.canvas.resetClip();
         }
     };
@@ -178,10 +222,42 @@
                     }
                 }
             }
+
+            if (args.properties.indexOf('msref') >= 0) {
+                var masterPage = this.getMasterPage();
+                if (masterPage) {
+                    switch (change) {
+                        case IFNode._Change.BeforePropertiesChange:
+                            this.getScene().unlink(masterPage, this);
+                            break;
+                        case IFNode._Change.AfterPropertiesChange:
+                            this.getScene().link(masterPage, this);
+                            break;
+                    }
+                }
+            }
         }
 
         this._handleVisualChangeForProperties(change, args, IFPage.VisualProperties);
         IFBlock.prototype._handleChange.call(this, change, args);
+    };
+
+    /** @override */
+    IFPage.prototype._setScene = function (scene) {
+        if (scene !== this._scene) {
+            if (scene) {
+                var masterPage = scene.getReference(this.$msref);
+                if (masterPage) {
+                    scene.link(masterPage, this)
+                }
+            } else {
+                var masterPage = this._scene.getReference(this.$msref);
+                if (masterPage) {
+                    this._scene.unlink(masterPage, this);
+                }
+            }
+        }
+        IFBlock.prototype._setScene.call(this, scene);
     };
 
     _.IFPage = IFPage;

@@ -7,24 +7,57 @@
             var scene = document.getScene();
             scene.removeChild(scene.getActivePage());
 
-            for (var i = 0; i < 10; ++i) {
-                var insertPos = scene.getPageInsertPosition();
-                var insertSize = new IFPoint(800, 600);
+            var masterPage = new IFPage();
+            var insertPos = scene.getPageInsertPosition();
+            var insertSize = new IFPoint(800, 600);
 
+            masterPage.setProperties([
+                'name',
+                'x',
+                'y',
+                'w',
+                'h'
+            ], [
+                'Master-Page',
+                insertPos.getX() + 100,
+                insertPos.getY() + 100,
+                insertSize.getX(),
+                insertSize.getY()
+            ]);
+
+            var layer = new IFLayer();
+            layer.setFlag(IFNode.Flag.Active);
+            masterPage.appendChild(layer);
+
+            var rectangle = new IFRectangle();
+            var style = new IFInlineStyle();
+            var fillPaint = new IFFillPaint();
+            fillPaint.setProperty('pat', IFColor.parseCSSColor('rgba(255, 0, 0, 0.75)'));
+            style.appendChild(fillPaint);
+            rectangle.getStyleSet().appendChild(style);
+            rectangle.setProperty('trf', new IFTransform(insertSize.getX() / 2, 0, 0, 50, 100 + insertSize.getX() / 2, 100 + 50));
+            layer.appendChild(rectangle);
+
+            scene.appendChild(masterPage);
+
+            for (var i = 0; i < 10; ++i) {
                 var page = new IFPage();
+                insertPos = scene.getPageInsertPosition();
 
                 page.setProperties([
                     'name',
                     'x',
                     'y',
                     'w',
-                    'h'
+                    'h',
+                    'msref'
                 ], [
                     'Page-' + i,
                     insertPos.getX(),
                     insertPos.getY(),
                     insertSize.getX(),
-                    insertSize.getY()
+                    insertSize.getY(),
+                    masterPage.getReferenceId()
                 ]);
 
                 var text = new IFText();
