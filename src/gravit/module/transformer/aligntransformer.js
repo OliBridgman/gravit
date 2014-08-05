@@ -51,6 +51,12 @@
      */
     GAlignTransformer.prototype._elements = null;
 
+    /**
+     * @type {GAlignTransformer._AlignTo}
+     * @private
+     */
+    GAlignTransformer.prototype._savedAlignTo = GAlignTransformer._AlignTo.Selection;
+
     /** @override */
     GAlignTransformer.prototype.getCategory = function () {
         // TODO : I18N
@@ -99,6 +105,7 @@
                             // TODO : I18N
                             .text('Last Selected Element'))
                         .on('change', function () {
+                            this._savedAlignTo = $(this).val();
                             this._updateControls();
                         }.bind(this)))))
             .append($('<tr></tr>')
@@ -221,6 +228,15 @@
     GAlignTransformer.prototype.update = function (document, elements) {
         this._document = document;
         this._elements = elements;
+
+        // If selection alignment-to is selected and we have only one
+        // element available then we (temporarily) switch to align-to page,
+        // otherwise we'll reset to our saved align-to selection
+        if (this._elements && this._elements.length === 1) {
+            this._panel.find('select[data-option="align-to"]').val(GAlignTransformer._AlignTo.Page);
+        } else {
+            this._panel.find('select[data-option="align-to"]').val(this._savedAlignTo)
+        }
 
         this._updateControls();
 
