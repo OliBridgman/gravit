@@ -46,6 +46,14 @@
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * Returns whether this page is a master page or not (always returns false if not attached)
+     * @returns {boolean}
+     */
+    IFPage.prototype.isMaster = function () {
+        return this.isAttached() ? this.getScene().hasLinks(this) : false;
+    };
+
+    /**
      * Returns the master page if attached and the page has a master
      * @returns {IFNode.Reference}
      */
@@ -58,6 +66,20 @@
         }
 
         return result;
+    };
+
+    /**
+     * Returns the page's clip box which always is the page's
+     * geometry bbox plus additional bleeding if any
+     * @return {IFRect}
+     */
+    IFPage.prototype.getPageClipBBox = function () {
+        var bbox = this.getGeometryBBox();
+        if (bbox && !bbox.isEmpty()) {
+            var bl = this.$bl || 0;
+            return bbox.expanded(bl, bl, bl, bl);
+        }
+        return bbox;
     };
 
     /** @override */
@@ -239,6 +261,31 @@
         }
 
         this._handleVisualChangeForProperties(change, args, IFPage.VisualProperties);
+
+        if (change === IFElement._Change.InvalidationRequested) {
+            /** @type IFRect */
+            var area = args;
+
+            // Handle invalidation if we're a master
+            if (area && !area.isEmpty() && this.isMaster()) {
+                // If the invalidation area intersects with our page clipping box then
+                // we need to invalidate the same area on all renderable linked pages as well
+                var clipBBox = this.getPageClipBBox();
+                if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
+                    this.getScene().visitLinks(this, function (link) {
+                        if (link instanceof IFPage && link.isRenderable()) {
+                            // Move invalidation area relative to the linked page and let the
+                            // page invalidate the area which by itself my trigger more invalidations
+                            // when the linked page is also a master
+                            var dx = link.getProperty('x') - this.$x;
+                            var dy = link.getProperty('y') - this.$y;
+                            link._requestInvalidationArea(area.translated(dx, dy));
+                        }
+                    }.bind(this));
+                }
+            }
+        }
+
         IFBlock.prototype._handleChange.call(this, change, args);
     };
 
