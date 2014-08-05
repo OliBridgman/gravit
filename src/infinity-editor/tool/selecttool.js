@@ -90,18 +90,6 @@
     IFSelectTool.prototype._sceneEditor = null;
 
     /** @override */
-    IFSelectTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this)
-            .addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFSelectTool, "shortcut.shift"), true)
-            .addKey(IFKey.Constant.META, new IFLocale.Key(IFSelectTool, "shortcut.meta"), true)
-            .addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFSelectTool, "shortcut.option"), true)
-            .addKey(IFKey.Constant.UP, new IFLocale.Key(IFSelectTool, "shortcut.up"), false)
-            .addKey(IFKey.Constant.DOWN, new IFLocale.Key(IFSelectTool, "shortcut.down"), false)
-            .addKey(IFKey.Constant.LEFT, new IFLocale.Key(IFSelectTool, "shortcut.left"), false)
-            .addKey(IFKey.Constant.RIGHT, new IFLocale.Key(IFSelectTool, "shortcut.right"), false);
-    };
-
-    /** @override */
     IFSelectTool.prototype.getCursor = function () {
         return this._editorUnderMouseInfo ? IFCursor.SelectDot : IFCursor.Select;
     };

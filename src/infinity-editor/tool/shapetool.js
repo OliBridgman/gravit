@@ -87,20 +87,6 @@
     IFShapeTool.prototype._hasCreatedShape = false;
 
     /** @override */
-    IFShapeTool.prototype.getHint = function () {
-        var hint = IFTool.prototype.getHint.call(this);
-
-        if (this._keepRatio) {
-            hint.addKey(IFKey.Constant.SHIFT, new IFLocale.Key(IFShapeTool, "shortcut.shift"), true);
-        }
-        if (this._fromCenter) {
-            hint.addKey(IFKey.Constant.OPTION, new IFLocale.Key(IFShapeTool, "shortcut.option"), true);
-        }
-
-        return hint;
-    };
-
-    /** @override */
     IFShapeTool.prototype.getCursor = function () {
         return IFCursor.Cross;
     };

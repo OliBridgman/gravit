@@ -160,12 +160,6 @@
     IFPathTool.prototype._deactivationAllowed = true;
 
     /** @override */
-    IFPathTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this)
-            .addKey(IFKey.Constant.TAB, new IFLocale.Key(IFPathTool, "shortcut.tab"));
-    };
-
-    /** @override */
     IFPathTool.prototype.getCursor = function () {
         return this._cursor;
     };

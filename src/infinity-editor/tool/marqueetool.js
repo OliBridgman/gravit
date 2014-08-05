@@ -104,12 +104,6 @@
     IFMarqueeTool.prototype._areaBounds = null;
 
     /** @override */
-    IFMarqueeTool.prototype.getHint = function () {
-        return IFTool.prototype.getHint.call(this)
-            .setTitle(new IFLocale.Key(IFMarqueeTool, "title"));
-    };
-
-    /** @override */
     IFMarqueeTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
