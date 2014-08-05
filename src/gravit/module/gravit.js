@@ -175,6 +175,7 @@
             new GEllipseProperties(),
             new GTextProperties(),
             new GImageProperties(),
+            new GSliceProperties(),
             new GPageProperties()
         );
 
