@@ -91,15 +91,12 @@
                     var width = bbox.getWidth();
                     var height = bbox.getHeight();
 
-                    var sx = this.$sx * width;
-                    var sy = this.$sy * height;
-                    var tx = left + this.$tx * width;
-                    var ty = top + this.$ty * height;
-
                     return new IFTransform()
-                        .scaled(sx, sy)
+                        .scaled(this.$sx, this.$sy)
                         .rotated(this.$rt)
-                        .translated(tx, ty);
+                        .translated(this.$tx, this.$ty)
+                        .scaled(width, height)
+                        .translated(left, top);
             }
         }
 
