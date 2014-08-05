@@ -112,7 +112,15 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'size-preset') {
+            if (property === 'msref') {
+                return $('<select></select>')
+                    .attr('data-property', 'msref')
+                    .css('width', '100%')
+                    .on('change', function () {
+                        var val = $(this).val();
+                        self._assignProperty(property, val === '' ? null : val);
+                    });
+            } else if (property === 'size-preset') {
                 var result = $('<select></select>')
                     .attr('data-property', 'size-preset')
                     .css('width', '100%')
@@ -200,6 +208,18 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
+                    .text('Master:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('msref'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .attr('colspan', 4)
+                    .append($('<hr>'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
                     .text('Bleed:'))
                 .append($('<td></td>')
                     .append(_createInput('bl')))
@@ -265,7 +285,9 @@
     /** @override */
     GPageProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().removeEventListener(IFNode.AfterInsertEvent, this._updatePages, this);
+            this._document.getScene().removeEventListener(IFNode.AfterRemoveEvent, this._updatePages, this);
             this._document = null;
         }
 
@@ -289,6 +311,8 @@
         if (this._pages.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(IFNode.AfterInsertEvent, this._updatePages, this);
+            this._document.getScene().addEventListener(IFNode.AfterRemoveEvent, this._updatePages, this);
             this._updateProperties();
             return true;
         } else {
@@ -315,6 +339,9 @@
         var scene = this._document.getScene();
         var page = this._pages[0];
 
+        this._updatePages();
+
+        this._panel.find('select[data-property="msref"]').val(page.getProperty('msref'));
         this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
         this._panel.find('[data-property="cls"]')
             .gColorButton('value', page.getProperty('cls'))
@@ -327,6 +354,34 @@
         this._panel.find('input[data-property="mr"]').val(scene.pointToString(page.getProperty('mr')));
 
         this._selectSizePreset();
+    };
+
+    /**
+     * @private
+     */
+    GPageProperties.prototype._updatePages = function () {
+        var scene = this._document.getScene();
+
+        var select = this._panel.find('select[data-property="msref"]');
+        var oldVal = select.val();
+        select.val(null);
+        select.empty();
+
+        $('<option></option>')
+            .attr('value', '')
+            .text('')
+            .appendTo(select);
+
+        for (var node = scene.getFirstChild(); node !== null; node = node.getNext()) {
+            if (node instanceof IFPage && this._pages.indexOf(node) < 0) {
+                $('<option></option>')
+                    .attr('value', node.getReferenceId())
+                    .text(node.getLabel())
+                    .appendTo(select);
+            }
+        }
+
+        select.val(oldVal);
     };
 
     GPageProperties.prototype._selectSizePreset = function () {
