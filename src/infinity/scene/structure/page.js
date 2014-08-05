@@ -267,7 +267,7 @@
             var area = args;
 
             // Handle invalidation if we're a master
-            if (area && !area.isEmpty() && this.isMaster()) {
+            if (area && !area.isEmpty() && this.isMaster() && this.getScene().getProperty('singlePage') === false) {
                 // If the invalidation area intersects with our page clipping box then
                 // we need to invalidate the same area on all renderable linked pages as well
                 var clipBBox = this.getPageClipBBox();
