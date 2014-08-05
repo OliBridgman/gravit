@@ -87,7 +87,7 @@
                 }
             });
 
-            document.getEditor().updateSelection(false, selection);
+            editor.updateSelection(false, selection);
         }
     };
 
