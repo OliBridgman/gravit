@@ -196,6 +196,7 @@
             scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
             scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.addEventListener(IFScene.ReferenceEvent, this._referenceEvent, this);
             this._clear();
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
@@ -204,6 +205,7 @@
             scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
             scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.removeEventListener(IFScene.ReferenceEvent, this._referenceEvent, this);
             this._clear();
         }
     };
@@ -283,6 +285,10 @@
                         }, 'Rename Page');
                     }
                 }))
+            .append($('<div></div>')
+                .addClass('page-master')
+                .append($('<span></span>')
+                    .addClass('fa fa-fw')))
             .on('mousedown', function () {
                 // TODO
             })
@@ -404,6 +410,32 @@
                     .toggleClass('fa-unlock', !pageLocked);
 
                 $element.find('.page-name').text(page.getProperty('name'));
+
+                var linkCount = page.getScene().linkCount(page);
+                var master = page.getMasterPage();
+                var masterTitle = '';
+
+                if (linkCount) {
+                    // TODO : I18N
+                    masterTitle = 'Master of ' + linkCount.toString() + ' pages:';
+                    page.getScene().visitLinks(page, function (pageSource) {
+                        masterTitle += '\n' + pageSource.getLabel();
+                    })
+                }
+                if (master) {
+                    if (masterTitle !== '') {
+                        masterTitle += '\n\n';
+                    }
+                    masterTitle += 'Slave of ' + master.getLabel();
+                }
+
+                $element.find('.page-master')
+                    .css('display', !!master || linkCount > 0 ? '' : 'none')
+                    /*!!*/
+                    .find('> span')
+                    .attr('title', masterTitle)
+                    .toggleClass('fa-link', !!master && linkCount === 0)
+                    .toggleClass('fa-crosshairs', linkCount > 0);
                 return false;
             }
         });
@@ -605,6 +637,16 @@
             this._updateLayer(event.node);
         } else if ((event.node instanceof IFLayer || event.node instanceof IFItem) && (event.flag === IFElement.Flag.Hidden || event.flag === IFElement.Flag.Locked)) {
             this._updateLayer(event.node);
+        }
+    };
+
+    /**
+     * @param {IFScene.ReferenceEvent} event
+     * @private
+     */
+    GPagesLayersSidebar.prototype._referenceEvent = function (event) {
+        if (event.reference instanceof IFPage) {
+            this._updatePage(event.reference);
         }
     };
 

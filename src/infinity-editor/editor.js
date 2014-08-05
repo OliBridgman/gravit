@@ -350,9 +350,9 @@
     };
 
     /**
-     * Called to close and detach this editor
+     * Called to release and detach this editor
      */
-    IFEditor.prototype.close = function () {
+    IFEditor.prototype.release = function () {
         delete this._scene.__graphic_editor__;
 
         this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert);

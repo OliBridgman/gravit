@@ -103,6 +103,39 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFScene.ReferenceEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever a reference has been either linked or unlinked
+     * @param {IFNode.Reference} reference the affected reference
+     * @param {IFNode} target the target that was linked/unlinked against reference
+     * @param {Boolean} linked if true, reference was linked, otherwise unlinked
+     * @class IFScene.ReferenceEvent
+     * @extends GEvent
+     * @constructor
+     */
+    IFScene.ReferenceEvent = function (reference, target, linked) {
+        this.reference = reference;
+        this.target = target;
+        this.linked = linked;
+    };
+    IFObject.inherit(IFScene.ReferenceEvent, GEvent);
+
+    /** @type {IFNode.Reference} */
+    IFScene.ReferenceEvent.prototype.reference = null;
+
+    /** @type {IFNode} */
+    IFScene.ReferenceEvent.prototype.target = null;
+
+    /** @type {Boolean} */
+    IFScene.ReferenceEvent.prototype.linked = null;
+
+    /** @override */
+    IFScene.ReferenceEvent.prototype.toString = function () {
+        return "[Event IFScene.ReferenceEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFScene.ResolveUrlEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -455,6 +488,10 @@
             this._links[referenceId] = [];
         }
         this._links[referenceId].push(link);
+
+        if (this.hasEventListeners(IFScene.ReferenceEvent)) {
+            this.trigger(new IFScene.ReferenceEvent(target, link, true));
+        }
     };
 
     /**
@@ -471,6 +508,10 @@
                 links.splice(index, 1);
                 if (links.length === 0) {
                     delete this._links[referenceId];
+                }
+
+                if (this.hasEventListeners(IFScene.ReferenceEvent)) {
+                    this.trigger(new IFScene.ReferenceEvent(target, link, false));
                 }
             }
         }
@@ -498,6 +539,19 @@
      */
     IFScene.prototype.hasLinks = function (reference) {
         return this._links.hasOwnProperty(reference.getReferenceId());
+    };
+
+    /**
+     * Returns the number of links a given reference has
+     * @param {IFNode.Reference} reference
+     * @returns {Number}
+     */
+    IFScene.prototype.linkCount = function (reference) {
+        var links = this._links[reference.getReferenceId()];
+        if (links) {
+            return links.length;
+        }
+        return 0;
     };
 
     /**

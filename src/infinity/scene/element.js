@@ -74,7 +74,7 @@
      */
     IFElement._Change = {
         /**
-         * A child's geometry has been updated
+         * A child's geometry has been updated. This change gets populated up in hierarchy.
          * args = the child which' geometry has been updated
          * @type {Number}
          */
@@ -99,7 +99,14 @@
          * args = none
          * @type {Number}
          */
-        InvalidationRequest: 230
+        InvalidationRequest: 230,
+
+        /**
+         * An invalidation was requested. This change gets populated up in hierarchy.
+         * args = the requested invalidation area rect
+         * @type {Number}
+         */
+        InvalidationRequested: 231
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -915,11 +922,11 @@
      * @private
      */
     IFElement.prototype._requestInvalidateNode = function (node) {
-        if (this.isAttached() && node.isRenderable()) {
+        if (node.isRenderable()) {
             var repaintArea = node.getPaintBBox();
             if (repaintArea) {
                 // Expand repaint area a bit to accreditate for any aa-pixels
-                this._scene._invalidateArea(repaintArea.expanded(1.5, 1.5, 1.5, 1.5));
+                this._requestInvalidationArea(repaintArea.expanded(2, 2, 2, 2));
             }
         }
     };
@@ -932,6 +939,7 @@
     IFElement.prototype._requestInvalidationArea = function (area) {
         if (this.isAttached()) {
             this._scene._invalidateArea(area);
+            this._handleChange(IFElement._Change.InvalidationRequested, area);
         }
     };
 
@@ -957,6 +965,11 @@
         if (change == IFElement._Change.InvalidationRequest) {
             if (this.isRenderable()) {
                 this._requestInvalidation();
+            }
+        } else if (change === IFElement._Change.InvalidationRequested) {
+            // Deliver invalidation requested up to parent
+            if (this.getParent()) {
+                this.getParent()._notifyChange(IFElement._Change.InvalidationRequested, args);
             }
         } else if (change == IFElement._Change.PrepareGeometryUpdate) {
             if (this.isRenderable()) {
