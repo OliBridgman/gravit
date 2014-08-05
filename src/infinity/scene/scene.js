@@ -501,6 +501,19 @@
     };
 
     /**
+     * Returns the number of links a given reference has
+     * @param {IFNode.Reference} reference
+     * @returns {Number}
+     */
+    IFScene.prototype.linkCount = function (reference) {
+        var links = this._links[reference.getReferenceId()];
+        if (links) {
+            return links.length;
+        }
+        return 0;
+    };
+
+    /**
      * Register a referenceable node
      * @param {IFNode.Reference} reference
      */

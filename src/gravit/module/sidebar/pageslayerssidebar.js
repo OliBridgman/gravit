@@ -283,6 +283,10 @@
                         }, 'Rename Page');
                     }
                 }))
+            .append($('<div></div>')
+                .addClass('page-master')
+                .append($('<span></span>')
+                    .addClass('fa fa-fw')))
             .on('mousedown', function () {
                 // TODO
             })
@@ -404,6 +408,32 @@
                     .toggleClass('fa-unlock', !pageLocked);
 
                 $element.find('.page-name').text(page.getProperty('name'));
+
+                var linkCount = page.getScene().linkCount(page);
+                var master = page.getMasterPage();
+                var masterTitle = '';
+
+                if (linkCount) {
+                    // TODO : I18N
+                    masterTitle = 'Master of ' + linkCount.toString() + ' pages:';
+                    page.getScene().visitLinks(page, function (pageSource) {
+                        masterTitle += '\n' + pageSource.getLabel();
+                    })
+                }
+                if (master) {
+                    if (masterTitle !== '') {
+                        masterTitle += '\n\n';
+                    }
+                    masterTitle += 'Slave of ' + master.getLabel();
+                }
+
+                $element.find('.page-master')
+                    .css('display', master || linkCount ? '' : 'none')
+                    /*!!*/
+                    .find('> span')
+                    .attr('title', masterTitle)
+                    .toggleClass('fa-link', master && !linkCount)
+                    .toggleClass('fa-crosshairs', linkCount > 0);
                 return false;
             }
         });
