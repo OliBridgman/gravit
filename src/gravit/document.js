@@ -221,6 +221,8 @@
      * Called when this document gets released
      */
     GDocument.prototype.release = function () {
+        this._editor.release();
+
         this._scene.removeEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
 
         if (this._storage) {

@@ -517,9 +517,6 @@
                 this.activateDocument(null);
             }
 
-            // Release document editor
-            document.getEditor().close();
-
             // Release document
             document.release();
 
