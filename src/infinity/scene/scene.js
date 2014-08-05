@@ -60,7 +60,7 @@
         /** The unit snap-mode (IFScene.UnitSnap) */
         unitSnap: IFScene.UnitSnap.Full,
         /** The snap distance */
-        snapDist: 3,
+        snapDist: 5,
         /** The pick distance */
         pickDist: 3,
         /** The cursor distance (small and big) */
