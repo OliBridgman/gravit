@@ -585,11 +585,7 @@
             this._canvasContext.clearRect(x, y, w, h);
         }
 
-        if (typeof opacity == "number") {
-            this._canvasContext.globalAlpha = opacity;
-        } else {
-            this._canvasContext.globalAlpha = 1.0;
-        }
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
@@ -760,11 +756,7 @@
         this._canvasContext.lineJoin = join ? join : "miter";
         this._canvasContext.miterLimit = typeof miterLimit == 'number' ? miterLimit : 10;
 
-        if (typeof opacity == "number") {
-            this._canvasContext.globalAlpha = opacity;
-        } else {
-            this._canvasContext.globalAlpha = 1.0;
-        }
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
@@ -782,11 +774,7 @@
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
-        if (typeof opacity == "number") {
-            this._canvasContext.globalAlpha = opacity;
-        } else {
-            this._canvasContext.globalAlpha = 1.0;
-        }
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
@@ -812,12 +800,12 @@
      * @param {Number} width width of rectangle
      * @param {Number} height height of rectangle
      * @param {*} [fill] the fill, defaults to full opaque black
-     * @version 1.0
+     * @param {Number} [opacity] optional opacity to use for filling
      */
-    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill) {
+    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity) {
         fill = this._convertStyle(fill ? fill : IFColor.BLACK);
         this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
-        this._canvasContext.globalAlpha = 1.0;
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
     };
@@ -833,13 +821,13 @@
      * @param {Number} height height of rectangle
      * @param {Number} [strokeWidth] the width of the stroke, defaults to 1.0
      * @param {Number} [stroke] the stroke, defaults to full opaque black
-     * @version 1.0
+     * @param {Number} [opacity] optional opacity to use for stroking
      */
-    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke) {
+    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity) {
         stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
-        this._canvasContext.globalAlpha = 1.0;
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
         this._canvasContext.strokeRect(x, y, width, height);
@@ -888,12 +876,7 @@
 
         image = this._convertImage(image);
 
-
-        if (typeof opacity == "number") {
-            this._canvasContext.globalAlpha = opacity;
-        } else {
-            this._canvasContext.globalAlpha = 1.0;
-        }
+        this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 

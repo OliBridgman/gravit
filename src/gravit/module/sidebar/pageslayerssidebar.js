@@ -730,6 +730,8 @@
             var icon = null;
             if (layerOrItem instanceof IFLayer) {
                 icon = layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder';
+            } else if (layerOrItem instanceof IFSlice) {
+                icon = 'crop';
             } else if (layerOrItem instanceof IFShape) {
                 if (layerOrItem instanceof IFText) {
                     icon = 'font';

@@ -70,7 +70,13 @@
     IFScenePaintConfiguration.prototype.guides = true;
 
     /**
-     * Whether to show annotations or not (guides, margins, etc.)
+     * Whether to show slices or not
+     * @type {Boolean}
+     */
+    IFScenePaintConfiguration.prototype.slices = true;
+
+    /**
+     * Whether to show annotations or not (guides, slices, margins, etc.)
      * @type {Boolean}
      */
     IFScenePaintConfiguration.prototype.annotations = true;
@@ -125,6 +131,19 @@
      */
     IFScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
         if (!this.guides || !this.isAnnotationsVisible()) {
+            return false;
+        }
+        return true;
+    };
+
+    /**
+     * Checks and returns whether to paint slices or not
+     * @param {IFPaintContext} [context] optional context
+     * to include when checking
+     * @returns {boolean}
+     */
+    IFScenePaintConfiguration.prototype.isSlicesVisible = function (context) {
+        if (!this.slices || !this.isAnnotationsVisible()) {
             return false;
         }
         return true;
