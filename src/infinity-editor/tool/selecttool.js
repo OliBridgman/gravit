@@ -125,7 +125,9 @@
 
     /** @override */
     IFSelectTool.prototype.deactivate = function (view) {
-        IFTool.prototype.deactivate.call(this, view);
+        if (this._mode === IFSelectTool._Mode.Transforming) {
+            this._closeTransformBox();
+        }
 
         view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
@@ -138,12 +140,16 @@
         view.removeEventListener(GUIKeyEvent.Release, this._keyRelease);
 
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+
+        IFTool.prototype.deactivate.call(this, view);
     };
 
     /** @override */
     IFSelectTool.prototype.isDeactivatable = function () {
-        // cannot deactivate while having any mode set
-        return !this._mode;
+        // cannot deactivate while having any mode set except
+        // if in transforming mode which will de-activate the transform mode
+        // in our deactivate event
+        return !this._mode || this._mode === IFSelectTool._Mode.Transforming;
     };
 
     /** @override */
@@ -449,34 +455,22 @@
      * @private
      */
     IFSelectTool.prototype._mouseDblClick = function () {
-        var openTransformBox = true;
-
         // Close an existing transform box, first
-        var sceneEditor = IFElementEditor.getEditor(this._scene);
-        if (sceneEditor && sceneEditor.isTransformBoxActive()) {
-            sceneEditor.setTransformBoxActive(false);
-            this._updateMode(null);
-            this.invalidateArea();
-            openTransformBox = false;
-            this.updateCursor();
-        }
+        if (!this._closeTransformBox()) {
+            var openTransformBox = true;
 
-        // Check whether to start inline editing
-        if (this._elementUnderMouse) {
-            var editor = IFElementEditor.getEditor(this._elementUnderMouse);
-            if (editor && editor.canInlineEdit()) {
-                if (this._editor.openInlineEditor(this._elementUnderMouse, this._view)) {
-                    openTransformBox = false;
+            // Check whether to start inline editing
+            if (this._elementUnderMouse) {
+                var editor = IFElementEditor.getEditor(this._elementUnderMouse);
+                if (editor && editor.canInlineEdit()) {
+                    if (this._editor.openInlineEditor(this._elementUnderMouse, this._view)) {
+                        openTransformBox = false;
+                    }
                 }
             }
-        }
 
-        if (openTransformBox) {
-            sceneEditor = sceneEditor ? sceneEditor : IFElementEditor.openEditor(this._scene);
-            sceneEditor.setTransformBoxActive(true);
-            if (sceneEditor.isTransformBoxActive()) {
-                // Switch to transformation mode
-                this._updateMode(IFSelectTool._Mode.Transforming);
+            if (openTransformBox) {
+                this._openTransformBox();
             }
         }
     };
@@ -558,6 +552,38 @@
             (this._mode === IFSelectTool._Mode.Moving || this._mode == IFSelectTool._Mode.Transforming)) {
 
             this._updateSelectionTransform();
+        }
+    };
+
+    /**
+     * Close the transform box if it is open
+     * @return {Boolean} true if a transform box was opened and got
+     * closed, false if not
+     * @private
+     */
+    IFSelectTool.prototype._closeTransformBox = function () {
+        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        if (sceneEditor && sceneEditor.isTransformBoxActive()) {
+            sceneEditor.setTransformBoxActive(false);
+            this._updateMode(null);
+            this.invalidateArea();
+            this.updateCursor();
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * Open the transform box if it is not yet open
+     * @private
+     */
+    IFSelectTool.prototype._openTransformBox = function () {
+        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        sceneEditor = sceneEditor ? sceneEditor : IFElementEditor.openEditor(this._scene);
+        sceneEditor.setTransformBoxActive(true);
+        if (sceneEditor.isTransformBoxActive()) {
+            // Switch to transformation mode
+            this._updateMode(IFSelectTool._Mode.Transforming);
         }
     };
 
