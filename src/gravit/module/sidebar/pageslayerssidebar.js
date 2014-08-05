@@ -250,6 +250,7 @@
                 // TODO : I18N
                 .attr('title', 'Toggle Page Visibility')
                 .on('click', function (evt) {
+                    evt.stopPropagation();
                     // TODO : I18N
                     IFEditor.tryRunTransaction(page, function () {
                         page.setProperty('visible', !page.getProperty('visible'));
@@ -262,6 +263,7 @@
                 // TODO : I18N
                 .attr('title', 'Toggle Page Lock')
                 .on('click', function (evt) {
+                    evt.stopPropagation();
                     // TODO : I18N
                     IFEditor.tryRunTransaction(page, function () {
                         page.setProperty('locked', !page.getProperty('locked'));
@@ -714,7 +716,8 @@
                 .toggleClass('layer-default', !isLocked)
                 // TODO : I18N
                 .attr('title', 'Toggle Lock')
-                .on('click', function () {
+                .on('click', function (evt) {
+                    evt.stopPropagation();
                     if (!parentLocked) {
                         // TODO : I18N
                         IFEditor.tryRunTransaction(layerOrItem, function () {
@@ -729,7 +732,8 @@
                 .toggleClass('layer-default', !isHidden)
                 // TODO : I18N
                 .attr('title', 'Toggle Visibility')
-                .on('click', function () {
+                .on('click', function (evt) {
+                    evt.stopPropagation();
                     if (!parentHidden) {
                         var show = !layerOrItem.getProperty('visible');
 
@@ -770,7 +774,8 @@
                         .toggleClass('layer-default', !isOutlined)
                         // TODO : I18N
                         .attr('title', 'Toggle Outline')
-                        .on('click', function () {
+                        .on('click', function (evt) {
+                            evt.stopPropagation();
                             if (!parentHidden) {
                                 // TODO : I18N
                                 IFEditor.tryRunTransaction(layerOrItem, function () {
