@@ -214,6 +214,12 @@
     IFEditor.prototype._lastCloneSelection = null;
 
     /**
+     * @type {Array<{{page: IFPage, selection: Array<*>}}>}
+     * @private
+     */
+    IFEditor.prototype._pageSelections = null;
+
+    /**
      * @type {number}
      * @private
      */
@@ -1172,6 +1178,11 @@
                 this._closeEditor(evt.node);
             }
         }
+
+        if (evt.node instanceof IFPage && this._scene.getProperty('singlePage') === true) {
+            // Remove saved page selection when removing the page and singlePage mode is turned on
+            this._removePageSelection(evt.node);
+        }
     };
 
     /**
@@ -1207,7 +1218,6 @@
                 }
             });
         }
-        ;
     };
 
     /**
@@ -1251,6 +1261,15 @@
                         editor.removeFlag(IFElementEditor.Flag.Highlighted);
                     }
                     this._tryCloseEditor(evt.node);
+                }
+            } else if (evt.flag == IFNode.Flag.Active) {
+                // In single page mode we'll save & restore page selections
+                if (evt.node instanceof IFPage && this._scene.getProperty('singlePage') === true) {
+                    if (evt.set) {
+                        this._restorePageSelection(evt.node);
+                    } else {
+                        this._savePageSelection(evt.node);
+                    }
                 }
             }
         }
@@ -1482,6 +1501,72 @@
             }
         }
     };
+
+    /**
+     * Save the selection for a given page
+     * @param {IFPage} page
+     * @private
+     */
+    IFEditor.prototype._savePageSelection = function (page) {
+        if (!this._pageSelections) {
+            this._pageSelections = [];
+        }
+
+        // Try to overwrite an existing selection
+        for (var i = 0; i < this._pageSelections.length; ++i) {
+            var sel = this._pageSelections[i];
+            if (sel.page === page) {
+                sel.selection = this._saveSelection();
+                // done here
+                return;
+            }
+        }
+
+        // Create new selection storage for page when coming here
+        this._pageSelections.push({
+            page: page,
+            selection: this._saveSelection()
+        });
+    };
+
+    /**
+     * Restore the selection for a given page
+     * @param {IFPage} page
+     * @private
+     */
+    IFEditor.prototype._restorePageSelection = function (page) {
+        if (this._pageSelections) {
+            for (var i = 0; i < this._pageSelections.length; ++i) {
+                var sel = this._pageSelections[i];
+                if (sel.page === page) {
+                    this._loadSelection(sel.selection);
+                    // done here
+                    return;
+                }
+            }
+        }
+
+        // No selection for page available so clear the current one
+        this.clearSelection();
+    };
+
+    /**
+     * Remove the stored selection for a given page
+     * @param {IFPage} page
+     * @private
+     */
+    IFEditor.prototype._removePageSelection = function (page) {
+        if (this._pageSelections) {
+            for (var i = 0; i < this._pageSelections.length; ++i) {
+                var sel = this._pageSelections[i];
+                if (sel.page === page) {
+                    this._pageSelections.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+
 
     /** @override */
     IFEditor.prototype.toString = function () {
