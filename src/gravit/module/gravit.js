@@ -37,22 +37,6 @@
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M3.5,18.5v18l5-7h9L3.5,18.5z"/>\n</svg>'
             },
             {
-                instance: new IFLayerTool(),
-                title: 'Layer',
-                category: GApplication.TOOL_CATEGORY_SELECT,
-                group: 'select',
-                keys: ['L'],
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -.5 18 18" width="18px" height="18px">\n<path stroke="none" d="M0.5,8.5 L0.5,10.5 L4.5,10.5 L4.5,8.5 L0.5,8.5 Z M10.5,8.5 L10.5,10.5 L12.5,10.5 L12.5,8.5 L10.5,8.5 Z M9.5,8.5 L9.5,9.5 L10.5,9.5 L10.5,8.5 L9.5,8.5 Z M0.5,0.5 L0.5,2.5 L12.5,2.5 L12.5,0.5 L0.5,0.5 Z M0.5,4.5 L0.5,6.5 L12.5,6.5 L12.5,4.5 L0.5,4.5 Z M5.5,7.5 L5.5,18.5 L9,14.5 L14.5,14.5 L5.5,7.5 Z"></path>\n</svg>'
-            },
-            {
-                instance: new IFPageTool(),
-                title: 'Page',
-                category: GApplication.TOOL_CATEGORY_SELECT,
-                group: 'select',
-                keys: ['D'],
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M15.5,18.5v10h-1v-9h-7v3h-3v10h3v1h-4v-12l3-3H15.5z M8.5,25.5v11l3.5-4h5.5L8.5,25.5z"/>\n</svg>'
-            },
-            {
                 instance: new IFLassoTool(),
                 title: 'Lasso',
                 category: GApplication.TOOL_CATEGORY_SELECT,
@@ -66,6 +50,31 @@
                 group: 'select2',
                 keys: ['A', '1'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M3.5,18.5v18l5-7h9L3.5,18.5z M7.5,27.5l-3,4.5V20.5l9,7H7.5z"/>\n</svg>'
+            },
+            {
+                instance: new IFPageTool(),
+                title: 'Page',
+                category: GApplication.TOOL_CATEGORY_SELECT,
+                group: 'select3',
+                keys: ['D'],
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M15.5,18.5v10h-1v-9h-7v3h-3v10h3v1h-4v-12l3-3H15.5z M8.5,25.5v11l3.5-4h5.5L8.5,25.5z"/>\n</svg>'
+            },
+            {
+                instance: new IFLayerTool(),
+                title: 'Layer',
+                category: GApplication.TOOL_CATEGORY_SELECT,
+                group: 'select3',
+                keys: ['L'],
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -.5 18 18" width="18px" height="18px">\n<path stroke="none" d="M0.5,8.5 L0.5,10.5 L4.5,10.5 L4.5,8.5 L0.5,8.5 Z M10.5,8.5 L10.5,10.5 L12.5,10.5 L12.5,8.5 L10.5,8.5 Z M9.5,8.5 L9.5,9.5 L10.5,9.5 L10.5,8.5 L9.5,8.5 Z M0.5,0.5 L0.5,2.5 L12.5,2.5 L12.5,0.5 L0.5,0.5 Z M0.5,4.5 L0.5,6.5 L12.5,6.5 L12.5,4.5 L0.5,4.5 Z M5.5,7.5 L5.5,18.5 L9,14.5 L14.5,14.5 L5.5,7.5 Z"></path>\n</svg>'
+            },
+            {
+                instance: new IFTransformTool(),
+                title: 'Transform',
+                category: GApplication.TOOL_CATEGORY_SELECT,
+                group: 'transform',
+                keys: ['Q'],
+                // todo : get a real svg icon here
+                icon: '<span class="fa fa-arrows" style="font-size:16px"></span>'
             },
             {
                 instance: new IFLineTool(),
@@ -103,7 +112,7 @@
                 instance: new IFEllipseTool(),
                 title: 'Ellipse',
                 category: GApplication.TOOL_CATEGORY_VECTOR,
-                group: 'shape',
+                group: 'shape2',
                 keys: ['E', '3'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<ellipse style="fill:none; stroke: inherit" cx="9.5" cy="27.5" rx="8.5" ry="7.5"/>\n</svg>'
             },
@@ -111,7 +120,7 @@
                 instance: new IFPolygonTool(),
                 title: 'Polygon',
                 category: GApplication.TOOL_CATEGORY_VECTOR,
-                group: 'shape',
+                group: 'shape3',
                 keys: ['G'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M13.4,20.5l3.9,7l-3.9,7H5.6l-3.9-7l3.9-7H13.4 M14,19.5H5l-4.5,8l4.5,8h9l4.5-8L14,19.5L14,19.5z"/>\n</svg>'
             },
