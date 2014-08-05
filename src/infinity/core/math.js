@@ -117,6 +117,15 @@
     };
 
     /**
+     * Approximates a given number with half integer for accurate pixel painting
+     * @param {Number} value - a number to approximate
+     * @returns {Number} approximated value
+     */
+    IFMath.prototype.pxAlign = function (value) {
+        return Math.floor(value) + 0.5;
+    };
+
+    /**
      * @return {Number} x mod y
      * @version 1.0
      */

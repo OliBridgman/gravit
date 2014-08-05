@@ -29,8 +29,8 @@
     IFVertexPixelAligner.prototype.readVertex = function (vertex) {
         if (this._source.readVertex(vertex)) {
             if (vertex.command >= IFVertex.Command.Move && vertex.command < IFVertex.Command.Close) {
-                vertex.x = Math.floor(vertex.x) + 0.5;
-                vertex.y = Math.floor(vertex.y) + 0.5;
+                vertex.x = ifMath.pxAlign(vertex.x);
+                vertex.y = ifMath.pxAlign(vertex.y);
             }
             return true;
         }
