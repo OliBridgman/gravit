@@ -63,7 +63,7 @@
     GApplication.TOOL_CATEGORY_SELECT = new IFLocale.Key(GApplication, "tool-category.select");
     GApplication.TOOL_CATEGORY_IMAGE = new IFLocale.Key(GApplication, "tool-category.image");
     GApplication.TOOL_CATEGORY_VECTOR = new IFLocale.Key(GApplication, "tool-category.vector");
-    GApplication.TOOL_CATEGORY_WEB = new IFLocale.Key(GApplication, "tool-category.web");
+    GApplication.TOOL_CATEGORY_OTHER = new IFLocale.Key(GApplication, "tool-category.other");
     GApplication.TOOL_CATEGORY_COLOR = new IFLocale.Key(GApplication, "tool-category.color");
     GApplication.TOOL_CATEGORY_VIEW = new IFLocale.Key(GApplication, "tool-category.view");
 

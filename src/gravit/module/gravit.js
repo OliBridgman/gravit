@@ -120,17 +120,26 @@
                 instance: new IFPolygonTool(),
                 title: 'Polygon',
                 category: GApplication.TOOL_CATEGORY_VECTOR,
-                group: 'shape3',
+                group: 'shape2',
                 keys: ['G'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M13.4,20.5l3.9,7l-3.9,7H5.6l-3.9-7l3.9-7H13.4 M14,19.5H5l-4.5,8l4.5,8h9l4.5-8L14,19.5L14,19.5z"/>\n</svg>'
             },
             {
                 instance: new IFTextTool(),
                 title: 'Text',
-                category: GApplication.TOOL_CATEGORY_VECTOR,
+                category: GApplication.TOOL_CATEGORY_OTHER,
                 group: 'text',
                 keys: ['T'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg">\n<text style="stroke:none; fill: inherit; font-family: Arial; font-size: 18px; text-anchor: middle" x="9" y="15">T</text>\n</svg>'
+            },
+            {
+                instance: new IFSliceTool(),
+                title: 'Slice',
+                category: GApplication.TOOL_CATEGORY_OTHER,
+                group: 'slice',
+                keys: ['K'],
+                // todo : get a real svg icon here
+                icon: '<span class="fa fa-slack" style="font-size:16px"></span>'
             },
             {
                 instance: new IFZoomTool(),

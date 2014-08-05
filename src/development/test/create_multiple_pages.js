@@ -38,6 +38,11 @@
             rectangle.setProperty('trf', new IFTransform(insertSize.getX() / 2, 0, 0, 50, 100 + insertSize.getX() / 2, 100 + 50));
             layer.appendChild(rectangle);
 
+
+            var slice = new IFSlice();
+            slice.setProperty('trf', new IFTransform(50, 0, 0, 50, 100 + 50 / 2, 100 + 50));
+            layer.appendChild(slice);
+
             scene.appendChild(masterPage);
 
             for (var i = 0; i < 10; ++i) {

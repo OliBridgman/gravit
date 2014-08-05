@@ -15,7 +15,7 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
     "tool-category.select",
     "tool-category.image",
     "tool-category.vector",
-    "tool-category.web",
+    "tool-category.other",
     "tool-category.color",
     "tool-category.view"],
     [
@@ -32,6 +32,6 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
         "Select",
         "Image",
         "Vector",
-        "Web",
+        "Other",
         "Color",
         "View"]);
