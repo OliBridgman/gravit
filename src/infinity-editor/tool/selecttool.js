@@ -587,6 +587,7 @@
 
                     this._editor.getGuides().beginMap();
                     position = this._editor.getGuides().mapPoint(position);
+                    this._editor.getGuides().finishMap();
 
                     var moveDelta = position.subtract(this._moveStartTransformed);
                     if (this._editorMovePartInfo.id.type == IFPathEditor.PartType.Point) {
@@ -596,7 +597,6 @@
                     this._editor.moveSelection(moveDelta, false,
                         this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
 
-                    this._editor.getGuides().finishMap();
                 } else {
                     var moveDelta = position.subtract(this._moveStartTransformed);
                     this._editor.moveSelection(moveDelta, true,

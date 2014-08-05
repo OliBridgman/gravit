@@ -9,6 +9,7 @@
     function IFEditorFrontStage(view) {
         IFStage.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+        view.addEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
 
         this._view.getEditor().getGuides().addEventListener(
             IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
@@ -19,6 +20,7 @@
     IFEditorFrontStage.prototype.release = function () {
         this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        view.removeEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
     };
 
     /** @override */
@@ -35,8 +37,13 @@
 
     IFEditorFrontStage.prototype._guidesInvalidationRequest = function (event) {
         if (event.area) {
-            this.invalidate(event.area);
+            var area = this._view.getWorldTransform().mapRect(event.area);
+            this.invalidate(area);
         }
+    };
+
+    IFEditorFrontStage.prototype._cleanGuides = function (event) {
+        this._view.getEditor().getGuides().invalidate();
     };
 
     /** @override */

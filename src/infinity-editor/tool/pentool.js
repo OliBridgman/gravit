@@ -106,6 +106,7 @@
                 var pt = this._view.getViewTransform().mapPoint(event.client);
                 this._editor.getGuides().beginMap();
                 pt = this._editor.getGuides().mapPoint(pt);
+                this._editor.getGuides().finishMap();
                 anchorPt = this._constructNewPoint(event, pt);
                 if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
                     if (ifPlatform.modifiers.optionKey) {
@@ -115,7 +116,6 @@
                     }
                 }
                 this._addPoint(anchorPt, true, false);
-                this._editor.getGuides().finishMap();
             }
         }
 
@@ -224,10 +224,10 @@
                 var clickPt = this._view.getViewTransform().mapPoint(newPos);
                 this._editor.getGuides().beginMap();
                 clickPt = this._editor.getGuides().mapPoint(clickPt);
+                this._editor.getGuides().finishMap();
                 newPos = this._view.getWorldTransform().mapPoint(clickPt);
                 anchorPt = this._constructNewPoint(event, clickPt);
                 this._addPoint(anchorPt, true, false, true);
-                this._editor.getGuides().finishMap();
             } else if (this._editPt) {
                 this._pathEditor.requestInvalidation();
                 newPos = this._updatePoint(event.client);

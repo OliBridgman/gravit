@@ -319,8 +319,8 @@
                 this._editor.getGuides().mapPoint(
                     this._view.getViewTransform().mapPoint(newPos)));
 
-            this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
             this._editor.getGuides().finishMap();
+            this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);
         }
         return newPos;
     };

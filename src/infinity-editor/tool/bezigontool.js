@@ -108,9 +108,9 @@
                         var pt = this._view.getViewTransform().mapPoint(clickPt);
                         this._editor.getGuides().beginMap();
                         pt = this._editor.getGuides().mapPoint(pt);
+                        this._editor.getGuides().finishMap();
                         anchorPt = this._constructNewPoint(event, pt);
                         this._addPoint(anchorPt, true, false);
-                        this._editor.getGuides().finishMap();
                     }
                 }
             }

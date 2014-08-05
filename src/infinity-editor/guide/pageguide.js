@@ -24,26 +24,30 @@
         var snapDistance = this._scene.getProperty('snapDist');
         var resX = null;
         var resY = null;
-        var visualX = false;
-        var visualY = false;
+        var guideX = null;
+        var guideY = null;
         var result = null;
 
         var _snap = function (page) {
             var pageBBox = page.getGeometryBBox();
             if (pageBBox && !pageBBox.isEmpty()) {
+                var tl = pageBBox.getSide(IFRect.Side.TOP_LEFT);
+                var br = pageBBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+                var cntr = pageBBox.getSide(IFRect.Side.CENTER);
+                var pivots = [tl, br, cntr];
                 var sides = [IFRect.Side.TOP_LEFT, IFRect.Side.BOTTOM_RIGHT, IFRect.Side.CENTER];
                 for (var i = 0; i < sides.length; ++i) {
-                    var pivot = pageBBox.getSide(sides[i]);
+                    var pivot = pivots[i];
                     if (resX === null && Math.abs(x - pivot.getX()) <= snapDistance) {
                         resX = pivot.getX();
                         if (sides[i] == IFRect.Side.CENTER) {
-                            visualX = true;
+                            guideX = [new IFPoint(resX, tl.getY()), new IFPoint(resX, br.getY())];
                         }
                     }
                     if (resY === null && Math.abs(y - pivot.getY()) <= snapDistance) {
                         resY = pivot.getY();
                         if (sides[i] == IFRect.Side.CENTER) {
-                            visualY = true;
+                            guideY = [new IFPoint(tl.getX(), resY), new IFPoint(br.getX(), resY)];
                         }
                     }
                 }
@@ -66,8 +70,8 @@
 
         if (resX !== null || resY !== null) {
             result = {
-                x: resX !== null ? {value: resX, visual: visualX} : null,
-                y: resY !== null ? {value: resY, visual: visualY} : null};
+                x: resX !== null ? {value: resX, guide: guideX} : null,
+                y: resY !== null ? {value: resY, guide: guideY} : null};
         }
 
         return result;

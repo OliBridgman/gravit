@@ -21,13 +21,13 @@
         switch (this._scene.getProperty('unitSnap')) {
             case IFScene.UnitSnap.Full:
                 result = {
-                    x: {value: ifMath.round(x, true), visual: false},
-                    y: {value: ifMath.round(y, true), visual: false}};
+                    x: {value: ifMath.round(x, true), guide: null},
+                    y: {value: ifMath.round(y, true), guide: null}};
                 break;
             case IFScene.UnitSnap.Half:
                 result = {
-                    x: {value: ifMath.round(x, true) + 0.5, visual: false},
-                    y: {value: ifMath.round(y, true) + 0.5, visual: false}};
+                    x: {value: ifMath.round(x, true) + 0.5, guide: null},
+                    y: {value: ifMath.round(y, true) + 0.5, guide: null}};
                 break;
         }
 

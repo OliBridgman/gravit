@@ -9,11 +9,12 @@
     function IFGuides(scene) {
         this._scene = scene;
         this._guides = [];
+        this._counter = 0;
+        this._visuals = [];
 
-        // guides go from last to first
-        this.addGuide(new IFUnitGuide(this));
-        this.addGuide(new IFGridGuide(this));
         this.addGuide(new IFPageGuide(this));
+        this.addGuide(new IFGridGuide(this));
+        this.addGuide(new IFUnitGuide(this));
     }
 
     IFObject.inherit(IFGuides, GEventTarget);
@@ -54,20 +55,81 @@
     IFGuides.prototype._guides = null;
 
     /**
+     * Internal counter of begin/endMap calls
+     * @type {number}
+     * @private
+     */
+    IFGuides.prototype._counter = 0;
+
+    /**
+     * An array of vusial guides' lines ends in scene coordinates
+     * @type {Array<Array<IFPoint>>}
+     * @private
+     */
+    IFGuides.prototype._visuals = null;
+
+    /**
+     * Stores the area in scene coordinates, where painting of visual guides occurs
+     * @type {IFRect}
+     * @private
+     */
+    IFGuides.prototype._area = null;
+
+    /**
      * Call this if you want to start mapping. This needs
      * to be followed by a closing call to finishMap. If
      * you just want to map without any visual guides,
      * you don't need to call this.
      */
     IFGuides.prototype.beginMap = function () {
-        // TODO
+        if (this._counter == 0) {
+            this._visuals = [];
+            if (this._area && !this._area.isEmpty()) {
+                this.invalidate(this._area);
+            }
+            this._area = null;
+        }
+        ++this._counter;
     };
 
     /**
      * Finish mapping. See beginMap description.
      */
     IFGuides.prototype.finishMap = function () {
-        // TODO
+        if (this._counter > 0) {
+            --this._counter;
+            if (this._counter == 0 && this._visuals.length) {
+                var minx = null;
+                var miny = null;
+                var maxx = null;
+                var maxy = null;
+                var visLine;
+                for (var i = 0; i < this._visuals.length; ++i) {
+                    visLine = this._visuals[i];
+                    for (var j = 0; j < 2; ++j) {
+                        if (minx === null || minx > visLine[j].getX()) {
+                            minx = visLine[j].getX();
+                        }
+                        if (miny === null || miny > visLine[j].getY()) {
+                            miny = visLine[j].getY();
+                        }
+                        if (maxx === null || maxx < visLine[j].getX()) {
+                            maxx = visLine[j].getX();
+                        }
+                        if (maxy === null || maxy < visLine[j].getY()) {
+                            maxy = visLine[j].getY();
+                        }
+                    }
+                }
+                minx -= 1;
+                miny -= 1;
+                maxx += 1;
+                maxy += 1;
+
+                this._area = new IFRect(minx, miny, maxx - minx, maxy - miny);
+                this.invalidate(this._area);
+            }
+        }
     };
 
     /**
@@ -81,17 +143,30 @@
 
         var guide;
         var res = null;
+        var targPts = [];
         for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
             res = guide.map(point.getX(), point.getY());
             if (res) {
                 if (res.x && resX === null) {
                     resX = res.x.value;
-                    // TODO: if visual is true and beginMap has been called, then paint
+                    if (this._visuals && res.x.guide) {
+                        if (res.x.guide instanceof IFPoint) {
+                            targPts.push(res.x.guide);
+                        } else {
+                            this._visuals.push(res.x.guide);
+                        }
+                    }
                 }
                 if (res.y && resY === null) {
                     resY = res.y.value;
-                    // TODO: if visual is true and beginMap has been called, then paint
+                    if (this._visuals && res.y.guide) {
+                        if (res.y.guide instanceof IFPoint) {
+                            targPts.push(res.y.guide);
+                        } else {
+                            this._visuals.push(res.y.guide);
+                        }
+                    }
                 }
             }
             res = null;
@@ -104,8 +179,17 @@
         if (resY === null) {
             resY = point.getY();
         }
+        var resPt = new IFPoint(resX, resY);
 
-        return new IFPoint(resX, resY);
+        var pt;
+        for (var i = 0; i < targPts.length; ++i) {
+            pt = targPts[i];
+            if (Math.abs(resX - pt.getX()) >= 2 || Math.abs(resY - pt.getY()) >= 2) {
+                this._visuals.push([resPt, pt]);
+            }
+        }
+
+        return resPt;
     };
 
     /**
@@ -114,9 +198,6 @@
      * @param {IFPaintContext} context
      */
     IFGuides.prototype.paint = function (transform, context) {
-        var fillRect = context.canvas.getTransform(false).inverted().mapRect(new IFRect(0, 150.5, context.canvas.getWidth(), context.canvas.getHeight()));
-        context.canvas.strokeLine(fillRect.getX(), fillRect.getY(), fillRect.getX() + fillRect.getWidth(), fillRect.getY(), 1, context.guideOutlineColor);
-
         var guide;
         for (var i = 0; i < this._guides.length; ++i) {
             guide = this._guides[i];
@@ -124,11 +205,30 @@
                 guide.paint(transform, context);
             }
         }
+
+        var visLine;
+        for (var i = 0; i < this._visuals.length; ++i) {
+            visLine = this._visuals[i];
+            var pt0 = transform.mapPoint(visLine[0]);
+            var pt1 = transform.mapPoint(visLine[1]);
+            context.canvas.strokeLine(pt0.getX(), pt0.getY(), pt1.getX(), pt1.getY(), 1, context.guideOutlineColor);
+        }
+
+        this._visuals = [];
     };
 
+    /**
+     * Triggers invalidation request of passed area
+     * @param {IFRect} area - an area to invalidate; if empty, last stored area painted with visuals is used
+     */
     IFGuides.prototype.invalidate = function (area) {
-        if (area && !area.isEmpty()) {
-            this.trigger(new IFGuides.InvalidationRequestEvent(area));
+        if (this.hasEventListeners(IFGuides.InvalidationRequestEvent)) {
+            if (area && !area.isEmpty()) {
+                this.trigger(new IFGuides.InvalidationRequestEvent(area));
+            } else if (this._area && !this._area.isEmpty()) {
+                this.trigger(new IFGuides.InvalidationRequestEvent(this._area));
+                this._area = null;
+            }
         }
     };
 

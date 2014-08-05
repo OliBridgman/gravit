@@ -570,13 +570,11 @@
             var transBBox = selBBox.translated(delta.getX(), delta.getY());
             this._guides.beginMap();
             var tl = this._guides.mapPoint(transBBox.getSide(IFRect.Side.TOP_LEFT));
+            this._guides.finishMap();
             delta = tl.subtract(selBBox.getSide(IFRect.Side.TOP_LEFT));
         }
 
         this.transformSelection(new IFTransform(1, 0, 0, 1, delta.getX(), delta.getY()), partId, partData);
-        if (align) {
-            this._guides.finishMap();
-        }
     };
 
     /**

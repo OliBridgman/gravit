@@ -257,6 +257,7 @@
             var transform = this._transformBox.calculateTransformation(this._tBoxData,
                 startPos, curPos, guides, option, ratio, rStep);
 
+            guides.finishMap();
             if (this._tBoxMode != IFSceneEditor.TBoxMode.CNTRMOVE) {
                 this._transformBox.setTransform(transform);
                 this._getGraphicEditor().transformSelection(transform, null, null);
@@ -264,7 +265,6 @@
                 this._transformBox.setCenterTransform(transform);
                 this.requestInvalidation();
             }
-            guides.finishMap();
         }
     };
 

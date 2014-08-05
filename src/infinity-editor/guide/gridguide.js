@@ -66,8 +66,8 @@
             var gsx = this._scene.getProperty('gridSizeX');
             var gsy = this._scene.getProperty('gridSizeY');
             result = {
-                x: {value: Math.round(x / gsx) * gsx, visual: false},
-                y: {value: Math.round(y / gsy) * gsy, visual: false}};
+                x: {value: Math.round(x / gsx) * gsx, guide: null},
+                y: {value: Math.round(y / gsy) * gsy, guide: null}};
         }
 
         return result;
