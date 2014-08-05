@@ -95,7 +95,7 @@
     GPageProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFEllipse>}
+     * @type {Array<IFPage>}
      * @private
      */
     GPageProperties.prototype._pages = null;
