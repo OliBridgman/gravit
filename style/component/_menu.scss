@@ -98,11 +98,6 @@
   content:$fa-var-caret-right;
 }
 
-/** Add tail arrow indicator to bottom and spacing if sub-menu and root and part of a menu button */
-.g-menu-button > .g-menu-item-menu > span.g-menu-item-tail:before {
-  content:$fa-var-caret-down;
-}
-
 /** Icon needs fixed width */
 .g-menu-item > span.g-menu-item-icon {
   width: 16px;
@@ -138,11 +133,7 @@
 
 /** Set active/hover color if not disabled */
 .g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled),
-.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span,
-.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled),
-.g-menu:not(.g-menu-button) > .g-menu-item.g-active:not(.g-disabled) > span,
-.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled),
-.g-menu-root:not(.g-menu-button) > .g-menu-item:active:not(.g-disabled) > span {
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span {
   background: $activeColor;
   color: $activeTextColor;
 }
@@ -191,24 +182,4 @@
 
 .g-menu-bar > .g-menu > .g-menu-item > span.g-menu-item-tail {
   padding-left: 0px;
-}
-
-/** Adjustments for menu button */
-.g-menu-button,
-.g-menu-button > .g-menu-item {
-  display: inline-block;
-  vertical-align: baseline;
-}
-
-.g-menu-button > .g-menu-item {
-  width: 100%;
-  text-align: center;
-}
-
-.g-menu-button > .g-menu-item > span {
-  display: inline;
-}
-
-.g-menu-button > .g-menu-item.g-disabled > span {
-  color: inherit;
 }
