@@ -11,12 +11,53 @@
 
     IFObject.inherit(IFTextTool, IFShapeTool);
 
+    /**
+     * @type {IFText}
+     * @private
+     */
+    IFTextTool.prototype._textUnderMouse = null;
+
     /** @override */
     IFTextTool.prototype.getCursor = function () {
-        if (!this._shape) {
+        if (this._textUnderMouse) {
+            // TODO : Figure a better cursor to indicate editing
+            return IFCursor.SelectDot;
+        } else if (!this._shape) {
             return IFCursor.Text;
         } else {
             return IFShapeTool.prototype.getCursor.call(this);
+        }
+    };
+
+    /**
+     * @param {GUIMouseEvent.Release} event
+     * @private
+     */
+    IFTextTool.prototype._mouseRelease = function (event) {
+        if (this._textUnderMouse) {
+            this._editor.openInlineEditor(this._textUnderMouse, this._view, event.client)
+        } else {
+            IFShapeTool.prototype._mouseRelease.call(this, event);
+        }
+    };
+
+    /** @override */
+    IFTextTool.prototype._mouseMove = function (event) {
+        IFShapeTool.prototype._mouseMove.call(this, event);
+
+        if (this._textUnderMouse) {
+            this._textUnderMouse = null;
+            this.updateCursor();
+        }
+
+        if (!this._shape) {
+            var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
+                false, -1, this._scene.getProperty('pickDist'));
+
+            if (elementHits && elementHits.length && elementHits[0].element instanceof IFText) {
+                this._textUnderMouse = elementHits[0].element;
+                this.updateCursor();
+            }
         }
     };
 

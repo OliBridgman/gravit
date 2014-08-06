@@ -438,20 +438,18 @@
     };
 
     /**
+     * @param {GUIMouseEvent.DblClick} event
      * @private
      */
-    IFSelectTool.prototype._mouseDblClick = function () {
+    IFSelectTool.prototype._mouseDblClick = function (event) {
         // Close an existing transform box, first
         if (!this._closeTransformBox()) {
             var openTransformBox = true;
 
             // Check whether to start inline editing
             if (this._elementUnderMouse) {
-                var editor = IFElementEditor.getEditor(this._elementUnderMouse);
-                if (editor && editor.canInlineEdit()) {
-                    if (this._editor.openInlineEditor(this._elementUnderMouse, this._view)) {
-                        openTransformBox = false;
-                    }
+                if (this._editor.openInlineEditor(this._elementUnderMouse, this._view, event.client)) {
+                    openTransformBox = false;
                 }
             }
 

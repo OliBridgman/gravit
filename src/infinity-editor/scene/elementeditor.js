@@ -862,8 +862,10 @@
      * editor should adjust itself. This will also called immediately
      * after the beginInlineEdit call.
      * @param {IFEditorView} view the view the inline editing takes place
+     * @param {IFPoint} [position] optional position in screen cordinates,
+     * defaults to null
      */
-    IFElementEditor.prototype.adjustInlineEditForView = function (view) {
+    IFElementEditor.prototype.adjustInlineEditForView = function (view, position) {
         throw new Error('Not Supported.');
     };
 

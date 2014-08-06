@@ -1048,9 +1048,11 @@
      * Called to open an inline editor for a given node and view
      * @param {IFNode} node
      * @param {IFEditorView} view
+     * @param {IFPoint} [position] optional position in screen cordinates,
+     * defaults to null
      * @return {Boolean} true if an inline editor was opened, false if not
      */
-    IFEditor.prototype.openInlineEditor = function (node, view) {
+    IFEditor.prototype.openInlineEditor = function (node, view, position) {
         this.closeInlineEditor();
 
         var editor = IFElementEditor.getEditor(node);

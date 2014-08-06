@@ -95,6 +95,7 @@
     IFShapeTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
+        view.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
         view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
         view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
         view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
@@ -108,6 +109,7 @@
     IFShapeTool.prototype.deactivate = function (view) {
         IFTool.prototype.deactivate.call(this, view);
 
+        view.removeEventListener(GUIMouseEvent.Move, this._mouseMove, this);
         view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
         view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
         view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
@@ -237,6 +239,14 @@
         // Finally insert our shape
         this._insertShape(shape);
         this._hasCreatedShape = true;
+    };
+
+    /**
+     * @param {GUIMouseEvent.Move} event
+     * @private
+     */
+    IFShapeTool.prototype._mouseMove = function (event) {
+        // NO-OP
     };
 
     /**

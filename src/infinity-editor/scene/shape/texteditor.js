@@ -313,7 +313,7 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.adjustInlineEditForView = function (view) {
+    IFTextEditor.prototype.adjustInlineEditForView = function (view, position) {
         var sceneBBox = this.getElement().getGeometryBBox();
         if (!sceneBBox) {
             sceneBBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
@@ -344,7 +344,57 @@
                 'left': left,
                 'transform': 'scale(' + view.getZoom() + ')',
                 '-webkit-transform': 'scale(' + view.getZoom() + ')'
-            })
+            });
+
+        if (position) {
+            this.createSelectionFromPosition(position);
+        }
+    };
+
+    /**
+     * Creates a selection and/or sets the caret position by given screen coordinates
+     * @param {IFPoint} startPos the start position in screen coordinates
+     * @param {IFPoint} [endPos] the end position in screen coordinates. If not provided
+     * will not create a selection but set the caret position only. Defaults to null.
+     */
+    IFTextEditor.prototype.createSelectionFromPosition = function (startPos, endPos) {
+        var doc = document;
+        var range = null;
+        if (typeof doc.caretPositionFromPoint != "undefined") {
+            range = doc.createRange();
+            var start = doc.caretPositionFromPoint(startPos.getX(), startPos.getY());
+            range.setStart(start.offsetNode, start.offset);
+
+            if (endPos) {
+                var end = doc.caretPositionFromPoint(endPos.getX(), endPos.getY());
+                range.setEnd(end.offsetNode, end.offset);
+            }
+        } else if (typeof doc.caretRangeFromPoint != "undefined") {
+            range = doc.createRange();
+            var start = doc.caretRangeFromPoint(startPos.getX(), startPos.getY());
+            range.setStart(start.startContainer, start.startOffset);
+
+            if (endPos) {
+                var end = doc.caretRangeFromPoint(endX, endY);
+                range.setEnd(endPos.getX(), endPos.getY());
+            }
+        }
+
+        if (range !== null && typeof window.getSelection != "undefined") {
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (typeof doc.body.createTextRange != "undefined") {
+            range = doc.body.createTextRange();
+            range.moveToPoint(startPos.getX(), startPos.getY());
+
+            if (endPos) {
+                var endRange = range.duplicate();
+                endRange.moveToPoint(endPos.getX(), endPos.getY());
+                range.setEndPoint("EndToEnd", endRange);
+            }
+            range.select();
+        }
     };
 
     /** @override */
