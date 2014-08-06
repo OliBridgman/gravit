@@ -211,8 +211,8 @@
             visLine = this._visuals[i];
             var pt0 = transform.mapPoint(visLine[0]);
             var pt1 = transform.mapPoint(visLine[1]);
-            context.canvas.strokeLine(ifMath.pxAlign(pt0.getX()), ifMath.pxAlign(pt0.getY()),
-                ifMath.pxAlign(pt1.getX()), ifMath.pxAlign(pt1.getY()), 1, context.guideOutlineColor);
+            context.canvas.strokeLine(Math.floor(pt0.getX()) + 0.5, Math.floor(pt0.getY()) + 0.5,
+                Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 1, context.guideOutlineColor);
         }
 
         this._visuals = [];
