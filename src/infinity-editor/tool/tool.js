@@ -121,6 +121,14 @@
         }
     };
 
+    /**
+     * This may return to supress context menu because
+     * the tool handles right clicking differently
+     */
+    IFTool.prototype.catchesContextMenu = function () {
+        return false;
+    };
+
     /** override */
     IFTool.prototype.toString = function () {
         return "[Object IFTool]";

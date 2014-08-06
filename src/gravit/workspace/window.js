@@ -21,6 +21,12 @@
         // Catch the context menu event to show our own
         var contextMenu = this._createContextMenu();
         this._container.on("contextmenu", function (evt) {
+            var toolManager = gApp.getToolManager();
+            var tool = toolManager.getActiveTool();
+            if (tool && tool.catchesContextMenu()) {
+                return;
+            }
+
             this._contextMenuClientPosition = new IFPoint(evt.clientX, evt.clientY);
             contextMenu.open({x: evt.pageX, y: evt.pageY});
             return true;
@@ -166,14 +172,6 @@
             }
         }.bind(this));
         menu.addItem(selectItem);
-        menu.setMenuBlocker(function () {
-            var toolManager = gApp.getToolManager();
-            var tool = toolManager.getActiveTool();
-            if (tool instanceof IFBezigonTool || tool instanceof IFPenTool) {
-                return true;
-            }
-            return false;
-        });
 
         // TODO : Add more actions
 

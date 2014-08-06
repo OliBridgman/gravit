@@ -165,6 +165,11 @@
     };
 
     /** @override */
+    IFPathTool.prototype.catchesContextMenu = function () {
+        return true;
+    };
+
+    /** @override */
     IFPathTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
