@@ -568,6 +568,8 @@
         if (canvas.getScale() !== 1.0) {
             this.setScale(1);
         }
+        var oldTransform = this.resetTransform();
+        var oldTranslation = oldTransform.getTranslation();
 
         dx = dx | 0;
         dy = dy | 0;
@@ -578,8 +580,8 @@
         var w = canvas.getWidth();
         var h = canvas.getHeight();
 
-        x += dx;
-        y += dy;
+        x += dx + oldTranslation.getX() * oldScale;
+        y += dy + oldTranslation.getY() * oldScale;
 
         if (clear) {
             this._canvasContext.clearRect(x, y, w, h);
@@ -589,8 +591,10 @@
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
-        this._canvasContext.drawImage(canvas._canvasContext.canvas, 0, 0, w, h, x, y, w, h);
+        this._canvasContext.drawImage(canvas._canvasContext.canvas, 0, 0, w, h,
+            x, y, w, h);
 
+        this.setTransform(oldTransform);
         this.setScale(oldScale);
         this._setImageSmoothingEnabled(hadSmooth);
     };
