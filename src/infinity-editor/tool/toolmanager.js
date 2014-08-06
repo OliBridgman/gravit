@@ -223,13 +223,15 @@
 
         if (tool != this._activeTool) {
             this._removeActiveToolFromView();
+
             var oldTool = this._activeTool;
             this._activeTool = tool;
-            this._addActiveToolToView();
 
             if (this.hasEventListeners(IFToolManager.ToolChangedEvent)) {
                 this.trigger(new IFToolManager.ToolChangedEvent(oldTool, tool));
             }
+
+            this._addActiveToolToView();
 
             return true;
         }

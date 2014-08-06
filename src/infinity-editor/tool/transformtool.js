@@ -15,7 +15,14 @@
     /** @override */
     IFTransformTool.prototype.activate = function (view) {
         IFSelectTool.prototype.activate.call(this, view);
-        this._openTransformBox();
+
+        // If there's no available selection, select the pointer tool instead
+        var selection = view.getEditor().getSelection();
+        if (!selection || selection.length === 0) {
+            this._manager.activateTool(IFPointerTool);
+        } else {
+            this._openTransformBox();
+        }
     };
 
     /** @override */
