@@ -27,7 +27,7 @@
         if (pattern) {
             var patternTransform = this._getPaintPatternTransform(bbox);
             if (patternTransform) {
-                var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(patternTransform));
+                var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(patternTransform));
                 canvas.fillVertices(pattern, this.$opc, this.$blm);
                 canvas.setTransform(oldTransform);
             } else {
