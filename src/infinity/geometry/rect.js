@@ -534,6 +534,31 @@
         }
     };
 
+    /**
+     * Based on the position, returns the rectangle nearest pivot point name
+     * @param {IFPoint} pos
+     * @returns {IFRect.Side}
+     */
+    IFRect.prototype.getClosestSideName = function (pos) {
+        var sides = [IFRect.Side.TOP_LEFT, IFRect.Side.TOP_CENTER, IFRect.Side.TOP_RIGHT,
+            IFRect.Side.LEFT_CENTER, IFRect.Side.CENTER, IFRect.Side.RIGHT_CENTER,
+            IFRect.Side.BOTTOM_LEFT, IFRect.Side.BOTTOM_CENTER, IFRect.Side.BOTTOM_RIGHT];
+
+        var i = 1;
+        var j = 1;
+        if (pos.getX() <= this._x + this._width / 3.0) {
+            i = 0;
+        } else if (pos.getX() >= this._x + this._width * 2 / 3.0) {
+            i = 2;
+        }
+        if (pos.getY() <= this._y + this._height / 3.0) {
+            j = 0;
+        } else if (pos.getY() >= this._y + this._height * 2 / 3.0) {
+            j = 2;
+        }
+        return sides[j * 3 + i];
+    };
+
     /** @override */
     IFRect.prototype.toString = function () {
         return "[Object IFRect(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")]";

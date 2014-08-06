@@ -610,7 +610,9 @@
                 } else {
                     var moveDelta = position.subtract(this._moveStartTransformed);
                     this._editor.moveSelection(moveDelta, true,
-                        this._editorMovePartInfo ? this._editorMovePartInfo.id : null, this._editorMovePartInfo ? this._editorMovePartInfo.data : null);
+                        this._editorMovePartInfo ? this._editorMovePartInfo.id : null,
+                        this._editorMovePartInfo ? this._editorMovePartInfo.data : null,
+                        this._moveStartTransformed);
                 }
             }
         } else if (this._mode == IFSelectTool._Mode.Transforming) {

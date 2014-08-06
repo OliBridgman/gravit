@@ -496,7 +496,23 @@
 
             return transform1.multiplied(transform2).multiplied(transform3);
         } else {
-            _snap(this.tlx, this.tly, true, true);
+            var width3 = (this.brx - this.tlx) / 3.0;
+            var height3 = (this.bry - this.tly) / 3.0;
+            var handleX = this.cx;
+            var handleY = this.cy;
+
+            if (startPtTr.getX() <= this.tlx + width3) {
+                handleX = this.tlx;
+            } else if (startPtTr.getX() >= this.tlx + width3 * 2) {
+                handleX = this.brx;
+            }
+            if (startPtTr.getY() <= this.tly + height3) {
+                handleY = this.tly;
+            } else if (startPtTr.getY() >= this.tly + height3 * 2) {
+                handleY = this.bry;
+            }
+
+            _snap(handleX, handleY, true, true);
             return new IFTransform(1, 0, 0, 1, dx, dy);
         }
     };

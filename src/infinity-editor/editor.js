@@ -568,19 +568,22 @@
      * @param {Boolean} align whether to automatically align or not
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [data] optional data of part that has started the transformation
+     * @param {IFPoint} startPos - movement start position, needed when align is true only
      */
-    IFEditor.prototype.moveSelection = function (delta, align, partId, partData) {
-        if (align) {
+    IFEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
+        var translation = delta;
+        if (align && startPos) {
             var selBBox = this.getSelectionBBox(false);
-
-            var transBBox = selBBox.translated(delta.getX(), delta.getY());
+            var side = selBBox.getClosestSideName(startPos);
+            var sidePos = selBBox.getSide(side);
+            var newSidePos = sidePos.add(delta);
             this._guides.beginMap();
-            var tl = this._guides.mapPoint(transBBox.getSide(IFRect.Side.TOP_LEFT));
+            newSidePos = this._guides.mapPoint(newSidePos);
             this._guides.finishMap();
-            delta = tl.subtract(selBBox.getSide(IFRect.Side.TOP_LEFT));
+            translation = newSidePos.subtract(sidePos);
         }
 
-        this.transformSelection(new IFTransform(1, 0, 0, 1, delta.getX(), delta.getY()), partId, partData);
+        this.transformSelection(new IFTransform(1, 0, 0, 1, translation.getX(), translation.getY()), partId, partData);
     };
 
     /**
