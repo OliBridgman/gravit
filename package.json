@@ -28,6 +28,7 @@
         "grunt-node-webkit-builder": "0.2.0",
         "grunt-contrib-compress": "~0.9.1",
         "load-grunt-tasks": "~0.1.0",
-        "time-grunt": "~0.1.1"
+        "time-grunt": "~0.1.1",
+        "appdmg": "^0.2.0"
     }
 }

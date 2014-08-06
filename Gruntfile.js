@@ -352,17 +352,7 @@ module.exports = function (grunt) {
             // package
             'test -f ./dist/gravit-osx.dmg && rm ./dist/gravit-osx.dmg',
             'mkdir ./dist',
-            './shell/system/package/osx/create-dmg \
-  --volname "Gravit" \
-  --volicon "./shell/system/appicon.icns" \
-  --background "./shell/system/package/osx/background.tiff" \
-  --window-size 626 313 \
-  --icon-size 120 \
-  --icon Gravit.app 284 0 \
-  --hide-extension Gravit.app \
-  --app-drop-link 483 0 \
-  ./dist/gravit-osx.dmg \
-  ./build/system-binaries/Gravit/osx/'
+            './node_modules/appdmg/bin/appdmg ./shell/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
         ];
 
         console.log('Sign & Package for OS-X');
