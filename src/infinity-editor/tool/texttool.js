@@ -35,7 +35,16 @@
      */
     IFTextTool.prototype._mouseRelease = function (event) {
         if (this._textUnderMouse) {
-            this._editor.openInlineEditor(this._textUnderMouse, this._view, event.client)
+
+            // Save as this will be lost after switching tool
+            var editor = this._editor;
+            var view = this._view;
+
+            // Switch to select tool
+            this._manager.activateTool(IFPointerTool);
+
+            // open inline editor
+            editor.openInlineEditor(this._textUnderMouse, view, event.client)
         } else {
             IFShapeTool.prototype._mouseRelease.call(this, event);
         }
