@@ -560,7 +560,9 @@
      */
     GUIWidget.prototype._triggerWidgetEventFromDom = function (domEvent, widgetEvent, ignoreTarget) {
         // Handle capturing of mouse for down/release events
-        if (widgetEvent instanceof GUIMouseEvent.Down) {
+        // TODO : Fix checking for left button and let triggered event result decide wether
+        // to capture other buttons than left one too
+        if (widgetEvent instanceof GUIMouseEvent.Down && widgetEvent.button === GUIMouseEvent.BUTTON_LEFT) {
             this._setCapture();
         } else if (widgetEvent instanceof GUIMouseEvent.Release) {
             this._releaseCapture();
