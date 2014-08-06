@@ -154,6 +154,24 @@ module.exports = function (grunt) {
                         cwd: 'assets/font',
                         dest: '<%= cfg.build %>/source/font/',
                         src: '{,*/}*.*'
+                    },
+
+                    // Chrome Assets
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'bower_components/jquery/dist/',
+                        dest: '<%= cfg.build %>/chrome/',
+                        src: 'jquery.min.js'
+                    },
+
+                    // System assets
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'bower_components/jquery/dist/',
+                        dest: '<%= cfg.build %>/system/',
+                        src: 'jquery.min.js'
                     }
                 ]
             },
