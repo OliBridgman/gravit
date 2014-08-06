@@ -10,6 +10,7 @@
     function IFEditor(scene) {
         this._scene = scene;
         this._scene.__graphic_editor__ = this;
+        this._transactionStack = [];
         this._undoStates = [];
         this._redoStates = [];
         this._guides = new IFGuides(this._scene);
@@ -232,10 +233,10 @@
     IFEditor.prototype._selectionDetail = false;
 
     /**
-     * @type {{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: IFElement, parts: Array<*>}>}}
+     * @type {Array<{{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: IFElement, parts: Array<*>}>}}>}
      * @private
      */
-    IFEditor.prototype._transaction = null;
+    IFEditor.prototype._transactionStack = null;
 
     /**
      * @type {Array<*>}
@@ -826,18 +827,12 @@
      * as undo / redo states.
      */
     IFEditor.prototype.beginTransaction = function () {
-        if (this._transaction) {
-            throw new Error('There already is an active transaction.');
-        }
-
-        if (!this._transaction) {
-            var sceneEditor = IFElementEditor.getEditor(this._scene);
-            this._transaction = {
-                actions: [],
-                selection: this._saveSelection(),
-                transformBoxCenter: sceneEditor ? sceneEditor.getTransformBoxCenter() : null
-            }
-        }
+        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        this._transactionStack.push({
+            actions: [],
+            selection: this._saveSelection(),
+            transformBoxCenter: sceneEditor ? sceneEditor.getTransformBoxCenter() : null
+        });
     };
 
     IFEditor.prototype._transactionRedo = function (data) {
@@ -918,12 +913,12 @@
      * @param {String} name
      */
     IFEditor.prototype.commitTransaction = function (name) {
-        if (!this._transaction) {
-            throw new Error('No active transaction to be committed.');
+        if (!this._transactionStack.length) {
+            throw new Error('Nothing to commit, transaction stack is empty.');
         }
 
-        if (this._transaction.actions.length > 0) {
-            var transaction = this._transaction;
+        var transaction = this._transactionStack.pop();
+        if (transaction.actions.length > 0) {
             var sceneEditor = IFElementEditor.getEditor(this._scene);
             var data = {
                 actions: transaction.actions.slice(),
@@ -935,8 +930,6 @@
 
             this.pushState(name, this._transactionRedo.bind(this), this._transactionUndo.bind(this), data, this._transactionMerge.bind(this));
         }
-
-        this._transaction = null;
     };
 
     /**
@@ -1065,7 +1058,7 @@
             }
 
             editor.beginInlineEdit(view, view._htmlElement);
-            editor.adjustInlineEditForView(view);
+            editor.adjustInlineEditForView(view, position);
 
             this._currentInlineEditorNode = node;
 
@@ -1127,12 +1120,12 @@
      */
     IFEditor.prototype._afterNodeInsert = function (evt) {
         // If we have an active transaction, we need to record the action
-        if (this._transaction) {
+        if (this._transactionStack.length) {
             var node = evt.node;
             var parent = node.getParent();
             var next = node.getNext();
 
-            this._transaction.actions.push({
+            this._transactionStack[this._transactionStack.length-1].actions.push({
                 action: function () {
                     // Simply re-insert the node
                     parent.insertChild(node, next);
@@ -1156,12 +1149,12 @@
      */
     IFEditor.prototype._beforeNodeRemove = function (evt) {
         // If we have an active transaction, we need to record the action
-        if (this._transaction) {
+        if (this._transactionStack.length) {
             var node = evt.node;
             var parent = node.getParent();
             var next = node.getNext();
 
-            this._transaction.actions.push({
+            this._transactionStack[this._transactionStack.length-1].actions.push({
                 action: function () {
                     // Simply remove the node
                     parent.removeChild(node);
@@ -1196,7 +1189,7 @@
      */
     IFEditor.prototype._beforePropertiesChange = function (evt) {
         // If we have an active transaction, we need to record the action
-        if (this._transaction) {
+        if (this._transactionStack.length) {
             var node = evt.node;
             var properties = evt.properties;
             var values = evt.values;
@@ -1205,7 +1198,7 @@
                 oldValues.push(node.getProperty(evt.properties[i]));
             }
 
-            this._transaction.actions.push({
+            this._transactionStack[this._transactionStack.length-1].actions.push({
                 isPropertyChangeAction: true,
                 node: node,
                 properties: properties.slice(),
