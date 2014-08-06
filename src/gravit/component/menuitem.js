@@ -2,19 +2,19 @@
     /**
      * A menu item
      * @param {Number} type the type of the menu item.
-     * Defaults to GUIMenuItem.Type.Item
-     * @class GUIMenuItem
+     * Defaults to GMenuItem.Type.Item
+     * @class GMenuItem
      * @extends GEventTarget
      * @constructor
-     * @see GUIMenuItem.Type
+     * @see GMenuItem.Type
      * @version 1.0
      */
-    function GUIMenuItem(type) {
+    function GMenuItem(type) {
         this._htmlElement = $("<li></li>").addClass('g-menu-item');
 
-        this._type = type ? type : GUIMenuItem.Type.Item;
+        this._type = type ? type : GMenuItem.Type.Item;
 
-        if (this._type === GUIMenuItem.Type.Divider) {
+        if (this._type === GMenuItem.Type.Divider) {
             this._htmlElement.addClass('g-menu-item-divider');
         } else {
             this._htmlElement
@@ -29,9 +29,9 @@
                 .append($('<span></span>')
                     .addClass('g-menu-item-tail'));
 
-            if (this._type === GUIMenuItem.Type.Menu) {
+            if (this._type === GMenuItem.Type.Menu) {
                 this._htmlElement.addClass('g-menu-item-menu');
-                this.setMenu(new GUIMenu(this));
+                this.setMenu(new GMenu(this));
             }
         }
 
@@ -41,14 +41,14 @@
         this._htmlElement.on("mouseup", this._mouseUp.bind(this));
     }
 
-    IFObject.inherit(GUIMenuItem, GEventTarget);
+    IFObject.inherit(GMenuItem, GEventTarget);
 
     /**
      * The type of a menu item
      * @type {{}}
      * @version 1.0
      */
-    GUIMenuItem.Type = {
+    GMenuItem.Type = {
         /**
          * A regular item which can be checked and clicked / executed
          * @type {Number}
@@ -71,159 +71,159 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIMenuItem.EnterEvent Event
+    // GMenuItem.EnterEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever a menu item is entered
-     * @class GUIMenuItem.EnterEvent
+     * @class GMenuItem.EnterEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GUIMenuItem.EnterEvent = function () {
+    GMenuItem.EnterEvent = function () {
     };
-    IFObject.inherit(GUIMenuItem.EnterEvent, GEvent);
+    IFObject.inherit(GMenuItem.EnterEvent, GEvent);
 
     /** @override */
-    GUIMenuItem.EnterEvent.prototype.toString = function () {
-        return "[Object GUIMenuItem.EnterEvent]";
+    GMenuItem.EnterEvent.prototype.toString = function () {
+        return "[Object GMenuItem.EnterEvent]";
     };
 
-    GUIMenuItem.ENTER_EVENT = new GUIMenuItem.EnterEvent();
+    GMenuItem.ENTER_EVENT = new GMenuItem.EnterEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIMenuItem.LeaveEvent Event
+    // GMenuItem.LeaveEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever a menu item is left
-     * @class GUIMenuItem.LeaveEvent
+     * @class GMenuItem.LeaveEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GUIMenuItem.LeaveEvent = function () {
+    GMenuItem.LeaveEvent = function () {
     };
-    IFObject.inherit(GUIMenuItem.LeaveEvent, GEvent);
+    IFObject.inherit(GMenuItem.LeaveEvent, GEvent);
 
     /** @override */
-    GUIMenuItem.LeaveEvent.prototype.toString = function () {
-        return "[Object GUIMenuItem.LeaveEvent]";
+    GMenuItem.LeaveEvent.prototype.toString = function () {
+        return "[Object GMenuItem.LeaveEvent]";
     };
 
-    GUIMenuItem.LEAVE_EVENT = new GUIMenuItem.LeaveEvent();
+    GMenuItem.LEAVE_EVENT = new GMenuItem.LeaveEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIMenuItem.ActivateEvent Event
+    // GMenuItem.ActivateEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever a menu item was activated
-     * @class GUIMenuItem.ActivateEvent
+     * @class GMenuItem.ActivateEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GUIMenuItem.ActivateEvent = function () {
+    GMenuItem.ActivateEvent = function () {
     };
-    IFObject.inherit(GUIMenuItem.ActivateEvent, GEvent);
+    IFObject.inherit(GMenuItem.ActivateEvent, GEvent);
 
     /** @override */
-    GUIMenuItem.ActivateEvent.prototype.toString = function () {
-        return "[Object GUIMenuItem.ActivateEvent]";
+    GMenuItem.ActivateEvent.prototype.toString = function () {
+        return "[Object GMenuItem.ActivateEvent]";
     };
 
-    GUIMenuItem.ACTIVATE_EVENT = new GUIMenuItem.ActivateEvent();
+    GMenuItem.ACTIVATE_EVENT = new GMenuItem.ActivateEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIMenuItem.UpdateEvent Event
+    // GMenuItem.UpdateEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever a menu item should be updated (before it is shown)
-     * @class GUIMenuItem.UpdateEvent
+     * @class GMenuItem.UpdateEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    GUIMenuItem.UpdateEvent = function () {
+    GMenuItem.UpdateEvent = function () {
     };
-    IFObject.inherit(GUIMenuItem.UpdateEvent, GEvent);
+    IFObject.inherit(GMenuItem.UpdateEvent, GEvent);
 
     /** @override */
-    GUIMenuItem.UpdateEvent.prototype.toString = function () {
-        return "[Object GUIMenuItem.UpdateEvent]";
+    GMenuItem.UpdateEvent.prototype.toString = function () {
+        return "[Object GMenuItem.UpdateEvent]";
     };
 
-    GUIMenuItem.UPDATE_EVENT = new GUIMenuItem.UpdateEvent();
+    GMenuItem.UPDATE_EVENT = new GMenuItem.UpdateEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIMenuItem Class
+    // GMenuItem Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {GUIMenu}
+     * @type {GMenu}
      * @private
      */
-    GUIMenuItem.prototype._parent = null;
+    GMenuItem.prototype._parent = null;
 
     /**
      * @type {Number}
      * @private
      */
-    GUIMenuItem.prototype._type = null;
+    GMenuItem.prototype._type = null;
     /**
-     * @type {GUIMenu}
+     * @type {GMenu}
      * @private
      */
-    GUIMenuItem.prototype._menu = null;
+    GMenuItem.prototype._menu = null;
 
     /**
      * @type {String|JQuery}
      * @private
      */
-    GUIMenuItem.prototype._icon = null;
+    GMenuItem.prototype._icon = null;
 
     /**
      * @type {IFLocale.Key|String}
      * @private
      */
-    GUIMenuItem.prototype._caption = null;
+    GMenuItem.prototype._caption = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    GUIMenuItem.prototype._shortcutHint = null;
+    GMenuItem.prototype._shortcutHint = null;
 
     /**
      * @type {GAction}
      * @private
      */
-    GUIMenuItem.prototype._action = null;
+    GMenuItem.prototype._action = null;
 
     /**
-     * @return {GUIMenu}
+     * @return {GMenu}
      * @version 1.0
      */
-    GUIMenuItem.prototype.getParent = function () {
+    GMenuItem.prototype.getParent = function () {
         return this._parent;
     };
 
     /**
      * @returns {Number} the item's type
-     * @see GUIMenuItem.Type
+     * @see GMenuItem.Type
      * @version 1.0
      */
-    GUIMenuItem.prototype.getType = function () {
+    GMenuItem.prototype.getType = function () {
         return this._type;
     };
 
     /**
      * @returns {Stringg|JQuery} the item's icon
      */
-    GUIMenuItem.prototype.getIcon = function () {
+    GMenuItem.prototype.getIcon = function () {
         return this._icon;
     };
 
@@ -232,7 +232,7 @@
      * or a JQuery Html-Element
      * @param {Stringg|JQuery} icon the icon or null for none
      */
-    GUIMenuItem.prototype.setIcon = function (icon) {
+    GMenuItem.prototype.setIcon = function (icon) {
         if (icon !== this._icon) {
             this._icon = icon;
             var iconElement = this._htmlElement.find('.g-menu-item-icon');
@@ -255,7 +255,7 @@
      * @returns {IFLocale.Key|String} the item's caption
      * @version 1.0
      */
-    GUIMenuItem.prototype.getCaption = function () {
+    GMenuItem.prototype.getCaption = function () {
         return this._caption;
     };
 
@@ -264,7 +264,7 @@
      * @param {IFLocale.Key|String} caption
      * @version 1.0
      */
-    GUIMenuItem.prototype.setCaption = function (caption) {
+    GMenuItem.prototype.setCaption = function (caption) {
         if (caption !== this._caption) {
             this._caption = caption;
             var captionElement = this._htmlElement.find('.g-menu-item-caption');
@@ -281,7 +281,7 @@
     /**
      * @returns {Array<*>} the item's shortcut hint
      */
-    GUIMenuItem.prototype.getShortcutHint = function () {
+    GMenuItem.prototype.getShortcutHint = function () {
         return this._shortcutHint;
     };
 
@@ -290,7 +290,7 @@
      * @param {Array<*>} hint the shortcut hint
      * @version 1.0
      */
-    GUIMenuItem.prototype.setShortcutHint = function (hint) {
+    GMenuItem.prototype.setShortcutHint = function (hint) {
         this._shortcutHint = hint;
         var shortcutElement = this._htmlElement.find('.g-menu-item-shortcut');
         if (this._shortcutHint && this._shortcutHint.length > 0) {
@@ -305,7 +305,7 @@
     /**
      * @returns {GAction} the item's action
      */
-    GUIMenuItem.prototype.getAction = function () {
+    GMenuItem.prototype.getAction = function () {
         return this._action;
     };
 
@@ -313,7 +313,7 @@
      * Assign an action to this menu item or remove it
      * @param {GAction} action
      */
-    GUIMenuItem.prototype.setAction = function (action) {
+    GMenuItem.prototype.setAction = function (action) {
         if (action !== this._action) {
             if (this._action) {
                 // Remove shortcut if any was set
@@ -342,7 +342,7 @@
      * @returns {Boolean} whether the item is checked or not
      * @version 1.0
      */
-    GUIMenuItem.prototype.isChecked = function () {
+    GMenuItem.prototype.isChecked = function () {
         return this._htmlElement.hasClass('g-menu-item-checked');
     };
 
@@ -351,7 +351,7 @@
      * @param {Boolean} checked
      * @version 1.0
      */
-    GUIMenuItem.prototype.setChecked = function (checked) {
+    GMenuItem.prototype.setChecked = function (checked) {
         if (checked != this.isChecked()) {
             if (checked) {
                 this._htmlElement.addClass("g-menu-item-checked");
@@ -365,7 +365,7 @@
      * @returns {Boolean} whether the item is enabled or not
      * @version 1.0
      */
-    GUIMenuItem.prototype.isEnabled = function () {
+    GMenuItem.prototype.isEnabled = function () {
         return !this._htmlElement.hasClass('g-disabled');
     };
 
@@ -374,7 +374,7 @@
      * @param {Boolean} enabled
      * @version 1.0
      */
-    GUIMenuItem.prototype.setEnabled = function (enabled) {
+    GMenuItem.prototype.setEnabled = function (enabled) {
         if (enabled != this.isEnabled()) {
             if (enabled) {
                 this._htmlElement.removeClass("g-disabled");
@@ -388,24 +388,24 @@
      * Checks and returns whether this item is a root item or not
      * @return {boolean}
      */
-    GUIMenuItem.prototype.isRootItem = function () {
-        return this._parent && this._parent instanceof GUIMenu &&
-            this._parent._parent != null && !(this._parent._parent instanceof GUIMenuItem);
+    GMenuItem.prototype.isRootItem = function () {
+        return this._parent && this._parent instanceof GMenu &&
+            this._parent._parent != null && !(this._parent._parent instanceof GMenuItem);
     };
 
     /**
      * Checks and returns whether this item is a a root item of a menubar or not
      * @return {boolean}
      */
-    GUIMenuItem.prototype.isRootMenuBarItem = function () {
-        return this.isRootItem() && this._parent._parent instanceof GUIMenuBar;
+    GMenuItem.prototype.isRootMenuBarItem = function () {
+        return this.isRootItem() && this._parent._parent instanceof GMenuBar;
     };
 
     /**
      * This will go up and return the menu bar or null if there's none
-     * @return {GUIMenuBar}
+     * @return {GMenuBar}
      */
-    GUIMenuItem.prototype.getMenuBar = function () {
+    GMenuItem.prototype.getMenuBar = function () {
         if (this.isRootMenuBarItem()) {
             return this._parent._parent;
         }
@@ -413,23 +413,23 @@
     };
 
     /**
-     * @return {GUIMenu} the submenu of this item if supported
+     * @return {GMenu} the submenu of this item if supported
      * @version 1.0
      */
-    GUIMenuItem.prototype.getMenu = function () {
+    GMenuItem.prototype.getMenu = function () {
         return this._menu;
     };
 
     /**
      * Assign the submenu for this item if it is a menu item
-     * @param {GUIMenu} menu
+     * @param {GMenu} menu
      */
-    GUIMenuItem.prototype.setMenu = function (menu) {
-        if (menu && menu !== this._menu && this._type === GUIMenuItem.Type.Menu) {
+    GMenuItem.prototype.setMenu = function (menu) {
+        if (menu && menu !== this._menu && this._type === GMenuItem.Type.Menu) {
             this._menu = menu;
             this._menu._parent = this;
-            this._menu.addEventListener(GUIMenu.OPEN_EVENT, this._menuOpen.bind(this));
-            this._menu.addEventListener(GUIMenu.CLOSE_EVENT, this._menuClose.bind(this));
+            this._menu.addEventListener(GMenu.OPEN_EVENT, this._menuOpen.bind(this));
+            this._menu.addEventListener(GMenu.CLOSE_EVENT, this._menuClose.bind(this));
         }
     };
 
@@ -437,7 +437,7 @@
      * Called before the menu item is shown to update it's status
      * @version 1.0
      */
-    GUIMenuItem.prototype.update = function () {
+    GMenuItem.prototype.update = function () {
         // If we have an action, it may have changed so update here
         if (this._action) {
             this.setCaption(this._action.getTitle());
@@ -445,19 +445,19 @@
             this.setChecked(this._action.isChecked());
         }
 
-        if (this.hasEventListeners(GUIMenuItem.UpdateEvent)) {
-            this.trigger(GUIMenuItem.UPDATE_EVENT);
+        if (this.hasEventListeners(GMenuItem.UpdateEvent)) {
+            this.trigger(GMenuItem.UPDATE_EVENT);
         }
     };
 
     /** @override */
-    GUIMenuItem.prototype.toString = function () {
-        return "[Object GUIMenuItem]";
+    GMenuItem.prototype.toString = function () {
+        return "[Object GMenuItem]";
     };
 
-    GUIMenuItem.prototype._mouseOver = function (evt) {
+    GMenuItem.prototype._mouseOver = function (evt) {
         // Close all sub-menus of our parent
-        if (this._parent && this._parent instanceof GUIMenu && !this.isRootItem()) {
+        if (this._parent && this._parent instanceof GMenu && !this.isRootItem()) {
             this._parent.closeMenus();
         }
 
@@ -471,37 +471,37 @@
         // c) Are not a Root-Item
         //      - or -
         //    Are a root item and part of a menu-bar which' menu is opened
-        if (this._type == GUIMenuItem.Type.Menu &&
+        if (this._type == GMenuItem.Type.Menu &&
             ifSystem.hardware === IFSystem.Hardware.Desktop &&
             (!this.isRootItem() || (this.isRootMenuBarItem() && this.getMenuBar().isActive()))) {
             this._openMenu();
         }
 
         // Handle events for others than dividers
-        if (this._type != GUIMenuItem.Type.Divider) {
+        if (this._type != GMenuItem.Type.Divider) {
             this._htmlElement.addClass("g-hover");
 
-            if (this.hasEventListeners(GUIMenuItem.EnterEvent)) {
-                this.trigger(GUIMenuItem.ENTER_EVENT);
+            if (this.hasEventListeners(GMenuItem.EnterEvent)) {
+                this.trigger(GMenuItem.ENTER_EVENT);
             }
         }
     };
 
-    GUIMenuItem.prototype._mouseOut = function (evt) {
+    GMenuItem.prototype._mouseOut = function (evt) {
         if (!this.isEnabled()) {
             return;
         }
 
-        if (this._type != GUIMenuItem.Type.Divider) {
+        if (this._type != GMenuItem.Type.Divider) {
             this._htmlElement.removeClass("g-hover");
 
-            if (this.hasEventListeners(GUIMenuItem.LeaveEvent)) {
-                this.trigger(GUIMenuItem.LEAVE_EVENT);
+            if (this.hasEventListeners(GMenuItem.LeaveEvent)) {
+                this.trigger(GMenuItem.LEAVE_EVENT);
             }
         }
     };
 
-    GUIMenuItem.prototype._mouseDown = function (evt) {
+    GMenuItem.prototype._mouseDown = function (evt) {
         if (!this.isEnabled()) {
             return;
         }
@@ -512,7 +512,7 @@
             evt.preventDefault();
 
             // Open Sub-Menu if we're a Sub-Item and on Root or not on Desktop which doesn't have mouse-over
-            if (this._type === GUIMenuItem.Type.Menu && (this.isRootItem() || ifSystem.hardware !== IFSystem.Hardware.Desktop)) {
+            if (this._type === GMenuItem.Type.Menu && (this.isRootItem() || ifSystem.hardware !== IFSystem.Hardware.Desktop)) {
                 // Toggle our menu
                 if (this._htmlElement.hasClass('g-active')) {
                     this.getMenu().close();
@@ -523,39 +523,39 @@
         }
     };
 
-    GUIMenuItem.prototype._mouseUp = function (evt) {
+    GMenuItem.prototype._mouseUp = function (evt) {
         // Stop propagation and default handling to not run into our global menu handlers
         evt.stopPropagation();
         evt.preventDefault();
 
         // Close active menu if we're not a sub-menu-item
-        if (this._type !== GUIMenuItem.Type.Menu) {
+        if (this._type !== GMenuItem.Type.Menu) {
             // Simulate a virtual 'mouse-out', first as that'll never occurr
             // otherwise as we're removing the menu from the DOM
             this._mouseOut(evt);
 
             // Reset the active menu closing everything
-            GUIMenu.setActiveMenu(null);
+            GMenu.setActiveMenu(null);
         }
 
-        if (this._type == GUIMenuItem.Type.Item) {
+        if (this._type == GMenuItem.Type.Item) {
             if (this._action && this._action.isAvailable() && this._action.isEnabled()) {
                 this._action.execute();
             }
 
-            if (this.isEnabled() && this.hasEventListeners(GUIMenuItem.ActivateEvent)) {
-                this.trigger(GUIMenuItem.ACTIVATE_EVENT);
+            if (this.isEnabled() && this.hasEventListeners(GMenuItem.ActivateEvent)) {
+                this.trigger(GMenuItem.ACTIVATE_EVENT);
             }
         }
     };
 
-    GUIMenuItem.prototype._openMenu = function () {
+    GMenuItem.prototype._openMenu = function () {
         this.getMenu().open(this._htmlElement,
-            this.isRootItem() ? GUIMenu.Position.Center : GUIMenu.Position.Right_Bottom,
-            this.isRootItem() ? GUIMenu.Position.Right_Bottom : GUIMenu.Position.Center);
+            this.isRootItem() ? GMenu.Position.Center : GMenu.Position.Right_Bottom,
+            this.isRootItem() ? GMenu.Position.Right_Bottom : GMenu.Position.Center);
     };
 
-    GUIMenuItem.prototype._menuOpen = function () {
+    GMenuItem.prototype._menuOpen = function () {
         this._htmlElement.addClass('g-active');
 
         if (this.isRootItem()) {
@@ -563,7 +563,7 @@
         }
     };
 
-    GUIMenuItem.prototype._menuClose = function () {
+    GMenuItem.prototype._menuClose = function () {
         this._htmlElement.removeClass('g-active');
 
         if (this.isRootItem()) {
@@ -571,5 +571,5 @@
         }
     };
 
-    _.GUIMenuItem = GUIMenuItem;
+    _.GMenuItem = GMenuItem;
 })(this);

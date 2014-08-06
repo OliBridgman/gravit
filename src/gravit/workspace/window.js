@@ -120,17 +120,17 @@
 
     /**
      * Creates the context menu for the view
-     * @returns {GUIMenu}
+     * @returns {GMenu}
      * @private
      */
     GWindow.prototype._createContextMenu = function () {
-        var menu = new GUIMenu();
+        var menu = new GMenu();
 
         // Add select menu item to select shapes underneath
-        var selectItem = new GUIMenuItem(GUIMenuItem.Type.Menu);
+        var selectItem = new GMenuItem(GMenuItem.Type.Menu);
         // TODO : I18N
         selectItem.setCaption('Select');
-        selectItem.addEventListener(GUIMenuItem.UpdateEvent, function () {
+        selectItem.addEventListener(GMenuItem.UpdateEvent, function () {
             // Clear out any previous items and disable our item by default
             selectItem.getMenu().clearItems();
             selectItem.setEnabled(false);
@@ -146,18 +146,18 @@
                 // Add each hit as a menu item
                 for (var i = 0; i < elementHits.length; ++i) {
                     var self = this;
-                    var stackItem = new GUIMenuItem();
+                    var stackItem = new GMenuItem();
                     var element = elementHits[i].element;
                     stackItem.element = element;
                     var name = element instanceof IFBlock ? element.getLabel() : element.getNodeNameTranslated();
                     stackItem.setCaption((i + 1).toString() + '. ' + name);
-                    stackItem.addEventListener(GUIMenuItem.EnterEvent, function () {
+                    stackItem.addEventListener(GMenuItem.EnterEvent, function () {
                         this.element.setFlag(IFNode.Flag.Highlighted);
                     });
-                    stackItem.addEventListener(GUIMenuItem.LeaveEvent, function () {
+                    stackItem.addEventListener(GMenuItem.LeaveEvent, function () {
                         this.element.removeFlag(IFNode.Flag.Highlighted);
                     });
-                    stackItem.addEventListener(GUIMenuItem.ActivateEvent, function () {
+                    stackItem.addEventListener(GMenuItem.ActivateEvent, function () {
                         this.element.removeFlag(IFNode.Flag.Highlighted);
                         self._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [this.element]);
                     });

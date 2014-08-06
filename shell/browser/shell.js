@@ -6,13 +6,13 @@
      * @constructor
      */
     function GBrowserShell() {
-        this._menuBar = new GUIMenuBar();
+        this._menuBar = new GMenuBar();
         this._clipboardMimeTypes = {};
     };
     IFObject.inherit(GBrowserShell, GShell);
 
     /**
-     * @type {GUIMenuBar}
+     * @type {GMenuBar}
      * @private
      */
     GBrowserShell.prototype._menuBar = null;
@@ -40,12 +40,12 @@
     /** @override */
     GBrowserShell.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar.getMenu();
-        var item = new GUIMenuItem(GUIMenuItem.Type.Menu);
+        var item = new GMenuItem(GMenuItem.Type.Menu);
         item.setCaption(title);
         parentMenu.addItem(item);
 
         if (callback) {
-            item.getMenu().addEventListener(GUIMenu.OpenEvent, callback);
+            item.getMenu().addEventListener(GMenu.OpenEvent, callback);
         }
 
         return item.getMenu();
@@ -53,16 +53,16 @@
 
     /** @override */
     GBrowserShell.prototype.addMenuSeparator = function (parentMenu) {
-        var item = new GUIMenuItem(GUIMenuItem.Type.Divider);
+        var item = new GMenuItem(GMenuItem.Type.Divider);
         parentMenu.addItem(item);
         return item;
     };
 
     /** @override */
     GBrowserShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
-        var item = new GUIMenuItem(GUIMenuItem.Type.Item);
+        var item = new GMenuItem(GMenuItem.Type.Item);
         if (callback) {
-            item.addEventListener(GUIMenuItem.ActivateEvent, callback);
+            item.addEventListener(GMenuItem.ActivateEvent, callback);
         }
 
         if (shortcut) {

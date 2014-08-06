@@ -10,9 +10,7 @@
         IFStage.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         view.addEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
-
-        this._view.getEditor().getGuides().addEventListener(
-            IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        view.getEditor().getGuides().addEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
     }
     IFObject.inherit(IFEditorFrontStage, IFStage);
 
@@ -20,7 +18,7 @@
     IFEditorFrontStage.prototype.release = function () {
         this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
-        view.removeEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
+        this._view.removeEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
     };
 
     /** @override */

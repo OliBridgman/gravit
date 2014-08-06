@@ -73,7 +73,7 @@
         parentMenu.append(item);
 
         //if (callback) {
-        //    item.getMenu().addEventListener(GUIMenu.OpenEvent, callback);
+        //    item.getMenu().addEventListener(GMenu.OpenEvent, callback);
         //}
 
         return item.submenu;

@@ -133,7 +133,11 @@
 
 /** Set active/hover color if not disabled */
 .g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled),
-.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span {
+.g-menu:not(.g-menu-root) > .g-menu-item.g-hover:not(.g-disabled) > span,
+.g-menu > .g-menu-item.g-active:not(.g-disabled),
+.g-menu > .g-menu-item.g-active:not(.g-disabled) > span,
+.g-menu-root > .g-menu-item:active:not(.g-disabled),
+.g-menu-root > .g-menu-item:active:not(.g-disabled) > span {
   background: $activeColor;
   color: $activeTextColor;
 }
