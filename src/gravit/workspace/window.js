@@ -152,22 +152,22 @@
                 // Add each hit as a menu item
                 for (var i = 0; i < elementHits.length; ++i) {
                     var self = this;
-                    var stackItem = new GMenuItem();
                     var element = elementHits[i].element;
-                    stackItem.element = element;
                     var name = element instanceof IFBlock ? element.getLabel() : element.getNodeNameTranslated();
-                    stackItem.setCaption((i + 1).toString() + '. ' + name);
-                    stackItem.addEventListener(GMenuItem.EnterEvent, function () {
-                        this.element.setFlag(IFNode.Flag.Highlighted);
-                    });
-                    stackItem.addEventListener(GMenuItem.LeaveEvent, function () {
-                        this.element.removeFlag(IFNode.Flag.Highlighted);
-                    });
-                    stackItem.addEventListener(GMenuItem.ActivateEvent, function () {
-                        this.element.removeFlag(IFNode.Flag.Highlighted);
-                        self._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [this.element]);
-                    });
-                    selectItem.getMenu().addItem(stackItem);
+
+                    selectItem.getMenu().createAddItem(
+                        (i + 1).toString() + '. ' + name,
+                        function () {
+                            this.element.removeFlag(IFNode.Flag.Highlighted);
+                            self._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [this.element]);
+                        },
+                        function () {
+                            this.element.setFlag(IFNode.Flag.Highlighted);
+                        },
+                        function () {
+                            this.element.removeFlag(IFNode.Flag.Highlighted);
+                        }
+                    ).element = element;
                 }
             }
         }.bind(this));

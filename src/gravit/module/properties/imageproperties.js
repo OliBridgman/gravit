@@ -81,10 +81,20 @@
             }.bind(this))
             .appendTo(panel);
 
+        var exportMenu = new GMenu();
+        exportMenu.createAddItem('Test 1', function () {alert('test_1 activate')});
+        exportMenu.createAddItem('Test 2');
+
         $('<button></button>')
-            .attr('data-action', 'export')
+            .attr('data-action', 'export1')
             // TODO : I18N
             .text('Export...')
+            .gMenuButton({
+                menu: exportMenu,
+                defaultAction: function () {
+                    alert('default_action');
+                }
+            })
             .appendTo(panel);
 
         $('<button></button>')

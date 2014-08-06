@@ -62,7 +62,7 @@
             this._activeMenu = null;
 
             // Remove global menu listeners
-            document.addEventListener("mousemove", GMenu._activeMenuMouseMoveListener);
+            document.removeEventListener("mousemove", GMenu._activeMenuMouseMoveListener);
             document.removeEventListener("mousedown", GMenu._activeMenuMouseUpDownListener);
             document.removeEventListener("mouseup", GMenu._activeMenuMouseUpDownListener);
             document.removeEventListener("keyup", GMenu._activeMenuKeyDownListener);
@@ -328,6 +328,48 @@
     };
 
     /**
+     * Creates and appends a menu item and returns it
+     * @param caption
+     * @param activate
+     * @param enter
+     * @param leave
+     * @returns {GMenuItem}
+     */
+    GMenu.prototype.createAddItem = function (caption, activate, enter, leave) {
+        return this.createInsertItem(this.getItemCount(), caption, activate, enter, leave);
+    };
+
+    /**
+     * Creates and inserts a menu item and returns it
+     * @param index
+     * @param caption
+     * @param activate
+     * @param enter
+     * @param leave
+     * @returns {GMenuItem}
+     */
+    GMenu.prototype.createInsertItem = function (index, caption, activate, enter, leave) {
+        var newItem = new GMenuItem();
+        newItem.setCaption(caption);
+
+        if (activate) {
+            newItem.addEventListener(GMenuItem.ActivateEvent, activate);
+        }
+
+        if (enter) {
+            newItem.addEventListener(GMenuItem.EnterEvent, enter);
+        }
+
+        if (enter) {
+            newItem.addEventListener(GMenuItem.LeaveEvent, enter);
+        }
+
+        this.insertItem(index, newItem);
+
+        return newItem;
+    };
+
+    /**
      * Add a menu item to this menu
      * @param {GMenuItem} item
      * @returns {Number} index of newly inserted item
@@ -444,6 +486,14 @@
     };
 
     /**
+     * Returns whether this menu is open or not
+     * @return {Boolean}
+     */
+    GMenu.prototype.isOpen = function () {
+        return !!this._htmlElement.parent().length;
+    };
+
+    /**
      * Open the menu at a given reference which can be
      * either an absolute point or a jquery html element
      * @param {JQuery|{{x: Number, y: Number}}} reference the reference element or point to open at
@@ -454,9 +504,7 @@
         horzPosition = typeof horzPosition === 'number' ? horzPosition : GMenu.Position.Center;
         vertPosition = typeof vertPosition === 'number' ? vertPosition : GMenu.Position.Center;
 
-        // If our html element doesn't have a parent yet, we're opening it
-        // the first time, otherwise we're just re-positioning it
-        if (this._htmlElement.parent().length === 0) {
+        if (!this.isOpen()) {
             // Do an initial update on the menu
             this.update();
 
@@ -564,8 +612,7 @@
      * Close the menu if it is opened and closeable
      */
     GMenu.prototype.close = function () {
-        var parent = this._htmlElement.parent();
-        if (parent.is("body")) {
+        if (this.isOpen() && this._htmlElement.parent().is("body")) {
             this.closeMenus();
 
             // Remove our orientation classes
