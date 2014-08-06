@@ -87,8 +87,6 @@
      */
     IFSelectTool.prototype._moveCurrent = null;
 
-    IFSelectTool.prototype._sceneEditor = null;
-
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
         return this._editorUnderMouseInfo ? IFCursor.SelectDot : IFCursor.Select;
