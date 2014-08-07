@@ -282,11 +282,14 @@
             new GAlignAction(GAlignAction.Type.AlignLeft),
             new GAlignAction(GAlignAction.Type.AlignCenter),
             new GAlignAction(GAlignAction.Type.AlignRight),
+            new GAlignAction(GAlignAction.Type.AlignJustifyHorizontal),
             new GAlignAction(GAlignAction.Type.AlignTop),
             new GAlignAction(GAlignAction.Type.AlignMiddle),
             new GAlignAction(GAlignAction.Type.AlignBottom),
-            new GAlignAction(GAlignAction.Type.DistributeHorizontal),
-            new GAlignAction(GAlignAction.Type.DistributeVertical),
+            new GAlignAction(GAlignAction.Type.AlignJustifyVertical),
+
+            new GDistributeAction(GDistributeAction.Type.Horizontal),
+            new GDistributeAction(GDistributeAction.Type.Vertical),
 
             new GSnapUnitAction(GSnapUnitAction.Type.FullUnit),
             new GSnapUnitAction(GSnapUnitAction.Type.HalfUnit),

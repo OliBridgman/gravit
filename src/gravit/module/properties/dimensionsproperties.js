@@ -72,13 +72,13 @@
         var _createApplyButton = function (apply) {
             var self = this;
             // TODO : I18N
-            var hint = apply === 'selection' ? 'Apply to selection' : 'Apply to individual objects';
+            var hint = apply === 'selection' ? 'Selection Dimensions' : 'Individual Elements\' Dimensions';
+            var text = apply === 'selection' ? 'Selection' : 'Individual';
             return $('<button></button>')
                 .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
                 .attr('title', hint)
                 .attr('data-apply', apply)
-                .append($('<span></span>')
-                    .addClass('fa fa-' + (apply === 'selection' ? 'square' : 'th-large')))
+                .text(text)
                 .on('click', function () {
                     if (!$(this).hasClass('g-active')) {
                         if (apply === 'selection') {

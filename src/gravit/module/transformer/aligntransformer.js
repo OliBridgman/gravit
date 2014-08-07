@@ -104,9 +104,9 @@
                             .attr('value', GAlignTransformer._AlignTo.LastElement)
                             // TODO : I18N
                             .text('Last Selected Element'))
-                        .on('change', function () {
-                            this._savedAlignTo = $(this).val();
-                            this._updateControls();
+                        .on('change', function (evt) {
+                            this._savedAlignTo = $(evt.target).val();
+                            this._updateStates();
                         }.bind(this)))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
@@ -153,10 +153,9 @@
                         .addClass('fa fa-align-right'))
                     .append($('<button></button>')
                         // TODO : I18N
-                        .attr('title', 'Equal Spaces')
-                        .attr('data-align', GAlignAction.Type.DistributeHorizontal)
-                        .addClass('fa fa-reorder fa-rotate-270')
-                        .css('margin-left', '7px'))))
+                        .attr('title', 'Justify Horizontal')
+                        .attr('data-align', GAlignAction.Type.AlignJustifyHorizontal)
+                        .addClass('fa fa-align-justify fa-rotate-270'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -181,22 +180,51 @@
                         .addClass('fa fa-align-left fa-rotate-270'))
                     .append($('<button></button>')
                         // TODO : I18N
-                        .attr('title', 'Equal Spaces')
-                        .attr('data-align', GAlignAction.Type.DistributeVertical)
-                        .addClass('fa fa-reorder')
-                        .css('margin-left', '7px'))))
+                        .attr('title', 'Justify Vertical')
+                        .attr('data-align', GAlignAction.Type.AlignJustifyVertical)
+                        .addClass('fa fa-align-justify'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Distribute:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append($('<input>')
+                        // TODO : I18N
+                        .attr('title', 'Horizontal Spacing, zero will auto-space')
+                        .attr('data-dist', GDistributeAction.Type.Horizontal)
+                        .css('width', '3em')
+                        .val('0'))
+                    .append($('<button></button>')
+                        // TODO : I18N
+                        .attr('title', 'Distribute Horizontal')
+                        .attr('data-dist', GDistributeAction.Type.Horizontal)
+                        .addClass('fa fa-reorder fa-rotate-270'))
+                    .append($('<input>')
+                        // TODO : I18N
+                        .attr('title', 'Vertical Spacing, zero will auto-space')
+                        .attr('data-dist', GDistributeAction.Type.Vertical)
+                        .css('width', '3em')
+                        .css('margin-left', '10px')
+                        .val('0'))
+                    .append($('<button></button>')
+                        // TODO : I18N
+                        .attr('title', 'Distribute Vertical')
+                        .attr('data-dist', GDistributeAction.Type.Vertical)
+                        .addClass('fa fa-reorder'))))
             .appendTo(panel);
 
         var _createApplyButton = function (apply) {
             var self = this;
             // TODO : I18N
-            var hint = apply === 'selection' ? 'Apply to selection' : 'Apply to individual objects';
+            var hint = apply === 'selection' ? 'Align Selection' : 'Align Individual Elements';
+            var text = apply === 'selection' ? 'Selection' : 'Individual';
             return $('<button></button>')
                 .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
                 .attr('title', hint)
                 .attr('data-apply', apply)
-                .append($('<span></span>')
-                    .addClass('fa fa-' + (apply === 'selection' ? 'square' : 'th-large')))
+                .text(text)
                 .on('click', function () {
                     if (!$(this).hasClass('g-active')) {
                         if (apply === 'selection') {
@@ -216,12 +244,28 @@
             .append(_createApplyButton('objects'));
 
         var alignHandler = function (evt) {
-            this._align($(evt.target).attr('data-align'))
+            this._executeAction($(evt.target).attr('data-align'), 'align');
+        }.bind(this);
+
+        var distHandler = function (evt) {
+            this._executeAction($(evt.target).attr('data-dist'), 'dist')
         }.bind(this);
 
         this._panel.find('button[data-align]').each(function (index, element) {
             $(element).on('click', alignHandler);
-        })
+        });
+
+        this._panel.find('button[data-dist]').each(function (index, element) {
+            $(element).on('click', distHandler);
+        });
+
+        this._panel.find('input[data-dist]').each(function (index, element) {
+            $(element).on('keyup', function (evt) {
+                if (evt.keyCode === 13) {
+                    distHandler.call(this, evt);
+                }
+            });
+        });
     };
 
     /** @override */
@@ -238,16 +282,19 @@
             this._panel.find('select[data-option="align-to"]').val(this._savedAlignTo)
         }
 
-        this._updateControls();
+        this._updateStates();
 
         return true;
     };
 
     /**
-     * @param {GAlignAction.Type} type
+     * Returns the action args
+     * @param {GAlignAction.Type|GDistributeAction.Type} type
+     * @param {String} mode - 'align', 'dist'
+     * @return {{actionId: String, actionParams: Array<*>}}
      * @private
      */
-    GAlignTransformer.prototype._align = function (type) {
+    GAlignTransformer.prototype._getActionArgs = function (type, mode) {
         // Gather our reference box depending on the selection, first
         var referenceBox = null;
         var elements = this._elements.slice();
@@ -282,20 +329,65 @@
 
         if (elements.length > 0) {
             var geometry = this._panel.find('select[data-option="align-on"]').val() === GAlignTransformer._AlignOn.Geometry;
-            var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._controls.find('button[data-apply="selection"]').hasClass('g-active') : false;
 
-            // Execute align action now
-            gApp.executeAction(GAlignAction.ID + '.' + type, [elements, compound, geometry, referenceBox]);
+            if (mode === 'align') {
+                var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._controls.find('button[data-apply="selection"]').hasClass('g-active') : false;
+                return {
+                    actionId: GAlignAction.ID + '.' + type,
+                    actionParams: [elements, compound, geometry, referenceBox]
+                };
+            } else if (mode === 'dist') {
+                var spacing = scene.stringToPoint(this._panel.find('input[data-dist="' + type + '"]').val()) || 0;
+                return {
+                    actionId: GDistributeAction.ID + '.' + type,
+                    actionParams: [elements, geometry, referenceBox, spacing]
+                };
+            } else {
+                throw new Error('Unknown align mode: ' + mode);
+            }
         }
     };
 
+    /**
+     * see _getActionArgs
+     * @private
+     */
+    GAlignTransformer.prototype._executeAction = function (type, mode) {
+        var actionArgs = this._getActionArgs(type, mode);
+        if (actionArgs) {
+            gApp.executeAction(actionArgs.actionId, actionArgs.actionParams);
+        }
+    };
+
+    /**
+     * see _getActionArgs
+     * @private
+     */
+    GAlignTransformer.prototype._isActionEnabled = function (type, mode) {
+        var actionArgs = this._getActionArgs(type, mode);
+        if (actionArgs) {
+            return gApp.canExecuteAction(actionArgs.actionId, actionArgs.actionParams);
+        }
+        return false;
+    };
+
     /** @private */
-    GAlignTransformer.prototype._updateControls = function () {
+    GAlignTransformer.prototype._updateStates = function () {
         var alignTo = this._panel.find('select[data-option="align-to"]').val();
         var compoundCtrlsVisible = alignTo !== GAlignTransformer._AlignTo.Selection && this._elements.length > 1;
 
         this._controls.find('button[data-apply="selection"]').css('display', compoundCtrlsVisible ? '' : 'none');
         this._controls.find('button[data-apply="objects"]').css('display', compoundCtrlsVisible ? '' : 'none');
+
+        this._panel.find('[data-align]').each(function (index, element) {
+            var $element = $(element);
+            $element.prop('disabled', !this._isActionEnabled($element.attr('data-align'), 'align'));
+        }.bind(this));
+
+        this._panel.find('[data-dist]').each(function (index, element) {
+            var $element = $(element);
+            $element.prop('disabled', !this._isActionEnabled($element.attr('data-dist'), 'dist'));
+        }.bind(this));
     };
 
     /** @override */

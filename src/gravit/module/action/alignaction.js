@@ -20,8 +20,8 @@
         AlignTop: 'align-top',
         AlignMiddle: 'align-middle',
         AlignBottom: 'align-bottom',
-        DistributeHorizontal: 'distribute-horizontal',
-        DistributeVertical: 'distribute-vertical'
+        AlignJustifyHorizontal: 'align-justify-horizontal',
+        AlignJustifyVertical: 'align-justify-vertical'
     };
 
     GAlignAction.ID = 'arrange.align';
@@ -63,16 +63,14 @@
             case GAlignAction.Type.AlignLeft:
             case GAlignAction.Type.AlignCenter:
             case GAlignAction.Type.AlignRight:
+            case GAlignAction.Type.AlignJustifyHorizontal:
                 result = 'horizontal';
                 break;
             case GAlignAction.Type.AlignTop:
             case GAlignAction.Type.AlignMiddle:
             case GAlignAction.Type.AlignBottom:
+            case GAlignAction.Type.AlignJustifyVertical:
                 result = 'vertical';
-                break;
-            case GAlignAction.Type.DistributeHorizontal:
-            case GAlignAction.Type.DistributeVertical:
-                result = 'distribute';
                 break;
         }
 
@@ -161,93 +159,72 @@
         }
 
         IFEditor.tryRunTransaction(scene, function () {
-            if (this._type === GAlignAction.Type.DistributeHorizontal ||
-                this._type === GAlignAction.Type.DistributeVertical) {
+            for (var i = 0; i < elements.length; ++i) {
+                var bbox = compound ? elementsBBox : elements[i].bbox;
+                var element = elements[i].element;
 
-                var elementsWidth = 0;
-                var elementsHeight = 0;
+                switch (this._type) {
+                    case GAlignAction.Type.AlignLeft:
+                        if (referenceBox.getX() !== bbox.getX()) {
+                            element.transform(new IFTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
+                        }
+                        break;
 
-                for (var i = 0; i < elements.length; ++i) {
-                    var bbox = elements[i].bbox;
+                    case GAlignAction.Type.AlignCenter:
+                        var center = referenceBox.getX() + referenceBox.getWidth() / 2;
+                        if (center !== bbox.getX() + bbox.getWidth() / 2) {
+                            element.transform(new IFTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
+                        }
+                        break;
 
-                    elementsWidth += bbox.getWidth();
-                    elementsHeight += bbox.getHeight();
-                }
+                    case GAlignAction.Type.AlignRight:
+                        var right = referenceBox.getX() + referenceBox.getWidth();
+                        if (right !== bbox.getX() + bbox.getWidth()) {
+                            element.transform(new IFTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
+                        }
+                        break;
 
-                var spacingX = (referenceBox.getWidth() - elementsWidth) / (elements.length - 1);
-                var spacingY = (referenceBox.getHeight() - elementsHeight) / (elements.length - 1);
+                    case GAlignAction.Type.AlignTop:
+                        if (referenceBox.getY() !== bbox.getY()) {
+                            element.transform(new IFTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
+                        }
+                        break;
 
-                var xPosition = referenceBox.getX();
-                var yPosition = referenceBox.getY();
+                    case GAlignAction.Type.AlignMiddle:
+                        var center = referenceBox.getY() + referenceBox.getHeight() / 2;
+                        if (center !== bbox.getY() + bbox.getHeight() / 2) {
+                            element.transform(new IFTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
+                        }
+                        break;
 
-                for (var i = 0; i < elements.length; ++i) {
-                    var bbox = elements[i].bbox;
-                    var element = elements[i].element;
+                    case GAlignAction.Type.AlignBottom:
+                        var bottom = referenceBox.getY() + referenceBox.getHeight();
+                        if (bottom !== bbox.getY() + bbox.getHeight()) {
+                            element.transform(new IFTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
+                        }
+                        break;
 
-                    switch (this._type) {
-                        case GAlignAction.Type.DistributeHorizontal:
-                            if (xPosition !== bbox.getX()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, xPosition - bbox.getX(), 0));
-                            }
-                            break;
+                    case GAlignAction.Type.AlignJustifyHorizontal:
+                        if (referenceBox.getX() !== bbox.getX() || bbox.getWidth() !== referenceBox) {
+                            element.transform(
+                                new IFTransform(1, 0, 0, 1, 0, 0)
+                                    .translated(-bbox.getX(), -bbox.getY())
+                                    .scaled(referenceBox.getWidth() / bbox.getWidth(), 1)
+                                    .translated(bbox.getX(), bbox.getY())
+                                    .translated(referenceBox.getX() - bbox.getX(), 0));
+                        }
+                        break;
 
-                        case GAlignAction.Type.DistributeVertical:
-                            if (yPosition !== bbox.getY()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, yPosition - bbox.getY()));
-                            }
-                            break;
-                    }
-
-                    xPosition += bbox.getWidth() + spacingX;
-                    yPosition += bbox.getHeight() + spacingY;
-                }
-
-            } else {
-                for (var i = 0; i < elements.length; ++i) {
-                    var bbox = compound ? elementsBBox : elements[i].bbox;
-                    var element = elements[i].element;
-
-                    switch (this._type) {
-                        case GAlignAction.Type.AlignLeft:
-                            if (referenceBox.getX() !== bbox.getX()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
-                            }
-                            break;
-
-                        case GAlignAction.Type.AlignCenter:
-                            var center = referenceBox.getX() + referenceBox.getWidth() / 2;
-                            if (center !== bbox.getX() + bbox.getWidth() / 2) {
-                                element.transform(new IFTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
-                            }
-                            break;
-
-                        case GAlignAction.Type.AlignRight:
-                            var right = referenceBox.getX() + referenceBox.getWidth();
-                            if (right !== bbox.getX() + bbox.getWidth()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
-                            }
-                            break;
-
-                        case GAlignAction.Type.AlignTop:
-                            if (referenceBox.getY() !== bbox.getY()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
-                            }
-                            break;
-
-                        case GAlignAction.Type.AlignMiddle:
-                            var center = referenceBox.getY() + referenceBox.getHeight() / 2;
-                            if (center !== bbox.getY() + bbox.getHeight() / 2) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
-                            }
-                            break;
-
-                        case GAlignAction.Type.AlignBottom:
-                            var bottom = referenceBox.getY() + referenceBox.getHeight();
-                            if (bottom !== bbox.getY() + bbox.getHeight()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
-                            }
-                            break;
-                    }
+                    case GAlignAction.Type.AlignJustifyVertical:
+                        if (referenceBox.getY() !== bbox.getY() || bbox.getHeight() !== referenceBox) {
+                            element.transform(
+                                new IFTransform(1, 0, 0, 1, 0, 0)
+                                    .translated(-bbox.getX(), -bbox.getY())
+                                    .scaled(1, referenceBox.getHeight() / bbox.getHeight())
+                                    .translated(bbox.getX(), bbox.getY())
+                                    .translated(0, referenceBox.getY() - bbox.getY()));
+                        }
+                        break;
                 }
             }
         }.bind(this), ifLocale.get(this.getTitle()));

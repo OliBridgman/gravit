@@ -530,6 +530,22 @@
     };
 
     /**
+     * Checks whether a given action can be executed or not
+     * @param {String} id id of the action to check
+     * @param {*} [args] optional args to be supplied to the action
+     * @return {Boolean}
+     */
+    GApplication.prototype.canExecuteAction = function (id, args) {
+        var actionInstance = this.getAction(id);
+
+        if (actionInstance) {
+            return actionInstance.isAvailable() && actionInstance.isEnabled.apply(actionInstance, args);
+        }
+
+        return false;
+    };
+
+    /**
      * Execute a given action
      * @param {String} id id of the action to execute
      * @param {*} [args] optional args to be supplied to the action

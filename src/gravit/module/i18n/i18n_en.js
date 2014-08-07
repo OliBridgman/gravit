@@ -1,7 +1,7 @@
 // Action
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
-ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.align-left", "title.align-center", "title.align-right", "title.align-top", "title.align-middle", "title.align-bottom", "title.distribute-horizontal", "title.distribute-vertical"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom", "Distribute Horizontally", "Distribute Vertically"]);
+ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.align-left", "title.align-center", "title.align-right", "title.align-top", "title.align-middle", "title.align-bottom", "title.align-justify-horizontal", "title.align-justify-vertical"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom", "Justify Horizontal", "Justify Vertical"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
@@ -11,6 +11,7 @@ ifLocale.setValues(GCutAction, IFLocale.Language.English, ["title"], ["Cut"]);
 ifLocale.setValues(GDeleteAction, IFLocale.Language.English, ["title"], ["Delete"]);
 ifLocale.setValues(GDeleteLayerAction, IFLocale.Language.English, ["title"], ["Delete Layer"]);
 ifLocale.setValues(GDeletePageAction, IFLocale.Language.English, ["title"], ["Delete Page"]);
+ifLocale.setValues(GDistributeAction, IFLocale.Language.English, ["title.horizontal", "title.vertical"], ["Distribute Horizontally", "Distribute Vertically"]);
 ifLocale.setValues(GDuplicateAction, IFLocale.Language.English, ["title"], ["Duplicate"]);
 ifLocale.setValues(GExportAction, IFLocale.Language.English, ["title"], ["%name%..."]);
 ifLocale.setValues(GFitAllAction, IFLocale.Language.English, ["title"], ["Fit All"]);

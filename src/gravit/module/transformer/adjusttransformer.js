@@ -96,7 +96,7 @@
             // TODO : I18N
             .css('margin-left', '7px')
             // TODO : I18N
-            .text('APPLY')
+            .text('Apply')
             .on('click', this._apply.bind(this))
             .appendTo(controls);
 
