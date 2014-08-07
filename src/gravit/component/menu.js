@@ -360,8 +360,8 @@
             newItem.addEventListener(GMenuItem.EnterEvent, enter);
         }
 
-        if (enter) {
-            newItem.addEventListener(GMenuItem.LeaveEvent, enter);
+        if (leave) {
+            newItem.addEventListener(GMenuItem.LeaveEvent, leave);
         }
 
         this.insertItem(index, newItem);
