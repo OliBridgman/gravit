@@ -86,7 +86,12 @@
     IFPage.prototype.store = function (blob) {
         if (IFBlock.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFPage.GeometryProperties);
-            this.storeProperties(blob, IFPage.VisualProperties);
+            this.storeProperties(blob, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return value.asString();
+                }
+                return value;
+            });
 
             // Store activeness flag which is special to pages and layers
             if (this.hasFlag(IFNode.Flag.Active)) {
@@ -102,7 +107,12 @@
     IFPage.prototype.restore = function (blob) {
         if (IFBlock.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFPage.GeometryProperties);
-            this.restoreProperties(blob, IFPage.VisualProperties);
+            this.restoreProperties(blob, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return IFColor.parseColor(value);
+                }
+                return value;
+            });
 
             // Restore activeness flag which is special to pages and layers
             if (blob.__active) {
