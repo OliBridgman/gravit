@@ -528,12 +528,14 @@
         evt.stopPropagation();
         evt.preventDefault();
 
-        // Simulate a virtual 'mouse-out', first as that'll never occurr
-        // otherwise as we're removing the menu from the DOM
-        this._mouseOut(evt);
+        if (!this.isRootMenuBarItem()) {
+            // Simulate a virtual 'mouse-out', first as that'll never occurr
+            // otherwise as we're removing the menu from the DOM
+            this._mouseOut(evt);
 
-        // Reset the active menu closing everything
-        GMenu.setActiveMenu(null);
+            // Reset the active menu closing everything
+            GMenu.setActiveMenu(null);
+        }
 
         if (this._type == GMenuItem.Type.Item) {
             if (this._action && this._action.isAvailable() && this._action.isEnabled()) {
