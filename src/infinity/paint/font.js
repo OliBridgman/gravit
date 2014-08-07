@@ -49,6 +49,27 @@
     };
 
     /**
+     * The category of a font
+     * @enum
+     */
+    IFFont.Category = {
+        Other: 0,
+        Serif: 100,
+        Monospace: 200,
+        Iconic: 300
+    };
+
+    /**
+     * Localized names for IFFont.Category
+     */
+    IFFont.CategoryName = {
+          0: new IFLocale.Key(IFFont, 'category.other'),
+        100: new IFLocale.Key(IFFont, 'category.serif'),
+        200: new IFLocale.Key(IFFont, 'category.monospace'),
+        300: new IFLocale.Key(IFFont, 'category.iconic')
+    };
+
+    /**
      * @type {{}}
      * @private
      */
@@ -60,15 +81,18 @@
      * @param {IFFont.Style} style the style of the type
      * @param {IFFont.Weight} weight the weight of the type
      * @param {String} url the url to load the font-file from
+     * @param {Boolean} [category] the font type category. Needs to be called
+     * on the first typeface added only. Defaults to IFFont.Category.Other
      */
-    IFFont.prototype.addType = function (family, style, weight, url) {
+    IFFont.prototype.addType = function (family, style, weight, url, category) {
         var type = this._types[family];
 
         if (!type) {
             type = {
                 styles: {},
                 weights: {},
-                variants: {}
+                variants: {},
+                category: category || IFFont.Category.Other
             }
 
             this._types[family] = type;
@@ -140,6 +164,19 @@
         var families = Object.keys(this._types);
         families.sort();
         return families;
+    };
+
+    /**
+     * Returns the typeface category for a given family
+     * @param {String} family
+     * @returns {IFFont.Category}
+     */
+    IFFont.prototype.getCategory = function (family) {
+        var type = this._types[family];
+        if (type) {
+            return type.category;
+        }
+        return IFFont.Category.Other;
     };
 
     /**

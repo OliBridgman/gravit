@@ -25,7 +25,7 @@ ifLocale.setValues(IFKey, IFLocale.Language.English, ["key.19", "key.19.short"],
 ifLocale.setValues(IFKey, IFLocale.Language.English, ["key.30", "key.31", "key.32", "key.33", "key.34", "key.35", "key.36", "key.37", "key.38", "key.39", "key.40", "key.41"], ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"]);
 
 // Paint
-ifLocale.setValues(IFFont, IFLocale.Language.English, ["weight.thin", "weight.extra-light", "weight.light", "weight.regular", "weight.medium", "weight.semi-bold", "weight.bold", "weight.extra-bold", "weight.heavy"], ["Thin", "Extra-Light", "Light", "Regular", "Medium", "Semi-Bold", "Bold", "Extra-Bold", "Heavy"]);
+ifLocale.setValues(IFFont, IFLocale.Language.English, ["weight.thin", "weight.extra-light", "weight.light", "weight.regular", "weight.medium", "weight.semi-bold", "weight.bold", "weight.extra-bold", "weight.heavy", "category.other", "category.serif", "category.monospace", "category.iconic"], ["Thin", "Extra-Light", "Light", "Regular", "Medium", "Semi-Bold", "Bold", "Extra-Bold", "Heavy", "Other", "Serif", "Monospace", "Iconic"]);
 
 // Scene
 ifLocale.setValues(IFEllipse, IFLocale.Language.English, ["name"], ["Ellipse"]);

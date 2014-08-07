@@ -101,13 +101,26 @@
                         self._assignProperty(property, val === '' ? null : val);
                     });
 
+                // TODO : Group local & most used fonts first
+                var optGroups = {};
+
                 // Add typefaces
                 var families = ifFont.getFamilies();
                 for (var i = 0; i < families.length; ++i) {
+                    var category = ifFont.getCategory(families[i]);
+                    var optGroup = null;
+                    if (optGroups.hasOwnProperty(category)) {
+                        optGroup = optGroups[category];
+                    } else {
+                        optGroups[category] = optGroup = $('<optgroup></optgroup>')
+                            .attr('label', ifLocale.get(IFFont.CategoryName[category]))
+                            .appendTo(select);
+                    }
+
                     $('<option></option>')
                         .attr('value', families[i])
                         .text(families[i])
-                        .appendTo(select);
+                        .appendTo(optGroup);
                 }
 
                 return select;

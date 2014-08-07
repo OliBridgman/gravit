@@ -105,7 +105,7 @@ $(document).ready(function () {
     //
 
     // Open Sans
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Light, 'font/OpenSans-Light.ttf');
+    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Light, 'font/OpenSans-Light.ttf', IFFont.Category.Serif);
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Light, 'font/OpenSans-LightItalic.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/OpenSans-Regular.ttf');
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Regular, 'font/OpenSans-Italic.ttf');
@@ -117,7 +117,7 @@ $(document).ready(function () {
     ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.ExtraBold, 'font/OpenSans-ExtraBoldItalic.ttf');
 
     // Source Sans Pro
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLight.ttf');
+    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLight.ttf', IFFont.Category.Serif);
     ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLightIt.ttf');
     ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.Light, 'font/SourceSansPro-Light.ttf');
     ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.Light, 'font/SourceSansPro-LightIt.ttf');
@@ -132,13 +132,16 @@ $(document).ready(function () {
 
 
     // Source Code Pro
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceCodePro-ExtraLight.ttf');
+    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceCodePro-ExtraLight.ttf', IFFont.Category.Monospace);
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Light, 'font/SourceCodePro-Light.ttf');
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/SourceCodePro-Regular.ttf');
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Medium, 'font/SourceCodePro-Medium.ttf');
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/SourceCodePro-Semibold.ttf');
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/SourceCodePro-Bold.ttf');
     ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Heavy, 'font/SourceCodePro-Black.ttf');
+
+    // FontAwesome
+    ifFont.addType('FontAwesome', IFFont.Style.Normal, IFFont.Weight.Regular, gShell.isDevelopment() ? '../bower_components/font-awesome/fonts/FontAwesome-webfont.ttf' : 'font/FontAwesome-webfont.ttf', IFFont.Category.Iconic);
 });
 
 $(window).load(function () {
