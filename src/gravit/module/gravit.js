@@ -12,6 +12,11 @@
 
     /** @override */
     GravitModule.prototype.init = function () {
+        // Register default exporters
+        gravit.exporters.push(
+            new GImageExporter()
+        );
+
         // Register default palettes
         gravit.palettes.push(
             new GPropertiesPalette(),
