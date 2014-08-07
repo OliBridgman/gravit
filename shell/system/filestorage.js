@@ -63,7 +63,7 @@
     };
 
     /** @override */
-    GFileStorage.prototype.getMimeTypes = function () {
+    GFileStorage.prototype.getExtensions = function () {
         return null;
     };
 

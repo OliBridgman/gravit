@@ -56,7 +56,7 @@
             // TODO : I18N
             .text('Embed')
             .on('click', function () {
-                image64(this._image.getImage(), function (data) {
+                image2Base64(this._image.getImage(), function (data) {
                     // TODO : I18N
                     IFEditor.tryRunTransaction(this._image, function () {
                         this._image.setProperty('url', data);
@@ -81,20 +81,26 @@
             }.bind(this))
             .appendTo(panel);
 
-        var exportMenu = new GMenu();
-        exportMenu.createAddItem('Test 1', function () {alert('test_1 activate')});
-        exportMenu.createAddItem('Test 2');
-
         $('<button></button>')
-            .attr('data-action', 'export1')
+            .attr('data-action', 'export')
             // TODO : I18N
             .text('Export...')
-            .gMenuButton({
-                menu: exportMenu,
-                defaultAction: function () {
-                    alert('default_action');
+            .on('click', function () {
+                for (var i = 0; i < gravit.storages.length; ++i) {
+                    var storage = gravit.storages[i];
+                    if (storage.isAvailable() && storage.isPrompting() && storage.isSaving()) {
+                        var extensions = storage.getExtensions();
+                        if (!extensions || extensions.isEmpty() || extensions.indexOf('png') >= 0) {
+                            storage.savePrompt(this._document.getUrl(), this._image.getLabel(), ['png'], function (url) {
+                                image2ArrayBuffer(this._image.getImage(), function (buffer) {
+                                    storage.save(url, buffer, true);
+                                });
+                            }.bind(this));
+                            break;
+                        }
+                    }
                 }
-            })
+            }.bind(this))
             .appendTo(panel);
 
         $('<button></button>')
@@ -180,7 +186,7 @@
         // TODO : I18N
         this._panel.find('[data-property="url"]').text(isData ? '<Embedded Image>' : decodeURIComponent(url));
         this._panel.find('button[data-action="embed"]').prop('disabled', !hasImage || isData);
-        this._panel.find('button[data-action="replace"]').prop('disabled', !hasImage || !this._document.isSaveable());
+        this._panel.find('button[data-action="replace"]').prop('disabled', !this._document.isSaveable());
         this._panel.find('button[data-action="export"]').prop('disabled', !hasImage || !this._document.isSaveable());
         this._panel.find('button[data-action="reset-size"]').prop('disabled', !hasImage || (image.naturalWidth === imgBBox.getWidth() && image.naturalHeight === imgBBox.getHeight()));
     };

@@ -195,59 +195,14 @@
         );
 
         // Register default actions
-        gravit.actions = gravit.actions.concat(this._createDefaultActions());
-    };
-
-    /**
-     * @returns {Array<GAction>}
-     * @private
-     */
-    GravitModule.prototype._createDefaultActions = function () {
-        // Collect all storages and create our open
-        // and saveAs actions out of it here
-        var openActions = [];
-        var saveAsActions = [];
-
-        var hasDefaultOpen = false;
-        var hasDefaultSave = false;
-        for (var i = 0; i < gravit.storages.length; ++i) {
-            var storage = gravit.storages[i];
-            if (storage.isAvailable() && storage.isPrompting()) {
-                openActions.push(new GOpenAction(storage, !hasDefaultOpen));
-                hasDefaultOpen = true;
-
-                if (storage.isSaving()) {
-                    saveAsActions.push(new GSaveAsAction(storage, !hasDefaultSave));
-                    hasDefaultSave = true;
-                }
-            }
-        }
-
-        // Collect all import and export filters and add actions for 'em
-        var importActions = [];
-        var exportActions = [];
-
-        for (var i = 0; i < gravit.importers.length; ++i) {
-            importActions.push(new GImportAction(gravit.importers[i]));
-        }
-        for (var i = 0; i < gravit.exporters.length; ++i) {
-            exportActions.push(new GExportAction(gravit.exporters[i]));
-        }
-
-        // TODO : If there's only one storage available,
-        // don't put open/saveAs actions in sub-categories file.open/file.saveAs
-
-        return [].concat(
+        gravit.actions.push(
             // File
             new GNewAction(),
-            openActions,
+            new GOpenAction(),
 
             new GSaveAction(),
-            saveAsActions,
+            new GSaveAsAction(),
             new GSaveAllAction(),
-
-            importActions,
-            exportActions,
 
             new GPlaceImageAction(),
 

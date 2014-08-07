@@ -2,71 +2,81 @@
 
     /**
      * Action saving a document filed under a name
-     * @param {GStorage} storage
-     * @param {Boolean} isDefault whether this is the default storage or not
      * @class GSaveAsAction
      * @extends GAction
      * @constructor
      */
-    function GSaveAsAction(storage, isDefault) {
-        this._storage = storage;
-        this._default = isDefault;
+    function GSaveAsAction() {
     };
     IFObject.inherit(GSaveAsAction, GAction);
 
     GSaveAsAction.ID = 'file.save-as';
     GSaveAsAction.TITLE = new IFLocale.Key(GSaveAsAction, "title");
-    GSaveAsAction.TITLE_DEFAULT = new IFLocale.Key(GSaveAsAction, "title-default");
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getId = function () {
-        return GSaveAsAction.ID + '.' + this._storage.getProtocol();
+        return GSaveAsAction.ID;
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getTitle = function () {
-        return this._default ?
-            ifLocale.get(GSaveAsAction.TITLE_DEFAULT) :
-            ifLocale.get(GSaveAsAction.TITLE).replace('%name%', ifLocale.get(this._storage.getName()));
+        return GSaveAsAction.TITLE;
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getCategory = function () {
-        return this._default ? GApplication.CATEGORY_FILE : GApplication.CATEGORY_FILE_SAVEAS;
+        return GApplication.CATEGORY_FILE;
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getGroup = function () {
-        return this._default ? "file" : "file/saveas_storage";
+        return 'file';
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.getShortcut = function () {
-        return this._default ? [IFKey.Constant.SHIFT, IFKey.Constant.META, 'S'] : null;
+        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'S'];
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.isEnabled = function () {
-        return !!gApp.getActiveDocument();
+        return !!this._getViableStorage();
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.execute = function () {
-        gApp.saveDocumentAs(this._storage);
+        gApp.openDocumentFrom(this._getViableStorage());
+    };
+
+    /**
+     * @returns {GStorage}
+     * @private
+     */
+    GSaveAsAction.prototype._getViableStorage = function () {
+        for (var i = 0; i < gravit.storages.length; ++i) {
+            var storage = gravit.storages[i];
+            if (storage.isAvailable() && storage.isPrompting() && storage.isSaving()) {
+                var extensions = storage.getExtensions();
+                if (!extensions || extensions.isEmpty() || extensions.indexOf('gravit') >= 0) {
+                    return storage;
+                }
+            }
+        }
+        return null;
     };
 
     /** @override */

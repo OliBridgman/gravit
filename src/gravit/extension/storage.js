@@ -2,7 +2,6 @@
     /**
      * The storage base class
      * @constructor
-     * @version 1.0
      */
     function GStorage() {
     };
@@ -40,13 +39,12 @@
     };
 
     /**
-     * Returns an array of supported mime-types or null
-     * if this storage supports any kind of mime-type
-     * @return {Array<String>} list of mime-types supported
-     * or null for all
+     * The extensions this storage  supports like ['pdf', 'ps'].
+     * Return null or empty array to support all.
+     * @return {Array<String>} array of extensions
      */
-    GStorage.prototype.getMimeTypes = function () {
-        throw new Error('Not supported.');
+    GStorage.prototype.getExtensions = function () {
+        throw new Error('Not Supported.');
     };
 
     /**

@@ -43,10 +43,6 @@
 
     // Constants for pre-defined action categories
     GApplication.CATEGORY_FILE = new IFLocale.Key(GApplication, "category.file");
-    GApplication.CATEGORY_FILE_OPEN = new IFLocale.Key(GApplication, "category.file.open");
-    GApplication.CATEGORY_FILE_SAVEAS = new IFLocale.Key(GApplication, "category.file.saveas");
-    GApplication.CATEGORY_FILE_IMPORT = new IFLocale.Key(GApplication, "category.file.import");
-    GApplication.CATEGORY_FILE_EXPORT = new IFLocale.Key(GApplication, "category.file.export");
     GApplication.CATEGORY_EDIT = new IFLocale.Key(GApplication, "category.edit");
     GApplication.CATEGORY_MODIFY = new IFLocale.Key(GApplication, "category.modify");
     GApplication.CATEGORY_MODIFY_ARRANGE = new IFLocale.Key(GApplication, "category.modify.arrange");
@@ -428,6 +424,17 @@
                 }.bind(this));
             }
         }
+    };
+
+    /**
+     * Prompt to open a document
+     * @param {GStorage} storage
+     */
+    GApplication.prototype.openDocumentFrom = function (storage) {
+        var url = gApp.getActiveDocument() ? gApp.getActiveDocument().getUrl() : null;
+        storage.openPrompt(url && url !== '' ? url : null, ['gravit'], function (url) {
+            gApp.openDocument(url);
+        });
     };
 
     /**
