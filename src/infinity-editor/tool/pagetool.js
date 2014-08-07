@@ -13,6 +13,29 @@
     IFObject.inherit(IFPageTool, IFSelectTool);
 
     /** @override */
+    IFPageTool.prototype.activate = function (view) {
+        IFTool.prototype.activate.call(this, view);
+
+        // Store current selection & select active page
+        this._editor.storeSelection();
+
+        var activePage = this._scene.getActivePage();
+        if (activePage) {
+            this._editor.updateSelection(false, [activePage])
+        } else {
+            this._editor.clearSelection();
+        }
+    };
+
+    /** @override */
+    IFPageTool.prototype.deactivate = function (view) {
+        // Restore previous selection
+        this._editor.restoreSelection();
+
+        IFTool.prototype.deactivate.call(this, view);
+    };
+
+    /** @override */
     IFPageTool.prototype._getSelectableElement = function (element) {
         for (var p = element; p !== null; p = p.getParent()) {
             if (p instanceof IFPage) {

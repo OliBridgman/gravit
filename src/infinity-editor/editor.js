@@ -215,6 +215,12 @@
     IFEditor.prototype._lastCloneSelection = null;
 
     /**
+     * @type {Array<*>}
+     * @private
+     */
+    IFEditor.prototype._storedSelection = null;
+
+    /**
      * @type {Array<{{page: IFPage, selection: Array<*>}}>}
      * @private
      */
@@ -560,6 +566,28 @@
             }
         } finally {
             this._finishSelectionUpdate();
+        }
+    };
+
+    /**
+     * Temporarily store the current selection
+     */
+    IFEditor.prototype.storeSelection = function () {
+        if (this._scene.getProperty('singlePage')) {
+            this._savePageSelection(this._scene.getActivePage(), true/*no-overwrite*/);
+        } else {
+            this._storedSelection = this._saveSelection();
+        }
+    };
+
+    /**
+     * Restore a temporarily stored selection
+     */
+    IFEditor.prototype.restoreSelection = function () {
+        if (this._scene.getProperty('singlePage')) {
+            this._restorePageSelection(this._scene.getActivePage());
+        } else {
+            this._loadSelection(this._storedSelection);
         }
     };
 
@@ -1133,7 +1161,7 @@
             var parent = node.getParent();
             var next = node.getNext();
 
-            this._transactionStack[this._transactionStack.length-1].actions.push({
+            this._transactionStack[this._transactionStack.length - 1].actions.push({
                 action: function () {
                     // Simply re-insert the node
                     parent.insertChild(node, next);
@@ -1162,7 +1190,7 @@
             var parent = node.getParent();
             var next = node.getNext();
 
-            this._transactionStack[this._transactionStack.length-1].actions.push({
+            this._transactionStack[this._transactionStack.length - 1].actions.push({
                 action: function () {
                     // Simply remove the node
                     parent.removeChild(node);
@@ -1206,7 +1234,7 @@
                 oldValues.push(node.getProperty(evt.properties[i]));
             }
 
-            this._transactionStack[this._transactionStack.length-1].actions.push({
+            this._transactionStack[this._transactionStack.length - 1].actions.push({
                 isPropertyChangeAction: true,
                 node: node,
                 properties: properties.slice(),
@@ -1274,7 +1302,7 @@
                     if (evt.set) {
                         this._restorePageSelection(evt.node);
                     } else {
-                        this._savePageSelection(evt.node);
+                        this._savePageSelection(evt.node, false, true/*check-overwrite*/);
                     }
                 }
             }
@@ -1456,6 +1484,79 @@
     };
 
     /**
+     * Save the selection for a given page
+     * @param {IFPage} page
+     * @param {Boolean} [noOverwrite] if set, won't overwrite
+     * the saved selection for the page on page change
+     * @param {Boolean} [checkOverwrite] if set, will not store
+     * the page selection if it has the noOverwrite flag set to true
+     * @private
+     */
+    IFEditor.prototype._savePageSelection = function (page, noOverwrite, checkOverwrite) {
+        if (!this._pageSelections) {
+            this._pageSelections = [];
+        }
+
+        // Try to overwrite an existing selection
+        for (var i = 0; i < this._pageSelections.length; ++i) {
+            var sel = this._pageSelections[i];
+            if (sel.page === page) {
+                if (!checkOverwrite || !sel.noOverwrite) {
+                    sel.selection = this._saveSelection();
+                    sel.noOverwrite = noOverwrite;
+                }
+
+                // done here
+                return;
+            }
+        }
+
+        // Create new selection storage for page when coming here
+        this._pageSelections.push({
+            page: page,
+            selection: this._saveSelection()
+        });
+    };
+
+    /**
+     * Restore the selection for a given page
+     * @param {IFPage} page
+     * @private
+     */
+    IFEditor.prototype._restorePageSelection = function (page) {
+        if (this._pageSelections) {
+            for (var i = 0; i < this._pageSelections.length; ++i) {
+                var sel = this._pageSelections[i];
+                if (sel.page === page) {
+                    this._loadSelection(sel.selection);
+                    // done here
+                    return;
+                }
+            }
+        }
+
+        // No selection for page available so clear the current one
+        this.clearSelection();
+    };
+
+    /**
+     * Remove the stored selection for a given page
+     * @param {IFPage} page
+     * @private
+     */
+    IFEditor.prototype._removePageSelection = function (page) {
+        if (this._pageSelections) {
+            for (var i = 0; i < this._pageSelections.length; ++i) {
+                var sel = this._pageSelections[i];
+                if (sel.page === page) {
+                    this._pageSelections.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    };
+
+    /**
      * Saves and returns the current selection
      * @return {Array<{element: IFElement, parts: Array<*>}>}
      * @private
@@ -1507,72 +1608,6 @@
             }
         }
     };
-
-    /**
-     * Save the selection for a given page
-     * @param {IFPage} page
-     * @private
-     */
-    IFEditor.prototype._savePageSelection = function (page) {
-        if (!this._pageSelections) {
-            this._pageSelections = [];
-        }
-
-        // Try to overwrite an existing selection
-        for (var i = 0; i < this._pageSelections.length; ++i) {
-            var sel = this._pageSelections[i];
-            if (sel.page === page) {
-                sel.selection = this._saveSelection();
-                // done here
-                return;
-            }
-        }
-
-        // Create new selection storage for page when coming here
-        this._pageSelections.push({
-            page: page,
-            selection: this._saveSelection()
-        });
-    };
-
-    /**
-     * Restore the selection for a given page
-     * @param {IFPage} page
-     * @private
-     */
-    IFEditor.prototype._restorePageSelection = function (page) {
-        if (this._pageSelections) {
-            for (var i = 0; i < this._pageSelections.length; ++i) {
-                var sel = this._pageSelections[i];
-                if (sel.page === page) {
-                    this._loadSelection(sel.selection);
-                    // done here
-                    return;
-                }
-            }
-        }
-
-        // No selection for page available so clear the current one
-        this.clearSelection();
-    };
-
-    /**
-     * Remove the stored selection for a given page
-     * @param {IFPage} page
-     * @private
-     */
-    IFEditor.prototype._removePageSelection = function (page) {
-        if (this._pageSelections) {
-            for (var i = 0; i < this._pageSelections.length; ++i) {
-                var sel = this._pageSelections[i];
-                if (sel.page === page) {
-                    this._pageSelections.splice(i, 1);
-                    break;
-                }
-            }
-        }
-    };
-
 
     /** @override */
     IFEditor.prototype.toString = function () {
