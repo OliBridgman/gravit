@@ -75,7 +75,13 @@
         /** Whether the grid is active or not */
         gridActive: false,
         /** Whether to use single or multi page mode */
-        singlePage: true
+        singlePage: true,
+        /** Relative path to image assets */
+        pathImage: 'images',
+        /** Relative path to font assets */
+        pathFont: 'fonts',
+        /** Relative path to export assets */
+        pathExport: 'export'
     };
 
     // -----------------------------------------------------------------------------------------------------------------

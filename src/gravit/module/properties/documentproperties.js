@@ -32,6 +32,17 @@
     GDocumentProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
+        $('<button></button>')
+            .addClass('fa fa-cog')
+            // TODO : I18N
+            .attr('title', 'More Settings')
+            .on('click', function (evt) {
+                var $target = $(evt.target);
+                $target.toggleClass('g-active', !$target.hasClass('g-active'));
+                this._showMore($target.hasClass('g-active'));
+            }.bind(this))
+            .appendTo(controls);
+
         var _createInput = function (property) {
             var self = this;
             if (property === 'unit') {
@@ -131,6 +142,14 @@
                             self._updateProperties();
                         }
                     });
+            } else if (property === 'pathImage' || property === 'pathFont' || property === 'pathExport') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .css('width', '100%')
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).val());
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -197,14 +216,57 @@
                     // TODO : I18N
                     .html('<span class="fa fa-arrows"></span> / <span class="fa fa-magnet"></span>'))
                 .append($('<td></td>')
-                    .attr('colspan', '4')
+                    .attr('colspan', '3')
                     .append(_createInput('pickDist')
                         // TODO : I18N
                         .attr('title', 'Pick Distance in Pixels'))
                     .append(_createInput('snapDist')
                         // TODO : I18N
                         .attr('title', 'Snap Distance'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append($('<h1></h1>')
+                        .addClass('g-divider')
+                        // TODO : I18N
+                        .text('Pathes'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Images'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('pathImage')
+                        // TODO : I18N
+                        .attr('title', 'Path for imported image assets'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Fonts'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('pathFont')
+                        // TODO : I18N
+                        .attr('title', 'Path for imported font assets'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Export'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('pathExport')
+                        // TODO : I18N
+                        .attr('title', 'Path for exported assets'))))
             .appendTo(panel);
+
+        this._showMore(false);
     };
 
     /** @override */
@@ -250,6 +312,9 @@
             ifUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
+        this._panel.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
+        this._panel.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
+        this._panel.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));
     };
 
     /**
@@ -275,6 +340,13 @@
             // TODO : I18N
             editor.commitTransaction('Modify Document Properties');
         }
+    };
+
+    /** @private */
+    GDocumentProperties.prototype._showMore = function (more) {
+        this._panel.find('[data-more]').each(function (index, element) {
+            $(element).css('display', more ? '' : 'none');
+        });
     };
 
     /** @override */
