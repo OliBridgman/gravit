@@ -138,7 +138,7 @@
     };
 
     /** @override */
-    GStorage.prototype.releaseUrl = function (url) {
+    GFileStorage.prototype.releaseUrl = function (url) {
         if (this._urlEntryMap.hasOwnProperty(url)) {
             if (--this._urlEntryMap[url].usage === 0) {
                 delete this._urlEntryMap[url];
@@ -147,7 +147,7 @@
     };
 
     /** @override */
-    GStorage.prototype.resolveUrl = function (url, resolved) {
+    GFileStorage.prototype.resolveUrl = function (url, resolved) {
         // Our file:/// protocol is understandable by the browser
         // so just use the source url
         resolved(url);

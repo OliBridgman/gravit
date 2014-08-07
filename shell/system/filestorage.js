@@ -143,7 +143,7 @@
     };
 
     /** @override */
-    GStorage.prototype.resolveUrl = function (url, resolved) {
+    GFileStorage.prototype.resolveUrl = function (url, resolved) {
         // Our file:/// protocol is understandable by the browser
         // so just use the source url
         resolved(url);
