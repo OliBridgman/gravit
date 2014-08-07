@@ -5,7 +5,8 @@
     @include box-sizing(border-box);
     display: table;
     width: 100%;
-    padding: 4px 5px;
+    padding: 0px 5px;
+    height: 25px;
     background: $frameBorderColor;
     margin-bottom: 1px;
 
