@@ -638,6 +638,7 @@
                 }
             }
         }
+        $this.find('.color-mode-select').val(data.colorMode ? data.colorMode.type.key : IFColor.Type.RGB.key);
     }
 
     function updateFromComponents($this) {
@@ -735,7 +736,6 @@
             data.previousColor = value;
         }
 
-        $this.find('.color-mode-select').val(value ? value.getType().key : IFColor.Type.RGB.key);
         $this.find('input[type="color"]').val(value ? value.asHTMLHexString() : '');
         $this.find('.previous-color').css('background', IFPattern.asCSSBackground(data.previousColor));
         $this.find('.current-color').css('background', IFPattern.asCSSBackground(data.color));
@@ -1044,6 +1044,7 @@
                 if (oldScene) {
                     swatchView.gSwatchPanel('detach');
                 }
+
                 if (data.scene) {
                     swatchView.gSwatchPanel('attach', data.scene.getSwatchCollection());
                 }
@@ -1060,7 +1061,21 @@
             if (!arguments.length) {
                 return $this.data('gcolorpanel').color;
             } else {
+                var data = $this.data('gcolorpanel');
                 assignValue($this, value, true);
+
+                if (data.scene && (!data.color || data.color.getType() === IFColor.Type.Black || data.color.getType() === IFColor.Type.White || data.color.getType() === IFColor.Type.Registration)) {
+                    var clspace = data.scene.getProperty('clspace');
+                    if (clspace) {
+                        for (var i = 0; i < ColorModes.length; ++i) {
+                            if (ColorModes[i].type.space === clspace) {
+                                activateColorMode($this, ColorModes[i].type.key);
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 return this;
             }
         }

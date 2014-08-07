@@ -207,7 +207,7 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.initialSetup = function (fillColor, strokeColor) {
+    IFTextEditor.prototype.initialSetup = function () {
         // Add a default style with a default fill
         var style = new IFInlineStyle();
         style.appendChild(new IFFillPaint());

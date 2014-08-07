@@ -142,6 +142,18 @@
                             self._updateProperties();
                         }
                     });
+            } else if (property === 'clspace') {
+                return $('<select></select>')
+                    .attr('data-property', property)
+                    .append($('<option></option>')
+                        .attr('value', IFColorSpace.RGB)
+                        .text('RGB'))
+                    .append($('<option></option>')
+                        .attr('value', IFColorSpace.CMYK)
+                        .text('CMYK'))
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).val());
+                    });
             } else if (property === 'pathImage' || property === 'pathFont' || property === 'pathExport') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -189,7 +201,7 @@
                     .append($('<h1></h1>')
                         .addClass('g-divider')
                         // TODO : I18N
-                        .text('Cursor & Distances'))))
+                        .text('Defaults'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -223,6 +235,25 @@
                     .append(_createInput('snapDist')
                         // TODO : I18N
                         .attr('title', 'Snap Distance'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append($('<h1></h1>')
+                        .addClass('g-divider')
+                        // TODO : I18N
+                        .text('Color'))))
+            .append($('<tr></tr>')
+                .attr('data-more', 'yes')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Color:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('clspace')
+                        // TODO : I18N
+                        .attr('title', 'Default Colorspace of document'))))
             .append($('<tr></tr>')
                 .attr('data-more', 'yes')
                 .append($('<td></td>')
@@ -312,6 +343,7 @@
             ifUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
+        this._panel.find('select[data-property="clspace"]').val(scene.getProperty('clspace'));
         this._panel.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
         this._panel.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
         this._panel.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));

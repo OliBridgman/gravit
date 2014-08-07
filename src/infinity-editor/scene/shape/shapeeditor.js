@@ -34,14 +34,9 @@
 
     /** @override */
     IFShapeEditor.prototype.initialSetup = function () {
-        // Add a default style with a default stroke & fill
+        // Add a default style with a default fill
         var style = new IFInlineStyle();
-        var stroke = new IFStrokePaint();
-        var fill = new IFFillPaint();
-        stroke.setProperty('pat', IFColor.parseCSSColor('gray'));
-        fill.setProperty('pat', IFColor.parseCSSColor('silver'));
-        style.appendChild(fill);
-        style.appendChild(stroke);
+        style.appendChild(new IFStrokePaint());
         this.getElement().getStyleSet().appendChild(style);
     };
 

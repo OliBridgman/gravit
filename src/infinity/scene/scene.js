@@ -55,6 +55,8 @@
     IFScene.MetaProperties = {
         /** Version of the scene */
         version: IFScene.VERSION,
+        /** The default color space */
+        clspace: IFColorSpace.RGB,
         /** The unit used externally */
         unit: IFLength.Unit.PT,
         /** The unit snap-mode (IFScene.UnitSnap) */
