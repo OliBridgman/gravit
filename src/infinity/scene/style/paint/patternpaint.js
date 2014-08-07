@@ -60,6 +60,7 @@
                         return IFPattern.parsePattern(value);
                     }
                 }
+                return value;
             });
             return true;
         }
