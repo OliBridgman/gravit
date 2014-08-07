@@ -1041,6 +1041,14 @@
     };
 
     /**
+     * Checks and returns if there's an active inline editing editor or not
+     * @returns {boolean}
+     */
+    IFEditor.prototype.isInlineEditing = function () {
+        return !!this._currentInlineEditorNode;
+    };
+
+    /**
      * Called to open an inline editor for a given node and view
      * @param {IFNode} node
      * @param {IFEditorView} view

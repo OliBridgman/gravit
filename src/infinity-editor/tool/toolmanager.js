@@ -305,6 +305,11 @@
      * @private
      */
     IFToolManager.prototype._updateTemporaryTool = function () {
+        // Don't allow temporary tool switching when our editor is in inline editor mode
+        if (this._view.getEditor().isInlineEditing()) {
+            return;
+        }
+
         var pointerToolInstance = this.getTool(this.indexOf(IFPointerTool));
         var subselectToolInstance = this.getTool(this.indexOf(IFSubSelectTool));
         var handToolInstance = this.getTool(this.indexOf(IFHandTool));
