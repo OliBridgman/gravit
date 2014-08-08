@@ -145,7 +145,7 @@
             var editor = this._document.getEditor();
 
             // Unsubscribe from the editor's events
-            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
             scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
             this._document = null;
