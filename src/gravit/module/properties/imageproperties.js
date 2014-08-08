@@ -43,7 +43,6 @@
             .append($('<span></span>')
                 .addClass('fa fa-image'))
             .append($('<span></span>')
-                .css('margin-left', '5px')
                 .css('text-overflow', 'ellipsis')
                 .attr('data-property', 'url'))
             .appendTo(panel);

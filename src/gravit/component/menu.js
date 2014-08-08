@@ -328,6 +328,25 @@
     };
 
     /**
+     * Creates and appends a divider and returns it
+     * @returns {GMenuItem}
+     */
+    GMenu.prototype.createAddDivider = function () {
+        return this.createInsertDivider(this.getItemCount());
+    };
+
+    /**
+     * Creates and inserts a divider and returns it
+     * @param index
+     * @returns {GMenuItem}
+     */
+    GMenu.prototype.createInsertDivider = function (index) {
+        var newItem = new GMenuItem(GMenuItem.Type.Divider);
+        this.insertItem(index, newItem);
+        return newItem;
+    };
+
+    /**
      * Creates and appends a menu item and returns it
      * @param caption
      * @param activate

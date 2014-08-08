@@ -8,13 +8,18 @@ button, .g-button, input, textArea, select, .g-input {
   @include box-sizing(border-box);
   margin: 0px;
   padding: 3px;
-  line-height: 1em;
+  line-height: 22px;
   vertical-align: middle;
   background: $frameColor;
   color: $textColor;
+  height: 22px;
 
   &:not(:last-child) {
     margin-right: 3px;
+  }
+
+  &, * {
+    line-height: 14px !important;
   }
 }
 
@@ -55,6 +60,10 @@ button, .g-button {
       fill: $disabledTextColor !important;
       stroke: $disabledTextColor !important;
     }
+  }
+
+  span:not(:last-child) {
+    padding-right: 5px;
   }
 }
 

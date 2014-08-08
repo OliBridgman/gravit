@@ -3,7 +3,7 @@
 #palettes {
   position: absolute;
   right: 0px;
-  width: 250px;
+  width: 260px;
   background: $frameColor;
   border-left: 1px solid $frameBorderColor;
 
@@ -48,7 +48,7 @@
         width: 100%;
 
         > button {
-          margin-right: 3px;
+          padding-right: 5px;
           border-left: 1px solid $frameBorderColor;
           padding-left: 5px;
           font-weight: 600;

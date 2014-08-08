@@ -106,7 +106,6 @@
 
         this._pageDeleteControl =
             $('<button></button>')
-                .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Page')
                 .on('click', function () {
@@ -169,7 +168,6 @@
 
         this._layerDeleteControl =
             $('<button></button>')
-                .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Layer')
                 .on('click', function () {

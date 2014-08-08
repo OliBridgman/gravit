@@ -215,7 +215,6 @@
                                 .append($('<span></span>')
                                     .addClass('fa fa-external-link-square')))
                             .append($('<button></button>')
-                                .css('margin-left', '5px')
                                 .append($('<span></span>')
                                     .addClass('fa fa-trash-o'))))
                         .appendTo(exportTable);
@@ -225,14 +224,10 @@
                     .addClass('controls')
                     .append($('<button></button>')
                         .append($('<span></span>')
-                            .addClass('fa fa-ellipsis-h'))
-                        .append($('<span></span>')
-                            .text('Export As')))
+                            .text('Export All')))
                     .append($('<button></button>')
                         .append($('<span></span>')
-                            .addClass('fa fa-external-link-square'))
-                        .append($('<span></span>')
-                            .text('Export')))
+                            .text('Export All as...')))
                     .appendTo(this._htmlElement);
             }
         }

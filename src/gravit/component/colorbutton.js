@@ -68,7 +68,7 @@
                     $this
                         .addClass('g-cursor-pipette')
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-ban')
+                            .addClass('fa fa-ban')
                             .css('visibility', 'hidden'));
                 }
 

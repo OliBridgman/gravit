@@ -9,12 +9,22 @@
 
   .style-settings {
     width: 100%;
-    margin: 5px 0px;
+    padding: 5px 0px;
 
-    td {
-      &:first-child {
+    > div {
+      display: table-cell;
+      vertical-align: middle;
+
+      &.visibility {
         padding-left: 5px;
+        padding-right: 7px;
+        text-align: center;
+
+        > span {
+          cursor: pointer;
+        }
       }
+
       &:last-child {
         padding-right: 5px;
       }

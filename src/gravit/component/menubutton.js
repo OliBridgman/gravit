@@ -20,14 +20,16 @@
                 // A default action to be fired. If this is provided,
                 // the menu will be shown with some delay, otherwise the
                 // defaultAction gets fired
-                defaultAction: null
+                defaultAction: null,
+                // Whether to show a dropdown arrow indicator or not
+                arrow: true
             }, options);
 
             return this.each(function () {
                 var self = this;
                 var timeout = null;
 
-                $(this)
+                var $this = $(this)
                     .data('gmenubutton', {
                         options: options
                     })
@@ -52,10 +54,14 @@
                         if (!options.menu.isOpen() && options.defaultAction) {
                             options.defaultAction();
                         }
-                    })
-                    .append($('<span></span>')
-                        .addClass('fa fa-caret-down')
-                        .css(options.defaultAction ? DEF_ACTION_CARET_CSS : NO_DEF_ACTION_CARET_CSS));
+                    });
+
+                if (options.arrow) {
+                    $this
+                        .append($('<span></span>')
+                            .addClass('fa fa-caret-down')
+                            .css(options.defaultAction ? DEF_ACTION_CARET_CSS : NO_DEF_ACTION_CARET_CSS));
+                }
             });
         },
 

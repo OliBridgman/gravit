@@ -36,7 +36,7 @@
             // TODO : I18N
             .attr('title', 'More Settings')
             .on('click', function (evt) {
-                var $target = $(evt.target);
+                var $target = $(evt.target).closest('button');
                 $target.toggleClass('g-active', !$target.hasClass('g-active'));
                 this._showMore($target.hasClass('g-active'));
             }.bind(this))

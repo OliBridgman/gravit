@@ -129,6 +129,7 @@
                 .css('width', '100%')
                 .css('text-align', 'right')
                 .append($('<button></button>')
+                    .css('margin-right', '0px')
                     .attr('data-element', 'more')
                     .on('click', function (evt) {
                         var $this = $(this);

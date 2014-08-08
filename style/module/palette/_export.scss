@@ -4,7 +4,8 @@
   padding: 5px;
 
   > .title {
-    padding-bottom: 3px;
+    padding-bottom: 5px;
+    text-align: center;
   }
 
   > .export-table {
@@ -24,5 +25,10 @@
         }
       }
     }
+  }
+
+  > .controls {
+    padding-top: 5px;
+    text-align: right;
   }
 }

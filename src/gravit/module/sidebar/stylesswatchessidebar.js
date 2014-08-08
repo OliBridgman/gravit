@@ -113,7 +113,7 @@
                 }
             }.bind(this))
             .append($('<span></span>')
-                .addClass('fa fa-fw fa-trash-o'));
+                .addClass('fa fa-trash-o'));
 
         this._updateStyleControls();
         this._updateSwatchControls();

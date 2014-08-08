@@ -38,18 +38,6 @@
      * @type {JQuery}
      * @private
      */
-    GStylePalette.prototype._styleVisibilityToggleControl = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GStylePalette.prototype._styleLinkToggleControl = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
     GStylePalette.prototype._styleDeleteControl = null;
 
     /**
@@ -195,27 +183,7 @@
                 .addClass('fa fa-plus'))
             .appendTo(controls);
 
-        this._styleVisibilityToggleControl = $('<button></button>')
-            .on('click', function (evt) {
-                var makeVisible = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
-                this._modifyEachSelectedStyle(function (style) {
-                    style.setProperty('vs', makeVisible);
-                });
-            }.bind(this))
-            .append($('<span></span>')
-                .addClass('fa'))
-            .appendTo(controls);
-
-        this._styleLinkToggleControl = $('<button></button>')
-            .on('click', function () {
-                this._toggleStyleLink();
-            }.bind(this))
-            .append($('<span></span>')
-                .addClass('fa'))
-            .appendTo(controls);
-
         this._styleDeleteControl = $('<button></button>')
-            .css('margin-left', '5px')
             // TODO : I18N
             .attr('title', 'Remove hidden styles')
             .on('click', function () {
@@ -240,12 +208,56 @@
                 .addClass('fa fa-trash-o'))
             .appendTo(controls);
 
-        // Initialize all style entry handlers
+        var filterEntries = [];
+        var effectEntries = [];
+
+        // Initialize all style entry handlers and create menus for them
         for (var i = 0; i < gravit.styleEntries.length; ++i) {
             var styleEntry = gravit.styleEntries[i];
             var entryClass = styleEntry.getEntryClass();
             this._styleEntries[IFObject.getTypeId(entryClass)] = styleEntry;
+
+            if (IFFilterEntry.prototype.isPrototypeOf(styleEntry.getEntryClass().prototype)) {
+                filterEntries.push({
+                    entry: styleEntry,
+                    name: ifLocale.get(styleEntry.getEntryName())
+                });
+            } else if (IFEffectEntry.prototype.isPrototypeOf(styleEntry.getEntryClass().prototype)) {
+                effectEntries.push({
+                    entry: styleEntry,
+                    name: ifLocale.get(styleEntry.getEntryName()),
+                    rootClass: IFEffectEntry
+                });
+            } else if (IFVEffectEntry.prototype.isPrototypeOf(styleEntry.getEntryClass().prototype)) {
+                effectEntries.push({
+                    entry: styleEntry,
+                    name: ifLocale.get(styleEntry.getEntryName()),
+                    rootClass: IFVEffectEntry
+                });
+            }
         }
+
+        // Order filters by name, effects by type and name
+        filterEntries.sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+        });
+        effectEntries.sort(function (a, b) {
+            if (a.rootClass === b.rootClass) {
+                return a.name.localeCompare(b.name);
+            } else {
+                return a.rootClass === IFVEffectEntry ? -1 : 1;
+            }
+        });
+
+        // Handler for adding a new style entry menu item
+        var _addStyleEntryMenu = function (styleEntryClass, name, menu) {
+            // TODO : I18N
+            menu.createAddItem('Add ' + name, function () {
+                this._modifyEachSelectedStyle(function (style) {
+                    style.getActualStyle().appendChild(new styleEntryClass());
+                });
+            }.bind(this));
+        }.bind(this);
 
         // Add style selector
         this._styleSelector = $('<div></div>')
@@ -297,63 +309,80 @@
             .appendTo(this._htmlElement);
 
         // Style settings
-        this._styleSettings = $('<table></table>')
-            .addClass('g-form style-settings')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', '2')
-                    .append($('<select></select>')
-                        .attr('data-property', 'blm')
-                        .gBlendMode()
-                        .on('change', function (evt) {
-                            var val = $(evt.target).val();
+        this._styleSettings = $('<div></div>')
+            .addClass('style-settings')
+            .append($('<div></div>')
+                .addClass('visibility')
+                .append($('<span></span>')
+                    .addClass('fa')
+                    // TODO : I18N
+                    .attr('title', 'Toggle Style Visibility')
+                    .on('click', function () {
+                        var makeVisible = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
+                        this._modifyEachSelectedStyle(function (style) {
+                            style.setProperty('vs', makeVisible);
+                        });
+                    }.bind(this))))
+            .append($('<div></div>')
+                .css('width', '100%')
+                .append($('<select></select>')
+                    .attr('data-property', 'blm')
+                    .gBlendMode()
+                    .on('change', function (evt) {
+                        var val = $(evt.target).val();
+                        this._modifyEachSelectedStyle(function (style) {
+                            style.setProperty('blm', val);
+                        });
+                    }.bind(this)))
+                .append($('<input>')
+                    .attr('data-property', 'opc')
+                    .css('width', '3em')
+                    .on('change', function (evt) {
+                        var opacity = IFLength.parseEquationValue($(evt.target).val());
+                        if (opacity !== null) {
+                            opacity = opacity < 0 ? 0 : opacity > 100 ? 100 : opacity;
+                            opacity /= 100.0;
                             this._modifyEachSelectedStyle(function (style) {
-                                style.setProperty('blm', val);
+                                style.setProperty('opc', opacity);
                             });
-                        }.bind(this)))
-                    .append($('<input>')
-                        .attr('data-property', 'opc')
-                        .css('width', '3em')
-                        .on('change', function (evt) {
-                            var opacity = IFLength.parseEquationValue($(evt.target).val());
-                            if (opacity !== null) {
-                                opacity = opacity < 0 ? 0 : opacity > 100 ? 100 : opacity;
-                                opacity /= 100.0;
-                                this._modifyEachSelectedStyle(function (style) {
-                                    style.setProperty('opc', opacity);
-                                });
-                            } else {
-                                this._updateStyleSettings();
-                            }
-                        }.bind(this))))
-                .append($('<td></td>')
-                    .attr('colspan', '2')
-                    .css('text-align', 'right')
-                    .append($('<select></select>')
-                        .attr('data-property', 'tp')
-                        .append($('<option></option>')
-                            .attr('value', IFAppliedStyle.Type.Content)
-                            // TODO : I18N
-                            .text('Content'))
-                        .append($('<option></option>')
-                            .attr('value', IFAppliedStyle.Type.Knockout)
-                            // TODO : I18N
-                            .text('Knockout'))
-                        /* TODO
-                         .append($('<option></option>')
-                         .attr('value', IFAppliedStyle.Type.Mask)
-                         // TODO : I18N
-                         .text('Mask'))
-                         .append($('<option></option>')
-                         .attr('value', IFAppliedStyle.Type.Background)
-                         // TODO : I18N
-                         .text('Background'))*/
-                        .on('change', function (evt) {
-                            var val = $(evt.target).val();
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.setProperty('tp', val);
-                            });
-                        }.bind(this)))))
+                        } else {
+                            this._updateStyleSettings();
+                        }
+                    }.bind(this)))
+                .append($('<select></select>')
+                    .attr('data-property', 'tp')
+                    .append($('<option></option>')
+                        .attr('value', IFAppliedStyle.Type.Content)
+                        // TODO : I18N
+                        .text('Content'))
+                    .append($('<option></option>')
+                        .attr('value', IFAppliedStyle.Type.Knockout)
+                        // TODO : I18N
+                        .text('Knockout'))
+                    /* TODO
+                     .append($('<option></option>')
+                     .attr('value', IFAppliedStyle.Type.Mask)
+                     // TODO : I18N
+                     .text('Mask'))
+                     .append($('<option></option>')
+                     .attr('value', IFAppliedStyle.Type.Background)
+                     // TODO : I18N
+                     .text('Background'))*/
+                    .on('change', function (evt) {
+                        var val = $(evt.target).val();
+                        this._modifyEachSelectedStyle(function (style) {
+                            style.setProperty('tp', val);
+                        });
+                    }.bind(this))))
+            .append($('<div></div>')
+                .css('text-align', 'right')
+                .append($('<button></button>')
+                    .attr('data-property', '__link')
+                    .on('click', function () {
+                        this._toggleStyleLink();
+                    }.bind(this))
+                    .append($('<span></span>')
+                        .addClass('fa'))))
             .appendTo(this._htmlElement);
 
         // Paints section
@@ -377,7 +406,7 @@
                             });
                         }.bind(this))
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-pencil')),
+                            .addClass('fa fa-pencil')),
                     $('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Add Fill')
@@ -387,21 +416,26 @@
                             });
                         }.bind(this))
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-stop')),
+                            .addClass('fa fa-stop')),
                     $('<button></button>')
-                        .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFPaintEntry]);
                         }.bind(this))
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-trash-o'))
+                            .addClass('fa fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
 
         // Filter section
+        var filtersAddMenu = new GMenu();
+        for (var i = 0; i < filterEntries.length; ++i) {
+            // TODO : I18N
+            _addStyleEntryMenu(filterEntries[i].entry.getEntryClass(), filterEntries[i].name, filtersAddMenu);
+        }
+
         this._filtersPanel = $('<div></div>')
             .addClass('style-entries-panel')
             .append($('<div></div>')
@@ -415,29 +449,38 @@
                 content: this._filtersPanel,
                 controls: [
                     $('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Add Blur')
-                        .on('click', function () {
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.getActualStyle().appendChild(new IFBlurFilter());
-                            });
-                        }.bind(this))
+                        .gMenuButton({
+                            menu: filtersAddMenu,
+                            arrow: false
+                        })
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-circle')),
+                            .addClass('fa fa-plus')),
                     $('<button></button>')
-                        .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFFilterEntry]);
                         }.bind(this))
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-trash-o'))
+                            .addClass('fa fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
 
         // Effects section
+        var effectsAddMenu = new GMenu();
+        var hasRasterEffect = false;
+        for (var i = 0; i < effectEntries.length; ++i) {
+            var entryClass = effectEntries[i].entry.getEntryClass();
+            var rootClass = effectEntries[i].rootClass;
+            if (!hasRasterEffect && rootClass === IFEffectEntry) {
+                effectsAddMenu.createAddDivider();
+                hasRasterEffect = true;
+            }
+
+            _addStyleEntryMenu(entryClass, effectEntries[i].name, effectsAddMenu);
+        }
+
         this._effectsPanel = $('<div></div>')
             .addClass('style-entries-panel')
             .append($('<div></div>')
@@ -451,34 +494,20 @@
                 content: this._effectsPanel,
                 controls: [
                     $('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Add Shadow')
-                        .on('click', function () {
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.getActualStyle().appendChild(new IFShadowEffect());
-                            });
-                        }.bind(this))
+                        .gMenuButton({
+                            menu: effectsAddMenu,
+                            arrow: false
+                        })
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-cube')),
+                            .addClass('fa fa-plus')),
                     $('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Add Vector Offset')
-                        .on('click', function () {
-                            this._modifyEachSelectedStyle(function (style) {
-                                style.getActualStyle().appendChild(new IFOffsetVEffect());
-                            });
-                        }.bind(this))
-                        .append($('<span></span>')
-                            .addClass('fa fa-fw fa-dot-circle-o')),
-                    $('<button></button>')
-                        .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFEffectEntry, IFVEffectEntry]);
                         }.bind(this))
                         .append($('<span></span>')
-                            .addClass('fa fa-fw fa-trash-o'))
+                            .addClass('fa fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
@@ -943,8 +972,6 @@
 
     GStylePalette.prototype._updateStyleSettings = function () {
         this._styleSettings.css('display', 'none');
-        this._styleVisibilityToggleControl.css('display', 'none');
-        this._styleLinkToggleControl.css('display', 'none');
         this._styleDeleteControl.prop('disabled', true);
         this._styleAddControl.prop('disabled', this._styleElements === null || this._styleElements.length === 0);
 
@@ -952,24 +979,17 @@
             this._styleSettings.css('display', '');
             var style = this._styles[this._selectedStyleIndex][0];
 
-            this._styleVisibilityToggleControl
-                // TODO : I18N
-                .attr('title', style.getProperty('vs') ? 'Hide style' : 'Show style')
-                .css('display', '')
-                /** !! */
-                .find('> span')
-                .toggleClass('fa-eye', style.getProperty('vs') == false)
-                .toggleClass('fa-eye-slash', style.getProperty('vs') == true)
+            this._styleSettings.find('.visibility > span')
+                .toggleClass('fa-eye', style.getProperty('vs') == true)
+                .toggleClass('fa-eye-slash', style.getProperty('vs') == false)
 
-            this._styleLinkToggleControl
+            this._styleSettings.find('[data-property="__link"]')
                 // TODO : I18N
                 .attr('title', style instanceof IFLinkedStyle ? 'Unlink style' : 'Link style')
-                .css('display', '')
-                /** !! */
+                /* !! */
                 .find('> span')
                 .toggleClass('fa-link', !(style instanceof IFLinkedStyle))
                 .toggleClass('fa-unlink', style instanceof IFLinkedStyle);
-
 
             this._styleDeleteControl.prop('disabled', false);
 
