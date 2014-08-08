@@ -135,7 +135,6 @@
 
         // Init controls
         this._styleAddControl = $('<button></button>')
-            .addClass('fa fa-plus')
             // TODO : I18N
             .attr('title', 'Add new style')
             .on('click', function (evt) {
@@ -192,27 +191,30 @@
                         }
                     }.bind(this));
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-plus'))
             .appendTo(controls);
 
         this._styleVisibilityToggleControl = $('<button></button>')
-            .addClass('fa')
             .on('click', function (evt) {
                 var makeVisible = this._styles[this._selectedStyleIndex][0].getProperty('vs') === false;
                 this._modifyEachSelectedStyle(function (style) {
                     style.setProperty('vs', makeVisible);
                 });
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa'))
             .appendTo(controls);
 
         this._styleLinkToggleControl = $('<button></button>')
-            .addClass('fa')
             .on('click', function () {
                 this._toggleStyleLink();
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa'))
             .appendTo(controls);
 
         this._styleDeleteControl = $('<button></button>')
-            .addClass('fa fa-trash-o')
             .css('margin-left', '5px')
             // TODO : I18N
             .attr('title', 'Remove hidden styles')
@@ -234,6 +236,8 @@
                     editor.commitTransaction('Removed Hidden Styles');
                 }
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-trash-o'))
             .appendTo(controls);
 
         // Initialize all style entry handlers
@@ -365,31 +369,34 @@
                 content: this._paintsPanel,
                 controls: [
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-pencil')
                         // TODO : I18N
                         .attr('title', 'Add Stroke')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFStrokePaint());
                             });
-                        }.bind(this)),
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-pencil')),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-stop')
                         // TODO : I18N
                         .attr('title', 'Add Fill')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFFillPaint());
                             });
-                        }.bind(this)),
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-stop')),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFPaintEntry]);
                         }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
@@ -408,22 +415,24 @@
                 content: this._filtersPanel,
                 controls: [
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-circle')
                         // TODO : I18N
                         .attr('title', 'Add Blur')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFBlurFilter());
                             });
-                        }.bind(this)),
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-circle')),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFFilterEntry]);
                         }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
@@ -442,31 +451,34 @@
                 content: this._effectsPanel,
                 controls: [
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-cube')
                         // TODO : I18N
                         .attr('title', 'Add Shadow')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFShadowEffect());
                             });
-                        }.bind(this)),
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-cube')),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-dot-circle-o')
                         // TODO : I18N
                         .attr('title', 'Add Vector Offset')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
                                 style.getActualStyle().appendChild(new IFOffsetVEffect());
                             });
-                        }.bind(this)),
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-dot-circle-o')),
                     $('<button></button>')
-                        .addClass('fa fa-fw fa-trash-o')
                         .css('margin-left', '5px')
                         // TODO : I18N
                         .attr('title', 'Remove hidden entries')
                         .on('click', function () {
                             this._removeHiddenEntries([IFEffectEntry, IFVEffectEntry]);
                         }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-fw fa-trash-o'))
                 ]
             })
             .appendTo(this._htmlElement);
@@ -941,18 +953,23 @@
             var style = this._styles[this._selectedStyleIndex][0];
 
             this._styleVisibilityToggleControl
-                .toggleClass('fa-eye', style.getProperty('vs') == false)
-                .toggleClass('fa-eye-slash', style.getProperty('vs') == true)
                 // TODO : I18N
                 .attr('title', style.getProperty('vs') ? 'Hide style' : 'Show style')
-                .css('display', '');
+                .css('display', '')
+                /** !! */
+                .find('> span')
+                .toggleClass('fa-eye', style.getProperty('vs') == false)
+                .toggleClass('fa-eye-slash', style.getProperty('vs') == true)
 
             this._styleLinkToggleControl
-                .toggleClass('fa-link', !(style instanceof IFLinkedStyle))
-                .toggleClass('fa-unlink', style instanceof IFLinkedStyle)
                 // TODO : I18N
                 .attr('title', style instanceof IFLinkedStyle ? 'Unlink style' : 'Link style')
-                .css('display', '');
+                .css('display', '')
+                /** !! */
+                .find('> span')
+                .toggleClass('fa-link', !(style instanceof IFLinkedStyle))
+                .toggleClass('fa-unlink', style instanceof IFLinkedStyle);
+
 
             this._styleDeleteControl.prop('disabled', false);
 

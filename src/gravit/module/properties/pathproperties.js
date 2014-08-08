@@ -140,11 +140,12 @@
             } else if (property === 'cu') {
                 return $('<button></button>')
                     .attr('data-point-property', property)
-                    .addClass('fa fa-lock fa-fw')
                     .on('click', function () {
                         self._assignPointProperty(property, !$(this).hasClass('g-active'));
                         self._updatePointProperties();
-                    });
+                    })
+                    .append($('<span></span>')
+                        .addClass('fa fa-lock fa-fw'));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -193,27 +194,27 @@
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Clear Left Handle')
-                        .append($('<span></span>')
-                            .addClass('fa fa-forward'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly'], [null, null]);
-                        }.bind(this)))
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-forward')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Clear Right Handle')
-                        .append($('<span></span>')
-                            .addClass('fa fa-backward'))
                         .on('click', function () {
                             this._assignPointProperties(['hrx', 'hry'], [null, null]);
-                        }.bind(this)))
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-backward')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Clear Handles')
-                        .append($('<span></span>')
-                            .addClass('fa fa-times'))
                         .on('click', function () {
                             this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
-                        }.bind(this))))
+                        }.bind(this))
+                        .append($('<span></span>')
+                            .addClass('fa fa-times'))))
                 .append($('<td></td>')
                     .attr('colspan', '2')
                     .css('text-align', 'right')

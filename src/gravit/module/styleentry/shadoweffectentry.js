@@ -30,7 +30,7 @@
             .append($('<div></div>')
                 .append($('<div></div>')
                     .append($('<div></div>')
-                        .css('width', '5em')
+                        .css('width', '4.5em')
                         .addClass('g-switch')
                         .append($('<label></label>')
                             .append($('<input>')

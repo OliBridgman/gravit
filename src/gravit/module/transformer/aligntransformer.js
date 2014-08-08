@@ -140,22 +140,26 @@
                         // TODO : I18N
                         .attr('title', 'Align Left')
                         .attr('data-align', GAlignAction.Type.AlignLeft)
-                        .addClass('fa fa-align-left'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-left')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Align Center')
                         .attr('data-align', GAlignAction.Type.AlignCenter)
-                        .addClass('fa fa-align-center'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-center')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Align Right')
                         .attr('data-align', GAlignAction.Type.AlignRight)
-                        .addClass('fa fa-align-right'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-right')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Justify Horizontal')
                         .attr('data-align', GAlignAction.Type.AlignJustifyHorizontal)
-                        .addClass('fa fa-align-justify fa-rotate-270'))))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-justify fa-rotate-270')))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -167,22 +171,26 @@
                         // TODO : I18N
                         .attr('title', 'Align Top')
                         .attr('data-align', GAlignAction.Type.AlignTop)
-                        .addClass('fa fa-align-right fa-rotate-270'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-right fa-rotate-270')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Align Middle')
                         .attr('data-align', GAlignAction.Type.AlignMiddle)
-                        .addClass('fa fa-align-center fa-rotate-270'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-center fa-rotate-270')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Align Bottom')
                         .attr('data-align', GAlignAction.Type.AlignBottom)
-                        .addClass('fa fa-align-left fa-rotate-270'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-left fa-rotate-270')))
                     .append($('<button></button>')
                         // TODO : I18N
                         .attr('title', 'Justify Vertical')
                         .attr('data-align', GAlignAction.Type.AlignJustifyVertical)
-                        .addClass('fa fa-align-justify'))))
+                        .append($('<span></span>')
+                            .addClass('fa fa-align-justify')))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -200,7 +208,8 @@
                         // TODO : I18N
                         .attr('title', 'Distribute Horizontal')
                         .attr('data-dist', GDistributeAction.Type.Horizontal)
-                        .addClass('fa fa-reorder fa-rotate-270'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-reorder fa-rotate-270')))
                     .append($('<input>')
                         // TODO : I18N
                         .attr('title', 'Vertical Spacing, zero will auto-space')
@@ -212,7 +221,8 @@
                         // TODO : I18N
                         .attr('title', 'Distribute Vertical')
                         .attr('data-dist', GDistributeAction.Type.Vertical)
-                        .addClass('fa fa-reorder'))))
+                        .append($('<span></span>')
+                            .addClass('fa fa-reorder')))))
             .appendTo(panel);
 
         var _createApplyButton = function (apply) {

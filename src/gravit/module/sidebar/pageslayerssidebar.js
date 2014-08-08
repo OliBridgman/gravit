@@ -96,22 +96,24 @@
 
         this._pageAddControl =
             $('<button></button>')
-                .addClass('fa fa-plus')
                 // TODO : I18N
                 .attr('title', 'Add Page')
                 .on('click', function () {
                     gApp.executeAction(GAddPageAction.ID);
-                }.bind(this));
+                }.bind(this))
+                .append($('<span></span>')
+                    .addClass('fa fa-plus'));
 
         this._pageDeleteControl =
             $('<button></button>')
-                .addClass('fa fa-trash-o')
                 .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Page')
                 .on('click', function () {
                     gApp.executeAction(GDeletePageAction.ID);
-                }.bind(this));
+                }.bind(this))
+                .append($('<span></span>')
+                    .addClass('fa fa-trash-o'));
 
         $('<div></div>')
             .gPanel({
@@ -157,22 +159,24 @@
 
         this._layerAddControl =
             $('<button></button>')
-                .addClass('fa fa-plus')
                 // TODO : I18N
                 .attr('title', 'Add Layer')
                 .on('click', function () {
                     gApp.executeAction(GAddLayerAction.ID);
-                }.bind(this));
+                }.bind(this))
+                .append($('<span></span>')
+                    .addClass('fa fa-plus'));
 
         this._layerDeleteControl =
             $('<button></button>')
-                .addClass('fa fa-trash-o')
                 .css('margin-left', '5px')
                 // TODO : I18N
                 .attr('title', 'Delete Layer')
                 .on('click', function () {
                     gApp.executeAction(GDeleteLayerAction.ID);
-                }.bind(this));
+                }.bind(this))
+                .append($('<span></span>')
+                    .addClass('fa fa-trash-o'));
 
         $('<div></div>')
             .gPanel({

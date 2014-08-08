@@ -33,7 +33,6 @@
         this._panel = panel;
 
         $('<button></button>')
-            .addClass('fa fa-cog')
             // TODO : I18N
             .attr('title', 'More Settings')
             .on('click', function (evt) {
@@ -41,6 +40,8 @@
                 $target.toggleClass('g-active', !$target.hasClass('g-active'));
                 this._showMore($target.hasClass('g-active'));
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-cog'))
             .appendTo(controls);
 
         var _createInput = function (property) {

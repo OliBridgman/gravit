@@ -107,10 +107,11 @@
                     $('<div></div>')
                         .addClass('zoom')
                         .append($('<button></button>')
-                            .addClass('fa fa-minus')
                             .on('click', function () {
                                 gApp.executeAction(GZoomOutAction.ID);
-                            }))
+                            })
+                            .append($('<span></span>')
+                                .addClass('fa fa-minus')))
                         .append($('<input>')
                             .css('border', 'none')
                             .on('click', function () {
@@ -126,10 +127,11 @@
                                 }
                             }))
                         .append($('<button></button>')
-                            .addClass('fa fa-plus')
                             .on('click', function () {
                                 gApp.executeAction(GZoomInAction.ID);
-                            }))
+                            })
+                            .append($('<span></span>')
+                                .addClass('fa fa-plus')))
                         .appendTo(toolpanel);
                 }
             }

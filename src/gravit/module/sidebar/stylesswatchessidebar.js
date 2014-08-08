@@ -100,7 +100,6 @@
             }.bind(this));
 
         this._swatchDeleteControl = $('<button></button>')
-            .addClass('fa fa-fw fa-trash-o')
             // TODO : I18N
             .attr('title', 'Delete Selected Swatch')
             .on('click', function () {
@@ -112,7 +111,9 @@
                 } finally {
                     editor.commitTransaction('Delete Swatch');
                 }
-            }.bind(this));
+            }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-fw fa-trash-o'));
 
         this._updateStyleControls();
         this._updateSwatchControls();

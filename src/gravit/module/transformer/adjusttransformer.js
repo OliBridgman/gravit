@@ -62,34 +62,39 @@
 
         // Controls
         $('<button></button>')
-            .addClass('fa fa-arrows')
             // TODO : I18N
             .attr('title', 'Move')
             .attr('data-mode', GAdjustTransformer._TransformMode.Move)
+            .append($('<span></span>')
+                .addClass('fa fa-arrows'))
             .appendTo(controls);
         $('<button></button>')
-            .addClass('fa fa-expand')
             // TODO : I18N
             .attr('title', 'Scale')
             .attr('data-mode', GAdjustTransformer._TransformMode.Scale)
+            .append($('<span></span>')
+                .addClass('fa fa-expand'))
             .appendTo(controls);
         $('<button></button>')
-            .addClass('fa fa-rotate-right')
             // TODO : I18N
             .attr('title', 'Rotate')
             .attr('data-mode', GAdjustTransformer._TransformMode.Rotate)
+            .append($('<span></span>')
+                .addClass('fa fa-rotate-right'))
             .appendTo(controls);
         $('<button></button>')
-            .addClass('fa fa-eraser')
             // TODO : I18N
             .attr('title', 'Skew')
             .attr('data-mode', GAdjustTransformer._TransformMode.Skew)
+            .append($('<span></span>')
+                .addClass('fa fa-eraser'))
             .appendTo(controls);
         $('<button></button>')
-            .addClass('fa fa-star-half-o')
             // TODO : I18N
             .attr('title', 'Reflect')
             .attr('data-mode', GAdjustTransformer._TransformMode.Reflect)
+            .append($('<span></span>')
+                .addClass('fa fa-star-half-o'))
             .appendTo(controls);
 
         $('<button></button>')

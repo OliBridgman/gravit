@@ -67,7 +67,6 @@
         this._controls = controls;
 
         $('<button></button>')
-            .addClass('fa fa-plus')
             .attr('data-action', 'add')
             // TODO : I18N
             .attr('title', 'Add Export')
@@ -88,6 +87,8 @@
 
                 this._element.setProperty('export', exportVal, true);
             }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-plus'))
             .appendTo(controls);
     };
 
@@ -208,21 +209,30 @@
                         .append($('<div></div>')
                             .addClass('export-cell')
                             .append($('<button></button>')
-                                .addClass('fa fa-ellipsis-h'))
+                                .append($('<span></span>')
+                                    .addClass('fa fa-ellipsis-h')))
                             .append($('<button></button>')
-                                .addClass('fa fa-external-link-square'))
+                                .append($('<span></span>')
+                                    .addClass('fa fa-external-link-square')))
                             .append($('<button></button>')
-                                .addClass('fa fa-trash-o')
-                                .css('margin-left', '5px')))
+                                .css('margin-left', '5px')
+                                .append($('<span></span>')
+                                    .addClass('fa fa-trash-o'))))
                         .appendTo(exportTable);
                 }
 
                 $('<div></div>')
                     .addClass('controls')
                     .append($('<button></button>')
-                        .text('Export'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-ellipsis-h'))
+                        .append($('<span></span>')
+                            .text('Export As')))
                     .append($('<button></button>')
-                        .text('Export As...'))
+                        .append($('<span></span>')
+                            .addClass('fa fa-external-link-square'))
+                        .append($('<span></span>')
+                            .text('Export')))
                     .appendTo(this._htmlElement);
             }
         }

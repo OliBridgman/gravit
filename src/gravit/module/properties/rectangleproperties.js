@@ -86,11 +86,12 @@
             } else if (property === 'tl_uf' || property === 'tr_uf' || property === 'bl_uf' || property === 'br_uf') {
                 return $('<button></button>')
                     .attr('data-property', property)
-                    .addClass('fa fa-lock fa-fw')
                     .on('click', function () {
                         self._assignProperty(property, !$(this).hasClass('g-active'));
                         self._updateCornerProperties();
-                    });
+                    })
+                    .append($('<span></span>')
+                        .addClass('fa fa-lock fa-fw'));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }

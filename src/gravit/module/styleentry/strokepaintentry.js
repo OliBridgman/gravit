@@ -130,14 +130,15 @@
                 .css('text-align', 'right')
                 .append($('<button></button>')
                     .attr('data-element', 'more')
-                    .addClass('fa fa-cog')
                     .on('click', function (evt) {
                         var $this = $(this);
                         var active = $this.hasClass('g-active');
                         $this.toggleClass('g-active', !active);
                         $this.closest('.g-form').find('[data-element="stroke-settings"]')
                             .css('display', active ? 'none' : '');
-                    }))
+                    })
+                    .append($('<span></span>')
+                        .addClass('fa fa-cog')))
                 .append($('<label>&nbsp;</label>')))
             .prependTo(content);
 
