@@ -47,6 +47,11 @@
 
     /** @override */
     GSystemShell.prototype.start = function () {
+        var win = gui.Window.get();
+        win.menu = _.gShell._menuBar;
+        win.show();
+        win.focus();
+
         var hasOpenedDocuments = false;
         var argv = gui.App.argv;
         if (argv && argv.length) {
@@ -354,9 +359,6 @@
     _.gShell = new GSystemShell;
 
     $(document).ready(function () {
-        var win = gui.Window.get();
-        win.menu = _.gShell._menuBar;
-
         // Open dev console if desired
         var argv = gui.App.argv;
         if (_.gShell.isDevelopment() || argv.indexOf('-console') >= 0) {
@@ -368,9 +370,6 @@
 
     $(window).load(function () {
         gravit.storages.push(new GFileStorage());
-        var win = gui.Window.get();
-        win.show();
-        win.focus();
         gShellFinished();
     });
 })(this);
