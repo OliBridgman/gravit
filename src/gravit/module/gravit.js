@@ -21,7 +21,7 @@
         gravit.palettes.push(
             new GPropertiesPalette(),
             new GTransformPalette(),
-            new GExportPalette(),
+            //new GExportPalette(),
             new GStylePalette()
         );
 
