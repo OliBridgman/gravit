@@ -263,7 +263,12 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: [
-                    // ..
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/browser/',
+                        dest: '<%= cfg.dist %>/browser/',
+                        src: ['**']
+                    }
                 ]
             }
         },
@@ -317,13 +322,23 @@ module.exports = function (grunt) {
             src: '<%= cfg.build %>/system/**/*'
         },
         compress: {
-            dist: {
+            dist_chrome: {
                 options: {
                     mode: 'zip',
                     archive: '<%= cfg.dist %>/gravit-chrome.zip'
                 },
                 expand: true,
                 cwd: '<%= cfg.build %>/chrome',
+                src: ['**/**'],
+                dest: '/'
+            },
+            dist_win: {
+                options: {
+                    mode: 'zip',
+                    archive: '<%= cfg.dist %>/gravit-windows.zip'
+                },
+                expand: true,
+                cwd: '<%= cfg.build %>/system-binaries/Gravit/win',
                 src: ['**/**'],
                 dest: '/'
             }
@@ -429,7 +444,8 @@ module.exports = function (grunt) {
             'clean:dist',
             'copy:dist',
             '_dist_osx',
-            'compress:dist'
+            'compress:dist_chrome',
+            'compress:dist_win'
         ]);
     });
 
