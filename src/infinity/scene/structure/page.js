@@ -149,8 +149,8 @@
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
-        // If we have contents and are in output mode we'll clip to our page extents
-        if (hasContents && masterPage || context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
+        // If we have contents test if we shall clip to our extents
+        if (hasContents && masterPage || context.configuration.isClipPages()) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
             context.canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);

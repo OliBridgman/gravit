@@ -64,6 +64,12 @@
     IFScenePaintConfiguration.prototype.pixelMode = false;
 
     /**
+     * Whether to clip pages or not
+     * @type {Boolean}
+     */
+    IFScenePaintConfiguration.prototype.pagesClip = false;
+
+    /**
      * Whether to show guides or not
      * @type {Boolean}
      */
@@ -147,6 +153,14 @@
             return false;
         }
         return true;
+    };
+
+    /**
+     * Tests and returns wether pages should be clipped or not
+     * @param context
+     */
+    IFScenePaintConfiguration.prottoype.isPagesClip = function (context) {
+        return (this.pagesClip || this.paintMode === IFScenePaintConfiguration.PaintMode.Output);
     };
 
     /** @override */
