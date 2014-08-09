@@ -631,7 +631,7 @@
             this.setScale(1);
         }
         var oldTransform = this.resetTransform();
-        var oldTranslation = oldTransform.getTranslation();
+        var oldTranslation = oldTransform ? oldTransform.getTranslation() : new IFPoint(0,0);
 
         dx = dx | 0;
         dy = dy | 0;
@@ -642,6 +642,7 @@
         var w = canvas.getWidth();
         var h = canvas.getHeight();
         var canvasScale = canvas.getScale();
+        canvasScale = canvasScale ? canvasScale : 1.0;
 
         x += dx + oldTranslation.getX() * canvasScale;
         y += dy + oldTranslation.getY() * canvasScale;
