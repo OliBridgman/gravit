@@ -15,12 +15,18 @@
                     var file = this._fileInput[0].files[0];
                     var location = ifUtil.replaceAll(file.path, '\\', '/');
 
-                    if (this._fileInputMode === 'open') {
+                    if (this._fileInputMode === 'open_resource') {
                         this._fileInputCallback(this.getProtocol() + '://' + location);
-                    } else if (this._fileInputMode === 'save') {
+                    } else if (this._fileInputMode === 'save_resource') {
                         var extension = this._fileInput.attr('data-extension');
                         if (extension && !location.match("\\." + extension + "$")) {
                             location += "." + extension;
+                        }
+                        this._fileInputCallback(this.getProtocol() + '://' + location);
+                    } else if (this._fileInputMode === 'open_directory' || this._fileInputMode === 'save_directory') {
+                        // Make sure location ends with a slash
+                        if (location.charAt(location.length - 1) !== '/') {
+                            location += '/';
                         }
                         this._fileInputCallback(this.getProtocol() + '://' + location);
                     }
@@ -58,6 +64,11 @@
     };
 
     /** @override */
+    GFileStorage.prototype.isDirectory = function () {
+        return true;
+    };
+
+    /** @override */
     GFileStorage.prototype.getProtocol = function () {
         return 'file';
     };
@@ -74,7 +85,7 @@
     };
 
     /** @override */
-    GFileStorage.prototype.openPrompt = function (reference, extensions, done) {
+    GFileStorage.prototype.openResourcePrompt = function (reference, extensions, done) {
         var filter = "*.*";
         if (extensions) {
             filter = "";
@@ -86,25 +97,43 @@
             }
         }
 
-        this._fileInputMode = 'open';
+        this._fileInputMode = 'open_resource';
         this._fileInputCallback = done;
+        this._prepareInput(reference);
         this._fileInput
             .attr('accept', filter ? filter : '')
-            .removeAttr('nwsaveas')
-            .removeAttr('data-extension')
-            .val('')
             .trigger('click');
     };
 
     /** @override */
-    GFileStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
-        this._fileInputMode = 'save';
+    GFileStorage.prototype.saveResourcePrompt = function (reference, proposedName, extension, done) {
+        this._fileInputMode = 'save_resource';
         this._fileInputCallback = done;
+        this._prepareInput(reference);
         this._fileInput
             .attr('accept', extension ? '.' + extension : '')
             .attr('nwsaveas', proposedName ? proposedName + (extension ? '.' + extension : '') : '')
             .attr('data-extension', extension)
-            .val('')
+            .trigger('click');
+    };
+
+    /** @override */
+    GFileStorage.prototype.openDirectoryPrompt = function (reference, done) {
+        this._fileInputMode = 'open_directory';
+        this._fileInputCallback = done;
+        this._prepareInput(reference);
+        this._fileInput
+            .attr('nwdirectory', '')
+            .trigger('click');
+    };
+
+    /** @override */
+    GFileStorage.prototype.saveDirectoryPrompt = function (reference, done) {
+        this._fileInputMode = 'save_directory';
+        this._fileInputCallback = done;
+        this._prepareInput(reference);
+        this._fileInput
+            .attr('nwdirectory', '')
             .trigger('click');
     };
 
@@ -147,6 +176,36 @@
         // Our file:/// protocol is understandable by the browser
         // so just use the source url
         resolved(url);
+    };
+
+    /** @private */
+    GFileStorage.prototype._prepareInput = function (reference) {
+        var workingDir = null;
+        if (reference && reference !== '') {
+            var directory = new URI(reference).directory();
+            if (directory && directory !== '') {
+                if (ifSystem.operatingSystem === IFSystem.OperatingSystem.Windows) {
+                    directory = ifUtil.replaceAll(directory, '/', '\\');
+                }
+                workingDir = directory;
+            }
+        }
+
+        this._fileInput
+            .removeAttr('accept')
+            .removeAttr('nwsaveas')
+            .removeAttr('nwdirectory')
+            .removeAttr('nwworkingdir')
+            .removeAttr('data-extension')
+            .val('');
+
+        if (workingDir && workingDir !== '') {
+            this._fileInput
+                .attr('nwworkingdir', workingDir);
+        } else {
+            this._fileInput
+                .removeAttr('nwworkingdir');
+        }
     };
 
     /**

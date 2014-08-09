@@ -235,17 +235,11 @@
                             // TODO : I18N
                             .attr('title', 'Export this item only')
                             .on('click', function () {
-                                for (var i = 0; i < gravit.storages.length; ++i) {
-                                    var storage = gravit.storages[i];
-                                    if (storage.isAvailable() && storage.isPrompting() && storage.isSaving()) {
-                                        var extensions = storage.getExtensions();
-                                        if (!extensions || extensions.isEmpty() || extensions.indexOf(exportRow.ex) >= 0) {
-                                            storage.savePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {
-                                                this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, url, exportRow.ex);
-                                            }.bind(this));
-                                            break;
-                                        }
-                                    }
+                                var storage = gApp.getMatchingStorage(true, true, exportRow.ex, false, this._document.getStorage());
+                                if (storage) {
+                                    storage.saveResourcePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {
+                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, url, exportRow.ex);
+                                    }.bind(this));
                                 }
                             }.bind(this))
                             .append($('<span></span>')
@@ -270,11 +264,21 @@
                 $('<div></div>')
                     .addClass('controls')
                     .append($('<button></button>')
+                        .on('click', function () {
+                            var storage = gApp.getMatchingStorage(true, true, null, true, this._document.getStorage());
+                            if (storage) {
+                                storage.openDirectoryPrompt(this._document.getUrl(), function (url) {
+                                    var exports = this._element.getProperty('export', true);
+                                    for (var i = 0; i < exports.length; ++i) {
+                                        var exportRow = exports[i];
+                                        var resourceUrl = new URI(url).filename(this._element.getLabel() + exportRow.sf + '.' + exportRow.ex).toString();
+                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, resourceUrl, exportRow.ex);
+                                    }
+                                }.bind(this));
+                            }
+                        }.bind(this))
                         .append($('<span></span>')
-                            .text('Export All')))
-                    .append($('<button></button>')
-                        .append($('<span></span>')
-                            .text('Export All as...')))
+                            .text('Export All...')))
                     .appendTo(this._htmlElement);
             }
         }

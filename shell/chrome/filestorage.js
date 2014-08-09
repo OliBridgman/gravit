@@ -46,7 +46,7 @@
     };
 
     /** @override */
-    GFileStorage.prototype.openPrompt = function (reference, extensions, done) {
+    GFileStorage.prototype.openResourcePrompt = function (reference, extensions, done) {
         chrome.fileSystem.chooseEntry(
             {
                 type: 'openWritableFile',
@@ -65,7 +65,7 @@
     };
 
     /** @override */
-    GFileStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
+    GFileStorage.prototype.saveResourcePrompt = function (reference, proposedName, extension, done) {
         chrome.fileSystem.chooseEntry(
             {
                 type: 'saveFile',

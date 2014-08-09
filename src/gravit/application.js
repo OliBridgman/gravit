@@ -355,6 +355,62 @@
     };
 
     /**
+     * Tries to find the best matching storage for the given parameters
+     * @param {Boolean} prompt if true, the storage must support prompting
+     * @param {Boolean} save if true, the storage must support saving
+     * @param {String} [extension] if set, the storage must support the given
+     * extension (ignored if directory is true), defaults to null which ignores this
+     * @param {Boolean} [directory] if true, the storage must support directories,
+     * defaults to false
+     * @param {GStorage} [preferredStorage] if provided, will prefer this storage
+     * when it fills all requirements. Defaults to null.
+     */
+    GApplication.prototype.getMatchingStorage = function (prompt, save, extension, directory, preferredStorage) {
+        var storages = [];
+
+        // Put preferred storage on top if any
+        if (preferredStorage) {
+            storages.push(preferredStorage);
+        }
+
+        // Add all storages to check
+        for (var i = 0; i < gravit.storages.length; ++i) {
+            var storage = gravit.storages[i];
+            if (storage !== preferredStorage) {
+                storages.push(storage);
+            }
+        }
+
+        // Now iterate and find the best candidate if any
+        for (var i = 0; i < storages.length; ++i) {
+            var storage = storages[i];
+
+            if (prompt && !storage.isPrompting()) {
+                continue;
+            }
+
+            if (save && !storage.isSaving()) {
+                continue;
+            }
+
+            if (extension && extension !== '') {
+                var extensions = storage.getExtensions();
+                if (extensions && extensions.length && extensions.indexOf(extension) < 0) {
+                    continue;
+                }
+            }
+
+            if (directory && !storage.isDirectory()) {
+                continue;
+            }
+
+            return storage;
+        }
+
+        return null;
+    };
+
+    /**
      * Create a new document and add it
      */
     GApplication.prototype.createNewDocument = function () {
@@ -432,7 +488,7 @@
      */
     GApplication.prototype.openDocumentFrom = function (storage) {
         var url = gApp.getActiveDocument() ? gApp.getActiveDocument().getUrl() : null;
-        storage.openPrompt(url && url !== '' ? url : null, ['gravit'], function (url) {
+        storage.openResourcePrompt(url && url !== '' ? url : null, ['gravit'], function (url) {
             gApp.openDocument(url);
         });
     };
@@ -448,7 +504,7 @@
 
         if (document) {
             // TODO : Set first parameter 'reference'
-            storage.savePrompt(null, document.getTitle(), 'gravit', function (url) {
+            storage.saveResourcePrompt(null, document.getTitle(), 'gravit', function (url) {
                 document.setUrl(url)
                 document.save();
 

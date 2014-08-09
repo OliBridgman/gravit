@@ -31,6 +31,14 @@
     };
 
     /**
+     * Returns whether this storage supports directories
+     * @return {Boolean}
+     */
+    GStorage.prototype.isDirectory = function () {
+        throw new Error('Not supported.');
+    };
+
+    /**
      * Get the unique protocol of this storage
      * @return {String}
      */
@@ -40,7 +48,8 @@
 
     /**
      * The extensions this storage  supports like ['pdf', 'ps'].
-     * Return null or empty array to support all.
+     * Return null or empty array to support all. Ensure to always
+     * return extensions in lower-case only!
      * @return {Array<String>} array of extensions
      */
     GStorage.prototype.getExtensions = function () {
@@ -56,28 +65,48 @@
     };
 
     /**
-     * Prompt for opening an url
+     * Prompt for opening a resource
      * @param {String} reference a reference url to set i.e.
      * the current working directory from, defaults to null
      * @param {Array<String>} extensions array of extensions to limit
      * the selection to, can be null for all
-     * @param {Function} done called with the url
+     * @param {Function} done called with the resource url
      */
-    GStorage.prototype.openPrompt = function (reference, extensions, done) {
+    GStorage.prototype.openResourcePrompt = function (reference, extensions, done) {
         throw new Error('Not supported.');
     };
 
     /**
-     * Prompt for saving to an url
+     * Prompt for saving to a resources
      * @param {String} reference a reference url to set i.e.
      * the current working directory from, defaults to null
      * @param {String} proposedName the proposed default name,
      * maybe null for none
      * @param {String} extension the desired extension to be
      * used for the url resource, can be null
-     * @param {Function} done called with the url
+     * @param {Function} done called with the resource url
      */
-    GStorage.prototype.savePrompt = function (reference, proposedName, extension, done) {
+    GStorage.prototype.saveResourcePrompt = function (reference, proposedName, extension, done) {
+        throw new Error('Not supported.');
+    };
+
+    /**
+     * Prompt for opening a directory
+     * @param {String} reference a reference url to set i.e.
+     * the current working directory from, defaults to null
+     * @param {Function} done called with the directory url
+     */
+    GStorage.prototype.openDirectoryPrompt = function (reference, done) {
+        throw new Error('Not supported.');
+    };
+
+    /**
+     * Prompt for saving to a directory
+     * @param {String} reference a reference url to set i.e.
+     * the current working directory from, defaults to null
+     * @param {Function} done called with the directory url
+     */
+    GStorage.prototype.saveDirectoryPrompt = function (reference, done) {
         throw new Error('Not supported.');
     };
 

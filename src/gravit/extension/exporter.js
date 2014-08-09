@@ -23,7 +23,8 @@
     };
 
     /**
-     * The extensions this export filter produces like ['png', 'jpg']
+     * The extensions this export filter produces like ['png', 'jpg'].
+     * Ensure to always return extensions in lower-case only!
      * @return {Array<String>} the extension
      */
     GExporter.prototype.getExtensions = function () {

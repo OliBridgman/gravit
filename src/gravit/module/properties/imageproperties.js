@@ -70,7 +70,7 @@
             .text('Replace...')
             .on('click', function () {
                 var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
-                this._document.getStorage().openPrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
+                this._document.getStorage().openResourcePrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
                     // TODO : I18N
                     IFEditor.tryRunTransaction(this._image, function () {
                         // make url relative to document & reset size
@@ -85,19 +85,13 @@
             // TODO : I18N
             .text('Export...')
             .on('click', function () {
-                for (var i = 0; i < gravit.storages.length; ++i) {
-                    var storage = gravit.storages[i];
-                    if (storage.isAvailable() && storage.isPrompting() && storage.isSaving()) {
-                        var extensions = storage.getExtensions();
-                        if (!extensions || extensions.isEmpty() || extensions.indexOf('png') >= 0) {
-                            storage.savePrompt(this._document.getUrl(), this._image.getLabel(), ['png'], function (url) {
-                                image2ArrayBuffer(this._image.getImage(), function (buffer) {
-                                    storage.save(url, buffer, true);
-                                });
-                            }.bind(this));
-                            break;
-                        }
-                    }
+                var storage = gApp.getMatchingStorage(true, true, 'png', false, this._document.getStorage());
+                if (storage) {
+                    storage.saveResourcePrompt(this._document.getUrl(), this._image.getLabel(), ['png'], function (url) {
+                        image2ArrayBuffer(this._image.getImage(), function (buffer) {
+                            storage.save(url, buffer, true);
+                        });
+                    }.bind(this));
                 }
             }.bind(this))
             .appendTo(panel);
