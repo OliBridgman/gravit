@@ -612,9 +612,10 @@
         var y = offset ? offset.getY() : 0 | 0;
         var w = canvas.getWidth();
         var h = canvas.getHeight();
+        var canvasScale = canvas.getScale();
 
-        x += dx + oldTranslation.getX() * oldScale;
-        y += dy + oldTranslation.getY() * oldScale;
+        x += dx + oldTranslation.getX() * canvasScale;
+        y += dy + oldTranslation.getY() * canvasScale;
 
         if (clear) {
             this._canvasContext.clearRect(x, y, w, h);
