@@ -26,10 +26,23 @@
     };
 
     /** @override */
-    GImageExporter.prototype.exportPart = function (part, scale, storage, url, extension) {
-        scale = 2;
+    GImageExporter.prototype.exportPart = function (part, size, storage, url, extension) {
+        // TODO  Set pageClip to true if we export page
+
+        size = GExporter.parseSize(size);
 
         var paintArea = part.getPaintBBox();
+
+        // Calculate scale & delta offsets
+        var scale = size.width;
+        var deltaX = 0;
+        var deltaY = 0;
+
+        if (typeof dimension === 'number') {
+            scale = dimension;
+        } else {
+            // TODO
+        }
 
         // Create + Setup Paint-Canvas
         var paintCanvas = new IFPaintCanvas();
@@ -39,14 +52,30 @@
         var paintContext = new IFPaintContext();
         paintContext.canvas = paintCanvas;
         var paintConfig = new IFScenePaintConfiguration();
+        paintConfig.paintMode = IFScenePaintConfiguration.PaintMode;
+        paintConfig.annotations = false;
         paintContext.configuration = paintConfig;
+        paintConfig.clipArea = paintArea;
+        paintConfig.pagesClip = part instanceof IFPage;
 
         // Paint
         paintCanvas.prepare();
         paintCanvas.setOrigin(new IFPoint(paintArea.getX() * scale, paintArea.getY() * scale));
         paintCanvas.setScale(scale);
-        part.render(paintContext);
-        paintCanvas.finish();
+        try {
+            if (part instanceof IFSlice) {
+                part.getScene().render(paintContext);
+            } else {
+                part.render(paintContext);
+            }
+        } finally {
+            paintCanvas.finish();
+        }
+
+        // Slices may be trimmed
+        if (part instanceof IFSlice && part.getProperty('trm')) {
+            paintCanvas.trim();
+        }
 
         // Store
         var callback = function (buffer) {

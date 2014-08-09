@@ -209,7 +209,7 @@
                     .append($('<div></div>')
                         .addClass('export-cell')
                         .append($('<input>')
-                            .css('width', '4em')
+                            .css('width', '8em')
                             // TODO: I18N
                             .attr('placeholder', 'Size')
                             .val(exportRow.sz)
@@ -238,7 +238,7 @@
                                 var storage = gApp.getMatchingStorage(true, true, exportRow.ex, false, this._document.getStorage());
                                 if (storage) {
                                     storage.saveResourcePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {
-                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, url, exportRow.ex);
+                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, storage, url, exportRow.ex);
                                     }.bind(this));
                                 }
                             }.bind(this))
@@ -272,7 +272,7 @@
                                     for (var i = 0; i < exports.length; ++i) {
                                         var exportRow = exports[i];
                                         var resourceUrl = new URI(url).filename(this._element.getLabel() + exportRow.sf + '.' + exportRow.ex).toString();
-                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, resourceUrl, exportRow.ex);
+                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, storage, resourceUrl, exportRow.ex);
                                     }
                                 }.bind(this));
                             }

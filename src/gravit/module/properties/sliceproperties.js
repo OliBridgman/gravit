@@ -50,6 +50,24 @@
                     .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
+            } else if (property === 'trm') {
+                return $('<div></div>')
+                    .css('width', '7em')
+                    .addClass('g-switch')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-property', property)
+                            .on('change', function () {
+                                self._assignProperty(property, $(this).is(':checked'));
+                            }))
+                        .append($('<span></span>')
+                            .addClass('switch')
+                            .attr({
+                                // TODO : I18N
+                                'data-on': 'Trim Empty',
+                                'data-off': 'No Trim'
+                            })));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -63,7 +81,12 @@
                     .addClass('label')
                     .text('Color:'))
                 .append($('<td></td>')
-                    .append(_createInput('cls'))))
+                    .append(_createInput('cls')))
+                .append($('<td></td>')
+                    .addClass('label')
+                    .text('On Export:'))
+                .append($('<td></td>')
+                    .append(_createInput('trm'))))
             .appendTo(this._panel);
     };
 
@@ -114,6 +137,8 @@
         this._panel.find('[data-property="cls"]')
             .gColorButton('value', slice.getProperty('cls'))
             .gColorButton('scene', scene);
+
+        this._panel.find('input[data-property="trm"]').prop('checked', slice.getProperty('trm'));
     };
 
     /**

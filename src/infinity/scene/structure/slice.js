@@ -17,7 +17,8 @@
      * The meta properties of a slice with their default values
      */
     IFSlice.MetaProperties = {
-        // TODO
+        // Whether to trim on exporting or not
+        trm: true
     };
 
     /**

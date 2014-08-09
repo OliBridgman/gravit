@@ -162,7 +162,7 @@
         None: 'no-repeat'
     };
 
-    function createChessboardCanvas (size, backColor, foreColor) {
+    function createChessboardCanvas(size, backColor, foreColor) {
         var result = document.createElement('canvas');
         result.width = size * 2;
         result.height = size * 2;
@@ -499,6 +499,16 @@
         this._origin = null;
         this._scale = null;
         this._areas = null;
+    };
+
+    /**
+     * Trim the canvas size for either a given area or
+     * if no area is provided trims the canvas to remove
+     * all transparent pixels on each side
+     * @param {IFRect} [area]
+     */
+    IFPaintCanvas.prototype.trim = function (area) {
+        alert('todo: trim_canvas');
     };
 
     /**
