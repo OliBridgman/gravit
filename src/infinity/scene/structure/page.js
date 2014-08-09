@@ -150,7 +150,7 @@
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
         // If we have contents test if we shall clip to our extents
-        if (hasContents && masterPage || context.configuration.isClipPages()) {
+        if (hasContents && masterPage || context.configuration.isPagesClip()) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
             context.canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);

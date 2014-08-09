@@ -642,6 +642,11 @@
 
     /** @override */
     IFScene.prototype._renderChildren = function (context) {
+        if (context.configuration.clipArea) {
+            var r = context.configuration.clipArea;
+            context.canvas.clipRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+        }
+
         for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
             if (node instanceof IFPage) {
                 // Handle single-page mode if set
@@ -651,6 +656,10 @@
             } else if (node instanceof IFElement) {
                 node.render(context);
             }
+        }
+
+        if (context.configuration.clipArea) {
+            context.canvas.resetClip();
         }
     };
 

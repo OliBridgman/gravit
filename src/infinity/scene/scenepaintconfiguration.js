@@ -88,6 +88,12 @@
     IFScenePaintConfiguration.prototype.annotations = true;
 
     /**
+     * A clip area defining the area of paint for the scene
+     * @type {IFRect}
+     */
+    IFScenePaintConfiguration.prototype.clipArea = null;
+
+    /**
      * Checks and returns whether to paint outlined or not
      * @param {IFPaintContext} [context] optional context
      * to include when checking
@@ -159,7 +165,7 @@
      * Tests and returns wether pages should be clipped or not
      * @param context
      */
-    IFScenePaintConfiguration.prottoype.isPagesClip = function (context) {
+    IFScenePaintConfiguration.prototype.isPagesClip = function (context) {
         return (this.pagesClip || this.paintMode === IFScenePaintConfiguration.PaintMode.Output);
     };
 

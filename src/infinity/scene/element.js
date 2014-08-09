@@ -756,8 +756,14 @@
             return false;
         }
 
-        if (context && context.dirtyMatcher && !context.dirtyMatcher.isDirty(paintBBox)) {
-            return false;
+        if (context) {
+            if (context.dirtyMatcher && !context.dirtyMatcher.isDirty(paintBBox)) {
+                return false;
+            }
+
+            if (context.configuration && context.configuration.clipArea && !context.configuration.clipArea.intersectsRect(paintBBox)) {
+                return false;
+            }
         }
         return true;
     };
