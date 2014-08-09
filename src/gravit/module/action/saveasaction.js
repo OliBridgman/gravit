@@ -52,14 +52,14 @@
      * @override
      */
     GSaveAsAction.prototype.isEnabled = function () {
-        return !!this._getViableStorage();
+        return !!this._getViableStorage() && !!gApp.getActiveDocument();
     };
 
     /**
      * @override
      */
     GSaveAsAction.prototype.execute = function () {
-        gApp.openDocumentFrom(this._getViableStorage());
+        gApp.saveDocumentAs(this._getViableStorage(), gApp.getActiveDocument());
     };
 
     /**
