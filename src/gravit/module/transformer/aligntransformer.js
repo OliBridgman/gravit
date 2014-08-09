@@ -254,11 +254,11 @@
             .append(_createApplyButton('objects'));
 
         var alignHandler = function (evt) {
-            this._executeAction($(evt.target).attr('data-align'), 'align');
+            this._executeAction($(evt.target).closest('button').attr('data-align'), 'align');
         }.bind(this);
 
         var distHandler = function (evt) {
-            this._executeAction($(evt.target).attr('data-dist'), 'dist')
+            this._executeAction($(evt.target).closest('button').attr('data-dist'), 'dist')
         }.bind(this);
 
         this._panel.find('button[data-align]').each(function (index, element) {
