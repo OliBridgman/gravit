@@ -766,7 +766,7 @@
      * Called to render this element
      * @param {IFPaintContext} context the context to be used for drawing
      */
-    IFElement.prototype.render = function (context, style) {
+    IFElement.prototype.render = function (context) {
         // Prepare paint
         if (!this._preparePaint(context)) {
             return;

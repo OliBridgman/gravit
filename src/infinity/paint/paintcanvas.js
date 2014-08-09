@@ -289,6 +289,39 @@
     };
 
     /**
+     * Returns the contents of the canvas as a png image
+     * with a resolution of 96dpi as an ArrayBuffer
+     * @param {Function} done callback function called with the ArrayBuffer
+     */
+    IFPaintCanvas.prototype.asPNGImageBuffer = function (done) {
+        this._canvasContext.canvas.toBlob(function (blob) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                done(event.target.result);
+            };
+            reader.readAsArrayBuffer(blob);
+        }, 'image/png');
+    };
+
+    /**
+     * Returns the contents of the canvas as a jpeg image
+     * with a resolution of 96dpi as an ArrayBuffer
+     * @param {Function} done callback function called with the ArrayBuffer
+     * @param {Number} [quality] the quality of the image from
+     * 0.0 to 1.0, defaults to 1.0
+     */
+    IFPaintCanvas.prototype.asJPEGImageBuffer = function (done, quality) {
+        quality = quality || 1.0;
+        this._canvasContext.canvas.toBlob(function (blob) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                done(event.target.result);
+            };
+            reader.readAsArrayBuffer(blob);
+        }, 'image/jpeg', quality);
+    };
+
+    /**
      * Resize this canvas
      * @param {Number} width the new width for the canvas
      * @param {Number} height the new height for the canvas

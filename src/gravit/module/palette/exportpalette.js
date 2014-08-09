@@ -8,6 +8,7 @@
      */
     function GExportPalette() {
         GPalette.call(this);
+        this._extensions = [];
     }
 
     IFObject.inherit(GExportPalette, GPalette);
@@ -39,6 +40,12 @@
      */
     GExportPalette.prototype._element = null;
 
+    /**
+     * @type {Array<{{extension: String, exporter: GExporter}}>}
+     * @private
+     */
+    GExportPalette.prototype._extensions = null;
+
     /** @override */
     GExportPalette.prototype.getId = function () {
         return GExportPalette.ID;
@@ -62,6 +69,20 @@
     /** @override */
     GExportPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
+
+        // Init our extensions / exporters
+        for (var k = 0; k < gravit.exporters.length; ++k) {
+            var exporter = gravit.exporters[k];
+            if (!exporter.isStandalone()) {
+                var extensions = exporter.getExtensions();
+                for (var n = 0; n < extensions.length; ++n) {
+                    this._extensions.push({
+                        extension: extensions[n].toLowerCase(),
+                        exporter: exporter
+                    });
+                }
+            }
+        }
 
         this._htmlElement = htmlElement;
         this._controls = controls;
@@ -171,53 +192,79 @@
                 .addClass('export-table')
                 .appendTo(this._htmlElement);
 
-            var exportVal = this._element.getProperty('export', true);
-            if (exportVal && exportVal.length > 0) {
-                for (var i = 0; i < exportVal.length; ++i) {
-                    var extSelect = $('<select></select>');
+            var _addExportRow = function (exportRow, index) {
+                var extSelect = $('<select></select>');
 
-                    for (var k = 0; k < gravit.exporters.length; ++k) {
-                        var exporter = gravit.exporters[k];
-                        if (!exporter.isStandalone()) {
-                            var extensions = exporter.getExtensions();
-                            for (var n = 0; n < extensions.length; ++n) {
-                                $('<option></option>')
-                                    .text(extensions[n].toUpperCase())
-                                    .val(extensions[n])
-                                    .data('exporter', exporter)
-                                    .appendTo(extSelect);
-                            }
-                        }
-                    }
+                for (var i = 0; i < this._extensions.length; ++i) {
+                    var ext = this._extensions[i];
+                    $('<option></option>')
+                        .text(ext.extension.toUpperCase())
+                        .val(ext.extension)
+                        .appendTo(extSelect);
+                }
 
-                    $('<div></div>')
-                        .addClass('export-row')
-                        .data('export-index', i)
-                        .append($('<div></div>')
-                            .addClass('export-cell')
-                            .append($('<input>')
-                                .css('width', '4em')
-                                // TODO: I18N
-                                .attr('placeholder', 'Size')
-                                .val('1x'))
-                            .append($('<input>')
-                                .css('width', '4em')
-                                // TODO: I18N
-                                .attr('placeholder', 'Suffix')
-                                .val(''))
-                            .append(extSelect))
-                        .append($('<div></div>')
-                            .addClass('export-cell')
-                            .append($('<button></button>')
-                                .append($('<span></span>')
-                                    .addClass('fa fa-ellipsis-h')))
-                            .append($('<button></button>')
-                                .append($('<span></span>')
-                                    .addClass('fa fa-external-link-square')))
-                            .append($('<button></button>')
-                                .append($('<span></span>')
-                                    .addClass('fa fa-trash-o'))))
-                        .appendTo(exportTable);
+                $('<div></div>')
+                    .addClass('export-row')
+                    .data('export-index', i)
+                    .append($('<div></div>')
+                        .addClass('export-cell')
+                        .append($('<input>')
+                            .css('width', '4em')
+                            // TODO: I18N
+                            .attr('placeholder', 'Size')
+                            .val(exportRow.sz)
+                            .on('change', function (evt) {
+                                exportRow.sz = $(evt.target).val();
+                            }))
+                        .append($('<input>')
+                            .css('width', '4em')
+                            // TODO: I18N
+                            .attr('placeholder', 'Suffix')
+                            .val(exportRow.sf)
+                            .on('change', function (evt) {
+                                exportRow.sf = $(evt.target).val();
+                            }))
+                        .append(extSelect
+                            .val(exportRow.ex)
+                            .on('change', function (evt) {
+                                exportRow.ex = $(evt.target).val();
+                            })))
+                    .append($('<div></div>')
+                        .addClass('export-cell')
+                        .append($('<button></button>')
+                            // TODO : I18N
+                            .attr('title', 'Export this item only')
+                            .on('click', function () {
+                                for (var i = 0; i < gravit.storages.length; ++i) {
+                                    var storage = gravit.storages[i];
+                                    if (storage.isAvailable() && storage.isPrompting() && storage.isSaving()) {
+                                        var extensions = storage.getExtensions();
+                                        if (!extensions || extensions.isEmpty() || extensions.indexOf(exportRow.ex) >= 0) {
+                                            storage.savePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {
+                                                this._getExporterByExt(exportRow.ex).exportPart(this._element, 1, storage, url, exportRow.ex);
+                                            }.bind(this));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }.bind(this))
+                            .append($('<span></span>')
+                                .addClass('fa fa-external-link-square')))
+                        .append($('<button></button>')
+                            .append($('<span></span>')
+                                .addClass('fa fa-trash-o'))
+                            .on('click', function () {
+                                var exports = this._element.getProperty('export', true).slice();
+                                exports.splice(index, 1);
+                                this._element.setProperty('export', exports, true);
+                            }.bind(this))))
+                    .appendTo(exportTable);
+            }.bind(this);
+
+            var exports = this._element.getProperty('export', true);
+            if (exports && exports.length > 0) {
+                for (var i = 0; i < exports.length; ++i) {
+                    _addExportRow(exports[i], i);
                 }
 
                 $('<div></div>')
@@ -233,6 +280,21 @@
         }
 
         this._controls.find('[data-action="add"]').prop('disabled', !this._element);
+    };
+
+    /**
+     * @param {String} extension
+     * @returns {GExporter}
+     * @private
+     */
+    GExportPalette.prototype._getExporterByExt = function (extension) {
+        extension = extension.toLowerCase();
+        for (var i = 0; i < this._extensions.length; ++i) {
+            if (this._extensions[i].extension === extension) {
+                return this._extensions[i].exporter;
+            }
+        }
+        return null;
     };
 
     /** @override */
