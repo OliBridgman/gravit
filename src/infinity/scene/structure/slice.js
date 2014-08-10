@@ -111,16 +111,17 @@
     /** @override */
     IFSlice.prototype._paint = function (context) {
         if (context.configuration.isSlicesVisible(context)) {
-            var sourceBBox = new IFRect(-1, -1, 1, 1);
+            var sourceBBox = new IFRect(-1, -1, 2, 2);
+            sourceBBox = this.$trf ? this.$trf.mapRect(sourceBBox) : sourceBBox;
 
             if (context.configuration.isOutline(context)) {
                 var transform = context.canvas.resetTransform();
-                var transformedRect = transform.mapRect(sourceBBox);
+                var transformedRect = transform ? transform.mapRect(sourceBBox) : sourceBBox;
                 context.canvas.strokeRect(transformedRect.getX(), transformedRect.getY(),
                     transformedRect.getWidth(), transformedRect.getHeight(), 1, context.getOutlineColor());
                 context.canvas.setTransform(transform);
             } else {
-                var transformedRect = this.$trf ? this.$trf.mapRect(sourceBBox) : sourceBBox;
+                var transformedRect = sourceBBox;
                 context.canvas.fillRect(transformedRect.getX(), transformedRect.getY(),
                     transformedRect.getWidth(), transformedRect.getHeight(), this.$cls, 0.5);
             }
@@ -129,7 +130,7 @@
 
     /** @override */
     IFSlice.prototype._calculateGeometryBBox = function () {
-        var rect = new IFRect(-1, -1, 1, 1);
+        var rect = new IFRect(-1, -1, 2, 2);
         return this.$trf ? this.$trf.mapRect(rect) : rect;
     };
 

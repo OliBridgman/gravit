@@ -85,6 +85,7 @@
     IFSliceTool.prototype.paint = function (context) {
         if (this._slice) {
             var sliceBBox = this._slice.getGeometryBBox();
+            sliceBBox = this._view.getWorldTransform().mapRect(sliceBBox);
             var x = Math.floor(sliceBBox.getX()) + 0.5;
             var y = Math.floor(sliceBBox.getY()) + 0.5;
 
@@ -161,7 +162,7 @@
         this._invalidateSliceArea(slice);
 
         // Update slice with scene coordinates before appending
-        this._updateSlice(slice, this._dragArea, true);
+        this._updateSlice(slice, this._dragArea);
 
         // Clear our stuff
         this._dragStart = null;
@@ -226,12 +227,8 @@
                 // Assign area in scene coordinates
                 this._dragArea = dragArea;
 
-                // Convert area into view coordinates before updating the slice
-                var worldTransform = this._view.getWorldTransform();
-                var dragAreaView = worldTransform.mapRect(dragArea);
-
                 this._invalidateSliceArea();
-                this._updateSlice(this._slice, dragAreaView, false);
+                this._updateSlice(this._slice, dragArea);
                 this._invalidateSliceArea();
             }
         }
@@ -245,7 +242,7 @@
     IFSliceTool.prototype._invalidateSliceArea = function (slice) {
         slice = slice || this._slice;
         if (slice) {
-            var geometryBBox = slice.getGeometryBBox();
+            var geometryBBox = this._view.getWorldTransform().mapRect(slice.getGeometryBBox());
             if (geometryBBox && (geometryBBox.getWidth() > 0 || geometryBBox.getHeight() > 0)) {
                 this.invalidateArea(geometryBBox.expanded(1, 1, 1, 1));
             }
@@ -255,13 +252,10 @@
     /**
      * Called to update the slice of this tool
      * @param {IFSlice} slice the slice to update
-     * @param {IFRect} area the slice area
-     * @param {Boolean} scene true if coordinates are in scene coordinates,
-     * this usually is only the case before the slice gets appended, otherwise
-     * if false, the coordinates are in view coordinates
+     * @param {IFRect} area the slice area in scene coordinates
      * @private
      */
-    IFSliceTool.prototype._updateSlice = function (slice, area, scene) {
+    IFSliceTool.prototype._updateSlice = function (slice, area) {
         // Original slice is a in coordinates x,y: [-1, 1]. Transform it to fit into the area:
         slice.setProperty('trf',
             new IFTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
