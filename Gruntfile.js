@@ -312,7 +312,7 @@ module.exports = function (grunt) {
         nodewebkit: {
             options: {
                 version: '0.10.1',
-                platforms: ['win', 'osx', 'linux32', 'linux64'],
+                platforms: ['win', 'osx', 'linux64'],
                 cacheDir: './node-webkit',
                 buildDir: '<%= cfg.build %>/system-binaries',
                 macIcns: 'shell/system/appicon.icns',
@@ -339,16 +339,6 @@ module.exports = function (grunt) {
                 },
                 expand: true,
                 cwd: '<%= cfg.build %>/system-binaries/Gravit/win',
-                src: ['**/**'],
-                dest: '/'
-            },
-            dist_linux32: {
-                options: {
-                    mode: 'zip',
-                    archive: '<%= cfg.dist %>/gravit-linux32.zip'
-                },
-                expand: true,
-                cwd: '<%= cfg.build %>/system-binaries/Gravit/linux32',
                 src: ['**/**'],
                 dest: '/'
             },
@@ -466,7 +456,6 @@ module.exports = function (grunt) {
             '_dist_osx',
             'compress:dist_chrome',
             'compress:dist_win',
-            'compress:dist_linux32',
             'compress:dist_linux64'
         ]);
     });
