@@ -118,12 +118,11 @@
                                 $(this).select();
                             })
                             .on('change', function () {
-                                var zoomLevel = parseInt($(this).val());
+                                var zoomLevel = ifUtil.parseNumber($(this).val());
                                 if (!isNaN(zoomLevel) && zoomLevel !== 0) {
                                     var view = gApp.getWindows().getActiveWindow().getView();
-                                    var newZoom = zoomLevel / 100.0;
-                                    var zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
-                                    view.zoomAt(zoomPoint, newZoom);
+                                    var centerPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+                                    view.zoomAtCenter(centerPoint, zoomLevel);
                                 }
                             }))
                         .append($('<button></button>')
@@ -203,7 +202,7 @@
 
         if (window) {
             zoom
-                .find('input').val(Math.round(window.getView().getZoom() * 100) + '%');
+                .find('input').val(ifUtil.formatNumber(window.getView().getZoom()) + 'x');
         }
     };
 
