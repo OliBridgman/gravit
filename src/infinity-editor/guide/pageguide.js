@@ -12,12 +12,7 @@
         IFGuide.call(this, guides);
     }
 
-    IFObject.inheritAndMix(IFPageGuide, IFGuide, [IFGuide.Visual, IFGuide.Map]);
-
-    /** @override */
-    IFPageGuide.prototype.paint = function (transform, context) {
-
-    };
+    IFObject.inheritAndMix(IFPageGuide, IFGuide, [IFGuide.Map]);
 
     /** @override */
     IFPageGuide.prototype.map = function (x, y) {

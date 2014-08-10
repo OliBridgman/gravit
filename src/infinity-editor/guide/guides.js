@@ -12,6 +12,7 @@
         this._counter = 0;
         this._visuals = [];
 
+        this.addGuide(new IFShapeBoxGuide(this));
         this.addGuide(new IFPageGuide(this));
         this.addGuide(new IFGridGuide(this));
         this.addGuide(new IFUnitGuide(this));
