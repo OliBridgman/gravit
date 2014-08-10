@@ -184,12 +184,29 @@
             }
         }
 
-        return source.expanded(
+        var bbox = source.expanded(
             vEffectPadding[0] + paintPadding[0] + filterPadding[0] + effectPadding[0],
             vEffectPadding[1] + paintPadding[1] + filterPadding[1] + effectPadding[1],
             vEffectPadding[2] + paintPadding[2] + filterPadding[2] + effectPadding[2],
             vEffectPadding[3] + paintPadding[3] + filterPadding[3] + effectPadding[3]
         );
+
+        // Due to pixel aligning, we may need extra half pixel in some cases
+        var paintExtraExpand = [0, 0, 0, 0];
+        if (bbox.getX() != Math.floor(bbox.getX())) {
+            paintExtraExpand[0] = 0.5;
+        }
+        if (bbox.getY() != Math.floor(bbox.getY())) {
+            paintExtraExpand[1] = 0.5;
+        }
+        var br = bbox.getSide(IFRect.Side.BOTTOM_RIGHT);
+        if (br.getX() != Math.ceil(br.getX())) {
+            paintExtraExpand[2] = 0.5;
+        }
+        if (br.getY() != Math.ceil(br.getY())) {
+            paintExtraExpand[3] = 0.5;
+        }
+        return bbox.expanded(paintExtraExpand[0], paintExtraExpand[1], paintExtraExpand[2], paintExtraExpand[3]);
     };
 
     /**

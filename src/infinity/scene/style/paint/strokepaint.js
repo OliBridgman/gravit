@@ -132,7 +132,7 @@
                     // Now stroke as regular but use our stroke as mask
                     canvas.strokeVertices(pattern, strokeWidth, this.$slc, this.$slj, this.$slm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                 } else {
-                    var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(patternTransform))
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(patternTransform));
                     canvas.strokeVertices(pattern, strokeWidth / patternTransform.getScaleFactor(), this.$slc, this.$slj, this.$slm, opacity, blendMode);
                     canvas.setTransform(oldTransform);
                 }
