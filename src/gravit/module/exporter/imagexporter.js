@@ -72,21 +72,34 @@
             paintCanvas.finish();
         }
 
+        // Gather our bitmap
+        var bitmap = paintCanvas.getBitmap();
+
         // Slices may be trimmed
         if (part instanceof IFSlice && part.getProperty('trm')) {
-            paintCanvas.trim();
+            bitmap.trim();
         }
 
-        // Store
+        // Store bitmap now
         var callback = function (buffer) {
             storage.save(url, buffer, true);
         };
 
+        bitmap.toImageBuffer(this._getImageTypeByExt(extension), callback);
+    };
+
+    /**
+     * @param {String} ext
+     * @returns {IFBitmap.ImageType}
+     * @private
+     */
+    GImageExporter.prototype._getImageTypeByExt = function (extension) {
         if (extension === 'png') {
-            paintCanvas.asPNGImageBuffer(callback);
+            return IFBitmap.ImageType.PNG;
         } else if (extension === 'jpg') {
-            // TODO : Read quality from size?
-            paintCanvas.asJPEGImage(callback);
+            return IFBitmap.ImageType.JPEG;
+        } else {
+            throw new Error('Unknown image extension - ' + extension);
         }
     };
 

@@ -235,6 +235,9 @@
                             // TODO : I18N
                             .attr('title', 'Export this item only')
                             .on('click', function () {
+                                //this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, null, '', exportRow.ex);
+
+
                                 var storage = gApp.getMatchingStorage(true, true, exportRow.ex, false, this._document.getStorage());
                                 if (storage) {
                                     storage.saveResourcePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {

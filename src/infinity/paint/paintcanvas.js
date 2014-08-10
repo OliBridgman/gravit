@@ -220,6 +220,12 @@
     IFPaintCanvas.prototype._canvasContext = null;
 
     /**
+     * @type {IFBitmap}
+     * @private
+     */
+    IFPaintCanvas.prototype._bitmap = null;
+
+    /**
      * @type IFTransform
      * @private
      */
@@ -263,6 +269,19 @@
      */
     IFPaintCanvas.prototype.getHeight = function () {
         return this._canvasContext.canvas.height;
+    };
+
+    /**
+     * Returns the underlying bitmap of the canvas
+     * for direct pixel manipulation. This operation
+     * is cheap and doesn't allocate any memory
+     * @returns {IFBitmap}
+     */
+    IFPaintCanvas.prototype.getBitmap = function () {
+        if (!this._bitmap) {
+            this._bitmap = new IFBitmap(this);
+        }
+        return this._bitmap;
     };
 
     /**
