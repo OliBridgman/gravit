@@ -707,6 +707,8 @@
                 this._resizeTimerId = null;
             }
 
+            this._windows.relayout();
+
             this._resizeTimerId = setTimeout(function () {
                 this.relayout();
                 this._resizeTimerId = null;

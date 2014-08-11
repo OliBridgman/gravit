@@ -234,7 +234,7 @@
      * Called from the workspace to relayout
      */
     GWindows.prototype.relayout = function (viewOffset) {
-        this._viewOffset = viewOffset;
+        this._viewOffset = viewOffset ? viewOffset : this._viewOffset;
         if (this._activeWindow) {
             this._relayoutWindow(this._activeWindow);
         }
@@ -252,7 +252,12 @@
         window._container.width(myWidth);
         window._container.height(myHeight);
         window.getView().setViewOffset(this._viewOffset);
+        var oldW = window.getView().getWidth();
+        var oldH = window.getView().getHeight();
         window.getView().resize(myWidth, myHeight);
+        if (oldW != null && oldH != null && (oldW != myWidth || oldH != myHeight)) {
+            window.getView().scrollBy((oldW - myWidth) / 2, (oldH - myHeight) / 2);
+        }
     };
 
     /**
