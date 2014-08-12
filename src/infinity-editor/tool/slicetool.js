@@ -145,9 +145,6 @@
      */
     IFSliceTool.prototype._mouseDrag = function (event) {
         this._dragCurrent = this._view.getViewTransform().mapPoint(event.client);
-        this._editor.getGuides().beginMap();
-        this._dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
-        this._editor.getGuides().finishMap();
         this._invalidateSlice();
     };
 
@@ -182,7 +179,7 @@
      * @private
      */
     IFSliceTool.prototype._modifiersChanged = function (event) {
-        if (event.changed.shiftKey || event.changed.optionKey) {
+        if (event.changed.shiftKey || event.changed.optionKey || event.changed.metaKey) {
             this._invalidateSlice();
         }
     };
@@ -192,13 +189,16 @@
      */
     IFSliceTool.prototype._invalidateSlice = function () {
         if (this._dragStart && this._dragCurrent) {
-            if (IFPoint.equals(this._dragStart, this._dragCurrent)) {
+            this._editor.getGuides().beginMap();
+            var dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
+            this._editor.getGuides().finishMap();
+            if (IFPoint.equals(this._dragStart, dragCurrent)) {
                 this._invalidateSliceArea();
             } else {
                 var x0 = this._dragStart.getX();
                 var y0 = this._dragStart.getY();
-                var x1 = this._dragCurrent.getX();
-                var y1 = this._dragCurrent.getY();
+                var x1 = dragCurrent.getX();
+                var y1 = dragCurrent.getY();
 
                 if (ifPlatform.modifiers.shiftKey) {
                     var w = Math.abs(x1 - x0);

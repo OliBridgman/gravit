@@ -74,6 +74,15 @@
         // NO-OP
     };
 
+    /**
+     * Called to check for each guide if mapping is allowed at the current moment. It may be blocked due to
+     * key modifiers like CTRL, and so on.
+     * @returns {Boolean}
+     */
+    IFGuide.Map.prototype.isMappingAllowed = function () {
+        return true;
+    };
+
     /** @override */
     IFGuide.Map.prototype.toString = function () {
         return "[Mixin IFGuide.Map]";

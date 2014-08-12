@@ -73,6 +73,11 @@
     };
 
     /** @override */
+    IFPageGuide.prototype.isMappingAllowed = function () {
+        return !ifPlatform.modifiers.metaKey;
+    };
+
+    /** @override */
     IFPageGuide.prototype.toString = function () {
         return "[Object IFPageGuide]";
     };

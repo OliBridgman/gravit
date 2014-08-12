@@ -532,7 +532,7 @@
             this._updateMode(null);
         }
 
-        if ((event.changed.shiftKey || event.changed.optionKey) &&
+        if ((event.changed.shiftKey || event.changed.optionKey || event.changed.metaKey) &&
             (this._mode === IFSelectTool._Mode.Moving || this._mode == IFSelectTool._Mode.Transforming)) {
 
             this._updateSelectionTransform();

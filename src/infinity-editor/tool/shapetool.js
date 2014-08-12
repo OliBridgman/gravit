@@ -208,9 +208,6 @@
      */
     IFShapeTool.prototype._mouseDrag = function (event) {
         this._dragCurrent = this._view.getViewTransform().mapPoint(event.client);
-        this._editor.getGuides().beginMap();
-        this._dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
-        this._editor.getGuides().finishMap();
         this._invalidateShape();
     };
 
@@ -255,7 +252,9 @@
      */
     IFShapeTool.prototype._modifiersChanged = function (event) {
         if ((this._keepRatio && event.changed.shiftKey) ||
-            (this._fromCenter && event.changed.optionKey)) {
+                (this._fromCenter && event.changed.optionKey) ||
+                event.changed.metaKey) {
+
             this._invalidateShape();
         }
     };
@@ -265,13 +264,16 @@
      */
     IFShapeTool.prototype._invalidateShape = function () {
         if (this._dragStart && this._dragCurrent) {
-            if (IFPoint.equals(this._dragStart, this._dragCurrent)) {
+            this._editor.getGuides().beginMap();
+            var dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
+            this._editor.getGuides().finishMap();
+            if (IFPoint.equals(this._dragStart, dragCurrent)) {
                 this._invalidateShapeArea();
             } else {
                 var x0 = this._dragStart.getX();
                 var y0 = this._dragStart.getY();
-                var x1 = this._dragCurrent.getX();
-                var y1 = this._dragCurrent.getY();
+                var x1 = dragCurrent.getX();
+                var y1 = dragCurrent.getY();
                 var x2 = x1; // for line
                 var y2 = y1; // for line
 

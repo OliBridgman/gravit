@@ -85,6 +85,11 @@
     };
 
     /** @override */
+    IFShapeBoxGuide.prototype.isMappingAllowed = function () {
+        return !ifPlatform.modifiers.metaKey;
+    };
+
+    /** @override */
     IFShapeBoxGuide.prototype.toString = function () {
         return "[Object IFShapeBoxGuide]";
     };

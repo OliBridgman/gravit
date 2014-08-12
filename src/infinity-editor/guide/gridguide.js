@@ -74,6 +74,11 @@
     };
 
     /** @override */
+    IFGridGuide.prototype.isMappingAllowed = function () {
+        return !ifPlatform.modifiers.metaKey;
+    };
+
+    /** @override */
     IFGridGuide.prototype.toString = function () {
         return "[Object IFGridGuide]";
     };

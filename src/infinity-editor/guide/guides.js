@@ -12,10 +12,10 @@
         this._counter = 0;
         this._visuals = [];
 
-        this.addGuide(new IFShapeBoxGuide(this));
-        this.addGuide(new IFPageGuide(this));
-        this.addGuide(new IFGridGuide(this));
-        this.addGuide(new IFUnitGuide(this));
+        this._addGuide(new IFShapeBoxGuide(this));
+        this._addGuide(new IFPageGuide(this));
+        this._addGuide(new IFGridGuide(this));
+        this._addGuide(new IFUnitGuide(this));
     }
 
     IFObject.inherit(IFGuides, GEventTarget);
@@ -147,30 +147,32 @@
         var targPts = [];
         for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
-            res = guide.map(point.getX(), point.getY());
-            if (res) {
-                if (res.x && resX === null) {
-                    resX = res.x.value;
-                    if (this._visuals && res.x.guide) {
-                        if (res.x.guide instanceof IFPoint) {
-                            targPts.push(res.x.guide);
-                        } else {
-                            this._visuals.push(res.x.guide);
+            if (guide.isMappingAllowed()) {
+                res = guide.map(point.getX(), point.getY());
+                if (res) {
+                    if (res.x && resX === null) {
+                        resX = res.x.value;
+                        if (this._visuals && res.x.guide) {
+                            if (res.x.guide instanceof IFPoint) {
+                                targPts.push(res.x.guide);
+                            } else {
+                                this._visuals.push(res.x.guide);
+                            }
+                        }
+                    }
+                    if (res.y && resY === null) {
+                        resY = res.y.value;
+                        if (this._visuals && res.y.guide) {
+                            if (res.y.guide instanceof IFPoint) {
+                                targPts.push(res.y.guide);
+                            } else {
+                                this._visuals.push(res.y.guide);
+                            }
                         }
                     }
                 }
-                if (res.y && resY === null) {
-                    resY = res.y.value;
-                    if (this._visuals && res.y.guide) {
-                        if (res.y.guide instanceof IFPoint) {
-                            targPts.push(res.y.guide);
-                        } else {
-                            this._visuals.push(res.y.guide);
-                        }
-                    }
-                }
+                res = null;
             }
-            res = null;
         }
 
         if (resX === null) {
@@ -238,7 +240,7 @@
      * Add a guide to this manager
      * @param {IFGuide} guide
      */
-    IFGuides.prototype.addGuide = function (guide) {
+    IFGuides.prototype._addGuide = function (guide) {
         this._guides.push(guide);
     };
 
