@@ -135,8 +135,7 @@
             this._document = document;
             this._document.getScene().addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-            this._panel.find('input[data-apply]')
-                .prop('disabled', this._elements.length <= 1);
+            this._panel.find('input[data-apply]').css('display', this._elements.length <= 1 ? 'none' : '')
             this._panel.find('input[data-name]')
                 .prop('disabled', this._elements.length > 1)
                 .val(this._elements.length === 1 && this._elements[0] instanceof IFBlock ? this._elements[0].getProperty('name') : (this._elements.length.toString() + ' Elements'));
