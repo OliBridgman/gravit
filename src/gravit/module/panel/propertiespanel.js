@@ -175,12 +175,15 @@
 
     /** @private */
     GPropertiesPanel.prototype._updatePropertyPanels = function () {
+        var firstVisiblePropertyPanel = null;
         var lastVisiblePropertyPanel = null;
+
         for (var i = 0; i < this._propertyPanels.length; ++i) {
             var propertyPanel = this._propertyPanels[i];
             var available = !this._elements || this._elements.length === 0 ?
                 false : propertyPanel.properties.update(this._document, this._elements);
 
+            propertyPanel.panel.removeClass('first-visible');
             propertyPanel.panel.removeClass('last-visible');
             if (available) {
                 propertyPanel.category.css('display', '');
@@ -191,12 +194,17 @@
 
                 propertyPanel.panel.attr('data-available', 'true');
 
+                if (!firstVisiblePropertyPanel) firstVisiblePropertyPanel = propertyPanel;
                 lastVisiblePropertyPanel = propertyPanel;
             } else {
                 propertyPanel.category.css('display', 'none');
                 propertyPanel.panel.css('display', 'none');
                 propertyPanel.panel.attr('data-available', 'false');
             }
+        }
+
+        if (firstVisiblePropertyPanel) {
+            firstVisiblePropertyPanel.panel.addClass('first-visible');
         }
 
         if (lastVisiblePropertyPanel) {
