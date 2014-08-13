@@ -1,6 +1,7 @@
 @import '../variables';
 
 #palettes {
+  @include box-sizing(border-box);
   position: absolute;
   right: 0px;
   width: 260px;

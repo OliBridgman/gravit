@@ -73,6 +73,9 @@
         Toolbar: {
             id: "toolbar"
         },
+        Panels: {
+            id: "panels"
+        },
         Sidebars: {
             id: "sidebars"
         },
@@ -180,6 +183,12 @@
     GApplication.prototype._toolbar = null;
 
     /**
+     * @type {GPanels}
+     * @private
+     */
+    GApplication.prototype._panels = null;
+
+    /**
      * @type {GSidebars}
      * @private
      */
@@ -264,6 +273,14 @@
     };
 
     /**
+     * Return access to the panels
+     * @returns {GPanels}
+     */
+    GApplication.prototype.getPanels = function () {
+        return this._panels;
+    };
+
+    /**
      * Return access to the sidebars
      * @returns {GSidebars}
      */
@@ -304,6 +321,7 @@
     GApplication.prototype.setPartVisible = function (part, visible) {
         if (visible != this.isPartVisible(part)) {
             this.getPart(part).css('display', (visible ? 'block' : 'none'));
+            this.relayout();
         }
     };
 
@@ -671,6 +689,13 @@
 
         this._toolbar = new GToolbar(toolbarPart);
 
+        // Panels-Part
+        var panelsPart = $("<div></div>")
+            .attr('id', GApplication.Part.Panels.id)
+            .appendTo(this._view);
+
+        this._panels = new GPanels(panelsPart);
+
         // Sidebars-Part
         var sidebarsPart = $("<div></div>")
             .attr('id', GApplication.Part.Sidebars.id)
@@ -749,6 +774,7 @@
 
         this._header.init();
         this._toolbar.init();
+        this._panels.init();
         this._sidebars.init();
         this._windows.init();
         this._palettes.init();
@@ -791,7 +817,7 @@
 
             var sidebarsPart = this.getPart(GApplication.Part.Sidebars);
             sidebarsPart.css('top', topOffset.toString() + 'px');
-            sidebarsPart.css('left', (this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0).toString() + 'px');
+            sidebarsPart.css('left',leftOffset.toString() + 'px');
             sidebarsPart.height(this._view.height() - topOffset);
             leftOffset += this.isPartVisible(GApplication.Part.Sidebars) ? sidebarsPart.outerWidth() : 0;
 
@@ -800,8 +826,14 @@
             palettesPart.height(this._view.height() - topOffset);
             rightOffset += this.isPartVisible(GApplication.Part.Palettes) ? palettesPart.outerWidth() : 0;
 
+            var panelsPart = this.getPart(GApplication.Part.Panels);
+            panelsPart.css('left', leftOffset.toString() + 'px');
+            panelsPart.css('width', (this._view.width() - leftOffset - rightOffset).toString() + 'px');
+            bottomOffset += this.isPartVisible(GApplication.Part.Panels) ? panelsPart.outerHeight() : 0;
+
             this._header.relayout();
             this._toolbar.relayout();
+            this._panels.relayout();
             this._sidebars.relayout();
             this._windows.relayout([leftOffset, topOffset, rightOffset, bottomOffset]);
             this._palettes.relayout();

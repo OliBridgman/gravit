@@ -1,8 +1,9 @@
 @import '../variables';
 
 #toolbar {
+  @include box-sizing(border-box);
   position: absolute;
-  width: 60px;
+  width: 61px; // + border size
   background: $frameColor;
   border-right: 1px solid $frame3DShadowColor;
 

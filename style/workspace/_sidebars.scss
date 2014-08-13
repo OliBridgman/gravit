@@ -1,6 +1,7 @@
 @import '../variables';
 
 #sidebars {
+  @include box-sizing(border-box);
   position: absolute;
   top: 0px;
   left: 0px;
@@ -11,7 +12,7 @@
   border-right: 1px solid $frameBorderColor;
   background: $frameColor;
 
-  .sidebar-panel {
+  .sidebar-container {
     width: 100%;
     height: 100%;
   }

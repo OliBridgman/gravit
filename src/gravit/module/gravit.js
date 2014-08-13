@@ -25,6 +25,11 @@
             new GStylePalette()
         );
 
+        // Register default panels
+        gravit.panels.push(
+            new GPropertiesPanel()
+        );
+
         // Register default sidebars
         gravit.sidebars.push(
             new GPagesLayersSidebar(),
