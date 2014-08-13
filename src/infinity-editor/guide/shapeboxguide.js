@@ -18,13 +18,13 @@
 
     /** @override */
     IFShapeBoxGuide.prototype.map = function (x, y) {
+        var resX = null;
+        var resY = null;
+        var guideX = null;
+        var guideY = null;
+        var result = null;
         if (this._scene.getProperty('singlePage')) {
             var snapDistance = this._scene.getProperty('snapDist');
-            var resX = null;
-            var resY = null;
-            var guideX = null;
-            var guideY = null;
-            var result = null;
 
             var _snap = function (shape) {
                 var bBox = shape.getGeometryBBox();
