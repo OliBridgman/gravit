@@ -293,6 +293,35 @@
     };
 
     /**
+     * Return the copy of the selection array. Elements in this copy has canvas-relative positions.
+     * @return {Array<IFElement>} the selection array copy or null for no selection
+     */
+    IFEditor.prototype.getSelectionCopy = function () {
+        var selectionCopy = null;
+        if (this._selection && this._selection.length > 0) {
+            selectionCopy = [];
+
+            for (var i = 0; i < this._selection.length; ++i) {
+                var element = this._selection[i];
+                if (element instanceof IFBlock) {
+                    var page = element.getPage();
+                    var copyElem = element.clone();
+                    if (copyElem) {
+                        copyElem.transform(
+                            new IFTransform(1, 0, 0, 1, -page.getProperty('x'), -page.getProperty('y')));
+                        selectionCopy.push(copyElem);
+                    }
+                }
+            }
+
+            if (!selectionCopy.length) {
+                selectionCopy = null;
+            }
+        }
+        return selectionCopy;
+    };
+
+    /**
      * Returns whether selection details are available or not
      * @returns {boolean}
      */
@@ -602,7 +631,7 @@
     IFEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
         var translation = delta;
         if (align && startPos) {
-            var selBBox = this.getSelectionBBox(false);
+            var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
             var side = selBBox.getClosestSideName(startPos);
             var sidePos = selBBox.getSide(side);
             var newSidePos = sidePos.add(delta);
@@ -626,7 +655,7 @@
      * @param {*} [partData] optional data of part that has started the transformation
      */
     IFEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
-        var selBBox = this.getSelectionBBox(false);
+        var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
         if (selBBox) {
             // TODO : Align support
             var tl = selBBox.getSide(IFRect.Side.TOP_LEFT);
@@ -1130,24 +1159,6 @@
             return this._finishEditorInlineEdit(this._currentInlineEditorNode);
         }
         return false;
-    };
-
-    /**
-     * @param {Boolean} paintBBox
-     * @returns {IFRect}
-     */
-    IFEditor.prototype.getSelectionBBox = function (paintBBox) {
-        var selBBox = null;
-        if (this.getSelection()) {
-            for (var i = 0; i < this.getSelection().length; ++i) {
-                var bbox = paintBBox ? this.getSelection()[i].getPaintBBox() : this.getSelection()[i].getGeometryBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    selBBox = selBBox ? selBBox.united(bbox) : bbox;
-                }
-            }
-        }
-
-        return selBBox;
     };
 
     /**

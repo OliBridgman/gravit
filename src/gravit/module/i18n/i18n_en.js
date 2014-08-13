@@ -28,6 +28,7 @@ ifLocale.setValues(GArrangeAction, IFLocale.Language.English, ["title.send-front
 ifLocale.setValues(GOriginalViewAction, IFLocale.Language.English, ["title"], ["Original-View"]);
 ifLocale.setValues(GPaintModeAction, IFLocale.Language.English, ["title"], ["%name% View"]);
 ifLocale.setValues(GPasteAction, IFLocale.Language.English, ["title"], ["Paste"]);
+ifLocale.setValues(GPasteInPlaceAction, IFLocale.Language.English, ["title"], ["Paste In Place"]);
 ifLocale.setValues(GPasteInsideAction, IFLocale.Language.English, ["title"], ["Paste Inside Selection"]);
 ifLocale.setValues(GPasteAttributesAction, IFLocale.Language.English, ["title"], ["Paste Attributes"]);
 ifLocale.setValues(GPixelPreviewAction, IFLocale.Language.English, ["title"], ["Pixel Preview"]);

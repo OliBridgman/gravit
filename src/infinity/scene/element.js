@@ -475,6 +475,28 @@
     };
 
     /**
+     * Calculates the united geometry bbox of the array of elements
+     * @param {Array<*>} group - an array of elements for calculating geometry bbox.
+     * Only IFElement members are taken into account.
+     * @returns {IFRect} the geometry bbox of the group
+     */
+    IFElement.prototype.getGroupGeometryBBox = function (group) {
+        var groupBBox = null;
+        if (group && group.length) {
+            for (var i = 0; i < group.length; ++i) {
+                if (group[i] instanceof IFElement) {
+                    var bbox = group[i].getGeometryBBox();
+                    if (bbox && !bbox.isEmpty()) {
+                        groupBBox = groupBBox ? groupBBox.united(bbox) : bbox;
+                    }
+                }
+            }
+        }
+
+        return groupBBox;
+    };
+
+    /**
      * Called to get the united geometry bbox of all children of this node if this node is a container
      * @return {IFRect} the united geometry bbox of all children or empty rect if this node does not have
      * any children with valid geometry bboxes

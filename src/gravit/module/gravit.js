@@ -221,6 +221,7 @@
             new GCutAction(),
             new GCopyAction(),
             new GPasteAction(),
+            new GPasteInPlaceAction(),
             new GPasteInsideAction(),
             new GDeleteAction(),
 

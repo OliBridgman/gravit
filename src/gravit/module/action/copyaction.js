@@ -75,7 +75,7 @@
             // intern format, rasterized and as svg format
 
             // Make sure to serialize ordered
-            var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelection());
+            var selection = IFNode.order(gApp.getActiveDocument().getEditor().getSelectionCopy());
             var serializedSelection = IFNode.serialize(selection);
             gShell.setClipboardContent(IFNode.MIME_TYPE, serializedSelection);
         }

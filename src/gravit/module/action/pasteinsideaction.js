@@ -95,12 +95,23 @@
                             continue;
                         }
 
+                        var insertGroup = [];
                         for (var k = 0; k < elements.length; ++k) {
                             if (elements[k].validateInsertion(target)) {
-                                var clone = elements[k].clone();
-                                target.appendChild(clone);
-                                newSelection.push(clone);
+                                insertGroup.push(elements[k].clone());
                             }
+                        }
+
+                        var groupBBox = IFElement.prototype.getGroupGeometryBBox(insertGroup);
+                        var groupCntr = groupBBox ? groupBBox.getSide(IFRect.Side.CENTER) : new IFPoint(0,0);
+                        var targBBox = target instanceof IFElement ? target.getGeometryBBox() : null;
+                        var targCntr = targBBox ? targBBox.getSide(IFRect.Side.CENTER) : new IFPoint(0,0);
+                        for (var k = 0; k < insertGroup.length; ++k) {
+                            insertGroup[k].transform(new IFTransform(1, 0, 0, 1,
+                                -groupCntr.getX() + targCntr.getX(), -groupCntr.getY() + targCntr.getY()));
+                            target.appendChild(insertGroup[k]);
+                            newSelection.push(insertGroup[k]);
+
                         }
                     }
 

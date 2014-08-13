@@ -1,7 +1,7 @@
 (function (_) {
 
     /**
-     * Action for pasting clipboard contents
+     * Action for pasting clipboard contents into the center of active page
      * @class GPasteAction
      * @extends GAction
      * @constructor
@@ -75,14 +75,23 @@
             var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
             if (nodes && nodes.length > 0) {
                 var elements = [];
+                var editor = gApp.getActiveDocument().getEditor();
+                var page = gApp.getActiveDocument().getScene().querySingle('page:active');
+                var pageCntr = page.getGeometryBBox().getSide(IFRect.Side.CENTER);
                 for (var i = 0; i < nodes.length; ++i) {
                     if (nodes[i] instanceof IFElement) {
-                        elements.push(nodes[i]);
+                        var element = nodes[i];
+                        var bbox = element.getGeometryBBox();
+                        var elemCntr = bbox ? bbox.getSide(IFRect.Side.CENTER) : new IFPoint(0,0);
+
+                        element.transform(new IFTransform(1, 0, 0, 1,
+                            -elemCntr.getX() + pageCntr.getX(), -elemCntr.getY() + pageCntr.getY()));
+
+                        elements.push(element);
                     }
                 }
 
                 if (elements.length > 0) {
-                    var editor = gApp.getActiveDocument().getEditor();
                     editor.beginTransaction();
                     try {
                         editor.insertElements(elements, true, true);

@@ -292,11 +292,10 @@
             cy = this._transformBox.cy;
         }
         this._transformBox = null;
-        if (this._getGraphicEditor().getSelection()) {
-            var selBBox = this._getGraphicEditor().getSelectionBBox(false);
-            if (selBBox) {
-                this._transformBox = new IFTransformBox(selBBox, cx, cy);
-            }
+        var selection = this._getGraphicEditor().getSelection();
+        var selBBox = IFElement.prototype.getGroupGeometryBBox(selection);
+        if (selBBox) {
+            this._transformBox = new IFTransformBox(selBBox, cx, cy);
         }
         this.requestInvalidation();
 
