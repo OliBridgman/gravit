@@ -15,7 +15,7 @@
     GSidebars.prototype._htmlElement = null;
 
     /**
-     * @type {Array<{{panel: JQuery, sidebar: GSidebar}}>}
+     * @type {Array<{{container: JQuery, sidebar: GSidebar}}>}
      * @private
      */
     GSidebars.prototype._sidebars = null;
@@ -44,10 +44,10 @@
                 var id = sidebar.sidebar.getId();
 
                 if (id === sidebarId) {
-                    sidebar.panel.css('display', '');
+                    sidebar.container.css('display', '');
                     sidebar.sidebar.activate();
                 } else {
-                    sidebar.panel.css('display', 'none');
+                    sidebar.container.css('display', 'none');
                     if (id === this._activeSidebar) {
                         sidebar.sidebar.deactivate();
                     }
@@ -66,15 +66,15 @@
             for (var i = 0; i < gravit.sidebars.length; ++i) {
                 var sidebar = gravit.sidebars[i];
 
-                var panel = $('<div></div>')
-                    .addClass('sidebar-panel sidebar-' + sidebar.getId())
+                var container = $('<div></div>')
+                    .addClass('sidebar-container sidebar-' + sidebar.getId())
                     .css('display', 'none')
                     .appendTo(this._htmlElement);
 
-                sidebar.init(panel);
+                sidebar.init(container);
 
                 this._sidebars.push({
-                    panel: panel,
+                    container: container,
                     sidebar: sidebar
                 });
             }
