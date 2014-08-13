@@ -1038,6 +1038,7 @@
             // ignore root
         } else if (node instanceof IFText.Paragraph) {
             parent = $('<p></p>')
+                .css('margin', '0px') // !!
                 .css(node.propertiesToCss({}))
                 .appendTo(parent);
         } else if (node instanceof IFText.Span) {
