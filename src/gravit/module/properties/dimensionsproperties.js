@@ -15,12 +15,6 @@
      * @type {JQuery}
      * @private
      */
-    GDimensionsProperties.prototype._controls = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
     GDimensionsProperties.prototype._panel = null;
 
     /**
@@ -54,8 +48,7 @@
     };
 
     /** @override */
-    GDimensionsProperties.prototype.init = function (panel, controls) {
-        this._controls = controls;
+    GDimensionsProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createDimensionInput = function (dimension) {
@@ -63,69 +56,62 @@
             return $('<input>')
                 .attr('type', 'text')
                 .attr('data-dimension', dimension)
-                .css('width', '5em')
+                .css('width', '3em')
                 .on('change', function (evt) {
                     self._assignDimension(dimension, $(this).val());
                 });
         }.bind(this);
 
-        var _createApplyButton = function (apply) {
-            var self = this;
-            // TODO : I18N
-            var hint = apply === 'selection' ? 'Selection Dimensions' : 'Individual Elements\' Dimensions';
-            var text = apply === 'selection' ? 'Selection' : 'Individual';
-            return $('<button></button>')
-                .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
-                .attr('title', hint)
-                .attr('data-apply', apply)
-                .text(text)
-                .on('click', function () {
-                    if (!$(this).hasClass('g-active')) {
-                        if (apply === 'selection') {
-                            self._controls.find('button[data-apply="objects"]').removeClass('g-active');
-                            self._controls.find('button[data-apply="selection"]').addClass('g-active');
-                        } else {
-                            self._controls.find('button[data-apply="selection"]').removeClass('g-active');
-                            self._controls.find('button[data-apply="objects"]').addClass('g-active');
-                        }
-                        self._updateDimensions(true);
-                    }
-                });
-        }.bind(this);
-
-        // Init controls
-        controls
-            .append(_createApplyButton('selection'))
-            .append(_createApplyButton('objects'));
-
         // Init panel
         $('<table></table>')
             .addClass('g-form')
-            .css('margin', '0px auto')
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .attr('colspan', '4')
+                    .append($('<input>')
+                        .css('width', '100%')
+                        .attr('data-name', '')
+                        .on('change', function (evt) {
+                            IFEditor.tryRunTransaction(this._elements[0], function () {
+                                this._elements[0].setProperty('name', $(evt.target).val());
+                            }.bind(this), 'Rename Element');
+                        }.bind(this)))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
-                    .text('X:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('x')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Y:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('y'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
                     .text('W:'))
                 .append($('<td></td>')
                     .append(_createDimensionInput('w')))
                 .append($('<td></td>')
                     .addClass('label')
+                    .text('x:'))
+                .append($('<td></td>')
+                    .append(_createDimensionInput('x'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
                     // TODO : I18N
                     .text('H:'))
                 .append($('<td></td>')
-                    .append(_createDimensionInput('h'))))
+                    .append(_createDimensionInput('h')))
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Y:'))
+                .append($('<td></td>')
+                    .append(_createDimensionInput('y'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .attr('colspan', '4')
+                    .append($('<label></label>')
+                        .append($('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('data-apply', '')
+                            .on('change', function () {
+                                this._updateDimensions(true);
+                            }.bind(this)))
+                        .append($('<span></span>')
+                            .html('&nbsp;Apply to Selection')))))
             .appendTo(panel);
     };
 
@@ -133,6 +119,7 @@
     GDimensionsProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
@@ -147,8 +134,12 @@
         if (this._elements.length > 0) {
             this._document = document;
             this._document.getScene().addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
-            this._controls.find('button[data-apply="selection"]').css('display', this._elements.length > 1 ? '' : 'none');
-            this._controls.find('button[data-apply="objects"]').css('display', this._elements.length > 1 ? '' : 'none');
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._panel.find('input[data-apply]')
+                .prop('disabled', this._elements.length <= 1);
+            this._panel.find('input[data-name]')
+                .prop('disabled', this._elements.length > 1)
+                .val(this._elements.length === 1 && this._elements[0] instanceof IFBlock ? this._elements[0].getProperty('name') : (this._elements.length.toString() + ' Elements'));
             this._updateDimensions();
             return true;
         } else {
@@ -166,6 +157,16 @@
             if (this._elements.indexOf(event.element) >= 0) {
                 this._updateDimensions();
             }
+    };
+
+    /**
+     * @param {IFElement.GeometryChangeEvent} event
+     * @private
+     */
+    GDimensionsProperties.prototype._afterPropertiesChange = function (event) {
+        if (this._elements && this._elements.length === 1 && this._elements[0] === event.node && event.properties.indexOf('name') >= 0) {
+            this._panel.find('input[data-name]').val(this._elements[0].getProperty('name'));
+        }
     };
 
     /**
@@ -198,16 +199,17 @@
             }
         }
 
-        var applyToSelection = this._controls.find('button[data-apply="selection"]').hasClass('g-active');
+        var applyToSelection = this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
+        var delta = this._getDelta();
 
         if (applyToSelection) {
-            _updateDimension('x', this._elementsBBox.getX());
-            _updateDimension('y', this._elementsBBox.getY());
+            _updateDimension('x', this._elementsBBox.getX() - delta.getX());
+            _updateDimension('y', this._elementsBBox.getY() - delta.getY());
             _updateDimension('w', this._elementsBBox.getWidth());
             _updateDimension('h', this._elementsBBox.getHeight());
         } else {
-            _updateDimension('x', this._firstElementsBBox.getX());
-            _updateDimension('y', this._firstElementsBBox.getY());
+            _updateDimension('x', this._firstElementsBBox.getX() - delta.getX());
+            _updateDimension('y', this._firstElementsBBox.getY() - delta.getY());
             _updateDimension('w', this._firstElementsBBox.getWidth());
             _updateDimension('h', this._firstElementsBBox.getHeight());
         }
@@ -223,6 +225,21 @@
         if (value === null || typeof value !== 'number' || ((dimension === 'w' || dimension == 'h') && value <= 0)) {
             this._updateDimensions();
             return;
+        }
+
+        // Correct x,y for delta if any
+        if (dimension === 'x' || dimension === 'y') {
+            var delta = this._getDelta();
+            switch (dimension) {
+                case 'x':
+                    value += delta.getX();
+                    break;
+                case 'y':
+                    value += delta.getY();
+                    break;
+                default:
+                    break;
+            }
         }
 
         var _getTransformation = function (bbox) {
@@ -248,7 +265,7 @@
             }
         };
 
-        var applyToSelection = this._controls.find('button[data-apply="selection"]').hasClass('g-active');
+        var applyToSelection = this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
 
         var editor = this._document.getEditor();
         editor.beginTransaction();
@@ -269,6 +286,22 @@
             editor.commitTransaction('Modify Dimensions');
         }
     };
+
+    /**
+     * @returns {IFPoint}
+     * @private
+     */
+    GDimensionsProperties.prototype._getDelta = function () {
+        var scene = this._document.getScene();
+        if (scene.getProperty('singlePage') === true) {
+            var activePage = scene.getActivePage();
+            if (activePage) {
+                return activePage.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+            }
+        }
+
+        return new IFPoint(0, 0);
+    }
 
     /** @override */
     GDimensionsProperties.prototype.toString = function () {

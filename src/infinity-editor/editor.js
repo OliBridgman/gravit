@@ -583,6 +583,10 @@
      * from the selection or null for none
      */
     IFEditor.prototype.clearSelection = function (exclusion) {
+        if (ifUtil.equals(exclusion, this._selection)) {
+            return;
+        }
+
         this._beginSelectionUpdate();
         try {
             var index = 0;
