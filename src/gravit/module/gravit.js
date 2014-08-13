@@ -80,7 +80,7 @@
                 group: 'transform',
                 keys: ['Q'],
                 // todo : get a real svg icon here
-                icon: '<span class="fa fa-arrows" style="font-size:16px"></span>'
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M17.5,32.5H12l-3.5,4v-11L17.5,32.5z M3.5,18.5h-3v3h1v-2h2V18.5z M15.5,18.5v1h2v2h1v-3H15.5z M1.5,35.5v-2h-1v3h3v-1H1.5z M6.4,33.5H3.5v-12h12v7h1v-8h-14v14h3.9V33.5z"/>\n</svg>'
             },
             {
                 instance: new IFLineTool(),
@@ -144,8 +144,7 @@
                 category: GApplication.TOOL_CATEGORY_OTHER,
                 group: 'slice',
                 keys: ['K'],
-                // todo : get a real svg icon here
-                icon: '<span class="fa fa-slack" style="font-size:16px"></span>'
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M14.8,19.3L2.6,33.4c-0.2,0.3-0.1,0.7,0.1,0.9c0.2,0.2,0.6,0.3,0.9,0.1c0,0,7.9-4.9,8-5.1l6.4-7.4l0,0 c0.8-0.9,0.5-2.2-0.3-2.9C16.9,18.3,15.6,18.3,14.8,19.3z M17,21l-6.3,7.4l-1.1-0.9l6.4-7.4c0.4-0.5,1-0.2,1-0.1 C17.2,20.2,17.2,20.7,17,21z M18.5,25.5v11h-18v-18v0h11v1h-10v16h16v-10H18.5z"/>\n</svg>'
             },
             {
                 instance: new IFZoomTool(),
