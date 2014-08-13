@@ -12,8 +12,29 @@
   background: $frameColor;
 
   .panels-tabs {
+    padding-top: 2px;
     height: 25px;
     background: $frameDarkColor;
+
+    > button {
+      background: $frameDarkColor;
+      padding-left: 7px;
+      padding-right: 7px;
+      text-transform: uppercase;
+
+      &:active, &.g-active {
+        background: $activeColor;
+
+        &, * {
+          color: $activeTextColor;
+        }
+
+        svg {
+          fill: $activeTextColor;
+          stroke: $activeTextColor;
+        }
+      }
+    }
   }
 
   .panels-frames {

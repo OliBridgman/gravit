@@ -27,7 +27,8 @@
 
         // Register default panels
         gravit.panels.push(
-            new GPropertiesPanel()
+            new GPropertiesPanel(),
+            new GTransformPanel()
         );
 
         // Register default sidebars

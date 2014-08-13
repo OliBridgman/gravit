@@ -14,7 +14,6 @@
 
   .palette-group {
     overflow: hidden;
-    border-bottom: 1px solid $frame3DShadowColor;
 
     &:last-child, &.collapsed-palette {
       border-bottom: none;
@@ -22,10 +21,13 @@
 
     > .palette-group-header {
       display: table;
-      height: 24px;
+      padding-top: 2px;
+      height: 25px;
       width: 100%;
-      background: #CED7E0 linear-gradient(to top, $frameDarkColor, $frameColor);
-      border-top: 1px solid $frame3DLightColor;
+      //background: #CED7E0 linear-gradient(to top, $frameDarkColor, $frameColor);
+      //border-top: 1px solid $frame3DLightColor;
+      //border-bottom: 1px solid $frame3DShadowColor;
+      background: $frameDarkColor;
       border-bottom: 1px solid $frame3DShadowColor;
 
       > * {
@@ -36,7 +38,7 @@
       }
 
       button {
-        background: transparent !important;
+        background: $frameDarkColor;
         border: none;
         margin: 0px;
       }
@@ -49,21 +51,27 @@
         width: 100%;
 
         > button {
-          padding-right: 5px;
-          border-left: 1px solid $frameBorderColor;
+          //padding-right: 5px;
+          //border-left: 1px solid $frameBorderColor;
+          //padding-left: 5px;
+          //font-weight: 600;
           padding-left: 5px;
-          font-weight: 600;
+          padding-right: 5px;
           text-transform: uppercase;
-          color: $selectedColor;
-        }
+          //color: $selectedColor;
 
-        button:not(:active):not(.g-active) {
-          color: $textColor;
-        }
+          &:active, &.g-active {
+            background: $activeColor;
 
-        > button:first-child {
-          padding-left: 0px;
-          border-left: none;
+            &, * {
+              color: $activeTextColor;
+            }
+
+            svg {
+              fill: $activeTextColor;
+              stroke: $activeTextColor;
+            }
+          }
         }
       }
 

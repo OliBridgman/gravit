@@ -6,6 +6,7 @@
   width: 61px; // + border size
   background: $frameColor;
   border-right: 1px solid $frame3DShadowColor;
+  border-top: 3px solid $frameDarkColor;
 
   &, *:not(.fa) {
     font: $smallFont;
@@ -97,6 +98,7 @@
   width: 100%;
   text-align: left;
   padding: 5px;
+  height: 28px;
 
   &.g-hover {
     background: $activeColor;

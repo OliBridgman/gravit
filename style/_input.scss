@@ -19,7 +19,7 @@ button, .g-button, input, textArea, select, .g-input {
   }
 
   &, * {
-    line-height: 14px !important;
+    line-height: 14px;
   }
 }
 
@@ -50,8 +50,6 @@ button, .g-button {
   }
 
   &:disabled {
-    background: $frameColor !important;
-
     &, * {
       color: $disabledTextColor !important;
     }
@@ -93,6 +91,7 @@ select {
 
 input[type="range"] {
   padding: 2px;
+  height: auto !important;
 
   &::-moz-range-track {
     border: none;

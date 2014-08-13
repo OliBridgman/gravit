@@ -45,14 +45,18 @@
 
                 if (id === panelId) {
                     panel.container.css('display', '');
+                    panel.tab.addClass('g-active');
                     panel.panel.activate();
                 } else {
                     panel.container.css('display', 'none');
+                    panel.tab.removeClass('g-active');
                     if (id === this._activePanel) {
                         panel.panel.deactivate();
                     }
                 }
             }
+
+            this._activePanel = panelId;
         }
     };
 
@@ -78,7 +82,7 @@
                     .addClass('panel-tab')
                     .attr('data-panel-id', panel.getId())
                     .text(ifLocale.get(panel.getTitle()))
-                    .on('click', function () {
+                    .on('click', function (evt) {
                         this.setActivePanel($(evt.target).attr('data-panel-id'));
                     }.bind(this))
                     .appendTo(panelsTabs);

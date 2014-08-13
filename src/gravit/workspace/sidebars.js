@@ -53,6 +53,8 @@
                     }
                 }
             }
+
+            this._activeSidebar = sidebarId;
         }
     };
 
