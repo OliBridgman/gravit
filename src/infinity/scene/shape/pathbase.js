@@ -138,11 +138,17 @@
     };
 
     /**
+     * Constant used for approximating circle arcs with cubic bezier curve
+     * @type {Number}
+     */
+    IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF = 0.55191502; // http://spencermortensen.com/articles/bezier-circle/
+
+    /**
      * Coefficient, meaning the relevant length of handle in relevance to the distance between points,
      * when handle length should be calculated automatically
      * @type {number}
      */
-    IFPathBase.AnchorPoint.HANDLE_COEFF = 0.4;
+    IFPathBase.AnchorPoint.HANDLE_COEFF = 0.39026286; // 0.551915024494 / sqrt(2)
 
     /** @override */
     IFPathBase.AnchorPoint.prototype.validateInsertion = function (parent, reference) {
@@ -1230,8 +1236,6 @@
                 target.addVertex(IFVertex.Command.Curve, pt2x, pt2y);
                 target.addVertex(IFVertex.Command.Curve, edgePtx, edgePty);
             } else {
-                // TODO: may be check angle, and if == 90, create properly rounded arc instead of quadratic curve,
-                // see code example at coconut:QCDrawPathWorkerImpl.cpp: QCDrawPathWorkerImpl::addStyledEdge
                 if (edgePtType == IFPathBase.CornerType.Rounded) {
                     edgeForArcX = edgePtx;
                     edgeForArcY = edgePty;
@@ -1239,8 +1243,13 @@
                     edgeForArcX = pt1x + pt2x - edgePtx;
                     edgeForArcY = pt1y + pt2y - edgePty;
                 }
-                target.addVertex(IFVertex.Command.Curve, pt2x, pt2y);
-                target.addVertex(IFVertex.Command.Curve, edgeForArcX, edgeForArcY);
+                target.addVertex(IFVertex.Command.Curve2, pt2x, pt2y);
+                target.addVertex(IFVertex.Command.Curve2,
+                    pt1x + (edgeForArcX - pt1x) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
+                    pt1y + (edgeForArcY - pt1y) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
+                target.addVertex(IFVertex.Command.Curve2,
+                    pt2x + (edgeForArcX - pt2x) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
+                    pt2y + (edgeForArcY - pt2y) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
             }
         } else if (edgePtType == IFPathBase.CornerType.Fancy) {
             chunk1X = (pt2x - edgePtx) / 3;
