@@ -64,7 +64,17 @@
     GZoomInAction.prototype.execute = function () {
         var view = gApp.getWindows().getActiveWindow().getView();
         var newZoom = view.getZoom() * GZoomInAction.ZOOM_STEP;
-        var zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+        var scene = view.getScene();
+        var zoomPoint = null;
+        if (scene.getProperty('singlePage')) {
+            var pageBBox = scene.getActivePage().getGeometryBBox();
+            if (pageBBox && !pageBBox.isEmpty()) {
+                zoomPoint = pageBBox.getSide(IFRect.Side.CENTER);
+            }
+        }
+        if (!zoomPoint) {
+            zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+        }
         view.zoomAt(zoomPoint, newZoom);
     };
 
