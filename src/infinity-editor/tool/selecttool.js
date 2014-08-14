@@ -235,19 +235,35 @@
 
         // If we didn't receive an editor part then do our regular stuff here
         if (this._mode === IFSelectTool._Mode.Select) {
+            // Test selection at first, and if hit, leave it as is
+            var selection = this._editor.getSelection();
             var selectableElements = [];
-
-            var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
-                stacked, -1, this._scene.getProperty('pickDist'));
-
-            // Convert element hits if any into an array of pure elements
-            // and gather the selectable elements from it
-            if (elementHits) {
-                var elements = [];
-                for (var i = 0; i < elementHits.length; ++i) {
-                    elements.push(elementHits[i].element);
+            var element;
+            var hitRes = null;
+            if (selection && selection.length) {
+                for (var i = 0; i < selection.length && !hitRes; ++i) {
+                    if (selection[i] instanceof IFElement) {
+                        element = selection[i];
+                        hitRes = element.hitTest(event.client, this._view.getWorldTransform(), null,
+                            stacked, -1, this._scene.getProperty('pickDist'), true);
+                    }
                 }
-                selectableElements = this._getSelectableElements(elements);
+            }
+            if (hitRes) {
+                selectableElements.push(element);
+            } else {
+                var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
+                    stacked, -1, this._scene.getProperty('pickDist'));
+
+                // Convert element hits if any into an array of pure elements
+                // and gather the selectable elements from it
+                if (elementHits) {
+                    var elements = [];
+                    for (var i = 0; i < elementHits.length; ++i) {
+                        elements.push(elementHits[i].element);
+                    }
+                    selectableElements = this._getSelectableElements(elements);
+                }
             }
 
             if (selectableElements.length > 0) {
@@ -290,7 +306,7 @@
                     }
 
                     // Switch to move mode if there's any selection in editor
-                    var selection = this._editor.getSelection();
+                    selection = this._editor.getSelection();
                     if (selection && selection.length > 0) {
                         this._updateMode(IFSelectTool._Mode.Move);
                     }
