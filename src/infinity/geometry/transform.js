@@ -21,17 +21,11 @@
      * @returns {Array} serialized array or empty array for identity
      */
     IFTransform.serialize = function (transform) {
-        var result = [];
-        if (!ifMath.isEqualEps(transform._sx, 1.0) || !ifMath.isEqualEps(transform._sy, 1.0)) {
-            result = result.concat(['S'], transform._sx, transform._sy);
+        if (!transform.isIdentity()) {
+            return transform.getMatrix();
+        } else {
+            return [];
         }
-        if (!ifMath.isEqualEps(transform._shx, 0.0) || !ifMath.isEqualEps(transform._shy, 0.0)) {
-            result = result.concat(['H'], transform._shx, transform._shy);
-        }
-        if (!ifMath.isEqualEps(transform._tx, 0.0) || !ifMath.isEqualEps(transform._ty, 0.0)) {
-            result = result.concat(['T'], transform._tx, transform._ty);
-        }
-        return result;
     };
 
     /**
@@ -40,44 +34,11 @@
      * @return {IFTransform}
      */
     IFTransform.deserialize = function (array) {
-        // 0 = SX,SY | 1 = SHX,SHY | 2 = TX,TY
-        var sx = 1, shy = 0, shx = 0, sy = 1, tx = 0, ty = 1;
-        var mode = -1;
-        var index = 0;
-        while (index < array.length) {
-            if (typeof array[index] === 'string') {
-                if (array[index] === 'S') {
-                    mode = 0;
-                } else if (array[index] === 'H') {
-                    mode = 1;
-                } else if (array[index] === 'T') {
-                    mode = 2;
-                } else {
-                    throw new Error("Broken transform integrity.");
-                }
-                index += 1;
-            } else {
-                switch (mode) {
-                    case 0:
-                        sx = array[index];
-                        sy = array[index + 1];
-                        break;
-                    case 1:
-                        shx = array[index];
-                        shy = array[index + 1];
-                        break;
-                    case 2:
-                        tx = array[index];
-                        ty = array[index + 1];
-                        break;
-                    default:
-                        throw new Error("Broken transform integrity.");
-                }
-                index += 2;
-            }
+        if (array && array.length >= 6) {
+            return new IFTransform(array[0], array[1], array[2], array[3], array[4], array[5]);
+        } else {
+            return new IFTransform();
         }
-
-        return new IFTransform(sx, shy, shx, sy, tx, ty);
     };
 
     /**

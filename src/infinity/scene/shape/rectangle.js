@@ -112,7 +112,7 @@
     /** @override */
     IFRectangle.prototype.store = function (blob) {
         if (IFPathBase.prototype.store.call(this, blob)) {
-            if (this.uf) {
+            if (this.$uf) {
                 blob.uf = true; // all uniform
                 blob.ct = this.$tl_ct; // all corner type
                 blob.sl = this.$tl_sx; // all shoulder length
@@ -137,6 +137,7 @@
             for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
                 var side = IFRectangle.SIDES[i];
                 var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
+                this.$uf = blob.uf;
                 this['$' + prefix + '_uf'] = blob.uf ? blob.uf : blob[prefix + 'uf'];
                 this['$' + prefix + '_ct'] = blob.uf ? blob.ct : blob[prefix + 'ct'];
                 this['$' + prefix + '_sx'] = blob.uf ? blob.sl : blob[prefix + 'sl'][0];
