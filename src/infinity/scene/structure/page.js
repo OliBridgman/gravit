@@ -105,23 +105,29 @@
 
     /** @override */
     IFPage.prototype.restore = function (blob) {
-        if (IFBlock.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFPage.GeometryProperties);
-            this.restoreProperties(blob, IFPage.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
+        // Ugly hack to prevent transforming children when restoring
+        this.__restoring = true;
+        try {
+            if (IFBlock.prototype.restore.call(this, blob)) {
+                this.restoreProperties(blob, IFPage.GeometryProperties);
+                this.restoreProperties(blob, IFPage.VisualProperties, function (property, value) {
+                    if (property === 'cls' && value) {
+                        return IFColor.parseColor(value);
+                    }
+                    return value;
+                });
+
+                // Restore activeness flag which is special to pages and layers
+                if (blob.__active) {
+                    this.setFlag(IFNode.Flag.Active);
                 }
-                return value;
-            });
 
-            // Restore activeness flag which is special to pages and layers
-            if (blob.__active) {
-                this.setFlag(IFNode.Flag.Active);
+                return true;
             }
-
-            return true;
+            return false;
+        } finally {
+            delete this.__restoring;
         }
-        return false;
     };
 
     /** @override */
@@ -229,13 +235,14 @@
             return new IFBlock.HitResult(this);
         }
 
-        return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);;
+        return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
+        ;
     };
 
     /** @override */
     IFPage.prototype._handleChange = function (change, args) {
         if (this._handleGeometryChangeForProperties(change, args, IFPage.GeometryProperties)) {
-            if (change === IFNode._Change.BeforePropertiesChange) {
+            if (change === IFNode._Change.BeforePropertiesChange && !this.__restoring) {
                 // Check for position change in page
                 var xIndex = args.properties.indexOf('x');
                 var yIndex = args.properties.indexOf('y');
