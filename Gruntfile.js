@@ -320,38 +320,6 @@ module.exports = function (grunt) {
                 winIco: 'shell/system/appicon.ico'
             },
             src: '<%= cfg.build %>/system/**/*'
-        },
-        compress: {
-            dist_chrome: {
-                options: {
-                    mode: 'zip',
-                    archive: '<%= cfg.dist %>/gravit-chrome.zip'
-                },
-                expand: true,
-                cwd: '<%= cfg.build %>/chrome',
-                src: ['**/**'],
-                dest: '/'
-            },
-            dist_win: {
-                options: {
-                    mode: 'zip',
-                    archive: '<%= cfg.dist %>/gravit-windows.zip'
-                },
-                expand: true,
-                cwd: '<%= cfg.build %>/system-binaries/Gravit/win',
-                src: ['**/**'],
-                dest: '/'
-            },
-            dist_linux64: {
-                options: {
-                    mode: 'zip',
-                    archive: '<%= cfg.dist %>/gravit-linux64.zip'
-                },
-                expand: true,
-                cwd: '<%= cfg.build %>/system-binaries/Gravit/linux64',
-                src: ['**/**'],
-                dest: '/'
-            }
         }
     });
 
@@ -404,9 +372,43 @@ module.exports = function (grunt) {
     })
 
     grunt.registerTask('_dist_win', function () {
+        // TODO : Build installer
         var done = this.async();
-        // TODO
-        done();
+
+        exec('zip -r -X ../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.build + '/system-binaries/Gravit/win'}, function (error, stdout, stderr) {
+            if (stdout) console.log(stdout);
+            if (stderr) console.log(stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            done();
+        });
+    })
+
+    grunt.registerTask('_dist_linux', function () {
+        var done = this.async();
+
+        exec('zip -r -X ../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.build + '/system-binaries/Gravit/linux64'}, function (error, stdout, stderr) {
+            if (stdout) console.log(stdout);
+            if (stderr) console.log(stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            done();
+        });
+    })
+
+    grunt.registerTask('_dist_chrome', function () {
+        var done = this.async();
+
+        exec('zip -r -X ../../' + cfg.dist + '/gravit-chrome.zip *', {cwd: cfg.build + '/chrome'}, function (error, stdout, stderr) {
+            if (stdout) console.log(stdout);
+            if (stderr) console.log(stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            done();
+        });
     })
 
     // Public tasks
@@ -454,9 +456,9 @@ module.exports = function (grunt) {
             'clean:dist',
             'copy:dist',
             '_dist_osx',
-            'compress:dist_chrome',
-            'compress:dist_win',
-            'compress:dist_linux64'
+            '_dist_linux',
+            '_dist_win',
+            '_dist_chrome'
         ]);
     });
 
