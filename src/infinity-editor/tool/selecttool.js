@@ -111,6 +111,11 @@
 
     /** @override */
     IFSelectTool.prototype.deactivate = function (view) {
+        if (this._visualsArea) {
+            this.invalidateArea(this._visualsArea);
+            this._visualsArea = null;
+        }
+
         if (this._mode === IFSelectTool._Mode.Transforming) {
             this._closeTransformBox();
         }
@@ -146,6 +151,18 @@
             var w = Math.ceil(this._selectArea.getWidth()) - 1.0;
             var h = Math.ceil(this._selectArea.getHeight()) - 1.0;
             context.canvas.strokeRect(x, y, w, h, 1, context.selectionOutlineColor);
+        }
+        if (this._visuals) {
+            var visLine;
+            for (var i = 0; i < this._visuals.length; ++i) {
+                visLine = this._visuals[i];
+                var pt0 = visLine[0];
+                var pt1 = visLine[1];
+                context.canvas.strokeLine(Math.floor(pt0.getX()) + 0.5, Math.floor(pt0.getY()) + 0.5,
+                    Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 1, context.highlightOutlineColor);
+            }
+
+            this._visuals = null;
         }
     };
 
@@ -339,6 +356,10 @@
      * @private
      */
     IFSelectTool.prototype._mouseDragStart = function (event) {
+        if (this._visualsArea) {
+            this.invalidateArea(this._visualsArea);
+            this._visualsArea = null;
+        }
         var sceneEditor = IFElementEditor.getEditor(this._scene);
         if (sceneEditor && sceneEditor.isTransformBoxActive()) {
             if (this._mode != IFSelectTool._Mode.Transforming) {
@@ -661,6 +682,7 @@
      */
     IFSelectTool.prototype._updateEditorUnderMouse = function (mouse) {
         var hasEditorInfoUnderMouse = false;
+        this._visuals = null;
 
         if (this._mode == IFSelectTool._Mode.Transforming) {
             var sceneEditor = IFElementEditor.getEditor(this._scene);
@@ -676,10 +698,11 @@
         }
 
         // Hit-Test editor under mouse if not in any mode
+        var partInfo = null;
         if (!this._mode) {
             var docEditor = IFElementEditor.getEditor(this._scene);
             if (docEditor) {
-                var partInfo = docEditor.getPartInfoAt(mouse, this._view.getWorldTransform(), function (editor) {
+                partInfo = docEditor.getPartInfoAt(mouse, this._view.getWorldTransform(), function (editor) {
                     // Ensure to allow selected editors for part, only
                     return editor.hasFlag(IFElementEditor.Flag.Selected);
                 }.bind(this), this._scene.getProperty('pickDist'));
@@ -692,9 +715,80 @@
             }
         }
 
+        if (!this._mode && !partInfo || this._mode == IFSelectTool._Mode.Select) {
+            var selection = this._editor.getSelection();
+            var selectableElements = [];
+            var shape;
+            var hitRes = null;
+            var stacked = false;
+            if (selection && selection.length == 1 && selection[0] instanceof IFShape) {
+                hitRes = selection[0].hitTest(mouse, this._view.getWorldTransform(), null,
+                    stacked, -1, this._scene.getProperty('pickDist'), true);
+                if (hitRes) {
+                    shape = selection[0];
+                }
+            }
+            if (!shape) {
+                var elementHits = this._scene.hitTest(mouse, this._view.getWorldTransform(), null,
+                    stacked, -1, this._scene.getProperty('pickDist'));
+
+                if (elementHits && elementHits.length) {
+                    for (var i = 0; i < elementHits.length && !shape; ++i) {
+                        if (elementHits[i].element instanceof IFShape) {
+                            if (!shape) {
+                                shape = elementHits[i].element;
+                            }
+                        }
+                    }
+                }
+            }
+            if (shape) {
+                var bBox = shape.getGeometryBBox();
+                var mousePt = this._view.getViewTransform().mapPoint(mouse);
+                if (bBox && !bBox.isEmpty() && bBox.containsPoint(mousePt)) {
+                    this._visuals = [];
+                    var side = bBox.getClosestSideName(mousePt);
+                    var sidePos = this._view.getWorldTransform().mapPoint(bBox.getSide(side));
+                    var tl = this._view.getWorldTransform().mapPoint(bBox.getSide(IFRect.Side.TOP_LEFT));
+                    var br = this._view.getWorldTransform().mapPoint(bBox.getSide(IFRect.Side.BOTTOM_RIGHT));
+                    var hVis = true;
+                    var vVis = true;
+                    switch (side) {
+                        case IFRect.Side.TOP_CENTER:
+                        case IFRect.Side.BOTTOM_CENTER:
+                            vVis = false;
+                            break;
+                        case IFRect.Side.LEFT_CENTER:
+                        case IFRect.Side.RIGHT_CENTER:
+                            hVis = false;
+                            break;
+                    }
+                    if (hVis) {
+                        this._visuals.push(
+                            [new IFPoint(tl.getX(), sidePos.getY()), new IFPoint(br.getX(), sidePos.getY())]);
+                    }
+                    if (vVis) {
+                        this._visuals.push(
+                            [new IFPoint(sidePos.getX(), tl.getY()), new IFPoint(sidePos.getX(), br.getY())]);
+                    }
+                }
+            }
+        }
+
         if (!hasEditorInfoUnderMouse && this._editorUnderMouseInfo) {
             this._editorUnderMouseInfo = null;
             this.updateCursor();
+        }
+
+        var visualsArea = this._visuals ? this._view.getWorldTransform().mapRect(bBox).expanded(1, 1, 1, 1) : null;
+        if (this._visualsArea || visualsArea) {
+            if (this._visualsArea) {
+                this.invalidateArea(this._visualsArea);
+            }
+            if (visualsArea) {
+                this.invalidateArea(visualsArea);
+            }
+            this._visualsArea = visualsArea;
         }
     };
 
