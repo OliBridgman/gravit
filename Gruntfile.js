@@ -209,15 +209,17 @@ module.exports = function (grunt) {
                     },
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/browser/',
-                        dest: '<%= cfg.build %>/browser/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
                         cwd: 'shell/browser/',
                         dest: '<%= cfg.build %>/browser/',
                         src: ['index.html']
+                    },
+
+                    // Infinity
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/source/',
+                        dest: '<%= cfg.build %>/infinity/',
+                        src: ['cursor/*.*', 'infinity-**.js']
                     },
 
                     // Chrome
@@ -263,10 +265,19 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: [
+                    // Browser
                     {
                         expand: true,
                         cwd: '<%= cfg.build %>/browser/',
                         dest: '<%= cfg.dist %>/browser/',
+                        src: ['**']
+                    },
+
+                    // Infinity
+                    {
+                        expand: true,
+                        cwd: '<%= cfg.build %>/infinity/',
+                        dest: '<%= cfg.dist %>/infinity/',
                         src: ['**']
                     }
                 ]
@@ -375,7 +386,7 @@ module.exports = function (grunt) {
         // TODO : Build installer
         var done = this.async();
 
-        exec('zip -r -X ../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.build + '/system-binaries/Gravit/win'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.build + '/system-binaries/Gravit/win'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -388,7 +399,7 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_linux', function () {
         var done = this.async();
 
-        exec('zip -r -X ../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.build + '/system-binaries/Gravit/linux64'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.build + '/system-binaries/Gravit/linux64'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
