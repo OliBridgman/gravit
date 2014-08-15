@@ -7,12 +7,12 @@ button, .g-button, input, textArea, select, .g-input {
   -ms-appearance: none;
   @include box-sizing(border-box);
   margin: 0px;
-  padding: 3px;
-  line-height: 22px;
+  padding: 1px 3px;
+  line-height: 20px;
   vertical-align: middle;
   background: $frameColor;
   color: $textColor;
-  height: 22px;
+  height: 20px;
 
   &:not(:last-child) {
     margin-right: 3px;
