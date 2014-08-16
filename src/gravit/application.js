@@ -476,24 +476,41 @@
             var storage = this.getStorage(url);
             if (storage) {
                 storage.load(url, true, function (data, name) {
-                    var scene = new IFScene();
-                    var document = new GDocument(scene, url, name);
-                    try {
-                        var source = pako.ungzip(new Uint8Array(data), { to: 'string' });
-                        var blob = JSON.parse(source);
-                        if (!scene.restore(blob)) {
-                            throw new Error('Failure.');
+                    var _readDocument = function (source) {
+                        var scene = new IFScene();
+                        var document = new GDocument(scene, url, name);
+                        try {
+                            var blob = JSON.parse(source);
+                            if (!scene.restore(blob)) {
+                                throw new Error('Failure.');
+                            }
+                        } catch (e) {
+                            document.close();
+                            scene = null;
+                            document = null;
+                            console.log(e);
+                            alert('An error has ocurred while trying to open the document.');
                         }
-                    } catch (e) {
-                        document.close();
-                        scene = null;
-                        document = null;
-                        console.log(e);
-                        alert('An error has ocurred while trying to open the document.');
-                    }
 
-                    if (document) {
-                        this._addDocument(document);
+                        if (document) {
+                            this._addDocument(document);
+                        }
+                    }.bind(this);
+
+
+                    var uint8Array = new Uint8Array(data);
+
+                    // Test for gzip
+                    if (uint8Array[0] === 0x1F && uint8Array[1] === 0x8B && uint8Array[2] === 0x08) {
+                        var source = pako.ungzip(uint8Array, { to: 'string' });
+                        _readDocument(source);
+                    } else {
+                        // Assume plain string
+                        var f = new FileReader();
+                        f.onload = function (e) {
+                            _readDocument(e.target.result);
+                        }
+                        f.readAsText(new Blob([data]));
                     }
                 }.bind(this));
             }
@@ -817,7 +834,7 @@
 
             var sidebarsPart = this.getPart(GApplication.Part.Sidebars);
             sidebarsPart.css('top', topOffset.toString() + 'px');
-            sidebarsPart.css('left',leftOffset.toString() + 'px');
+            sidebarsPart.css('left', leftOffset.toString() + 'px');
             sidebarsPart.height(this._view.height() - topOffset);
             leftOffset += this.isPartVisible(GApplication.Part.Sidebars) ? sidebarsPart.outerWidth() : 0;
 
