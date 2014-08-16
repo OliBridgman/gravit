@@ -479,7 +479,7 @@
                     var scene = new IFScene();
                     var document = new GDocument(scene, url, name);
                     try {
-                        var source = pako.inflate(new Uint8Array(data), { to: 'string' });
+                        var source = pako.ungzip(new Uint8Array(data), { to: 'string' });
                         var blob = JSON.parse(source);
                         if (!scene.restore(blob)) {
                             throw new Error('Failure.');

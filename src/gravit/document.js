@@ -150,7 +150,7 @@
         // TODO : Reset undo list/set save point
         if (this._url) {
             var input = IFNode.serialize(this._scene);
-            var output = pako.deflate(input);
+            var output = pako.gzip(input, {level:9});
             this._storage.save(this._url, output.buffer, true, function (name) {
                 this._title = name;
             }.bind(this));
