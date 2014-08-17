@@ -750,10 +750,8 @@
 
                 if (elementHits && elementHits.length) {
                     for (var i = 0; i < elementHits.length && !shape; ++i) {
-                        if (elementHits[i].element instanceof IFShape) {
-                            if (!shape) {
-                                shape = elementHits[i].element;
-                            }
+                        if (elementHits[i].element instanceof IFShape && !elementHits[i].element.hasFlag(IFNode.Flag.Selected)) {
+                            shape = elementHits[i].element;
                         }
                     }
                 }

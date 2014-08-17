@@ -242,7 +242,7 @@
         }
         var bBox = null;
         this._visuals = null;
-        if (this._mouseInfo.id == IFTransformBox.INSIDE) {
+        if (this._tBoxMode == IFSceneEditor.TBoxMode.PASSIVE && this._mouseInfo.id == IFTransformBox.INSIDE) {
             var selection = this._getGraphicEditor().getSelection();
             var selBBox = IFElement.prototype.getGroupGeometryBBox(selection);
             if (selBBox && !selBBox.isEmpty()) {
@@ -321,6 +321,7 @@
                 startPos, curPos, guides, option, ratio, rStep);
 
             guides.finishMap();
+            this.requestInvalidation();
             if (this._tBoxMode != IFSceneEditor.TBoxMode.CNTRMOVE) {
                 this._transformBox.setTransform(transform);
                 this._getGraphicEditor().transformSelection(transform, null, null);
