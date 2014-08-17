@@ -20,6 +20,12 @@
 
     IFObject.inherit(IFGuides, GEventTarget);
 
+    /**
+     * The length of snap zone lines in pixels
+     * @type {Number}
+     */
+    IFGuides.VISUALS_LENGTH = 8;
+
     // -----------------------------------------------------------------------------------------------------------------
     // IFGuides.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
@@ -234,6 +240,141 @@
                 this._area = null;
             }
         }
+    };
+
+    /**
+     * Calculates and return snap zone lines for a bbox and a location against the bbox.
+     * Everything is in scene coordinates
+     * @param {IFRect} bBox
+     * @param {IFPoint} location
+     * @return {Array<Array<IFPoint>>}
+     */
+    IFGuides.prototype.getBBoxSnapZones = function (bBox, location) {
+        var visLines = null;
+        var snapZonesAllowed = false;
+        for (var i = 0; i < this._guides.length && !snapZonesAllowed; ++i) {
+            var guide = this._guides[i];
+            if (guide.isMappingAllowed() && !(guide instanceof IFUnitGuide)) {
+                snapZonesAllowed = true;
+            }
+        }
+        var pDst = this._scene.getProperty('pickDist');
+        if (snapZonesAllowed && bBox && !bBox.isEmpty() && bBox.expanded(pDst, pDst, pDst, pDst).containsPoint(location)) {
+            visLines = [];
+            var side = bBox.getClosestSideName(location);
+            var sidePos = bBox.getSide(side);
+            var tl = bBox.getSide(IFRect.Side.TOP_LEFT);
+            var br = bBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+            var shapeWidth = Math.abs(br.getX() - tl.getX());
+            var shapeHeight = Math.abs(br.getY() - tl.getY());
+            var vis1 = null;
+            var vis2 = null;
+            var cntrVis1 = null;
+            var cntrVis2 = null;
+            var tmpCoordX = null;
+            var tmpCoordY = null;
+            switch (side) {
+                case IFRect.Side.LEFT_CENTER:
+                    tmpCoordX = tl.getX();
+                case IFRect.Side.RIGHT_CENTER:
+                    tmpCoordX = tmpCoordX == null ? br.getX() : tmpCoordX;
+                    if (shapeHeight > IFGuides.VISUALS_LENGTH * 2) {
+                        vis1 = [new IFPoint(tmpCoordX, tl.getY()),
+                            new IFPoint(tmpCoordX, tl.getY() + IFGuides.VISUALS_LENGTH)];
+                        vis2 = [new IFPoint(tmpCoordX, br.getY() - IFGuides.VISUALS_LENGTH),
+                            new IFPoint(tmpCoordX, br.getY())];
+                    } else {
+                        vis1 = [new IFPoint(tmpCoordX, tl.getY()), new IFPoint(tmpCoordX, br.getY())];
+                    }
+                case IFRect.Side.TOP_CENTER:
+                    tmpCoordY = tl.getY();
+                case IFRect.Side.BOTTOM_CENTER:
+                    if (!vis1) {
+                        tmpCoordY = tmpCoordY == null ? br.getY() : tmpCoordY;
+                        if (shapeWidth > IFGuides.VISUALS_LENGTH * 2) {
+                            vis1 = [new IFPoint(tl.getX(), tmpCoordY),
+                                new IFPoint(tl.getX() + IFGuides.VISUALS_LENGTH, tmpCoordY)];
+                            vis2 = [new IFPoint(br.getX() - IFGuides.VISUALS_LENGTH, tmpCoordY),
+                                new IFPoint(br.getX(), tmpCoordY)];
+                        } else {
+                            vis1 = [new IFPoint(tl.getX(), tmpCoordY), new IFPoint(br.getX(), tmpCoordY)];
+                        }
+                    }
+                case IFRect.Side.CENTER:
+                    // Draw center cross
+                    if (shapeWidth > IFGuides.VISUALS_LENGTH && shapeHeight > IFGuides.VISUALS_LENGTH) {
+                        cntrVis1 = [
+                            new IFPoint(tl.getX() + (shapeWidth - IFGuides.VISUALS_LENGTH) / 2,
+                                tl.getY() + (shapeHeight - IFGuides.VISUALS_LENGTH) / 2),
+                            new IFPoint(tl.getX() + (shapeWidth + IFGuides.VISUALS_LENGTH) / 2,
+                                tl.getY() + (shapeHeight + IFGuides.VISUALS_LENGTH) / 2)];
+                        cntrVis2 = [
+                            new IFPoint(tl.getX() + (shapeWidth + IFGuides.VISUALS_LENGTH) / 2,
+                                tl.getY() + (shapeHeight - IFGuides.VISUALS_LENGTH) / 2),
+                            new IFPoint(tl.getX() + (shapeWidth - IFGuides.VISUALS_LENGTH) / 2,
+                                tl.getY() + (shapeHeight + IFGuides.VISUALS_LENGTH) / 2)];
+                    }
+                    break;
+                case IFRect.Side.TOP_LEFT:
+                    if (shapeWidth > IFGuides.VISUALS_LENGTH) {
+                        vis1 = [tl, new IFPoint(tl.getX() + IFGuides.VISUALS_LENGTH, tl.getY())];
+                    }
+                    tmpCoordX = tl.getX();
+                    if (shapeHeight > IFGuides.VISUALS_LENGTH) {
+                        vis2 = [tl, new IFPoint(tl.getX(), tl.getY() + IFGuides.VISUALS_LENGTH)];
+                    }
+                case IFRect.Side.TOP_RIGHT:
+                    tmpCoordY = tl.getY();
+                    if (!vis1 && shapeWidth > IFGuides.VISUALS_LENGTH) {
+                        vis1 = [new IFPoint(br.getX(), tl.getY()),
+                            new IFPoint(br.getX() - IFGuides.VISUALS_LENGTH, tl.getY())];
+                    }
+                    tmpCoordX = tmpCoordX == null ? br.getX() : tmpCoordX;
+                    if (!vis2 && shapeHeight > IFGuides.VISUALS_LENGTH) {
+                        vis2 = [new IFPoint(br.getX(), tl.getY()),
+                            new IFPoint(br.getX(), tl.getY() + IFGuides.VISUALS_LENGTH)];
+                    }
+                case IFRect.Side.BOTTOM_RIGHT:
+                    tmpCoordY = tmpCoordY == null ? br.getY() : tmpCoordY;
+                    if (!vis1 && shapeWidth > IFGuides.VISUALS_LENGTH) {
+                        vis1 = [br, new IFPoint(br.getX() - IFGuides.VISUALS_LENGTH, br.getY())];
+                    }
+                    tmpCoordX = tmpCoordX == null ? br.getX() : tmpCoordX;
+                    if (!vis2 && shapeHeight > IFGuides.VISUALS_LENGTH) {
+                        vis2 = [br, new IFPoint(br.getX(), br.getY() - IFGuides.VISUALS_LENGTH)];
+                    }
+                case IFRect.Side.BOTTOM_LEFT:
+                    tmpCoordY = tmpCoordY == null ? br.getY() : tmpCoordY;
+                    if (!vis1 && shapeWidth > IFGuides.VISUALS_LENGTH) {
+                        vis1 = [new IFPoint(tl.getX(), br.getY()),
+                            new IFPoint(tl.getX() + IFGuides.VISUALS_LENGTH, br.getY())];
+                    }
+                    tmpCoordX = tmpCoordX == null ? tl.getX() : tmpCoordX;
+                    if (!vis2 && shapeHeight > IFGuides.VISUALS_LENGTH) {
+                        vis2 = [new IFPoint(tl.getX(), br.getY()),
+                            new IFPoint(tl.getX(), br.getY() - IFGuides.VISUALS_LENGTH)];
+                    }
+                    if (!vis1) {
+                        vis1 = [new IFPoint(tl.getX(), tmpCoordY), new IFPoint(br.getX(), tmpCoordY)];
+                    }
+                    if (!vis2) {
+                        vis2 = [new IFPoint(tmpCoordX, tl.getY()), new IFPoint(tmpCoordX, br.getY())];
+                    }
+                    break;
+            }
+            if (vis1) {
+                visLines.push(vis1);
+            }
+            if (vis2) {
+                visLines.push(vis2);
+            }
+            if (cntrVis1 && cntrVis2) {
+                visLines.push(cntrVis1);
+                visLines.push(cntrVis2);
+            }
+        }
+
+        return visLines;
     };
 
     /**

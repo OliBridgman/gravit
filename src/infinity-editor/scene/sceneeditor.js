@@ -19,6 +19,20 @@
     IFSceneEditor.prototype._transformBox = null;
 
     /**
+     * An array of vusial lines ends, which are used to show snap zones
+     * @type {Array<Array<IFPoint>>} - line ends in view coordinates
+     * @private
+     */
+    IFSceneEditor.prototype._visuals = null;
+
+    /**
+     * Area, which is used for painting and cleaning lines of snap zones
+     * @type {IFRect} - visuals area in world coordinates
+     * @private
+     */
+    IFSceneEditor.prototype._visualsArea = null;
+
+    /**
      * The possible modes of transform box functionality
      * @type {{NA: number, PASSIVE: number, TBOXMOVE: number, CNTRMOVE: number, ROTATE: number, RESIZE: number, SKEW: number}}
      */
@@ -55,6 +69,19 @@
         IFElementEditor.prototype.paint.call(this, transform, context);
         if (this._transformBox) {
             this._transformBox.paint(transform, context);
+
+            if (this._visuals) {
+                var visLine;
+                for (var i = 0; i < this._visuals.length; ++i) {
+                    visLine = this._visuals[i];
+                    var pt0 = visLine[0];
+                    var pt1 = visLine[1];
+                    context.canvas.strokeLine(Math.floor(pt0.getX()) + 0.5, Math.floor(pt0.getY()) + 0.5,
+                        Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 2, context.highlightOutlineColor);
+                }
+
+                this._visuals = null;
+            }
         }
     };
 
@@ -65,7 +92,8 @@
             var transBBox = this._transformBox._calculateGeometryBBox();
             if (transBBox && !transBBox.isEmpty()) {
                 transBBox = transform ? transform.mapRect(transBBox) : transBBox;
-                transBBox = transBBox.expanded(IFTransformBox.ANNOT_SIZE);
+                transBBox = transBBox.expanded(
+                    IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE);
                 bbox = bbox ? bbox.united(transBBox) : transBBox;
             }
         }
@@ -197,7 +225,7 @@
         return cursor;
     };
 
-    IFSceneEditor.prototype.updateTBoxCursorForView = function (location, transform, view) {
+    IFSceneEditor.prototype.updateTBoxUnderMouse = function (location, transform, view) {
         var pInfo = null;
         if (this._tBoxData) {
             pInfo = new IFElementEditor.PartInfo(this._tBoxData.editor, this._tBoxData.id, this._tBoxData.data);
@@ -212,6 +240,35 @@
             this._mouseInfo = pInfo;
             view.setCursor(this.getCursor(this._mouseInfo));
         }
+        var bBox = null;
+        this._visuals = null;
+        if (this._mouseInfo.id == IFTransformBox.INSIDE) {
+            var selection = this._getGraphicEditor().getSelection();
+            var selBBox = IFElement.prototype.getGroupGeometryBBox(selection);
+            if (selBBox && !selBBox.isEmpty()) {
+                bBox = transform.mapRect(selBBox);
+                var visuals = this._getGraphicEditor().getGuides().getBBoxSnapZones(bBox, location);
+                if (visuals && visuals.length) {
+                    this._visuals = visuals;
+                }
+            }
+        }
+
+        var visualsArea = this._visuals ? bBox.expanded(2, 2, 2, 2) : null;
+        visualsArea = visualsArea ? view.getViewTransform().mapRect(visualsArea) : null;
+        if (this._visualsArea || visualsArea) {
+            if (this._visualsArea) {
+                //this._element._invalidateArea(this._visualsArea);
+                //this.requestInvalidation();
+            }
+            if (visualsArea) {
+                //this._element._invalidateArea(visualsArea);
+                //this.requestInvalidation();
+            }
+            this.requestInvalidation();
+            this._visualsArea = visualsArea;
+            this.requestInvalidation();
+        }
     };
 
     IFSceneEditor.prototype.getTBoxPartInfoAt = function (location, transform, tolerance) {
@@ -219,6 +276,12 @@
     };
 
     IFSceneEditor.prototype.startTBoxTransform = function (partInfo) {
+        if (this._visualsArea) {
+            this.requestInvalidation();
+            //this._element._invalidateArea(this._visualsArea);
+            this._visualsArea = null;
+        }
+
         this._tBoxData = new IFElementEditor.PartInfo(partInfo.editor, partInfo.id,
             partInfo.data);
 
@@ -306,6 +369,10 @@
         }
         this._tBoxData = null;
         this._mouseInfo = null;
+        if (this._visualsArea) {
+            //this._element._invalidateArea(this._visualsArea);
+            this._visualsArea = null;
+        }
     };
 
     IFSceneEditor.prototype._geometryChange = function (evt) {
