@@ -634,7 +634,7 @@
      */
     IFEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
         var translation = delta;
-        if (align && startPos) {
+        if (align && startPos && this._selection.length == 1) {
             var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
             var side = selBBox.getClosestSideName(startPos);
             var sidePos = selBBox.getSide(side);
