@@ -12,7 +12,9 @@
         this._counter = 0;
         this._visuals = [];
 
-        this._addGuide(new IFShapeBoxGuide(this));
+        this._shapeBoxGuide = new IFShapeBoxGuide(this);
+
+        this._addGuide(this._shapeBoxGuide);
         this._addGuide(new IFPageGuide(this));
         this._addGuide(new IFGridGuide(this));
         this._addGuide(new IFUnitGuide(this));
@@ -60,6 +62,12 @@
      * @private
      */
     IFGuides.prototype._guides = null;
+
+    /**
+     * @type {IFShapeBoxGuide}
+     * @private
+     */
+    IFGuides.prototype._shapeBoxGuide = null;
 
     /**
      * Internal counter of begin/endMap calls
@@ -135,6 +143,8 @@
 
                 this._area = new IFRect(minx, miny, maxx - minx, maxy - miny);
                 this.invalidate(this._area);
+
+                this._shapeBoxGuide.cleanExclusions();
             }
         }
     };
@@ -240,6 +250,14 @@
                 this._area = null;
             }
         }
+    };
+
+    /**
+     * Returns ShapeBoxGuide
+     * @returns {IFShapeBoxGuide}
+     */
+    IFGuides.prototype.getShapeBoxGuide = function () {
+        return this._shapeBoxGuide;
     };
 
     /**

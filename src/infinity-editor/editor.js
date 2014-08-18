@@ -639,6 +639,7 @@
             var side = selBBox.getClosestSideName(startPos);
             var sidePos = selBBox.getSide(side);
             var newSidePos = sidePos.add(delta);
+            this._guides.getShapeBoxGuide().useExclusions(this._selection);
             this._guides.beginMap();
             newSidePos = this._guides.mapPoint(newSidePos);
             this._guides.finishMap();

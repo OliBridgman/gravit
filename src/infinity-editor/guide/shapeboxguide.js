@@ -16,6 +16,13 @@
 
     IFShapeBoxGuide.GUIDE_MARGIN = 20;
 
+    /**
+     * Array of elements, which should be excluded from snapping to them
+     * @type {Array}
+     * @private
+     */
+    IFShapeBoxGuide.prototype._exclusions = null;
+
     /** @override */
     IFShapeBoxGuide.prototype.map = function (x, y) {
         var resX = null;
@@ -27,6 +34,14 @@
             var snapDistance = this._scene.getProperty('snapDist');
 
             var _snap = function (shape) {
+                if (this._exclusions) {
+                    for (var i = 0; i < this._exclusions.length; ++i) {
+                        if (this._exclusions[i] == shape) {
+                            return;
+                        }
+                    }
+                }
+
                 var bBox = shape.getGeometryBBox();
                 if (bBox && !bBox.isEmpty()) {
                     var tl = bBox.getSide(IFRect.Side.TOP_LEFT);
@@ -64,7 +79,7 @@
                         }
                     }
                 }
-            };
+            }.bind(this);
 
             var page = this._scene.getActivePage();
 
@@ -87,6 +102,21 @@
     /** @override */
     IFShapeBoxGuide.prototype.isMappingAllowed = function () {
         return !ifPlatform.modifiers.metaKey;
+    };
+
+    /**
+     * Use the passed list of elements as exclusions from snapping to them
+     * @param {Array} exclusions
+     */
+    IFShapeBoxGuide.prototype.useExclusions = function (exclusions) {
+        this._exclusions = exclusions;
+    };
+
+    /**
+     * Clean exclusions list
+     */
+    IFShapeBoxGuide.prototype.cleanExclusions = function () {
+        this._exclusions = null;
     };
 
     /** @override */
