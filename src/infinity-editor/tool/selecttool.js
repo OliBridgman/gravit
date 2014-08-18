@@ -629,6 +629,7 @@
         if (this._mode == IFSelectTool._Mode.Moving) {
             var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
+                this._editor.getGuides().getShapeBoxGuide().useExclusions(this._editor.getSelection());
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                     position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);
