@@ -155,6 +155,7 @@
     // Pre-defined color constants
     IFColor.BLACK = new IFColor(IFColor.Type.Black);
     IFColor.WHITE = new IFColor(IFColor.Type.White);
+    IFColor.TRANSPARENT_WHITE = new IFColor(IFColor.Type.RGB, [255, 255, 255, 0]);
 
     IFColor.SELECTION_OUTLINE = new IFColor(IFColor.Type.RGB, [0, 168, 255, 100]);
     IFColor.HIGHLIGHT_OUTLINE = new IFColor(IFColor.Type.RGB, [255, 0, 0, 100]);

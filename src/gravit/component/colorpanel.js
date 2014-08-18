@@ -675,7 +675,7 @@
     function updateToComponents($this) {
         var data = $this.data('gcolorpanel');
 
-        var color = data.color ? data.color : IFColor.WHITE;
+        var color = data.color ? data.color : IFColor.TRANSPARENT_WHITE;
 
         // Get the components in the right format
         var components = null;
