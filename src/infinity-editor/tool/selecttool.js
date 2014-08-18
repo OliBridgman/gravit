@@ -271,7 +271,7 @@
             var selectableElements = [];
             var element;
             var hitRes = null;
-            if (selection && selection.length) {
+            if (selection && selection.length && !stacked) {
                 for (var i = 0; i < selection.length && !hitRes; ++i) {
                     if (selection[i] instanceof IFElement) {
                         element = selection[i];
