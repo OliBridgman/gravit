@@ -14,7 +14,7 @@
 
     /** @override */
     IFPageTool.prototype.activate = function (view) {
-        IFTool.prototype.activate.call(this, view);
+        IFSelectTool.prototype.activate.call(this, view);
 
         // Store current selection & select active page
         this._editor.storeSelection();
@@ -32,7 +32,7 @@
         // Restore previous selection
         this._editor.restoreSelection();
 
-        IFTool.prototype.deactivate.call(this, view);
+        IFSelectTool.prototype.deactivate.call(this, view);
     };
 
     /** @override */
