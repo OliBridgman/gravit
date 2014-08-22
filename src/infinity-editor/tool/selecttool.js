@@ -735,30 +735,30 @@
         if (!this._mode && !partInfo || this._mode == IFSelectTool._Mode.Select) {
             var selection = this._editor.getSelection();
             var selectableElements = [];
-            var shape;
+            var item;
             var hitRes = null;
             var stacked = false;
-            if (selection && selection.length == 1 && selection[0] instanceof IFShape) {
+            if (selection && selection.length == 1 && selection[0] instanceof IFItem) {
                 hitRes = selection[0].hitTest(mouse, this._view.getWorldTransform(), null,
                     stacked, -1, this._scene.getProperty('pickDist'), true);
                 if (hitRes) {
-                    shape = selection[0];
+                    item = selection[0];
                 }
             }
-            if (!shape) {
+            if (!item) {
                 var elementHits = this._scene.hitTest(mouse, this._view.getWorldTransform(), null,
                     stacked, -1, this._scene.getProperty('pickDist'));
 
                 if (elementHits && elementHits.length) {
-                    for (var i = 0; i < elementHits.length && !shape; ++i) {
-                        if (elementHits[i].element instanceof IFShape && !elementHits[i].element.hasFlag(IFNode.Flag.Selected)) {
-                            shape = elementHits[i].element;
+                    for (var i = 0; i < elementHits.length && !item; ++i) {
+                        if (elementHits[i].element instanceof IFItem && !elementHits[i].element.hasFlag(IFNode.Flag.Selected)) {
+                            item = elementHits[i].element;
                         }
                     }
                 }
             }
-            if (shape) {
-                bBox = shape.getGeometryBBox();
+            if (item) {
+                bBox = item.getGeometryBBox();
                 if (bBox && !bBox.isEmpty()) {
                     bBox = this._view.getWorldTransform().mapRect(bBox);
                     var visuals = this._editor.getGuides().getBBoxSnapZones(bBox, mouse);
