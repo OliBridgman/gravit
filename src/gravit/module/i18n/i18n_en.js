@@ -40,6 +40,7 @@ ifLocale.setValues(GShowRulersAction, IFLocale.Language.English, ["title"], ["Sh
 ifLocale.setValues(GSelectAllAction, IFLocale.Language.English, ["title"], ["Select All"]);
 ifLocale.setValues(GShowAllPagesAction, IFLocale.Language.English, ["title"], ["All Pages visible"]);
 ifLocale.setValues(GShowGridAction, IFLocale.Language.English, ["title"], ["Show Grid"]);
+ifLocale.setValues(GSliceFromSelectionAction, IFLocale.Language.English, ["title"], ["Create Slice from Selection"]);
 ifLocale.setValues(GSnapUnitAction, IFLocale.Language.English, ["title.full", "title.half"], ["Snap to full units", "Snap to half units"]);
 ifLocale.setValues(GTransformAction, IFLocale.Language.English, ["title.rotate-45-left", "title.rotate-90-left", "title.rotate-180-left", "title.rotate-45-right", "title.rotate-90-right", "title.rotate-180-right", "title.flip-vertical", "title.flip-horizontal"], ["Rotate 45° Left", "Rotate 90° Left", "Rotate 180° Left", "Rotate 45° Right", "Rotate 90° Right", "Rotate 180° Right", "Flip Vertical", "Flip Horizontal"]);
 ifLocale.setValues(GUndoAction, IFLocale.Language.English, ["title"], ["Undo"]);

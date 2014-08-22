@@ -284,6 +284,26 @@
     };
 
     /**
+     * Return the united selection bounding box
+     * @param {Boolean} [geometryBBox] if true, uses geometry bboxes,
+     * otherwises uses paint bboxes. Defaults to false.
+     * @return {IFRect} the selection bbox or null for no selection
+     */
+    IFEditor.prototype.getSelectionBBox = function (geometryBBox) {
+        if (this.hasSelection()) {
+            var result = null;
+            for (var i = 0; i < this._selection.length; ++i) {
+                var bbox = geometryBBox ? this._selection[i].getGeometryBBox() : this._selection[i].getPaintBBox();
+                if (bbox && !bbox.isEmpty()) {
+                    result = result ? result.united(bbox) : new IFRect(bbox.getX(), bbox.getY(), bbox.getWidth(), bbox.getHeight());
+                }
+            }
+            return result;
+        }
+        return null;
+    };
+
+    /**
      * Return the selection array
      * @return {Array<IFElement>} the selection array or null for no selection
      * @version 1.0

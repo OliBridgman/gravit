@@ -273,6 +273,8 @@
             new GGroupAction(),
             new GUngroupAction(),
 
+            new GSliceFromSelectionAction(),
+
             new GAddPageAction(),
             new GDeletePageAction(),
 
