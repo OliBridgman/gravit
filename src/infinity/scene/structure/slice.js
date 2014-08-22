@@ -107,6 +107,20 @@
         return parent instanceof IFLayer;
     };
 
+    /** @override */
+    IFPage.prototype._renderToBitmap = function (context) {
+        // Render scene and not ourself
+        this.getScene().render(context);
+
+        var bitmap = context.canvas.getBitmap();
+
+        // Clip bitmap if necessary
+        if (this.getProperty('trm')) {
+            bitmap.trim();
+        }
+
+        return bitmap;
+    };
 
     /** @override */
     IFSlice.prototype._paint = function (context) {

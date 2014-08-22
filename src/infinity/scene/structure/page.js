@@ -131,6 +131,18 @@
     };
 
     /** @override */
+    IFPage.prototype._getBitmapPaintArea = function () {
+        return this.getPageClipBBox();
+    };
+
+    /** @override */
+    IFPage.prototype._renderToBitmap = function (context) {
+        // Enable page clipping
+        paintConfig.pagesClip = true;
+        return IFBlock.prototype._renderToBitmap(context);
+    };
+
+    /** @override */
     IFPage.prototype._paint = function (context) {
         // Paint master page if we have any
         var masterPage = this.getMasterPage();

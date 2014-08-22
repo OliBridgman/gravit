@@ -8,7 +8,7 @@
     };
 
     /**
-     * @param {String} size ?|({Number}[{Unit|x}])[@?|({Number}[{Unit|x}])]
+     * @param {String} size ?|({Number}[{Unit|x|w|h}])[@?|({Number}[{Unit|x}])]
      * @return {{width: Number|IFLength, height: Number|IFLength}}
      */
     GExporter.parseSize = function (size) {
@@ -38,9 +38,28 @@
             return IFLength.parseLength(value);
         }
 
+        var width = null;
+        var height = null;
+
+        switch (wh[0].charAt(wh[0].length - 1)) {
+            case 'w':
+            case 'W':
+                width = _parseValue(wh[0].substr(0, wh[0].length - 1));
+                break;
+            case 'h':
+            case 'H':
+                height = _parseValue(wh[0].substr(0, wh[0].length - 1));
+                break;
+            default:
+                width = _parseValue(wh[0]);
+                if (wh.length > 1) {
+                    height = _parseValue(wh[1]);
+                }
+        }
+
         return {
-            width: _parseValue(wh[0]),
-            height: wh.length > 1 ? _parseValue(wh[1]) : null
+            width: width,
+            height: height
         }
     };
 

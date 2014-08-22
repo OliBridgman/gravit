@@ -27,65 +27,14 @@
 
     /** @override */
     GImageExporter.prototype.exportPart = function (part, size, storage, url, extension) {
-        // TODO  Set pageClip to true if we export page
-
-        size = GExporter.parseSize(size);
-
-        var paintArea = part.getPaintBBox();
-
-        // Calculate scale & delta offsets
-        var scale = size.width;
-        var deltaX = 0;
-        var deltaY = 0;
-
-        if (typeof dimension === 'number') {
-            scale = dimension;
-        } else {
-            // TODO
+        var size = GExporter.parseSize(size);
+        var bitmap = part.toBitmap(size.width, size.height ? size.height : size.width, 2);
+        if (bitmap) {
+            // Store bitmap now
+            bitmap.toImageBuffer(this._getImageTypeByExt(extension), function (buffer) {
+                storage.save(url, buffer, true);
+            });
         }
-
-        // Create + Setup Paint-Canvas
-        var paintCanvas = new IFPaintCanvas();
-        paintCanvas.resize(paintArea.getWidth() * scale, paintArea.getHeight() * scale);
-
-        // Create + Setup Paint Context & Configuration
-        var paintContext = new IFPaintContext();
-        paintContext.canvas = paintCanvas;
-        var paintConfig = new IFScenePaintConfiguration();
-        paintConfig.paintMode = IFScenePaintConfiguration.PaintMode;
-        paintConfig.annotations = false;
-        paintContext.configuration = paintConfig;
-        paintConfig.clipArea = paintArea;
-        paintConfig.pagesClip = part instanceof IFPage;
-
-        // Paint
-        paintCanvas.prepare();
-        paintCanvas.setOrigin(new IFPoint(paintArea.getX() * scale, paintArea.getY() * scale));
-        paintCanvas.setScale(scale);
-        try {
-            if (part instanceof IFSlice) {
-                part.getScene().render(paintContext);
-            } else {
-                part.render(paintContext);
-            }
-        } finally {
-            paintCanvas.finish();
-        }
-
-        // Gather our bitmap
-        var bitmap = paintCanvas.getBitmap();
-
-        // Slices may be trimmed
-        if (part instanceof IFSlice && part.getProperty('trm')) {
-            bitmap.trim();
-        }
-
-        // Store bitmap now
-        var callback = function (buffer) {
-            storage.save(url, buffer, true);
-        };
-
-        bitmap.toImageBuffer(this._getImageTypeByExt(extension), callback);
     };
 
     /**

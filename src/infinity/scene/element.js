@@ -823,6 +823,140 @@
     };
 
     /**
+     * Called to render this element into a new bitmap
+     * @param {Number|IFLength} [width] the width of the bitmap, set to 0|null
+     * to use the element's bbox as width. Defaults to null. If the value is
+     * a number, it reflects the scale factor, otherwise if it is an IFLength,
+     * it defines an absolute width.
+     * @param {Number|IFLength} [height] the height of the bitmap, set to 0|null
+     * to use the element's bbox as height. Defaults to null. If the value is
+     * a number, it reflects the scale factor, otherwise if it is an IFLength,
+     * it defines an absolute width.
+     * @param {Number} [ratio] the ratio mode to be used whereas 0|null
+     * means to keep minimum aspect ratio thus eventually adjusting width
+     * or height and making one smaller, 1 means to keep maximum aspect ratio
+     * thus eventually adjusting  width or height and making one larger and
+     * 2 means to keep the width/height but center the element on bitmap
+     * if it's bbox ratio doesn't match the one of width / height
+     */
+    IFElement.prototype.toBitmap = function (width, height, ratio) {
+        var paintArea = this._getBitmapPaintArea();
+
+        // Calculate scale & delta offsets
+        ratio = ratio || 0;
+        var scaleX = 1;
+        var scaleY = 1;
+        var scale = 1;
+        var deltaX = 0;
+        var deltaY = 0;
+
+        if (width) {
+            if (typeof width === 'number') {
+                scaleX = width;
+            } else if (width instanceof IFLength) {
+                scaleX = width.toPoint() / paintArea.getWidth();
+            }
+        }
+
+        if (height) {
+            if (typeof height === 'number') {
+                scaleY = height;
+            } else if (height instanceof IFLength) {
+                scaleY = height.toPoint() / paintArea.getHeight();
+            }
+        }
+
+        var canvasWidth = paintArea.getWidth() * scaleX;
+        var canvasHeight = paintArea.getHeight() * scaleY;
+
+        // Handle ratio
+        if (scaleX !== scaleY) {
+            switch (ratio) {
+                case 0:
+                    // minimum aspect ratio
+                    if (scaleX < scaleY) {
+                        scale = scaleX;
+                        canvasHeight = canvasWidth;
+                    } else {
+                        scale = scaleY;
+                        canvasWidth = canvasHeight;
+                    }
+                    break;
+
+                case 1:
+                    // maximum aspect ratio
+                    if (scaleX > scaleY) {
+                        canvasHeight = scaleX;
+                        scaleY = canvasWidth;
+                    } else {
+                        scale = scaleY;
+                        canvasWidth = canvasHeight;
+                    }
+                    break;
+
+                case 2:
+                    // centered aspect ratio
+                    if (scaleX < scaleY) {
+                        // center vertically
+                        scale = scaleX;
+                        deltaY = (canvasHeight - (paintArea.getHeight() * scale)) / 2;
+                        //deltaY = paintArea.getHeight() * (scaleY / scaleX) / 2;
+                    } else {
+                        // center horizontally
+                        //deltaX = paintArea.getWidth() * (scaleX / scaleY) / 2;
+                        scale = scaleY;
+                        deltaX = (canvasWidth - (paintArea.getWidth() * scale)) / 2;
+                    }
+                    break;
+            }
+        } else {
+            scale = scaleX;
+        }
+
+        // Create + Setup Paint-Canvas
+        var paintCanvas = new IFPaintCanvas();
+        paintCanvas.resize(canvasWidth, canvasHeight);
+
+        // Create + Setup Paint Context & Configuration
+        var paintContext = new IFPaintContext();
+        paintContext.canvas = paintCanvas;
+        var paintConfig = new IFScenePaintConfiguration();
+        paintConfig.paintMode = IFScenePaintConfiguration.PaintMode.Full;
+        paintConfig.annotations = false;
+        paintContext.configuration = paintConfig;
+        paintConfig.clipArea = paintArea;
+
+        paintCanvas.prepare();
+        paintCanvas.setOrigin(new IFPoint(paintArea.getX() * scale - deltaX, paintArea.getY() * scale - deltaY));
+        paintCanvas.setScale(scale);
+        try {
+            return this._renderToBitmap(paintContext);
+        } finally {
+            paintCanvas.finish();
+        }
+    };
+
+    /**
+     * Called to return the area for this element for painting into bitmap
+     * @returns {IFRect}
+     * @private
+     */
+    IFElement.prototype._getBitmapPaintArea = function () {
+        return this.getPaintBBox();
+    };
+
+    /**
+     * Called to render this element into a bitmap
+     * @param {IFPaintContext} context
+     * @returns {IFBitmap}
+     * @private
+     */
+    IFElement.prototype._renderToBitmap = function (context) {
+        this.render(context);
+        return context.canvas.getBitmap();
+    };
+
+    /**
      * Called whenever this should paint itself
      * @param {IFPaintContext} context the context to be used for drawing
      * @param {IFStyle} [style] the current style used for painting, only
