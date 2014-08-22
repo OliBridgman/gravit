@@ -44,7 +44,6 @@
             if (property === 'etp') {
                 return $('<select></select>')
                     .attr('data-property', 'etp')
-                    .css('width', '100%')
                     .append($('<option></option>')
                         .attr('value', IFEllipse.Type.Arc)
                         // TODO : I18N
@@ -64,7 +63,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
@@ -78,6 +76,47 @@
                 throw new Error('Unknown input property: ' + property);
             }
         }.bind(this);
+
+        panel
+            .css('width', '144px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .text('Type:')
+                .append(_createInput('etp')
+                    .css({
+                        'position': 'absolute',
+                        'left': '35px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .text('Angle:')
+                .append(_createInput('sa')
+                    .css({
+                        'position': 'absolute',
+                        'left': '35px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '85px'
+                })
+                .html('<span class="fa fa-circle"></span>')
+                .append(_createInput('ea')
+                    .css({
+                        'position': 'absolute',
+                        'left': '15px',
+                        'width': '38px'
+                    })));
 
         $('<table></table>')
             .addClass('g-form')
@@ -101,8 +140,8 @@
                     .addClass('label')
                     .html('<i class="fa fa-circle"></i>'))
                 .append($('<td></td>')
-                    .append(_createInput('ea'))))
-            .appendTo(panel);
+                    .append(_createInput('ea'))));
+            //.appendTo(panel);
     };
 
     /** @override */

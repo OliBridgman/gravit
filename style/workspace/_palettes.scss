@@ -8,10 +8,6 @@
   background: $frameColor;
   border-left: 1px solid $frameBorderColor;
 
-  &, *:not(.fa) {
-    font: $smallFont;
-  }
-
   .palette-group {
     overflow: hidden;
 

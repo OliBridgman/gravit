@@ -54,20 +54,18 @@
     }
 
     > .properties-panel-content {
+      overflow: scroll;
+
+      position: relative;
       height: 100%;
-      padding: 5px 5px;
       float: left;
       border-left: 1px solid $frameBorderColor;
-      margin-right: 0px;
-      margin-left: 3px;
 
       &.first-visible {
-        margin-left: 0px;
         border-left: none;
       }
 
       &.last-visible {
-        margin-right: 0px;
       }
     }
   }

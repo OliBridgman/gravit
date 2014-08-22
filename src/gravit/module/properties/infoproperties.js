@@ -1,54 +1,54 @@
 (function (_) {
 
     /**
-     * Dimension properties panel
-     * @class GDimensionsProperties
+     * Info properties panel
+     * @class GInfoProperties
      * @extends GProperties
      * @constructor
      */
-    function GDimensionsProperties() {
+    function GInfoProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GDimensionsProperties, GProperties);
+    IFObject.inherit(GInfoProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    GDimensionsProperties.prototype._panel = null;
+    GInfoProperties.prototype._panel = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GDimensionsProperties.prototype._document = null;
+    GInfoProperties.prototype._document = null;
 
     /**
      * @type {Array<IFElement>}
      * @private
      */
-    GDimensionsProperties.prototype._elements = null;
+    GInfoProperties.prototype._elements = null;
 
     /**
      * @type {IFRect}
      * @private
      */
-    GDimensionsProperties.prototype._elementsBBox = null;
+    GInfoProperties.prototype._elementsBBox = null;
 
     /**
      * @type {IFRect}
      * @private
      */
-    GDimensionsProperties.prototype._firstElementsBBox = null;
+    GInfoProperties.prototype._firstElementsBBox = null;
 
     /** @override */
-    GDimensionsProperties.prototype.getCategory = function () {
+    GInfoProperties.prototype.getCategory = function () {
         // TODO : I18N
         return 'Dimensions';
     };
 
     /** @override */
-    GDimensionsProperties.prototype.init = function (panel) {
+    GInfoProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createDimensionInput = function (dimension) {
@@ -61,6 +61,105 @@
                     self._assignDimension(dimension, $(this).val());
                 });
         }.bind(this);
+
+        panel
+            .css('width', '133px')
+            .append($('<div></div>')
+                .addClass('g-input')
+                .css({
+                    'position': 'absolute',
+                    'left': '5px',
+                    'top': '9px',
+                    'width': '41px',
+                    'height': '41px'
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '51px',
+                    'top': '5px',
+                    'width': '77px',
+                    'text-transform': 'uppercase'
+                })
+                .attr('data-type', ''))
+            .append($('<input>')
+                .css({
+                    'position': 'absolute',
+                    'left': '51px',
+                    'top': '30px',
+                    'width': '77px'
+                })
+                .attr('data-name', ''))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<button></button>')
+                .css({
+
+                    'position': 'absolute',
+                    'left': '5px',
+                    'top': '75px',
+                    'padding': '0px',
+                    'font-size': '10px'
+                })
+                .addClass('fa fa-lock')
+                .attr('data-ratio', ''))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '15px',
+                    'top': '65px'
+                })
+                .text('W:')
+                .append($('<input>')
+                    .css({
+                        'position': 'absolute',
+                        'left': '15px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '15px',
+                    'top': '89px'
+                })
+                .text('H:')
+                .append($('<input>')
+                    .css({
+                        'position': 'absolute',
+                        'left': '15px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '74px',
+                    'top': '65px'
+                })
+                .text('X:')
+                .append($('<input>')
+                    .css({
+                        'position': 'absolute',
+                        'left': '15px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '74px',
+                    'top': '89px'
+                })
+                .text('Y:')
+                .append($('<input>')
+                    .css({
+                        'position': 'absolute',
+                        'left': '15px',
+                        'width': '38px'
+                    })));
 
         // Init panel
         $('<table></table>')
@@ -111,34 +210,25 @@
                                 this._updateDimensions(true);
                             }.bind(this)))
                         .append($('<span></span>')
-                            .html('&nbsp;Apply to Selection')))))
-            .appendTo(panel);
+                            .html('&nbsp;Apply to Selection')))));
     };
 
     /** @override */
-    GDimensionsProperties.prototype.update = function (document, elements) {
+    GInfoProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document = null;
         }
 
         // Collect all transformable elements
-        this._elements = [];
-        for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Transform)) {
-                this._elements.push(elements[i]);
-            }
-        }
+        this._elements = elements.slice();
 
         if (this._elements.length > 0) {
             this._document = document;
             this._document.getScene().addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-            this._panel.find('input[data-apply]').css('display', this._elements.length <= 1 ? 'none' : '')
-            this._panel.find('input[data-name]')
-                .prop('disabled', this._elements.length > 1)
-                .val(this._elements.length === 1 && this._elements[0] instanceof IFBlock ? this._elements[0].getProperty('name') : (this._elements.length.toString() + ' Elements'));
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._updateProperties();
             this._updateDimensions();
             return true;
         } else {
@@ -150,7 +240,7 @@
      * @param {IFElement.GeometryChangeEvent} event
      * @private
      */
-    GDimensionsProperties.prototype._geometryChange = function (event) {
+    GInfoProperties.prototype._geometryChange = function (event) {
         if ((event.type === IFElement.GeometryChangeEvent.Type.After) ||
             (event.type === IFElement.GeometryChangeEvent.Type.Child))
             if (this._elements.indexOf(event.element) >= 0) {
@@ -162,10 +252,22 @@
      * @param {IFElement.GeometryChangeEvent} event
      * @private
      */
-    GDimensionsProperties.prototype._afterPropertiesChange = function (event) {
+    GInfoProperties.prototype._afterPropertiesChange = function (event) {
         if (this._elements && this._elements.length === 1 && this._elements[0] === event.node && event.properties.indexOf('name') >= 0) {
-            this._panel.find('input[data-name]').val(this._elements[0].getProperty('name'));
+            this._updateProperties();
         }
+    };
+
+    /** @private */
+    GInfoProperties.prototype._updateProperties = function () {
+        this._panel.find('input[data-apply]').css('display', this._elements.length <= 1 ? 'none' : '');
+
+        this._panel.find('label[data-type]')
+            .text(this._elements.length === 1 ? this._elements[0].getNodeNameTranslated() : (this._elements.length.toString() + ' Elements'))
+
+        this._panel.find('input[data-name]')
+            .css('visibility', this._elements.length === 1 && this._elements[0] instanceof IFBlock ? 'visible' : 'hidden')
+            .val(this._elements.length === 1 && this._elements[0] instanceof IFBlock ? this._elements[0].getLabel() : '');
     };
 
     /**
@@ -173,7 +275,7 @@
      * Defaults to false.
      * @private
      */
-    GDimensionsProperties.prototype._updateDimensions = function (noBBoxCalculation) {
+    GInfoProperties.prototype._updateDimensions = function (noBBoxCalculation) {
         var _updateDimension = function (dimension, value) {
             this._panel.find('input[data-dimension="' + dimension + '"]').val(this._document.getScene().pointToString(value));
         }.bind(this);
@@ -182,12 +284,14 @@
             this._elementsBBox = null;
             this._firstElementsBBox = null;
             for (var i = 0; i < this._elements.length; ++i) {
-                var bbox = this._elements[i].getGeometryBBox();
-                if (bbox && !bbox.isEmpty()) {
-                    this._elementsBBox = this._elementsBBox ? this._elementsBBox.united(bbox) : bbox;
+                if (this._elements[i].hasMixin(IFElement.Transform)) {
+                    var bbox = this._elements[i].getGeometryBBox();
+                    if (bbox && !bbox.isEmpty()) {
+                        this._elementsBBox = this._elementsBBox ? this._elementsBBox.united(bbox) : bbox;
 
-                    if (!this._firstElementsBBox) {
-                        this._firstElementsBBox = bbox;
+                        if (!this._firstElementsBBox) {
+                            this._firstElementsBBox = bbox;
+                        }
                     }
                 }
             }
@@ -217,7 +321,7 @@
     /**
      * @private
      */
-    GDimensionsProperties.prototype._assignDimension = function (dimension, valueString) {
+    GInfoProperties.prototype._assignDimension = function (dimension, valueString) {
         var value = this._document.getScene().stringToPoint(valueString);
 
         // Check for invalid value and if it is invalid, reset dimension values and return here
@@ -227,7 +331,7 @@
         }
 
         // Correct x,y for delta if any
-        if (dimension === 'x' || dimension === 'y') {
+        if (dimension === 'x' || dimension === 'y') {
             var delta = this._getDelta();
             switch (dimension) {
                 case 'x':
@@ -290,7 +394,7 @@
      * @returns {IFPoint}
      * @private
      */
-    GDimensionsProperties.prototype._getDelta = function () {
+    GInfoProperties.prototype._getDelta = function () {
         var scene = this._document.getScene();
         if (scene.getProperty('singlePage') === true) {
             var activePage = scene.getActivePage();
@@ -303,9 +407,9 @@
     }
 
     /** @override */
-    GDimensionsProperties.prototype.toString = function () {
-        return "[Object GDimensionsProperties]";
+    GInfoProperties.prototype.toString = function () {
+        return "[Object GInfoProperties]";
     };
 
-    _.GDimensionsProperties = GDimensionsProperties;
+    _.GInfoProperties = GInfoProperties;
 })(this);

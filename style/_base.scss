@@ -9,8 +9,9 @@ body, html {
   /** Prevent double-tap = zoom on windows mobile */
   -ms-content-zooming: none;
 
-  & {
+  &, * {
     font: $font;
+    line-height: $baseline;
   }
 
   p {
@@ -70,7 +71,7 @@ body, html {
     padding: 0px;
     border: none;
     margin: 5px 0px;
-    border-bottom: 1px dotted $frameBorderColor;
+    border-bottom: 1px solid $frameBorderColor;
   }
 
   // Add special header divider

@@ -19,7 +19,6 @@
 
         // Register default palettes
         gravit.palettes.push(
-            new GPropertiesPalette(),
             new GTransformPalette(),
             new GExportPalette(),
             new GStylePalette()
@@ -178,7 +177,7 @@
 
         // Register default properties
         gravit.properties.push(
-            new GDimensionsProperties(),
+            new GInfoProperties(),
             new GDocumentProperties(),
             new GPolygonProperties(),
             new GPathProperties(),

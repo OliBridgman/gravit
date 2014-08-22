@@ -54,7 +54,6 @@ ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], 
 
 // Palette
 ifLocale.setValues(GExportPalette, IFLocale.Language.English, ["title"], ["Export"]);
-ifLocale.setValues(GPropertiesPalette, IFLocale.Language.English, ["title"], ["Properties"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
 ifLocale.setValues(GTransformPalette, IFLocale.Language.English, ["title"], ["Transform"]);
 

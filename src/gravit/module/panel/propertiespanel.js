@@ -153,9 +153,12 @@
     GPropertiesPanel.prototype._updateFromSelection = function () {
         this._elements = this._document.getEditor().getSelection();
 
-        // If there's no selection, select the scene
+        // If there's no selection, select the active page if any
         if (!this._elements || this._elements.length === 0) {
-            this._elements = [this._document.getScene()];
+            var activePage = this._document.getScene().getActivePage();
+            if (activePage) {
+                this._elements = [activePage];
+            }
         }
 
         this._updatePropertyPanels();
