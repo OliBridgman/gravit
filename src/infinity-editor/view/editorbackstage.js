@@ -84,18 +84,17 @@
         var mx = transformedMarginRect.getX(), my = transformedMarginRect.getY(), mw = transformedMarginRect.getWidth(), mh = transformedMarginRect.getHeight();
 
         // Paint page color or chessboard if transparent
-        var pageColor = page.getProperty('cls');
-        var fill = pageColor;
-
-        if (!fill) {
-            if (!PAGE_CHESSBOARD_FILL) {
-                PAGE_CHESSBOARD_FILL = IFPaintCanvas.createChessboard(8, 'white', 'rgb(205, 205, 205)');
-            }
-            fill = context.canvas.createTexture(PAGE_CHESSBOARD_FILL);
+        if (!PAGE_CHESSBOARD_FILL) {
+            PAGE_CHESSBOARD_FILL = IFPaintCanvas.createChessboard(8, 'white', 'rgb(205, 205, 205)');
         }
+        var chessFill = context.canvas.createTexture(PAGE_CHESSBOARD_FILL);
 
         context.canvas.setTransform(new IFTransform(1, 0, 0, 1, x, y));
-        context.canvas.fillRect(0, 0, w, h, fill);
+        context.canvas.fillRect(0, 0, w, h, chessFill);
+        var pageColor = page.getProperty('cls');
+        if (pageColor) {
+            context.canvas.fillRect(0, 0, w, h, pageColor);
+        }
         context.canvas.resetTransform();
 
         // Paint margin rect

@@ -87,6 +87,20 @@
      */
     IFSelectTool.prototype._moveCurrent = null;
 
+    /**
+     * An array of vusial lines ends, which are used to show snap zones
+     * @type {Array<Array<IFPoint>>} - line ends in view coordinates
+     * @private
+     */
+    IFSelectTool.prototype._visuals = null;
+
+    /**
+     * Area, which is used for painting and cleaning lines of snap zones
+     * @type {IFRect} - visuals area in view coordinates
+     * @private
+     */
+    IFSelectTool.prototype._visualsArea = null;
+
     /** @override */
     IFSelectTool.prototype.getCursor = function () {
         return this._editorUnderMouseInfo ? IFCursor.SelectDot : IFCursor.Select;
@@ -159,7 +173,7 @@
                 var pt0 = visLine[0];
                 var pt1 = visLine[1];
                 context.canvas.strokeLine(Math.floor(pt0.getX()) + 0.5, Math.floor(pt0.getY()) + 0.5,
-                    Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 1, context.highlightOutlineColor);
+                    Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 2, context.highlightOutlineColor);
             }
 
             this._visuals = null;
@@ -257,7 +271,7 @@
             var selectableElements = [];
             var element;
             var hitRes = null;
-            if (selection && selection.length) {
+            if (selection && selection.length && !stacked) {
                 for (var i = 0; i < selection.length && !hitRes; ++i) {
                     if (selection[i] instanceof IFElement) {
                         element = selection[i];
@@ -615,6 +629,7 @@
         if (this._mode == IFSelectTool._Mode.Moving) {
             var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
+                this._editor.getGuides().getShapeBoxGuide().useExclusions(this._editor.getSelection());
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                     position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);
@@ -690,7 +705,7 @@
                 if (this._editorUnderMouseInfo) {
                     this._editorUnderMouseInfo = null;
                 }
-                sceneEditor.updateTBoxCursorForView(mouse, this._view.getWorldTransform(), this._view);
+                sceneEditor.updateTBoxUnderMouse(mouse, this._view.getWorldTransform(), this._view);
                 hasEditorInfoUnderMouse = true;
             } else {
                 this._updateMode(null);
@@ -715,6 +730,8 @@
             }
         }
 
+        var bBox = null;
+        this._visuals = null;
         if (!this._mode && !partInfo || this._mode == IFSelectTool._Mode.Select) {
             var selection = this._editor.getSelection();
             var selectableElements = [];
@@ -734,42 +751,19 @@
 
                 if (elementHits && elementHits.length) {
                     for (var i = 0; i < elementHits.length && !shape; ++i) {
-                        if (elementHits[i].element instanceof IFShape) {
-                            if (!shape) {
-                                shape = elementHits[i].element;
-                            }
+                        if (elementHits[i].element instanceof IFShape && !elementHits[i].element.hasFlag(IFNode.Flag.Selected)) {
+                            shape = elementHits[i].element;
                         }
                     }
                 }
             }
             if (shape) {
-                var bBox = shape.getGeometryBBox();
-                var mousePt = this._view.getViewTransform().mapPoint(mouse);
-                if (bBox && !bBox.isEmpty() && bBox.containsPoint(mousePt)) {
-                    this._visuals = [];
-                    var side = bBox.getClosestSideName(mousePt);
-                    var sidePos = this._view.getWorldTransform().mapPoint(bBox.getSide(side));
-                    var tl = this._view.getWorldTransform().mapPoint(bBox.getSide(IFRect.Side.TOP_LEFT));
-                    var br = this._view.getWorldTransform().mapPoint(bBox.getSide(IFRect.Side.BOTTOM_RIGHT));
-                    var hVis = true;
-                    var vVis = true;
-                    switch (side) {
-                        case IFRect.Side.TOP_CENTER:
-                        case IFRect.Side.BOTTOM_CENTER:
-                            vVis = false;
-                            break;
-                        case IFRect.Side.LEFT_CENTER:
-                        case IFRect.Side.RIGHT_CENTER:
-                            hVis = false;
-                            break;
-                    }
-                    if (hVis) {
-                        this._visuals.push(
-                            [new IFPoint(tl.getX(), sidePos.getY()), new IFPoint(br.getX(), sidePos.getY())]);
-                    }
-                    if (vVis) {
-                        this._visuals.push(
-                            [new IFPoint(sidePos.getX(), tl.getY()), new IFPoint(sidePos.getX(), br.getY())]);
+                bBox = shape.getGeometryBBox();
+                if (bBox && !bBox.isEmpty()) {
+                    bBox = this._view.getWorldTransform().mapRect(bBox);
+                    var visuals = this._editor.getGuides().getBBoxSnapZones(bBox, mouse);
+                    if (visuals && visuals.length) {
+                        this._visuals = visuals;
                     }
                 }
             }
@@ -780,7 +774,7 @@
             this.updateCursor();
         }
 
-        var visualsArea = this._visuals ? this._view.getWorldTransform().mapRect(bBox).expanded(1, 1, 1, 1) : null;
+        var visualsArea = this._visuals ? bBox.expanded(2, 2, 2, 2) : null;
         if (this._visualsArea || visualsArea) {
             if (this._visualsArea) {
                 this.invalidateArea(this._visualsArea);

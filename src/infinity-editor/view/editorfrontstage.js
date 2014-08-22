@@ -11,6 +11,7 @@
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         view.addEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
         view.getEditor().getGuides().addEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        //view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
     IFObject.inherit(IFEditorFrontStage, IFStage);
 
@@ -18,12 +19,17 @@
     IFEditorFrontStage.prototype.release = function () {
         this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        //this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
         this._view.removeEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
     };
 
     /** @override */
     IFEditorFrontStage.prototype.paint = function (context) {
         this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
+        //var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
+        //if (sceneEditor) {
+           // sceneEditor.paint(this._view.getWorldTransform(), context);
+        //}
     };
 
     IFEditorFrontStage.prototype._sceneAfterPropertiesChanged = function (event) {
@@ -34,6 +40,13 @@
     };
 
     IFEditorFrontStage.prototype._guidesInvalidationRequest = function (event) {
+        if (event.area) {
+            var area = this._view.getWorldTransform().mapRect(event.area);
+            this.invalidate(area);
+        }
+    };
+
+    IFEditorFrontStage.prototype._sceneInvalidationRequest = function (event) {
         if (event.area) {
             var area = this._view.getWorldTransform().mapRect(event.area);
             this.invalidate(area);

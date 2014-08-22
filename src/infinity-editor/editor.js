@@ -634,11 +634,12 @@
      */
     IFEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
         var translation = delta;
-        if (align && startPos) {
+        if (align && startPos && this._selection.length == 1) {
             var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
             var side = selBBox.getClosestSideName(startPos);
             var sidePos = selBBox.getSide(side);
             var newSidePos = sidePos.add(delta);
+            this._guides.getShapeBoxGuide().useExclusions(this._selection);
             this._guides.beginMap();
             newSidePos = this._guides.mapPoint(newSidePos);
             this._guides.finishMap();

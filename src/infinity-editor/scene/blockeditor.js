@@ -183,7 +183,7 @@
             if (this._showResizeHandles()) {
                 this._iterateResizeHandles(function (point, side) {
                     this._paintAnnotation(context, transform, point, IFElementEditor.Annotation.Rectangle, false, true);
-                }.bind(this), true);
+                }.bind(this), transform);
             }
 
             // Let descendant classes do some post-painting
@@ -204,7 +204,7 @@
                     result = new IFElementEditor.PartInfo(this, IFBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
                     return true;
                 }
-            }.bind(this), true);
+            }.bind(this), transform);
 
             if (result) {
                 return result;
@@ -246,19 +246,31 @@
      * Iterate all resize handles
      * @param {Function(point: IFPoint, side: IFRect.Side)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
+     * @param {IFTransform} transform - current view transformation to check that shape has enough space
+     * to show resize handles
      */
-    IFBlockEditor.prototype._iterateResizeHandles = function (iterator) {
+    IFBlockEditor.prototype._iterateResizeHandles = function (iterator, transform) {
         var bbox = this.getPaintElement().getGeometryBBox();
 
         if (bbox && !bbox.isEmpty()) {
             var sides = [];
 
-            if (this.hasFlag(IFBlockEditor.Flag.ResizeEdges)) {
+            var transformedBBox = transform ? transform.mapRect(bbox) : bbox;
+
+            if (this.hasFlag(IFBlockEditor.Flag.ResizeEdges) &&
+                    transformedBBox.getHeight() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 2 &&
+                    transformedBBox.getWidth() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 2) {
+
                 sides = sides.concat([IFRect.Side.TOP_LEFT, IFRect.Side.TOP_RIGHT, IFRect.Side.BOTTOM_LEFT, IFRect.Side.BOTTOM_RIGHT]);
             }
 
             if (this.hasFlag(IFBlockEditor.Flag.ResizeCenters)) {
-                sides = sides.concat([IFRect.Side.TOP_CENTER, IFRect.Side.RIGHT_CENTER, IFRect.Side.BOTTOM_CENTER, IFRect.Side.LEFT_CENTER]);
+                if (transformedBBox.getHeight() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
+                    sides = sides.concat([IFRect.Side.RIGHT_CENTER, IFRect.Side.LEFT_CENTER]);
+                }
+                if (transformedBBox.getWidth() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
+                    sides = sides.concat([IFRect.Side.TOP_CENTER, IFRect.Side.BOTTOM_CENTER]);
+                }
             }
 
             for (var i = 0; i < sides.length; ++i) {

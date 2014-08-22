@@ -366,6 +366,10 @@
                         var insertReference = element.getNext() ? element.getNext() : null;
                         for (var c = 0; c < copies; ++c) {
                             var clone = element.clone();
+                            if (c == copies - 1) {
+                                clone.setFlag(IFNode.Flag.Selected);
+                                element.removeFlag(IFNode.Flag.Selected);
+                            }
                             parent.insertChild(clone, insertReference);
                             elementElements.push(clone);
                         }
@@ -379,8 +383,12 @@
                 }
                 for (var i = 0; i < transformElements.length; ++i) {
                     var elementElements = transformElements[i];
-                    for (var step = 1; step <= elementElements.length; ++step) {
-                        transformFunc(step, elementElements[step - 1], pivotPt);
+                    if (elementElements.length > 1) {
+                        for (var step = 0; step < elementElements.length; ++step) {
+                            transformFunc(step, elementElements[step], pivotPt);
+                        }
+                    } else if (elementElements.length == 1) {
+                        transformFunc(1, elementElements[0], pivotPt);
                     }
                 }
             }.bind(this), 'Adjust Transformation');

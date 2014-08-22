@@ -195,8 +195,10 @@
             // TODO: draw dashed line
             context.canvas.putVertices(new IFVertexPixelAligner(this));
             context.canvas.strokeVertices(IFColor.BLACK, 1);
-            for (var side = 0; side < 8 ; ++side) {
-                var pt = this._getPoint(side);
+
+            var sides = this._collectResizeHandles(transform);
+            for (var i = 0; i < sides.length; ++i) {
+                var pt = this._getPoint(sides[i]);
                 ifAnnotation.paintAnnotation(context, null, pt, ifAnnotation.AnnotType.Rectangle,
                     false, IFTransformBox.ANNOT_SIZE, IFColor.WHITE, IFColor.BLACK);
             }
@@ -247,11 +249,13 @@
         }
 
         // test handles and center
-        for (var side = 0; side < 9; ++side) {
-            var handle = this._getPoint(side);
+        var sides = this._collectResizeHandles(transform);
+        sides.push(IFTransformBox.Handles.ROTATION_CENTER);
+        for (var i = 0; i < sides.length; ++i) {
+            var handle = this._getPoint(sides[i]);
             if (ifAnnotation.getAnnotationBBox(null, handle, IFTransformBox.ANNOT_SIZE)
                     .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-                result = new IFElementEditor.PartInfo(null, side, handle);
+                result = new IFElementEditor.PartInfo(null, sides[i], handle);
                 break;
             }
         }
@@ -620,6 +624,32 @@
         }
 
         return pt;
+    };
+
+    /**
+     * Defines and return which resize handles should be painted and hit tested based on transform box size
+     * @param {IFTransform} transform
+     * @returns {Array<IFTransformBox.Handles>}
+     * @private
+     */
+    IFTransformBox.prototype._collectResizeHandles = function (transform) {
+        var bbox = new IFRect(this.tlx, this.tly, this.brx - this.tlx, this.bry - this.tly);
+        bbox = this.trf ? this.trf.mapRect(bbox) : bbox;
+        var transformedBBox = transform ? transform.mapRect(bbox) : bbox;
+        var sides = [];
+        if (transformedBBox.getHeight() > (IFTransformBox.ANNOT_SIZE + 2) * 2 &&
+            transformedBBox.getWidth() > (IFTransformBox.ANNOT_SIZE + 2) * 2) {
+
+            sides = sides.concat([IFTransformBox.Handles.TOP_LEFT, IFTransformBox.Handles.TOP_RIGHT,
+                IFTransformBox.Handles.BOTTOM_LEFT, IFTransformBox.Handles.BOTTOM_RIGHT]);
+        }
+        if (transformedBBox.getHeight() > (IFTransformBox.ANNOT_SIZE + 2) * 3) {
+            sides = sides.concat([IFTransformBox.Handles.RIGHT_CENTER, IFTransformBox.Handles.LEFT_CENTER]);
+        }
+        if (transformedBBox.getWidth() > (IFTransformBox.ANNOT_SIZE + 2) * 3) {
+            sides = sides.concat([IFTransformBox.Handles.TOP_CENTER, IFTransformBox.Handles.BOTTOM_CENTER]);
+        }
+        return sides;
     };
 
     /** @override */
