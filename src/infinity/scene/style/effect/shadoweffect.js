@@ -57,12 +57,12 @@
         // Paint shadow now
         if (this.$in) {
             canvas.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
-            canvas.blur(r);
+            canvas.getBitmap().blur(r);
             canvas.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
         } else {
             // Drop shadow
             canvas.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-            canvas.blur(r);
+            canvas.getBitmap().blur(r);
         }
     };
 

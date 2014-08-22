@@ -28,7 +28,7 @@
 
     /** @override */
     IFBlurFilter.prototype.apply = function (contents, scale) {
-        contents.blur(this.$r * scale);
+        contents.getBitmap().blur(this.$r * scale);
     };
 
     /** @override */
