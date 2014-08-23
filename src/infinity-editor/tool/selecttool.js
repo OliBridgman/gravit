@@ -173,7 +173,7 @@
                 var pt0 = visLine[0];
                 var pt1 = visLine[1];
                 context.canvas.strokeLine(Math.floor(pt0.getX()) + 0.5, Math.floor(pt0.getY()) + 0.5,
-                    Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 2, context.highlightOutlineColor);
+                    Math.floor(pt1.getX()) + 0.5, Math.floor(pt1.getY()) + 0.5, 1, context.highlightOutlineColor);
             }
 
             this._visuals = null;
