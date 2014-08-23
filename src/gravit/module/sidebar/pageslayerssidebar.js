@@ -839,6 +839,10 @@
                         immediateClose: true
                     })
                     .gColorButton('value', layerOrItem.getProperty('cls'))
+                    .removeClass('g-input')
+                    .on('click', function (evt) {
+                        evt.stopPropagation();
+                    })
                     .on('colorchange', function (evt, color) {
                         // TODO : I18N
                         IFEditor.tryRunTransaction(layerOrItem, function () {
