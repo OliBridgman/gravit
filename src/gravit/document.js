@@ -173,13 +173,15 @@
             'x',
             'y',
             'w',
-            'h'
+            'h',
+            'cls'
         ], [
             'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),
             insertPos.getY(),
             800,
-            600
+            600,
+            IFColor.WHITE
         ]);
 
         // Add default layer
