@@ -83,6 +83,7 @@
             var $this = $(this);
             var data = $this.data('g-colorbutton');
             var colorPanel = getColorPanel();
+            colorPanel.gOverlay('close', this);
             colorPanel.gColorPanel('scene', data.scene);
             colorPanel.gColorPanel('value', methods.value.call(this));
             colorPanel.gColorPanel('allowClear', data.options.allowClear);
