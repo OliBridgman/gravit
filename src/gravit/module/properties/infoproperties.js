@@ -51,15 +51,27 @@
     GInfoProperties.prototype.init = function (panel) {
         this._panel = panel;
 
-        var _createDimensionInput = function (dimension) {
+        var _createInput = function (property) {
             var self = this;
-            return $('<input>')
-                .attr('type', 'text')
-                .attr('data-dimension', dimension)
-                .css('width', '3em')
-                .on('change', function (evt) {
-                    self._assignDimension(dimension, $(this).val());
-                });
+
+            if (property === 'name') {
+                return $('<input>')
+                    .css('width', '100%')
+                    .attr('data-name', '')
+                    .on('change', function (evt) {
+                        IFEditor.tryRunTransaction(self._elements[0], function () {
+                            self._elements[0].setProperty('name', $(evt.target).val());
+                        }, 'Rename Element');
+                    });
+            }
+            else if (property === 'x' || property === 'y' || property === 'w' || property === 'h') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-dimension', property)
+                    .on('change', function (evt) {
+                        self._assignDimension(property, $(this).val());
+                    });
+            }
         }.bind(this);
 
         panel
@@ -82,14 +94,13 @@
                     'text-transform': 'uppercase'
                 })
                 .attr('data-type', ''))
-            .append($('<input>')
+            .append(_createInput('name')
                 .css({
                     'position': 'absolute',
                     'left': '51px',
                     'top': '30px',
                     'width': '77px'
-                })
-                .attr('data-name', ''))
+                }))
             .append($('<hr>')
                 .css({
                     'position': 'absolute',
@@ -106,7 +117,13 @@
                     'padding': '0px',
                     'font-size': '10px'
                 })
+                .on('click', function (evt) {
+                    var $me = $(this);
+                    $me.toggleClass('g-active', !$me.hasClass('g-active'));
+                })
                 .addClass('fa fa-lock')
+                // TODO : I18N
+                .attr('title', 'Keep Ratio')
                 .attr('data-ratio', ''))
             .append($('<label></label>')
                 .css({
@@ -115,7 +132,7 @@
                     'top': '65px'
                 })
                 .text('W:')
-                .append($('<input>')
+                .append(_createInput('w')
                     .css({
                         'position': 'absolute',
                         'left': '15px',
@@ -128,7 +145,7 @@
                     'top': '89px'
                 })
                 .text('H:')
-                .append($('<input>')
+                .append(_createInput('h')
                     .css({
                         'position': 'absolute',
                         'left': '15px',
@@ -141,7 +158,7 @@
                     'top': '65px'
                 })
                 .text('X:')
-                .append($('<input>')
+                .append(_createInput('x')
                     .css({
                         'position': 'absolute',
                         'left': '15px',
@@ -154,63 +171,12 @@
                     'top': '89px'
                 })
                 .text('Y:')
-                .append($('<input>')
+                .append(_createInput('y')
                     .css({
                         'position': 'absolute',
                         'left': '15px',
                         'width': '38px'
                     })));
-
-        // Init panel
-        $('<table></table>')
-            .addClass('g-form')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', '4')
-                    .append($('<input>')
-                        .css('width', '100%')
-                        .attr('data-name', '')
-                        .on('change', function (evt) {
-                            IFEditor.tryRunTransaction(this._elements[0], function () {
-                                this._elements[0].setProperty('name', $(evt.target).val());
-                            }.bind(this), 'Rename Element');
-                        }.bind(this)))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('W:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('w')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('x:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('x'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('H:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('h')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Y:'))
-                .append($('<td></td>')
-                    .append(_createDimensionInput('y'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', '4')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-apply', '')
-                            .on('change', function () {
-                                this._updateDimensions(true);
-                            }.bind(this)))
-                        .append($('<span></span>')
-                            .html('&nbsp;Apply to Selection')))));
     };
 
     /** @override */
@@ -277,7 +243,11 @@
      */
     GInfoProperties.prototype._updateDimensions = function (noBBoxCalculation) {
         var _updateDimension = function (dimension, value) {
-            this._panel.find('input[data-dimension="' + dimension + '"]').val(this._document.getScene().pointToString(value));
+            this._panel.find('input[data-dimension="' + dimension + '"]')
+                .val(value !== null ? this._document.getScene().pointToString(value) : '')
+            /** !! */
+                .parents('label')
+                .css('display', value === null ? 'none' : '');
         }.bind(this);
 
         if (!noBBoxCalculation) {
@@ -297,24 +267,33 @@
             }
 
             if (!this._elementsBBox) {
-                this._elementsBBox = new IFRect(0, 0, 0, 0);
+                this._elementsBBox = null;
                 this._firstElementsBBox = this._elementsBBox;
             }
         }
 
-        var applyToSelection = this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
-        var delta = this._getDelta();
-
-        if (applyToSelection) {
-            _updateDimension('x', this._elementsBBox.getX() - delta.getX());
-            _updateDimension('y', this._elementsBBox.getY() - delta.getY());
-            _updateDimension('w', this._elementsBBox.getWidth());
-            _updateDimension('h', this._elementsBBox.getHeight());
+        if (!this._firstElementsBBox) {
+            this._panel.find('button[data-ratio]').css('display', 'none');
+            _updateDimension('x', null);
+            _updateDimension('y', null);
+            _updateDimension('w', null);
+            _updateDimension('h', null);
         } else {
-            _updateDimension('x', this._firstElementsBBox.getX() - delta.getX());
-            _updateDimension('y', this._firstElementsBBox.getY() - delta.getY());
-            _updateDimension('w', this._firstElementsBBox.getWidth());
-            _updateDimension('h', this._firstElementsBBox.getHeight());
+            var applyToSelection = true;// TODO : this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
+            var delta = this._getDelta();
+
+            this._panel.find('button[data-ratio]').css('display', '');
+            if (applyToSelection) {
+                _updateDimension('x', this._elementsBBox.getX() - delta.getX());
+                _updateDimension('y', this._elementsBBox.getY() - delta.getY());
+                _updateDimension('w', this._elementsBBox.getWidth());
+                _updateDimension('h', this._elementsBBox.getHeight());
+            } else {
+                _updateDimension('x', this._firstElementsBBox.getX() - delta.getX());
+                _updateDimension('y', this._firstElementsBBox.getY() - delta.getY());
+                _updateDimension('w', this._firstElementsBBox.getWidth());
+                _updateDimension('h', this._firstElementsBBox.getHeight());
+            }
         }
     };
 
@@ -345,48 +324,65 @@
             }
         }
 
-        var _getTransformation = function (bbox) {
-            switch (dimension) {
-                case 'x':
-                    return new IFTransform()
-                        .translated(value - bbox.getX(), 0);
-                case 'y':
-                    return new IFTransform()
-                        .translated(0, value - bbox.getY());
-                case 'w':
-                    return new IFTransform()
-                        .translated(-bbox.getX(), -bbox.getY())
-                        .scaled(value / bbox.getWidth(), 1)
-                        .translated(bbox.getX(), bbox.getY());
-                case 'h':
-                    return new IFTransform()
-                        .translated(-bbox.getX(), -bbox.getY())
-                        .scaled(1, value / bbox.getHeight())
-                        .translated(bbox.getX(), bbox.getY());
-                default:
-                    break;
+        var _getTransformation = function (bbox, keepRatio) {
+            if (dimension === 'w' || dimension === 'h') {
+                var sx = 1;
+                var sy = 1;
+
+                switch (dimension) {
+                    case 'w':
+                        sx = value / bbox.getWidth();
+                        if (keepRatio) {
+                            sy = sx;
+                        }
+                        break;
+                    case 'h':
+                        sy = value / bbox.getHeight();
+                        if (keepRatio) {
+                            sx = sy;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return new IFTransform()
+                    .translated(-bbox.getX(), -bbox.getY())
+                    .scaled(sx, sy)
+                    .translated(bbox.getX(), bbox.getY());
+            } else {
+                switch (dimension) {
+                    case 'x':
+                        return new IFTransform()
+                            .translated(value - bbox.getX(), 0);
+                    case 'y':
+                        return new IFTransform()
+                            .translated(0, value - bbox.getY());
+                    default:
+                        break;
+                }
             }
         };
 
-        var applyToSelection = this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
+        var applyToSelection = true; // TODO : this._elements.length > 1 && this._panel.find('input[data-apply]').is(':checked');
+        var keepRatio = this._panel.find('button[data-ratio]').hasClass('g-active');
 
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
             if (applyToSelection) {
-                var transform = _getTransformation(this._elementsBBox);
+                var transform = _getTransformation(this._elementsBBox, keepRatio);
                 for (var i = 0; i < this._elements.length; ++i) {
                     this._elements[i].transform(transform);
                 }
             } else {
                 for (var i = 0; i < this._elements.length; ++i) {
-                    var transform = _getTransformation(this._elements[i].getGeometryBBox());
+                    var transform = _getTransformation(this._elements[i].getGeometryBBox(), keepRatio);
                     this._elements[i].transform(transform);
                 }
             }
         } finally {
             // TODO : I18N
-            editor.commitTransaction('Modify Dimensions');
+            editor.commitTransaction('Change Size');
         }
     };
 
