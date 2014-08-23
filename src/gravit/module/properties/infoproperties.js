@@ -134,8 +134,7 @@
                 .text('W:')
                 .append(_createInput('w')
                     .css({
-                        'position': 'absolute',
-                        'left': '15px',
+                        'margin-left': '3px',
                         'width': '38px'
                     })))
             .append($('<label></label>')
@@ -147,8 +146,7 @@
                 .text('H:')
                 .append(_createInput('h')
                     .css({
-                        'position': 'absolute',
-                        'left': '15px',
+                        'margin-left': '3px',
                         'width': '38px'
                     })))
             .append($('<label></label>')
@@ -160,8 +158,7 @@
                 .text('X:')
                 .append(_createInput('x')
                     .css({
-                        'position': 'absolute',
-                        'left': '15px',
+                        'margin-left': '3px',
                         'width': '38px'
                     })))
             .append($('<label></label>')
@@ -173,8 +170,7 @@
                 .text('Y:')
                 .append(_createInput('y')
                     .css({
-                        'position': 'absolute',
-                        'left': '15px',
+                        'margin-left': '3px',
                         'width': '38px'
                     })));
     };

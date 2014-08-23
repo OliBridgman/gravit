@@ -12,6 +12,7 @@ body, html {
   &, * {
     font: $font;
     line-height: $baseline;
+    vertical-align: middle;
   }
 
   p {

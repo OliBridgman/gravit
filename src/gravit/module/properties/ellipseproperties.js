@@ -85,63 +85,30 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .text('Type:')
                 .append(_createInput('etp')
-                    .css({
-                        'position': 'absolute',
-                        'left': '35px'
-                    })))
+                    .css('width', '98px')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '30px',
                     'left': '5px'
                 })
-                .text('Angle:')
+                .html('<span class="fa fa-rotate-right" style="font-size:12px"></span>')
                 .append(_createInput('sa')
                     .css({
-                        'position': 'absolute',
-                        'left': '35px',
+                        'margin-left': '5px',
                         'width': '38px'
                     })))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '30px',
-                    'left': '85px'
+                    'left': '65px'
                 })
-                .html('<span class="fa fa-circle"></span>')
                 .append(_createInput('ea')
                     .css({
-                        'position': 'absolute',
-                        'left': '15px',
                         'width': '38px'
                     })));
-
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Style:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('etp'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Angle:'))
-                .append($('<td></td>')
-                    .append(_createInput('sa')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
-                .append($('<td></td>')
-                    .append(_createInput('ea'))));
-            //.appendTo(panel);
     };
 
     /** @override */
