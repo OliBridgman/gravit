@@ -6,53 +6,6 @@
   .properties-panels {
     height: 100%;
 
-    > .properties-panel-category {
-      display: none !important;
-
-      @include box-sizing(border-box);
-      display: table;
-      width: 100%;
-      padding: 0px 5px;
-      height: 25px;
-      background: $frameBorderColor;
-      margin-bottom: 1px;
-
-      > div {
-        display: table-cell;
-        vertical-align: middle;
-      }
-
-      > .title {
-        width: 100%;
-
-        > i.fa:first-child {
-          padding-right: 3px;
-          width: 9px;
-          text-align: center;
-        }
-      }
-
-      > .controls {
-        text-align: right;
-        white-space: nowrap;
-
-        input, button, .g-button, select {
-          border: none;
-          background: transparent !important;
-          box-shadow: none;
-          margin: 0px;
-        }
-
-        button, .g-button {
-          &.g-active {
-            &, * {
-              color: $selectedColor;
-            }
-          }
-        }
-      }
-    }
-
     > .properties-panel-content {
       overflow: scroll;
 
@@ -60,6 +13,7 @@
       height: 100%;
       float: left;
       border-left: 1px solid $frameBorderColor;
+      border-right: 1px solid red;
 
       &.first-visible {
         border-left: none;

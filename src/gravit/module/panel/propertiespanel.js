@@ -24,7 +24,7 @@
 
     /**
      * The property panels
-     * @type {Array<{{category: JQuery, panel: JQuery, properties: GProperties}}>}
+     * @type {Array<{{panel: JQuery, properties: GProperties}}>}
      * @private
      */
     GPropertiesPanel.prototype._propertyPanels = null;
@@ -68,44 +68,13 @@
                 .attr('data-available', 'false')
                 .addClass('properties-panel-content');
 
-            // Append category
-            var category = $('<div></div>')
-                .addClass('properties-panel-category')
-                .css('display', 'none')
-                .attr('data-expanded', 'true')
-                .append($('<div></div>')
-                    .addClass('title')
-                    .append($('<i></i>')
-                        .addClass('fa fa-angle-down'))
-                    .append($('<span></span>')
-                        .text(ifLocale.get(properties.getCategory())))
-                    .on('click', function () {
-                        if (panel.attr('data-available') === 'true') {
-                            var category = $(this).parents('.properties-panel-category');
-                            var icon = category.find('i.fa');
-                            if (panel.css('display') !== 'none') {
-                                panel.css('display', 'none');
-                                icon.attr('class', 'fa fa-angle-right');
-                                category.attr('data-expanded', 'false');
-                            } else {
-                                panel.css('display', '');
-                                icon.attr('class', 'fa fa-angle-down');
-                                category.attr('data-expanded', 'true');
-                            }
-                        }
-                    }))
-                .append($('<div></div>')
-                    .addClass('controls'))
-                .appendTo(propertiesPanels);
-
             // Init properties
-            properties.init(panel, category.find('.controls'));
+            properties.init(panel);
 
             // Append panel
             panel.appendTo(propertiesPanels);
 
             this._propertyPanels.push({
-                category: category,
                 panel: panel,
                 properties: properties
             })
@@ -189,18 +158,11 @@
             propertyPanel.panel.removeClass('first-visible');
             propertyPanel.panel.removeClass('last-visible');
             if (available) {
-                propertyPanel.category.css('display', '');
-
-                if (propertyPanel.category.attr('data-expanded') == 'true') {
-                    propertyPanel.panel.css('display', '');
-                }
-
+                propertyPanel.panel.css('display', '');
                 propertyPanel.panel.attr('data-available', 'true');
-
                 if (!firstVisiblePropertyPanel) firstVisiblePropertyPanel = propertyPanel;
                 lastVisiblePropertyPanel = propertyPanel;
             } else {
-                propertyPanel.category.css('display', 'none');
                 propertyPanel.panel.css('display', 'none');
                 propertyPanel.panel.attr('data-available', 'false');
             }

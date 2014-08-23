@@ -113,7 +113,7 @@
 
                     'position': 'absolute',
                     'left': '5px',
-                    'top': '75px',
+                    'top': '77px',
                     'padding': '0px',
                     'font-size': '10px'
                 })
@@ -152,26 +152,26 @@
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
-                    'left': '74px',
+                    'left': '75px',
                     'top': '65px'
                 })
                 .text('X:')
                 .append(_createInput('x')
                     .css({
                         'margin-left': '3px',
-                        'width': '38px'
+                        'width': '41px'
                     })))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
-                    'left': '74px',
+                    'left': '75px',
                     'top': '89px'
                 })
                 .text('Y:')
                 .append(_createInput('y')
                     .css({
                         'margin-left': '3px',
-                        'width': '38px'
+                        'width': '41px'
                     })));
     };
 

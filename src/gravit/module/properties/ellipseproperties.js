@@ -36,7 +36,7 @@
     };
 
     /** @override */
-    GEllipseProperties.prototype.init = function (panel, controls) {
+    GEllipseProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createInput = function (property) {

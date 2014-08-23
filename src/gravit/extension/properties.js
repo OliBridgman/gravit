@@ -20,9 +20,8 @@
     /**
      * Called to initialize the properties panel
      * @param {JQuery} panel the panel to init on
-     * @param {JQuery} controls the controls panel to init on
      */
-    GProperties.prototype.init = function (panel, controls) {
+    GProperties.prototype.init = function (panel) {
         throw new Error("Not Supported.");
     };
 

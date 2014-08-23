@@ -6,6 +6,10 @@ ul.jqtree-tree ul.jqtree_common {
   margin-bottom: 0;
   margin-top: 0px;
   padding: 0;
+
+  &, * {
+    line-height: 1 !important;
+  }
 }
 
 ul.jqtree-tree ul.jqtree_common {

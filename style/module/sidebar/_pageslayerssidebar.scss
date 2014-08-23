@@ -6,6 +6,10 @@
       position: relative;
       width: 100%;
 
+      &, * {
+        line-height: 1 !important;
+      }
+
       &.g-active {
         background: $activeColor;
 

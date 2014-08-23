@@ -107,7 +107,7 @@
     };
 
     /** @override */
-    GPageProperties.prototype.init = function (panel, controls) {
+    GPageProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -115,7 +115,6 @@
             if (property === 'msref') {
                 return $('<select></select>')
                     .attr('data-property', 'msref')
-                    .css('width', '100%')
                     .on('change', function () {
                         var val = $(this).val();
                         self._assignProperty(property, val === '' ? null : val);
@@ -123,7 +122,6 @@
             } else if (property === 'size-preset') {
                 var result = $('<select></select>')
                     .attr('data-property', 'size-preset')
-                    .css('width', '100%')
                     .on('change', function () {
                         var scene = self._document.getScene();
                         var val = $(this).val();
@@ -173,7 +171,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -183,15 +180,31 @@
                         }
                         self._selectSizePreset();
                     });
-            } else if (property === 'bl' || property === 'mt' || property === 'mb' || property === 'ml' || property === 'mr') {
+            } else if (property === 'bl') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
                             self._assignProperty(property, value);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
+            } else if (property === 'mt' || property === 'mb' || property === 'ml' || property === 'mr') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        var value = self._document.getScene().stringToPoint($(this).val());
+                        if (value !== null && typeof value === 'number' && value >= 0) {
+                            var lockMargins = self._panel.find('button[data-lock-margin]').hasClass('g-active');
+                            if (lockMargins) {
+                                self._assignProperties(['mt', 'mb', 'ml', 'mr'], [value, value, value, value]);
+                            } else {
+                                self._assignProperty(property, value);
+                            }
                         } else {
                             self._updateProperties();
                         }
@@ -201,85 +214,145 @@
             }
         }.bind(this);
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Master:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('msref'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Bleed:'))
-                .append($('<td></td>')
-                    .append(_createInput('bl')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Color:'))
-                .append($('<td></td>')
-                    .append(_createInput('cls'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .html('&nbsp;'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('size-preset'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Width:'))
-                .append($('<td></td>')
-                    .append(_createInput('w')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Height:'))
-                .append($('<td></td>')
-                    .append(_createInput('h'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<h1></h1>')
-                        .addClass('g-divider')
-                        // TODO : I18N
-                        .text('Margin'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Top:'))
-                .append($('<td></td>')
-                    .append(_createInput('mt')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Bottom:'))
-                .append($('<td></td>')
-                    .append(_createInput('mb'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Left:'))
-                .append($('<td></td>')
-                    .append(_createInput('ml')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Right:'))
-                .append($('<td></td>')
-                    .append(_createInput('mr'))))
-            .appendTo(this._panel);
+        panel
+            .css('width', '250px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px',
+                })
+                .append(_createInput('size-preset')
+                    .css({
+                        'width': '110px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '125px'
+                })
+                .html('<span class="fa fa-link"></span>')
+                .append(_createInput('msref')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '102px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .text('W:')
+                .append(_createInput('w')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '65px'
+                })
+                .text('H:')
+                .append(_createInput('h')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '125px'
+                })
+                .text('Bleed:')
+                .append(_createInput('bl')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'right': '5px'
+                })
+                .append(_createInput('cls')))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '5px',
+                    'top': '65px'
+                })
+                .text('L:')
+                .append(_createInput('ml')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '5px',
+                    'top': '89px'
+                })
+                .text('T:')
+                .append(_createInput('mt')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '65px',
+                    'top': '65px'
+                })
+                .text('R:')
+                .append(_createInput('mr')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'left': '65px',
+                    'top': '89px'
+                })
+                .text('B:')
+                .append(_createInput('mb')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<button></button>')
+                .css({
+
+                    'position': 'absolute',
+                    'left': '123px',
+                    'top': '77px',
+                    'padding': '0px',
+                    'font-size': '10px'
+                })
+                .on('click', function (evt) {
+                    var $me = $(this);
+                    $me.toggleClass('g-active', !$me.hasClass('g-active'));
+                })
+                .addClass('fa fa-lock g-active')
+                // TODO : I18N
+                .attr('title', 'Equal Margins')
+                .attr('data-lock-margin', ''));
     };
 
     /** @override */

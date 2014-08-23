@@ -39,6 +39,8 @@
                 var $this = $(this);
 
                 $this
+                    .addClass('g-input')
+                    .css('min-width', '20px')
                     .data('g-colorbutton', {
                         options: options,
                         scene: options.scene,
@@ -64,12 +66,8 @@
                     });
 
                 if (!options.transient) {
-                    // Add an invisible placeholder for sizing
                     $this
-                        .addClass('g-cursor-pipette')
-                        .append($('<span></span>')
-                            .addClass('fa fa-ban')
-                            .css('visibility', 'hidden'));
+                        .addClass('g-cursor-pipette');
                 }
 
                 if (options.autoOpen) {
