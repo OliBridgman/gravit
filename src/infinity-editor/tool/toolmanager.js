@@ -343,10 +343,11 @@
         // Hand Tool is active when:
         //
         // .) Space Key is hold
-        // .) The active tool is the hand tool
+        // .) The active tool may be and may be not the hand tool as the _updateTemporaryTool may be called due to other
+        // modifiers
         // .) The temporary tool is not the hand tool
         //
-        if (ifPlatform.modifiers.spaceKey && this._activeTool !== handToolInstance && this._temporaryActiveTool !== handToolInstance) {
+        if (ifPlatform.modifiers.spaceKey && this._temporaryActiveTool !== handToolInstance) {
             temporaryTool = handToolInstance;
         }
 
