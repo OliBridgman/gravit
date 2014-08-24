@@ -32,9 +32,9 @@
             name: 'Lighten'
         },
         {
-            type: IFPaintCanvas.BlendMode.ColorDoge,
+            type: IFPaintCanvas.BlendMode.ColorDodge,
             // TODO : I18N
-            name: 'Color Doge'
+            name: 'Color Dodge'
         },
         {
             type: IFPaintCanvas.BlendMode.ColorBurn,

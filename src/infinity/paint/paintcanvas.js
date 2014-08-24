@@ -40,7 +40,7 @@
         Overlay: 'overlay',
         Darken: 'darken',
         Lighten: 'lighten',
-        ColorDoge: 'color-doge',
+        ColorDodge: 'color-dodge',
         ColorBurn: 'color-burn',
         HardLight: 'hard-light',
         SoftLight: 'soft-light',
