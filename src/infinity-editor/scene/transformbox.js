@@ -332,141 +332,15 @@
         }.bind(this);
 
         if (partInfo.id < 8) {
-            var transform1 = null;
-            var transform3 = null;
-            var width = this.brx - this.tlx;
-            var height = this.bry - this.tly;
+            var sides = [IFRect.Side.TOP_LEFT, IFRect.Side.TOP_CENTER, IFRect.Side.TOP_RIGHT, IFRect.Side.RIGHT_CENTER,
+                IFRect.Side.BOTTOM_RIGHT, IFRect.Side.BOTTOM_CENTER, IFRect.Side.BOTTOM_LEFT, IFRect.Side.LEFT_CENTER];
 
-            switch (partInfo.id) {
-                case IFTransformBox.Handles.TOP_LEFT:
-                    _snap(this.tlx, this.tly, true, true);
-                    width = this.brx - this.tlx - dx;
-                    height = this.bry - this.tly - dy;
-                    if (!option) {
-                        var tlxNew = this.tlx + dx;
-                        var tlyNew = this.tly + dy;
+            var tBoxRect = new IFRect(this.tlx, this.tly, this.brx - this.tlx, this.bry - this.tly);
+            var rectSide = sides[partInfo.id];
+            var handlePt = tBoxRect.getSide(rectSide);
+            _snap(handlePt.getX(), handlePt.getY(), true, true);
 
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.brx, -this.bry);
-                        transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, tlyNew + height);
-                    }
-                    break;
-                case IFTransformBox.Handles.TOP_CENTER:
-                    _snap(this.tlx, this.tly, false, true);
-                    height = this.bry - this.tly - dy;
-                    if (!option) {
-                        var tlyNew = this.tly + dy;
-                        var botCenter = new IFPoint((this.blx + this.brx) / 2, (this.bly + this.bry) / 2);
-                        transform1 = new IFTransform(1, 0, 0, 1, -botCenter.getX(), -botCenter.getY());
-                        transform3 = new IFTransform(1, 0, 0, 1, botCenter.getX(), tlyNew + height);
-                    }
-                    break;
-                case IFTransformBox.Handles.TOP_RIGHT:
-                    _snap(this.trx, this.try, true, true);
-                    width = width + dx;
-                    height = height - dy;
-                    if (!option) {
-                        var tlxNew = this.tlx;
-                        var tlyNew = this.tly + dy;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.blx, -this.bly);
-                        transform3 = new IFTransform(1, 0, 0, 1, tlxNew, tlyNew + height);
-                    }
-                    break;
-                case IFTransformBox.Handles.RIGHT_CENTER:
-                    _snap(this.trx, this.try, true, false);
-                    width = width + dx;
-                    if (!option) {
-                        var tlxNew = this.tlx;
-                        var leftCenter = new IFPoint((this.blx + this.tlx) / 2, (this.bly + this.tly) / 2);
-                        transform1 = new IFTransform(1, 0, 0, 1, -leftCenter.getX(), -leftCenter.getY());
-                        transform3 = new IFTransform(1, 0, 0, 1,  tlxNew, leftCenter.getY());
-                    }
-                    break;
-                case IFTransformBox.Handles.BOTTOM_RIGHT:
-                    _snap(this.brx, this.bry, true, true);
-                    width = width + dx;
-                    height = height + dy;
-                    if (!option) {
-                        var tlxNew = this.tlx;
-                        var tlyNew = this.tly;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.tlx, -this.tly);
-                        transform3 = new IFTransform(1, 0, 0, 1, tlxNew, tlyNew);
-                    }
-                    break;
-                case IFTransformBox.Handles.BOTTOM_CENTER:
-                    _snap(this.brx, this.bry, false, true);
-                    height = height + dy;
-                    if (!option) {
-                        var tlyNew = this.tly;
-                        var topCenter = new IFPoint((this.trx + this.tlx) / 2, (this.try + this.tly) / 2);
-                        transform1 = new IFTransform(1, 0, 0, 1, -topCenter.getX(), -topCenter.getY());
-                        transform3 = new IFTransform(1, 0, 0, 1,  topCenter.getX(), tlyNew);
-                    }
-                    break;
-                case IFTransformBox.Handles.BOTTOM_LEFT:
-                    _snap(this.blx, this.bly, true, true);
-                    width = width - dx;
-                    height = height + dy;
-                    if (!option) {
-                        var tlxNew = this.tlx + dx;
-                        var tlyNew = this.tly;
-                        transform1 = new IFTransform(1, 0, 0, 1, -this.trx, -this.try);
-                        transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, tlyNew);
-                    }
-                    break;
-                case IFTransformBox.Handles.LEFT_CENTER:
-                    _snap(this.blx, this.bly, true, false);
-                    width = width - dx;
-                    if (!option) {
-                        var dxNew = dx;
-                        var tlxNew = this.tlx + dxNew;
-                        var rightCenter = new IFPoint((this.trx + this.brx) / 2, (this.try + this.bry) / 2);
-                        transform1 = new IFTransform(1, 0, 0, 1, -rightCenter.getX(), -rightCenter.getY());
-                        transform3 = new IFTransform(1, 0, 0, 1, tlxNew + width, rightCenter.getY());
-                    }
-                    break;
-            }
-
-            var scaleX = width / (this.brx - this.tlx);
-            var scaleY = height / (this.bry - this.tly);
-            if (option) {
-                scaleX += scaleX - 1;
-                scaleY += scaleY - 1;
-                var cnt = new IFPoint((this.tlx + this.brx) / 2, (this.tly + this.bry) / 2);
-                transform1 = new IFTransform(1, 0, 0, 1, -cnt.getX(), -cnt.getY());
-                transform3 = new IFTransform(1, 0, 0, 1, cnt.getX(), cnt.getY());
-            }
-            if (ratio){
-                switch (partInfo.id) {
-                    case IFTransformBox.Handles.TOP_CENTER:
-                    case IFTransformBox.Handles.BOTTOM_CENTER:
-                        // Make equal delta for center resize
-                        scaleX = Math.abs(scaleY);
-                        break;
-                    case IFTransformBox.Handles.LEFT_CENTER:
-                    case IFTransformBox.Handles.RIGHT_CENTER:
-                        // Make equal delta for center resize
-                        scaleY = Math.abs(scaleX);
-                        break;
-                    default:
-                        if (Math.abs(scaleX) > Math.abs(scaleY)) {
-                            if (ifMath.isEqualEps(scaleY, 0)) {
-                                scaleY = scaleX;
-                            } else {
-                                scaleY = scaleY * Math.abs(scaleX) / Math.abs(scaleY);
-                            }
-                        } else {
-                            if (ifMath.isEqualEps(scaleX, 0)) {
-                                scaleX = scaleY;
-                            } else {
-                                scaleX = scaleX * Math.abs(scaleY) / Math.abs(scaleX);
-                            }
-                        }
-                        break;
-                }
-            }
-            var transform2 = new IFTransform(scaleX, 0, 0, scaleY, 0, 0);
-
-            return transform1.multiplied(transform2).multiplied(transform3);
+            return tBoxRect.getResizeTransform(rectSide, dx, dy, ratio, option);
         } else if (partInfo.id == IFTransformBox.Handles.ROTATION_CENTER) {
             _snap(this.cx, this.cy, true, true);
             return new IFTransform(1, 0, 0, 1, dx, dy);

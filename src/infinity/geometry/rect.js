@@ -559,6 +559,108 @@
         return sides[j * 3 + i];
     };
 
+    /**
+     * Calculates and returns the rectangle transformation based on the handle delta. Keeps ratio if needed, and
+     * calculates center-resize if option is true.
+     * @param {IFRect.Side} side - moved resize handle
+     * @param {Number} dx - an X component of handle position delta
+     * @param {Number} dy - an Y component of handle position delta
+     * @param {Boolean} ratio - keep the same rectangle proportions (sx == sy)
+     * @param {Boolean} option - calculates center-resize
+     * @return {IFTransform} calculated transformation
+     */
+    IFRect.prototype.getResizeTransform = function (side, dx, dy, ratio, option) {
+        var sx = 1;
+        var sy = 1;
+        var tx = this._x + this._width / 2.0;
+        var ty = this._y + this._height / 2.0;
+
+        // Calculate horizontal factors
+        switch (side) {
+            case IFRect.Side.TOP_LEFT:
+            case IFRect.Side.LEFT_CENTER:
+            case IFRect.Side.BOTTOM_LEFT:
+                sx = (this._width - dx) / this._width;
+                if (option) {
+                    sx += sx - 1;
+                } else {
+                    tx = this._x + this._width;
+                }
+                break;
+            case IFRect.Side.TOP_RIGHT:
+            case IFRect.Side.RIGHT_CENTER:
+            case IFRect.Side.BOTTOM_RIGHT:
+                sx = (this._width + dx) / this._width;
+                if (option) {
+                    sx += sx - 1;
+                } else {
+                    tx = this._x;
+                }
+                break;
+            default:
+                break;
+        }
+
+        // Calculate vertical factors
+        switch (side) {
+            case IFRect.Side.TOP_LEFT:
+            case IFRect.Side.TOP_CENTER:
+            case IFRect.Side.TOP_RIGHT:
+                sy = (this._height - dy) / this._height;
+                if (option) {
+                    sy += sy - 1;
+                } else {
+                    ty = this._y + this._height;
+                }
+                break;
+            case IFRect.Side.BOTTOM_LEFT:
+            case IFRect.Side.BOTTOM_CENTER:
+            case IFRect.Side.BOTTOM_RIGHT:
+                sy = (this._height + dy) / this._height;
+                if (option) {
+                    sy += sy - 1;
+                } else {
+                    ty = this._y;
+                }
+                break;
+            default:
+                break;
+        }
+
+        // Honor shift
+        if (ratio) {
+            switch (side) {
+                case IFRect.Side.TOP_CENTER:
+                case IFRect.Side.BOTTOM_CENTER:
+                    sx = Math.abs(sy);
+                    break;
+                case IFRect.Side.LEFT_CENTER:
+                case IFRect.Side.RIGHT_CENTER:
+                    sy = Math.abs(sx);
+                    break;
+                default:
+                    if (Math.abs(sx) > Math.abs(sy)) {
+                        if (ifMath.isEqualEps(sy, 0)) {
+                            sy = sx;
+                        } else {
+                            sy = sy * Math.abs(sx) / Math.abs(sy);
+                        }
+                    } else {
+                        if (ifMath.isEqualEps(sx, 0)) {
+                            sx = sy;
+                        } else {
+                            sx = sx * Math.abs(sy) / Math.abs(sx);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        return new IFTransform(1, 0, 0, 1, -tx, -ty)
+            .multiplied(new IFTransform(sx, 0, 0, sy, 0, 0))
+            .multiplied(new IFTransform(1, 0, 0, 1, tx, ty));
+    };
+
     /** @override */
     IFRect.prototype.toString = function () {
         return "[Object IFRect(x=" + this._x + ", y=" + this._y + ", width=" + this._width + ", height=" + this._height + ")]";
