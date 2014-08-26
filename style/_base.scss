@@ -15,8 +15,9 @@ body, html {
     vertical-align: middle;
   }
 
-  p {
+  p, table, tr, td {
     margin: 0px;
+    padding: 0px;
   }
 
   *.fa {

@@ -78,7 +78,7 @@
         }.bind(this);
 
         panel
-            .css('width', '144px')
+            .css('width', '127px')
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -86,14 +86,14 @@
                     'left': '5px'
                 })
                 .append(_createInput('etp')
-                    .css('width', '98px')))
+                    .css('width', '114px')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '30px',
                     'left': '5px'
                 })
-                .html('<span class="fa fa-rotate-right" style="font-size:12px"></span>')
+                .html('<span class="fa fa-stop" style="font-size:11px;transform:rotate(45deg)"></span>')
                 .append(_createInput('sa')
                     .css({
                         'margin-left': '5px',
@@ -103,10 +103,12 @@
                 .css({
                     'position': 'absolute',
                     'top': '30px',
-                    'left': '65px'
+                    'left': '66px'
                 })
+                .html('<span class="fa fa-circle"></span>')
                 .append(_createInput('ea')
                     .css({
+                        'margin-left': '3px',
                         'width': '38px'
                     })));
     };

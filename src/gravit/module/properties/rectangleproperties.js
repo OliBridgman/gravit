@@ -42,31 +42,20 @@
         var _createInput = function (property) {
             var self = this;
             if (property === 'uf') {
-                return $('<div></div>')
-                    .css('width', '12em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-property', property)
-                            .on('change', function () {
-                                self._assignProperty('uf', $(this).is(':checked'));
-                                self._updateCornerProperties();
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': 'Uniform Corners',
-                                'data-off': 'Separate Corners'
-                            })));
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        self._assignProperty('uf', $(this).is(':checked'));
+                        self._updateCornerProperties();
+                    });
             }
             else if (property === 'tl_sx' || property === 'tl_sy' || property === 'tr_sx' || property === 'tr_sy' ||
                 property === 'bl_sx' || property === 'bl_sy' || property === 'br_sx' || property === 'br_sy') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
+                    .css('width', '48px')
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -78,7 +67,7 @@
             } else if (property === 'tl_ct' || property === 'tr_ct' || property === 'bl_ct' || property === 'br_ct') {
                 return $('<select></select>')
                     .attr('data-property', property)
-                    .css('width', '2em')
+                    .css('width', '32px')
                     .gCornerType()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
@@ -103,58 +92,74 @@
         var titleSmoothY = 'Vertical Corner-Smoothness';
         var titleCornerType = 'Corner-Type';
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', '2')
-                    .append(_createInput('uf'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .append(_createInput('tl_uf')
-                        .attr('title', titleUniform))
-                    .append(_createInput('tl_sx')
-                        .attr('title', titleSmoothX)))
-                .append($('<td></td>')
-                    .append(_createInput('tr_sx')
-                        .attr('title', titleSmoothX))
-                    .append(_createInput('tr_uf')
-                        .attr('title', titleUniform))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .append(_createInput('tl_sy')
-                        .attr('title', titleSmoothY))
-                    .append(_createInput('tl_ct')
-                        .attr('title', titleCornerType)))
-                .append($('<td></td>')
-                    .append(_createInput('tr_ct')
-                        .attr('title', titleCornerType))
-                    .append(_createInput('tr_sy')
-                        .attr('title', titleSmoothY))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .append(_createInput('bl_sy')
-                        .attr('title', titleSmoothY))
-                    .append(_createInput('bl_ct')
-                        .attr('title', titleCornerType)))
-                .append($('<td></td>')
-                    .append(_createInput('br_ct')
-                        .attr('title', titleCornerType))
-                    .append(_createInput('br_sy')
-                        .attr('title', titleSmoothY))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .append(_createInput('bl_uf')
-                        .attr('title', titleUniform))
-                    .append(_createInput('bl_sx')
-                        .attr('title', titleSmoothX)))
-                .append($('<td></td>')
-                    .append(_createInput('br_sx')
-                        .attr('title', titleSmoothX))
-                    .append(_createInput('br_uf')
-                        .attr('title', titleUniform))))
-            .appendTo(panel);
+        panel
+            .css('width', '180px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append(_createInput('uf'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Uniform Corners')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .append(_createInput('tl_uf')
+                    .attr('title', titleUniform))
+                .append(_createInput('tl_sx')
+                    .attr('title', titleSmoothX))
+                .append(_createInput('tr_sx')
+                    .attr('title', titleSmoothX))
+                .append(_createInput('tr_uf')
+                    .attr('title', titleUniform)))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '53px',
+                    'left': '5px'
+                })
+                .append(_createInput('tl_sy')
+                    .attr('title', titleSmoothY))
+                .append(_createInput('tl_ct')
+                    .attr('title', titleCornerType))
+                .append(_createInput('tr_ct')
+                    .attr('title', titleCornerType))
+                .append(_createInput('tr_sy')
+                    .attr('title', titleSmoothY)))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '76px',
+                    'left': '5px'
+                })
+                .append(_createInput('bl_sy')
+                    .attr('title', titleSmoothY))
+                .append(_createInput('bl_ct')
+                    .attr('title', titleCornerType))
+                .append(_createInput('br_ct')
+                    .attr('title', titleCornerType))
+                .append(_createInput('br_sy')
+                    .attr('title', titleSmoothY)))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '99px',
+                    'left': '5px'
+                })
+                .append(_createInput('bl_uf')
+                    .attr('title', titleUniform))
+                .append(_createInput('bl_sx')
+                    .attr('title', titleSmoothX))
+                .append(_createInput('br_sx')
+                    .attr('title', titleSmoothX))
+                .append(_createInput('br_uf')
+                    .attr('title', titleUniform)));
     };
 
     /** @override */

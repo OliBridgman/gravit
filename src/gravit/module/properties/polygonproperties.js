@@ -45,7 +45,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', 'pts')
-                    .css('width', '3em')
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
@@ -59,28 +58,16 @@
                         }
                     });
             } else if (property === 'evenodd') {
-                return $('<div></div>')
-                    .css('width', '6em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-property', property)
-                            .on('change', function () {
-                                self._assignProperty(property, $(this).is(':checked'));
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': 'Even Fill',
-                                'data-off': 'Odd Fill'
-                            })));
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).is(':checked'));
+                    });
             } else if (property === 'ir' || property === 'or') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '5em')
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -93,7 +80,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
@@ -106,7 +92,6 @@
             } else if (property === 'ict' || property === 'oct') {
                 return $('<select></select>')
                     .attr('data-property', property)
-                    .css('width', '6em')
                     .gCornerType()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
@@ -115,7 +100,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -129,92 +113,115 @@
             }
         }.bind(this);
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+        panel
+            .css('width', '198px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                // TODO : I18N
+                .text('Points:')
+                .append(_createInput('pts')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '48px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '101px'
+                })
+                .append(_createInput('evenodd'))
+                .append($('<span></span>')
                     // TODO : I18N
-                    .text('Points:'))
-                .append($('<td></td>')
-                    .append(_createInput('pts')))
-                .append($('<td></td>')
-                    .html('&nbsp;'))
-                .append($('<td></td>')
-                    .append(_createInput('evenodd'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Radius:'))
-                .append($('<td></td>')
-                    .append(_createInput('or')
-                        // TODO : I18N
-                        .attr('title', 'Outside Radius')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
-                .append($('<td></td>')
-                    .append(_createInput('ir')
-                        // TODO : I18N
-                        .attr('title', 'Inside Radius'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Angle:'))
-                .append($('<td></td>')
-                    .append(_createInput('oa')
-                        // TODO : I18N
-                        .attr('title', 'Outside Angle')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('&nbsp;'))
-                .append($('<td></td>')
-                    .append(_createInput('ia')
-                        // TODO : I18N
-                        .attr('title', 'Inside Angle'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Corner:'))
-                .append($('<td></td>')
-                    .append(_createInput('oct')
-                        // TODO : I18N
-                        .attr('title', 'Outside Corner-Type')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('<i class="fa fa-circle"></i>'))
-                .append($('<td></td>')
-                    .append(_createInput('ict')
-                        // TODO : I18N
-                        .attr('title', 'Inside Corner-Type'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Smooth:'))
-                .append($('<td></td>')
-                    .append(_createInput('ocr')
-                        // TODO : I18N
-                        .attr('title', 'Outside Corner-Smoothness')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('&nbsp;'))
-                .append($('<td></td>')
-                    .append(_createInput('icr')
-                        // TODO : I18N
-                        .attr('title', 'Inside Corner-Smoothness'))))
-            .appendTo(panel);
+                    .text(' Even/odd fill')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .html('<span class="fa fa-stop" style="font-size:11px;transform:rotate(45deg)"></span>')
+                .append(_createInput('or')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '48px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '103px'
+                })
+                .html('<span class="fa fa-circle"></span>')
+                .append(_createInput('ir')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '48px'
+                    })))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                .html('<span class="fa fa-rotate-right"></span>')
+                .append(_createInput('oa')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '48px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '103px'
+                })
+                .html('<span class="fa fa-rotate-right" style="visibility: hidden"></span>')
+                .append(_createInput('ia')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '48px'
+                    })))
+
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '90px',
+                    'left': '5px'
+                })
+                .html('<span class="fa fa-square"></span>')
+                .append(_createInput('ocr')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '38px'
+                    }))
+                .append(_createInput('oct')
+                    .css('width', '32px')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '103px'
+                })
+                .html('<span class="fa fa-square" style="visibility: hidden"></span>')
+                .append(_createInput('icr')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    }))
+                .append(_createInput('ict')
+                    .css('width', '32px')));
     };
 
     /** @override */
