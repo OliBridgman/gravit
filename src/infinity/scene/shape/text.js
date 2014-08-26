@@ -199,6 +199,10 @@
             if (css['font-family']) {
                 var family = css['font-family'];
                 if (family.length > 0) {
+                    if (family.indexOf(',') >= 0) {
+                        family = family.substr(0, family.indexOf(',')).trim();
+                    }
+
                     if (family.charAt(0) === '"' || family.charAt(0) === "'") {
                         family = family.substr(1);
                     }
