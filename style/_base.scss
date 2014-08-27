@@ -48,14 +48,6 @@ body, html {
     cursor: default;
   }
 
-  [contenteditable='true']:focus {
-    outline: rgba(0, 0, 0, 0) solid 1px;
-    &, * {
-      @include user-select(all);
-      cursor: auto;
-    }
-  }
-
   // Give dividers some base styling
   hr {
     height: 1px;

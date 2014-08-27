@@ -1,0 +1,33 @@
+[contenteditable='true'], .contenteditable {
+
+  &:focus {
+    outline: rgba(0, 0, 0, 0) solid 1px;
+  }
+
+  &, * {
+    @include user-select(all);
+    cursor: auto;
+  }
+
+  * {
+    // reset most stuff for content
+    margin: inherit;
+    padding: inherit;
+    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    text-decoration: inherit;
+    word-spacing: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    background: inherit;
+    line-height: inherit;
+    text-indent: inherit;
+    text-align: inherit;
+    white-space: inherit;
+    word-break: inherit;
+    vertical-align: inherit;
+  }
+}

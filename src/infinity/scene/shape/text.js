@@ -766,6 +766,7 @@
 
             // Create our temporary container for holding our html contents
             var container = $('<div></div>')
+                .addClass('contenteditable')
                 .css(this.getContent().propertiesToCss({}))
                 .css({
                     'position': 'absolute',
