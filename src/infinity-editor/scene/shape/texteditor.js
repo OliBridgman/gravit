@@ -325,7 +325,7 @@
 
         var viewBBox = view.getWorldTransform().mapRect(sceneBBox);
         var left = viewBBox.getX();
-        var top = viewBBox.getY();
+        var top = Math.floor(viewBBox.getY()) + 1;
 
         var width = '';
         var height = '';
@@ -340,11 +340,10 @@
             .css({
                 'width': width,
                 'height': height,
-                'top': top,
-                'left': left,
                 'transform': 'scale(' + view.getZoom() + ')',
                 '-webkit-transform': 'scale(' + view.getZoom() + ')'
-            });
+            })
+            .offset({top: top, left: left});
 
         if (position) {
             this.createSelectionFromPosition(position);
