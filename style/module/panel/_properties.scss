@@ -12,15 +12,7 @@
       position: relative;
       height: 100%;
       float: left;
-      border-left: 1px solid $frameBorderColor;
-      border-right: 1px solid red;
-
-      &.first-visible {
-        border-left: none;
-      }
-
-      &.last-visible {
-      }
+      border-right: 1px solid $frameBorderColor;
     }
   }
 }
