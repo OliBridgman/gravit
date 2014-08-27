@@ -155,8 +155,6 @@
             if (available) {
                 propertyPanel.panel.css('display', '');
                 propertyPanel.panel.attr('data-available', 'true');
-                if (!firstVisiblePropertyPanel) firstVisiblePropertyPanel = propertyPanel;
-                lastVisiblePropertyPanel = propertyPanel;
             } else {
                 propertyPanel.panel.css('display', 'none');
                 propertyPanel.panel.attr('data-available', 'false');
