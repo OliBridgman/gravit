@@ -193,7 +193,6 @@
                         'margin-left': '3px',
                         'width': '48px'
                     })))
-
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',

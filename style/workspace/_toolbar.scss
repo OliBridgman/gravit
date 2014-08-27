@@ -17,6 +17,7 @@
       margin: 1px 0px;
       width: 28px;
       height: 28px;
+      border: none;
 
       > .fa-caret-down {
         position: absolute;
@@ -47,18 +48,7 @@
 
     &.toolpanel {
       > button {
-        &:active, &.g-active {
-          background: $activeColor;
-
-          &, * {
-            color: $activeTextColor;
-          }
-
-          svg {
-            fill: $activeTextColor;
-            stroke: $activeTextColor;
-          }
-        }
+        border: none;
       }
 
       > .zoom {
@@ -69,6 +59,7 @@
           top: 0px;
           height: 100%;
           font-size: 10px !important;
+          border: none;
 
           &:first-child {
             left: 0px;

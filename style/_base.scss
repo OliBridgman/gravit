@@ -15,11 +15,6 @@ body, html {
     vertical-align: middle;
   }
 
-  p, table, tr, td {
-    margin: 0px;
-    padding: 0px;
-  }
-
   *.fa {
     font-size: 14px;
   }
@@ -31,12 +26,6 @@ body, html {
       border: 0;
       padding: 0;
     }
-  }
-
-  // Reset tables
-  table {
-    border-collapse: collapse;
-    border-spacing: 0px;
   }
 
   * {

@@ -38,76 +38,79 @@
     GImageProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 
-        $('<div></div>')
-            .css('overflow', 'hidden')
-            .append($('<span></span>')
-                .addClass('fa fa-image'))
-            .append($('<span></span>')
-                .css('text-overflow', 'ellipsis')
-                .attr('data-property', 'url'))
-            .appendTo(panel);
-
-        $('<hr>')
-            .appendTo(panel);
-
-        $('<button></button>')
-            .attr('data-action', 'embed')
-            // TODO : I18N
-            .text('Embed')
-            .on('click', function () {
-                image2Base64(this._image.getImage(), function (data) {
+        panel
+            .css('width', '210px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append($('<span></span>')
+                    .addClass('fa fa-image'))
+                .append($('<span></span>')
+                    .css({
+                        'text-overflow': 'ellipsis',
+                        'padding-left': '5px'
+                    })
+                    .attr('data-property', 'url')))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    .attr('data-action', 'embed')
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(this._image, function () {
-                        this._image.setProperty('url', data);
-                    }.bind(this), 'Embed Image');
-                }.bind(this));
-            }.bind(this))
-            .appendTo(panel);
-
-        $('<button></button>')
-            .attr('data-action', 'replace')
-            // TODO : I18N
-            .text('Replace...')
-            .on('click', function () {
-                var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
-                this._document.getStorage().openResourcePrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
+                    .text('Embed')
+                    .on('click', function () {
+                        image2Base64(this._image.getImage(), function (data) {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(this._image, function () {
+                                this._image.setProperty('url', data);
+                            }.bind(this), 'Embed Image');
+                        }.bind(this));
+                    }.bind(this)))
+                .append($('<button></button>')
+                    .attr('data-action', 'replace')
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(this._image, function () {
-                        // make url relative to document & reset size
-                        this._image.setProperties(['url', 'trf'], [new URI(url).relativeTo(this._document.getUrl()).toString(), new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY())]);
-                    }.bind(this), 'Replace Image');
-                }.bind(this));
-            }.bind(this))
-            .appendTo(panel);
-
-        $('<button></button>')
-            .attr('data-action', 'export')
-            // TODO : I18N
-            .text('Export...')
-            .on('click', function () {
-                var storage = gApp.getMatchingStorage(true, true, 'png', false, this._document.getStorage());
-                if (storage) {
-                    storage.saveResourcePrompt(this._document.getUrl(), this._image.getLabel(), ['png'], function (url) {
-                        image2ArrayBuffer(this._image.getImage(), function (buffer) {
-                            storage.save(url, buffer, true);
-                        });
-                    }.bind(this));
-                }
-            }.bind(this))
-            .appendTo(panel);
-
-        $('<button></button>')
-            .attr('data-action', 'reset-size')
-            // TODO : I18N
-            .text('Reset Size')
-            .on('click', function () {
-                var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
-                // TODO : I18N
-                IFEditor.tryRunTransaction(this._image, function () {
-                    this._image.setProperty('trf', new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY()));
-                }.bind(this), 'Reset Image Size');
-            }.bind(this))
-            .appendTo(panel);
+                    .text('Replace')
+                    .on('click', function () {
+                        var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                        this._document.getStorage().openResourcePrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(this._image, function () {
+                                // make url relative to document & reset size
+                                this._image.setProperties(['url', 'trf'], [new URI(url).relativeTo(this._document.getUrl()).toString(), new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY())]);
+                            }.bind(this), 'Replace Image');
+                        }.bind(this));
+                    }.bind(this)))
+                .append($('<button></button>')
+                    .attr('data-action', 'export')
+                    // TODO : I18N
+                    .text('Export')
+                    .on('click', function () {
+                        var storage = gApp.getMatchingStorage(true, true, 'png', false, this._document.getStorage());
+                        if (storage) {
+                            storage.saveResourcePrompt(this._document.getUrl(), this._image.getLabel(), ['png'], function (url) {
+                                image2ArrayBuffer(this._image.getImage(), function (buffer) {
+                                    storage.save(url, buffer, true);
+                                });
+                            }.bind(this));
+                        }
+                    }.bind(this)))
+                .append($('<button></button>')
+                    .attr('data-action', 'reset-size')
+                    // TODO : I18N
+                    .text('Reset Size')
+                    .on('click', function () {
+                        var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(this._image, function () {
+                            this._image.setProperty('trf', new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY()));
+                        }.bind(this), 'Reset Size');
+                    }.bind(this))));
     };
 
     /** @override */

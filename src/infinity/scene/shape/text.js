@@ -15,31 +15,11 @@
     IFNode.inherit("text", IFText, IFShape);
 
     /**
-     * Vertical Box type of a text
-     * @enum
+     * Vertical align of a text
      */
-    IFText.VerticalBox = {
-        /**
-         * Auto sized vertical box
-         */
-        Auto: 'a',
-
-        /**
-         * Fixed sized vertical box,
-         * text is aligned on top
-         */
-        Fixed: 'f',
-
-        /**
-         * Fixed sized vertical box,
-         * text is aligned on center
-         */
-        Center: 'c',
-
-        /**
-         * Fixed sized vertical box,
-         * text is aligned on bottom
-         */
+    IFText.VerticalAlign = {
+        Top: 't',
+        Middle: 'm',
         Bottom: 'b'
     };
 
@@ -49,8 +29,10 @@
     IFText.GeometryProperties = {
         /** Auto-width or not */
         aw: true,
-        /** Vertical box */
-        vb: IFText.VerticalBox.Auto
+        /** Auto-height or not */
+        ah: true,
+        /** Vertical alignment */
+        va: IFText.VerticalAlign.Top
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -791,7 +773,7 @@
                     'left': '0px',
                     'visibility': 'hidden',
                     'width': textBox.getWidth() > 1 && !this.$aw ? textBox.getWidth() + 'px' : '',
-                    'height': textBox.getHeight() > 1 && this.$vb != IFText.VerticalBox.Auto ? textBox.getHeight() + 'px' : ''
+                    'height': textBox.getHeight() > 1 && this.$ah ? textBox.getHeight() + 'px' : ''
                 })
                 .html(this.asHtml(true))
                 .appendTo($('body'));
@@ -816,16 +798,15 @@
             // Assign calculated dimensions
             this._size = maxWidth !== null && maxHeight !== null ? new IFPoint(maxWidth, maxHeight) : null;
 
-            // Calculate vertical shift depending on vbox
+            // Calculate vertical shift depending on vertical alignment
             var verticalShift = 0;
-            if (this.$vb != IFText.VerticalBox.Auto && this._size && this._size.getY() < textBox.getHeight()) {
-
-                switch (this.$vb) {
-                    case IFText.VerticalBox.Center:
+            if (!this.$ah && this._size && this._size.getY() < textBox.getHeight()) {
+                switch (this.$va) {
+                    case IFText.VerticalAlign.Middle:
                         verticalShift = (textBox.getHeight() - this._size.getY()) / 2;
                         break;
 
-                    case IFText.VerticalBox.Bottom:
+                    case IFText.VerticalAlign.Bottom:
                         verticalShift = textBox.getHeight() - this._size.getY();
                         break;
                 }
@@ -926,7 +907,7 @@
         }
 
         var width = !this.$aw ? textBox.getWidth() : this._size.getX();
-        var height = this.$vb != IFText.VerticalBox.Auto ? textBox.getHeight() : this._size.getY();
+        var height = !this.$ah ? textBox.getHeight() : this._size.getY();
 
         return new IFRect(textBox.getX(), textBox.getY(), width, height);
     };
@@ -1005,11 +986,11 @@
         var bbox = this.getGeometryBBox();
         if (this._size &&
             ((!this.$aw && this._size.getX() >= bbox.getWidth()) ||
-                (this.$vb != IFText.VerticalBox.Auto && this._size.getY() >= bbox.getHeight()))) {
+                (!this.$ah && this._size.getY() >= bbox.getHeight()))) {
 
             return new IFRect(bbox.getX(), bbox.getY(),
                 !this.$aw ? bbox.getWidth() : context.canvas.getWidth(),
-                this.$vb != IFText.VerticalBox.Auto ? bbox.getHeight() : context.canvas.getHeight());
+                !this.$ah ? bbox.getHeight() : context.canvas.getHeight());
         }
         return null;
     };

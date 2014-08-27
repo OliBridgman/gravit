@@ -47,24 +47,13 @@
 
         var _createPathInput = function (property) {
             var self = this;
-            if (property === 'evenodd' || property === 'closed') {
-                return $('<div></div>')
-                    .css('width', '6em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-path-property', property)
-                            .on('change', function () {
-                                self._assignPathProperty(property, $(this).is(':checked'));
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': property === 'closed' ? 'Closed' : 'Even Fill',
-                                'data-off': property === 'closed' ? 'Open' : 'Odd Fill'
-                            })));
+            if (property === 'evenodd' || property === 'closed') {
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-path-property', property)
+                    .on('change', function () {
+                        self._assignPathProperty(property, $(this).is(':checked'));
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -76,7 +65,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-point-property', property)
-                    .css('width', '5em')
                     .on('change', function (evt) {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value !== null && typeof value === 'number' && value >= 0) {
@@ -87,7 +75,6 @@
                     });
             } else if (property === 'type') {
                 return $('<select></select>')
-                    .css('width', '100%')
                     .attr('data-point-property', property)
                     .append($('<optgroup></optgroup>')
                         // TODO : I18N
@@ -120,137 +107,152 @@
                         self._assignPointProperty('tp', val);
                     });
             } else if (property === 'ah') {
-                return $('<div></div>')
-                    .css('width', '4.5em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-point-property', property)
-                            .on('change', function () {
-                                self._assignPointProperty(property, $(this).is(':checked'));
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': 'Auto',
-                                'data-off': 'Off'
-                            })));
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-point-property', property)
+                    .on('change', function () {
+                        self._assignPointProperty(property, $(this).is(':checked'));
+                    });
             } else if (property === 'cu') {
                 return $('<button></button>')
+                    .addClass('g-flat')
                     .attr('data-point-property', property)
                     .on('click', function () {
                         self._assignPointProperty(property, !$(this).hasClass('g-active'));
                         self._updatePointProperties();
                     })
                     .append($('<span></span>')
-                        .addClass('fa fa-lock fa-fw'));
+                        .addClass('fa fa-lock'));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
         }.bind(this);
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .html('&nbsp;'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createPathInput('evenodd'))
-                    .append(_createPathInput('closed'))))
-            .append($('<tr></tr>')
+        panel
+            .css('width', '205px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append(_createPathInput('closed'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Closed')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '75px'
+                })
+                .append(_createPathInput('evenodd'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Even/odd fill')))
+            .append($('<label></label>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<h1></h1>')
-                        .addClass('g-divider')
-                        .text('Anchor Point'))))
-            .append($('<tr></tr>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .text('X:')
+                .append(_createPointInput('x')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<label></label>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('X:'))
-                .append($('<td></td>')
-                    .append(_createPointInput('x')
-                        // TODO : I18N
-                        .attr('title', 'Horizontal Position of Point')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Y:'))
-                .append($('<td></td>')
-                    .append(_createPointInput('y')
-                        // TODO : I18N
-                        .attr('title', 'Vertical Position of Point'))))
-            .append($('<tr></tr>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '65px'
+                })
+                .text('Y:')
+                .append(_createPointInput('y')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })))
+            .append($('<div></div>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Handles:'))
-                .append($('<td></td>')
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Clear Left Handle')
-                        .on('click', function () {
-                            this._assignPointProperties(['hlx', 'hly'], [null, null]);
-                        }.bind(this))
-                        .append($('<span></span>')
-                            .addClass('fa fa-forward')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Clear Right Handle')
-                        .on('click', function () {
-                            this._assignPointProperties(['hrx', 'hry'], [null, null]);
-                        }.bind(this))
-                        .append($('<span></span>')
-                            .addClass('fa fa-backward')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Clear Handles')
-                        .on('click', function () {
-                            this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
-                        }.bind(this))
-                        .append($('<span></span>')
-                            .addClass('fa fa-times'))))
-                .append($('<td></td>')
-                    .attr('colspan', '2')
-                    .css('text-align', 'right')
-                    .append(_createPointInput('ah')
-                        // TODO : I18N
-                        .attr('title', 'Toggle automatic calculation of handles'))))
-            .append($('<tr></tr>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '125px'
+                })
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Clear Left Handle')
+                    .on('click', function () {
+                        this._assignPointProperties(['hlx', 'hly'], [null, null]);
+                    }.bind(this))
+                    .append($('<span></span>')
+                        .addClass('fa fa-forward')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Clear Right Handle')
+                    .on('click', function () {
+                        this._assignPointProperties(['hrx', 'hry'], [null, null]);
+                    }.bind(this))
+                    .append($('<span></span>')
+                        .addClass('fa fa-backward')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Clear Handles')
+                    .on('click', function () {
+                        this._assignPointProperties(['hlx', 'hly', 'hrx', 'hry'], [null, null, null, null]);
+                    }.bind(this))
+                    .append($('<span></span>')
+                        .addClass('fa fa-times'))))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<label></label>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                .append(_createPointInput('type')
+                    .css('width', '100px')))
+            .append($('<label></label>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Type:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createPointInput('type'))))
-            .append($('<tr></tr>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '110px'
+                })
+                .append(_createPointInput('ah'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Auto Handles')))
+            .append($('<label></label>')
                 .attr('data-point-property', '_row')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Smooth:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createPointInput('cl')
-                        // TODO : I18N
-                        .attr('title', 'Left Smoothness'))
-                    .append(_createPointInput('cu')
-                        // TODO : I18N
-                        .attr('title', 'Toggle Lock of Left & Right Smoothness'))
-                    .append(_createPointInput('cr')
-                        // TODO : I18N
-                        .attr('title', 'Right Smoothness'))))
-            .appendTo(panel);
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '5px'
+                })
+                .append(_createPointInput('cl')
+                    .css('width', '38px')
+                    // TODO : I18N
+                    .attr('title', 'Left Smoothness'))
+                .append(_createPointInput('cu')
+                    .css('width', '18px')
+                    // TODO : I18N
+                    .attr('title', 'Toggle Lock of Left & Right Smoothness'))
+                .append(_createPointInput('cr')
+                    .css('width', '38px')
+                    // TODO : I18N
+                    .attr('title', 'Right Smoothness')));
     };
 
     /** @override */

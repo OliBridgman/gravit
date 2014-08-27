@@ -75,7 +75,7 @@
         }.bind(this);
 
         panel
-            .css('width', '133px')
+            .css('width', '136px')
             .append($('<div></div>')
                 .addClass('g-input')
                 .css({
@@ -121,7 +121,7 @@
                     var $me = $(this);
                     $me.toggleClass('g-active', !$me.hasClass('g-active'));
                 })
-                .addClass('fa fa-lock')
+                .addClass('g-flat fa fa-lock')
                 // TODO : I18N
                 .attr('title', 'Keep Ratio')
                 .attr('data-ratio', ''))

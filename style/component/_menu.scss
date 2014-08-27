@@ -4,7 +4,6 @@
 .g-menu {
   margin: 0px;
   padding: 0px;
-  font: $font;
 
   &, * {
     /** Make everything based on border-box model */
@@ -50,6 +49,10 @@
   margin: 0px;
   white-space: nowrap;
   vertical-align: middle;
+
+  &, * {
+    font: $menuFont;
+  }
 }
 
 /** Set to full width and reduce font-size if not on root */

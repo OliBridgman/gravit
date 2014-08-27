@@ -47,50 +47,66 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'vb') {
-                return $('<select></select>')
-                    .attr('data-property', property)
-                    .append($('<option></option>')
-                        .attr('value', IFText.VerticalBox.Auto)
-                        // TODO : I18N
-                        .text('Auto'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.VerticalBox.Fixed)
-                        // TODO : I18N
-                        .text('Fixed'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.VerticalBox.Center)
-                        // TODO : I18N
-                        .text('Centered'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.VerticalBox.Bottom)
-                        // TODO : I18N
-                        .text('Bottom'))
-                    .on('change', function () {
-                        self._assignProperty(property, $(this).val());
-                    });
-            } else if (property === 'aw') {
+            if (property.indexOf('va-') === 0) {
+                var icon = '';
+                var align = property.substr('va-'.length);
+                switch (align) {
+                    case IFText.VerticalAlign.Top:
+                        icon = 'fa-align-right fa-rotate-270';
+                        break;
+                    case IFText.VerticalAlign.Middle:
+                        icon = 'fa-align-center fa-rotate-270';
+                        break;
+                    case IFText.VerticalAlign.Bottom:
+                        icon = 'fa-align-left fa-rotate-270';
+                        break;
+                    default:
+                        break;
+                }
 
-                return $('<div></div>')
-                    .css('width', '8em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-property', property)
-                            .on('change', function () {
-                                self._assignProperty(property, $(this).is(':checked'));
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': 'Auto Width',
-                                'data-off': 'Fixed Width'
-                            })));
+                return $('<button></button>')
+                    .attr('data-property', property)
+                    .on('click', function () {
+                        self._assignProperty('va', align);
+                    })
+                    .append($('<span></span>')
+                        .addClass('fa ' + icon));
+            } else if (property.indexOf('al-') === 0) {
+                var iconName = '';
+                var alignment = property.substr('al-'.length);
+                switch (alignment) {
+                    case IFText.Paragraph.Alignment.Left:
+                        iconName = 'left';
+                        break;
+                    case IFText.Paragraph.Alignment.Center:
+                        iconName = 'center';
+                        break;
+                    case IFText.Paragraph.Alignment.Right:
+                        iconName = 'right';
+                        break;
+                    case IFText.Paragraph.Alignment.Justify:
+                        iconName = 'justify';
+                        break;
+                    default:
+                        break;
+                }
+
+                return $('<button></button>')
+                    .attr('data-property', property)
+                    .on('click', function () {
+                        self._assignProperty('al', $(this).hasClass('g-active') ? null : alignment);
+                    })
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-' + iconName));
+            } else if (property === 'aw' || property === 'ah') {
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).is(':checked'));
+                    });
             } else if (property === 'ff') {
                 var select = $('<select></select>')
-                    .css('width', '100%')
                     .attr('data-property', property)
                     .append(
                         $('<option></option>')
@@ -128,7 +144,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var value = self._document.getScene().stringToPoint($(this).val());
                         if (value === null || (typeof value === 'number' && value >= 0)) {
@@ -185,32 +200,6 @@
                     .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
-            } else if (property === 'al') {
-                return $('<select></select>')
-                    .attr('data-property', property)
-                    .append($('<option></option>')
-                        .attr('value', '')
-                        .text(''))
-                    .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.Alignment.Left)
-                        // TODO : I18N
-                        .text('Left'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.Alignment.Center)
-                        // TODO : I18N
-                        .text('Center'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.Alignment.Right)
-                        // TODO : I18N
-                        .text('Right'))
-                    .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.Alignment.Justify)
-                        // TODO : I18N
-                        .text('Justify'))
-                    .on('change', function () {
-                        var val = $(this).val();
-                        self._assignProperty(property, val === '' ? null : val);
-                    });
             } else if (property === 'wm') {
                 return $('<select></select>')
                     .attr('data-property', property)
@@ -237,7 +226,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var value = $(this).val();
                         value = !value || value === "" ? null : IFLength.parseEquationValue(value);
@@ -251,7 +239,6 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '4em')
                     .on('change', function () {
                         var value = $(this).val();
                         value = !value || value === "" ? null : parseInt(value);
@@ -266,106 +253,188 @@
             }
         }.bind(this);
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+        panel
+            .css('width', '320px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append(_createInput('ff')
+                    .css({
+                        'width': '120px'
+                    }))
+                .append(_createInput('fw')
+                    .css({
+                        'width': '83px'
+                    }))
+                .append(_createInput('fs')
+                    .css({
+                        'width': '65px'
+                    }))
+                .append(_createInput('fi')
+                    .css({
+                        'width': '30px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .html('<span class="fa fa-text-width"></span>')
+                .append(_createInput('cs')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
                     // TODO : I18N
-                    .text('Box:'))
-                .append($('<td></td>')
-                    .append(_createInput('vb')))
-                .append($('<td></td>')
-                    .attr('colspan', '2')
-                    .append(_createInput('aw'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Character Spacing')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '60px'
+                })
+                .html('<span class="fa fa-text-width"></span>')
+                .append(_createInput('ws')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
                     // TODO : I18N
-                    .text('Face:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('ff'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Word Spacing')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '115px'
+                })
+                .html('<span class="fa fa-text-height"></span>')
+                .append(_createInput('lh')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
                     // TODO : I18N
-                    .text('Style:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('fw'))
-                    .append(_createInput('fs'))
-                    /*.append(_createInput('fc'))*/))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Line Height')))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '215px'
+                })
+                .append(_createInput('al-' + IFText.Paragraph.Alignment.Left)
                     // TODO : I18N
-                    .text('Size:'))
-                .append($('<td></td>')
-                    .append(_createInput('fi')))
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Align Left'))
+                .append(_createInput('al-' + IFText.Paragraph.Alignment.Center)
                     // TODO : I18N
-                    .text('Space:'))
-                .append($('<td></td>')
-                    .append(_createInput('ws')
-                        .css('width', '1.5em')
-                        // TODO : I18N
-                        .attr('title', 'Word Spacing'))
-                    .append(_createInput('cs')
-                        .css('width', '1.5em')
-                        // TODO : I18N
-                        .attr('title', 'Character Spacing'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<h1></h1>')
-                        .addClass('g-divider')
-                        .text('Paragraph'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Align Centered'))
+                .append(_createInput('al-' + IFText.Paragraph.Alignment.Right)
                     // TODO : I18N
-                    .text('Columns:'))
-                .append($('<td></td>')
-                    .append(_createInput('cc')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Gap:'))
-                .append($('<td></td>')
-                    .append(_createInput('cg'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Align Right'))
+                .append(_createInput('al-' + IFText.Paragraph.Alignment.Justify)
                     // TODO : I18N
-                    .text('Align:'))
-                .append($('<td></td>')
-                    .append(_createInput('al')))
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Justify')))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                .append(_createInput('va-' + IFText.VerticalAlign.Top)
                     // TODO : I18N
-                    .text('Wrap:'))
-                .append($('<td></td>')
-                    .append(_createInput('wm'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Align Top'))
+                .append(_createInput('va-' + IFText.VerticalAlign.Middle)
                     // TODO : I18N
-                    .text('Indent:'))
-                .append($('<td></td>')
-                    .append(_createInput('in')))
-                .append($('<td></td>')
-                    .addClass('label')
+                    .attr('title', 'Align Middle'))
+                .append(_createInput('va-' + IFText.VerticalAlign.Bottom)
                     // TODO : I18N
-                    .text('Line:'))
-                .append($('<td></td>')
-                    .append(_createInput('lh'))))
-            .appendTo(panel);
+                    .attr('title', 'Align Bottom')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '85px'
+                })
+                .html('<span class="fa fa-sort-alpha-asc"></span>')
+                .append(_createInput('wm')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '60px'
+                    })
+                    // TODO : I18N
+                    .attr('title', 'Wrap Mode')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '230px'
+                })
+                .append(_createInput('ah'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Auto Height')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '5px'
+                })
+                .html('<span class="fa fa-indent"></span>')
+                .append(_createInput('in')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
+                    // TODO : I18N
+                    .attr('title', 'Indent')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '60px'
+                })
+                .html('<span class="fa fa-reorder fa-rotate-270"></span>')
+                .append(_createInput('cc')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
+                    // TODO : I18N
+                    .attr('title', 'Columns')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '115px'
+                })
+                .html('<span class="fa fa-sort-amount-desc fa-rotate-270"></span>')
+                .append(_createInput('cg')
+                    .css({
+                        'margin-left': '5px',
+                        'width': '30px'
+                    })
+                    // TODO : I18N
+                    .attr('title', 'Columns Gap')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '230px'
+                })
+                .append(_createInput('aw'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Auto Width')));
     };
 
     /** @override */
@@ -437,14 +506,23 @@
         var propertySource = this._textEditor ? this._textEditor : IFElementEditor.getEditor(this._text[0]);
 
         // Text
-        this._panel.find('select[data-property="vb"]')
+        this._panel.find('button[data-property^="va"]').each(function (index, element) {
+            var $element = $(element);
+            var disabled = this._textEditor && this._textEditor.isInlineEdit() ? true : false;
+            $element
+                .prop('disabled', disabled)
+                .toggleClass('g-active', disabled ? false : ($element.attr('data-property') === 'va-' + propertySource.getProperty('va')));
+        }.bind(this));
+
+        this._panel.find('input[data-property="ah"]')
             .prop('disabled', this._textEditor && this._textEditor.isInlineEdit())
-            .val(propertySource.getProperty('vb'));
+            .prop('checked', propertySource.getProperty('ah'));
+
         this._panel.find('input[data-property="aw"]')
             .prop('disabled', this._textEditor && this._textEditor.isInlineEdit())
             .prop('checked', propertySource.getProperty('aw'));
 
-        // Text
+        // Block
         var fontFamily = propertySource.getProperty('ff', true);
 
         this._panel.find('select[data-property="ff"]').val(propertySource.getProperty('ff'));
@@ -482,7 +560,12 @@
         this._panel.find('input[data-property="cg"]')
             .val(this._document.getScene().pointToString(propertySource.getProperty('cg')));
 
-        this._panel.find('select[data-property="al"]').val(propertySource.getProperty('al'));
+        var alignVal = propertySource.getProperty('al') || '';
+        this._panel.find('button[data-property^="al"]').each(function (index, element) {
+            var $element = $(element);
+            $element.toggleClass('g-active', $element.attr('data-property') === 'al-' + alignVal);
+        });
+
         this._panel.find('select[data-property="wm"]').val(propertySource.getProperty('wm'));
 
         this._panel.find('input[data-property="in"]')

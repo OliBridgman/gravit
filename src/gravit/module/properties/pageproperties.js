@@ -349,7 +349,7 @@
                     var $me = $(this);
                     $me.toggleClass('g-active', !$me.hasClass('g-active'));
                 })
-                .addClass('fa fa-lock g-active')
+                .addClass('g-flat fa fa-lock g-active')
                 // TODO : I18N
                 .attr('title', 'Equal Margins')
                 .attr('data-lock-margin', ''));

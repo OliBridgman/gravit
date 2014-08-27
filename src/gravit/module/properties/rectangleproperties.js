@@ -74,6 +74,8 @@
                     });
             } else if (property === 'tl_uf' || property === 'tr_uf' || property === 'bl_uf' || property === 'br_uf') {
                 return $('<button></button>')
+                    .addClass('g-flat')
+                    .css('width', '32px')
                     .attr('data-property', property)
                     .on('click', function () {
                         self._assignProperty(property, !$(this).hasClass('g-active'));
@@ -110,13 +112,13 @@
                     'top': '30px',
                     'left': '5px'
                 })
-                .append(_createInput('tl_uf')
+                .append(_createInput('tl_ct')
                     .attr('title', titleUniform))
                 .append(_createInput('tl_sx')
                     .attr('title', titleSmoothX))
                 .append(_createInput('tr_sx')
                     .attr('title', titleSmoothX))
-                .append(_createInput('tr_uf')
+                .append(_createInput('tr_ct')
                     .attr('title', titleUniform)))
             .append($('<label></label>')
                 .css({
@@ -126,9 +128,9 @@
                 })
                 .append(_createInput('tl_sy')
                     .attr('title', titleSmoothY))
-                .append(_createInput('tl_ct')
+                .append(_createInput('tl_uf')
                     .attr('title', titleCornerType))
-                .append(_createInput('tr_ct')
+                .append(_createInput('tr_uf')
                     .attr('title', titleCornerType))
                 .append(_createInput('tr_sy')
                     .attr('title', titleSmoothY)))
@@ -140,9 +142,9 @@
                 })
                 .append(_createInput('bl_sy')
                     .attr('title', titleSmoothY))
-                .append(_createInput('bl_ct')
+                .append(_createInput('bl_uf')
                     .attr('title', titleCornerType))
-                .append(_createInput('br_ct')
+                .append(_createInput('br_uf')
                     .attr('title', titleCornerType))
                 .append(_createInput('br_sy')
                     .attr('title', titleSmoothY)))
@@ -152,13 +154,13 @@
                     'top': '99px',
                     'left': '5px'
                 })
-                .append(_createInput('bl_uf')
+                .append(_createInput('bl_ct')
                     .attr('title', titleUniform))
                 .append(_createInput('bl_sx')
                     .attr('title', titleSmoothX))
                 .append(_createInput('br_sx')
                     .attr('title', titleSmoothX))
-                .append(_createInput('br_uf')
+                .append(_createInput('br_ct')
                     .attr('title', titleUniform)));
     };
 

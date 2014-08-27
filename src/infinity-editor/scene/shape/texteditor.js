@@ -169,23 +169,23 @@
         // Apply text properties if any
         if (textProperties.length > 0) {
             var oldAutoWidth = this.getElement().getProperty('aw');
-            var oldVBox = this.getElement().getProperty('vb');
+            var oldAutoHeight = this.getElement().getProperty('ah');
 
             this.getElement().setProperties(textProperties, textValues);
 
             // Hack: For changing height/width settings we
             // need to re-calculate the transformation
             var awIdx = textProperties.indexOf('aw');
-            var vbIdx = textProperties.indexOf('vb');
+            var ahIdx = textProperties.indexOf('ah');
 
-            if (awIdx >= 0 || vbIdx >= 0) {
+            if (awIdx >= 0 || ahIdx >= 0) {
                 var newHeight = false;
                 var newWidth = false;
 
                 if (awIdx >= 0 && textValues[awIdx] === false && oldAutoWidth === true) {
                     newWidth = true;
                 }
-                if (vbIdx >= 0 && textValues[vbIdx] !== IFText.VerticalBox.Auto && oldVBox === IFText.VerticalBox.Auto) {
+                if (ahIdx >= 0 && textValues[ahIdx] === false && oldAutoHeight === true) {
                     newHeight = true;
                 }
 
@@ -332,7 +332,7 @@
         if (this.getElement().getProperty('aw') === false && sceneBBox.getWidth() > 0) {
             width = sceneBBox.getWidth() + 'px';
         }
-        if (this.getElement().getProperty('vb') !== IFText.VerticalBox.Auto && sceneBBox.getHeight() > 0) {
+        if (this.getElement().getProperty('ah') === false && sceneBBox.getHeight() > 0) {
             height = sceneBBox.getHeight() + 'px';
         }
 

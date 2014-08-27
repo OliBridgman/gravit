@@ -51,43 +51,41 @@
                         self._assignProperty(property, color);
                     });
             } else if (property === 'trm') {
-                return $('<div></div>')
-                    .css('width', '7em')
-                    .addClass('g-switch')
-                    .append($('<label></label>')
-                        .append($('<input>')
-                            .attr('type', 'checkbox')
-                            .attr('data-property', property)
-                            .on('change', function () {
-                                self._assignProperty(property, $(this).is(':checked'));
-                            }))
-                        .append($('<span></span>')
-                            .addClass('switch')
-                            .attr({
-                                // TODO : I18N
-                                'data-on': 'Trim Empty',
-                                'data-off': 'No Trim'
-                            })));
+                return $('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).is(':checked'));
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
         }.bind(this);
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Color:'))
-                .append($('<td></td>')
-                    .append(_createInput('cls')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('On Export:'))
-                .append($('<td></td>')
-                    .append(_createInput('trm'))))
-            .appendTo(this._panel);
+        panel
+            .css('width', '120px')
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                // TODO : I18N
+                .text('Color:')
+                .append(_createInput('cls')
+                    .css({
+                        'margin-left': '3px'
+                    })))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .append(_createInput('trm'))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Trim Transparent')));
     };
 
     /** @override */
@@ -99,11 +97,11 @@
 
         this._slices = [];
 
-            for (var i = 0; i < elements.length; ++i) {
-                if (elements[i] instanceof IFSlice) {
-                    this._slices.push(elements[i]);
-                }
+        for (var i = 0; i < elements.length; ++i) {
+            if (elements[i] instanceof IFSlice) {
+                this._slices.push(elements[i]);
             }
+        }
 
         if (this._slices.length === elements.length) {
             this._document = document;

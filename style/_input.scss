@@ -7,11 +7,12 @@ button, .g-button, input, textArea, select, .g-input {
   -ms-appearance: none;
   @include box-sizing(border-box);
   margin: 0px;
-  padding: 0px 3px 1px 3px;
+  padding: 0px 3px;
   vertical-align: middle;
   background: $frameColor;
   color: $textColor;
   height: $baseline;
+  line-height: $baseline - 2px;
 
   &:not(:last-child) {
     margin-right: 3px;
@@ -19,7 +20,7 @@ button, .g-button, input, textArea, select, .g-input {
 }
 
 button, .g-button {
-  border: none;
+  border: 1px solid $frameDarkColor;
 
   &, * {
     vertical-align: middle;
@@ -33,13 +34,32 @@ button, .g-button {
   }
 
   &:active, &.g-active {
+    background: $activeColor;
+
     &, * {
-      color: $selectedColor;
+      color: $activeTextColor;
     }
 
     svg {
-      fill: $selectedColor;
-      stroke: $selectedColor;
+      fill: $activeTextColor;
+      stroke: $activeTextColor;
+    }
+  }
+
+  &.g-flat {
+    border: none;
+
+    &:active, &.g-active {
+      background: transparent;
+
+      &, * {
+        color: $selectedColor;
+      }
+
+      svg {
+        fill: $selectedColor;
+        stroke: $selectedColor;
+      }
     }
   }
 

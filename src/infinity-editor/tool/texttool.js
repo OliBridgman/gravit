@@ -90,7 +90,7 @@
     IFTextTool.prototype._insertShape = function (shape) {
         // Create our text out of our rectangle here
         var text = new IFText();
-        text.setProperties(['aw', 'vb', 'trf'], [false, IFText.VerticalBox.Fixed, shape.getProperty('trf')]);
+        text.setProperties(['aw', 'ah', 'trf'], [false, false, shape.getProperty('trf')]);
 
         this._insertText(text);
     };

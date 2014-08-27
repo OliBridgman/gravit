@@ -1,5 +1,6 @@
 @import "compass/css3/user-interface";
 @import "compass/css3/box-sizing";
+@import "compass/reset";
 
 @import 'fonts';
 @import 'base';
@@ -31,7 +32,6 @@
 @import 'module/sidebar/pageslayerssidebar';
 
 @import 'module/palette/export';
-@import 'module/palette/properties';
 @import 'module/palette/style';
 @import 'module/palette/transform';
 
