@@ -5,6 +5,11 @@ in the spirit for Freehand and Fireworks. It is completely written in HTML5,
 Javascript and CSS3. Gravit consists of the core engine called "Infinity", the
 actual Application and the core Module called "Gravit".
 
+We'd like to encourage everyone in getting involved with this project. You can
+develop new features or take a ticket and fix it. Or if you're a UX/Designer, you
+could help designing new icons or improving the UI. To get started contributing,
+read the [GitHub Guide](https://guides.github.com/activities/contributing-to-open-source/)
+
 ## Prerequisites
 
 * NodeJS + NPM
