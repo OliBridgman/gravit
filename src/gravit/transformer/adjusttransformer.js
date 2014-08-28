@@ -179,7 +179,7 @@
         this._panel = panel;
 
         panel
-            .css('width', '175px')
+            .css('width', '166px')
             .append($('<div></div>')
                 .css({
                     'position': 'absolute',

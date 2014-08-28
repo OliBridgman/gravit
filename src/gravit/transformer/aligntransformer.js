@@ -21,12 +21,6 @@
         LastElement: 'last-element'
     };
 
-    /** @enum */
-    GAlignTransformer._AlignOn = {
-        Geometry: 'geometry',
-        Painted: 'painted'
-    };
-
     /**
      * @type {JQuery}
      * @private
@@ -61,190 +55,169 @@
     GAlignTransformer.prototype.init = function (panel) {
         this._panel = panel;
 
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Align To:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<select></select>')
-                        .attr('data-option', 'align-to')
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.Selection)
-                            // TODO : I18N
-                            .text('Selection'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.Layer)
-                            // TODO : I18N
-                            .text('Active Layer'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.Page)
-                            // TODO : I18N
-                            .text('Active Page'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.PageMargins)
-                            // TODO : I18N
-                            .text('Active Page Margins'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.FirstElement)
-                            // TODO : I18N
-                            .text('First Selected Element'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignTo.LastElement)
-                            // TODO : I18N
-                            .text('Last Selected Element'))
-                        .on('change', function (evt) {
-                            this._savedAlignTo = $(evt.target).val();
-                            this._updateStates();
-                        }.bind(this)))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Align On:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<select></select>')
-                        .attr('data-option', 'align-on')
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignOn.Geometry)
-                            // TODO : I18N
-                            .text('Geometry'))
-                        .append($('<option></option>')
-                            .attr('value', GAlignTransformer._AlignOn.Painted)
-                            // TODO : I18N
-                            .text('Painted')))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .attr('colspan', 4)
-                    .append($('<hr>'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Horizontal:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Left')
-                        .attr('data-align', GAlignAction.Type.AlignLeft)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-left')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Center')
-                        .attr('data-align', GAlignAction.Type.AlignCenter)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-center')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Right')
-                        .attr('data-align', GAlignAction.Type.AlignRight)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-right')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Justify Horizontal')
-                        .attr('data-align', GAlignAction.Type.AlignJustifyHorizontal)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-justify fa-rotate-270')))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Vertical:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Top')
-                        .attr('data-align', GAlignAction.Type.AlignTop)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-right fa-rotate-270')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Middle')
-                        .attr('data-align', GAlignAction.Type.AlignMiddle)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-center fa-rotate-270')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Align Bottom')
-                        .attr('data-align', GAlignAction.Type.AlignBottom)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-left fa-rotate-270')))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Justify Vertical')
-                        .attr('data-align', GAlignAction.Type.AlignJustifyVertical)
-                        .append($('<span></span>')
-                            .addClass('fa fa-align-justify')))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Distribute:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<input>')
-                        // TODO : I18N
-                        .attr('title', 'Horizontal Spacing, zero will auto-space')
-                        .attr('data-dist', GDistributeAction.Type.Horizontal)
-                        .css('width', '3em')
-                        .val('0'))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Distribute Horizontal')
-                        .attr('data-dist', GDistributeAction.Type.Horizontal)
-                        .append($('<span></span>')
-                            .addClass('fa fa-reorder fa-rotate-270')))
-                    .append($('<input>')
-                        // TODO : I18N
-                        .attr('title', 'Vertical Spacing, zero will auto-space')
-                        .attr('data-dist', GDistributeAction.Type.Vertical)
-                        .css('width', '3em')
-                        .css('margin-left', '10px')
-                        .val('0'))
-                    .append($('<button></button>')
-                        // TODO : I18N
-                        .attr('title', 'Distribute Vertical')
-                        .attr('data-dist', GDistributeAction.Type.Vertical)
-                        .append($('<span></span>')
-                            .addClass('fa fa-reorder')))))
-            .appendTo(panel);
-
-        var _createApplyButton = function (apply) {
-            var self = this;
-            // TODO : I18N
-            var hint = apply === 'selection' ? 'Align Selection' : 'Align Individual Elements';
-            var text = apply === 'selection' ? 'Selection' : 'Individual';
-            return $('<button></button>')
-                .addClass('g-button ' + (apply === 'selection' ? 'g-active' : ''))
-                .attr('title', hint)
-                .attr('data-apply', apply)
-                .text(text)
-                .on('click', function () {
-                    if (!$(this).hasClass('g-active')) {
-                        if (apply === 'selection') {
-                            self._panel.find('button[data-apply="objects"]').removeClass('g-active');
-                            self._panel.find('button[data-apply="selection"]').addClass('g-active');
-                        } else {
-                            self._panel.find('button[data-apply="selection"]').removeClass('g-active');
-                            self._panel.find('button[data-apply="objects"]').addClass('g-active');
-                        }
-                    }
-                });
-        }.bind(this);
-
-        // Init
         panel
-            .append(_createApplyButton('selection'))
-            .append(_createApplyButton('objects'));
+            .css('width', '182px')
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Left')
+                    .attr('data-align', GAlignAction.Type.AlignLeft)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-left')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Center')
+                    .attr('data-align', GAlignAction.Type.AlignCenter)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-center')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Right')
+                    .attr('data-align', GAlignAction.Type.AlignRight)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-right')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Justify Horizontal')
+                    .attr('data-align', GAlignAction.Type.AlignJustifyHorizontal)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-justify fa-rotate-270')))
+                .append($('<button></button>')
+                    .css('margin-left', '10px')
+                    // TODO : I18N
+                    .attr('title', 'Distribute Horizontal')
+                    .attr('data-dist', GDistributeAction.Type.Horizontal)
+                    .append($('<span></span>')
+                        .addClass('fa fa-reorder fa-rotate-270')))
+                .append($('<input>')
+                    // TODO : I18N
+                    .attr('title', 'Horizontal Spacing, zero will auto-space')
+                    .attr('data-dist', GDistributeAction.Type.Horizontal)
+                    .css('width', '38px')
+                    .val('0')))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '30px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Top')
+                    .attr('data-align', GAlignAction.Type.AlignTop)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-right fa-rotate-270')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Middle')
+                    .attr('data-align', GAlignAction.Type.AlignMiddle)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-center fa-rotate-270')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Align Bottom')
+                    .attr('data-align', GAlignAction.Type.AlignBottom)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-left fa-rotate-270')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Justify Vertical')
+                    .attr('data-align', GAlignAction.Type.AlignJustifyVertical)
+                    .append($('<span></span>')
+                        .addClass('fa fa-align-justify')))
+                .append($('<button></button>')
+                    .css('margin-left', '10px')
+                    // TODO : I18N
+                    .attr('title', 'Distribute Vertical')
+                    .attr('data-dist', GDistributeAction.Type.Vertical)
+                    .append($('<span></span>')
+                        .addClass('fa fa-reorder')))
+                .append($('<input>')
+                    // TODO : I18N
+                    .attr('title', 'Vertical Spacing, zero will auto-space')
+                    .attr('data-dist', GDistributeAction.Type.Vertical)
+                    .css('width', '38px')
+                    .val('0')))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                // TODO : I18N
+                .text('Align To:')
+                .append(($('<select></select>')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '100px'
+                    })
+                    .attr('data-option', 'align-to')
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.Selection)
+                        // TODO : I18N
+                        .text('Selection'))
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.Layer)
+                        // TODO : I18N
+                        .text('Active Layer'))
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.Page)
+                        // TODO : I18N
+                        .text('Active Page'))
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.PageMargins)
+                        // TODO : I18N
+                        .text('Active Page Margins'))
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.FirstElement)
+                        // TODO : I18N
+                        .text('First Selected Element'))
+                    .append($('<option></option>')
+                        .attr('value', GAlignTransformer._AlignTo.LastElement)
+                        // TODO : I18N
+                        .text('Last Selected Element'))
+                    .on('change', function (evt) {
+                        this._savedAlignTo = $(evt.target).val();
+                        this._updateStates();
+                    }.bind(this)))))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '5px'
+                })
+                .append($('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-align-geometry', '')
+                    .prop('checked', true))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Geometry')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '80px'
+                })
+                .append($('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-align-selection', '')
+                    .prop('checked', true))
+                .append($('<span></span>')
+                    // TODO : I18N
+                    .text(' Selection')));
 
         var alignHandler = function (evt) {
             this._executeAction($(evt.target).closest('button').attr('data-align'), 'align');
@@ -331,10 +304,10 @@
         }
 
         if (elements.length > 0) {
-            var geometry = this._panel.find('select[data-option="align-on"]').val() === GAlignTransformer._AlignOn.Geometry;
+            var geometry = this._panel.find('input[data-align-geometry]').is(':checked');
 
             if (mode === 'align') {
-                var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._panel.find('button[data-apply="selection"]').hasClass('g-active') : false;
+                var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._panel.find('input[data-align-selection]').is(':checked') : false;
                 return {
                     actionId: GAlignAction.ID + '.' + type,
                     actionParams: [elements, compound, geometry, referenceBox]
@@ -377,10 +350,9 @@
     /** @private */
     GAlignTransformer.prototype._updateStates = function () {
         var alignTo = this._panel.find('select[data-option="align-to"]').val();
-        var compoundCtrlsVisible = alignTo !== GAlignTransformer._AlignTo.Selection && this._elements.length > 1;
+        var compoundCtrls = alignTo !== GAlignTransformer._AlignTo.Selection && this._elements.length > 1;
 
-        this._panel.find('button[data-apply="selection"]').css('display', compoundCtrlsVisible ? '' : 'none');
-        this._panel.find('button[data-apply="objects"]').css('display', compoundCtrlsVisible ? '' : 'none');
+        this._panel.find('input[data-align-selection]').prop('disabled', !compoundCtrls);
 
         this._panel.find('[data-align]').each(function (index, element) {
             var $element = $(element);
