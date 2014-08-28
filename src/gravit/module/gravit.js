@@ -19,7 +19,6 @@
 
         // Register default palettes
         gravit.palettes.push(
-            new GTransformPalette(),
             new GExportPalette(),
             new GStylePalette()
         );

@@ -8,15 +8,134 @@
      */
     function GAdjustTransformer() {
         this._elements = [];
+        this._savedValues = {
+            'Move': [0, 0],
+            'Scale': [100, 100],
+            'Rotate': [0],
+            'Skew': [0, 0],
+            'Reflect': [0]
+        };
     };
     IFObject.inherit(GAdjustTransformer, GTransformer);
 
     GAdjustTransformer._TransformMode = {
-        Move: 'move',
-        Scale: 'scale',
-        Rotate: 'rotate',
-        Skew: 'skew',
-        Reflect: 'reflect'
+        Move: {
+            label1: {
+                prefix: 'X'
+            },
+            label2: {
+                prefix: 'Y'
+            },
+            pivot: false,
+            transformFunc: function (val1, val2, scene) {
+                var tx = scene.stringToPoint(val1) || 0;
+                var ty = scene.stringToPoint(val2) || 0;
+
+                if (tx !== 0 || ty !== 0) {
+                    return function (step, element, origin) {
+                        element.transform(new IFTransform(1, 0, 0, 1, tx * step, ty * step));
+                    }
+                }
+
+                return null;
+            }
+        },
+        Scale: {
+            label1: {
+                prefix: 'W',
+                postfix: '%'
+            },
+            label2: {
+                prefix: 'H',
+                postfix: '%'
+            },
+            pivot: true,
+            transformFunc: function (val1, val2, scene) {
+                var sx = parseFloat(val1) / 100.0 || 1;
+                var sy = parseFloat(val2) / 100.0 || 1;
+
+                if (sx !== 1 || sy !== 1) {
+                    return function (step, element, origin) {
+                        element.transform(new IFTransform()
+                            .translated(-origin.getX(), -origin.getY())
+                            .scaled(sx + (sx - 1) * (step - 1), sy + (sy - 1) * (step - 1))
+                            .translated(origin.getX(), origin.getY()));
+                    }
+                }
+                return null;
+            }
+        },
+        Rotate: {
+            label1: {
+                prefix: 'Angle',
+                postfix: '°'
+            },
+            pivot: true,
+            transformFunc: function (val1, val2, scene) {
+                var angle = ifMath.toRadians(parseFloat(val1)) || 0;
+
+                if (angle !== 0) {
+                    return function (step, element, origin) {
+                        element.transform(new IFTransform()
+                            .translated(-origin.getX(), -origin.getY())
+                            .rotated(-angle * step)
+                            .translated(origin.getX(), origin.getY()));
+                    }
+                }
+
+                return null;
+            }
+        },
+        Skew: {
+            label1: {
+                prefix: 'X',
+                postfix: '°'
+            },
+            label2: {
+                prefix: 'Y',
+                postfix: '°'
+            },
+            pivot: true,
+            transformFunc: function (val1, val2, scene) {
+                var sx = ifMath.toRadians(parseFloat(val1)) || 0;
+                var sy = ifMath.toRadians(parseFloat(val2)) || 0;
+
+                if ((sx !== 0 || sy !== 0) && (sx > -ifMath.PIHALF && sy > -ifMath.PIHALF && sx < ifMath.PIHALF && sy < ifMath.PIHALF)) {
+                    return function (step, element, origin) {
+                        element.transform(new IFTransform()
+                            .translated(-origin.getX(), -origin.getY())
+                            .skewed(sx * step, sy * step)
+                            .translated(origin.getX(), origin.getY()));
+                    }
+                }
+
+                return null;
+            }
+        },
+        Reflect: {
+            label1: {
+                prefix: 'Axis',
+                postfix: '°'
+            },
+            pivot: true,
+            transformFunc: function (val1, val2, scene) {
+                var angle = parseFloat(val1) || 0;
+                angle = ifMath.toRadians(-angle);
+                var cosA = Math.cos(angle);
+                var sinA = Math.sin(angle);
+
+                return function (step, element, origin) {
+                    if (step % 2) {
+                        element.transform(new IFTransform()
+                            .translated(-origin.getX(), -origin.getY())
+                            .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
+                            .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
+                            .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
+                            .translated(origin.getX(), origin.getY()));
+                    }
+                }
+            }
+        }
     };
 
     /**
@@ -24,12 +143,6 @@
      * @private
      */
     GAdjustTransformer.prototype._panel = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GAdjustTransformer.prototype._controls = null;
 
     /**
      * @type {GDocument}
@@ -49,6 +162,12 @@
      */
     GAdjustTransformer.prototype._transformMode = null;
 
+    /**
+     * @type {*}
+     * @private
+     */
+    GAdjustTransformer.prototype._savedValues = null;
+
     /** @override */
     GAdjustTransformer.prototype.getCategory = function () {
         // TODO : I18N
@@ -56,197 +175,141 @@
     };
 
     /** @override */
-    GAdjustTransformer.prototype.init = function (panel, controls) {
+    GAdjustTransformer.prototype.init = function (panel) {
         this._panel = panel;
-        this._controls = controls;
 
-        // Controls
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'Move')
-            .attr('data-mode', GAdjustTransformer._TransformMode.Move)
-            .append($('<span></span>')
-                .addClass('fa fa-arrows'))
-            .appendTo(controls);
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'Scale')
-            .attr('data-mode', GAdjustTransformer._TransformMode.Scale)
-            .append($('<span></span>')
-                .addClass('fa fa-expand'))
-            .appendTo(controls);
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'Rotate')
-            .attr('data-mode', GAdjustTransformer._TransformMode.Rotate)
-            .append($('<span></span>')
-                .addClass('fa fa-rotate-right'))
-            .appendTo(controls);
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'Skew')
-            .attr('data-mode', GAdjustTransformer._TransformMode.Skew)
-            .append($('<span></span>')
-                .addClass('fa fa-eraser'))
-            .appendTo(controls);
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'Reflect')
-            .attr('data-mode', GAdjustTransformer._TransformMode.Reflect)
-            .append($('<span></span>')
-                .addClass('fa fa-star-half-o'))
-            .appendTo(controls);
+        panel
+            .css('width', '175px')
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '5px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    .addClass('g-flat')
+                    // TODO : I18N
+                    .attr('title', 'Move')
+                    .attr('data-mode', 'Move')
+                    .append($('<span></span>')
+                        .addClass('fa fa-arrows')))
+                .append($('<button></button>')
+                    .addClass('g-flat')
+                    // TODO : I18N
+                    .attr('title', 'Scale')
+                    .attr('data-mode', 'Scale')
+                    .append($('<span></span>')
+                        .addClass('fa fa-expand')))
+                .append($('<button></button>')
+                    .addClass('g-flat')
+                    // TODO : I18N
+                    .attr('title', 'Rotate')
+                    .attr('data-mode', 'Rotate')
+                    .append($('<span></span>')
+                        .addClass('fa fa-rotate-right')))
+                .append($('<button></button>')
+                    .addClass('g-flat')
+                    // TODO : I18N
+                    .attr('title', 'Skew')
+                    .attr('data-mode', 'Skew')
+                    .append($('<span></span>')
+                        .addClass('fa fa-eraser')))
+                .append($('<button></button>')
+                    .addClass('g-flat')
+                    // TODO : I18N
+                    .attr('title', 'Reflect')
+                    .attr('data-mode', 'Reflect')
+                    .append($('<span></span>')
+                        .addClass('fa fa-star-half-o')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .css('margin-left', '7px')
+                    // TODO : I18N
+                    .text('Apply')
+                    .on('click', this._apply.bind(this))))
+            .append($('<label></label>')
+                .attr('data-value', '1')
+                .css({
+                    'position': 'absolute',
+                    'left': '5px',
+                    'top': '30px'
+                })
+                .append($('<span></span>')
+                    .attr('data-prefix', ''))
+                .append($('<input>')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '48px'
+                    })
+                    .val('0')
+                    .on('keyup', function (evt) {
+                        if (evt.keyCode == 13) {
+                            this._apply();
+                        }
+                    }.bind(this)))
+                .append($('<span></span>')
+                    .attr('data-postfix', '')))
+            .append($('<label></label>')
+                .attr('data-value', '2')
+                .css({
+                    'position': 'absolute',
+                    'left': '90px',
+                    'top': '30px'
+                })
+                .append($('<span></span>')
+                    .attr('data-prefix', ''))
+                .append($('<input>')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '48px'
+                    })
+                    .val('0')
+                    .on('keyup', function (evt) {
+                        if (evt.keyCode == 13) {
+                            this._apply();
+                        }
+                    }.bind(this)))
+                .append($('<span></span>')
+                    .attr('data-postfix', '')))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<div></div>')
+                .attr('data-property', 'pivot')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                .gPivot())
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'right': '5px'
+                })
+                // TODO : I18N
+                .text('Copies:')
+                .append($('<input>')
+                    .css({
+                        'margin-left': '3px',
+                        'width': '38px'
+                    })
+                    .attr('data-property', 'copies')
+                    .val('0')));
 
-        $('<button></button>')
-            // TODO : I18N
-            .css('margin-left', '7px')
-            // TODO : I18N
-            .text('Apply')
-            .on('click', this._apply.bind(this))
-            .appendTo(controls);
-
-        controls.find('button[data-mode]').each(function (index, element) {
+        panel.find('button[data-mode]').each(function (index, element) {
             var $element = $(element);
             $element.on('click', function () {
                 this._setTransformMode($element.attr('data-mode'));
             }.bind(this))
         }.bind(this));
 
-
-        var _createDimensionInput = function (dimension) {
-            var self = this;
-            return $('<input>')
-                .attr('type', 'text')
-                .attr('data-dimension', dimension)
-                .css('width', '5em')
-                .on('change', function (evt) {
-                    self._assignDimension(dimension, $(this).val());
-                });
-        }.bind(this);
-
-        // Content
-        $('<table></table>')
-            .addClass('g-form')
-            .css('margin', '0px auto')
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Pivot:'))
-                .append($('<td></td>')
-                    .append($('<div></div>')
-                        .attr('data-property', 'pivot')
-                        .css('display', 'inline-block')
-                        .gPivot()
-                        .on('pivotchange', function (evt, side) {
-                            //alert('NEW PIVOT SIDE: ' + side);
-                        })))
-                .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Copies:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'copies')
-                        .val('0'))))
-            .append($('<tr></tr>')
-                .attr('data-mode', GAdjustTransformer._TransformMode.Move)
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('X:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '5em')
-                        .attr('data-property', 'x')
-                        .val('0')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Y:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '5em')
-                        .attr('data-property', 'y')
-                        .val('0'))))
-            .append($('<tr></tr>')
-                .attr('data-mode', GAdjustTransformer._TransformMode.Scale)
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('W:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'w')
-                        .val('100'))
-                    .append($('<span></span>')
-                        .text('%')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('H:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'h')
-                        .val('100'))
-                    .append($('<span></span>')
-                        .text('%'))))
-            .append($('<tr></tr>')
-                .attr('data-mode', GAdjustTransformer._TransformMode.Rotate)
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Angle:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'angle')
-                        .val('0'))
-                    .append($('<span></span>')
-                        .text('°')))
-                .append($('<td></td>')
-                    .attr('colspan', '2')))
-            .append($('<tr></tr>')
-                .attr('data-mode', GAdjustTransformer._TransformMode.Skew)
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('X:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'x')
-                        .val('0'))
-                    .append($('<span></span>')
-                        .text('°')))
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Y:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'y')
-                        .val('0'))
-                    .append($('<span></span>')
-                        .text('°'))))
-            .append($('<tr></tr>')
-                .attr('data-mode', GAdjustTransformer._TransformMode.Reflect)
-                .append($('<td></td>')
-                    .addClass('label')
-                    .text('Axis:'))
-                .append($('<td></td>')
-                    .append($('<input>')
-                        .css('width', '4em')
-                        .attr('data-property', 'axis')
-                        .val('0'))
-                    .append($('<span></span>')
-                        .text('°')))
-                .append($('<td></td>')
-                    .attr('colspan', '2')))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
-                    .css('display', 'none')
-                    .attr('colspan', '4')))
-            .appendTo(panel);
-
-        this._setTransformMode(GAdjustTransformer._TransformMode.Move);
+        this._setTransformMode('Move');
     };
 
     /** @override */
@@ -260,17 +323,36 @@
     };
 
     GAdjustTransformer.prototype._setTransformMode = function (mode) {
+        if (this._transformMode) {
+            this._savedValues[this._transformMode] = [
+                this._panel.find('label[data-value="1"] input').val(),
+                this._panel.find('label[data-value="2"] input').val()
+            ];
+        }
+
         this._transformMode = mode;
 
-        this._controls.find('button[data-mode]').each(function (index, element) {
+        this._panel.find('button[data-mode]').each(function (index, element) {
             var $element = $(element);
             $element.toggleClass('g-active', $element.attr('data-mode') === mode);
         }.bind(this));
 
-        this._panel.find('tr[data-mode]').each(function (index, element) {
-            var $element = $(element);
-            $element.css('display', $element.attr('data-mode') === mode ? '' : 'none');
-        });
+        var _updateLabel = function (labelInfo, number) {
+            var label = this._panel.find('label[data-value="' + number.toString() + '"]');
+            if (!labelInfo) {
+                label.css('display', 'none');
+            } else {
+                label.css('display', '');
+                label.find('span[data-prefix]').text(labelInfo.prefix ? (labelInfo.prefix + ':') : '');
+                label.find('span[data-postfix]').text(labelInfo.postfix ? labelInfo.postfix : '');
+                label.find('input').val(this._savedValues[mode][number - 1]);
+            }
+        }.bind(this);
+
+        var transModeInfo = GAdjustTransformer._TransformMode[mode];
+        _updateLabel(transModeInfo.label1, 1);
+        _updateLabel(transModeInfo.label2, 2);
+        this._panel.find('[data-property="pivot"]').css('display', transModeInfo.pivot ? '' : 'none');
     };
 
     /**
@@ -281,73 +363,10 @@
 
         var copies = parseInt(this._panel.find('[data-property="copies"]').val());
         var pivot = this._panel.find('[data-property="pivot"]').gPivot('value');
+        var value1 = this._panel.find('label[data-value="1"] input').val();
+        var value2 = this._panel.find('label[data-value="2"] input').val();
 
-        /** Function(step, element) */
-        var transformFunc = null;
-        var transformRows = this._panel.find('[data-mode="' + this._transformMode + '"]');
-
-        if (this._transformMode === GAdjustTransformer._TransformMode.Move) {
-            var tx = scene.stringToPoint(transformRows.find('[data-property="x"]').val()) || 0;
-            var ty = scene.stringToPoint(transformRows.find('[data-property="y"]').val()) || 0;
-
-            if (tx !== 0 || ty !== 0) {
-                transformFunc = function (step, element, origin) {
-                    element.transform(new IFTransform(1, 0, 0, 1, tx * step, ty * step));
-                }
-            }
-        } else if (this._transformMode === GAdjustTransformer._TransformMode.Scale) {
-            var sx = parseFloat(transformRows.find('[data-property="w"]').val()) / 100.0 || 1;
-            var sy = parseFloat(transformRows.find('[data-property="h"]').val()) / 100.0 || 1;
-
-            if (sx !== 1 || sy !== 1) {
-                transformFunc = function (step, element, origin) {
-                    element.transform(new IFTransform()
-                        .translated(-origin.getX(), -origin.getY())
-                        .scaled(sx + (sx - 1) * (step - 1), sy + (sy - 1) * (step - 1))
-                        .translated(origin.getX(), origin.getY()));
-                }
-            }
-        } else if (this._transformMode === GAdjustTransformer._TransformMode.Rotate) {
-            var angle = ifMath.toRadians(parseFloat(transformRows.find('[data-property="angle"]').val())) || 0;
-
-            if (angle !== 0) {
-                transformFunc = function (step, element, origin) {
-                    element.transform(new IFTransform()
-                        .translated(-origin.getX(), -origin.getY())
-                        .rotated(-angle * step)
-                        .translated(origin.getX(), origin.getY()));
-                }
-            }
-        } else if (this._transformMode === GAdjustTransformer._TransformMode.Skew) {
-            var sx = ifMath.toRadians(parseFloat(transformRows.find('[data-property="x"]').val())) || 0;
-            var sy = ifMath.toRadians(parseFloat(transformRows.find('[data-property="y"]').val())) || 0;
-
-            if ((sx !== 0 || sy !== 0) && (sx > -ifMath.PIHALF && sy > -ifMath.PIHALF && sx < ifMath.PIHALF && sy < ifMath.PIHALF)) {
-                transformFunc = function (step, element, origin) {
-                    element.transform(new IFTransform()
-                        .translated(-origin.getX(), -origin.getY())
-                        .skewed(sx * step, sy * step)
-                        .translated(origin.getX(), origin.getY()));
-                }
-            }
-        } else if (this._transformMode === GAdjustTransformer._TransformMode.Reflect) {
-            var angle = parseFloat(transformRows.find('[data-property="axis"]').val()) || 0;
-            //var axis = angle === 90 ? 0 : Math.tan(ifMath.toRadians(angle)) || 0;
-            angle = ifMath.toRadians(-angle);
-            var cosA = Math.cos(angle);
-            var sinA = Math.sin(angle);
-
-            transformFunc = function (step, element, origin) {
-                if (step % 2) {
-                    element.transform(new IFTransform()
-                        .translated(-origin.getX(), -origin.getY())
-                        .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
-                        .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
-                        .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
-                        .translated(origin.getX(), origin.getY()));
-                }
-            }
-        }
+        var transformFunc = GAdjustTransformer._TransformMode[this._transformMode].transformFunc(value1, value2, scene);
 
         if (transformFunc) {
             // TODO : I18N

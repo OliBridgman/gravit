@@ -1,12 +1,12 @@
 @import '../../variables';
 
-.panel-properties {
+.panel-transform {
   padding: 0px;
 
-  .properties-panels {
+  .transform-panels {
     height: 100%;
 
-    > .properties-panel-content {
+    > .transform-panel-content {
       overflow: scroll;
       position: relative;
       height: 100%;

@@ -65,7 +65,6 @@
             // Create panel
             var panel = $('<div></div>')
                 .css('display', 'none')
-                .attr('data-available', 'false')
                 .addClass('properties-panel-content');
 
             // Init properties
@@ -154,10 +153,8 @@
 
             if (available) {
                 propertyPanel.panel.css('display', '');
-                propertyPanel.panel.attr('data-available', 'true');
             } else {
                 propertyPanel.panel.css('display', 'none');
-                propertyPanel.panel.attr('data-available', 'false');
             }
         }
     };

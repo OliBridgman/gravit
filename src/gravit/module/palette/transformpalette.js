@@ -67,7 +67,7 @@
 
         this._htmlElement = htmlElement;
 
-        var propertiesPanels = $('<div></div>')
+        var transformPanels = $('<div></div>')
             .addClass('transform-panels')
             .appendTo(this._htmlElement);
 
@@ -106,13 +106,13 @@
                     }))
                 .append($('<div></div>')
                     .addClass('controls'))
-                .appendTo(propertiesPanels);
+                .appendTo(transformPanels);
 
             // Init transformer
             transformer.init(panel, category.find('.controls'));
 
             // Append panel
-            panel.appendTo(propertiesPanels);
+            panel.appendTo(transformPanels);
 
             this._transformPanels.push({
                 category: category,

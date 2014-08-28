@@ -20,9 +20,8 @@
     /**
      * Called to initialize the transform panel
      * @param {JQuery} panel the panel to init on
-     * @param {JQuery} controls the controls panel to init on
      */
-    GTransformer.prototype.init = function (panel, controls) {
+    GTransformer.prototype.init = function (panel) {
         throw new Error("Not Supported.");
     };
 
