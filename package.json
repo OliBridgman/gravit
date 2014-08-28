@@ -2,7 +2,7 @@
     "name": "Gravit",
     "description" : "Gravit, the versatile Design Tool",
     "author" : "Quasado",
-    "version": "0.0.3.1",
+    "version": "0.0.3-1",
     "private": true,
     "devDependencies": {
         "grunt": "~0.4.1",
