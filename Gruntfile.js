@@ -462,8 +462,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dist', function (target) {
         grunt.task.run([
-            'test',
             'build',
+            'test',
             'clean:dist',
             'copy:dist',
             '_dist_osx',

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/quasado/gravit.svg?branch=master)](https://travis-ci.org/quasado/gravit)
+
 ## Introduction
 
 Gravit is a design tool for Mac, Windows, Linux, ChromeOS and the Browser made
