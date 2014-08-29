@@ -1,6 +1,4 @@
-language: node_js
-node_js:
-  - "0.8"
+language: objective-c
 before_install: npm install -g grunt-cli
 install: npm install
 before_script: grunt dist
