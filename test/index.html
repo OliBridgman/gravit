@@ -9,66 +9,20 @@
     <div id="mocha"></div>
     <script src="lib/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
-    <!-- assertion framework -->
+    <!-- Assertion Framework -->
     <script src="lib/chai.js"></script>
     <script>var expect = chai.expect</script>
 
-    <!-- include source files here... -->
-    <script src="../lib/bower_components/appkit/dist/scripts/appkit.js"></script>
+    <!-- Libraries -->
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../build/browser/infinity-libraries.js"></script>
+    <script src="../build/browser/infinity-core.js"></script>
+    <script src="../build/browser/infinity-editor.js"></script>
+    <script src="../build/browser/gravit.js"></script>
+    <script src="../build/browser/gravit-shell.js"></script>
 
-    <script src="../lib/scripts/graphics/core/color.js"></script>
-    <script src="../lib/scripts/graphics/core/dirtylist.js"></script>
-    <script src="../lib/scripts/graphics/core/math.js"></script>
-    <script src="../lib/scripts/graphics/core/point.js"></script>
-    <script src="../lib/scripts/graphics/core/rect.js"></script>
-    <script src="../lib/scripts/graphics/core/transform.js"></script>
-    <script src="../lib/scripts/graphics/core/unit.js"></script>
-    <!-- Storage -->
-    <script src="../lib/scripts/graphics/storage/storable.js"></script>
-    <script src="../lib/scripts/graphics/storage/storage.js"></script>
-    <script src="../lib/scripts/graphics/storage/memorystorage.js"></script>
-    <!-- Vertex -->
-    <script src="../lib/scripts/graphics/vertex/vertex.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertexsource.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertextarget.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertexcontainer.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertexinfo.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertextransformer.js"></script>
-    <script src="../lib/scripts/graphics/vertex/vertexpixelaligner.js"></script>
-    <script src="../lib/scripts/graphics/vertex/arcvertexgenerator.js"></script>
-    <!-- Model -->
-    <script src="../lib/scripts/graphics/model/selector.js"></script>
-    <script src="../lib/scripts/graphics/model/node.js"></script>
-    <script src="../lib/scripts/graphics/model/element.js"></script>
-    <!-- Model/Shape -->
-    <script src="../lib/scripts/graphics/model/shape/shape.js"></script>
-    <script src="../lib/scripts/graphics/model/shape/arcshape.js"></script>
-    <script src="../lib/scripts/graphics/model/shape/ellipse.js"></script>
-    <script src="../lib/scripts/graphics/model/shape/polygon.js"></script>
-    <script src="../lib/scripts/graphics/model/shape/path.js"></script>
-    <!-- Model/Structure -->
-    <script src="../lib/scripts/graphics/model/structure/group.js"></script>
-    <script src="../lib/scripts/graphics/model/structure/layer.js"></script>
-    <script src="../lib/scripts/graphics/model/structure/page.js"></script>
-    <script src="../lib/scripts/graphics/model/structure/document.js"></script>
-    <!-- Paint -->
-    <script src="../lib/scripts/graphics/paint/canvas.js"></script>
-    <script src="../lib/scripts/graphics/paint/htmlcanvas.js"></script>
-    <script src="../lib/scripts/graphics/paint/paintcontext.js"></script>
-    <!-- Widget -->
-    <script src="../lib/scripts/graphics/widget/paintwidget.js"></script>
-    <script src="../lib/scripts/graphics/widget/panel.js"></script>
-    <script src="../lib/scripts/graphics/widget/view.js"></script>
-    <!-- Root -->
-    <script src="../lib/scripts/graphics/graphicview.js"></script>
-    <!-- I18N -->
-    <script src="../lib/scripts/graphics/i18n/i18n_en.js"></script>
-    <script src="../lib/scripts/graphics/i18n/i18n_de.js"></script>
-    <script src="../lib/scripts/graphics/model/shape/path.js"></script>
-
-    <!-- include spec files here... -->
-    <!-- <script src="spec/test.js"></script> -->
-    <script src="spec/pathmodel.js"></script>
+    <!-- Infinity Tests -->
+    <script src="spec/infinity/object.js"></script>
 
     <script>mocha.run()</script>
 </body>
