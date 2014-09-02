@@ -123,7 +123,7 @@
         }.bind(this);
 
         panel
-            .css('width', '205px')
+            .css('width', '210px')
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
