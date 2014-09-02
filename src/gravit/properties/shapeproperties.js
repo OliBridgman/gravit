@@ -2,35 +2,35 @@
 
     /**
      * Shape properties panel
-     * @class GShapeAttrProperties
+     * @class GShapeProperties
      * @extends GProperties
      * @constructor
      */
-    function GShapeAttrProperties() {
+    function GShapeProperties() {
         this._shapes = [];
     };
-    IFObject.inherit(GShapeAttrProperties, GProperties);
+    IFObject.inherit(GShapeProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    GShapeAttrProperties.prototype._panel = null;
+    GShapeProperties.prototype._panel = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GShapeAttrProperties.prototype._document = null;
+    GShapeProperties.prototype._document = null;
 
     /**
      * @type {Array<IFShape>}
      * @private
      */
-    GShapeAttrProperties.prototype._shapes = null;
+    GShapeProperties.prototype._shapes = null;
 
     /** @override */
-    GShapeAttrProperties.prototype.init = function (panel) {
+    GShapeProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -274,7 +274,7 @@
     };
 
     /** @override */
-    GShapeAttrProperties.prototype.update = function (document, elements) {
+    GShapeProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
@@ -302,14 +302,14 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GShapeAttrProperties.prototype._afterPropertiesChange = function (event) {
+    GShapeProperties.prototype._afterPropertiesChange = function (event) {
         // TODO
     };
 
     /**
      * @private
      */
-    GShapeAttrProperties.prototype._updateProperties = function () {
+    GShapeProperties.prototype._updateProperties = function () {
         // TODO
     };
 
@@ -318,7 +318,7 @@
      * @param {*} value
      * @private
      */
-    GShapeAttrProperties.prototype._assignProperty = function (property, value) {
+    GShapeProperties.prototype._assignProperty = function (property, value) {
         this._assignProperties([property], [value]);
     };
 
@@ -327,7 +327,7 @@
      * @param {Array<*>} values
      * @private
      */
-    GShapeAttrProperties.prototype._assignProperties = function (properties, values) {
+    GShapeProperties.prototype._assignProperties = function (properties, values) {
         /* TODO
          var editor = this._document.getEditor();
          editor.beginTransaction();
@@ -342,9 +342,9 @@
     };
 
     /** @override */
-    GShapeAttrProperties.prototype.toString = function () {
-        return "[Object GShapeAttrProperties]";
+    GShapeProperties.prototype.toString = function () {
+        return "[Object GShapeProperties]";
     };
 
-    _.GShapeAttrProperties = GShapeAttrProperties;
+    _.GShapeProperties = GShapeProperties;
 })(this);
