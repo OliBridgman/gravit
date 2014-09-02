@@ -96,10 +96,9 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createInput('uf'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Uniform Corners')))
+                // TODO : I18N
+                .text('Uniform Corners:')
+                .append(_createInput('uf')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',

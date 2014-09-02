@@ -76,10 +76,9 @@
                     'top': '30px',
                     'left': '5px'
                 })
-                .append(_createInput('trm'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Trim Transparent')));
+                // TODO : I18N
+                .text('Trim Transparent:')
+                .append(_createInput('trm')));
     };
 
     /** @override */

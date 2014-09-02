@@ -130,20 +130,18 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createPathInput('closed'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Closed')))
+                // TODO : I18N
+                .text('Closed:')
+                .append(_createPathInput('closed')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '5px',
                     'left': '75px'
                 })
-                .append(_createPathInput('evenodd'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Even/odd fill')))
+                // TODO : I18N
+                .text('Even/odd Fill:')
+                .append(_createPathInput('evenodd')))
             .append($('<label></label>')
                 .attr('data-point-property', '_row')
                 .css({

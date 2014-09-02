@@ -371,12 +371,11 @@
                 .css({
                     'position': 'absolute',
                     'top': '65px',
-                    'left': '230px'
+                    'right': '5px'
                 })
-                .append(_createInput('ah'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Auto Height')))
+                // TODO : I18N
+                .text('Auto Height:')
+                .append(_createInput('ah')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -423,12 +422,11 @@
                 .css({
                     'position': 'absolute',
                     'top': '89px',
-                    'left': '230px'
+                    'right': '5px'
                 })
-                .append(_createInput('aw'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Auto Width')));
+                // TODO : I18N
+                .text('Auto Width:')
+                .append(_createInput('aw')));
     };
 
     /** @override */

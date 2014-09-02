@@ -128,10 +128,9 @@
                     'top': '5px',
                     'left': '101px'
                 })
-                .append(_createInput('evenodd'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Even/odd fill')))
+                // TODO : I18N
+                .text('Even/odd Fill:')
+                .append(_createInput('evenodd')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
