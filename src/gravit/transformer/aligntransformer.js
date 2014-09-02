@@ -56,7 +56,7 @@
         this._panel = panel;
 
         panel
-            .css('width', '182px')
+            .css('width', '220px')
             .append($('<div></div>')
                 .css({
                     'position': 'absolute',
@@ -143,6 +143,18 @@
                     .attr('data-dist', GDistributeAction.Type.Vertical)
                     .css('width', '38px')
                     .val('0')))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'right': '5px'
+                })
+                // TODO : I18N
+                .text('Use Geometry:')
+                .append($('<input>')
+                    .attr('type', 'checkbox')
+                    .attr('data-align-geometry', '')
+                    .prop('checked', true)))
             .append($('<hr>')
                 .css({
                     'position': 'absolute',
@@ -160,8 +172,10 @@
                 .text('Align To:')
                 .append(($('<select></select>')
                     .css({
-                        'margin-left': '3px',
-                        'width': '100px'
+                        'width': '90px',
+                        'position': 'absolute',
+                        'top': '24px',
+                        'left': '0px'
                     })
                     .attr('data-option', 'align-to')
                     .append($('<option></option>')
@@ -171,23 +185,23 @@
                     .append($('<option></option>')
                         .attr('value', GAlignTransformer._AlignTo.Layer)
                         // TODO : I18N
-                        .text('Active Layer'))
+                        .text('Layer'))
                     .append($('<option></option>')
                         .attr('value', GAlignTransformer._AlignTo.Page)
                         // TODO : I18N
-                        .text('Active Page'))
+                        .text('Page'))
                     .append($('<option></option>')
                         .attr('value', GAlignTransformer._AlignTo.PageMargins)
                         // TODO : I18N
-                        .text('Active Page Margins'))
+                        .text('Page Margins'))
                     .append($('<option></option>')
                         .attr('value', GAlignTransformer._AlignTo.FirstElement)
                         // TODO : I18N
-                        .text('First Selected Element'))
+                        .text('First Element'))
                     .append($('<option></option>')
                         .attr('value', GAlignTransformer._AlignTo.LastElement)
                         // TODO : I18N
-                        .text('Last Selected Element'))
+                        .text('Last Element'))
                     .on('change', function (evt) {
                         this._savedAlignTo = $(evt.target).val();
                         this._updateStates();
@@ -196,28 +210,14 @@
                 .css({
                     'position': 'absolute',
                     'top': '89px',
-                    'left': '5px'
+                    'right': '5px'
                 })
-                .append($('<input>')
-                    .attr('type', 'checkbox')
-                    .attr('data-align-geometry', '')
-                    .prop('checked', true))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Geometry')))
-            .append($('<label></label>')
-                .css({
-                    'position': 'absolute',
-                    'top': '89px',
-                    'left': '80px'
-                })
+                // TODO : I18N
+                .text('Align Selection:')
                 .append($('<input>')
                     .attr('type', 'checkbox')
                     .attr('data-align-selection', '')
-                    .prop('checked', true))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Selection')));
+                    .prop('checked', true)));
 
         var alignHandler = function (evt) {
             this._executeAction($(evt.target).closest('button').attr('data-align'), 'align');
