@@ -222,10 +222,9 @@
                     'top': '65px',
                     'left': '110px'
                 })
-                .append(_createPointInput('ah'))
-                .append($('<span></span>')
-                    // TODO : I18N
-                    .text(' Auto Handles')))
+                // TODO : I18N
+                .text('Auto Handles:')
+                .append(_createPointInput('ah')))
             .append($('<label></label>')
                 .attr('data-point-property', '_row')
                 .css({
