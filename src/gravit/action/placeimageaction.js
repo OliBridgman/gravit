@@ -57,11 +57,8 @@
      */
     GPlaceImageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
-        document.getStorage().openResourcePrompt(document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
+        document.getStorage().openResourcePrompt(document.getUrl(), ['jpg', 'jpeg', 'png', 'gif', 'svg'], function (url) {
             var uri = new URI(url);
-
-            alert('uri: ' + uri.toString());
-            alert('make_relative_to: ' + document.getUrl());
 
             // make url relative to document
             url = uri.relativeTo(document.getUrl()).toString();
