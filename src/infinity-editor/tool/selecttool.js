@@ -467,10 +467,12 @@
                 collisionArea.addVertex(IFVertex.Command.Line, x2, y2);
                 collisionArea.addVertex(IFVertex.Command.Line, x0, y2);
                 collisionArea.addVertex(IFVertex.Command.Close, 0, 0);
-                var collisions = this._scene.getCollisions(collisionArea, IFElement.CollisionFlag.GeometryBBox);
+                var collisions = this._scene.getCollisions(collisionArea,
+                    IFElement.CollisionFlag.GeometryBBox | IFElement.CollisionFlag.Partial);
                 var selectableElements = this._getSelectableElements(collisions);
 
-                this._editor.updateSelection(ifPlatform.modifiers.shiftKey, selectableElements);
+                this._editor.updateSelectionUnderCollision(ifPlatform.modifiers.shiftKey,
+                    selectableElements, collisionArea);
 
                 // Invalidate to remove area selector's paint region
                 var selectArea = this._selectArea;
