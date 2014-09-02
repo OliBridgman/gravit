@@ -139,6 +139,7 @@ input[type=checkbox], input[type=radio] {
   border: none !important;
   background: transparent !important;
   margin-right: 0px !important;
+  line-height: $baseline;
 
   &:before {
     text-align: right;
