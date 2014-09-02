@@ -161,8 +161,6 @@
     };
 
     /**
-     * @param {Boolean} [noBBoxCalculation] if set, do not recalculate all element's bbox.
-     * Defaults to false.
      * @private
      */
     GImageProperties.prototype._updateProperties = function () {

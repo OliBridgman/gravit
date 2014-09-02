@@ -144,8 +144,6 @@
     };
 
     /**
-     * @param {Boolean} [noBBoxCalculation] if set, do not recalculate all element's bbox.
-     * Defaults to false.
      * @private
      */
     GEllipseProperties.prototype._updateProperties = function () {
