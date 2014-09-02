@@ -135,14 +135,26 @@ input[type="range"] {
 }
 
 input[type=checkbox], input[type=radio] {
-  width: 1em;
-  height: 1em;
   vertical-align: middle;
-  position: relative;
-  bottom: 1px;
+  border: none !important;
+  background: transparent !important;
+  margin-right: 0px !important;
+
+  &:before {
+    text-align: right;
+    font-family: FontAwesome !important;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: $fa-var-toggle-off;
+  }
 
   &:checked {
-    background: $selectedColor;
+    &:before {
+      content: $fa-var-toggle-on;
+    }
   }
 }
 
