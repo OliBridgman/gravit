@@ -30,12 +30,6 @@
     GSliceProperties.prototype._slices = null;
 
     /** @override */
-    GSliceProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Slice';
-    };
-
-    /** @override */
     GSliceProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

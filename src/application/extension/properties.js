@@ -10,14 +10,6 @@
     };
 
     /**
-     * Called to return the category of the panel
-     * @return {String|IFLocale.Key}
-     */
-    GProperties.prototype.getCategory = function () {
-        throw new Error("Not Supported.");
-    };
-
-    /**
      * Called to initialize the properties panel
      * @param {JQuery} panel the panel to init on
      */

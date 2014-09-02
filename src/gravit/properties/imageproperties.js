@@ -29,12 +29,6 @@
     GImageProperties.prototype._image = null;
 
     /** @override */
-    GImageProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Image';
-    };
-
-    /** @override */
     GImageProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

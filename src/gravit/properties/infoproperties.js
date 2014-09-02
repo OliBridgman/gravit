@@ -42,12 +42,6 @@
     GInfoProperties.prototype._firstElementsBBox = null;
 
     /** @override */
-    GInfoProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Dimensions';
-    };
-
-    /** @override */
     GInfoProperties.prototype.init = function (panel) {
         this._panel = panel;
 

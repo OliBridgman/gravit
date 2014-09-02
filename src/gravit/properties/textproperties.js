@@ -36,12 +36,6 @@
     GTextProperties.prototype._textEditor = null;
 
     /** @override */
-    GTextProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Text';
-    };
-
-    /** @override */
     GTextProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

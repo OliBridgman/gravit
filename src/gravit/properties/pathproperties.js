@@ -36,12 +36,6 @@
     GPathProperties.prototype._points = null;
 
     /** @override */
-    GPathProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Path';
-    };
-
-    /** @override */
     GPathProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

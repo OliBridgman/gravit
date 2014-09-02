@@ -30,12 +30,6 @@
     GPolygonProperties.prototype._polygons = null;
 
     /** @override */
-    GPolygonProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Polygon';
-    };
-
-    /** @override */
     GPolygonProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

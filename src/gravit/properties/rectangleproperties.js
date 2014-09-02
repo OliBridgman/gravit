@@ -30,12 +30,6 @@
     GRectangleProperties.prototype._rectangles = null;
 
     /** @override */
-    GRectangleProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Rectangle';
-    };
-
-    /** @override */
     GRectangleProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

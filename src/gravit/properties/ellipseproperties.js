@@ -30,12 +30,6 @@
     GEllipseProperties.prototype._ellipses = null;
 
     /** @override */
-    GEllipseProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Ellipse';
-    };
-
-    /** @override */
     GEllipseProperties.prototype.init = function (panel) {
         this._panel = panel;
 

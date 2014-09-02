@@ -23,12 +23,6 @@
     GDocumentProperties.prototype._document = null;
 
     /** @override */
-    GDocumentProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Document';
-    };
-
-    /** @override */
     GDocumentProperties.prototype.init = function (panel, controls) {
         this._panel = panel;
 

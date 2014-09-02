@@ -101,12 +101,6 @@
     GPageProperties.prototype._pages = null;
 
     /** @override */
-    GPageProperties.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Page';
-    };
-
-    /** @override */
     GPageProperties.prototype.init = function (panel) {
         this._panel = panel;
 
