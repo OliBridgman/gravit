@@ -52,29 +52,9 @@
       }
 
       > .zoom {
-        position: relative;
-
-        > button {
-          position: absolute;
-          top: 0px;
-          height: 100%;
-          font-size: 10px !important;
-          border: none;
-
-          &:first-child {
-            left: 0px;
-          }
-
-          &:last-child {
-            right: 0px;
-          }
-        }
-
-        > input {
-          width: 100%;
-          text-align: center;
-          font-size: smaller;
-        }
+        width: 100%;
+        text-align: center;
+        font-size: smaller;
       }
     }
   }

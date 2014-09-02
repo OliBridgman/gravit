@@ -104,46 +104,24 @@
 
                 // Do some custom handling for known categories
                 if (mainTool.category === GApplication.TOOL_CATEGORY_VIEW) {
-                    $('<div></div>')
+                    var zoomLevels = [6, 12, 25, 50, 66, 100, 150, 200, 300, 400, 800, 1600, 3200, 6400];
+
+                    var select = $('<select></select>')
                         .addClass('zoom')
-                        .css('text-align', 'center')
-                        .append($('<div></div>')
-                            .css('text-align', 'center')
-                            .on('click', function () {
-                                gApp.executeAction(GZoomOutAction.ID);
-                            })
-                            .text(ifLocale.get(GZoomOutAction.TITLE)))
-                        .append($('<input>')
-                            .css('width', '3.5em')
-                            .on('click', function () {
-                                $(this).select();
-                            })
-                            .on('change', function () {
-                                var val = ifUtil.parseNumber($(this).val());
-                                if (val >= 100) {
-                                    val = ifMath.round(val, false);
-                                } else if (val >= 10) {
-                                    val = ifMath.round(val, false, 1);
-                                } else if (val >= 0) {
-                                    val = ifMath.round(val, false, 2);
-                                } else {
-                                    val = 1;
-                                }
-                                var zoomLevel = val;
-                                if (!isNaN(zoomLevel) && zoomLevel !== 0) {
-                                    var view = gApp.getWindows().getActiveWindow().getView();
-                                    var centerPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
-                                    view.zoomAtCenter(centerPoint, zoomLevel);
-                                }
-                                $(this).val(ifUtil.formatNumber(val) + 'x');
-                            }))
-                        .append($('<div></div>')
-                            .css('text-align', 'center')
-                            .on('click', function () {
-                                gApp.executeAction(GZoomInAction.ID);
-                            })
-                            .text(ifLocale.get(GZoomInAction.TITLE)))
+                        .append($('<option></option>'))
+                        .on('change', function () {
+                            var view = gApp.getWindows().getActiveWindow().getView();
+                            var centerPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+                            view.zoomAtCenter(centerPoint, parseInt($(this).val()) / 100.0);
+                        })
                         .appendTo(toolpanel);
+
+                    for (var z = 0; z < zoomLevels.length; ++z) {
+                        $('<option></option>')
+                            .text(zoomLevels[z].toString() + '%')
+                            .attr('value', zoomLevels[z])
+                            .appendTo(select);
+                    }
                 }
             }
 
@@ -213,8 +191,12 @@
             .find('*').prop('disabled', !window);
 
         if (window) {
+            var zoomLevel = ifMath.round(window.getView().getZoom() * 100, false, 0);
             zoom
-                .find('input').val(ifUtil.formatNumber(window.getView().getZoom()) + 'x');
+                .find('option:first-child')
+                .text(zoomLevel.toString() + '%')
+                .attr('value', zoomLevel);
+            zoom.val(zoomLevel);
         }
     };
 
