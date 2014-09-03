@@ -59,12 +59,12 @@
                         }
                     });
             } else if (property === 'tl_ct' || property === 'tr_ct' || property === 'bl_ct' || property === 'br_ct') {
-                return $('<select></select>')
+                return $('<button></butto>')
                     .attr('data-property', property)
                     .css('width', '32px')
                     .gCornerType()
-                    .on('change', function () {
-                        self._assignProperty(property, $(this).val());
+                    .on('cornertypechange', function (evt, cornerType) {
+                        self._assignProperty(property, cornerType);
                     });
             } else if (property === 'tl_uf' || property === 'tr_uf' || property === 'bl_uf' || property === 'br_uf') {
                 return $('<button></button>')
@@ -99,7 +99,7 @@
                 // TODO : I18N
                 .text('Uniform Corners:')
                 .append(_createInput('uf')))
-            .append($('<label></label>')
+            .append($('<div></div>')
                 .css({
                     'position': 'absolute',
                     'top': '30px',
@@ -113,7 +113,7 @@
                     .attr('title', titleSmoothX))
                 .append(_createInput('tr_ct')
                     .attr('title', titleUniform)))
-            .append($('<label></label>')
+            .append($('<div></div>')
                 .css({
                     'position': 'absolute',
                     'top': '53px',
@@ -127,7 +127,7 @@
                     .attr('title', titleCornerType))
                 .append(_createInput('tr_sy')
                     .attr('title', titleSmoothY)))
-            .append($('<label></label>')
+            .append($('<div></div>')
                 .css({
                     'position': 'absolute',
                     'top': '76px',
@@ -141,7 +141,7 @@
                     .attr('title', titleCornerType))
                 .append(_createInput('br_sy')
                     .attr('title', titleSmoothY)))
-            .append($('<label></label>')
+            .append($('<div></div>')
                 .css({
                     'position': 'absolute',
                     'top': '99px',
@@ -215,7 +215,7 @@
                 var uf = this._panel.find('button[data-property="' + corner + '_uf"]');
                 var sx = this._panel.find('input[data-property="' + corner + '_sx"]');
                 var sy = this._panel.find('input[data-property="' + corner + '_sy"]');
-                var ct = this._panel.find('select[data-property="' + corner + '_ct"]');
+                var ct = this._panel.find('button[data-property="' + corner + '_ct"]');
 
                 var hidden = allUniform && corner !== 'tl';
                 uf.css('visibility', hidden ? 'hidden' : 'visible');
@@ -235,6 +235,7 @@
                     }
 
                     uf.prop('disabled', allUniform);
+                    ct.gCornerType('value', rectangle.getProperty(corner + '_ct'));
                 }
             }
         }.bind(this);

@@ -67,38 +67,43 @@
                             self._updatePointProperties();
                         }
                     });
-            } else if (property === 'type') {
+            } else if (property === 'tp') {
                 return $('<select></select>')
                     .attr('data-point-property', property)
-                    .append($('<optgroup></optgroup>')
+                    .append($('<option></option>')
+                        .attr('value', IFPathBase.AnchorPoint.Type.Symmetric)
                         // TODO : I18N
-                        .attr('label', 'Curve')
-                        .append($('<option></option>')
-                            .attr('value', IFPathBase.AnchorPoint.Type.Symmetric)
-                            // TODO : I18N
-                            .text('Symmetric'))
-                        .append($('<option></option>')
-                            .attr('value', IFPathBase.AnchorPoint.Type.Asymmetric)
-                            // TODO : I18N
-                            .text('Asymmetric'))
-                        .append($('<option></option>')
-                            .attr('value', IFPathBase.AnchorPoint.Type.Mirror)
-                            // TODO : I18N
-                            .text('Mirror'))
-                        .append($('<option></option>')
-                            .attr('value', IFPathBase.AnchorPoint.Type.Connector)
-                            // TODO : I18N
-                            .text('Connector')))
-                    .append($('<optgroup></optgroup>')
+                        .text('Symmetric'))
+                    .append($('<option></option>')
+                        .attr('value', IFPathBase.AnchorPoint.Type.Asymmetric)
                         // TODO : I18N
-                        .attr('label', 'Corner'))
-                    .gCornerType()
+                        .text('Asymmetric'))
+                    .append($('<option></option>')
+                        .attr('value', IFPathBase.AnchorPoint.Type.Mirror)
+                        // TODO : I18N
+                        .text('Mirror'))
+                    .append($('<option></option>')
+                        .attr('value', IFPathBase.AnchorPoint.Type.Connector)
+                        // TODO : I18N
+                        .text('Connector'))
+                    .append($('<option></option>')
+                        .attr('value', '-')
+                        // TODO : I18N
+                        .text('Corner'))
                     .on('change', function () {
                         var val = $(this).val();
+                        var ct = val;
                         if (val === '-') {
-                            val = IFPathBase.CornerType.Rounded;
+                            ct = IFPathBase.CornerType.Rounded;
                         }
-                        self._assignPointProperty('tp', val);
+                        self._assignPointProperty('tp', ct);
+                    });
+            } else if (property === 'ctp') {
+                return $('<button></button>')
+                    .attr('data-point-property', property)
+                    .gCornerType()
+                    .on('cornertypechange', function (evt, cornerType) {
+                        self._assignPointProperty('tp', cornerType);
                     });
             } else if (property === 'ah') {
                 return $('<input>')
@@ -116,7 +121,8 @@
                         self._updatePointProperties();
                     })
                     .append($('<span></span>')
-                        .addClass('fa fa-lock'));
+                        .addClass('fa fa-lock')
+                        .css('font-size', '10px'));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -213,8 +219,8 @@
                     'top': '65px',
                     'left': '5px'
                 })
-                .append(_createPointInput('type')
-                    .css('width', '100px')))
+                .append(_createPointInput('tp')
+                    .css('width', '105px')))
             .append($('<label></label>')
                 .attr('data-point-property', '_row')
                 .css({
@@ -227,23 +233,23 @@
                 .text('Auto Handles:')
                 .append('<br/>')
                 .append(_createPointInput('ah')))
-            .append($('<label></label>')
+            .append($('<div></div>')
                 .attr('data-point-property', '_row')
                 .css({
                     'position': 'absolute',
                     'top': '89px',
                     'left': '5px'
                 })
+                .append(_createPointInput('ctp'))
                 .append(_createPointInput('cl')
-                    .css('width', '38px')
+                    .css('width', '30px')
                     // TODO : I18N
                     .attr('title', 'Left Smoothness'))
                 .append(_createPointInput('cu')
-                    .css('width', '18px')
                     // TODO : I18N
                     .attr('title', 'Toggle Lock of Left & Right Smoothness'))
                 .append(_createPointInput('cr')
-                    .css('width', '38px')
+                    .css('width', '30px')
                     // TODO : I18N
                     .attr('title', 'Right Smoothness')));
     };
@@ -352,7 +358,10 @@
                 }
             }
 
-            this._panel.find('select[data-point-property="type"]').val(apType);
+            this._panel.find('select[data-point-property="tp"]').val(isCorner ? '-' : apType);
+            this._panel.find('button[data-point-property="ctp"]')
+                .prop('disabled', !isCorner)
+                .gCornerType('value', isCorner ? apType : IFPathBase.CornerType.Rounded);
 
             this._panel.find('input[data-point-property="cl"]')
                 .prop('disabled', !isCorner)

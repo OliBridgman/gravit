@@ -1,32 +1,35 @@
 (function ($) {
-
     var cornerTypes = [
         {
             type: IFPathBase.CornerType.Rounded,
-            // TODO : I18N
-            name: 'Rounded'
+            icon: 'gicon-corner-rounded'
         },
         {
             type: IFPathBase.CornerType.InverseRounded,
-            // TODO : I18N
-            name: 'Inverse Rounded'
+            icon: 'gicon-corner-inverse-rounded'
         },
         {
             type: IFPathBase.CornerType.Bevel,
-            // TODO : I18N
-            name: 'Beveled'
+            icon: 'gicon-corner-bevel'
         },
         {
             type: IFPathBase.CornerType.Inset,
-            // TODO : I18N
-            name: 'Inset'
+            icon: 'gicon-corner-inset'
         },
         {
             type: IFPathBase.CornerType.Fancy,
-            // TODO : I18N
-            name: 'Fancy'
+            icon: 'gicon-corner-fancy'
         }
     ];
+
+    function getCornerIcon (cornerType) {
+        for (var i = 0; i < cornerTypes.length; ++i) {
+            if (cornerTypes[i].type === cornerType) {
+                return cornerTypes[i].icon;
+            }
+        }
+        return null;
+    }
 
     var methods = {
         init: function (options) {
@@ -34,30 +37,55 @@
             }, options);
 
             return this.each(function () {
-                var $this = $(this);
-                if ($this.is("select")) {
-                    // If the last item is an optgroup, use that as a target
-                    var target = $this;
-                    var lastElement = $this.find(':last');
-                    if (lastElement.is('optgroup')) {
-                        target = lastElement;
-                    }
+                var self = this;
+                var $this = $(this)
+                    .data('gcornertype', {
+                        cornerType: null
+                    })
+                    .append('<span></span>')
+                    .on('click', function () {
+                        var panel = $('<div></div>')
+                            .gOverlay({
+                                releaseOnClose: true
+                            });
 
-                    // Append corner types
-                    for (var i = 0; i < cornerTypes.length; ++i) {
-                        target.append($('<option></option>')
-                            .attr('value', cornerTypes[i].type)
-                            .text(cornerTypes[i].name));
-                    }
-                }
+                        for (var i = 0; i < cornerTypes.length; ++i) {
+                            $('<button></button>')
+                                .addClass('g-flat')
+                                .toggleClass('g-active', cornerTypes[i].type === $this.data('gcornertype').cornerType)
+                                .attr('data-corner-type', cornerTypes[i].type)
+                                .append($('<span></span>')
+                                    .addClass(cornerTypes[i].icon))
+                                .on('click', function () {
+                                    var cornerType = $(this).attr('data-corner-type');
+                                    methods.value.call(self, cornerType);
+                                    $this.trigger('cornertypechange', cornerType);
+                                    panel.gOverlay('close');
+                                })
+                                .appendTo(panel);
+                        }
+
+                        panel.gOverlay('open', this);
+                    });
             });
+        },
+
+        value: function (value) {
+            var $this = $(this);
+            var data = $this.data('gcornertype');
+
+            if (!arguments.length) {
+                return data.cornerType;
+            } else {
+                data.cornerType = value;
+                $this.find('span').attr('class', getCornerIcon(data.cornerType))
+                return this;
+            }
         }
     };
 
     /**
-     * Adds a translated list of options to a selection that
-     * represents the IFBasePath.CornerType choices
-     * TODO : Replace select with visual selector with icons
+     * Converts a button into a corner-type chooser
      */
     $.fn.gCornerType = function (method) {
         if (methods[method]) {

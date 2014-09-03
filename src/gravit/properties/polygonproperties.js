@@ -84,11 +84,11 @@
                         }
                     });
             } else if (property === 'ict' || property === 'oct') {
-                return $('<select></select>')
+                return $('<button></button>')
                     .attr('data-property', property)
                     .gCornerType()
-                    .on('change', function () {
-                        self._assignProperty(property, $(this).val());
+                    .on('cornertypechange', function (evt, cornerType) {
+                        self._assignProperty(property, cornerType);
                     });
             } else if (property === 'icr' || property === 'ocr') {
                 return $('<input>')
@@ -192,14 +192,13 @@
                     'top': '90px',
                     'left': '5px'
                 })
-                .html('<span class="fa fa-square"></span>')
-                .append(_createInput('ocr')
-                    .css({
-                        'margin-left': '5px',
-                        'width': '38px'
-                    }))
+                .html('<span class="fa fa-square" style="visibility: hidden"></span>')
                 .append(_createInput('oct')
-                    .css('width', '32px')))
+                    .css({
+                        'margin-left': '5px'
+                    }))
+                .append(_createInput('ocr')
+                    .css('width', '38px')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -207,13 +206,12 @@
                     'left': '103px'
                 })
                 .html('<span class="fa fa-square" style="visibility: hidden"></span>')
-                .append(_createInput('icr')
-                    .css({
-                        'margin-left': '3px',
-                        'width': '38px'
-                    }))
                 .append(_createInput('ict')
-                    .css('width', '32px')));
+                    .css({
+                        'margin-left': '3px'
+                    }))
+                .append(_createInput('icr')
+                    .css('width', '38px')));
     };
 
     /** @override */
@@ -268,8 +266,8 @@
             ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
             ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
-        this._panel.find('select[data-property="oct"]').val(polygon.getProperty('oct'));
-        this._panel.find('select[data-property="ict"]').val(polygon.getProperty('ict'));
+        this._panel.find('button[data-property="oct"]').gCornerType('value', polygon.getProperty('oct'));
+        this._panel.find('button[data-property="ict"]').gCornerType('value', polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ocr')));
         this._panel.find('input[data-property="icr"]').val(
