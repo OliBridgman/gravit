@@ -1033,6 +1033,38 @@
         return (this._partSelection && this._partSelection.length);
     };
 
+    /** override */
+    IFPathEditor.prototype.isDeletePartsAllowed = function () {
+        var res = false;
+        if (this._partSelection && this._partSelection.length) {
+            var numPtsSelected = 0;
+            for (var i = 0; i < this._partSelection.length; ++i) {
+                if (this._partSelection[i].type == IFPathEditor.PartType.Point) {
+                    ++numPtsSelected;
+                }
+            }
+            var numPts = 0;
+            for (var anchorPt = this._element.getAnchorPoints().getFirstChild();
+                    anchorPt != null; anchorPt = anchorPt.getNext(), ++numPts) { }
+
+            if (numPts > numPtsSelected) {
+                res = true;
+            }
+        }
+        return res;
+    };
+
+    /** override */
+    IFPathEditor.prototype.deletePartsSelected = function () {
+        var anchorPts = this._element.getAnchorPoints();
+        for (var i = 0; i < this._partSelection.length; ++i) {
+            if (this._partSelection[i].type == IFPathEditor.PartType.Point) {
+                anchorPts.removeChild(this._partSelection[i].point);
+            }
+        }
+        this._partSelection = null;
+    };
+
     /**
      * Changes indices of preview points to some value. Useful when new points are added into preview,
      * when these points are not in main path yet
