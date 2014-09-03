@@ -61,8 +61,11 @@
                         }
                     })
                     .gPatternTarget(options)
-                    .on('patternchange', function (evt, color) {
-                        methods.value.call(self, color);
+                    .on('patternchange', function (evt, pattern) {
+                        if (!pattern || pattern instanceof IFColor) {
+                            methods.value.call(self, pattern);
+                            $this.trigger('colorchange', pattern);
+                        }
                     });
 
                 if (!options.transient) {
