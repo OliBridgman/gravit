@@ -123,7 +123,7 @@
         }.bind(this);
 
         panel
-            .css('width', '210px')
+            .css('width', '198px')
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -220,10 +220,12 @@
                 .css({
                     'position': 'absolute',
                     'top': '65px',
-                    'left': '110px'
+                    'right': '5px',
+                    'text-align': 'center'
                 })
                 // TODO : I18N
                 .text('Auto Handles:')
+                .append('<br/>')
                 .append(_createPointInput('ah')))
             .append($('<label></label>')
                 .attr('data-point-property', '_row')

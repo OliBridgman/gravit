@@ -147,7 +147,7 @@
                     'left': '5px'
                 })
                 .append($('<span></span>')
-                    .addClass('fa fa-tint')
+                    .addClass('gicon-fill')
                     .css({
                         'width': '16px',
                         'text-align': 'center'
@@ -185,7 +185,7 @@
                     'left': '5px'
                 })
                 .append($('<span></span>')
-                    .addClass('fa fa-pencil')
+                    .addClass('gicon-stroke')
                     .css({
                         'width': '16px',
                         'text-align': 'center'
@@ -231,14 +231,15 @@
                 .css({
                     'position': 'absolute',
                     'top': '65px',
-                    'right': '5px'
+                    'right': '86px'
                 })
                 // TODO : I18N
-                .text('Ending:')
+                .text('Ending:'))
                 .append($('<div></div>')
                     .css({
-                        'display': 'inline-block',
-                        'margin-left': '3px'
+                    'position': 'absolute',
+                    'top': '65px',
+                    'right': '5px'
                     })
                     .append(_createInput('lc-' + 'b')
                         // TODO : I18N
@@ -248,19 +249,20 @@
                         .attr('title', 'Round'))
                     .append(_createInput('lc-' + 's')
                         // TODO : I18N
-                        .attr('title', 'Square'))))
+                        .attr('title', 'Square')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '89px',
-                    'right': '5px'
+                    'right': '86px'
                 })
                 // TODO : I18N
-                .text('Join:')
+                .text('Join:'))
                 .append($('<div></div>')
                     .css({
-                        'display': 'inline-block',
-                        'margin-left': '3px'
+                    'position': 'absolute',
+                    'top': '89px',
+                    'right': '5px'
                     })
                     .append(_createInput('lj-' + 'b')
                         // TODO : I18N
@@ -270,7 +272,7 @@
                         .attr('title', 'Round'))
                     .append(_createInput('lj-' + 'm')
                         // TODO : I18N
-                        .attr('title', 'Miter'))));
+                        .attr('title', 'Miter')));
     };
 
     /** @override */
