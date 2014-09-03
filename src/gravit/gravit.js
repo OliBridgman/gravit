@@ -20,7 +20,9 @@
         // Register default palettes
         gravit.palettes.push(
             new GExportPalette(),
-            new GStylePalette()
+            new GStylePalette(),
+            new GStylesPalette(),
+            new GSwatchesPalette()
         );
 
         // Register default panels
@@ -31,8 +33,7 @@
 
         // Register default sidebars
         gravit.sidebars.push(
-            new GPagesLayersSidebar(),
-            new GStylesSwatchesSidebar()
+            new GPagesLayersSidebar()
         );
 
         // Register default tools

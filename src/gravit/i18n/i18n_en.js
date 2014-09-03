@@ -55,11 +55,12 @@ ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], 
 // Palette
 ifLocale.setValues(GExportPalette, IFLocale.Language.English, ["title"], ["Export"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
+ifLocale.setValues(GStylesPalette, IFLocale.Language.English, ["title"], ["Styles"]);
+ifLocale.setValues(GSwatchesPalette, IFLocale.Language.English, ["title"], ["Swatches"]);
 
 // Panel
 ifLocale.setValues(GPropertiesPanel, IFLocale.Language.English, ["title"], ["Properties"]);
 ifLocale.setValues(GTransformPanel, IFLocale.Language.English, ["title"], ["Transform"]);
 
 // Sidebar
-ifLocale.setValues(GStylesSwatchesSidebar, IFLocale.Language.English, ["title"], ["Styles & Swatches"]);
 ifLocale.setValues(GPagesLayersSidebar, IFLocale.Language.English, ["title"], ["Pages & Layers"]);
