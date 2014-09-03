@@ -19,6 +19,8 @@
 
         // Register default palettes
         gravit.palettes.push(
+            new GLayersPalette(),
+            new GPagesPalette(),
             new GExportPalette(),
             new GStylePalette(),
             new GStylesPalette(),

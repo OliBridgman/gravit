@@ -16,22 +16,22 @@
     GSwatchesPalette.TITLE = new IFLocale.Key(GSwatchesPalette, "title");
 
     /**
-     * @type {JQuery}
+     * @type {GDocument}
      * @private
      */
-    GSwatchesPalette.prototype._htmlElement = null;
-
-    /**
-     * @type {JQuery}
-     * @private
-     */
-    GSwatchesPalette.prototype._controls = null;
+    GSwatchesPalette.prototype._document = null;
 
     /**
      * @type {JQuery}
      * @private
      */
     GSwatchesPalette.prototype._swatchPanel = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GSwatchesPalette.prototype._swatchDeleteControl = null;
 
     /** @override */
     GSwatchesPalette.prototype.getId = function () {
@@ -57,9 +57,6 @@
     GSwatchesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
-        this._htmlElement = htmlElement;
-        this._controls = controls;
-
         this._swatchPanel = $('<div></div>')
             //.addClass('g-swatch-list')
             .gSwatchPanel({
@@ -80,7 +77,7 @@
             }.bind(this))
             .appendTo(htmlElement);
 
-        $('<button></button>')
+        this._swatchDeleteControl = $('<button></button>')
             // TODO : I18N
             .attr('title', 'Delete Selected Swatch')
             .attr('data-action', 'delete')
@@ -122,7 +119,7 @@
     /** @private */
     GSwatchesPalette.prototype._updateControls = function () {
         var swatch = this._swatchPanel.gSwatchPanel('value');
-        this._controls.find('[data-action="delete"]').prop('disabled', !swatch);
+        this._swatchDeleteControl.prop('disabled', !swatch);
     };
 
     /** @override */

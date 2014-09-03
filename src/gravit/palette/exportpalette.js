@@ -58,7 +58,7 @@
 
     /** @override */
     GExportPalette.prototype.getGroup = function () {
-        return "export";
+        return "structure";
     };
 
     /** @override */

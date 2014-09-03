@@ -1,0 +1,76 @@
+@import '../../variables';
+
+.palette-pages {
+  .pages {
+    .page-block {
+      position: relative;
+      width: 100%;
+
+      &, * {
+        line-height: 1 !important;
+      }
+
+      &.g-active {
+        background: $activeColor;
+
+        &, * {
+          color: $activeTextColor;
+        }
+      }
+
+      &.g-selected {
+        background: $selectedColor;
+
+        &, * {
+          color: $selectedTextColor;
+        }
+      }
+
+      &.drop {
+        background: $dragColor;
+
+        &, * {
+          color: $dragTextColor;
+        }
+      }
+
+      &:not(:last-child) > div {
+        border-bottom: 1px solid $darkShadowColor;
+      }
+
+      > div:not(.drag-overlay) {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 4px 0px;
+
+        &.page-visibility, &.page-lock {
+          border-right: 1px solid $darkShadowColor;
+          min-width: 21px;
+          max-width: 21px;
+          text-align: center;
+
+          &.page-default * {
+            opacity: 0.5;
+          }
+
+          &, * {
+            cursor: pointer;
+          }
+        }
+
+        &.page-name {
+          width: 100%;
+          padding-left: 3px;
+        }
+      }
+
+      > .drag-overlay {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+      }
+    }
+  }
+}
