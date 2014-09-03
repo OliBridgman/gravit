@@ -10,11 +10,7 @@
 
   > .export-table {
     > .export-row {
-      padding: 5px 0px;
-
-      &:not(:last-child) {
-        border-bottom: 1px solid $borderColor;
-      }
+      padding: 0px 0px 5px 0px;
 
       > .export-cell {
         display: table-cell;
