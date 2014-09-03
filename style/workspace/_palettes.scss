@@ -10,18 +10,15 @@
 
   .palette-group {
     overflow: hidden;
+    border-bottom: 1px solid $darkShadowColor;
 
     &:last-child, &.collapsed-palette {
       border-bottom: none;
     }
 
     > .palette-group-header {
-      display: table;
-      padding-top: 2px;
-      height: 25px;
-      width: 100%;
-      background: $inputColor;
-      border-bottom: 1px solid $darkColor;
+      height: 21px;
+      background: $darkColor;
 
       > * {
         display: table-cell;
@@ -34,6 +31,13 @@
         background: $darkColor;
         border: none;
         margin: 0px;
+        box-shadow: none;
+
+        &:active, &.g-active {
+          &, * {
+            color: $selectedColor;
+          }
+        }
       }
 
       > .palette-group-collapse > button {
@@ -43,26 +47,20 @@
       > .palette-group-tabs {
         width: 100%;
 
-        > button {
-          //padding-right: 5px;
-          //border-left: 1px solid $borderColor;
-          //padding-left: 5px;
-          //font-weight: 600;
-          padding-left: 5px;
-          padding-right: 5px;
+        button {
+          background: $darkColor;
+          padding-left: 7px;
+          padding-right: 7px;
           text-transform: uppercase;
-          //color: $selectedColor;
+          border: none;
+          box-shadow: none;
+          margin: 0px;
 
           &:active, &.g-active {
-            background: $activeColor;
+            background: $baseColor;
 
             &, * {
-              color: $activeTextColor;
-            }
-
-            svg {
-              fill: $activeTextColor;
-              stroke: $activeTextColor;
+              color: $textColor;
             }
           }
         }
