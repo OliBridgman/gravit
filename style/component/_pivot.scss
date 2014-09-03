@@ -14,7 +14,7 @@ $pivotButtonSpace: 3px;
     left: $pivotButtonSize / 2;
     right: $pivotButtonSize / 2;
     bottom: $pivotButtonSize / 2;
-    border: 1px solid $frameDarkColor;
+    border: 1px solid $borderColor;
   }
 
   > .side {
@@ -22,7 +22,7 @@ $pivotButtonSpace: 3px;
     position: absolute;
     width: $pivotButtonSize;
     height: $pivotButtonSize;
-    border: 1px solid $frameDarkColor;
+    border: 1px solid $borderColor;
     background: white;
     top: 0px;
 

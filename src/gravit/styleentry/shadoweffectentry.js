@@ -31,20 +31,12 @@
                 .append($('<div></div>')
                     .append($('<div></div>')
                         .css('width', '4.5em')
-                        .addClass('g-switch')
                         .append($('<label></label>')
                             .append($('<input>')
                                 .attr('type', 'checkbox')
                                 .attr('data-property', 'in')
                                 .on('change', function () {
                                     assign();
-                                }))
-                            .append($('<span></span>')
-                                .addClass('switch')
-                                .attr({
-                                    // TODO : I18N
-                                    'data-on': 'Inside',
-                                    'data-off': 'Outside'
                                 }))))
                     .append($('<label></label>')
                         // TODO : I18N

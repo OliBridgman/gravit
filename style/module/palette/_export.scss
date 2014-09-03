@@ -13,7 +13,7 @@
       padding: 5px 0px;
 
       &:not(:last-child) {
-        border-bottom: 1px solid $frameBorderColor;
+        border-bottom: 1px solid $borderColor;
       }
 
       > .export-cell {

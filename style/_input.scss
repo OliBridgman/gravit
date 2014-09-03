@@ -9,7 +9,7 @@ button, .g-button, input, textArea, select, .g-input {
   margin: 0px;
   padding: 0px 3px;
   vertical-align: middle;
-  background: $frameColor;
+  background: $baseColor;
   color: $textColor;
   height: $baseline;
   line-height: $baseline - 2px;
@@ -17,10 +17,15 @@ button, .g-button, input, textArea, select, .g-input {
   &:not(:last-child) {
     margin-right: 3px;
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 button, .g-button {
-  border: 1px solid $frameDarkColor;
+  border: 1px solid $inputBorderColor;
+  box-shadow: inset 1px 1px 1px $lightShadowColor;
 
   &, * {
     vertical-align: middle;
@@ -34,20 +39,14 @@ button, .g-button {
   }
 
   &:active, &.g-active {
-    background: $activeColor;
-
-    &, * {
-      color: $activeTextColor;
-    }
-
-    svg {
-      fill: $activeTextColor;
-      stroke: $activeTextColor;
-    }
+    box-shadow: inset 1px 1px 1px $darkShadowColor;
+    background: $inputColor;
   }
 
   &.g-flat {
     border: none;
+    box-shadow: none;
+    background: transparent;
 
     &:active, &.g-active {
       background: transparent;
@@ -63,30 +62,16 @@ button, .g-button {
     }
   }
 
-  &:disabled {
-    &, * {
-      color: $disabledTextColor !important;
-    }
-
-    svg {
-      fill: $disabledTextColor !important;
-      stroke: $disabledTextColor !important;
-    }
-  }
-
   span:not(:last-child) {
     padding-right: 5px;
   }
 }
 
 select, input, textArea, .g-input {
-  border: 1px solid $frameDarkColor;
   border-radius: 0px;
-
-  &:disabled {
-    background: transparent !important;
-    color: $disabledTextColor !important;
-  }
+  box-shadow: inset 1px 1px 1px $darkShadowColor;
+  background: $inputColor;
+  border: 1px solid $inputBorderColor;
 
   &:focus {
     outline: none;
@@ -101,6 +86,7 @@ select {
   background-repeat: no-repeat;
   background-position: right center;
   padding-right: 20px;
+  box-shadow: inset 1px 1px 1px $lightShadowColor;
 }
 
 input[type="range"] {
@@ -114,7 +100,7 @@ input[type="range"] {
 
   &::-moz-range-thumb {
     background: $textColor;
-    border: 1px solid $frameBorderColor;
+    border: 1px solid $borderColor;
     width: 8px;
     height: 8px;
     border-radius: 100px;
@@ -125,7 +111,7 @@ input[type="range"] {
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     background: $textColor;
-    border: 1px solid $frameBorderColor;
+    border: 1px solid $borderColor;
     width: 9px;
     height: 9px;
     border-radius: 100px;
@@ -139,6 +125,7 @@ input[type=checkbox], input[type=radio] {
   border: none !important;
   background: transparent !important;
   margin-right: 0px !important;
+  box-shadow: none;
 
   &:before {
     text-align: right;
@@ -155,77 +142,5 @@ input[type=checkbox], input[type=radio] {
     &:before {
       content: $fa-var-toggle-on;
     }
-  }
-}
-
-/** Switch */
-.g-switch {
-  position: relative;
-  display: inline-block;
-  border: 1px solid $frameDarkColor;
-
-  &:not(:last-child) {
-    margin-right: 3px;
-  }
-
-  &, * {
-    cursor: pointer;
-  }
-
-  input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-  }
-
-  label {
-    display: block;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .switch {
-    display: block;
-    width: 200%;
-    margin-left: -100%;
-    -moz-transition: margin 0.3s ease-in 0s;
-    -webkit-transition: margin 0.3s ease-in 0s;
-    -o-transition: margin 0.3s ease-in 0s;
-    transition: margin 0.3s ease-in 0s;
-  }
-
-  .switch:before,
-  .switch:after {
-    display: block;
-    float: left;
-    width: 50%;
-    margin: 0px;
-    padding: 4px;
-    color: $textColor;
-    line-height: 1em;
-    vertical-align: middle;
-    text-align: center;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-
-  .switch:before {
-    content: attr(data-on);
-    background-color: $frameDarkColor;
-  }
-
-  .switch:after {
-    content: attr(data-off);
-    background: $frameColor;
-  }
-
-  input[type="checkbox"]:checked + .switch {
-    margin-left: 0;
-  }
-
-  input[type="checkbox"]:disabled + .switch:before,
-  input[type="checkbox"]:disabled + .switch:after {
-    background: $frameColor !important;
-    color: $disabledTextColor !important;
   }
 }

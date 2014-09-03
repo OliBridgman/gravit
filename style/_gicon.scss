@@ -25,6 +25,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.gicon-stroke:before {
+  content: "\e60e";
+}
+.gicon-fill:before {
+  content: "\e60f";
+}
+.gicon-expand:before {
+  content: "\e610";
+}
+.gicon-shadow:before {
+  content: "\e611";
+}
 .gicon-corner-beveled:before {
   content: "\e600";
 }

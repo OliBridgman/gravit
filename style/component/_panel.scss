@@ -7,7 +7,7 @@
     width: 100%;
     padding: 0px 5px;
     height: 25px;
-    background: $frameBorderColor;
+    background: $borderColor;
     margin-bottom: 1px;
 
     > div {
@@ -37,7 +37,7 @@
       }
 
       button, .g-button {
-        &.g-active {
+        &:active, &.g-active {
           &, * {
             color: $selectedColor;
           }

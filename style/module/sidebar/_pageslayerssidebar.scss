@@ -35,7 +35,7 @@
       }
 
       &:not(:last-child) > div {
-        border-bottom: 1px solid $frame3DShadowColor;
+        border-bottom: 1px solid $darkShadowColor;
       }
 
       > div:not(.drag-overlay) {
@@ -44,13 +44,13 @@
         padding: 4px 0px;
 
         &.page-visibility, &.page-lock {
-          border-right: 1px solid $frame3DShadowColor;
+          border-right: 1px solid $darkShadowColor;
           min-width: 21px;
           max-width: 21px;
           text-align: center;
 
           &.page-default * {
-            color: $disabledTextColor;
+            opacity: 0.5;
           }
 
           &, * {
@@ -77,7 +77,7 @@
   .layers {
     div.jqtree-element {
       padding: 0px;
-      border-bottom: 1px solid $frame3DShadowColor;
+      border-bottom: 1px solid $darkShadowColor;
 
       &.g-active {
         background: $activeColor;
@@ -101,13 +101,13 @@
         padding: 4px 0px;
 
         &.layer-visibility, &.layer-lock, &.layer-outline {
-          border-right: 1px solid $frame3DShadowColor;
+          border-right: 1px solid $darkShadowColor;
           min-width: 21px;
           max-width: 21px;
           text-align: center;
 
           &.layer-default {
-            color: $disabledTextColor;
+            opacity: 0.5;
           }
 
           &, * {

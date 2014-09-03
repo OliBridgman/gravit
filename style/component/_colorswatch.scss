@@ -7,7 +7,7 @@
 
   .swatch {
     @include g-cursor(pipette);
-    border: 1px solid $frameDarkColor;
+    border: 1px solid $borderColor;
     width: 8px;
     height: 8px;
 

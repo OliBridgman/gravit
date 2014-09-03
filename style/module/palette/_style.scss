@@ -38,14 +38,14 @@
       > div {
         position: relative;
         padding: 5px 0px;
-        background: $frameColor;
+        background: $baseColor;
 
         &:not(:last-child) {
-          border-bottom: 1px solid $frame3DShadowColor;
+          border-bottom: 1px solid $darkShadowColor;
         }
 
         &:not(:first-child) {
-          border-top: 1px solid $frame3DLightColor;
+          border-top: 1px solid $lightShadowColor;
         }
 
         &.drag {

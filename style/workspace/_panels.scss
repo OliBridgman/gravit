@@ -6,24 +6,25 @@
   bottom: 0px;
   height: 146px;
   padding: 0px;
-  border-top: 1px solid $frameBorderColor;
-  border-left: 2px solid $frameDarkColor;
-  border-right: 2px solid $frameDarkColor;
-  background: $frameColor;
+  border-top: 1px solid $borderColor;
+  border-left: 2px solid $darkColor;
+  border-right: 2px solid $darkColor;
+  background: $baseColor;
 
   .panels-tabs {
     height: 21px;
-    background: $frameDarkColor;
+    background: $darkColor;
 
     > button {
-      background: $frameDarkColor;
+      background: $darkColor;
       padding-left: 7px;
       padding-right: 7px;
       text-transform: uppercase;
       border: none;
+      box-shadow: none;
 
       &:active, &.g-active {
-        background: $frameColor;
+        background: $baseColor;
 
         &, * {
           color: $textColor;

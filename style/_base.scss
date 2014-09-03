@@ -54,21 +54,21 @@ body, html {
     padding: 0px;
     border: none;
     margin: 5px 0px;
-    border-bottom: 1px solid $frameBorderColor;
+    border-bottom: 1px solid $borderColor;
   }
 
   // Add special header divider
   h1.g-divider {
     text-align: center;
     line-height: 0 !important;
-    border-bottom: 1px dotted $frameBorderColor;
+    border-bottom: 1px dotted $borderColor;
     margin: 10px 0px 5px 0px;
-    color: $frameBorderColor;
+    color: $borderColor;
     text-transform: uppercase;
-    text-shadow: 0px 1px 0px $frame3DLightColor;
+    text-shadow: 0px 1px 0px $lightShadowColor;
 
     &:first-line {
-      background-color: $frameColor;
+      background-color: $baseColor;
     }
     &:before {
       content: "\a0\a0";

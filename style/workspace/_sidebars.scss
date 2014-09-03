@@ -8,9 +8,9 @@
   width: 200px;
   height: 100%;
   padding: 0px;
-  border-left: 2px solid $frameDarkColor;
-  border-right: 1px solid $frameBorderColor;
-  background: $frameColor;
+  border-left: 2px solid $darkColor;
+  border-right: 1px solid $borderColor;
+  background: $baseColor;
 
   .sidebar-container {
     width: 100%;

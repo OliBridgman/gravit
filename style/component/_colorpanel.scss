@@ -121,7 +121,7 @@
   .matcher-palette {
     width: 100%;
     height: 27px;
-    border: 1px solid $frameBorderColor;
+    border: 1px solid $borderColor;
 
     > div {
       @include box-sizing(border-box);
@@ -130,7 +130,7 @@
     }
 
     > div:not(:last-child) {
-      border-right: 1px solid $frameBorderColor;
+      border-right: 1px solid $borderColor;
     }
   }
 
@@ -141,7 +141,7 @@
 
     .swatch {
       @include g-cursor(pipette);
-      border: 1px solid $frameDarkColor;
+      border: 1px solid $borderColor;
       width: 8px;
       height: 8px;
       padding: 1px;
@@ -160,7 +160,7 @@
 
       .swatch-preview {
         padding: 0px;
-        border: 1px solid $frameDarkColor;
+        border: 1px solid $borderColor;
 
         > div {
           box-shadow: none;
@@ -175,11 +175,11 @@
         cursor: pointer !important;
 
         .swatch-preview {
-          border: 1px solid $frameColor;
+          border: 1px solid $baseColor;
         }
 
         &:hover .swatch-preview {
-          border: 1px solid $frameColor;
+          border: 1px solid $baseColor;
         }
       }
     }
@@ -206,7 +206,7 @@
 
         > div {
           width: 100%;
-          border: 1px solid $frameBorderColor;
+          border: 1px solid $borderColor;
 
           > div {
             display: inline-block;
@@ -219,7 +219,7 @@
           }
 
           > div:last-child {
-            border-left: 3px solid $frameBorderColor;
+            border-left: 3px solid $borderColor;
           }
         }
       }
@@ -253,7 +253,7 @@
     .image-palette {
       width: 100%;
       height: 27px;
-      border: 1px solid $frameBorderColor;
+      border: 1px solid $borderColor;
 
       > div {
         @include box-sizing(border-box);
@@ -263,7 +263,7 @@
       }
 
       > div:not(:last-child) {
-        border-right: 1px solid $frameBorderColor;
+        border-right: 1px solid $borderColor;
       }
     }
   }

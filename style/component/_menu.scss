@@ -17,8 +17,8 @@
 .g-menu:not(.g-menu-root) {
   position: absolute;
   z-index: 100;
-  border: 1px solid $frameBorderColor;
-  background: $frameDarkColor;
+  border: 1px solid $borderColor;
+  background: $darkColor;
   color: $textColor;
   padding: 4px 0px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.50);
@@ -116,7 +116,7 @@
 
 /** Define styling of a special "divider" li menu item */
 .g-menu-item-divider {
-  background: $frameBorderColor;
+  background: $borderColor;
   margin-top: 5px;
   margin-bottom: 5px;
   height: 1px;
@@ -131,7 +131,7 @@
 
 /** Make opacity for disabled items */
 .g-menu-item.g-disabled > span {
-  color: $disabledTextColor;
+  opacity: 0.5;
 }
 
 /** Set active/hover color if not disabled */
