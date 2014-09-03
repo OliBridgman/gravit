@@ -203,9 +203,14 @@
         if (this._areaBounds) {
             // our area selector selected something
             var collisionArea = new IFVertexTransformer(this._areaSelector._pixelTransformer, this._view.getViewTransform());
-            var collisions = this._scene.getCollisions(collisionArea, IFElement.CollisionFlag.GeometryBBox);
+            var collisionsAcceptor = function (element) {
+                // By default, we allow only items to be selected.
+                return (element instanceof IFItem);
+            };
+            var collisions = this._scene.getCollisions(collisionArea,
+                IFElement.CollisionFlag.GeometryBBox | IFElement.CollisionFlag.Partial, collisionsAcceptor);
 
-            this._editor.updateSelection(ifPlatform.modifiers.shiftKey, collisions);
+            this._editor.updateSelectionUnderCollision(ifPlatform.modifiers.shiftKey, collisions, collisionArea);
         }
         this._areaSelector.finish();
     };

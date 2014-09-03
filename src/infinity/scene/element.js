@@ -721,6 +721,23 @@
     };
 
     /**
+     * Tests if the collision area contains the full element.
+     * Element's children are not tested here.
+     * @param {IFVertexSource} area the area to get collisions within
+     */
+    IFElement.prototype.isFullUnderCollision = function (area) {
+        var res = false;
+        var bbox = this.getPaintBBox();
+        if (bbox && !bbox.isEmpty()) {
+            var areaBounds = ifVertexInfo.calculateBounds(area, true);
+            // TODO: after path boolean operations will be ready, improve this to compare areas itself instead of bboxes
+            res = areaBounds.containsRect(bbox);
+        }
+
+        return res;
+    };
+
+    /**
      * Prepare an update on this node. This will delay all update notifications
      * until the corresponding endUpdate call was made. This helps in speeding up
      * heavy operations that may result in multiple modifications. This function

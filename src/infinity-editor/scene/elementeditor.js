@@ -535,6 +535,26 @@
     };
 
     /**
+     * If parts selection allowed based on collision area
+     * @returns {Boolean} true is allowed
+     */
+    IFElementEditor.prototype.isPartSelectionUnderCollisionAllowed = function () {
+        return false;
+    };
+
+    /**
+     * Update the parts selection based on collision area
+     * @param {boolean} toggle if true then this will merge/united the
+     * current selection parts with the new selected parts, otherwise the current selection parts
+     * will be replaced with the new selected parts
+     * @param {IFVertexSource} collisionArea
+     * @return {Boolean} true if some parts were selected, false otherwise
+     */
+    IFElementEditor.prototype.updatePartSelectionUnderCollision = function (toggle, collisionArea) {
+        return false;
+    };
+
+    /**
      * Called whenever information about a part at a given location shall be returned
      * @param {IFPoint} location the location to get a part for in view coordinates
      * @param {IFTransform} transform the current transformation of the view

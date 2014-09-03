@@ -1008,6 +1008,31 @@
         ]);
     };
 
+    /** override */
+    IFPathEditor.prototype.isPartSelectionUnderCollisionAllowed = function () {
+        return true;
+    };
+
+    /** override */
+    IFPathEditor.prototype.updatePartSelectionUnderCollision = function (toggle, collisionArea) {
+        var anchorPoints = this._element.getAnchorPoints();
+        var transform = this._element.getTransform();
+        var partsToUpdate = [];
+        for (var anchorPoint = anchorPoints.getFirstChild(); anchorPoint != null; anchorPoint = anchorPoint.getNext()) {
+            var position = new IFPoint(anchorPoint.getProperty('x'), anchorPoint.getProperty('y'));
+            position = transform ? transform.mapPoint(position) : position;
+            if (ifVertexInfo.hitTest(position.getX(), position.getY(), collisionArea, 0, true)) {
+                partsToUpdate.push({type: IFPathEditor.PartType.Point, point: anchorPoint});
+            }
+        }
+        if (partsToUpdate && !this._element.hasFlag(IFNode.Flag.Selected)) {
+            this._element.setFlag(IFNode.Flag.Selected);
+        }
+        this.updatePartSelection(toggle, partsToUpdate);
+
+        return (this._partSelection && this._partSelection.length);
+    };
+
     /**
      * Changes indices of preview points to some value. Useful when new points are added into preview,
      * when these points are not in main path yet

@@ -598,6 +598,57 @@
     };
 
     /**
+     * Update the current selection based on collision area
+     * @param {boolean} toggle if true then this will merge/united the
+     * current selection with the new one, otherwise the current selection
+     * will be replaced with the new one
+     * @param {Array<IFElement>} selection the new array of nodes to be selected
+     * @param {IFVertexSource} collisionArea
+     */
+    IFEditor.prototype.updateSelectionUnderCollision = function (toggle, selection, collisionArea) {
+        this._beginSelectionUpdate();
+        try {
+            var selectionForUpdate = [];
+            var selectionToRemember = [];
+            for (var i = 0; i < selection.length; ++i) {
+                var element = selection[i];
+                var addForFurtherUpdate = true;
+                var elemEditor = IFElementEditor.openEditor(element);
+                if (!elemEditor || !elemEditor.isPartSelectionUnderCollisionAllowed()) {
+                    if (element.isFullUnderCollision(collisionArea)) {
+                        selectionForUpdate.push(element);
+                    }
+                } else {
+                    if (elemEditor.updatePartSelectionUnderCollision(toggle, collisionArea)) {
+                        selectionToRemember.push(element);
+                    }
+                }
+            }
+
+            if (selectionToRemember && selectionToRemember.length) {
+                if (!this._selection) {
+                    this._selection = [];
+                }
+                if (toggle) {
+                    for (var i = 0; i < selectionToRemember.length; ++i) {
+                        if (this._selection.indexOf(selectionToRemember[i]) < 0) {
+                            this._tryAddToSelection(selectionToRemember[i]);
+                        }
+                    }
+                    this.updateSelection(toggle, selectionForUpdate);
+                } else {
+                    selectionForUpdate = selectionForUpdate.concat(selectionToRemember);
+                    this.updateSelection(toggle, selectionForUpdate);
+                }
+            } else {
+                this.updateSelection(toggle, selectionForUpdate);
+            }
+        } finally {
+            this._finishSelectionUpdate();
+        }
+    };
+
+    /**
      * Clears the whole selection if any
      * @param {Array<IFElement>} [exclusion] an array to exclude from removing
      * from the selection or null for none
