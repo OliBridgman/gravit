@@ -533,21 +533,26 @@
                 this.beginTransaction();
             }
 
+            this._beginSelectionUpdate();
             try {
                 // copy and order selection
                 var orderedSelection = IFNode.order(this._selection.slice(), true);
-
-                // clear selection before deleting it
-                this.clearSelection();
 
                 // now delete
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
                     if (selElement instanceof IFItem && !selElement.hasFlag(IFElement.Flag.Locked)) {
-                        selElement.getParent().removeChild(selElement);
+                        var elemEditor = IFElementEditor.getEditor(selElement);
+                        if (elemEditor && elemEditor.isDeletePartsAllowed()) {
+                            elemEditor.deletePartsSelected();
+                        } else {
+                            selElement.removeFlag(IFNode.Flag.Selected);
+                            selElement.getParent().removeChild(selElement);
+                        }
                     }
                 }
             } finally {
+                this._finishSelectionUpdate();
                 if (!noTransaction) {
                     // TODO : I18N
                     this.commitTransaction('Delete Selection');

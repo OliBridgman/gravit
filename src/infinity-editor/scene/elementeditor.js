@@ -555,6 +555,21 @@
     };
 
     /**
+     * Returns true if deletion of selected parts from element is allowed, and some parts are selected
+     * @returns {Boolean}
+     */
+    IFElementEditor.prototype.isDeletePartsAllowed = function () {
+        return false;
+    };
+
+    /**
+     * Delete the selected parts from element. Should be called only after prior check with isDeletePartsAllowed()
+     */
+    IFElementEditor.prototype.deletePartsSelected = function () {
+        // NO-OP
+    };
+
+    /**
      * Called whenever information about a part at a given location shall be returned
      * @param {IFPoint} location the location to get a part for in view coordinates
      * @param {IFTransform} transform the current transformation of the view
