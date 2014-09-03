@@ -177,6 +177,7 @@
         // Register default properties
         gravit.properties.push(
             new GInfoProperties(),
+            new GStyleProperties(),
             new GShapeProperties(),
             new GDocumentProperties(),
             new GPolygonProperties(),
