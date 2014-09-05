@@ -1,13 +1,13 @@
 (function (_) {
 
     /**
-     * Transform transform panel
-     * @class GAdjustTransformer
-     * @extends GTransformer
+     * Transform Palette
+     * @class GTransformPalette
+     * @extends GPalette
      * @constructor
      */
-    function GAdjustTransformer() {
-        this._elements = [];
+    function GTransformPalette() {
+        GPalette.call(this);
         this._savedValues = {
             'Move': [0, 0],
             'Scale': [100, 100],
@@ -15,10 +15,14 @@
             'Skew': [0, 0],
             'Reflect': [0]
         };
-    };
-    IFObject.inherit(GAdjustTransformer, GTransformer);
+    }
 
-    GAdjustTransformer._TransformMode = {
+    IFObject.inherit(GTransformPalette, GPalette);
+
+    GTransformPalette.ID = "transform";
+    GTransformPalette.TITLE = new IFLocale.Key(GTransformPalette, "title");
+
+    GTransformPalette._TransformMode = {
         Move: {
             label1: {
                 prefix: 'X'
@@ -142,44 +146,61 @@
      * @type {JQuery}
      * @private
      */
-    GAdjustTransformer.prototype._panel = null;
+    GTransformPalette.prototype._htmlElement = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GAdjustTransformer.prototype._document = null;
+    GTransformPalette.prototype._document = null;
 
     /**
      * @type {Array<IFElement>}
      * @private
      */
-    GAdjustTransformer.prototype._elements = null;
+    GTransformPalette.prototype._elements = null;
 
     /**
-     * @type {GAdjustTransformer._TransformMode}
+     * @type {GTransformPalette._TransformMode}
      * @private
      */
-    GAdjustTransformer.prototype._transformMode = null;
+    GTransformPalette.prototype._transformMode = null;
 
     /**
      * @type {*}
      * @private
      */
-    GAdjustTransformer.prototype._savedValues = null;
+    GTransformPalette.prototype._savedValues = null;
 
     /** @override */
-    GAdjustTransformer.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Adjust';
+    GTransformPalette.prototype.getId = function () {
+        return GTransformPalette.ID;
     };
 
     /** @override */
-    GAdjustTransformer.prototype.init = function (panel) {
-        this._panel = panel;
+    GTransformPalette.prototype.getTitle = function () {
+        return GTransformPalette.TITLE;
+    };
 
-        panel
-            .css('width', '166px')
+    /** @override */
+    GTransformPalette.prototype.getGroup = function () {
+        return "modify";
+    };
+
+
+    /** @override */
+    GTransformPalette.prototype.isEnabled = function () {
+        return this._document !== null && this._elements && this._elements.length > 0;
+    };
+
+    /** @override */
+    GTransformPalette.prototype.init = function (htmlElement, controls) {
+        GPalette.prototype.init.call(this, htmlElement, controls);
+
+        this._htmlElement = htmlElement;
+
+        htmlElement
+            .css('height', '95px')
             .append($('<div></div>')
                 .css({
                     'position': 'absolute',
@@ -271,13 +292,6 @@
                     }.bind(this)))
                 .append($('<span></span>')
                     .attr('data-postfix', '')))
-            .append($('<hr>')
-                .css({
-                    'position': 'absolute',
-                    'left': '0px',
-                    'right': '0px',
-                    'top': '50px'
-                }))
             .append($('<div></div>')
                 .attr('data-property', 'pivot')
                 .css({
@@ -285,7 +299,8 @@
                     'top': '65px',
                     'left': '5px'
                 })
-                .gPivot())
+                .gPivot()
+                .gPivot('value', IFRect.Side.CENTER))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -302,7 +317,7 @@
                     .attr('data-property', 'copies')
                     .val('0')));
 
-        panel.find('button[data-mode]').each(function (index, element) {
+        htmlElement.find('button[data-mode]').each(function (index, element) {
             var $element = $(element);
             $element.on('click', function () {
                 this._setTransformMode($element.attr('data-mode'));
@@ -313,32 +328,68 @@
     };
 
     /** @override */
-    GAdjustTransformer.prototype.update = function (document, elements) {
-        this._document = document;
-        this._elements = elements;
+    GTransformPalette.prototype._documentEvent = function (event) {
+        if (event.type === GApplication.DocumentEvent.Type.Activated) {
+            this._document = event.document;
+            var editor = this._document.getEditor();
 
-        this._panel.find('[data-property="pivot"]').gPivot('value', IFRect.Side.CENTER);
+            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
-        return true;
+            this._updateFromSelection();
+
+            this.trigger(GPalette.UPDATE_EVENT);
+        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var editor = this._document.getEditor();
+
+            // Unsubscribe from the editor's events
+            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+
+            this._document = null;
+            this._elements = null;
+
+            this.trigger(GPalette.UPDATE_EVENT);
+        }
     };
 
-    GAdjustTransformer.prototype._setTransformMode = function (mode) {
+    /**
+     * @private
+     */
+    GTransformPalette.prototype._updateFromSelection = function () {
+        this._elements = null;
+
+        var selection = this._document.getEditor().getSelection();
+
+        if (selection) {
+            for (var i = 0; i < selection.length; ++i) {
+                if (selection[i].hasMixin(IFElement.Transform)) {
+                    if (!this._elements) {
+                        this._elements = [];
+                    }
+                    this._elements.push(selection[i]);
+                }
+            }
+        }
+
+        this.trigger(GPalette.UPDATE_EVENT);
+    };
+
+    GTransformPalette.prototype._setTransformMode = function (mode) {
         if (this._transformMode) {
             this._savedValues[this._transformMode] = [
-                this._panel.find('label[data-value="1"] input').val(),
-                this._panel.find('label[data-value="2"] input').val()
+                this._htmlElement.find('label[data-value="1"] input').val(),
+                this._htmlElement.find('label[data-value="2"] input').val()
             ];
         }
 
         this._transformMode = mode;
 
-        this._panel.find('button[data-mode]').each(function (index, element) {
+        this._htmlElement.find('button[data-mode]').each(function (index, element) {
             var $element = $(element);
             $element.toggleClass('g-active', $element.attr('data-mode') === mode);
         }.bind(this));
 
         var _updateLabel = function (labelInfo, number) {
-            var label = this._panel.find('label[data-value="' + number.toString() + '"]');
+            var label = this._htmlElement.find('label[data-value="' + number.toString() + '"]');
             if (!labelInfo) {
                 label.css('display', 'none');
             } else {
@@ -349,24 +400,24 @@
             }
         }.bind(this);
 
-        var transModeInfo = GAdjustTransformer._TransformMode[mode];
+        var transModeInfo = GTransformPalette._TransformMode[mode];
         _updateLabel(transModeInfo.label1, 1);
         _updateLabel(transModeInfo.label2, 2);
-        this._panel.find('[data-property="pivot"]').css('display', transModeInfo.pivot ? '' : 'none');
+        this._htmlElement.find('[data-property="pivot"]').css('display', transModeInfo.pivot ? '' : 'none');
     };
 
     /**
      * @private
      */
-    GAdjustTransformer.prototype._apply = function () {
+    GTransformPalette.prototype._apply = function () {
         var scene = this._document.getScene();
 
-        var copies = parseInt(this._panel.find('[data-property="copies"]').val());
-        var pivot = this._panel.find('[data-property="pivot"]').gPivot('value');
-        var value1 = this._panel.find('label[data-value="1"] input').val();
-        var value2 = this._panel.find('label[data-value="2"] input').val();
+        var copies = parseInt(this._htmlElement.find('[data-property="copies"]').val());
+        var pivot = this._htmlElement.find('[data-property="pivot"]').gPivot('value');
+        var value1 = this._htmlElement.find('label[data-value="1"] input').val();
+        var value2 = this._htmlElement.find('label[data-value="2"] input').val();
 
-        var transformFunc = GAdjustTransformer._TransformMode[this._transformMode].transformFunc(value1, value2, scene);
+        var transformFunc = GTransformPalette._TransformMode[this._transformMode].transformFunc(value1, value2, scene);
 
         if (transformFunc) {
             // TODO : I18N
@@ -410,14 +461,14 @@
                         transformFunc(1, elementElements[0], pivotPt);
                     }
                 }
-            }.bind(this), 'Adjust Transformation');
+            }.bind(this), 'Apply Transformation');
         }
     };
 
     /** @override */
-    GAdjustTransformer.prototype.toString = function () {
-        return "[Object GAdjustTransformer]";
+    GTransformPalette.prototype.toString = function () {
+        return "[Object GTransformPalette]";
     };
 
-    _.GAdjustTransformer = GAdjustTransformer;
+    _.GTransformPalette = GTransformPalette;
 })(this);

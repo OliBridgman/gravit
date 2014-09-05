@@ -1,18 +1,22 @@
 (function (_) {
 
     /**
-     * Align transform panel
-     * @class GAlignTransformer
-     * @extends GTransformer
+     * Align Palette
+     * @class GAlignPalette
+     * @extends GPalette
      * @constructor
      */
-    function GAlignTransformer() {
-        this._elements = [];
-    };
-    IFObject.inherit(GAlignTransformer, GTransformer);
+    function GAlignPalette() {
+        GPalette.call(this);
+    }
 
+    IFObject.inherit(GAlignPalette, GPalette);
+
+    GAlignPalette.ID = "align";
+    GAlignPalette.TITLE = new IFLocale.Key(GAlignPalette, "title");
+    
     /** @enum */
-    GAlignTransformer._AlignTo = {
+    GAlignPalette._AlignTo = {
         Selection: 'selection',
         Layer: 'layer',
         Page: 'page',
@@ -25,38 +29,55 @@
      * @type {JQuery}
      * @private
      */
-    GAlignTransformer.prototype._panel = null;
+    GAlignPalette.prototype._htmlElement = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GAlignTransformer.prototype._document = null;
+    GAlignPalette.prototype._document = null;
 
     /**
      * @type {Array<IFElement>}
      * @private
      */
-    GAlignTransformer.prototype._elements = null;
+    GAlignPalette.prototype._elements = null;
 
     /**
-     * @type {GAlignTransformer._AlignTo}
+     * @type {GAlignPalette._AlignTo}
      * @private
      */
-    GAlignTransformer.prototype._savedAlignTo = GAlignTransformer._AlignTo.Selection;
+    GAlignPalette.prototype._savedAlignTo = GAlignPalette._AlignTo.Selection;
 
     /** @override */
-    GAlignTransformer.prototype.getCategory = function () {
-        // TODO : I18N
-        return 'Align';
+    GAlignPalette.prototype.getId = function () {
+        return GAlignPalette.ID;
     };
 
     /** @override */
-    GAlignTransformer.prototype.init = function (panel) {
-        this._panel = panel;
+    GAlignPalette.prototype.getTitle = function () {
+        return GAlignPalette.TITLE;
+    };
 
-        panel
-            .css('width', '220px')
+    /** @override */
+    GAlignPalette.prototype.getGroup = function () {
+        return "modify";
+    };
+
+
+    /** @override */
+    GAlignPalette.prototype.isEnabled = function () {
+        return this._document !== null && this._elements && this._elements.length > 0;
+    };
+
+    /** @override */
+    GAlignPalette.prototype.init = function (htmlElement, controls) {
+        GPalette.prototype.init.call(this, htmlElement, controls);
+
+        this._htmlElement = htmlElement;
+
+        htmlElement
+            .css('height', '115px')
             .append($('<div></div>')
                 .css({
                     'position': 'absolute',
@@ -155,13 +176,6 @@
                     .attr('type', 'checkbox')
                     .attr('data-align-geometry', '')
                     .prop('checked', true)))
-            .append($('<hr>')
-                .css({
-                    'position': 'absolute',
-                    'left': '0px',
-                    'right': '0px',
-                    'top': '50px'
-                }))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -179,27 +193,27 @@
                     })
                     .attr('data-option', 'align-to')
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.Selection)
+                        .attr('value', GAlignPalette._AlignTo.Selection)
                         // TODO : I18N
                         .text('Selection'))
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.Layer)
+                        .attr('value', GAlignPalette._AlignTo.Layer)
                         // TODO : I18N
                         .text('Layer'))
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.Page)
+                        .attr('value', GAlignPalette._AlignTo.Page)
                         // TODO : I18N
                         .text('Page'))
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.PageMargins)
+                        .attr('value', GAlignPalette._AlignTo.PageMargins)
                         // TODO : I18N
                         .text('Page Margins'))
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.FirstElement)
+                        .attr('value', GAlignPalette._AlignTo.FirstElement)
                         // TODO : I18N
                         .text('First Element'))
                     .append($('<option></option>')
-                        .attr('value', GAlignTransformer._AlignTo.LastElement)
+                        .attr('value', GAlignPalette._AlignTo.LastElement)
                         // TODO : I18N
                         .text('Last Element'))
                     .on('change', function (evt) {
@@ -227,15 +241,15 @@
             this._executeAction($(evt.target).closest('button').attr('data-dist'), 'dist')
         }.bind(this);
 
-        this._panel.find('button[data-align]').each(function (index, element) {
+        htmlElement.find('button[data-align]').each(function (index, element) {
             $(element).on('click', alignHandler);
         });
 
-        this._panel.find('button[data-dist]').each(function (index, element) {
+        htmlElement.find('button[data-dist]').each(function (index, element) {
             $(element).on('click', distHandler);
         });
 
-        this._panel.find('input[data-dist]').each(function (index, element) {
+        htmlElement.find('input[data-dist]').each(function (index, element) {
             $(element).on('keyup', function (evt) {
                 if (evt.keyCode === 13) {
                     distHandler.call(this, evt);
@@ -245,24 +259,62 @@
     };
 
     /** @override */
-    GAlignTransformer.prototype.update = function (document, elements) {
-        this._document = document;
-        this._elements = elements;
+    GAlignPalette.prototype._documentEvent = function (event) {
+        if (event.type === GApplication.DocumentEvent.Type.Activated) {
+            this._document = event.document;
+            var editor = this._document.getEditor();
+
+            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+
+            this._updateFromSelection();
+
+            this.trigger(GPalette.UPDATE_EVENT);
+        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var editor = this._document.getEditor();
+
+            // Unsubscribe from the editor's events
+            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+
+            this._document = null;
+            this._elements = null;
+
+            this.trigger(GPalette.UPDATE_EVENT);
+        }
+    };
+
+    /**
+     * @private
+     */
+    GAlignPalette.prototype._updateFromSelection = function () {
+        this._elements = null;
+
+        var selection = this._document.getEditor().getSelection();
+
+        if (selection) {
+            for (var i = 0; i < selection.length; ++i) {
+                if (selection[i].hasMixin(IFElement.Transform)) {
+                    if (!this._elements) {
+                        this._elements = [];
+                    }
+                    this._elements.push(selection[i]);
+                }
+            }
+        }
 
         // If selection alignment-to is selected and we have only one
         // element available then we (temporarily) switch to align-to page,
         // otherwise we'll reset to our saved align-to selection
         if (this._elements && this._elements.length === 1) {
-            this._panel.find('select[data-option="align-to"]').val(GAlignTransformer._AlignTo.Page);
+            this._htmlElement.find('select[data-option="align-to"]').val(GAlignPalette._AlignTo.Page);
         } else {
-            this._panel.find('select[data-option="align-to"]').val(this._savedAlignTo)
+            this._htmlElement.find('select[data-option="align-to"]').val(this._savedAlignTo)
         }
 
         this._updateStates();
 
-        return true;
+        this.trigger(GPalette.UPDATE_EVENT);
     };
-
+    
     /**
      * Returns the action args
      * @param {GAlignAction.Type|GDistributeAction.Type} type
@@ -270,50 +322,50 @@
      * @return {{actionId: String, actionParams: Array<*>}}
      * @private
      */
-    GAlignTransformer.prototype._getActionArgs = function (type, mode) {
+    GAlignPalette.prototype._getActionArgs = function (type, mode) {
         // Gather our reference box depending on the selection, first
         var referenceBox = null;
         var elements = this._elements.slice();
         var scene = this._document.getScene();
         var activePage = scene.getActivePage();
         var activeLayer = scene.getActiveLayer();
-        var alignTo = this._panel.find('select[data-option="align-to"]').val();
+        var alignTo = this._htmlElement.find('select[data-option="align-to"]').val();
 
         switch (alignTo) {
-            case GAlignTransformer._AlignTo.Layer:
+            case GAlignPalette._AlignTo.Layer:
                 referenceBox = activeLayer.getPaintBBox();
                 break;
-            case GAlignTransformer._AlignTo.Page:
+            case GAlignPalette._AlignTo.Page:
                 referenceBox = activePage.getGeometryBBox();
                 break;
-            case GAlignTransformer._AlignTo.PageMargins:
+            case GAlignPalette._AlignTo.PageMargins:
                 referenceBox = activePage.getGeometryBBox().expanded(
                     -activePage.getProperty('ml'),
                     -activePage.getProperty('mt'),
                     -activePage.getProperty('mr'),
                     -activePage.getProperty('mb'));
                 break;
-            case GAlignTransformer._AlignTo.FirstElement:
+            case GAlignPalette._AlignTo.FirstElement:
                 referenceBox = elements[0];
                 elements.splice(0);
                 break;
-            case GAlignTransformer._AlignTo.LastElement:
+            case GAlignPalette._AlignTo.LastElement:
                 referenceBox = elements[elements.length - 1];
                 elements.splice(elements.length - 1);
                 break;
         }
 
         if (elements.length > 0) {
-            var geometry = this._panel.find('input[data-align-geometry]').is(':checked');
+            var geometry = this._htmlElement.find('input[data-align-geometry]').is(':checked');
 
             if (mode === 'align') {
-                var compound = alignTo !== GAlignTransformer._AlignTo.Selection ? this._panel.find('input[data-align-selection]').is(':checked') : false;
+                var compound = alignTo !== GAlignPalette._AlignTo.Selection ? this._htmlElement.find('input[data-align-selection]').is(':checked') : false;
                 return {
                     actionId: GAlignAction.ID + '.' + type,
                     actionParams: [elements, compound, geometry, referenceBox]
                 };
             } else if (mode === 'dist') {
-                var spacing = scene.stringToPoint(this._panel.find('input[data-dist="' + type + '"]').val()) || 0;
+                var spacing = scene.stringToPoint(this._htmlElement.find('input[data-dist="' + type + '"]').val()) || 0;
                 return {
                     actionId: GDistributeAction.ID + '.' + type,
                     actionParams: [elements, geometry, referenceBox, spacing]
@@ -328,7 +380,7 @@
      * see _getActionArgs
      * @private
      */
-    GAlignTransformer.prototype._executeAction = function (type, mode) {
+    GAlignPalette.prototype._executeAction = function (type, mode) {
         var actionArgs = this._getActionArgs(type, mode);
         if (actionArgs) {
             gApp.executeAction(actionArgs.actionId, actionArgs.actionParams);
@@ -339,7 +391,11 @@
      * see _getActionArgs
      * @private
      */
-    GAlignTransformer.prototype._isActionEnabled = function (type, mode) {
+    GAlignPalette.prototype._isActionEnabled = function (type, mode) {
+        if (!this.isEnabled()) {
+            return false;
+        }
+
         var actionArgs = this._getActionArgs(type, mode);
         if (actionArgs) {
             return gApp.canExecuteAction(actionArgs.actionId, actionArgs.actionParams);
@@ -348,27 +404,27 @@
     };
 
     /** @private */
-    GAlignTransformer.prototype._updateStates = function () {
-        var alignTo = this._panel.find('select[data-option="align-to"]').val();
-        var compoundCtrls = alignTo !== GAlignTransformer._AlignTo.Selection && this._elements.length > 1;
+    GAlignPalette.prototype._updateStates = function () {
+        var alignTo = this._htmlElement.find('select[data-option="align-to"]').val();
+        var compoundCtrls = alignTo !== GAlignPalette._AlignTo.Selection && this._elements.length > 1;
 
-        this._panel.find('input[data-align-selection]').prop('disabled', !compoundCtrls);
+        this._htmlElement.find('input[data-align-selection]').prop('disabled', !compoundCtrls);
 
-        this._panel.find('[data-align]').each(function (index, element) {
+        this._htmlElement.find('[data-align]').each(function (index, element) {
             var $element = $(element);
             $element.prop('disabled', !this._isActionEnabled($element.attr('data-align'), 'align'));
         }.bind(this));
 
-        this._panel.find('[data-dist]').each(function (index, element) {
+        this._htmlElement.find('[data-dist]').each(function (index, element) {
             var $element = $(element);
             $element.prop('disabled', !this._isActionEnabled($element.attr('data-dist'), 'dist'));
         }.bind(this));
     };
 
     /** @override */
-    GAlignTransformer.prototype.toString = function () {
-        return "[Object GAlignTransformer]";
+    GAlignPalette.prototype.toString = function () {
+        return "[Object GAlignPalette]";
     };
 
-    _.GAlignTransformer = GAlignTransformer;
+    _.GAlignPalette = GAlignPalette;
 })(this);

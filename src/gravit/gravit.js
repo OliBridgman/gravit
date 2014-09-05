@@ -21,6 +21,8 @@
         gravit.palettes.push(
             new GLayersPalette(),
             new GPagesPalette(),
+            new GAlignPalette(),
+            new GTransformPalette(),
             new GExportPalette(),
             new GStylePalette(),
             new GStylesPalette(),
@@ -29,8 +31,7 @@
 
         // Register default panels
         gravit.panels.push(
-            new GPropertiesPanel(),
-            new GTransformPanel()
+            new GPropertiesPanel()
         );
 
         // Register default sidebars
@@ -199,12 +200,6 @@
             new GBlurFilterEntry(),
             new GOffsetVEffectEntry(),
             new GShadowEffectEntry()
-        );
-
-        // Register default transformers
-        gravit.transformers.push(
-            new GAlignTransformer(),
-            new GAdjustTransformer()
         );
 
         // Register default actions

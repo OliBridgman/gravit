@@ -136,15 +136,18 @@
     GPalettes.prototype.setPaletteEnabled = function (paletteId, enabled) {
         var paletteInfo = this._getPaletteInfo(paletteId);
         if (paletteInfo) {
-            var overlay = paletteInfo.panel.find('.panel-disabled-overlay');
-
-            if (enabled && overlay.length > 0) {
-                overlay.remove();
+            if (enabled) {
+                paletteInfo.panel.find('.panel-disabled-overlay').remove();
                 paletteInfo.panel.removeClass('panel-disabled');
-            } else if (!enabled && overlay.length === 0) {
-                overlay = $('<div></div>')
-                    .addClass('panel-disabled-overlay')
-                    .appendTo(paletteInfo.panel);
+            } else {
+                var overlay = paletteInfo.panel.find('.panel-disabled-overlay');
+
+                if (overlay.length === 0) {
+                    overlay = $('<div></div>')
+                        .addClass('panel-disabled-overlay')
+                        .appendTo(paletteInfo.panel);
+                }
+
                 paletteInfo.panel.addClass('panel-disabled');
             }
         }

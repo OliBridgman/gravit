@@ -53,16 +53,17 @@ ifLocale.setValues(GAnalogousMatcher, IFLocale.Language.English, ["title"], ["An
 ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], ["Complementary"]);
 
 // Palette
+ifLocale.setValues(GAlignPalette, IFLocale.Language.English, ["title"], ["Align"]);
 ifLocale.setValues(GExportPalette, IFLocale.Language.English, ["title"], ["Export"]);
 ifLocale.setValues(GLayersPalette, IFLocale.Language.English, ["title"], ["Layers"]);
 ifLocale.setValues(GPagesPalette, IFLocale.Language.English, ["title"], ["Pages"]);
 ifLocale.setValues(GStylePalette, IFLocale.Language.English, ["title"], ["Style"]);
 ifLocale.setValues(GStylesPalette, IFLocale.Language.English, ["title"], ["Styles"]);
 ifLocale.setValues(GSwatchesPalette, IFLocale.Language.English, ["title"], ["Swatches"]);
+ifLocale.setValues(GTransformPalette, IFLocale.Language.English, ["title"], ["Transform"]);
 
 // Panel
 ifLocale.setValues(GPropertiesPanel, IFLocale.Language.English, ["title"], ["Properties"]);
-ifLocale.setValues(GTransformPanel, IFLocale.Language.English, ["title"], ["Transform"]);
 
 // Sidebar
 ifLocale.setValues(GDocumentSidebar, IFLocale.Language.English, ["title"], ["Document Settings"]);
