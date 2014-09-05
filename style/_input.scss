@@ -1,6 +1,6 @@
 @import 'variables';
 
-button, .g-button, input, textArea, select, .g-input {
+button, .g-button, input, textArea, select, .g-input, .g-list {
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -67,7 +67,7 @@ button, .g-button {
   }
 }
 
-select, input, textArea, .g-input {
+select, input, textArea, .g-input, .g-list {
   border-radius: 0px;
   box-shadow: inset 1px 1px 1px $darkShadowColor;
   background: $inputColor;
@@ -143,4 +143,14 @@ input[type=checkbox], input[type=radio] {
       content: $fa-var-toggle-on;
     }
   }
+}
+
+textArea {
+  height: auto;
+}
+
+.g-list {
+  height: auto;
+  padding: 0px;
+  overflow-y: auto;
 }
