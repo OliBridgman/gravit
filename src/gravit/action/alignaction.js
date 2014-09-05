@@ -162,50 +162,75 @@
             for (var i = 0; i < elements.length; ++i) {
                 var bbox = compound ? elementsBBox : elements[i].bbox;
                 var element = elements[i].element;
+                var elemEditor = IFElementEditor.getEditor(element);
 
                 switch (this._type) {
                     case GAlignAction.Type.AlignLeft:
-                        if (referenceBox.getX() !== bbox.getX()) {
-                            element.transform(new IFTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (referenceBox.getX() !== bbox.getX()) {
+                                element.transform(new IFTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignLeft, referenceBox.getX(), null);
                         }
                         break;
 
                     case GAlignAction.Type.AlignCenter:
                         var center = referenceBox.getX() + referenceBox.getWidth() / 2;
-                        if (center !== bbox.getX() + bbox.getWidth() / 2) {
-                            element.transform(new IFTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (center !== bbox.getX() + bbox.getWidth() / 2) {
+                                element.transform(new IFTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignCenter, center, null);
                         }
                         break;
 
                     case GAlignAction.Type.AlignRight:
                         var right = referenceBox.getX() + referenceBox.getWidth();
-                        if (right !== bbox.getX() + bbox.getWidth()) {
-                            element.transform(new IFTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (right !== bbox.getX() + bbox.getWidth()) {
+                                element.transform(new IFTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignRight, right, null);
                         }
                         break;
 
                     case GAlignAction.Type.AlignTop:
-                        if (referenceBox.getY() !== bbox.getY()) {
-                            element.transform(new IFTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (referenceBox.getY() !== bbox.getY()) {
+                                element.transform(new IFTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignTop, null, referenceBox.getY());
                         }
                         break;
 
                     case GAlignAction.Type.AlignMiddle:
                         var center = referenceBox.getY() + referenceBox.getHeight() / 2;
-                        if (center !== bbox.getY() + bbox.getHeight() / 2) {
-                            element.transform(new IFTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (center !== bbox.getY() + bbox.getHeight() / 2) {
+                                element.transform(new IFTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignMiddle, null, center);
                         }
                         break;
 
                     case GAlignAction.Type.AlignBottom:
                         var bottom = referenceBox.getY() + referenceBox.getHeight();
-                        if (bottom !== bbox.getY() + bbox.getHeight()) {
-                            element.transform(new IFTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
+                        if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
+                            if (bottom !== bbox.getY() + bbox.getHeight()) {
+                                element.transform(new IFTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
+                            }
+                        } else {
+                            elemEditor.alignParts(GAlignAction.Type.AlignBottom, null, bottom);
                         }
                         break;
 
                     case GAlignAction.Type.AlignJustifyHorizontal:
-                        if (referenceBox.getX() !== bbox.getX() || bbox.getWidth() !== referenceBox) {
+                        if (referenceBox.getX() !== bbox.getX() || bbox.getWidth() !== referenceBox.getWidth()) {
                             element.transform(
                                 new IFTransform(1, 0, 0, 1, 0, 0)
                                     .translated(-bbox.getX(), -bbox.getY())
@@ -216,7 +241,7 @@
                         break;
 
                     case GAlignAction.Type.AlignJustifyVertical:
-                        if (referenceBox.getY() !== bbox.getY() || bbox.getHeight() !== referenceBox) {
+                        if (referenceBox.getY() !== bbox.getY() || bbox.getHeight() !== referenceBox.getHeight()) {
                             element.transform(
                                 new IFTransform(1, 0, 0, 1, 0, 0)
                                     .translated(-bbox.getX(), -bbox.getY())

@@ -570,6 +570,24 @@
     };
 
     /**
+     * Returns true if aligning of selected parts from element is allowed, and some parts are selected
+     * @returns {Boolean}
+     */
+    IFElementEditor.prototype.isAlignPartsAllowed = function () {
+        return false;
+    };
+
+    /**
+     * Align the selected parts of the element. Should be called only after prior check with isAlignPartsAllowed()
+     * @param {GAlignAction.Type} alignType
+     * @param {Number} posX - the X coordinate of the position to align to, or null if no vertical alignment
+     * @param {Number} posY - the Y coordinate of the position to align to, or null if no horizontal alignment
+     */
+    IFElementEditor.prototype.alignParts = function (alignType, posX, posY) {
+        // NO-OP
+    };
+
+    /**
      * Called whenever information about a part at a given location shall be returned
      * @param {IFPoint} location the location to get a part for in view coordinates
      * @param {IFTransform} transform the current transformation of the view

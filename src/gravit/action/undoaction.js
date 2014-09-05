@@ -73,10 +73,10 @@
      * @override
      */
     GUndoAction.prototype.execute = function () {
-        if (document.activeElement && $(document.activeElement).is(":editable")) {
+        if (document.activeElement && $(document.activeElement).is(":editable") && !$(document.activeElement).is(":button")) {
             document.execCommand('undo');
         } else {
-        gApp.getActiveDocument().getEditor().undoState();
+            gApp.getActiveDocument().getEditor().undoState();
         }/**/
     };
 

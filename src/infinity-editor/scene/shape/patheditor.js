@@ -1056,13 +1056,52 @@
 
     /** override */
     IFPathEditor.prototype.deletePartsSelected = function () {
-        var anchorPts = this._element.getAnchorPoints();
-        for (var i = 0; i < this._partSelection.length; ++i) {
-            if (this._partSelection[i].type == IFPathEditor.PartType.Point) {
-                anchorPts.removeChild(this._partSelection[i].point);
+        if (this._partSelection) {
+            var anchorPts = this._element.getAnchorPoints();
+            for (var i = 0; i < this._partSelection.length; ++i) {
+                if (this._partSelection[i].type == IFPathEditor.PartType.Point) {
+                    anchorPts.removeChild(this._partSelection[i].point);
+                }
+            }
+            this._partSelection = null;
+        }
+    };
+
+    /** override */
+    IFPathEditor.prototype.isAlignPartsAllowed = function () {
+        var res = false;
+        if (this._partSelection && this._partSelection.length) {
+            for (var i = 0; i < this._partSelection.length && !res; ++i) {
+                if (this._partSelection[i].type == IFPathEditor.PartType.Point) {
+                    res = true;
+                }
             }
         }
-        this._partSelection = null;
+        return res;
+    };
+
+    /** override */
+    IFPathEditor.prototype.alignParts = function (alignType, posX, posY) {
+        if (this._partSelection && this._partSelection.length) {
+            var pathTransform = this._element.getTransform();
+            this._element._beginBlockEvents([IFElement.GeometryChangeEvent]);
+            for (var i = 0; i < this._partSelection.length; ++i) {
+                if (i == this._partSelection.length - 1) {
+                    this._element._endBlockEvents([IFElement.GeometryChangeEvent]);
+                }
+                if (this._partSelection[i].type === IFPathEditor.PartType.Point) {
+                    var anchorPt = this._partSelection[i].point;
+                    var sourcePos = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                    if (pathTransform) {
+                        sourcePos = pathTransform.mapPoint(sourcePos);
+                    }
+                    var newPos =
+                        new IFPoint(posX !== null ? posX : sourcePos.getX(), posY !== null ? posY : sourcePos.getY());
+
+                    this.movePoint(anchorPt, newPos);
+                }
+            }
+        }
     };
 
     /**
