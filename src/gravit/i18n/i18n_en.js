@@ -65,4 +65,4 @@ ifLocale.setValues(GPropertiesPanel, IFLocale.Language.English, ["title"], ["Pro
 ifLocale.setValues(GTransformPanel, IFLocale.Language.English, ["title"], ["Transform"]);
 
 // Sidebar
-ifLocale.setValues(GPagesLayersSidebar, IFLocale.Language.English, ["title"], ["Pages & Layers"]);
+ifLocale.setValues(GDocumentSidebar, IFLocale.Language.English, ["title"], ["Document Settings"]);

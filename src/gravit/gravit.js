@@ -35,7 +35,7 @@
 
         // Register default sidebars
         gravit.sidebars.push(
-            new GPagesLayersSidebar()
+            new GDocumentSidebar()
         );
 
         // Register default tools
@@ -182,7 +182,6 @@
             new GInfoProperties(),
             new GStyleProperties(),
             new GShapeProperties(),
-            new GDocumentProperties(),
             new GPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),

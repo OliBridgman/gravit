@@ -1,42 +1,50 @@
 (function (_) {
-
     /**
-     * Document properties panel
-     * @class GDocumentProperties
-     * @extends GProperties
+     * The pages & layers sidebar
+     * @class GDocumentSidebar
+     * @extends GSidebar
      * @constructor
      */
-    function GDocumentProperties() {
-    };
-    IFObject.inherit(GDocumentProperties, GProperties);
+    function GDocumentSidebar() {
+        GSidebar.call(this);
+    }
+
+    IFObject.inherit(GDocumentSidebar, GSidebar);
+
+    GDocumentSidebar.ID = "document";
+    GDocumentSidebar.TITLE = new IFLocale.Key(GDocumentSidebar, "title");
 
     /**
      * @type {JQuery}
      * @private
      */
-    GDocumentProperties.prototype._panel = null;
+    GDocumentSidebar.prototype._htmlElement = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GDocumentProperties.prototype._document = null;
+    GDocumentSidebar.prototype._document = null;
 
     /** @override */
-    GDocumentProperties.prototype.init = function (panel, controls) {
-        this._panel = panel;
+    GDocumentSidebar.prototype.getId = function () {
+        return GDocumentSidebar.ID;
+    };
 
-        $('<button></button>')
-            // TODO : I18N
-            .attr('title', 'More Settings')
-            .on('click', function (evt) {
-                var $target = $(evt.target).closest('button');
-                $target.toggleClass('g-active', !$target.hasClass('g-active'));
-                this._showMore($target.hasClass('g-active'));
-            }.bind(this))
-            .append($('<span></span>')
-                .addClass('fa fa-cog'))
-            .appendTo(controls);
+    /** @override */
+    GDocumentSidebar.prototype.getTitle = function () {
+        return GDocumentSidebar.TITLE;
+    };
+
+    /** @override */
+    GDocumentSidebar.prototype.getIcon = function () {
+        return '<span class="fa fa-fw fa-file-text-o"></span>';
+    };
+
+    /** @override */
+    GDocumentSidebar.prototype.init = function (htmlElement) {
+        GSidebar.prototype.init.call(this, htmlElement);
+        this._htmlElement = htmlElement;
 
         var _createInput = function (property) {
             var self = this;
@@ -220,7 +228,6 @@
                         // TODO : I18N
                         .attr('title', 'Snap Distance'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append($('<h1></h1>')
@@ -228,7 +235,6 @@
                         // TODO : I18N
                         .text('Color'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
@@ -239,7 +245,6 @@
                         // TODO : I18N
                         .attr('title', 'Default Colorspace of document'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append($('<h1></h1>')
@@ -247,7 +252,6 @@
                         // TODO : I18N
                         .text('Pathes'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
@@ -258,7 +262,6 @@
                         // TODO : I18N
                         .attr('title', 'Path for imported image assets'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
@@ -269,7 +272,6 @@
                         // TODO : I18N
                         .attr('title', 'Path for imported font assets'))))
             .append($('<tr></tr>')
-                .attr('data-more', 'yes')
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
@@ -279,25 +281,19 @@
                     .append(_createInput('pathExport')
                         // TODO : I18N
                         .attr('title', 'Path for exported assets'))))
-            .appendTo(panel);
-
-        this._showMore(false);
+            .appendTo(htmlElement);
     };
 
     /** @override */
-    GDocumentProperties.prototype.update = function (document, elements) {
-        if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-            this._document = null;
-        }
-
-        if (elements.length === 1 && elements[0] instanceof IFScene) {
-            this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+    GDocumentSidebar.prototype._documentEvent = function (event) {
+        if (event.type === GApplication.DocumentEvent.Type.Activated) {
+            this._document = event.document;
+            var scene = this._document.getScene();
+            scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
-            return true;
-        } else {
-            return false;
+        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
+            var scene = this._document.getScene();
+            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
         }
     };
 
@@ -305,7 +301,7 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GDocumentProperties.prototype._afterPropertiesChange = function (event) {
+    GDocumentSidebar.prototype._afterPropertiesChange = function (event) {
         if (event.node === this._document.getScene()) {
             this._updateProperties();
         }
@@ -314,23 +310,23 @@
     /**
      * @private
      */
-    GDocumentProperties.prototype._updateProperties = function () {
+    GDocumentSidebar.prototype._updateProperties = function () {
         var scene = this._document.getScene();
-        this._panel.find('select[data-property="unit"]').val(scene.getProperty('unit'));
-        this._panel.find('select[data-property="unitSnap"]').val(scene.getProperty('unitSnap'));
-        this._panel.find('input[data-property="gridSizeX"]').val(scene.pointToString(scene.getProperty('gridSizeX')));
-        this._panel.find('input[data-property="gridSizeY"]').val(scene.pointToString(scene.getProperty('gridSizeY')));
-        this._panel.find('input[data-property="gridActive"]').prop('checked', scene.getProperty('gridActive'));
-        this._panel.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
-        this._panel.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
-        this._panel.find('input[data-property="crConstraint"]').val(
+        this._htmlElement.find('select[data-property="unit"]').val(scene.getProperty('unit'));
+        this._htmlElement.find('select[data-property="unitSnap"]').val(scene.getProperty('unitSnap'));
+        this._htmlElement.find('input[data-property="gridSizeX"]').val(scene.pointToString(scene.getProperty('gridSizeX')));
+        this._htmlElement.find('input[data-property="gridSizeY"]').val(scene.pointToString(scene.getProperty('gridSizeY')));
+        this._htmlElement.find('input[data-property="gridActive"]').prop('checked', scene.getProperty('gridActive'));
+        this._htmlElement.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
+        this._htmlElement.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
+        this._htmlElement.find('input[data-property="crConstraint"]').val(
             ifUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
-        this._panel.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
-        this._panel.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
-        this._panel.find('select[data-property="clspace"]').val(scene.getProperty('clspace'));
-        this._panel.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
-        this._panel.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
-        this._panel.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));
+        this._htmlElement.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
+        this._htmlElement.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
+        this._htmlElement.find('select[data-property="clspace"]').val(scene.getProperty('clspace'));
+        this._htmlElement.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
+        this._htmlElement.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
+        this._htmlElement.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));
     };
 
     /**
@@ -338,7 +334,7 @@
      * @param {*} value
      * @private
      */
-    GDocumentProperties.prototype._assignProperty = function (property, value) {
+    GDocumentSidebar.prototype._assignProperty = function (property, value) {
         this._assignProperties([property], [value]);
     };
 
@@ -347,7 +343,7 @@
      * @param {Array<*>} values
      * @private
      */
-    GDocumentProperties.prototype._assignProperties = function (properties, values) {
+    GDocumentSidebar.prototype._assignProperties = function (properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
@@ -358,17 +354,10 @@
         }
     };
 
-    /** @private */
-    GDocumentProperties.prototype._showMore = function (more) {
-        this._panel.find('[data-more]').each(function (index, element) {
-            $(element).css('display', more ? '' : 'none');
-        });
-    };
-
     /** @override */
-    GDocumentProperties.prototype.toString = function () {
-        return "[Object GDocumentProperties]";
+    GDocumentSidebar.prototype.toString = function () {
+        return "[Object GDocumentSidebar]";
     };
 
-    _.GDocumentProperties = GDocumentProperties;
+    _.GDocumentSidebar = GDocumentSidebar;
 })(this);
