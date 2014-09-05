@@ -78,7 +78,7 @@
         GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._pagesPanel = $('<div></div>')
-            .addClass('pages')
+            .addClass('g-list pages')
             .appendTo(htmlElement);
 
         this._pageAddControl =

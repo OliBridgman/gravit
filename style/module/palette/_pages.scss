@@ -1,7 +1,11 @@
 @import '../../variables';
 
 .palette-pages {
+  padding: 2px;
+
   .pages {
+    height: 110px;
+
     .page-block {
       position: relative;
       width: 100%;
@@ -35,7 +39,7 @@
       }
 
       &:not(:last-child) > div {
-        border-bottom: 1px solid $darkShadowColor;
+        border-bottom: 1px solid $borderColor;
       }
 
       > div:not(.drag-overlay) {
@@ -44,7 +48,7 @@
         padding: 4px 0px;
 
         &.page-visibility, &.page-lock {
-          border-right: 1px solid $darkShadowColor;
+          border-right: 1px solid $borderColor;
           min-width: 21px;
           max-width: 21px;
           text-align: center;
