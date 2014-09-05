@@ -631,7 +631,18 @@
         if (this._mode == IFSelectTool._Mode.Moving) {
             var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-                this._editor.getGuides().getShapeBoxGuide().useExclusions(this._editor.getSelection());
+                var exclusion = this._editor.getSelection();
+                if (this._editorMovePartInfo.id === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
+                    exclusion = [];
+                    exclusion = exclusion.concat(this._editor.getSelection());
+                    var elem = this._editorMovePartInfo.editor.getElement();
+                    for (var i = 0; i < exclusion.length && elem != exclusion[i]; ++i) {
+                    }
+                    if (i < exclusion.length && elem == exclusion[i]) {
+                        exclusion = exclusion.splice(i, 1);
+                    }
+                }
+                this._editor.getGuides().getShapeBoxGuide().useExclusions(exclusion);
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                     position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);
