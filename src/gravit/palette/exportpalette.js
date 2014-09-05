@@ -63,7 +63,7 @@
 
     /** @override */
     GExportPalette.prototype.isEnabled = function () {
-        return this._document !== null;
+        return this._document !== null && this._element !== null;
     };
 
     /** @override */
@@ -124,8 +124,6 @@
             editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._updateFromSelection();
-
-            this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
             var editor = this._document.getEditor();
@@ -134,7 +132,7 @@
             editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._document = null;
-            this._elements = null;
+            this._element = null;
 
             this._updateExports();
 
@@ -168,6 +166,7 @@
         }
 
         this._updateExports();
+        this.trigger(GPalette.UPDATE_EVENT);
     };
 
     GExportPalette.prototype._updateExports = function () {
