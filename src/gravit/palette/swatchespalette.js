@@ -50,7 +50,7 @@
 
     /** @override */
     GSwatchesPalette.prototype.isEnabled = function () {
-        return !!gApp.getActiveDocument();
+        return this._document !== null;
     };
 
     /** @override */

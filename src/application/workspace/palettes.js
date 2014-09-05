@@ -140,10 +140,12 @@
 
             if (enabled && overlay.length > 0) {
                 overlay.remove();
+                paletteInfo.panel.removeClass('panel-disabled');
             } else if (!enabled && overlay.length === 0) {
                 overlay = $('<div></div>')
                     .addClass('panel-disabled-overlay')
                     .appendTo(paletteInfo.panel);
+                paletteInfo.panel.addClass('panel-disabled');
             }
         }
     };

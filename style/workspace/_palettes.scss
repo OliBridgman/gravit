@@ -80,8 +80,8 @@
     .palette-panel {
       position: relative;
 
-      .fa {
-        font-size: 14px;
+      &.panel-disabled {
+        opacity: 0.5;
       }
 
       > .panel-disabled-overlay {
@@ -90,7 +90,6 @@
         height: 100%;
         top: 0px;
         left: 0px;
-        background: rgba(0, 0, 0, 0.5);
       }
     }
   }
