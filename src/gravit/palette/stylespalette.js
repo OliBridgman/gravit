@@ -67,10 +67,9 @@
         this._controls = controls;
 
         this._stylePanel = $('<div></div>')
+            .addClass('g-list styles')
             .gStylePanel({
-                allowNameEdit: true,
-                // TODO : I18N
-                placeholder: 'No Styles'
+                allowNameEdit: true
             })
             .on('stylechange', function (evt, style) {
                 this._document.getScene().getStyleCollection().acceptChildren(function (node) {

@@ -12,10 +12,6 @@
     overflow: hidden;
     border-bottom: 1px solid $darkShadowColor;
 
-    &:last-child, &.collapsed-palette {
-      border-bottom: none;
-    }
-
     > .palette-group-header {
       height: 21px;
       background: $darkColor;
@@ -68,6 +64,16 @@
 
       > :last-child {
         padding-right: 5px;
+      }
+    }
+
+    &.collapsed-palette > .palette-group-header > .palette-group-tabs button {
+      background: transparent;
+
+      &:active, &.g-active {
+        &, * {
+          color: $selectedColor;
+        }
       }
     }
 
