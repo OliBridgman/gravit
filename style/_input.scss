@@ -124,8 +124,11 @@ input[type=checkbox], input[type=radio] {
   vertical-align: middle;
   border: none !important;
   background: transparent !important;
-  margin-right: 0px !important;
   box-shadow: none;
+
+  &:not(:last-child) {
+    margin-right: 0px;
+  }
 
   &:before {
     text-align: right;
@@ -153,4 +156,8 @@ textArea {
   height: auto;
   padding: 0px;
   overflow-y: auto;
+
+  &:not(:last-child) {
+    margin-right: 0px;
+  }
 }
