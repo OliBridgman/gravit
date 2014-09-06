@@ -111,6 +111,35 @@
             .append($('<span></span>')
                 .addClass('fa fa-plus'))
             .appendTo(controls);
+
+        $('<div></div>')
+            .addClass('title')
+            .appendTo(this._htmlElement);
+
+        $('<div></div>')
+            .addClass('g-list export-table')
+            .appendTo(this._htmlElement);
+
+        $('<div></div>')
+            .addClass('controls')
+            .attr('data-action', 'export-all')
+            .append($('<button></button>')
+                .on('click', function () {
+                    var storage = gApp.getMatchingStorage(true, true, null, true, this._document.getStorage());
+                    if (storage) {
+                        storage.openDirectoryPrompt(this._document.getUrl(), function (url) {
+                            var exports = this._element.getProperty('export', true);
+                            for (var i = 0; i < exports.length; ++i) {
+                                var exportRow = exports[i];
+                                var resourceUrl = new URI(url).filename(this._element.getLabel() + exportRow.sf + '.' + exportRow.ex).toString();
+                                this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, storage, resourceUrl, exportRow.ex);
+                            }
+                        }.bind(this));
+                    }
+                }.bind(this))
+                .append($('<span></span>')
+                    .text('Export All...')))
+            .appendTo(this._htmlElement);
     };
 
     /** @override */
@@ -170,7 +199,12 @@
     };
 
     GExportPalette.prototype._updateExports = function () {
-        this._htmlElement.empty();
+        var exportTable = this._htmlElement.find('.export-table');
+        var exportTitle = this._htmlElement.find('.title');
+        exportTable.empty();
+        exportTitle.text('');
+
+        this._htmlElement.find('[data-action="export-all"]').prop('disabled', !this._element);
 
         if (this._element) {
             var name = this._element.getProperty('name');
@@ -182,14 +216,7 @@
             }
             title += ' as:';
 
-            $('<div></div>')
-                .addClass('title')
-                .text(title)
-                .appendTo(this._htmlElement);
-
-            var exportTable = $('<div></div>')
-                .addClass('export-table')
-                .appendTo(this._htmlElement);
+            exportTitle.text(title);
 
             var _addExportRow = function (exportRow, index) {
                 var extSelect = $('<select></select>');
@@ -208,7 +235,7 @@
                     .append($('<div></div>')
                         .addClass('export-cell')
                         .append($('<input>')
-                            .css('width', '8em')
+                            .css('width', '86px')
                             // TODO: I18N
                             .attr('placeholder', 'Size')
                             .val(exportRow.sz)
@@ -216,7 +243,7 @@
                                 exportRow.sz = $(evt.target).val();
                             }))
                         .append($('<input>')
-                            .css('width', '4em')
+                            .css('width', '58px')
                             // TODO: I18N
                             .attr('placeholder', 'Suffix')
                             .val(exportRow.sf)
@@ -234,9 +261,6 @@
                             // TODO : I18N
                             .attr('title', 'Export this item only')
                             .on('click', function () {
-                                //this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, null, '', exportRow.ex);
-
-
                                 var storage = gApp.getMatchingStorage(true, true, exportRow.ex, false, this._document.getStorage());
                                 if (storage) {
                                     storage.saveResourcePrompt(this._document.getUrl(), this._element.getLabel() + exportRow.sf, [exportRow.ex], function (url) {
@@ -262,26 +286,6 @@
                 for (var i = 0; i < exports.length; ++i) {
                     _addExportRow(exports[i], i);
                 }
-
-                $('<div></div>')
-                    .addClass('controls')
-                    .append($('<button></button>')
-                        .on('click', function () {
-                            var storage = gApp.getMatchingStorage(true, true, null, true, this._document.getStorage());
-                            if (storage) {
-                                storage.openDirectoryPrompt(this._document.getUrl(), function (url) {
-                                    var exports = this._element.getProperty('export', true);
-                                    for (var i = 0; i < exports.length; ++i) {
-                                        var exportRow = exports[i];
-                                        var resourceUrl = new URI(url).filename(this._element.getLabel() + exportRow.sf + '.' + exportRow.ex).toString();
-                                        this._getExporterByExt(exportRow.ex).exportPart(this._element, exportRow.sz, storage, resourceUrl, exportRow.ex);
-                                    }
-                                }.bind(this));
-                            }
-                        }.bind(this))
-                        .append($('<span></span>')
-                            .text('Export All...')))
-                    .appendTo(this._htmlElement);
             }
         }
 
