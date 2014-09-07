@@ -1873,7 +1873,7 @@
                 }
             }
             startIdx = j;
-            if (ifMath.isEqualEps(intPts[i].x, segmOrig.next.point.getX(), eps) &&
+            if (segmOrig.next && ifMath.isEqualEps(intPts[i].x, segmOrig.next.point.getX(), eps) &&
                     ifMath.isEqualEps(intPts[i].y, segmOrig.next.point.getY(), eps)) {
 
                 ++startIdx;

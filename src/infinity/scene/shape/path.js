@@ -7,8 +7,11 @@
      * @constructor
      */
     function IFPath(closed, evenOdd, anchorPoints) {
-        IFPathBase.call(this, closed, evenOdd, anchorPoints);
+        IFPathBase.call(this, evenOdd, anchorPoints);
         this._setDefaultProperties(IFPath.GeometryProperties);
+        if (closed) {
+            this.setProperty('closed', closed);
+        }
     }
 
     IFNode.inherit("path", IFPath, IFPathBase);
@@ -109,7 +112,7 @@
 
         var hitResult = new IFVertexInfo.HitResult();
         var elemHitRes = null;
-        var outlineWidth = scaleFactor + tolerance * 2;
+        var outlineWidth = scaleFactor * tolerance * 2;
 
         if (ifVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {

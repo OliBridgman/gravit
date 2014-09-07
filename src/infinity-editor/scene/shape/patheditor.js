@@ -194,8 +194,8 @@
                         }
                     }
                 } else if (selectedPartId.type === IFPathEditor.PartType.Segment && partId &&
-                    this._partIdAreEqual(selectedPartId, partId) &&
-                    partData.type == IFPathEditor.SegmentData.Handles) {
+                        this._partIdAreEqual(selectedPartId, partId) &&
+                        partData.type == IFPathEditor.SegmentData.Handles) {
 
                     var apLeftPreview = this.getPathPointPreview(selectedPartId.apLeft);
                     var apRightPreview = this.getPathPointPreview(selectedPartId.apRight);

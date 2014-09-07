@@ -59,6 +59,24 @@
         return styleSet;
     };
 
+    /**
+     * Replaces the shape's style set with the new one
+     * @param {IFShape._StyleSet} [styleSet] a new style set; may be null, then the old style set will be cleaned
+     */
+    IFShape.prototype.setStyleSet = function (styleSet) {
+        var oldStyleSet = this.getStyleSet();
+        if (styleSet && styleSet instanceof IFShape._StyleSet) {
+            // Insert the ne styleSet at the place of previous one
+            var nextItem = oldStyleSet.getNext(true);
+            this.removeChild(oldStyleSet);
+            this.insertChild(styleSet, nextItem);
+            this._styleSet = styleSet;
+        } else {
+            this.removeChild(oldStyleSet);
+            this._styleSet = null;
+        }
+    };
+
     /** @override */
     IFShape.prototype.getTransform = function () {
         return this.$trf;

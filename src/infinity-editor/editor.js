@@ -932,6 +932,66 @@
     };
 
     /**
+     * Convert selected PathBase descendant shapes into Path elements
+     * @param {Boolean} [noTransaction] if true, will not create a
+     * transaction (undo/redo), defaults to false
+     */
+    IFEditor.prototype.convertSelectionToPaths = function (noTransaction) {
+        var shapesToTransform = [];
+        var newSelection = [];
+        if (this._selection && this._selection.length) {
+            for (var i = 0; i < this._selection.length; ++i) {
+                var elem = this._selection[i];
+                if (elem instanceof IFPathBase && !(elem instanceof IFPath)) {
+                    shapesToTransform.push(elem);
+                } else {
+                    newSelection.push(elem);
+                }
+            }
+        }
+        if (shapesToTransform.length) {
+            if (!noTransaction) {
+                this.beginTransaction();
+            }
+            this._beginSelectionUpdate();
+            try {
+                this.updateSelection(false, shapesToTransform);
+                var newElems = [];
+                for (var i = 0; i < shapesToTransform.length; ++i) {
+                    var shape = shapesToTransform[i];
+                    if (!shape.hasFlag(IFElement.Flag.Locked)) {
+                        shape.removeFlag(IFNode.Flag.Selected);
+                        var parent = shape.getParent();
+                        var next = shape.getNext(true);
+                        parent.removeChild(shape);
+
+                        var anchorPoints = shape.clearAnchorPoints();
+                        var path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'),
+                            anchorPoints);
+                        path.setTransform(shape.getTransform());
+                        var styles = shape.getStyleSet();
+                        shape.setStyleSet(null);
+                        path.setStyleSet(styles);
+                        var pathEditor = new IFPathEditor(path);
+                        shape = null;
+
+                        parent.insertChild(path, next);
+                        newSelection.push(path);
+                    }
+                }
+                shapesToTransform = null;
+                this.updateSelection(false, newSelection);
+            } finally {
+                this._finishSelectionUpdate();
+                if (!noTransaction) {
+                    // TODO : I18N
+                    this.commitTransaction('Convert to Path(s)');
+                }
+            }
+        }
+    };
+
+    /**
      * Does various work when the mouse was pressed somewhere to update for
      * example the currently active page. Does nothing on single page mode
      * @param {IFPoint} position the mouse position

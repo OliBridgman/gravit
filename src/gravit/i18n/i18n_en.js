@@ -2,6 +2,7 @@
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.align-left", "title.align-center", "title.align-right", "title.align-top", "title.align-middle", "title.align-bottom", "title.align-justify-horizontal", "title.align-justify-vertical"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom", "Justify Horizontal", "Justify Vertical"]);
+ifLocale.setValues(GConvertToPathAction, IFLocale.Language.English, ["title"], ["Convert Selection to Path(s)"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);

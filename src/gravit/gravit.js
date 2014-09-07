@@ -233,6 +233,7 @@
 
             new GDuplicateAction(),
             new GCloneAction(),
+            new GConvertToPathAction(),
 
             new GSelectAllAction(),
             new GInvertSelectionAction(),

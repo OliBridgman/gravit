@@ -6,14 +6,18 @@
      * @extends IFShape
      * @constructor
      */
-    function IFPathBase() {
+    function IFPathBase(evenOdd, anchorPoints) {
         IFShape.call(this);
 
         this._setDefaultProperties(IFPathBase.VisualProperties);
+        if (evenOdd !== null) {
+            this.$evenodd = evenOdd;
+        }
 
         // Add anchor points
-        this._anchorPoints = new IFPathBase.AnchorPoints();
+        this._anchorPoints = anchorPoints ? anchorPoints : new IFPathBase.AnchorPoints();
         this.appendChild(this._anchorPoints);
+        this._anchorPoints._removalAllowed = false;
 
         this._vertices = new IFVertexContainer();
         this._verticesDirty = true;
@@ -811,6 +815,13 @@
      */
     IFPathBase.AnchorPoints.prototype._dirtyNext = null;
 
+    /**
+     * Used to disallow anchor points removal
+     * @type {Boolean}
+     * @private
+     */
+    IFPathBase.AnchorPoints.prototype._removalAllowed = false;
+
     /** @override */
     IFPathBase.AnchorPoints.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFPathBase;
@@ -818,7 +829,7 @@
 
     /** @override */
     IFPathBase.AnchorPoints.prototype.validateRemoval = function () {
-        return false;
+        return this._removalAllowed ? this._removalAllowed : false;
     };
 
     /**
@@ -1532,6 +1543,21 @@
             return true;
         }
         return false;
+    };
+
+    /**
+     * Creates a new empty anchor points set, and returns the old anchor points
+     * @returns {IFPathBase.AnchorPoints} old anchor points
+     */
+    IFPathBase.prototype.clearAnchorPoints = function () {
+        var anchorPoints = this._anchorPoints;
+        this._anchorPoints._removalAllowed = true;
+        var next = this._anchorPoints.getNext(true);
+        this.removeChild(this._anchorPoints);
+        this._anchorPoints = new IFPathBase.AnchorPoints();
+        this.appendChild(this._anchorPoints);
+
+        return anchorPoints;
     };
 
     /** @override */
