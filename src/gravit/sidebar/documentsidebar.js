@@ -57,22 +57,11 @@
                         self._assignProperty(property, $(this).val());
                     });
             } else if (property === 'unitSnap') {
-                return $('<select></select>')
+                return $('<input>')
+                    .attr('type', 'checkbox')
                     .attr('data-property', property)
-                    .append($('<option></option>')
-                        .attr('value', IFScene.UnitSnap.None)
-                        // TODO : I18N
-                        .text('None'))
-                    .append($('<option></option>')
-                        .attr('value', IFScene.UnitSnap.Full)
-                        // TODO : I18N
-                        .text('Full'))
-                    .append($('<option></option>')
-                        .attr('value', IFScene.UnitSnap.Half)
-                        // TODO : I18N
-                        .text('Half'))
                     .on('change', function () {
-                        self._assignProperty(property, $(this).val());
+                        self._assignProperty(property, $(this).is(':checked'));
                     });
             } else if (property === 'gridSizeX' || property === 'gridSizeY') {
                 return $('<input>')
@@ -150,7 +139,7 @@
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
-                    .css('width', '100%')
+                    .css('width', '8em')
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
@@ -161,7 +150,9 @@
 
         $('<table></table>')
             .addClass('g-form')
-            .css('margin', '0px auto')
+            .css({
+                'margin': '5px auto'
+            })
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -170,7 +161,9 @@
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append(_createInput('unit'))
-                    .append(_createInput('unitSnap'))))
+                    .append(_createInput('unitSnap')
+                        // TODO : I18N
+                        .attr('title', 'Snap to Units'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
                     .addClass('label')
@@ -185,11 +178,11 @@
                         .attr('title', 'Vertical Grid-Size')))
                 .append($('<td></td>')
                     .attr('colspan', '2')
-                    .css('text-align', 'right')
-                    .append(_createInput('gridActive'))))
+                    .append(_createInput('gridActive')
+                        .attr('title', 'Show Grid'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', 4)
+                    .attr('colspan', '4')
                     .append($('<h1></h1>')
                         .addClass('g-divider')
                         // TODO : I18N
@@ -229,13 +222,6 @@
                         .attr('title', 'Snap Distance'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append($('<h1></h1>')
-                        .addClass('g-divider')
-                        // TODO : I18N
-                        .text('Color'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
                     .text('Color:'))
@@ -246,7 +232,7 @@
                         .attr('title', 'Default Colorspace of document'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .attr('colspan', '3')
+                    .attr('colspan', '4')
                     .append($('<h1></h1>')
                         .addClass('g-divider')
                         // TODO : I18N
@@ -255,7 +241,7 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Images'))
+                    .text('Images:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append(_createInput('pathImage')
@@ -265,7 +251,7 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Fonts'))
+                    .text('Fonts:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append(_createInput('pathFont')
@@ -275,7 +261,7 @@
                 .append($('<td></td>')
                     .addClass('label')
                     // TODO : I18N
-                    .text('Export'))
+                    .text('Export:'))
                 .append($('<td></td>')
                     .attr('colspan', '3')
                     .append(_createInput('pathExport')
@@ -321,7 +307,7 @@
     GDocumentSidebar.prototype._updateProperties = function () {
         var scene = this._document.getScene();
         this._htmlElement.find('select[data-property="unit"]').val(scene.getProperty('unit'));
-        this._htmlElement.find('select[data-property="unitSnap"]').val(scene.getProperty('unitSnap'));
+        this._htmlElement.find('input[data-property="unitSnap"]').prop('checked', scene.getProperty('unitSnap'));
         this._htmlElement.find('input[data-property="gridSizeX"]').val(scene.pointToString(scene.getProperty('gridSizeX')));
         this._htmlElement.find('input[data-property="gridSizeY"]').val(scene.pointToString(scene.getProperty('gridSizeY')));
         this._htmlElement.find('input[data-property="gridActive"]').prop('checked', scene.getProperty('gridActive'));

@@ -19,24 +19,6 @@
 
     IFNode.inheritAndMix("scene", IFScene, IFElement, [IFNode.Container, IFNode.Properties, IFNode.Store, IFEventTarget]);
 
-    /** @enum */
-    IFScene.UnitSnap = {
-        /**
-         * No unit snapping
-         */
-        None: 'N',
-
-        /**
-         * Snap to full units
-         */
-        Full: 'F',
-
-        /**
-         * Snap to half units
-         */
-        Half: 'H'
-    };
-
     /**
      * The padding between pages
      * @type {number}
@@ -59,8 +41,8 @@
         clspace: IFColorSpace.RGB,
         /** The unit used externally */
         unit: IFLength.Unit.PT,
-        /** The unit snap-mode (IFScene.UnitSnap) */
-        unitSnap: IFScene.UnitSnap.Full,
+        /** Whether to snap to units or not */
+        unitSnap: true,
         /** The snap distance */
         snapDist: 5,
         /** The pick distance */
