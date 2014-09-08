@@ -37,9 +37,8 @@ version.
 + assets - contains all relevant assets like fonts, images, etc.
 + shell - contains platform-specific code for standalone version
 + src - contains all source code
-  + application - contains the application framework
+  + gravit - contains the gravit application
   + development - contains the development addon automatically loaded when developing
-  + gravit - contains the core module that is loaded by the application and provides all UI of Gravit
   + infinity - contains the core rendering engine as well as core classes used everywhere else
   + infinity-editor - contains editors, tools, guides and more based on infinity
 + style - contains all styling files for the application
@@ -51,8 +50,9 @@ Issues are being tracked here on GitHub.
 
 ## License
 
-`Gravit`'s code in this repo uses the GPL license, see our `LICENSE` file for detailed information.
-The name Gravit and the Gravit Logo as well as all related logos are exclusive trademarks of
-Quasado GmbH, Quasado e.K. and may not be used without prior written permission.
+`Gravit`'s code in this repo uses the GPL license, see our `LICENSE` file for detailed information
+and more detailed license restrictions.
+The name Gravit, the Gravit Logo, the Gravit GUI as well as all related logos are exclusive trademarks
+of Quasado e.K. and may not be used without prior written permission.
 
 `Gravit`'s code is also available as a commercial license. For more information, contact us.

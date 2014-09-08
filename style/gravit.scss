@@ -28,15 +28,12 @@
 @import 'workspace/windows';
 @import 'workspace/palettes';
 
-// Gravit Module
+// Framework
+@import 'framework/palette/export';
+@import 'framework/palette/layers';
+@import 'framework/palette/pages';
+@import 'framework/palette/style';
+@import 'framework/palette/styles';
+@import 'framework/palette/swatches';
 
-@import 'module/sidebar/pageslayerssidebar';
-
-@import 'module/palette/export';
-@import 'module/palette/layers';
-@import 'module/palette/pages';
-@import 'module/palette/style';
-@import 'module/palette/styles';
-@import 'module/palette/swatches';
-
-@import 'module/panel/properties';
+@import 'framework/panel/properties';

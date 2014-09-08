@@ -1,17 +1,17 @@
 (function (_) {
     /**
-     * Gravit Core Module
-     * @class GravitModule
+     * Gravit Framework Module
+     * @class FrameworkModule
      * @constructor
      * @extends GModule
      */
-    function GravitModule() {
+    function FrameworkModule() {
     }
 
-    IFObject.inherit(GravitModule, GModule);
+    IFObject.inherit(FrameworkModule, GModule);
 
     /** @override */
-    GravitModule.prototype.init = function () {
+    FrameworkModule.prototype.init = function () {
         // Register default exporters
         gravit.exporters.push(
             new GImageExporter()
@@ -318,9 +318,9 @@
     };
 
     /** @override */
-    GravitModule.prototype.toString = function () {
+    FrameworkModule.prototype.toString = function () {
         return '[Module Gravit]';
     };
 
-    gravit.modules.push(new GravitModule());
+    gravit.modules.push(new FrameworkModule());
 })(this);
