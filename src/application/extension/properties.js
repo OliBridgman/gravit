@@ -3,7 +3,7 @@
     /**
      * Base class for property panels
      * @class GProperties
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      */
     function GProperties() {

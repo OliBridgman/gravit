@@ -2,12 +2,12 @@
     /**
      * The global shell class
      * @class GShell
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      */
     function GShell() {
     };
-    IFObject.inherit(GShell, GEventTarget);
+    IFObject.inherit(GShell, IFEventTarget);
 
     /**
      * Called to check whether shell is in development mode or not

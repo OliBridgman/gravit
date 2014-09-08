@@ -3,7 +3,7 @@
      * The manager for tools
      * @class IFToolManager
      * @extends IFObject
-     * @mixes GEventTarget
+     * @mixes IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -13,7 +13,7 @@
         this._paintLink = this._paint.bind(this);
     }
 
-    IFObject.inheritAndMix(IFToolManager, IFObject, [GEventTarget]);
+    IFObject.inheritAndMix(IFToolManager, IFObject, [IFEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFToolManager.ToolChangedEvent Event
@@ -23,7 +23,7 @@
      * @param {IFTool} previousTool previous tool instance, may be null for no previous tool
      * @param {IFTool} newTool new tool instance, may be null for deactivation only
      * @class IFToolManager.ToolChangedEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
@@ -31,7 +31,7 @@
         this.previousTool = previousTool;
         this.newTool = newTool;
     };
-    IFObject.inherit(IFToolManager.ToolChangedEvent, GEvent);
+    IFObject.inherit(IFToolManager.ToolChangedEvent, IFEvent);
 
     /** @type IFTool */
     IFToolManager.ToolChangedEvent.prototype.previousTool = null;

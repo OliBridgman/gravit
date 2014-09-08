@@ -1,15 +1,15 @@
 (function (_) {
     /**
      * An object representing a key input event.
-     * @class GUIKeyEvent
-     * @extends GUIInputEvent
+     * @class IFKeyEvent
+     * @extends IFInputEvent
      * @constructor
      * @version 1.0
      */
-    function GUIKeyEvent() {
+    function IFKeyEvent() {
     }
 
-    IFObject.inherit(GUIKeyEvent, GUIInputEvent);
+    IFObject.inherit(IFKeyEvent, IFInputEvent);
 
     /**
      * The key for the key event. Might either be one of IFKey.Constant (number)
@@ -18,81 +18,81 @@
      * @version 1.0
      * @see IFKey.Constant
      */
-    GUIKeyEvent.prototype.key = null;
+    IFKeyEvent.prototype.key = null;
 
     /** @override */
-    GUIKeyEvent.prototype.toString = function () {
-        return "[Object GUIKeyEvent(" + this._paramsToString() + ")]";
+    IFKeyEvent.prototype.toString = function () {
+        return "[Object IFKeyEvent(" + this._paramsToString() + ")]";
     };
 
     /** @override */
-    GUIKeyEvent.prototype.GUIKeyEvent = function () {
+    IFKeyEvent.prototype.IFKeyEvent = function () {
         return "key=" + this.key;
     }
 
-    _.GUIKeyEvent = GUIKeyEvent;
+    _.IFKeyEvent = IFKeyEvent;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIKeyEvent.Down
+    // IFKeyEvent.Down
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key down event.
-     * @class GUIKeyEvent.Down
-     * @extends GUIKeyEvent
+     * @class IFKeyEvent.Down
+     * @extends IFKeyEvent
      * @constructor
      * @version 1.0
      */
-    GUIKeyEvent.Down = function () {
+    IFKeyEvent.Down = function () {
     }
-    IFObject.inherit(GUIKeyEvent.Down, GUIKeyEvent);
+    IFObject.inherit(IFKeyEvent.Down, IFKeyEvent);
 
 
     /** @override */
-    GUIKeyEvent.Down.prototype.toString = function () {
-        return "[Object GUIKeyEvent.Down(" + this._paramsToString() + ")]";
+    IFKeyEvent.Down.prototype.toString = function () {
+        return "[Object IFKeyEvent.Down(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIKeyEvent.Release
+    // IFKeyEvent.Release
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key release event.
-     * @class GUIKeyEvent.Release
-     * @extends GUIKeyEvent
+     * @class IFKeyEvent.Release
+     * @extends IFKeyEvent
      * @constructor
      * @version 1.0
      */
-    GUIKeyEvent.Release = function () {
+    IFKeyEvent.Release = function () {
     }
-    IFObject.inherit(GUIKeyEvent.Release, GUIKeyEvent);
+    IFObject.inherit(IFKeyEvent.Release, IFKeyEvent);
 
 
     /** @override */
-    GUIKeyEvent.Release.prototype.toString = function () {
-        return "[Object GUIKeyEvent.Release(" + this._paramsToString() + ")]";
+    IFKeyEvent.Release.prototype.toString = function () {
+        return "[Object IFKeyEvent.Release(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIKeyEvent.Press
+    // IFKeyEvent.Press
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key press event.
-     * @class GUIKeyEvent.Press
-     * @extends GUIKeyEvent
+     * @class IFKeyEvent.Press
+     * @extends IFKeyEvent
      * @constructor
      * @version 1.0
      */
-    GUIKeyEvent.Press = function () {
+    IFKeyEvent.Press = function () {
     }
-    IFObject.inherit(GUIKeyEvent.Press, GUIKeyEvent);
+    IFObject.inherit(IFKeyEvent.Press, IFKeyEvent);
 
 
     /** @override */
-    GUIKeyEvent.Press.prototype.toString = function () {
-        return "[Object GUIKeyEvent.Press(" + this._paramsToString() + ")]";
+    IFKeyEvent.Press.prototype.toString = function () {
+        return "[Object IFKeyEvent.Press(" + this._paramsToString() + ")]";
     };
 
 })(this);

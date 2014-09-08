@@ -3,7 +3,7 @@
      * The guide manager
      * @param {IFScene} scene
      * @class IFGuides
-     * @extend GEventTarget
+     * @extend IFEventTarget
      * @constructor
      */
     function IFGuides(scene) {
@@ -20,7 +20,7 @@
         this._addGuide(new IFUnitGuide(this));
     }
 
-    IFObject.inherit(IFGuides, GEventTarget);
+    IFObject.inherit(IFGuides, IFEventTarget);
 
     /**
      * The length of snap zone lines in pixels
@@ -35,13 +35,13 @@
      * An event for an invalidation request event
      * @param {IFRect} [area] the area to invalidate
      * @class IFGuides.InvalidationRequestEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFGuides.InvalidationRequestEvent = function (area) {
         this.area = area;
     };
-    IFObject.inherit(IFGuides.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFGuides.InvalidationRequestEvent, IFEvent);
 
     /** @type {IFRect} */
     IFGuides.InvalidationRequestEvent.prototype.area = null;

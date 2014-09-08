@@ -27,18 +27,18 @@
     IFHandTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
-        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(IFMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd, this);
     };
 
     /** @override */
     IFHandTool.prototype.deactivate = function (view) {
         IFTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(IFMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd);
     };
 
     /** @override */
@@ -48,7 +48,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragStart} event
+     * @param {IFMouseEvent.DragStart} event
      * @private
      */
     IFHandTool.prototype._mouseDragStart = function (event) {
@@ -57,7 +57,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag} event
+     * @param {IFMouseEvent.Drag} event
      * @private
      */
     IFHandTool.prototype._mouseDrag = function (event) {
@@ -67,7 +67,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragEnd} event
+     * @param {IFMouseEvent.DragEnd} event
      * @private
      */
     IFHandTool.prototype._mouseDragEnd = function (event) {

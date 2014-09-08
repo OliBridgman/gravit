@@ -15,20 +15,20 @@
     /** @override */
     IFBezigonTool.prototype.activate = function (view) {
         IFPathTool.prototype.activate.call(this, view);
-        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(IFMouseEvent.Move, this._mouseMove, this);
         this._checkMode();
     };
 
     /** @override */
     IFBezigonTool.prototype.deactivate = function (view) {
         IFPathTool.prototype.deactivate.call(this, view);
-        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
+        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(IFMouseEvent.Move, this._mouseMove);
     };
 
     /**
-     * @param {GUIMouseEvent.Down} event
+     * @param {IFMouseEvent.Down} event
      * @private
      */
     IFBezigonTool.prototype._mouseDown = function (event) {
@@ -49,8 +49,8 @@
         this._newPoint = null;
         this._editPt = null;
 
-        if (event.button == GUIMouseEvent.BUTTON_LEFT ||
-            event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
+        if (event.button == IFMouseEvent.BUTTON_LEFT ||
+            event.button == IFMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
             this._released = false;
 
             this._blockDeactivation();
@@ -118,12 +118,12 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Move} event
+     * @param {IFMouseEvent.Move} event
      * @private
      */
     IFBezigonTool.prototype._mouseMove = function (event) {
         if (!this._released) {
-            if (event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
+            if (event.button == IFMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
                 this._mouseDrag(event);
             }
             return;
@@ -134,7 +134,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag | GUIMouseEvent.Move} event
+     * @param {IFMouseEvent.Drag | IFMouseEvent.Move} event
      * @private
      */
     IFBezigonTool.prototype._mouseDrag = function (event) {
@@ -176,7 +176,7 @@
 
     /**
      * Constructs new point, specific to Bezigon Tool, with the given position
-     * @param {GUIMouseEvent} event used to define pressed button
+     * @param {IFMouseEvent} event used to define pressed button
      * @param {IFPoint} pt - coordinates to be used for new position in world system
      * @returns {IFPath.AnchorPoint} newly created anchor point
      * @private
@@ -185,7 +185,7 @@
         var anchorPt = new IFPath.AnchorPoint();
         anchorPt.setProperties(['x', 'y', 'ah'], [pt.getX(), pt.getY(), true]);
 
-        if (event.button == GUIMouseEvent.BUTTON_LEFT) {
+        if (event.button == IFMouseEvent.BUTTON_LEFT) {
             if (ifPlatform.modifiers.optionKey) {
                 anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
             } else {

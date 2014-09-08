@@ -4,7 +4,7 @@
      * like handling selection, keeping undo/redo information and more.
      * @param {IFScene} scene the scene this editor works on
      * @class IFEditor
-     * @extend GEventTarget
+     * @extend IFEventTarget
      * @constructor
      */
     function IFEditor(scene) {
@@ -31,7 +31,7 @@
             }
         }
     };
-    IFObject.inherit(IFEditor, GEventTarget);
+    IFObject.inherit(IFEditor, IFEventTarget);
 
     IFEditor.options = {
         /** Maximum number of undo-steps */
@@ -90,12 +90,12 @@
     /**
      * An event whenever the selection has been changed
      * @class IFEditor.SelectionChangedEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFEditor.SelectionChangedEvent = function () {
     };
-    IFObject.inherit(IFEditor.SelectionChangedEvent, GEvent);
+    IFObject.inherit(IFEditor.SelectionChangedEvent, IFEvent);
 
     /** @override */
     IFEditor.SelectionChangedEvent.prototype.toString = function () {
@@ -110,14 +110,14 @@
     /**
      * An event providing inline editor events
      * @class IFEditor.InlineEditorEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFEditor.InlineEditorEvent = function (editor, type) {
         this.editor = editor;
         this.type = type;
     };
-    IFObject.inherit(IFEditor.InlineEditorEvent, GEvent);
+    IFObject.inherit(IFEditor.InlineEditorEvent, IFEvent);
 
     /**
      * Enum of inline editor event types
@@ -173,14 +173,14 @@
      * @param {IFElementEditor} editor the requesting editor
      * @param {*} [args] optional arguments to be passed back to editor
      * @class IFEditor.InvalidationRequestEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFEditor.InvalidationRequestEvent = function (editor, args) {
         this.editor = editor;
         this.args = args;
     };
-    IFObject.inherit(IFEditor.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFEditor.InvalidationRequestEvent, IFEvent);
 
     /** @type {IFElementEditor} */
     IFEditor.InvalidationRequestEvent.prototype.editor = null;

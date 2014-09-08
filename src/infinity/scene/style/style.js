@@ -22,13 +22,13 @@
      * An event for a style change notification sent via a scene
      * @param {IFStyle} style the style that has changed
      * @class IFStyle.StyleChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFStyle.StyleChangeEvent = function (style) {
         this.style = style;
     };
-    IFObject.inherit(IFStyle.StyleChangeEvent, GEvent);
+    IFObject.inherit(IFStyle.StyleChangeEvent, IFEvent);
 
     /**
      * The style that has been changed

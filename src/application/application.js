@@ -2,7 +2,7 @@
     /**
      * The global application class
      * @class GApplication
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -38,7 +38,7 @@
             }
         }, true);
     };
-    IFObject.inherit(GApplication, GEventTarget);
+    IFObject.inherit(GApplication, IFEventTarget);
 
     // Constants for pre-defined action categories
     GApplication.CATEGORY_FILE = new IFLocale.Key(GApplication, "category.file");
@@ -91,14 +91,14 @@
     /**
      * An event whenever a document event occurrs
      * @class GApplication.DocumentEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     GApplication.DocumentEvent = function (type, document) {
         this.type = type;
         this.document = document;
     };
-    IFObject.inherit(GApplication.DocumentEvent, GEvent);
+    IFObject.inherit(GApplication.DocumentEvent, IFEvent);
 
     /**
      * Enumeration of view event types

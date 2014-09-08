@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * A mixin representing the target of an event.
-     * @class GEventTarget
+     * @class IFEventTarget
      * @mixin
      * @constructor
      * @version 1.0
      */
-    function GEventTarget() {
+    function IFEventTarget() {
     }
 
     /**
      * @type Object
      * @private
      */
-    GEventTarget.prototype._listeners = null;
+    IFEventTarget.prototype._listeners = null;
 
     /**
      * Add a new listener for a specific eventClass to this object
@@ -23,7 +23,7 @@
      * @param {Array} [args] optional arguments to be prepended to the listener call
      * @version 1.0
      */
-    GEventTarget.prototype.addEventListener = function (eventClass, listener, target, args) {
+    IFEventTarget.prototype.addEventListener = function (eventClass, listener, target, args) {
         var event_id = IFObject.getTypeId(eventClass);
 
         if (!this._listeners) {
@@ -58,7 +58,7 @@
      * @param {Object} [target] optional target ("this") for the listener
      * @version 1.0
      */
-    GEventTarget.prototype.removeEventListener = function (eventClass, listener, target) {
+    IFEventTarget.prototype.removeEventListener = function (eventClass, listener, target) {
         var event_id = IFObject.getTypeId(eventClass);
 
         if (this._listeners && event_id in this._listeners) {
@@ -81,7 +81,7 @@
      * @returns {Boolean} true if there's at least one listener, false if not
      * @version 1.0
      */
-    GEventTarget.prototype.hasEventListeners = function (eventClass) {
+    IFEventTarget.prototype.hasEventListeners = function (eventClass) {
         var event_id = IFObject.getTypeId(eventClass);
         return this._listeners && event_id in this._listeners ? true : false;
     };
@@ -89,11 +89,11 @@
     /**
      * Trigger an event for this object. Note: You should always check if there
      * is an event listener registered for the given event before triggering.
-     * @param {GEvent} event the event to trigger
+     * @param {IFEvent} event the event to trigger
      * @see hasEventListeners
      * @version 1.0
      */
-    GEventTarget.prototype.trigger = function (event) {
+    IFEventTarget.prototype.trigger = function (event) {
         if (this._listeners) {
             var event_id = IFObject.getTypeId(event);
             if (event_id in this._listeners) {
@@ -106,5 +106,5 @@
         }
     };
 
-    _.GEventTarget = GEventTarget;
+    _.IFEventTarget = IFEventTarget;
 })(this);

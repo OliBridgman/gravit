@@ -9,7 +9,7 @@
     function IFEditorFrontStage(view) {
         IFStage.call(this, view);
         view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
-        view.addEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
+        view.addEventListener(IFMouseEvent.Release, this._cleanGuides, this);
         view.getEditor().getGuides().addEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
         //view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
@@ -20,7 +20,7 @@
         this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
         this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
         //this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
-        this._view.removeEventListener(GUIMouseEvent.Release, this._cleanGuides, this);
+        this._view.removeEventListener(IFMouseEvent.Release, this._cleanGuides, this);
     };
 
     /** @override */

@@ -30,7 +30,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Release} event
+     * @param {IFMouseEvent.Release} event
      * @private
      */
     IFTextTool.prototype._mouseRelease = function (event) {

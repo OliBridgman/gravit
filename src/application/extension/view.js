@@ -3,12 +3,12 @@
     /**
      * Base class for a view
      * @class GView
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      */
     function GView() {
     };
-    IFObject.inherit(GView, GEventTarget);
+    IFObject.inherit(GView, IFEventTarget);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GView.UpdateEvent Event
@@ -17,12 +17,12 @@
      * An event whenever the view requires an update like changed
      * title or enabled status
      * @class GView.UpdateEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     GView.UpdateEvent = function () {
     };
-    IFObject.inherit(GView.UpdateEvent, GEvent);
+    IFObject.inherit(GView.UpdateEvent, IFEvent);
 
     /** @override */
     GView.UpdateEvent.prototype.toString = function () {

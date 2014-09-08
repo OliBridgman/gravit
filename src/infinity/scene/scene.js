@@ -6,7 +6,7 @@
      * @mixes IFNode.Container
      * @mixes IFNode.Properties
      * @mixes IFNode.Store
-     * @mixes GEventTarget
+     * @mixes IFEventTarget
      * @constructor
      */
     function IFScene() {
@@ -17,7 +17,7 @@
         this._setDefaultProperties(IFScene.MetaProperties);
     }
 
-    IFNode.inheritAndMix("scene", IFScene, IFElement, [IFNode.Container, IFNode.Properties, IFNode.Store, GEventTarget]);
+    IFNode.inheritAndMix("scene", IFScene, IFElement, [IFNode.Container, IFNode.Properties, IFNode.Store, IFEventTarget]);
 
     /** @enum */
     IFScene.UnitSnap = {
@@ -93,14 +93,14 @@
      * An event for an invalidation request event
      * @param {IFRect} [area] a repaint area, defaults to null means to repaint all
      * @class IFScene.InvalidationRequestEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     IFScene.InvalidationRequestEvent = function (area) {
         this.area = area ? area : null;
     };
-    IFObject.inherit(IFScene.InvalidationRequestEvent, GEvent);
+    IFObject.inherit(IFScene.InvalidationRequestEvent, IFEvent);
 
     /** @type IFRect */
     IFScene.InvalidationRequestEvent.prototype.area = null;
@@ -119,7 +119,7 @@
      * @param {IFNode} target the target that was linked/unlinked against reference
      * @param {Boolean} linked if true, reference was linked, otherwise unlinked
      * @class IFScene.ReferenceEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFScene.ReferenceEvent = function (reference, target, linked) {
@@ -127,7 +127,7 @@
         this.target = target;
         this.linked = linked;
     };
-    IFObject.inherit(IFScene.ReferenceEvent, GEvent);
+    IFObject.inherit(IFScene.ReferenceEvent, IFEvent);
 
     /** @type {IFNode.Reference} */
     IFScene.ReferenceEvent.prototype.reference = null;
@@ -152,14 +152,14 @@
      * @param {String} url
      * @param {Function} resolved
      * @class IFScene.ResolveUrlEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFScene.ResolveUrlEvent = function (url, resolved) {
         this.url = url;
         this.resolved = resolved;
     };
-    IFObject.inherit(IFScene.ResolveUrlEvent, GEvent);
+    IFObject.inherit(IFScene.ResolveUrlEvent, IFEvent);
 
     /** @type String */
     IFScene.ResolveUrlEvent.prototype.url = null;

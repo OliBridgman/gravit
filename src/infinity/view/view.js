@@ -67,12 +67,12 @@
     /**
      * An event whenever the view's transformation has changed
      * @class IFView.TransformEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFView.TransformEvent = function () {
     };
-    IFObject.inherit(IFView.TransformEvent, GEvent);
+    IFObject.inherit(IFView.TransformEvent, IFEvent);
 
     /** @override */
     IFView.TransformEvent.prototype.toString = function () {

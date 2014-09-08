@@ -15,19 +15,19 @@
     /** @override */
     IFPenTool.prototype.activate = function (view) {
         IFPathTool.prototype.activate.call(this, view);
-        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(GUIMouseEvent.Move, this._mouseMove, this);
+        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(IFMouseEvent.Move, this._mouseMove, this);
     };
 
     /** @override */
     IFPenTool.prototype.deactivate = function (view) {
         IFPathTool.prototype.deactivate.call(this, view);
-        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(GUIMouseEvent.Move, this._mouseMove);
+        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(IFMouseEvent.Move, this._mouseMove);
     };
 
     /**
-     * @param {GUIMouseEvent.Down} event
+     * @param {IFMouseEvent.Down} event
      * @private
      */
     IFPenTool.prototype._mouseDown = function (event) {
@@ -76,7 +76,7 @@
                     }
                 }
                 this._pathEditor.requestInvalidation();
-                if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
+                if (event.button == IFMouseEvent.BUTTON_RIGHT) {
                     if (ifPlatform.modifiers.optionKey) {
                         this._editPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
                     } else {
@@ -108,7 +108,7 @@
                 pt = this._editor.getGuides().mapPoint(pt);
                 this._editor.getGuides().finishMap();
                 anchorPt = this._constructNewPoint(event, pt);
-                if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
+                if (event.button == IFMouseEvent.BUTTON_RIGHT) {
                     if (ifPlatform.modifiers.optionKey) {
                         anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
                     } else {
@@ -190,7 +190,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Move} event
+     * @param {IFMouseEvent.Move} event
      * @private
      */
     IFPenTool.prototype._mouseMove = function (event) {
@@ -205,7 +205,7 @@
         var anchorPt;
 
         if (!this._released) {
-            if (event.button == GUIMouseEvent.BUTTON_RIGHT) {
+            if (event.button == IFMouseEvent.BUTTON_RIGHT) {
                 this._mouseDrag(event);
             }
             return;
@@ -404,7 +404,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag | GUIMouseEvent.Move} event
+     * @param {IFMouseEvent.Drag | IFMouseEvent.Move} event
      * @private
      */
     IFPenTool.prototype._mouseDrag = function (event) {
@@ -412,7 +412,7 @@
             this._makePointMajor(this._refPt);
             this._editPt = this._pathEditor.getPathPointPreview(this._refPt);
             this._dragStartPt = this._refPt;
-            if (event.button == GUIMouseEvent.BUTTON_LEFT) {
+            if (event.button == IFMouseEvent.BUTTON_LEFT) {
                 this._editPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
             }
             this._pathEditor.requestInvalidation();
@@ -422,7 +422,7 @@
             this._setCursorForPosition(IFCursor.PenDrag);
             if (!this._dragStartPt) {
                 this._dragStartPt = this._refPt ? this._refPt : this._editPt;
-                if (event.button == GUIMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != IFPathBase.AnchorPoint.Type.Connector) {
+                if (event.button == IFMouseEvent.BUTTON_LEFT && this._editPt.getProperty('tp') != IFPathBase.AnchorPoint.Type.Connector) {
                     this._editPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
                 }
             }
@@ -433,7 +433,7 @@
 
     /**
      * Constructs new point, specific to Pen Tool, with the given position
-     * @param {GUIMouseEvent} event used to define pressed button
+     * @param {IFMouseEvent} event used to define pressed button
      * @param {IFPoint} pt - coordinates to be used for new position in world system
      * @returns {IFPath.AnchorPoint} newly created anchor point
      * @private

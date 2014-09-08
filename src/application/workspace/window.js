@@ -2,7 +2,7 @@
     /**
      * An instance of an opened window
      * @class GWindow
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -33,7 +33,7 @@
         }.bind(this));
 
     };
-    IFObject.inherit(GWindow, GEventTarget);
+    IFObject.inherit(GWindow, IFEventTarget);
 
     /**
      * Constant defining the additional margin for the view

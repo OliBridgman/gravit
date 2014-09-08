@@ -107,11 +107,11 @@
     IFMarqueeTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
-        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
-        view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
-        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(IFMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(IFMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(IFMouseEvent.Release, this._mouseRelease, this);
 
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
@@ -120,11 +120,11 @@
     IFMarqueeTool.prototype.deactivate = function (view) {
         IFTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
-        view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
-        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(IFMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(IFMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(IFMouseEvent.Release, this._mouseRelease);
 
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
@@ -143,12 +143,12 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Down} event
+     * @param {IFMouseEvent.Down} event
      * @private
      */
     IFMarqueeTool.prototype._mouseDown = function (event) {
         // Quit if not hitting the left-mouse-button
-        if (event.button !== GUIMouseEvent.BUTTON_LEFT) {
+        if (event.button !== IFMouseEvent.BUTTON_LEFT) {
             return;
         }
 
@@ -157,7 +157,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Release} event
+     * @param {IFMouseEvent.Release} event
      * @private
      */
     IFMarqueeTool.prototype._mouseRelease = function (event) {
@@ -174,7 +174,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragStart} event
+     * @param {IFMouseEvent.DragStart} event
      * @private
      */
     IFMarqueeTool.prototype._mouseDragStart = function (event) {
@@ -183,7 +183,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag} event
+     * @param {IFMouseEvent.Drag} event
      * @private
      */
     IFMarqueeTool.prototype._mouseDrag = function (event) {
@@ -196,7 +196,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragEnd} event
+     * @param {IFMouseEvent.DragEnd} event
      * @private
      */
     IFMarqueeTool.prototype._mouseDragEnd = function (event) {

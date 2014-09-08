@@ -2,7 +2,7 @@
     /**
      * An instance of an opened document
      * @class GDocument
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      */
     function GDocument(scene, url, title) {
@@ -17,7 +17,7 @@
         // Provide an url resolver to our scene
         this._scene.addEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
     };
-    IFObject.inherit(GDocument, GEventTarget);
+    IFObject.inherit(GDocument, IFEventTarget);
 
     /**
      * The underlying scene

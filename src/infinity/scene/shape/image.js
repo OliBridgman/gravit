@@ -64,7 +64,7 @@
      * @param {IFImage} image the image
      * @param {IFImage.ImageStatus} status the status
      * @class IFImage.StatusEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
@@ -72,7 +72,7 @@
         this.image = image;
         this.status = status;
     };
-    IFObject.inherit(IFImage.StatusEvent, GEvent);
+    IFObject.inherit(IFImage.StatusEvent, IFEvent);
 
     /**
      * The status

@@ -313,14 +313,14 @@
      * An event for a future node insertion sent via a scene
      * @param {IFNode} node the node that will be inserted
      * @class IFNode.BeforeInsertEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     IFNode.BeforeInsertEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.BeforeInsertEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeInsertEvent, IFEvent);
 
     /**
      * The node that has will be inserted
@@ -342,14 +342,14 @@
      * An event for node insertion sent via a scene
      * @param {IFNode} node the node that was inserted
      * @class IFNode.AfterInsertEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     IFNode.AfterInsertEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.AfterInsertEvent, GEvent);
+    IFObject.inherit(IFNode.AfterInsertEvent, IFEvent);
 
     /**
      * The node that was inserted
@@ -370,14 +370,14 @@
      * An event for a future node removal sent via a scene
      * @param {IFNode} node the node that will be removed
      * @class IFNode.BeforeRemoveEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     IFNode.BeforeRemoveEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.BeforeRemoveEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeRemoveEvent, IFEvent);
 
     /**
      * The node that will be removed
@@ -398,14 +398,14 @@
      * An event for a node removal sent via a scene
      * @param {IFNode} node the node that was removed
      * @class IFNode.AfterRemoveEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     IFNode.AfterRemoveEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.AfterRemoveEvent, GEvent);
+    IFObject.inherit(IFNode.AfterRemoveEvent, IFEvent);
 
     /**
      * The node that was removed
@@ -428,7 +428,7 @@
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that will be assigned
      * @class IFNode.BeforePropertiesChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFNode.BeforePropertiesChangeEvent = function (node, properties, values) {
@@ -437,7 +437,7 @@
         this.values = values;
     };
 
-    IFObject.inherit(IFNode.BeforePropertiesChangeEvent, GEvent);
+    IFObject.inherit(IFNode.BeforePropertiesChangeEvent, IFEvent);
 
     /**
      * The node which' property is affected by the change
@@ -470,7 +470,7 @@
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that the properties previously had have
      * @class IFNode.AfterPropertiesChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
@@ -480,7 +480,7 @@
         this.values = values;
     };
 
-    IFObject.inherit(IFNode.AfterPropertiesChangeEvent, GEvent);
+    IFObject.inherit(IFNode.AfterPropertiesChangeEvent, IFEvent);
 
     /**
      * The node which' property is affected by the change
@@ -513,7 +513,7 @@
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will be set (true) or cleared/removed (false)
      * @class IFNode.BeforeFlagChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
@@ -523,7 +523,7 @@
         this.set = set;
     };
 
-    IFObject.inherit(IFNode.BeforeFlagChangeEvent, GEvent);
+    IFObject.inherit(IFNode.BeforeFlagChangeEvent, IFEvent);
 
     /**
      * The node which' flag is affected by the change
@@ -559,7 +559,7 @@
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will was set (true) or cleared/removed (false)
      * @class IFNode.AfterFlagChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
@@ -569,7 +569,7 @@
         this.set = set;
     };
 
-    IFObject.inherit(IFNode.AfterFlagChangeEvent, GEvent);
+    IFObject.inherit(IFNode.AfterFlagChangeEvent, IFEvent);
 
     /**
      * The node which' flag was affected by the change

@@ -65,10 +65,10 @@
 
         this._updateMode();
 
-        view.addEventListener(GUIMouseEvent.DragStart, this._mouseDragStart, this);
-        view.addEventListener(GUIMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd, this);
-        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(IFMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(IFMouseEvent.Release, this._mouseRelease, this);
 
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
@@ -77,10 +77,10 @@
     IFZoomTool.prototype.deactivate = function (view) {
         IFTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(GUIMouseEvent.DragStart, this._mouseDragStart);
-        view.removeEventListener(GUIMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(GUIMouseEvent.DragEnd, this._mouseDragEnd);
-        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(IFMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(IFMouseEvent.Release, this._mouseRelease);
 
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
@@ -103,7 +103,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragStart} event
+     * @param {IFMouseEvent.DragStart} event
      * @private
      */
     IFZoomTool.prototype._mouseDragStart = function (event) {
@@ -111,7 +111,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag} event
+     * @param {IFMouseEvent.Drag} event
      * @private
      */
     IFZoomTool.prototype._mouseDrag = function (event) {
@@ -129,7 +129,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DragEnd} event
+     * @param {IFMouseEvent.DragEnd} event
      * @private
      */
     IFZoomTool.prototype._mouseDragEnd = function (event) {
@@ -146,7 +146,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Release} event
+     * @param {IFMouseEvent.Release} event
      * @private
      */
     IFZoomTool.prototype._mouseRelease = function (event) {

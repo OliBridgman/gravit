@@ -3,7 +3,7 @@
      * A menu implementation
      * @param {GMenuItem|GMenuBar} parent parent if not a standalone menu
      * @class GMenu
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -14,7 +14,7 @@
         this._htmlElement.on("mouseout", this._mouseOut.bind(this));
     };
 
-    IFObject.inherit(GMenu, GEventTarget);
+    IFObject.inherit(GMenu, IFEventTarget);
 
     /**
      * A position a menu can be opened at
@@ -209,13 +209,13 @@
     /**
      * An event whenever a (standalone) menu is opened
      * @class GMenu.OpenEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenu.OpenEvent = function () {
     };
-    IFObject.inherit(GMenu.OpenEvent, GEvent);
+    IFObject.inherit(GMenu.OpenEvent, IFEvent);
 
     /** @override */
     GMenu.OpenEvent.prototype.toString = function () {
@@ -231,13 +231,13 @@
     /**
      * An event whenever a (standalone) menu is closed
      * @class GMenu.CloseEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenu.CloseEvent = function () {
     };
-    IFObject.inherit(GMenu.CloseEvent, GEvent);
+    IFObject.inherit(GMenu.CloseEvent, IFEvent);
 
     /** @override */
     GMenu.CloseEvent.prototype.toString = function () {

@@ -4,7 +4,7 @@
      * @param {Number} type the type of the menu item.
      * Defaults to GMenuItem.Type.Item
      * @class GMenuItem
-     * @extends GEventTarget
+     * @extends IFEventTarget
      * @constructor
      * @see GMenuItem.Type
      * @version 1.0
@@ -41,7 +41,7 @@
         this._htmlElement.on("mouseup", this._mouseUp.bind(this));
     }
 
-    IFObject.inherit(GMenuItem, GEventTarget);
+    IFObject.inherit(GMenuItem, IFEventTarget);
 
     /**
      * The type of a menu item
@@ -77,13 +77,13 @@
     /**
      * An event whenever a menu item is entered
      * @class GMenuItem.EnterEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.EnterEvent = function () {
     };
-    IFObject.inherit(GMenuItem.EnterEvent, GEvent);
+    IFObject.inherit(GMenuItem.EnterEvent, IFEvent);
 
     /** @override */
     GMenuItem.EnterEvent.prototype.toString = function () {
@@ -99,13 +99,13 @@
     /**
      * An event whenever a menu item is left
      * @class GMenuItem.LeaveEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.LeaveEvent = function () {
     };
-    IFObject.inherit(GMenuItem.LeaveEvent, GEvent);
+    IFObject.inherit(GMenuItem.LeaveEvent, IFEvent);
 
     /** @override */
     GMenuItem.LeaveEvent.prototype.toString = function () {
@@ -121,13 +121,13 @@
     /**
      * An event whenever a menu item was activated
      * @class GMenuItem.ActivateEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.ActivateEvent = function () {
     };
-    IFObject.inherit(GMenuItem.ActivateEvent, GEvent);
+    IFObject.inherit(GMenuItem.ActivateEvent, IFEvent);
 
     /** @override */
     GMenuItem.ActivateEvent.prototype.toString = function () {
@@ -143,13 +143,13 @@
     /**
      * An event whenever a menu item should be updated (before it is shown)
      * @class GMenuItem.UpdateEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.UpdateEvent = function () {
     };
-    IFObject.inherit(GMenuItem.UpdateEvent, GEvent);
+    IFObject.inherit(GMenuItem.UpdateEvent, IFEvent);
 
     /** @override */
     GMenuItem.UpdateEvent.prototype.toString = function () {
@@ -506,7 +506,7 @@
             return;
         }
 
-        if (evt.button == GUIMouseEvent.BUTTON_LEFT) {
+        if (evt.button == IFMouseEvent.BUTTON_LEFT) {
             // Stop propagation and default handling to not run into our global menu handlers
             evt.stopPropagation();
             evt.preventDefault();

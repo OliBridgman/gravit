@@ -117,14 +117,14 @@
      * @param {IFElement} element the affected element
      * @param {IFElement.GeometryChangeEvent.Type} type the geometrical change type
      * @class IFElement.GeometryChangeEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      */
     IFElement.GeometryChangeEvent = function (element, type) {
         this.element = element;
         this.type = type;
     };
-    IFObject.inherit(IFElement.GeometryChangeEvent, GEvent);
+    IFObject.inherit(IFElement.GeometryChangeEvent, IFEvent);
 
     /**
      * The type of a geometrical change

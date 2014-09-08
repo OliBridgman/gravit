@@ -3,7 +3,7 @@
      * Instance of a platform implementation
      * @class GUIPlatform
      * @extends IFObject
-     * @mixes GEventTarget
+     * @mixes IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -32,7 +32,7 @@
         }.bind(this), true);
     }
 
-    IFObject.inheritAndMix(GUIPlatform, IFObject, [GEventTarget]);
+    IFObject.inheritAndMix(GUIPlatform, IFObject, [IFEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GUIPlatform.Modifiers Class
@@ -80,7 +80,7 @@
     /**
      * An object representing an event when one or more modifiers have been changed globally
      * @class GUIPlatform.ModifiersChangedEvent
-     * @extends GEvent
+     * @extends IFEvent
      * @constructor
      * @version 1.0
      * @see GUIPlatform.modifiers
@@ -88,7 +88,7 @@
     GUIPlatform.ModifiersChangedEvent = function () {
         this.changed = new GUIPlatform.Modifiers();
     }
-    IFObject.inherit(GUIPlatform.ModifiersChangedEvent, GEvent);
+    IFObject.inherit(GUIPlatform.ModifiersChangedEvent, IFEvent);
 
     /**
      * The modifiers that have been changed

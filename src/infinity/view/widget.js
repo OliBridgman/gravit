@@ -5,7 +5,7 @@
      * @param {HTMLDivElement} [container] optional container to append this widget into
      * @class GUIWidget
      * @extends IFObject
-     * @mixes GEventTarget
+     * @mixes IFEventTarget
      * @constructor
      * @version 1.0
      */
@@ -18,7 +18,7 @@
         }
     }
 
-    IFObject.inheritAndMix(GUIWidget, IFObject, [GEventTarget]);
+    IFObject.inheritAndMix(GUIWidget, IFObject, [IFEventTarget]);
 
     /**
      * Convert a DOM-Mouse-Event client position to internal coordinates
@@ -282,18 +282,18 @@
     /** @override */
     GUIWidget.prototype.trigger = function (event) {
         // Handle drag release before mouse release
-        if (this._dragEventCounter > 0 && event instanceof GUIMouseEvent.Release) {
+        if (this._dragEventCounter > 0 && event instanceof IFMouseEvent.Release) {
             this._dragMouseRelease(event);
         }
 
         // Call original event
-        GEventTarget.prototype.trigger.call(this, event);
+        IFEventTarget.prototype.trigger.call(this, event);
 
         // Handle all other drag events after regular event
         if (this._dragEventCounter > 0) {
-            if (event instanceof GUIMouseEvent.Down) {
+            if (event instanceof IFMouseEvent.Down) {
                 this._dragMouseDown(event);
-            } else if (event instanceof GUIMouseEvent.Move && this._dragStartPosition) {
+            } else if (event instanceof IFMouseEvent.Move && this._dragStartPosition) {
                 this._dragMouseMove(event);
             }
         }
@@ -301,18 +301,18 @@
 
     /** @override */
     GUIWidget.prototype.addEventListener = function (eventClass, listener, target, args) {
-        GEventTarget.prototype.addEventListener.call(this, eventClass, listener, target, args);
+        IFEventTarget.prototype.addEventListener.call(this, eventClass, listener, target, args);
 
-        if (GUIInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+        if (IFInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
             this._registerInputEventListener(eventClass);
 
             // If event is mouse drag event then register our drag listeners
-            if (GUIMouseEvent.isDragEvent(eventClass)) {
+            if (IFMouseEvent.isDragEvent(eventClass)) {
                 if (this._dragEventCounter == 0) {
                     // First drag llistener so start listening for various events simulating the drag event(s)
-                    this._registerInputEventListener(GUIMouseEvent.Down);
-                    this._registerInputEventListener(GUIMouseEvent.Move);
-                    this._registerInputEventListener(GUIMouseEvent.Release);
+                    this._registerInputEventListener(IFMouseEvent.Down);
+                    this._registerInputEventListener(IFMouseEvent.Move);
+                    this._registerInputEventListener(IFMouseEvent.Release);
                 }
                 this._dragEventCounter++;
             }
@@ -321,18 +321,18 @@
 
     /** @override */
     GUIWidget.prototype.removeEventListener = function (eventClass, listener) {
-        GEventTarget.prototype.removeEventListener.call(this, eventClass, listener);
+        IFEventTarget.prototype.removeEventListener.call(this, eventClass, listener);
 
-        if (GUIInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+        if (IFInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
             this._unregisterInputEventListener(eventClass);
 
             // If event is mouse drag event then unregster our drag listeners if it is the last
-            if (GUIMouseEvent.isDragEvent(eventClass)) {
+            if (IFMouseEvent.isDragEvent(eventClass)) {
                 if (--this._dragEventCounter == 0) {
                     // Last drag event so stop listening for various events simulating the drag event(s)
-                    this._unregisterInputEventListener(GUIMouseEvent.Down);
-                    this._unregisterInputEventListener(GUIMouseEvent.Move);
-                    this._unregisterInputEventListener(GUIMouseEvent.Release);
+                    this._unregisterInputEventListener(IFMouseEvent.Down);
+                    this._unregisterInputEventListener(IFMouseEvent.Move);
+                    this._unregisterInputEventListener(IFMouseEvent.Release);
                 }
             }
         }
@@ -361,7 +361,7 @@
      */
     GUIWidget.prototype._registerInputEventListener = function (eventClass) {
         // Check if event is a drag event
-        var isDragEvent = GUIMouseEvent.isDragEvent(eventClass);
+        var isDragEvent = IFMouseEvent.isDragEvent(eventClass);
         var event_id = IFObject.getTypeId(eventClass);
 
         if (!this._inputEventCache || !(event_id in this._inputEventCache)) {
@@ -385,7 +385,7 @@
      */
     GUIWidget.prototype._unregisterInputEventListener = function (eventClass) {
         // Check if event is a drag event
-        var isDragEvent = GUIMouseEvent.isDragEvent(eventClass);
+        var isDragEvent = IFMouseEvent.isDragEvent(eventClass);
         var event_id = IFObject.getTypeId(eventClass);
 
         if (this._inputEventCache && event_id in this._inputEventCache) {
@@ -436,18 +436,18 @@
     };
 
     /**
-     * @param {GUIMouseEvent} event
+     * @param {IFMouseEvent} event
      * @private
      */
     GUIWidget.prototype._dragMouseDown = function (event) {
-        if (event.button == GUIMouseEvent.BUTTON_LEFT) {
+        if (event.button == IFMouseEvent.BUTTON_LEFT) {
             this._dragStartPosition = event.client;
             this._dragIsDragging = false;
         }
     };
 
     /**
-     * @param {GUIMouseEvent} event
+     * @param {IFMouseEvent} event
      * @private
      */
     GUIWidget.prototype._dragMouseMove = function (event) {
@@ -461,9 +461,9 @@
                     this._dragPreviousPosition = this._dragStartPosition;
 
                     // Fire drag start event
-                    if (this.hasEventListeners(GUIMouseEvent.DragStart)) {
-                        /** @type GUIMouseEvent */
-                        var cachedEvent = this._inputEventCache[IFObject.getTypeId(GUIMouseEvent.DragStart)].event;
+                    if (this.hasEventListeners(IFMouseEvent.DragStart)) {
+                        /** @type IFMouseEvent */
+                        var cachedEvent = this._inputEventCache[IFObject.getTypeId(IFMouseEvent.DragStart)].event;
                         this._dragAssignMouseEvent(event, cachedEvent);
 
                         // Ensure to use our source positions and not the current one
@@ -475,9 +475,9 @@
             }
         }
 
-        if (this._dragIsDragging && this.hasEventListeners(GUIMouseEvent.Drag)) {
-            /** @type GUIMouseEvent.Drag */
-            var cachedEvent = this._inputEventCache[IFObject.getTypeId(GUIMouseEvent.Drag)].event;
+        if (this._dragIsDragging && this.hasEventListeners(IFMouseEvent.Drag)) {
+            /** @type IFMouseEvent.Drag */
+            var cachedEvent = this._inputEventCache[IFObject.getTypeId(IFMouseEvent.Drag)].event;
             this._dragAssignMouseEvent(event, cachedEvent);
             this._dragAssignDragEvent(cachedEvent, event);
             this.trigger(cachedEvent);
@@ -487,14 +487,14 @@
     };
 
     /**
-     * @param {GUIMouseEvent} event
+     * @param {IFMouseEvent} event
      * @private
      */
     GUIWidget.prototype._dragMouseRelease = function (event) {
-        if (event.button == GUIMouseEvent.BUTTON_LEFT) {
+        if (event.button == IFMouseEvent.BUTTON_LEFT) {
             if (this._dragIsDragging) {
-                /** @type GUIMouseEvent.DragEnd */
-                var cachedEvent = this._inputEventCache[IFObject.getTypeId(GUIMouseEvent.DragEnd)].event;
+                /** @type IFMouseEvent.DragEnd */
+                var cachedEvent = this._inputEventCache[IFObject.getTypeId(IFMouseEvent.DragEnd)].event;
                 this._dragAssignMouseEvent(event, cachedEvent);
                 this._dragAssignDragEvent(cachedEvent, event);
 
@@ -507,8 +507,8 @@
     };
 
     /**
-     * @param {GUIMouseEvent} sourceEvent
-     * @param {GUIMouseEvent} dragEvent
+     * @param {IFMouseEvent} sourceEvent
+     * @param {IFMouseEvent} dragEvent
      * @private
      */
     GUIWidget.prototype._dragAssignMouseEvent = function (sourceEvent, dragEvent) {
@@ -517,8 +517,8 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Drag} dragEvent
-     * @param {GUIMouseEvent} currentEvent
+     * @param {IFMouseEvent.Drag} dragEvent
+     * @param {IFMouseEvent} currentEvent
      * @private
      */
     GUIWidget.prototype._dragAssignDragEvent = function (dragEvent, currentEvent) {
@@ -553,7 +553,7 @@
     /**
      * Called to trigger a widget event from the dom
      * @param {Event} domEvent dom source mouse event
-     * @param {GEvent} widgetEvent the widget event to trigger
+     * @param {IFEvent} widgetEvent the widget event to trigger
      * @param {Boolean} [ignoreTarget] if true, no check for the current target
      * is made. Defaults to false
      * @private
@@ -562,9 +562,9 @@
         // Handle capturing of mouse for down/release events
         // TODO : Fix checking for left button and let triggered event result decide wether
         // to capture other buttons than left one too
-        if (widgetEvent instanceof GUIMouseEvent.Down && widgetEvent.button === GUIMouseEvent.BUTTON_LEFT) {
+        if (widgetEvent instanceof IFMouseEvent.Down && widgetEvent.button === IFMouseEvent.BUTTON_LEFT) {
             this._setCapture();
-        } else if (widgetEvent instanceof GUIMouseEvent.Release) {
+        } else if (widgetEvent instanceof IFMouseEvent.Release) {
             this._releaseCapture();
         }
 
@@ -592,9 +592,9 @@
             domEvent.preventDefault();
         }
 
-        if (GUIMouseEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+        if (IFMouseEvent.prototype.isPrototypeOf(eventClass.prototype)) {
             this._updateAndTriggerMouseEvent(domEvent, IFObject.getTypeId(eventClass));
-        } else if (GUIKeyEvent.prototype.isPrototypeOf(eventClass.prototype)) {
+        } else if (IFKeyEvent.prototype.isPrototypeOf(eventClass.prototype)) {
             this._updateAndTriggerKeyEvent(domEvent, IFObject.getTypeId(eventClass));
         }
     };
@@ -606,7 +606,7 @@
      * @private
      */
     GUIWidget.prototype._updateAndTriggerMouseEvent = function (domEvent, event_id) {
-        /** @type GUIMouseEvent */
+        /** @type IFMouseEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
         cachedEvent.client = GUIWidget.convertClientPositionFromMousePosition(this._htmlElement, domEvent);
         cachedEvent.button = domEvent.button;
@@ -620,7 +620,7 @@
      * @private
      */
     GUIWidget.prototype._updateAndTriggerKeyEvent = function (domEvent, event_id) {
-        /** @type GUIKeyEvent */
+        /** @type IFKeyEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
 
         cachedEvent.key = ifKey.translateKey(domEvent.which || domEvent.keyCode);
@@ -636,25 +636,25 @@
      */
     GUIWidget.prototype._getDomEventNameForEventClass = function (eventClass) {
         switch (eventClass) {
-            case GUIMouseEvent.Move:
+            case IFMouseEvent.Move:
                 return "mousemove";
-            case GUIMouseEvent.Enter:
+            case IFMouseEvent.Enter:
                 return "mouseover";
-            case GUIMouseEvent.Leave:
+            case IFMouseEvent.Leave:
                 return "mouseout";
-            case GUIMouseEvent.Down:
+            case IFMouseEvent.Down:
                 return "mousedown";
-            case GUIMouseEvent.Release:
+            case IFMouseEvent.Release:
                 return "mouseup";
-            case GUIMouseEvent.Click:
+            case IFMouseEvent.Click:
                 return "click";
-            case GUIMouseEvent.DblClick:
+            case IFMouseEvent.DblClick:
                 return "dblclick";
-            case GUIKeyEvent.Down:
+            case IFKeyEvent.Down:
                 return "keydown";
-            case GUIKeyEvent.Release:
+            case IFKeyEvent.Release:
                 return "keyup";
-            case GUIKeyEvent.Press:
+            case IFKeyEvent.Press:
                 return "keypress";
             default:
                 break;
@@ -664,7 +664,7 @@
         throw new Error("Unknown DOMEvent name");
     };
 
-    var CAPTURE_EVENTS = [GUIMouseEvent.Move, GUIMouseEvent.Release, GUIKeyEvent.Down, GUIKeyEvent.Release, GUIKeyEvent.Press];
+    var CAPTURE_EVENTS = [IFMouseEvent.Move, IFMouseEvent.Release, IFKeyEvent.Down, IFKeyEvent.Release, IFKeyEvent.Press];
 
     GUIWidget.prototype._setCapture = function () {
         // Try the hand setCapture/releaseCapture combo, first

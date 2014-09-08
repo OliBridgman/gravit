@@ -146,7 +146,7 @@
     /**
      * Stores the details of the last mouse event, which leaves tool in the state, when it may be needed to
      * update point's properties is Shift key goes down or up
-     * @type {GUIMouseEvent}
+     * @type {IFMouseEvent}
      * @private
      */
     IFPathTool.prototype._lastMouseEvent = null;
@@ -173,9 +173,9 @@
     IFPathTool.prototype.activate = function (view) {
         IFTool.prototype.activate.call(this, view);
 
-        view.addEventListener(GUIMouseEvent.Down, this._mouseDown, this);
-        view.addEventListener(GUIMouseEvent.Release, this._mouseRelease, this);
-        view.addEventListener(GUIKeyEvent.Down, this._keyDown, this);
+        view.addEventListener(IFMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(IFMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(IFKeyEvent.Down, this._keyDown, this);
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = IFCursor.PenStart;
@@ -195,9 +195,9 @@
         this._reset();
         IFTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(GUIMouseEvent.Down, this._mouseDown);
-        view.removeEventListener(GUIMouseEvent.Release, this._mouseRelease);
-        view.removeEventListener(GUIKeyEvent.Down, this._keyDown);
+        view.removeEventListener(IFMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(IFMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(IFKeyEvent.Down, this._keyDown);
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
@@ -436,7 +436,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Down} event
+     * @param {IFMouseEvent.Down} event
      * @private
      */
     IFPathTool.prototype._mouseDown = function (event) {
@@ -444,7 +444,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.DblClick} event
+     * @param {IFMouseEvent.DblClick} event
      * @private
      */
     IFPathTool.prototype._mouseDblClick = function (event) {
@@ -461,7 +461,7 @@
     };
 
     /**
-     * @param {GUIMouseEvent.Release} event
+     * @param {IFMouseEvent.Release} event
      * @private
      */
     IFPathTool.prototype._mouseRelease = function (event) {
@@ -488,7 +488,7 @@
     };
 
     /**
-     * @param {GUIKeyEvent} event
+     * @param {IFKeyEvent} event
      * @private
      */
     IFPathTool.prototype._keyDown = function (event) {
@@ -641,7 +641,7 @@
     /**
      * In Edit mode hit-tests the path, and then takes appropriate action for mouse down:
      * selects a point for editing or creates a new one, or just updates the working mode
-     * @param {GUIMouseEvent.Down} event
+     * @param {IFMouseEvent.Down} event
      * @param {Function} customizer - a function to make tool-specific actions after new point has been created,
      * accepts (IFPathBase.AnchorPoint) a new point as a parameter
      * @private
@@ -678,7 +678,7 @@
             this._startTransaction(IFPathTool.Transaction.InsertPoint);
             var anchorPt = this._pathRef.insertHitPoint(partInfo.data.hitRes);
             if (anchorPt) {
-                if (event.button == GUIMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
+                if (event.button == IFMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
                     var tp = anchorPt.getProperty('tp');
                     if (tp == IFPathBase.AnchorPoint.Type.Asymmetric) {
                         anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
