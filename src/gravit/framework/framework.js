@@ -180,9 +180,10 @@
 
         // Register default properties
         gravit.properties.push(
+            // first
             new GInfoProperties(),
-            new GStyleProperties(),
-            new GShapeProperties(),
+
+            // middle
             new GPolygonProperties(),
             new GPathProperties(),
             new GRectangleProperties(),
@@ -190,7 +191,12 @@
             new GTextProperties(),
             new GImageProperties(),
             new GSliceProperties(),
-            new GPageProperties()
+            new GPageProperties(),
+
+            // last
+            new GShapeProperties(),
+            new GEffectProperties(),
+            new GStyleProperties()
         );
 
         // Register default style entries
