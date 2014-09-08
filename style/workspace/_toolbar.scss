@@ -3,7 +3,7 @@
 #toolbar {
   @include box-sizing(border-box);
   position: absolute;
-  width: 61px; // + border size
+  width: 31px; // + border size
   background: $baseColor;
   border-right: 1px solid $darkShadowColor;
   border-top: 3px solid $darkColor;
@@ -42,20 +42,6 @@
       }
     }
 
-    > .divider {
-      width: 100%;
-      padding: 2px 0px;
-      text-align: center;
-      color: $borderColor;
-      text-transform: uppercase;
-      text-shadow: 0px 1px 0px $lightShadowColor;
-
-      &:not(:first-child) {
-        margin-top: 3px;
-        border-top: 1px dotted $borderColor;
-      }
-    }
-
     &.sidebars {
       border-bottom: 3px solid $darkColor;
     }
@@ -63,12 +49,6 @@
     &.toolpanel {
       > button {
         border: none;
-      }
-
-      > .zoom {
-        width: 100%;
-        text-align: center;
-        font-size: smaller;
       }
     }
   }

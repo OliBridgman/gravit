@@ -96,45 +96,11 @@
             var category = ifLocale.get(mainTool.category);
             if (category != lastCategory) {
                 // Add a divider, first
-                $("<div></div>")
-                    .addClass('divider')
-                    .text(category)
-                    .appendTo(toolpanel);
-                lastCategory = category;
-
-                // Do some custom handling for known categories
-                if (mainTool.category === GApplication.TOOL_CATEGORY_VIEW) {
-                    var zoomLevels = [6, 12, 25, 50, 66, 100, 150, 200, 300, 400, 800, 1600, 3200, 6400];
-
-                    var select = $('<select></select>')
-                        .addClass('zoom')
-                        .append($('<option></option>'))
-                        .on('change', function () {
-                            var view = gApp.getWindows().getActiveWindow().getView();
-                            var scene = view.getScene();
-
-                            var zoomPoint = null;
-                            if (scene.getProperty('singlePage')) {
-                                var pageBBox = scene.getActivePage().getGeometryBBox();
-                                if (pageBBox && !pageBBox.isEmpty()) {
-                                    zoomPoint = pageBBox.getSide(IFRect.Side.CENTER);
-                                }
-                            }
-                            if (!zoomPoint) {
-                                zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
-                            }
-
-                            view.zoomAt(zoomPoint, parseInt($(this).val()) / 100.0);
-                        })
+                if (lastCategory !== null) {
+                    $('<hr>')
                         .appendTo(toolpanel);
-
-                    for (var z = 0; z < zoomLevels.length; ++z) {
-                        $('<option></option>')
-                            .text(zoomLevels[z].toString() + '%')
-                            .attr('value', zoomLevels[z])
-                            .appendTo(select);
-                    }
                 }
+                lastCategory = category;
             }
 
             // Append our group button now
@@ -153,9 +119,6 @@
 
         // Subscribe to some events
         gApp.getToolManager().addEventListener(IFToolManager.ToolChangedEvent, this._toolChanged, this);
-        gApp.getWindows().addEventListener(GWindows.WindowEvent, this._windowEvent, this);
-
-        this._updateZoomFromWindow();
     };
 
     /**
@@ -177,38 +140,6 @@
 
         if (event.newTool) {
             this._updateGroupTool(event.newTool);
-        }
-    };
-
-    /**
-     * @param {IFWindows.WindowEvent} evt
-     * @private
-     */
-    GToolbar.prototype._windowEvent = function (evt) {
-        if (evt.type === GWindows.WindowEvent.Type.Activated) {
-            evt.window.getView().addEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
-        } else if (evt.type === GWindows.WindowEvent.Type.Deactivated && evt.window) {
-            evt.window.getView().removeEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
-        }
-
-        this._updateZoomFromWindow();
-    };
-
-    /** @private */
-    GToolbar.prototype._updateZoomFromWindow = function () {
-        var zoom = this._htmlElement.find('.toolpanel > .zoom');
-        var window = gApp.getWindows().getActiveWindow();
-
-        zoom
-            .find('*').prop('disabled', !window);
-
-        if (window) {
-            var zoomLevel = ifMath.round(window.getView().getZoom() * 100, false, 0);
-            zoom
-                .find('option:first-child')
-                .text(zoomLevel.toString() + '%')
-                .attr('value', zoomLevel);
-            zoom.val(zoomLevel);
         }
     };
 
