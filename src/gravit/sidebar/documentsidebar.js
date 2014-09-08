@@ -285,15 +285,23 @@
     };
 
     /** @override */
+    GDocumentSidebar.prototype.isEnabled = function () {
+        return !!this._document;
+    };
+
+    /** @override */
     GDocumentSidebar.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
             var scene = this._document.getScene();
             scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
+            this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
+            this._document = null;
             scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this.trigger(GPalette.UPDATE_EVENT);
         }
     };
 

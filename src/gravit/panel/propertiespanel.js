@@ -86,6 +86,11 @@
     };
 
     /** @override */
+    GPropertiesPanel.prototype.isEnabled = function () {
+        return !!this._document;
+    };
+
+    /** @override */
     GPropertiesPanel.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

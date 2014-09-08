@@ -102,6 +102,14 @@
     };
 
     /**
+     * Whether the view is enabled or not.
+     * @return {Boolean}
+     */
+    GView.prototype.isEnabled = function () {
+        return true;
+    };
+
+    /**
      * Should create a new state for a given document if desired.
      * @param {GDocument} document
      * @return {GView.DocumentState}

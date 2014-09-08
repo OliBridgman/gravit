@@ -77,4 +77,18 @@ body, html {
       content: "\a0\a0";
     }
   }
+
+  // Disabled stuff
+  .g-disabled {
+    position: relative;
+    opacity: 0.5;
+
+    > .g-disabled-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0px;
+      left: 0px;
+    }
+  }
 }

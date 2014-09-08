@@ -20,17 +20,6 @@
     };
 
     /**
-     * Whether the palette is enabled or. Note that this
-     * will only disable the palette's panel so if the
-     * palette provides a custom menu, the enabled status
-     * of those needs to be manually managed by the palette.
-     * @return {Boolean}
-     */
-    GPalette.prototype.isEnabled = function () {
-        return true;
-    };
-
-    /**
      * Called to let the palette initialize on a given panel
      * and within a given menu if any
      * @param {JQuery} htmlElement the panel to put the palette into

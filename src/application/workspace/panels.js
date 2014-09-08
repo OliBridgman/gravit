@@ -61,6 +61,31 @@
     };
 
     /**
+     * Enable or disable a panel
+     * @param {String} panelId
+     * @param {Boolean} enabled
+     */
+    GPanels.prototype.setPanelEnabled = function (panelId, enabled) {
+        var panelInfo = this._getPanelInfo(panelId);
+        if (panelInfo) {
+            if (enabled) {
+                panelInfo.container.find('.g-disabled-overlay').remove();
+                panelInfo.container.removeClass('g-disabled');
+            } else {
+                var overlay = panelInfo.container.find('.g-disabled-overlay');
+
+                if (overlay.length === 0) {
+                    overlay = $('<div></div>')
+                        .addClass('g-disabled-overlay')
+                        .appendTo(panelInfo.container);
+                }
+
+                panelInfo.container.addClass('g-disabled');
+            }
+        }
+    };
+
+    /**
      * Called from the workspace to initialize
      */
     GPanels.prototype.init = function () {
@@ -74,31 +99,42 @@
             .addClass('panels-frame')
             .appendTo(this._htmlElement);
 
+        var _addPanelInfo = function (panel) {
+            var tab = $('<button></button>')
+                .addClass('panel-tab')
+                .attr('data-panel-id', panel.getId())
+                .text(ifLocale.get(panel.getTitle()))
+                .on('click', function (evt) {
+                    this.setActivePanel($(evt.target).attr('data-panel-id'));
+                }.bind(this))
+                .appendTo(panelsTabs);
+
+            var container = $('<div></div>')
+                .addClass('panel-container panel-' + panel.getId())
+                .css('display', 'none')
+                .appendTo(panelsFrame);
+
+            panel.init(container);
+
+            this.setPanelEnabled(panel.getId(), panel.isEnabled());
+
+            this._panels.push({
+                tab: tab,
+                container: container,
+                panel: panel
+            });
+
+            // Add update listener to panel
+            panel.addEventListener(GView.UpdateEvent, function () {
+                this.setPanelEnabled(panel.getId(), panel.isEnabled());
+            }.bind(this));
+        }.bind(this);
+
         if (gravit.panels) {
             for (var i = 0; i < gravit.panels.length; ++i) {
                 var panel = gravit.panels[i];
 
-                var tab = $('<button></button>')
-                    .addClass('panel-tab')
-                    .attr('data-panel-id', panel.getId())
-                    .text(ifLocale.get(panel.getTitle()))
-                    .on('click', function (evt) {
-                        this.setActivePanel($(evt.target).attr('data-panel-id'));
-                    }.bind(this))
-                    .appendTo(panelsTabs);
-
-                var container = $('<div></div>')
-                    .addClass('panel-container panel-' + panel.getId())
-                    .css('display', 'none')
-                    .appendTo(panelsFrame);
-
-                panel.init(container);
-
-                this._panels.push({
-                    tab: tab,
-                    container: container,
-                    panel: panel
-                });
+                _addPanelInfo(panel);
 
                 // Activate the first panel found
                 if (!this._activePanel) {
@@ -113,6 +149,16 @@
      */
     GPanels.prototype.relayout = function () {
         // NO-OP
+    };
+
+    /** @private */
+    GPanels.prototype._getPanelInfo = function (panelId) {
+        for (var i = 0; i < this._panels.length; ++i) {
+            var panel = this._panels[i].panel;
+            if (panel.getId() === panelId) {
+                return this._panels[i];
+            }
+        }
     };
 
     _.GPanels = GPanels;

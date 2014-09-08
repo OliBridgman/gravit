@@ -137,18 +137,18 @@
         var paletteInfo = this._getPaletteInfo(paletteId);
         if (paletteInfo) {
             if (enabled) {
-                paletteInfo.panel.find('.panel-disabled-overlay').remove();
-                paletteInfo.panel.removeClass('panel-disabled');
+                paletteInfo.panel.find('.g-disabled-overlay').remove();
+                paletteInfo.panel.removeClass('g-disabled');
             } else {
-                var overlay = paletteInfo.panel.find('.panel-disabled-overlay');
+                var overlay = paletteInfo.panel.find('.g-disabled-overlay');
 
                 if (overlay.length === 0) {
                     overlay = $('<div></div>')
-                        .addClass('panel-disabled-overlay')
+                        .addClass('g-disabled-overlay')
                         .appendTo(paletteInfo.panel);
                 }
 
-                paletteInfo.panel.addClass('panel-disabled');
+                paletteInfo.panel.addClass('g-disabled');
             }
         }
     };
