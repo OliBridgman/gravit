@@ -18,5 +18,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition to the GPL, complete source code means all the source code for
-all modules it contains made available as non-obfuscated source code.
+In addition to the GPL License the following restrictions do apply:
+
+- Complete source code means all the source code for all modules your
+  applications contains made available as non-obfuscated source code.
+- The Gravit-GUI is protected by Quasado and may not be used in other
+  projects. This applies to the all User-Interface-Elements.
