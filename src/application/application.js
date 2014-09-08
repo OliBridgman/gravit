@@ -10,7 +10,6 @@
         this._actions = [];
         this._toolManager = new IFToolManager();
         this._documents = [];
-        this._windowMenuMap = [];
 
         document.addEventListener("touchstart", this._touchHandler, true);
         document.addEventListener("touchmove", this._touchHandler, true);
@@ -52,7 +51,6 @@
     GApplication.CATEGORY_MODIFY_LAYER = new IFLocale.Key(GApplication, "category.modify.layer");
     GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");
     GApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(GApplication, "category.view.magnification");
-    GApplication.CATEGORY_WINDOW = new IFLocale.Key(GApplication, "category.window");
     GApplication.CATEGORY_HELP = new IFLocale.Key(GApplication, "category.help");
 
     // Constants for pre-defined tool categories
@@ -219,19 +217,6 @@
      * @private
      */
     GApplication.prototype._actions = null;
-
-    /**
-     * Application window shell menu
-     * @type {*}
-     * @private
-     */
-    GApplication.prototype._windowMenu = null;
-
-    /**
-     * @type {Array<{window: GWindow, item: *}>}
-     * @private
-     */
-    GApplication.prototype._windowMenuMap = null;
 
     /**
      * @returns {IFToolManager}
@@ -542,12 +527,6 @@
             storage.saveResourcePrompt(null, document.getTitle(), 'gravit', function (url) {
                 document.setUrl(url)
                 document.save();
-
-                // Update all view window menu items
-                var windows = document.getWindows();
-                for (var i = 0; i < windows.length; ++i) {
-                    this._updateWindowMenuItem(windows[i]);
-                }
 
                 // Trigger event
                 if (this.hasEventListeners(GApplication.DocumentEvent)) {
@@ -1013,14 +992,6 @@
         for (var i = 0; i < treeRoot.items.length; ++i) {
             var item = treeRoot.items[i];
             var menu = _createMenu(treeRoot.items[i], null);
-
-            // Save window menu
-            if (item.windowMenu) {
-                this._windowMenu = menu;
-
-                // Make sure to append an ending divider for windows
-                gShell.addMenuSeparator(this._windowMenu);
-            }
         }
     };
 
@@ -1031,69 +1002,23 @@
     GApplication.prototype._windowEvent = function (evt) {
         switch (evt.type) {
             case GWindows.WindowEvent.Type.Added:
-                this._addWindowMenuItem(evt.window);
-                break;
             case GWindows.WindowEvent.Type.Removed:
-                this._removeWindowMenuItem(evt.window);
+                this._updateTitle();
                 break;
             case GWindows.WindowEvent.Type.Activated:
-                this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(evt.window.getView());
+                this._updateTitle();
                 break;
             case GWindows.WindowEvent.Type.Deactivated:
-                this._updateWindowMenuItem(evt.window);
                 this._toolManager.setView(null);
+                this._updateTitle();
                 break;
             default:
                 break;
         }
     };
 
-    /**
-     * @param {GWindow} window
-     * @private
-     */
-    GApplication.prototype._addWindowMenuItem = function (window) {
-        this._windowMenuMap.push({
-            window: window,
-            item: gShell.addMenuItem(this._windowMenu, window.getTitle(), true, null, function () {
-                this._windows.activateWindow(window);
-            }.bind(this))
-        });
-        this._updateWindowMenuItem(window);
-    };
-
-    /**
-     * @param {GWindow} window
-     * @private
-     */
-    GApplication.prototype._removeWindowMenuItem = function (window) {
-        for (var i = 0; i < this._windowMenuMap.length; ++i) {
-            var map = this._windowMenuMap[i];
-            if (map.window === window) {
-                gShell.removeMenuItem(this._windowMenu, map.item);
-                this._windowMenuMap.splice(i, 1);
-                break;
-            }
-        }
-        this._updateTitle();
-    };
-
-    /**
-     * @param {GWindow} window
-     * @private
-     */
-    GApplication.prototype._updateWindowMenuItem = function (window) {
-        for (var i = 0; i < this._windowMenuMap.length; ++i) {
-            var map = this._windowMenuMap[i];
-            if (map.window === window) {
-                gShell.updateMenuItem(map.item, map.window.getTitle(), true, map.window === this._windows.getActiveWindow());
-                break;
-            }
-        }
-        this._updateTitle();
-    };
-
+    /** @private */
     GApplication.prototype._updateTitle = function () {
         var title = 'Gravit';
         var window = this.getWindows().getActiveWindow();

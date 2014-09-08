@@ -31,7 +31,7 @@
      * @override
      */
     GNewWindowAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_WINDOW;
+        return GApplication.CATEGORY_VIEW;
     };
 
     /**

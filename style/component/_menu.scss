@@ -49,16 +49,16 @@
   margin: 0px;
   white-space: nowrap;
   vertical-align: middle;
+}
+
+/** Set to full width and reduce font-size if not on root and set menu font */
+.g-menu:not(.g-menu-root) > .g-menu-item {
+  width: 100%;
+  padding: 1px 10px 1px 20px;
 
   &, * {
     font: $menuFont;
   }
-}
-
-/** Set to full width and reduce font-size if not on root */
-.g-menu:not(.g-menu-root) > .g-menu-item {
-  width: 100%;
-  padding: 1px 10px 1px 20px;
 }
 
 /* Styling for each span within a menu item */
@@ -116,7 +116,7 @@
 
 /** Define styling of a special "divider" li menu item */
 .g-menu-item-divider {
-  background: $borderColor;
+  background: shade($darkColor, 15%);
   margin-top: 5px;
   margin-bottom: 5px;
   height: 1px;

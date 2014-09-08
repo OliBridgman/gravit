@@ -4,7 +4,6 @@ ifLocale.setValues(GColorMatcher, IFLocale.Language.English, ["category.harmony"
 // Root
 ifLocale.setValues(GApplication, IFLocale.Language.English, [
     // Actions
-    "category.window",
     "category.file",
     "category.edit",
     "category.modify", "category.modify.arrange", "category.modify.align", "category.modify.transform", "category.modify.page", "category.modify.layer",
@@ -20,7 +19,6 @@ ifLocale.setValues(GApplication, IFLocale.Language.English, [
     "tool-category.view"],
     [
         // Actions
-        "Window",
         "File",
         "Edit",
         "Modify", "Modify/Arrange", "Modify/Align", "Modify/Transform", "Modify/Page", "Modify/Layer",

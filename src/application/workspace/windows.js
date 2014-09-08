@@ -128,7 +128,7 @@
             this._activeWindow = window;
 
             // Send deactivation event after document change if we had an active window
-            if (this._activeWindow && this.hasEventListeners(GWindows.WindowEvent)) {
+            if (previousActiveWindow && this.hasEventListeners(GWindows.WindowEvent)) {
                 this.trigger(new GWindows.WindowEvent(GWindows.WindowEvent.Type.Deactivated, previousActiveWindow));
             }
 
