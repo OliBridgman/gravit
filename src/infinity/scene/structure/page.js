@@ -136,10 +136,10 @@
     };
 
     /** @override */
-    IFPage.prototype._renderToBitmap = function (context) {
+    IFPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
         paintConfig.pagesClip = true;
-        return IFBlock.prototype._renderToBitmap(context);
+        return IFBlock.prototype._paintToBitmap(context);
     };
 
     /** @override */
@@ -178,7 +178,7 @@
         // Assign original transform again
         context.canvas.setTransform(canvasTransform);
 
-        // Render master page if any
+        // Paint master page if any
         if (masterPage) {
             var canvasTransform = context.canvas.getTransform(true);
             var mx = masterPage.getProperty('x');
@@ -193,17 +193,17 @@
             context.canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
             context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
 
-            // Let our master render now
-            masterPage.render(context);
+            // Let our master paint now
+            masterPage.paint(context);
 
             // Restore in reverse order of preparation
             context.dirtyMatcher.transform(masterTransform);
             context.canvas.setTransform(canvasTransform);
         }
 
-        // Render contents if any
+        // Paint contents if any
         if (hasContents) {
-            this._renderChildren(context);
+            this._paintChildren(context);
         }
 
         // Reset clipping if we've clipped
@@ -298,11 +298,11 @@
             // Handle invalidation if we're a master
             if (area && !area.isEmpty() && this.isMaster() && this.getScene().getProperty('singlePage') === false) {
                 // If the invalidation area intersects with our page clipping box then
-                // we need to invalidate the same area on all renderable linked pages as well
+                // we need to invalidate the same area on all paintable linked pages as well
                 var clipBBox = this.getPageClipBBox();
                 if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
                     this.getScene().visitLinks(this, function (link) {
-                        if (link instanceof IFPage && link.isRenderable()) {
+                        if (link instanceof IFPage && link.isPaintable()) {
                             // Move invalidation area relative to the linked page and let the
                             // page invalidate the area which by itself my trigger more invalidations
                             // when the linked page is also a master

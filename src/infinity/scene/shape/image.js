@@ -192,15 +192,6 @@
         return true;
     };
 
-    /** @overide */
-    IFImage.prototype._paintForeground = function (context, style, styleIndex) {
-        if (!context.configuration.isOutline(context)) {
-            this._paintImage(context);
-        }
-
-        IFShape.prototype._paintForeground.call(this, context);
-    };
-
     /** @override */
     IFImage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // TODO : Make correct shape hit test here instead

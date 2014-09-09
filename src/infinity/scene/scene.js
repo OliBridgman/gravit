@@ -623,7 +623,7 @@
     };
 
     /** @override */
-    IFScene.prototype._renderChildren = function (context) {
+    IFScene.prototype._paintChildren = function (context) {
         if (context.configuration.clipArea) {
             var r = context.configuration.clipArea;
             context.canvas.clipRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
@@ -633,10 +633,10 @@
             if (node instanceof IFPage) {
                 // Handle single-page mode if set
                 if (!this.$singlePage || node.hasFlag(IFNode.Flag.Active)) {
-                    node.render(context);
+                    node.paint(context);
                 }
             } else if (node instanceof IFElement) {
-                node.render(context);
+                node.paint(context);
             }
         }
 

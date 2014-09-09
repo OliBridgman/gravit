@@ -108,9 +108,9 @@
     };
 
     /** @override */
-    IFPage.prototype._renderToBitmap = function (context) {
-        // Render scene and not ourself
-        this.getScene().render(context);
+    IFPage.prototype._paintToBitmap = function (context) {
+        // Paint scene and not ourself
+        this.getScene().paint(context);
 
         var bitmap = context.canvas.getBitmap();
 

@@ -24,8 +24,7 @@
             new GAlignPalette(),
             new GTransformPalette(),
             new GExportPalette(),
-            new GStylePalette(),
-            new GStylesPalette(),
+            //new GStylesPalette(),
             new GSwatchesPalette()
         );
 
@@ -197,15 +196,6 @@
             new GShapeProperties(),
             new GEffectProperties(),
             new GStyleProperties()
-        );
-
-        // Register default style entries
-        gravit.styleEntries.push(
-            new GFillPaintEntry(),
-            new GStrokePaintEntry(),
-            new GBlurFilterEntry(),
-            new GOffsetVEffectEntry(),
-            new GShadowEffectEntry()
         );
 
         // Register default actions

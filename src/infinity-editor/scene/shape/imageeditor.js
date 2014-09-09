@@ -14,12 +14,6 @@
     IFElementEditor.exports(IFImageEditor, IFImage);
 
     /** @override */
-    IFImageEditor.prototype.initialSetup = function () {
-        // Add an empty style to images by default
-        this.getElement().getStyleSet().appendChild(new IFInlineStyle());
-    };
-
-    /** @override */
     IFImageEditor.prototype.toString = function () {
         return "[Object IFImageEditor]";
     };

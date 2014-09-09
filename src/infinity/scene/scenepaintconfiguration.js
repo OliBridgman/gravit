@@ -58,7 +58,7 @@
     IFScenePaintConfiguration.prototype.paintMode = IFScenePaintConfiguration.PaintMode.Fast;
 
     /**
-     * Whether to render in pixel mode or not
+     * Whether to paint in pixel mode or not
      * @type {Boolean}
      */
     IFScenePaintConfiguration.prototype.pixelMode = false;

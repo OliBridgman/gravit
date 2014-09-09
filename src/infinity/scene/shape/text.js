@@ -612,7 +612,7 @@
         var color = 'black';
         var text = this._parent;
         if (text) {
-            // TODO : Figure color of topmost visible styleSet and assign it to color
+            // TODO : Take color of fill pattern and assign it to editor
         }
         css['color'] = color;
 

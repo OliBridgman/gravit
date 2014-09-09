@@ -13,31 +13,10 @@
     /** @override */
     IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         if (IFElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
-            // Support dropping colors, gradients and swatches
-            // TODO : Support dropping IFTexture as well
-            if (hitData instanceof IFStyle.HitResult && hitData.entry instanceof IFPatternPaint) {
-                if (source instanceof IFPattern) {
-                    var editor = IFEditor.getEditor(this.getElement().getScene());
-                    editor.beginTransaction();
-                    try {
-                        hitData.entry.setProperty('pat', source);
-                    } finally {
-                        editor.commitTransaction('Drop Pattern');
-                    }
-                }
-            }
-            // NO-OP
+            // TODO
             return false;
         }
         return true;
-    };
-
-    /** @override */
-    IFShapeEditor.prototype.initialSetup = function () {
-        // Add a default style with a default fill
-        var style = new IFInlineStyle();
-        style.appendChild(new IFStrokePaint());
-        this.getElement().getStyleSet().appendChild(style);
     };
 
     /**

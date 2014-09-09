@@ -30,11 +30,6 @@
             masterPage.appendChild(layer);
 
             var rectangle = new IFRectangle();
-            var style = new IFInlineStyle();
-            var fillPaint = new IFFillPaint();
-            fillPaint.setProperty('pat', IFColor.parseCSSColor('rgba(255, 0, 0, 0.75)'));
-            style.appendChild(fillPaint);
-            rectangle.getStyleSet().appendChild(style);
             rectangle.setProperty('trf', new IFTransform(insertSize.getX() / 2, 0, 0, 50, 100 + insertSize.getX() / 2, 100 + 50));
             layer.appendChild(rectangle);
 
@@ -67,10 +62,6 @@
 
                 var text = new IFText();
                 text.fromHtml('<p style="font-size:72px">Page Number ' + i + '</p>');
-
-                var style = new IFInlineStyle();
-                text.getStyleSet().appendChild(style);
-                style.appendChild(new IFFillPaint());
 
                 var textPaintBBox = text.getPaintBBox();
                 text.setProperties(['trf'], [new IFTransform(1, 0, 0, 1,

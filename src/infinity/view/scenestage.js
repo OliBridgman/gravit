@@ -39,7 +39,7 @@
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
 
-        // Handle rendering in pixel mode but only if we're not at 100%
+        // Handle painting in pixel mode but only if we're not at 100%
         if (this._view.getViewConfiguration().pixelMode && !ifMath.isEqualEps(this._view.getZoom(), 1.0)) {
             // Create and size our pixel content canvas
             if (!this._pixelContentCanvas) {
@@ -47,7 +47,7 @@
                 this._pixelContentCanvas.resize(context.canvas.getWidth(), context.canvas.getHeight());
             }
 
-            // Pixel content canvas always renders at scale = 100%
+            // Pixel content canvas always paints at scale = 100%
             var elemsBBox = this._view.getScene().getChildrenPaintBBox();
             this._pixelContentCanvas.prepare([elemsBBox]);
             var tl = elemsBBox.getSide(IFRect.Side.TOP_LEFT);
@@ -59,9 +59,9 @@
             // Save source canvas, exchange it with pixel content canvas and paint the scene
             var sourceCanvas = context.canvas;
             context.canvas = this._pixelContentCanvas;
-            this._view.getScene().render(context);
+            this._view.getScene().paint(context);
 
-            // Now render our pixel content canvas at the given scale on our source canvas
+            // Now paint our pixel content canvas at the given scale on our source canvas
             sourceCanvas.setTransform(this._view.getWorldTransform());
             sourceCanvas.drawImage(this._pixelContentCanvas, tl.getX(), tl.getY(), true);
 
@@ -69,11 +69,11 @@
             this._pixelContentCanvas.finish();
             context.canvas = sourceCanvas;
         } else {
-            // Render regular vectors
+            // Paint regular vectors
             this._pixelContentCanvas = null;
             context.canvas.setOrigin(new IFPoint(this._view._scrollX, this._view._scrollY));
             context.canvas.setScale(this._view._zoom);
-            this._view.getScene().render(context);
+            this._view.getScene().paint(context);
         }
     };
 
