@@ -193,41 +193,12 @@
     };
 
     /** @overide */
-    IFImage.prototype._paintBackground = function (context, style, styleIndex) {
-        // Only paint for no style and no outline, otherwise this will be done in _paintStyle
-        if (!style && !context.configuration.isOutline(context)) {
+    IFImage.prototype._paintForeground = function (context, style, styleIndex) {
+        if (!context.configuration.isOutline(context)) {
             this._paintImage(context);
         }
 
-        IFShape.prototype._paintBackground.call(this, context);
-    };
-
-    /** @override */
-    IFImage.prototype._paintStyle = function (context, style, styleIndex) {
-        if (this._status === IFImage.ImageStatus.Loaded) {
-            // Image styles are painted on temporary canvas and then clipped against the image
-            var sourceCanvas = context.canvas;
-            context.canvas = sourceCanvas.createCanvas(style.getBBox(this.getGeometryBBox()));
-
-            // Paint image contents now (for first style, only)
-            if (styleIndex === 0) {
-                this._paintImage(context);
-            }
-
-            try {
-                IFShape.prototype._paintStyle.call(this, context, style, styleIndex);
-            } finally {
-                // Paint image contents now again but cut it out
-                this._paintImage(context, IFPaintCanvas.CompositeOperator.DestinationIn)
-
-                // Paint canvas back and swap again
-                sourceCanvas.drawCanvas(context.canvas);
-                context.canvas = sourceCanvas;
-            }
-        } else {
-            this._paintImage(context);
-            IFShape.prototype._paintStyle.call(this, context, style, styleIndex);
-        }
+        IFShape.prototype._paintForeground.call(this, context);
     };
 
     /** @override */
