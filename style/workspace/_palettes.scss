@@ -10,7 +10,7 @@
 
   .palette-group {
     overflow: hidden;
-    border-bottom: 1px solid $darkShadowColor;
+    border-bottom: 3px solid $darkShadowColor;
 
     > .palette-group-header {
       height: 21px;
@@ -36,10 +36,6 @@
         }
       }
 
-      > .palette-group-collapse > button {
-        padding: 0px;
-      }
-
       > .palette-group-tabs {
         width: 100%;
 
@@ -52,11 +48,39 @@
           box-shadow: none;
           margin: 0px;
 
+          > span.collapse-icon {
+            height: 14px;
+            line-height: 20px; // 14px-11px*2
+            width: 14px;
+            text-align: center;
+            display: none;
+
+            > span {
+              font-size: 11px;
+            }
+
+            > span:first-child {
+              bottom: 0px;
+            }
+
+            > span:last-child {
+              top: 0px;
+            }
+          }
+
           &:active, &.g-active {
             background: $baseColor;
 
             &, * {
               color: $textColor;
+            }
+          }
+
+          &.g-active {
+            padding-left: 0px;
+
+            > span.collapse-icon {
+              display: inline-block;
             }
           }
         }
@@ -67,14 +91,8 @@
       }
     }
 
-    &.collapsed-palette > .palette-group-header > .palette-group-tabs button {
-      background: transparent;
-
-      &:active, &.g-active {
-        &, * {
-          color: $selectedColor;
-        }
-      }
+    &.collapsed-palette > .palette-group-header > .palette-group-controls {
+      visibility: hidden;
     }
 
     .palette-panel {

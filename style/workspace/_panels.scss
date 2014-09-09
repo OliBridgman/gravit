@@ -11,6 +11,14 @@
   border-right: 2px solid $darkColor;
   background: $baseColor;
 
+  &.collapse-half {
+    height: 78px;
+  }
+
+  &.collapse-full {
+    height: 22px;
+  }
+
   .panels-tabs {
     height: 21px;
     background: $darkColor;
@@ -24,11 +32,39 @@
       box-shadow: none;
       margin: 0px;
 
+      > span.collapse-icon {
+        height: 14px;
+        line-height: 20px; // 14px-11px*2
+        width: 14px;
+        text-align: center;
+        display: none;
+
+        > span {
+          font-size: 11px;
+        }
+
+        > span:first-child {
+          bottom: 0px;
+        }
+
+        > span:last-child {
+          top: 0px;
+        }
+      }
+
       &:active, &.g-active {
         background: $baseColor;
 
         &, * {
           color: $textColor;
+        }
+      }
+
+      &.g-active {
+        padding-left: 0px;
+
+        > span.collapse-icon {
+          display: inline-block;
         }
       }
     }

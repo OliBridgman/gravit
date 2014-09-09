@@ -6,6 +6,14 @@
      */
     function GPanels(htmlElement) {
         this._htmlElement = htmlElement;
+        this._collapseIcon = $('<span class="fa fa-stack collapse-icon"><span class="fa fa-stack-1x fa-angle-up"></span><span class="fa fa-stack-1x fa-angle-down"></span></span>');
+    };
+
+    /** @enum */
+    GPanels.CollapseMode = {
+        None: 'none',
+        Half: 'half',
+        Full: 'full'
     };
 
     /**
@@ -13,6 +21,12 @@
      * @private
      */
     GPanels.prototype._htmlElement = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GPalettes.prototype._collapseIcon = null;
 
     /**
      * @type {Array<{{container: JQuery, panel: GPanel}}>}
@@ -27,6 +41,53 @@
     GPanels.prototype._activePanel = null;
 
     /**
+     * @type {GPanels.CollapseMode}
+     * @private
+     */
+    GPanels.prototype._collapseMode = null;
+
+    /**
+     * @returns {GPanels.CollapseMode}
+     */
+    GPanels.prototype.getCollapseMode = function () {
+        return this._collapseMode;
+    };
+
+    /**
+     * @param {GPanels.CollapseMode} collapseMode
+     */
+    GPanels.prototype.setCollapseMode = function (collapseMode) {
+        if (collapseMode !== this._collapseMode) {
+            if (this._collapseMode) {
+                this._htmlElement.removeClass('collapse-' + this._collapseMode);
+            }
+
+            this._collapseMode = collapseMode;
+
+            if (this._collapseMode) {
+                this._htmlElement.addClass('collapse-' + this._collapseMode);
+            }
+        }
+    };
+
+    /**
+     *
+     */
+    GPanels.prototype.toggleCollapseMode = function () {
+        switch (this._collapseMode) {
+            case GPanels.CollapseMode.Full:
+                this.setCollapseMode(GPanels.CollapseMode.None);
+                break;
+            case GPanels.CollapseMode.Half:
+                this.setCollapseMode(GPanels.CollapseMode.Full);
+                break;
+            case GPanels.CollapseMode.None:
+                this.setCollapseMode(GPanels.CollapseMode.Half);
+                break;
+        }
+    };
+
+    /**
      * @returns {String} the id of the active panel or null for none
      */
     GPanels.prototype.getActivePanel = function () {
@@ -38,7 +99,9 @@
      * @param {String} panelId
      */
     GPanels.prototype.setActivePanel = function (panelId) {
-        if (panelId !== this._activePanel) {
+        if (panelId === this._activePanel) {
+            this.toggleCollapseMode();
+        } else {
             for (var i = 0; i < this._panels.length; ++i) {
                 var panel = this._panels[i];
                 var id = panel.panel.getId();
@@ -105,8 +168,9 @@
                 .attr('data-panel-id', panel.getId())
                 .text(ifLocale.get(panel.getTitle()))
                 .on('click', function (evt) {
-                    this.setActivePanel($(evt.target).attr('data-panel-id'));
+                    this.setActivePanel($(evt.target).closest('button').attr('data-panel-id'));
                 }.bind(this))
+                .prepend(this._collapseIcon.clone())
                 .appendTo(panelsTabs);
 
             var container = $('<div></div>')
@@ -142,6 +206,8 @@
                 }
             }
         }
+
+        this.setCollapseMode(GPanels.CollapseMode.None);
     };
 
     /**

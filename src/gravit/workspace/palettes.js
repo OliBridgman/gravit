@@ -8,10 +8,11 @@
         this._htmlElement = htmlElement;
         this._palettesInfo = [];
         this._groupsInfo = [];
+        this._collapseIcon = $('<span class="fa fa-stack collapse-icon"><span class="fa fa-stack-1x fa-angle-up"></span><span class="fa fa-stack-1x fa-angle-down"></span></span>');
     };
 
     /**
-     * @type {HTMLDivElement}
+     * @type {JQuery}
      * @private
      */
     GPalettes.prototype._htmlElement = null;
@@ -27,6 +28,12 @@
      * @private
      */
     GPalettes.prototype._groupsInfo = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GPalettes.prototype._collapseIcon = null;
 
     /**
      * Group an array of palettes together
@@ -84,18 +91,18 @@
                 groupInfo.activePalette = paletteId;
 
                 // Iterate each tab and mark active/non-active
-                groupInfo.container.find('.palette-group-tabs > button').each(function () {
-                    var el = $(this);
+                groupInfo.container.find('.palette-group-tabs > button').each(function (index, element) {
+                    var el = $(element);
                     if (el.attr('data-palette-id') === paletteId) {
                         el.addClass('g-active');
                     } else {
                         el.removeClass('g-active');
                     }
-                });
+                }.bind(this));
 
                 // Iterate each panel and mark visible/hidden
-                groupInfo.container.find('.palette-group-panels > div').each(function () {
-                    var el = $(this);
+                groupInfo.container.find('.palette-group-panels > div').each(function (index, element) {
+                    var el = $(element);
                     if (el.attr('data-palette-id') === paletteId) {
                         el.css('display', '');
                     } else {
@@ -284,7 +291,8 @@
                     } else {
                         this.setPaletteActive(paletteInfo.palette.getId(), true);
                     }
-                }.bind(this)));
+                }.bind(this))
+                .prepend(this._collapseIcon.clone()));
 
             panelsContainer.append(paletteInfo.panel);
 
@@ -305,14 +313,6 @@
             .addClass('palette-group')
             .append($('<div></div>')
                 .addClass('palette-group-header')
-                .append($('<div></div>')
-                    .addClass('palette-group-collapse')
-                    .append($('<button></button>')
-                        .append($('<span></span>')
-                            .addClass('fa fa-angle-double-down fa-fw'))
-                        .on('click', function () {
-                            this._setGroupExpanded(groupInfo, !groupInfo.expanded);
-                        }.bind(this))))
                 .append($('<div></div>')
                     .addClass('palette-group-tabs'))
                 .append($('<div></div>')
@@ -339,17 +339,13 @@
         if (expanded !== groupInfo.expanded) {
             groupInfo.expanded = expanded;
 
-            var buttonSpan = groupInfo.container.find('.palette-group-collapse > button > span');
-
             if (groupInfo.expanded) {
                 groupInfo.container.css('height', '');
                 groupInfo.container.removeClass('collapsed-palette');
-                buttonSpan.attr('class', 'fa  fa-angle-double-down fa-fw');
             } else {
                 var header = groupInfo.container.find('.palette-group-header');
                 groupInfo.container.height(header.outerHeight());
                 groupInfo.container.addClass('collapsed-palette');
-                buttonSpan.attr('class', 'fa  fa-angle-double-right fa-fw');
             }
         }
     };
