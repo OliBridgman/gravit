@@ -37,15 +37,23 @@
             var self = this;
             if (property === 'blm') {
                 return $('<select></select>')
-                    .append($('<option></option>')
-                        .text('Mask'))
-                    .append($('<option></option>')
-                        .text('Background'))
-                    .append($('<optgroup></optgroup>')
-                        .attr('label', 'Regular'))
-                    .gBlendMode();
-            } else if (property === 'opc') {
-                return $('<input>');
+                    .attr('data-property', property)
+                    .gBlendMode()
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).val());
+                    });
+            } else if (property === 'opc' || property === 'fop') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        var opacity = IFLength.parseEquationValue($(this).val());
+                        if (opacity !== null && opacity >= 0.0 && opacity <= 100) {
+                            self._assignProperty(property, opacity / 100);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -107,7 +115,7 @@
                 })
                 // TODO : I18N
                 .text('Fill:')
-                .append(_createInput('opc')
+                .append(_createInput('fop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -151,14 +159,21 @@
      * @private
      */
     GStyleProperties.prototype._afterPropertiesChange = function (event) {
-        // TODO
+        if (event.node === this._styleElements[0].getStyle()) {
+            this._updateProperties();
+        }
     };
 
     /**
      * @private
      */
     GStyleProperties.prototype._updateProperties = function () {
-        // TODO
+        var scene = this._document.getScene();
+        var style = this._styleElements[0].getStyle();
+
+        this._panel.find('[data-property="blm"]').val(style.getProperty('blm'));
+        this._panel.find('[data-property="fop"]').val(ifUtil.formatNumber(style.getProperty('fop') * 100, 0));
+        this._panel.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100, 0));
     };
 
     /**
@@ -176,17 +191,16 @@
      * @private
      */
     GStyleProperties.prototype._assignProperties = function (properties, values) {
-        /* TODO
-         var editor = this._document.getEditor();
-         editor.beginTransaction();
-         try {
-         for (var i = 0; i < this._styleElements.length; ++i) {
-         this._styleElements[i].setProperties(properties, values);
-         }
-         } finally {
-         // TODO : I18N
-         editor.commitTransaction('Modify Ellipse Properties');
-         }*/
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._styleElements.length; ++i) {
+                this._styleElements[i].getStyle().setProperties(properties, values);
+            }
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Style');
+        }
     };
 
     /** @override */
