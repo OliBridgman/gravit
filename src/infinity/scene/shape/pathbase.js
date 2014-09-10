@@ -416,19 +416,17 @@
                         path._notifyChange(IFElement._Change.PrepareGeometryUpdate);
                     }
                 } else if (change === IFNode._Change.AfterPropertiesChange) {
-                    if (this.$tp == IFPathBase.AnchorPoint.Type.Symmetric &&
-                            !this.$ah && this.$hlx != null && this.$hrx != null ||
-                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror &&
-                            !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+                    if (this.$tp == IFPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
 
                         if ((args.properties.indexOf('hrx') >= 0 ||
                             args.properties.indexOf('hry') >= 0) &&
                             args.properties.indexOf('hlx') < 0 &&
                             args.properties.indexOf('hly') < 0 ||
                             args.properties.indexOf('tp') >= 0 &&
-                            args.properties.indexOf('hlx') < 0 &&
-                            args.properties.indexOf('hly') < 0 &&
-                            this.$hrx != null) {
+                                args.properties.indexOf('hlx') < 0 &&
+                                args.properties.indexOf('hly') < 0 &&
+                                this.$hrx != null) {
                             this._leadHr = true;
                         } else {
                             this._leadHr = false;
@@ -436,10 +434,8 @@
                     }
 
                     if (path || // For Smooth point recalculate handles properly, even if point is not inserted yet
-                        this.$tp == IFPathBase.AnchorPoint.Type.Symmetric &&
-                            !this.$ah && this.$hlx != null && this.$hrx != null ||
-                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror &&
-                            !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+                        this.$tp == IFPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
 
                         this._invalidateCalculations();
                     }
@@ -532,8 +528,7 @@
             var hx, hy;
             if (this.$ah) {
                 if (nextPt && prevPt && (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) &&
-                    !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
+                    nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenNext * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
@@ -543,8 +538,7 @@
                     this.setProperties(['hrx', 'hry'], [null, null]);
                 }
                 if (prevPt && nextPt && (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) &&
-                    !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
+                    prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenPrev * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
@@ -690,7 +684,7 @@
             } else { // type != Smooth && type != Connector as this method should not be called for connector
                 if (prevPt && (prevPt.$x != this.$x || prevPt.$y != this.$y)) {
                     if (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                            prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+                        prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
 
                         var prevprevPt = points.getPreviousPoint(prevPt);
                         if (!prevprevPt || (prevPt.$x == prevprevPt.$x && prevPt.$y == prevprevPt.$y)) {
@@ -733,7 +727,7 @@
 
                 if (nextPt && (nextPt.$x != this.$x || nextPt.$y != this.$y)) {
                     if (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                            nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+                        nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
 
                         var nextnextPt = points.getNextPoint(nextPt);
                         if (!nextnextPt || (nextPt.$x == nextnextPt.$x && nextPt.$y == nextnextPt.$y)) {
@@ -929,8 +923,7 @@
             ap.$tp == IFPathBase.AnchorPoint.Type.Asymmetric ||
             ap.$tp == IFPathBase.AnchorPoint.Type.Connector ||
             ap.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Mirror ||
-            !path || !path.$closed ||
+            ap.$tp == IFPathBase.AnchorPoint.Type.Mirror || !path || !path.$closed ||
             ap == this.getLastChild()) {
 
             if (transform) {
@@ -1525,24 +1518,6 @@
         return this._vertices.readVertex(vertex);
     };
 
-    /** @override */
-    IFPathBase.prototype.store = function (blob) {
-        if (IFShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPathBase.VisualProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPathBase.prototype.restore = function (blob) {
-        if (IFShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFPathBase.VisualProperties);
-            return true;
-        }
-        return false;
-    };
-
     /**
      * Creates a new empty anchor points set, and returns the old anchor points
      * @returns {IFPathBase.AnchorPoints} old anchor points
@@ -1562,8 +1537,12 @@
     IFPathBase.prototype._handleChange = function (change, args) {
         this._handleVisualChangeForProperties(change, args, IFPathBase.VisualProperties);
 
-        // Special handling when changing closed status of path
-        if (change === IFNode._Change.AfterPropertiesChange) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPathBase.VisualProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPathBase.VisualProperties);
+        } else if (change === IFNode._Change.AfterPropertiesChange) {
+            // Special handling when changing closed status of path
             if (args.properties.indexOf('closed') >= 0) {
                 var points = this._getAnchorPoints();
                 if (points) {

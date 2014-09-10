@@ -87,26 +87,6 @@
     };
 
     /** @override */
-    IFBlock.prototype.store = function (blob) {
-        if (IFNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFBlock.VisualProperties);
-            this.storeProperties(blob, IFBlock.MetaProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFBlock.prototype.restore = function (blob) {
-        if (IFNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFBlock.VisualProperties);
-            this.restoreProperties(blob, IFBlock.MetaProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFBlock.prototype._setParent = function (parent) {
         IFElement.prototype._setParent.call(this, parent);
 
@@ -124,7 +104,13 @@
 
     /** @override */
     IFBlock.prototype._handleChange = function (change, args) {
-        if (change == IFNode._Change.AfterPropertiesChange) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFBlock.VisualProperties);
+            this.storeProperties(args, IFBlock.MetaProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFBlock.VisualProperties);
+            this.restoreProperties(args, IFBlock.MetaProperties);
+        } else if (change == IFNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
 
@@ -173,13 +159,8 @@
                     }
                 });
             }
-
-            // Call super and be done with it
-            IFElement.prototype._handleChange.call(this, change, args);
-        } else {
-            // Call super by default and be done with it
-            IFElement.prototype._handleChange.call(this, change, args);
         }
+        IFElement.prototype._handleChange.call(this, change, args);
     };
 
     _.IFBlock = IFBlock;

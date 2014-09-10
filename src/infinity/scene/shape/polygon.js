@@ -85,29 +85,18 @@
     };
 
     /** @override */
-    IFPolygon.prototype.store = function (blob) {
-        if (IFPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPolygon.GeometryProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPolygon.prototype.restore = function (blob) {
-        if (IFPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFPolygon.GeometryProperties);
-            this._invalidatePath();
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFPolygon.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPolygon.GeometryProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPolygon.GeometryProperties);
+            this._invalidatePath();
+        }
+
         if (this._handleGeometryChangeForProperties(change, args, IFPolygon.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             this._invalidatePath();
         }
+
         IFPathBase.prototype._handleChange.call(this, change, args);
     };
 

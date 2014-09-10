@@ -109,47 +109,6 @@
         }
     };
 
-    /** @override */
-    IFRectangle.prototype.store = function (blob) {
-        if (IFPathBase.prototype.store.call(this, blob)) {
-            if (this.$uf) {
-                blob.uf = true; // all uniform
-                blob.ct = this.$tl_ct; // all corner type
-                blob.sl = this.$tl_sx; // all shoulder length
-            } else {
-                for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
-                    var side = IFRectangle.SIDES[i];
-                    var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
-                    blob[prefix + 'uf'] = this['$' + prefix + '_uf'];
-                    blob[prefix + 'ct'] = this['$' + prefix + '_ct'];
-                    blob[prefix + 'sl'] = [this['$' + prefix + '_sx'], this['$' + prefix + '_sy']];
-                }
-            }
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFRectangle.prototype.restore = function (blob) {
-        if (IFPathBase.prototype.restore.call(this, blob)) {
-            // We'll use our custom restore routine here as we can save optimized
-            for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
-                var side = IFRectangle.SIDES[i];
-                var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
-                this.$uf = blob.uf;
-                this['$' + prefix + '_uf'] = blob.uf ? blob.uf : blob[prefix + 'uf'];
-                this['$' + prefix + '_ct'] = blob.uf ? blob.ct : blob[prefix + 'ct'];
-                this['$' + prefix + '_sx'] = blob.uf ? blob.sl : blob[prefix + 'sl'][0];
-                this['$' + prefix + '_sy'] = blob.uf ? blob.sl : blob[prefix + 'sl'][1];
-            }
-
-            this._invalidatePath();
-            return true;
-        }
-        return false;
-    };
-
     /**
      * Return the anchor points of the rectangle
      * @returns {IFPathBase.AnchorPoints}
@@ -160,6 +119,35 @@
 
     /** @override */
     IFRectangle.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            if (this.$uf) {
+                args.uf = true; // all uniform
+                args.ct = this.$tl_ct; // all corner type
+                args.sl = this.$tl_sx; // all shoulder length
+            } else {
+                for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+                    var side = IFRectangle.SIDES[i];
+                    var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
+                    args[prefix + 'uf'] = this['$' + prefix + '_uf'];
+                    args[prefix + 'ct'] = this['$' + prefix + '_ct'];
+                    args[prefix + 'sl'] = [this['$' + prefix + '_sx'], this['$' + prefix + '_sy']];
+                }
+            }
+        } else if (change === IFNode._Change.Restore) {
+            // We'll use our custom restore routine here as we can save optimized
+            for (var i = 0; i < IFRectangle.SIDES.length; ++i) {
+                var side = IFRectangle.SIDES[i];
+                var prefix = IFRectangle.getGeometryPropertiesSidePrefix(side);
+                this.$uf = args.uf;
+                this['$' + prefix + '_uf'] = args.uf ? args.uf : args[prefix + 'uf'];
+                this['$' + prefix + '_ct'] = args.uf ? args.ct : args[prefix + 'ct'];
+                this['$' + prefix + '_sx'] = args.uf ? args.sl : args[prefix + 'sl'][0];
+                this['$' + prefix + '_sy'] = args.uf ? args.sl : args[prefix + 'sl'][1];
+            }
+
+            this._invalidatePath();
+        }
+        
         if (this._handleGeometryChangeForProperties(change, args, IFRectangle.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             var propertiesToSet = [];
             var valuesToSet = [];
@@ -251,6 +239,7 @@
                 this._invalidatePath();
             }
         }
+        
         IFPathBase.prototype._handleChange.call(this, change, args);
     };
 

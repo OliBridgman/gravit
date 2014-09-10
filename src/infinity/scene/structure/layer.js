@@ -69,48 +69,6 @@
     };
 
     /** @override */
-    IFLayer.prototype.store = function (blob) {
-        if (IFBlock.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFLayer.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return value.asString();
-                }
-                return value;
-            });
-            this.storeProperties(blob, IFLayer.MetaProperties);
-
-            // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(IFNode.Flag.Active)) {
-                blob.__active = true;
-            }
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFLayer.prototype.restore = function (blob) {
-        if (IFBlock.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFLayer.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
-                }
-                return value;
-            });
-            this.restoreProperties(blob, IFLayer.MetaProperties);
-
-            // Restore activeness flag which is special to pages and layers
-            if (blob.__active) {
-                this.setFlag(IFNode.Flag.Active);
-            }
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFLayer.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFLayer || parent instanceof IFPage;
     };
@@ -166,6 +124,34 @@
 
     /** @override */
     IFLayer.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFLayer.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return value.asString();
+                }
+                return value;
+            });
+            this.storeProperties(args, IFLayer.MetaProperties);
+
+            // Store activeness flag which is special to pages and layers
+            if (this.hasFlag(IFNode.Flag.Active)) {
+                args.__active = true;
+            }
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFLayer.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return IFColor.parseColor(value);
+                }
+                return value;
+            });
+            this.restoreProperties(args, IFLayer.MetaProperties);
+
+            // Restore activeness flag which is special to pages and layers
+            if (args.__active) {
+                this.setFlag(IFNode.Flag.Active);
+            }
+        }
+        
         this._handleVisualChangeForProperties(change, args, IFLayer.VisualProperties);
 
         if (change == IFNode._Change.AfterPropertiesChange) {

@@ -1067,27 +1067,18 @@
                 this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
                 args._handleChange(IFElement._Change.InvalidationRequest);
             }
-
-            // Call super and be done with it
-            IFNode.prototype._handleChange.call(this, change, args);
         } else if (change == IFNode._Change.BeforeChildRemove) {
 
             // If child is an element, request repaint for it's area
             if (args instanceof IFElement) {
                 this._requestInvalidateNode(args);
             }
-
-            // Call super and be done with it
-            IFNode.prototype._handleChange.call(this, change, args);
         } else if (change == IFNode._Change.AfterChildRemove) {
 
             // If child is an element, notify about the change
             if (args instanceof IFElement) {
                 this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
             }
-
-            // Call super and be done with it
-            IFNode.prototype._handleChange.call(this, change, args);
         } else if (change == IFNode._Change.AfterFlagChange) {
             switch (args.flag) {
                 case IFElement.Flag.NoPaint:
@@ -1095,14 +1086,21 @@
                     break;
                 default:
                     break;
-            }
 
-            // Call super and be done with it
-            IFNode.prototype._handleChange.call(this, change, args);
-        } else {
-            // Call super by default and be done with it
-            IFNode.prototype._handleChange.call(this, change, args);
+            }
+        } else if (change === IFNode._Change.Store) {
+            if (this.hasMixin(IFElement.Style) && this._style) {
+                //args._stl = IFNode.store(this._style);
+            }
+        } else if (change === IFNode._Change.Restore) {
+            if (this.hasMixin(IFElement.Style) && args._stl) {
+                //this._style = IFNode.restore(args);
+                //this._style._parent = this;
+                //this._style._setScene(this._scene);
+            }
         }
+
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     /**

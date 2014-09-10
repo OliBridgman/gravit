@@ -129,25 +129,6 @@
     };
 
     /** @override */
-    IFImage.prototype.store = function (blob) {
-        if (IFShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFImage.VisualProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFImage.prototype.restore = function (blob) {
-        if (IFShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFImage.VisualProperties);
-            this._updateImage();
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFImage.prototype.rewindVertices = function (index) {
         this._vertexIterator = index;
         return true;
@@ -200,7 +181,12 @@
 
     /** @override */
     IFImage.prototype._handleChange = function (change, args) {
-        if (change == IFNode._Change.AfterPropertiesChange) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFImage.VisualProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFImage.VisualProperties);
+            this._updateImage();
+        } else  if (change == IFNode._Change.AfterPropertiesChange) {
             if (args.properties.indexOf('url') >= 0) {
                 this._updateImage();
             }

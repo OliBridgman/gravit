@@ -33,32 +33,6 @@
     };
 
     /** @override */
-    IFPath.prototype.store = function (blob) {
-        if (IFPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPath.GeometryProperties);
-
-            // Store our anchor points
-            blob.pts = this.getAnchorPoints().serialize();
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPath.prototype.restore = function (blob) {
-        if (IFPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFPath.GeometryProperties);
-
-            // Restore our anchor points
-            if (blob.hasOwnProperty('pts')) {
-                this.getAnchorPoints().deserialize(blob.pts);
-            }
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFPath.prototype.clone = function () {
         var clone = IFPathBase.prototype.clone.call(this);
 
@@ -307,7 +281,18 @@
 
     /** @override */
     IFPath.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPath.GeometryProperties);
+            args.pts = this.getAnchorPoints().serialize();
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPath.GeometryProperties);
+            if (args.hasOwnProperty('pts')) {
+                this.getAnchorPoints().deserialize(args.pts);
+            }
+        }
+
         IFPathBase.prototype._handleChange.call(this, change, args);
+
         this._handleGeometryChangeForProperties(change, args, IFPath.GeometryProperties);
         this._handleGeometryChangeForProperties(change, args, IFPathBase.GeometryProperties);
     };

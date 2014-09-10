@@ -88,34 +88,6 @@
     };
 
     /** @override */
-    IFShape.prototype.store = function (blob) {
-        if (IFItem.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFShape.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.serialize(value);
-                }
-                return value;
-            });
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFShape.prototype.restore = function (blob) {
-        if (IFItem.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFShape.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.deserialize(value);
-                }
-                return value;
-            });
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFShape.prototype._paint = function (context) {
         this._paintStyle(context);
     };
@@ -177,6 +149,23 @@
     /** @override */
     IFShape.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFShape.GeometryProperties);
+
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFShape.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.serialize(value);
+                }
+                return value;
+            });
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFShape.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.deserialize(value);
+                }
+                return value;
+            });
+        }
+
         IFItem.prototype._handleChange.call(this, change, args);
     };
 

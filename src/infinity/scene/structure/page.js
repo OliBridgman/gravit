@@ -83,54 +83,6 @@
     };
 
     /** @override */
-    IFPage.prototype.store = function (blob) {
-        if (IFBlock.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPage.GeometryProperties);
-            this.storeProperties(blob, IFPage.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return value.asString();
-                }
-                return value;
-            });
-
-            // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(IFNode.Flag.Active)) {
-                blob.__active = true;
-            }
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPage.prototype.restore = function (blob) {
-        // Ugly hack to prevent transforming children when restoring
-        this.__restoring = true;
-        try {
-            if (IFBlock.prototype.restore.call(this, blob)) {
-                this.restoreProperties(blob, IFPage.GeometryProperties);
-                this.restoreProperties(blob, IFPage.VisualProperties, function (property, value) {
-                    if (property === 'cls' && value) {
-                        return IFColor.parseColor(value);
-                    }
-                    return value;
-                });
-
-                // Restore activeness flag which is special to pages and layers
-                if (blob.__active) {
-                    this.setFlag(IFNode.Flag.Active);
-                }
-
-                return true;
-            }
-            return false;
-        } finally {
-            delete this.__restoring;
-        }
-    };
-
-    /** @override */
     IFPage.prototype._getBitmapPaintArea = function () {
         return this.getPageClipBBox();
     };
@@ -253,6 +205,38 @@
 
     /** @override */
     IFPage.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPage.GeometryProperties);
+            this.storeProperties(args, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return value.asString();
+                }
+                return value;
+            });
+
+            // Store activeness flag which is special to pages and layers
+            if (this.hasFlag(IFNode.Flag.Active)) {
+                args.__active = true;
+            }
+        } else if (change === IFNode._Change.PrepareRestore) {
+            // Ugly hack to prevent transforming children when restoring
+            this.__restoring = true;
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPage.GeometryProperties);
+            this.restoreProperties(args, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return IFColor.parseColor(value);
+                }
+                return value;
+            });
+
+            // Restore activeness flag which is special to pages and layers
+            if (args.__active) {
+                this.setFlag(IFNode.Flag.Active);
+            }
+            delete this.__restoring;
+        }
+
         if (this._handleGeometryChangeForProperties(change, args, IFPage.GeometryProperties)) {
             if (change === IFNode._Change.BeforePropertiesChange && !this.__restoring) {
                 // Check for position change in page

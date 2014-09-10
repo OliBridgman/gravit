@@ -65,26 +65,19 @@
     };
 
     /** @override */
-    IFText.Chunk.prototype.store = function (blob) {
-        if (IFNode.Store.prototype.store.call(this, blob)) {
-            blob.cnt = this._content;
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFText.Chunk.prototype.restore = function (blob) {
-        if (IFNode.Store.prototype.restore.call(this, blob)) {
-            this._content = blob.cnt;
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFText.Chunk.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFText.Block;
+    };
+
+    /** @override */
+    IFText.Chunk._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            args.cnt = this._content;
+        } else if (change === IFNode._Change.Restore) {
+            this._content = args.cnt;
+        }
+
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -258,27 +251,14 @@
     };
 
     /** @override */
-    IFText.Block.prototype.store = function (blob) {
-        if (IFNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFText.Block.Properties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @Block */
-    IFText.Block.prototype.restore = function (blob) {
-        if (IFNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFText.Block.Properties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFText.Block.prototype._handleChange = function (change, args) {
-        var text = this.getText();
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFText.Block.Properties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFText.Block.Properties);
+        }
 
+        var text = this.getText();
         if (text) {
             if (text._handleGeometryChangeForProperties(change, args, IFText.Block.Properties) && change == IFNode._Change.BeforePropertiesChange) {
                 text._runsDirty = true;
@@ -529,39 +509,8 @@
     };
 
     /** @override */
-    IFText.Paragraph.prototype._handleChange = function (change, args) {
-        var text = this.getText();
-
-        if (text) {
-            if (text._handleGeometryChangeForProperties(change, args, IFText.Paragraph.Properties) && change == IFNode._Change.BeforePropertiesChange) {
-                text._runsDirty = true;
-            }
-        }
-
-        IFText.Block.prototype._handleChange.call(this, change, args);
-    };
-
-    /** @override */
     IFText.Paragraph.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFText.Content;
-    };
-
-    /** @override */
-    IFText.Paragraph.prototype.store = function (blob) {
-        if (IFText.Block.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFText.Paragraph.Properties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFText.Paragraph.prototype.restore = function (blob) {
-        if (IFText.Block.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFText.Paragraph.Properties);
-            return true;
-        }
-        return false;
     };
 
     /** @override */
@@ -576,6 +525,24 @@
     IFText.Paragraph.prototype.cssToProperties = function (css) {
         this._cssToProperties(css, IFText.Paragraph.Properties, IFText.Paragraph.cssToProperty);
         IFText.Block.prototype.cssToProperties.call(this, css);
+    };
+
+    /** @override */
+    IFText.Paragraph.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFText.Paragraph.Properties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFText.Paragraph.Properties);
+        }
+
+        var text = this.getText();
+        if (text) {
+            if (text._handleGeometryChangeForProperties(change, args, IFText.Paragraph.Properties) && change == IFNode._Change.BeforePropertiesChange) {
+                text._runsDirty = true;
+            }
+        }
+
+        IFText.Block.prototype._handleChange.call(this, change, args);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -663,8 +630,8 @@
      */
     IFText.prototype.getContent = function () {
         if (!this._content) {
-                this._content = new IFText.Content();
-                this._content._parent = this;
+            this._content = new IFText.Content();
+            this._content._parent = this;
         }
 
         return this._content;
@@ -715,35 +682,6 @@
         } finally {
             this.endUpdate();
         }
-    };
-
-    /** @override */
-    IFText.prototype.store = function (blob) {
-        if (IFShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFText.GeometryProperties);
-
-            if (this._content) {
-                blob.ct = IFNode.store(this._content);
-            }
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFText.prototype.restore = function (blob) {
-        if (IFShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFText.GeometryProperties);
-
-            if (blob.ct) {
-                this._content = IFNode.restore(blob.ct);
-            }
-
-            this._runsDirty = true;
-            return true;
-        }
-        return false;
     };
 
     /** @override */
@@ -816,7 +754,7 @@
                 var char = textContent[0];
 
                 // Ignore zero height/width, spaces and binary chars
-                if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
+                if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
                     return;
                 }
 
@@ -939,6 +877,23 @@
 
     /** @override */
     IFText.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFText.GeometryProperties);
+
+            if (this._content) {
+                args.ct = IFNode.store(this._content);
+            }
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFText.GeometryProperties);
+
+            if (args.ct) {
+                this._content = IFNode.restore(args.ct);
+                this._content._parent = this;
+            }
+
+            this._runsDirty = true;
+        }
+
         IFShape.prototype._handleChange.call(this, change, args);
 
         if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {

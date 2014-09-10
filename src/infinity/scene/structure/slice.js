@@ -55,54 +55,6 @@
     };
 
     /** @override */
-    IFSlice.prototype.store = function (blob) {
-        if (IFItem.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFSlice.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return value.asString();
-                }
-                return value;
-            });
-
-            this.storeProperties(blob, IFSlice.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.serialize(value);
-                }
-                return value;
-            });
-
-            this.storeProperties(blob, IFSlice.MetaProperties);
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFSlice.prototype.restore = function (blob) {
-        if (IFItem.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFSlice.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
-                }
-                return value;
-            });
-
-            this.restoreProperties(blob, IFSlice.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.deserialize(value);
-                }
-                return value;
-            });
-
-            this.restoreProperties(blob, IFSlice.MetaProperties);
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFSlice.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFLayer;
     };
@@ -155,8 +107,43 @@
 
     /** @override */
     IFSlice.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFSlice.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return value.asString();
+                }
+                return value;
+            });
+
+            this.storeProperties(args, IFSlice.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.serialize(value);
+                }
+                return value;
+            });
+
+            this.storeProperties(args, IFSlice.MetaProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFSlice.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return IFColor.parseColor(value);
+                }
+                return value;
+            });
+
+            this.restoreProperties(args, IFSlice.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.deserialize(value);
+                }
+                return value;
+            });
+
+            this.restoreProperties(args, IFSlice.MetaProperties);
+        }
+        
         this._handleGeometryChangeForProperties(change, args, IFSlice.GeometryProperties);
         this._handleVisualChangeForProperties(change, args, IFSlice.VisualProperties);
+        
         IFItem.prototype._handleChange.call(this, change, args);
     };
 
