@@ -588,7 +588,6 @@
      */
     IFText.Content = function () {
         IFText.Paragraph.call(this);
-        this._flags |= IFNode.Flag.Shadow;
 
         // Setup default font stuff
         this.$ff = 'Open Sans';
@@ -663,25 +662,9 @@
      * @returns {IFText.Content}
      */
     IFText.prototype.getContent = function () {
-        // If we have a _content reference and it not
-        // has ourself as a parent, then clear it, first
-        if (this._content && this._content.getParent() !== this) {
-            this._content = null;
-        }
-
         if (!this._content) {
-            // Find our content and save reference for faster access
-            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof IFText.Content) {
-                    this._content = child;
-                    break;
-                }
-            }
-
-            if (!this._content) {
                 this._content = new IFText.Content();
-                this.appendChild(this._content);
-            }
+                this._content._parent = this;
         }
 
         return this._content;
@@ -738,6 +721,11 @@
     IFText.prototype.store = function (blob) {
         if (IFShape.prototype.store.call(this, blob)) {
             this.storeProperties(blob, IFText.GeometryProperties);
+
+            if (this._content) {
+                blob.ct = IFNode.store(this._content);
+            }
+
             return true;
         }
         return false;
@@ -747,6 +735,11 @@
     IFText.prototype.restore = function (blob) {
         if (IFShape.prototype.restore.call(this, blob)) {
             this.restoreProperties(blob, IFText.GeometryProperties);
+
+            if (blob.ct) {
+                this._content = IFNode.restore(blob.ct);
+            }
+
             this._runsDirty = true;
             return true;
         }

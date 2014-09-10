@@ -195,15 +195,6 @@
      */
     IFNode.Flag = {
         /**
-         * Flag marking a node to be a shadow which means
-         * that if not explicitely requesting, the user
-         * won't see the node when iterating the model
-         * @type {Number}
-         * @version 1.0
-         */
-        Shadow: 1 << 0,
-
-        /**
          * Flag marking a node to be selected
          * @type {Number}
          * @version 1.0
@@ -919,42 +910,18 @@
 
     /**
      * Access the first child of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the first child of this node or null for none
-     * @version 1.0
      */
-    IFNode.Container.prototype.getFirstChild = function (shadow) {
-        if (shadow || !this._firstChild) {
-            return this._firstChild;
-        } else {
-            for (var c = this._firstChild; c != null; c = c._next) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.Container.prototype.getFirstChild = function () {
+        return this._firstChild;
     };
 
     /**
      * Access the last child of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the last child of this node or null for none
-     * @version 1.0
      */
-    IFNode.Container.prototype.getLastChild = function (shadow) {
-        if (shadow || !this._lastChild) {
-            return this._lastChild;
-        } else {
-            for (var c = this._lastChild; c != null; c = c._previous) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.Container.prototype.getLastChild = function () {
+        return this._lastChild;
     };
 
     /**
@@ -1338,42 +1305,18 @@
 
     /**
      * Access the previous sibling of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the previous sibling of this node or null for none
-     * @version 1.0
      */
-    IFNode.prototype.getPrevious = function (shadow) {
-        if (shadow || !this._previous) {
-            return this._previous;
-        } else {
-            for (var c = this._previous; c != null; c = c._previous) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.prototype.getPrevious = function () {
+        return this._previous;
     };
 
     /**
      * Access the next sibling of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the next sibling of this node or null for none
-     * @version 1.0
      */
-    IFNode.prototype.getNext = function (shadow) {
-        if (shadow || !this._next) {
-            return this._next;
-        } else {
-            for (var c = this._next; c != null; c = c._next) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.prototype.getNext = function () {
+        return this._next;
     };
 
     /**
@@ -1459,20 +1402,15 @@
      * node as first parameter. The function may return a boolean value indicating whether to
      * return visiting (true) or whether to cancel visiting (false). Not returning anything or
      * returning anything else than a Boolean will be ignored.
-     * @param {Boolean} [shadow] if true, visits shadow nodes as well.
-     * This defaults to false.
      * @return {Boolean} result of visiting (false = canceled, true = went through)
-     * @version 1.0
      */
-    IFNode.prototype.accept = function (visitor, shadow) {
-        if (shadow || !this.hasFlag(IFNode.Flag.Shadow)) {
-            if (visitor.call(null, this) === false) {
-                return false;
-            }
+    IFNode.prototype.accept = function (visitor) {
+        if (visitor.call(null, this) === false) {
+            return false;
         }
 
         if (this.hasMixin(IFNode.Container)) {
-            return this.acceptChildren(visitor, shadow);
+            return this.acceptChildren(visitor);
         }
 
         return true;

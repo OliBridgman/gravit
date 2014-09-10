@@ -16,7 +16,7 @@
 
         // Add anchor points
         this._anchorPoints = anchorPoints ? anchorPoints : new IFPathBase.AnchorPoints();
-        this.appendChild(this._anchorPoints);
+        this._anchorPoints._parent = this;
         this._anchorPoints._removalAllowed = false;
 
         this._vertices = new IFVertexContainer();
@@ -792,8 +792,6 @@
      * @constructor
      */
     IFPathBase.AnchorPoints = function () {
-        // AnchorPoints is a "shadow" node
-        this._flags |= IFNode.Flag.Shadow;
     };
     IFObject.inheritAndMix(IFPathBase.AnchorPoints, IFNode, [IFNode.Container]);
 
