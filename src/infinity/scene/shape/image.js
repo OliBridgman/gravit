@@ -195,7 +195,7 @@
     /** @override */
     IFImage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // TODO : Make correct shape hit test here instead
-        return new IFElement.HitResult(this);
+        return new IFElement.HitResultInfo(this);
     };
 
     /** @override */
@@ -217,42 +217,43 @@
         }
     };
 
-    /**
-     * @param {IFPaintContext} context
-     * @private
-     */
-    IFImage.prototype._paintImage = function (context, cmpOrBlend) {
-        // Apply our transformation (if any) before the canvas transformation
-        var canvasTransform = context.canvas.getTransform(true);
-        if (this.$trf) {
-            var tmpTransform = canvasTransform.preMultiplied(this.$trf);
-            context.canvas.setTransform(tmpTransform);
+    /** @override */
+    IFImage.prototype._paintStyleLayer = function (context, layer) {
+        IFShape.prototype._paintStyleLayer.call(this, context, layer);
+
+        if (layer === IFStyle.Layer.Background && !context.isOutline()) {
+            // Apply our transformation (if any) before the canvas transformation
+            var canvasTransform = context.canvas.getTransform(true);
+            if (this.$trf) {
+                var tmpTransform = canvasTransform.preMultiplied(this.$trf);
+                context.canvas.setTransform(tmpTransform);
+            }
+
+            // Paint depending on our status
+            switch (this._status) {
+                case IFImage.ImageStatus.Loaded:
+                    context.canvas.drawImage(this._image, 0, 0, false, 1);
+                    break;
+
+                default:
+                    var width = this._getWidth();
+                    var height = this._getHeight();
+
+                    context.canvas.fillRect(0, 0, width, height, IFImage.NO_IMAGE_BACKGROUND);
+
+                    // TODO : Paint some loading indicator!?
+
+                    if (this._status === IFImage.ImageStatus.Error) {
+                        // Paint red cross
+                        context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
+                        context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
+                    }
+                    break;
+            }
+
+            // Reset original transform
+            context.canvas.setTransform(canvasTransform);
         }
-
-        // Paint depending on our status
-        switch (this._status) {
-            case IFImage.ImageStatus.Loaded:
-                context.canvas.drawImage(this._image, 0, 0, false, 1, cmpOrBlend);
-                break;
-
-            default:
-                var width = this._getWidth();
-                var height = this._getHeight();
-
-                context.canvas.fillRect(0, 0, width, height, IFImage.NO_IMAGE_BACKGROUND);
-
-                // TODO : Paint some loading indicator!?
-
-                if (this._status === IFImage.ImageStatus.Error) {
-                    // Paint red cross
-                    context.canvas.strokeLine(0, 0, width, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
-                    context.canvas.strokeLine(width, 0, 0, height, 2, IFImage.NO_IMAGE_ERROR_STROKE);
-                }
-                break;
-        }
-
-        // Reset original transform
-        context.canvas.setTransform(canvasTransform);
     };
 
     /**

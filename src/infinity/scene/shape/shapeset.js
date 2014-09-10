@@ -19,7 +19,7 @@
 
     /** @override */
     IFShapeSet.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return new IFBlock.HitResult(this);
+        return new IFElement.HitResultInfo(this);
     };
 
     _.IFShapeSet = IFShapeSet;

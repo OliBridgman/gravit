@@ -35,14 +35,14 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'pat') {
+            if (property === 'fpt' || property === 'spt') {
                 return $('<button></button>')
                     .attr('data-property', property)
                     .gColorButton({
                         allowClear: true
                     })
                     .on('colorchange', function (evt, color) {
-                        self._assignProperty(property, color);
+                        self._assignStyleProperty(property, color);
                     });
             } else if (property === 'tp') {
                 return $('<select></select>')
@@ -60,6 +60,18 @@
                         .text('Noise'));
             } else if (property === 'opc') {
                 return $('<input>');
+            } else if (property === 'sw') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        var strokeWidth = IFLength.parseEquationValue($(this).val());
+                        if (strokeWidth !== null && strokeWidth >= 0.0) {
+                            self._assignStyleProperty(property, strokeWidth);
+                        } else {
+                            self._updateStyleProperties();
+                        }
+                    });
             } else if (property.indexOf('sa-') === 0) {
                 var icon = '';
                 var align = property.substr('sa-'.length);
@@ -80,7 +92,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty(property, align);
+                        self._assignStyleProperty(property, align);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -104,7 +116,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty(property, cap);
+                        self._assignStyleProperty(property, cap);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -128,7 +140,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty(property, join);
+                        self._assignStyleProperty(property, join);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -152,7 +164,7 @@
                         'width': '16px',
                         'text-align': 'center'
                     }))
-                .append(_createInput('pat')
+                .append(_createInput('fpt')
                     .css({
                         'margin-left': '5px',
                         'width': '20px'
@@ -190,7 +202,7 @@
                         'width': '16px',
                         'text-align': 'center'
                     }))
-                .append(_createInput('pat')
+                .append(_createInput('spt')
                     .css({
                         'margin-left': '5px',
                         'width': '20px'
@@ -201,7 +213,7 @@
                     'top': '30px',
                     'left': '50px'
                 })
-                .append(_createInput('opc')
+                .append(_createInput('sw')
                     .css({
                         'width': '30px'
                     })))
@@ -235,21 +247,21 @@
                 })
                 // TODO : I18N
                 .text('Ending:'))
-                .append($('<div></div>')
-                    .css({
+            .append($('<div></div>')
+                .css({
                     'position': 'absolute',
                     'top': '65px',
                     'right': '5px'
-                    })
-                    .append(_createInput('lc-' + 'b')
-                        // TODO : I18N
-                        .attr('title', 'Bevel'))
-                    .append(_createInput('lc-' + 'r')
-                        // TODO : I18N
-                        .attr('title', 'Round'))
-                    .append(_createInput('lc-' + 's')
-                        // TODO : I18N
-                        .attr('title', 'Square')))
+                })
+                .append(_createInput('lc-' + 'b')
+                    // TODO : I18N
+                    .attr('title', 'Bevel'))
+                .append(_createInput('lc-' + 'r')
+                    // TODO : I18N
+                    .attr('title', 'Round'))
+                .append(_createInput('lc-' + 's')
+                    // TODO : I18N
+                    .attr('title', 'Square')))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -258,21 +270,21 @@
                 })
                 // TODO : I18N
                 .text('Join:'))
-                .append($('<div></div>')
-                    .css({
+            .append($('<div></div>')
+                .css({
                     'position': 'absolute',
                     'top': '89px',
                     'right': '5px'
-                    })
-                    .append(_createInput('lj-' + 'b')
-                        // TODO : I18N
-                        .attr('title', 'Bevel'))
-                    .append(_createInput('lj-' + 'r')
-                        // TODO : I18N
-                        .attr('title', 'Round'))
-                    .append(_createInput('lj-' + 'm')
-                        // TODO : I18N
-                        .attr('title', 'Miter')));
+                })
+                .append(_createInput('lj-' + 'b')
+                    // TODO : I18N
+                    .attr('title', 'Bevel'))
+                .append(_createInput('lj-' + 'r')
+                    // TODO : I18N
+                    .attr('title', 'Round'))
+                .append(_createInput('lj-' + 'm')
+                    // TODO : I18N
+                    .attr('title', 'Miter')));
     };
 
     /** @override */
@@ -293,7 +305,7 @@
         if (this._shapes.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._updateProperties();
+            this._updateStyleProperties();
             return true;
         } else {
             return false;
@@ -305,14 +317,27 @@
      * @private
      */
     GShapeProperties.prototype._afterPropertiesChange = function (event) {
-        // TODO
+        if (event.node === this._shapes[0].getStyle()) {
+            this._updateStyleProperties();
+        }
     };
 
     /**
      * @private
      */
-    GShapeProperties.prototype._updateProperties = function () {
-        // TODO
+    GShapeProperties.prototype._updateStyleProperties = function () {
+        var scene = this._document.getScene();
+        var style = this._shapes[0].getStyle();
+
+        this._panel.find('[data-property="fpt"]')
+            .gColorButton('value', style.getProperty('fpt'))
+            .gColorButton('scene', scene);
+
+        this._panel.find('[data-property="spt"]')
+            .gColorButton('value', style.getProperty('spt'))
+            .gColorButton('scene', scene);
+
+        this._panel.find('[data-property="sw"]').val(ifUtil.formatNumber(style.getProperty('sw')));
     };
 
     /**
@@ -320,8 +345,8 @@
      * @param {*} value
      * @private
      */
-    GShapeProperties.prototype._assignProperty = function (property, value) {
-        this._assignProperties([property], [value]);
+    GShapeProperties.prototype._assignStyleProperty = function (property, value) {
+        this._assignStyleProperties([property], [value]);
     };
 
     /**
@@ -329,18 +354,17 @@
      * @param {Array<*>} values
      * @private
      */
-    GShapeProperties.prototype._assignProperties = function (properties, values) {
-        /* TODO
-         var editor = this._document.getEditor();
-         editor.beginTransaction();
-         try {
-         for (var i = 0; i < this._shapes.length; ++i) {
-         this._shapes[i].setProperties(properties, values);
-         }
-         } finally {
-         // TODO : I18N
-         editor.commitTransaction('Modify Ellipse Properties');
-         }*/
+    GShapeProperties.prototype._assignStyleProperties = function (properties, values) {
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._shapes.length; ++i) {
+                this._shapes[i].getStyle().setProperties(properties, values);
+            }
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Style Properties');
+        }
     };
 
     /** @override */

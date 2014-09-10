@@ -244,7 +244,7 @@
         }
 
         if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return new IFBlock.HitResult(this);
+            return new IFElement.HitResultInfo(this);
         }
 
         return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);

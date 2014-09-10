@@ -28,6 +28,40 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // IFShape.HitResult Class
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @class IFShape.HitResult
+     * @param {IFShape.HitResult.Type} type
+     * @param {IFVertexInfo.HitResult} vertexHit
+     * @constructor
+     */
+    IFShape.HitResult = function (type, vertexHit) {
+        this.type = type;
+        this.vertex = vertexHit;
+    };
+
+    /**
+     * @enum
+     */
+    IFShape.HitResult.Type = {
+        Stroke: 0,
+        Fill: 1,
+        Outline: 2,
+        Other: 3
+    };
+
+    /**
+     * @type {IFShape.HitResult.Type}
+     */
+    IFShape.HitResult.prototype.type = null;
+
+    /**
+     * @type {IFVertexInfo.HitResult}
+     */
+    IFShape.HitResult.prototype.vertexHit = null;
+
+    // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
@@ -83,14 +117,46 @@
 
     /** @override */
     IFShape.prototype._paint = function (context) {
-        if (!this.rewindVertices(0)) {
-            return;
-        }
+        this._paintStyle(context);
+    };
 
-        // TODO
-        context.canvas.putVertices(this);
-        context.canvas.fillVertices(IFColor.parseCSSColor('silver'));
-        context.canvas.strokeVertices(IFColor.parseCSSColor('black'));
+    /** @override */
+    IFShape.prototype._paintStyleLayer = function (context, layer) {
+        var style = this.getStyle();
+
+        if (layer === IFStyle.Layer.Background) {
+            // TODO : Check fill pattern opacity > 0
+            if (!context.isOutline() && style.hasFill()) {
+                context.canvas.putVertices(this);
+                // TODO : Honor fill opacity
+                context.canvas.fillVertices(
+                    style.getProperty('fpt')
+                );
+            }
+        } else if (layer === IFStyle.Layer.Content) {
+            // TODO : Render clipped contents
+        } else if (layer === IFStyle.Layer.Foreground) {
+            if (!context.isOutline() && style.hasStroke()) {
+                context.canvas.putVertices(this);
+                // TODO : Honor stroke opacity
+                context.canvas.strokeVertices(
+                    style.getProperty('spt'),
+                    style.getProperty('sw'),
+                    style.getProperty('slc'),
+                    style.getProperty('slj'),
+                    style.getProperty('slm')
+                );
+            } else if (context.isOutline()) {
+                // Outline is painted with non-transformed stroke
+                // so we reset transform, transform the vertices
+                // ourself and then re-apply the transformation
+                var transform = context.canvas.resetTransform();
+                var transformedVertices = new IFVertexTransformer(this, transform);
+                context.canvas.putVertices(transformedVertices);
+                context.canvas.strokeVertices(context.getOutlineColor());
+                context.canvas.setTransform(transform);
+            }
+        }
     };
 
     /** @override */
@@ -105,7 +171,7 @@
             return null;
         }
 
-        return source;
+        return this.getStyle().getBBox(source);
     };
 
     /** @override */
@@ -116,21 +182,30 @@
 
     /** @override */
     IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        if (force) {
-            // When forced we'll always hit-test our whole "invisible" outline / fill area
+        var style = this.getStyle();
+
+        if (style.hasStroke()) {
+            var outlineWidth = style.getProperty('sw') * transform.getScaleFactor() + tolerance * 2;
             var vertexHit = new IFVertexInfo.HitResult();
-            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
-                return new IFElement.HitResult(this, vertexHit);
-            }
-        } else {
-            // If we didn't hit a style entry, then hit-test our "invisible" tolerance outline area if any
-            if (tolerance) {
-                var vertexHit = new IFVertexInfo.HitResult();
-                if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {
-                    return new IFElement.HitResult(this, vertexHit);
-                }
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), outlineWidth, false, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Stroke, vertexHit));
             }
         }
+
+        if (style.hasFill() || force) {
+            var vertexHit = new IFVertexInfo.HitResult();
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(style.hasFill() ? IFShape.HitResult.Type.Fill : IFShape.HitResult.Type.Other, vertexHit));
+            }
+        }
+
+        if (tolerance) {
+            var vertexHit = new IFVertexInfo.HitResult();
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), transform.getScaleFactor() + tolerance * 2, false, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Outline, vertexHit));
+            }
+        }
+
         return null;
     };
 

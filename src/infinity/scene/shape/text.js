@@ -934,7 +934,7 @@
     IFText.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // For now, text is always hit-test by its bbox only so return ourself
         // TODO : Add support for detailed range hit test information here
-        return new IFElement.HitResult(this);
+        return new IFElement.HitResultInfo(this);
     };
 
     /** @override */

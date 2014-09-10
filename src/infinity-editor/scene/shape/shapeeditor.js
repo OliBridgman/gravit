@@ -13,7 +13,22 @@
     /** @override */
     IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         if (IFElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
-            // TODO
+            if (source instanceof IFPattern && hitData instanceof IFShape.HitResult) {
+                    var editor = IFEditor.getEditor(this.getElement().getScene());
+                    editor.beginTransaction();
+                    try {
+                        switch (hitData.type) {
+                            case IFShape.HitResult.Type.Stroke:
+                                this.getElement().getStyle().setProperty('spt', source);
+                                break;
+                            default:
+                                this.getElement().getStyle().setProperty('fpt', source);
+                                break;
+                        }
+                    } finally {
+                        editor.commitTransaction('Drop Pattern');
+                    }
+            }
             return false;
         }
         return true;

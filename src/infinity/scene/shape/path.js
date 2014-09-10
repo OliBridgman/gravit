@@ -82,7 +82,7 @@
      * path internal transformation, if any
      * @param {Boolean} area - indicates if path inside should be tested
      * @param {Boolean} [tolerance] optional hit test tolerance, defaults to zero
-     * @returns {IFElement.HitResult} if hit, or null otherwise; hit result contains all data
+     * @returns {IFElement.HitResultInfo} if hit, or null otherwise; hit result contains all data
      * in the path native anchor points coordinates
      */
     IFPath.prototype.pathHitTest = function (location, transform, area, tolerance) {
@@ -116,7 +116,7 @@
 
         if (ifVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {
-            elemHitRes = new IFElement.HitResult(this, hitResult);
+            elemHitRes = new IFElement.HitResultInfo(this, hitResult);
         }
 
         if (origTransform) {

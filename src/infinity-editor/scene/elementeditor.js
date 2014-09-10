@@ -836,7 +836,7 @@
      * @param {IFPoint} position the drop position in scene coordinates
      * @param {IFElementEditor.DropType} type
      * @param {*} source the drop source, the type depends on type
-     * @param {*} hitData the IFElement.HitResult.data that was gathered
+     * @param {*} hitData the IFElement.HitResultInfo.data that was gathered
      * when hitting the element for this editor, might be null
      */
     IFElementEditor.prototype.acceptDrop = function (position, type, source, hitData) {

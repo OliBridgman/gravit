@@ -801,7 +801,7 @@
                                     .addClass('fa fa-ban'))
                                 .on('click', function () {
                                     assignValue($this, null, false);
-                                    $this.trigger('colorchange', null);
+                                    $this.trigger('colorchange', [null]);
                                 }))
                             .append($('<button></button>')
                                 .attr('data-action', 'system-color')

@@ -156,16 +156,16 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.HitResult Class
+    // IFElement.HitResultInfo Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A hit result on an element
      * @param {IFElement} element the element that was hit
      * @param {*} args - other hit-test data
      * @constructor
-     * @class IFElement.HitResult
+     * @class IFElement.HitResultInfo
      */
-    IFElement.HitResult = function (element, args) {
+    IFElement.HitResultInfo = function (element, args) {
         this.element = element;
         this.data = args;
     };
@@ -175,13 +175,13 @@
      * @type {IFElement}
      * @version 1.0
      */
-    IFElement.HitResult.prototype.element = null;
+    IFElement.HitResultInfo.prototype.element = null;
 
     /**
      * Additional hit-test data
      * @type {*}
      */
-    IFElement.HitResult.prototype.data = null;
+    IFElement.HitResultInfo.prototype.data = null;
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFElement.Transform Mixin
@@ -245,12 +245,53 @@
     // IFElement.Style Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * Marks an element to be stylable
+     * Marks an element to be styleable
      * @class IFElement.Style
      * @constructor
      * @mixin
      */
     IFElement.Style = function () {
+    };
+
+    /**
+     * @type {IFElement.ElementStyle}
+     * @private
+     */
+    IFElement.Style.prototype._style = null;
+
+    /**
+     * Returns the style for this element
+     * @returns {IFStyle}
+     */
+    IFElement.Style.prototype.getStyle = function () {
+        if (!this._style) {
+            this._style = new IFStyle();
+            this._style._parent = this;
+        }
+
+        return this._style;
+    };
+
+    /**
+     * Called to paint with style
+     * @param {IFPaintContext} context the context to be used for drawing
+     */
+    IFElement.Style.prototype._paintStyle = function (context) {
+        var style = this.getStyle();
+        if (style.getProperty('opc') > 0.0) {
+            this._paintStyleLayer(context, IFStyle.Layer.Background); // fill
+            this._paintStyleLayer(context, IFStyle.Layer.Content); // innner shapes, image, ...
+            this._paintStyleLayer(context, IFStyle.Layer.Foreground); // stroke
+        }
+    };
+
+    /**
+     * Called whenever this should paint a specific style layer
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFStyle.Layer} layer the actual layer to be painted
+     */
+    IFElement.Style.prototype._paintStyleLayer = function (context, layer) {
+        // NO-OP
     };
 
     /** @override */
@@ -354,6 +395,7 @@
         if (this._paintBBox == null) {
             this._paintBBox = this._calculatePaintBBox();
         }
+
         return this._paintBBox;
     };
 
@@ -416,7 +458,7 @@
      * defaults to zero if not provided.
      * @param {Boolean} [force] if true, enforce hitting even if something is not visible
      * or has no area etc. Defaults to false.
-     * @returns {Array<IFElement.HitResult>} either null for no hit or
+     * @returns {Array<IFElement.HitResultInfo>} either null for no hit or
      * a certain hit result depending on the element type
      */
     IFElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
@@ -633,10 +675,17 @@
             return;
         }
 
-        this._paint(context, null, null);
+        this._paint(context);
 
         this._finishPaint(context);
     };
+
+    IFElement.PaintLayer = {
+        Outline: 'O',
+        Background: 'B',
+        Content: 'C',
+        Foreground: 'F'
+    }
 
     /**
      * Called to paint this element into a new bitmap
@@ -777,7 +826,11 @@
      * @param {IFPaintContext} context the context to be used for drawing
      */
     IFElement.prototype._paint = function (context) {
-        // Paint children by default
+        if (this.hasMixin(IFElement.Style)) {
+            this._paintStyle(context);
+        }
+
+        // By default we'll paint our children
         this._paintChildren(context);
     };
 
@@ -838,8 +891,8 @@
     IFElement.prototype._calculatePaintBBox = function () {
         var result = this.getChildrenPaintBBox();
 
-        if (result && this.hasMixin(IFElement.Style)) {
-            // TODO
+        if (result && this.hasMixin(IFElement.Style) && this._style) {
+            result = this._style.getBBox(result, true);
         }
 
         return result;
@@ -857,7 +910,7 @@
      * @param {Number} tolerance a tolerance used for hit-testing
      * @param {Boolean} force if true, enforce hitting even if something is not visible
      * or has no area etc.
-     * @returns {IFElement.HitResult} either null for no hit or
+     * @returns {IFElement.HitResultInfo} either null for no hit or
      * a certain hit result depending on the element type
      */
     IFElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
