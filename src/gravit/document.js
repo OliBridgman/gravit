@@ -244,6 +244,10 @@
         }
 
         if (uri.protocol().length > 0) {
+            if (uri.protocol() === "http" || uri.protocol() === "https") {
+              evt.resolved(evt.url);
+            }
+
             var storage = gApp.getStorage(uri.protocol() + ':');
             if (storage) {
                 storage.resolveUrl(uri.toString(), evt.resolved);
