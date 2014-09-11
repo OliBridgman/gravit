@@ -68,7 +68,7 @@
         // Collect all effect elements
         this._effectElements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Style)) {
+            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFStylable)) {
                 this._effectElements.push(elements[i]);
             }
         }

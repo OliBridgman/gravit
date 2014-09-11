@@ -7,6 +7,9 @@
      * @constructor
      */
     function IFElement() {
+        if (this.hasMixin(IFStylable)) {
+            this._setStyleDefaultProperties();
+        }
     }
 
     IFObject.inherit(IFElement, IFNode);
@@ -239,64 +242,6 @@
     /** @override */
     IFElement.Transform.prototype.toString = function () {
         return "[Mixin IFElement.Transform]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.Style Mixin
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * Marks an element to be styleable
-     * @class IFElement.Style
-     * @constructor
-     * @mixin
-     */
-    IFElement.Style = function () {
-    };
-
-    /**
-     * @type {IFElement.ElementStyle}
-     * @private
-     */
-    IFElement.Style.prototype._style = null;
-
-    /**
-     * Returns the style for this element
-     * @returns {IFStyle}
-     */
-    IFElement.Style.prototype.getStyle = function () {
-        if (!this._style) {
-            this._style = new IFStyle();
-            this._style._parent = this;
-        }
-
-        return this._style;
-    };
-
-    /**
-     * Called to paint with style
-     * @param {IFPaintContext} context the context to be used for drawing
-     */
-    IFElement.Style.prototype._paintStyle = function (context) {
-        var style = this.getStyle();
-        if (style.getProperty('opc') > 0.0) {
-            this._paintStyleLayer(context, IFStyle.Layer.Background); // fill
-            this._paintStyleLayer(context, IFStyle.Layer.Content); // innner shapes, image, ...
-            this._paintStyleLayer(context, IFStyle.Layer.Foreground); // stroke
-        }
-    };
-
-    /**
-     * Called whenever this should paint a specific style layer
-     * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFStyle.Layer} layer the actual layer to be painted
-     */
-    IFElement.Style.prototype._paintStyleLayer = function (context, layer) {
-        // NO-OP
-    };
-
-    /** @override */
-    IFElement.Style.prototype.toString = function () {
-        return "[Mixin IFElement.Style]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -826,7 +771,7 @@
      * @param {IFPaintContext} context the context to be used for drawing
      */
     IFElement.prototype._paint = function (context) {
-        if (this.hasMixin(IFElement.Style)) {
+        if (this.hasMixin(IFStylable)) {
             this._paintStyle(context);
         }
 
@@ -891,8 +836,8 @@
     IFElement.prototype._calculatePaintBBox = function () {
         var result = this.getChildrenPaintBBox();
 
-        if (result && this.hasMixin(IFElement.Style) && this._style) {
-            result = this._style.getBBox(result, true);
+        if (result && this.hasMixin(IFStylable)) {
+            result = this.getStyleBBox(result);
         }
 
         return result;
@@ -1088,16 +1033,10 @@
                     break;
 
             }
-        } else if (change === IFNode._Change.Store) {
-            if (this.hasMixin(IFElement.Style) && this._style) {
-                args._stl = IFNode.store(this._style);
-            }
-        } else if (change === IFNode._Change.Restore) {
-            if (this.hasMixin(IFElement.Style) && args._stl) {
-                this._style = IFNode.restore(args._stl);
-                this._style._parent = this;
-                this._style._setScene(this._scene);
-            }
+        }
+
+        if (this.hasMixin(IFStylable)) {
+            this._handleStyleChange(change, args);
         }
 
         IFNode.prototype._handleChange.call(this, change, args);

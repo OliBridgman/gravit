@@ -19,10 +19,10 @@
                     try {
                         switch (hitData.type) {
                             case IFShape.HitResult.Type.Stroke:
-                                this.getElement().getStyle().setProperty('spt', source);
+                                this.getElement().setProperty('_spt', source);
                                 break;
                             default:
-                                this.getElement().getStyle().setProperty('fpt', source);
+                                this.getElement().setProperty('_fpt', source);
                                 break;
                         }
                     } finally {

@@ -35,14 +35,14 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'blm') {
+            if (property === '_blm') {
                 return $('<select></select>')
                     .attr('data-property', property)
                     .gBlendMode()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
-            } else if (property === 'opc' || property === 'fop') {
+            } else if (property === '_opc' || property === '_fop') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -67,7 +67,7 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createInput('blm')
+                .append(_createInput('_blm')
                     .css({
                         'width': '117px'
                     })))
@@ -79,7 +79,7 @@
                 })
                 // TODO : I18N
                 .text('Opacity:')
-                .append(_createInput('opc')
+                .append(_createInput('_opc')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -115,7 +115,7 @@
                 })
                 // TODO : I18N
                 .text('Fill:')
-                .append(_createInput('fop')
+                .append(_createInput('_fop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -139,7 +139,7 @@
         // Collect all shape elements
         this._styleElements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Style)) {
+            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFStylable)) {
                 this._styleElements.push(elements[i]);
             }
         }
@@ -159,7 +159,7 @@
      * @private
      */
     GStyleProperties.prototype._afterPropertiesChange = function (event) {
-        if (event.node === this._styleElements[0].getStyle()) {
+        if (event.node === this._styleElements[0]) {
             this._updateProperties();
         }
     };
@@ -169,11 +169,11 @@
      */
     GStyleProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
-        var style = this._styleElements[0].getStyle();
+        var stylable = this._styleElements[0];
 
-        this._panel.find('[data-property="blm"]').val(style.getProperty('blm'));
-        this._panel.find('[data-property="fop"]').val(ifUtil.formatNumber(style.getProperty('fop') * 100, 0));
-        this._panel.find('[data-property="opc"]').val(ifUtil.formatNumber(style.getProperty('opc') * 100, 0));
+        this._panel.find('[data-property="_blm"]').val(stylable.getProperty('_blm'));
+        this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
+        this._panel.find('[data-property="_opc"]').val(ifUtil.formatNumber(stylable.getProperty('_opc') * 100, 0));
     };
 
     /**
@@ -195,7 +195,7 @@
         editor.beginTransaction();
         try {
             for (var i = 0; i < this._styleElements.length; ++i) {
-                this._styleElements[i].getStyle().setProperties(properties, values);
+                this._styleElements[i].setProperties(properties, values);
             }
         } finally {
             // TODO : I18N

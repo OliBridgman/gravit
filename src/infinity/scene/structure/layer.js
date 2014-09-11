@@ -5,7 +5,7 @@
      * @extends IFBlock
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
-     * @mixes IFElement.Style
+     * @mixes IFStylable
      * @constructor
      */
     function IFLayer() {
@@ -13,7 +13,7 @@
         this._setDefaultProperties(IFLayer.VisualProperties, IFLayer.MetaProperties);
     }
 
-    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFElement.Style]);
+    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFStylable]);
 
     IFLayer.GUIDE_COLOR_DEFAULT = new IFColor(IFColor.Type.RGB, [0, 255, 255, 100]);
 

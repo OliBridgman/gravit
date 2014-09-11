@@ -578,7 +578,11 @@
         var color = 'black';
         var text = this._parent;
         if (text) {
-            // TODO : Take color of fill pattern and assign it to editor
+            // Take color of fill pattern and assign it to editor if any
+            var fillPattern = text.getProperty('_fpt');
+            if (fillPattern && fillPattern instanceof IFColor) {
+                color = fillPattern.asCSSString();
+            }
         }
         css['color'] = color;
 
