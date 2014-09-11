@@ -12,7 +12,7 @@
         this._setDefaultProperties(IFStyle.VisualProperties, IFStyle.GeometryProperties);
     }
 
-    IFObject.inheritAndMix(IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
+    IFNode.inheritAndMix("style", IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
      * The layer of a style rendering
@@ -176,6 +176,28 @@
                     this._parent._notifyChange(IFElement._Change.InvalidationRequest);
                 }
             }
+        } else if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFStyle.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'fpt' || property === 'spt') {
+                        return IFPattern.asString(value);
+                    }
+                }
+                return value;
+            });
+
+            this.storeProperties(args, IFStyle.GeometryProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFStyle.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'fpt' || property === 'spt') {
+                        return IFPattern.parsePattern(value);
+                    }
+                }
+                return value;
+            });
+
+            this.restoreProperties(args, IFStyle.GeometryProperties);
         }
 
         IFNode.prototype._handleChange.call(this, change, args);

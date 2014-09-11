@@ -1090,13 +1090,13 @@
             }
         } else if (change === IFNode._Change.Store) {
             if (this.hasMixin(IFElement.Style) && this._style) {
-                //args._stl = IFNode.store(this._style);
+                args._stl = IFNode.store(this._style);
             }
         } else if (change === IFNode._Change.Restore) {
             if (this.hasMixin(IFElement.Style) && args._stl) {
-                //this._style = IFNode.restore(args);
-                //this._style._parent = this;
-                //this._style._setScene(this._scene);
+                this._style = IFNode.restore(args._stl);
+                this._style._parent = this;
+                this._style._setScene(this._scene);
             }
         }
 
