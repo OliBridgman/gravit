@@ -7,7 +7,7 @@
      * @constructor
      */
     function GStyleProperties() {
-        this._styleElements = [];
+        this._elements = [];
     };
     IFObject.inherit(GStyleProperties, GProperties);
 
@@ -27,7 +27,7 @@
      * @type {Array<IFElement>}
      * @private
      */
-    GStyleProperties.prototype._styleElements = null;
+    GStyleProperties.prototype._elements = null;
 
     /** @override */
     GStyleProperties.prototype.init = function (panel) {
@@ -136,15 +136,14 @@
             this._document = null;
         }
 
-        // Collect all shape elements
-        this._styleElements = [];
+        this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFStylable)) {
-                this._styleElements.push(elements[i]);
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Style) >= 0) {
+                this._elements.push(elements[i]);
             }
         }
 
-        if (this._styleElements.length === elements.length) {
+        if (this._elements.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
@@ -159,7 +158,7 @@
      * @private
      */
     GStyleProperties.prototype._afterPropertiesChange = function (event) {
-        if (event.node === this._styleElements[0]) {
+        if (event.node === this._elements[0]) {
             this._updateProperties();
         }
     };
@@ -169,7 +168,7 @@
      */
     GStyleProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
-        var stylable = this._styleElements[0];
+        var stylable = this._elements[0];
 
         this._panel.find('[data-property="_blm"]').val(stylable.getProperty('_blm'));
         this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
@@ -194,8 +193,8 @@
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
-            for (var i = 0; i < this._styleElements.length; ++i) {
-                this._styleElements[i].setProperties(properties, values);
+            for (var i = 0; i < this._elements.length; ++i) {
+                this._elements[i].setProperties(properties, values);
             }
         } finally {
             // TODO : I18N

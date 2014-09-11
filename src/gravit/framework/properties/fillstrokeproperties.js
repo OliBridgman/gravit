@@ -2,35 +2,35 @@
 
     /**
      * Shape properties panel
-     * @class GShapeProperties
+     * @class GFillStrokeProperties
      * @extends GProperties
      * @constructor
      */
-    function GShapeProperties() {
-        this._shapes = [];
+    function GFillStrokeProperties() {
+        this._elements = [];
     };
-    IFObject.inherit(GShapeProperties, GProperties);
+    IFObject.inherit(GFillStrokeProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    GShapeProperties.prototype._panel = null;
+    GFillStrokeProperties.prototype._panel = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GShapeProperties.prototype._document = null;
+    GFillStrokeProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFShape>}
+     * @type {Array<IFStylable>}
      * @private
      */
-    GShapeProperties.prototype._shapes = null;
+    GFillStrokeProperties.prototype._elements = null;
 
     /** @override */
-    GShapeProperties.prototype.init = function (panel) {
+    GFillStrokeProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createInput = function (property) {
@@ -42,7 +42,7 @@
                         allowClear: true
                     })
                     .on('colorchange', function (evt, color) {
-                        self._assignStyleProperty(property, color);
+                        self._assignProperty(property, color);
                     });
             } else if (property === 'tp') {
                 return $('<select></select>')
@@ -67,9 +67,9 @@
                     .on('change', function () {
                         var strokeWidth = IFLength.parseEquationValue($(this).val());
                         if (strokeWidth !== null && strokeWidth >= 0.0) {
-                            self._assignStyleProperty(property, strokeWidth);
+                            self._assignProperty(property, strokeWidth);
                         } else {
-                            self._updateStyleProperties();
+                            self._updateProperties();
                         }
                     });
             } else if (property.indexOf('_sa-') === 0) {
@@ -92,7 +92,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignStyleProperty('_sa', align);
+                        self._assignProperty('_sa', align);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -116,7 +116,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignStyleProperty('_slc', cap);
+                        self._assignProperty('_slc', cap);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -140,7 +140,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignStyleProperty('_slj', join);
+                        self._assignProperty('_slj', join);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -288,24 +288,23 @@
     };
 
     /** @override */
-    GShapeProperties.prototype.update = function (document, elements) {
+    GFillStrokeProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
-        // Collect all shape elements
-        this._shapes = [];
+        this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFShape) {
-                this._shapes.push(elements[i]);
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Fill) >= 0) {
+                this._elements.push(elements[i]);
             }
         }
 
-        if (this._shapes.length === elements.length) {
+        if (this._elements.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._updateStyleProperties();
+            this._updateProperties();
             return true;
         } else {
             return false;
@@ -316,18 +315,18 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GShapeProperties.prototype._afterPropertiesChange = function (event) {
-        if (event.node === this._shapes[0]) {
-            this._updateStyleProperties();
+    GFillStrokeProperties.prototype._afterPropertiesChange = function (event) {
+        if (event.node === this._elements[0]) {
+            this._updateProperties();
         }
     };
 
     /**
      * @private
      */
-    GShapeProperties.prototype._updateStyleProperties = function () {
+    GFillStrokeProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
-        var stylable = this._shapes[0];
+        var stylable = this._elements[0];
 
         this._panel.find('[data-property="_fpt"]')
             .gColorButton('value', stylable.getProperty('_fpt'))
@@ -363,8 +362,8 @@
      * @param {*} value
      * @private
      */
-    GShapeProperties.prototype._assignStyleProperty = function (property, value) {
-        this._assignStyleProperties([property], [value]);
+    GFillStrokeProperties.prototype._assignProperty = function (property, value) {
+        this._assignProperties([property], [value]);
     };
 
     /**
@@ -372,23 +371,23 @@
      * @param {Array<*>} values
      * @private
      */
-    GShapeProperties.prototype._assignStyleProperties = function (properties, values) {
+    GFillStrokeProperties.prototype._assignProperties = function (properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
-            for (var i = 0; i < this._shapes.length; ++i) {
-                this._shapes[i].setProperties(properties, values);
+            for (var i = 0; i < this._elements.length; ++i) {
+                this._elements[i].setProperties(properties, values);
             }
         } finally {
             // TODO : I18N
-            editor.commitTransaction('Modify Style Properties');
+            editor.commitTransaction('Modify Fill/Stroke Properties');
         }
     };
 
     /** @override */
-    GShapeProperties.prototype.toString = function () {
-        return "[Object GShapeProperties]";
+    GFillStrokeProperties.prototype.toString = function () {
+        return "[Object GFillStrokeProperties]";
     };
 
-    _.GShapeProperties = GShapeProperties;
+    _.GFillStrokeProperties = GFillStrokeProperties;
 })(this);

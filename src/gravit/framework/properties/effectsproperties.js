@@ -7,7 +7,7 @@
      * @constructor
      */
     function GEffectProperties() {
-        this._effectElements = [];
+        this._elements = [];
     };
     IFObject.inherit(GEffectProperties, GProperties);
 
@@ -27,7 +27,7 @@
      * @type {Array<IFElement>}
      * @private
      */
-    GEffectProperties.prototype._effectElements = null;
+    GEffectProperties.prototype._elements = null;
 
     /** @override */
     GEffectProperties.prototype.init = function (panel) {
@@ -65,15 +65,14 @@
             this._document = null;
         }
 
-        // Collect all effect elements
-        this._effectElements = [];
+        this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFStylable)) {
-                this._effectElements.push(elements[i]);
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Effects) >= 0) {
+                this._elements.push(elements[i]);
             }
         }
 
-        if (this._effectElements.length === elements.length) {
+        if (this._elements.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
@@ -117,8 +116,8 @@
          var editor = this._document.getEditor();
          editor.beginTransaction();
          try {
-         for (var i = 0; i < this._effectElements.length; ++i) {
-         this._effectElements[i].setProperties(properties, values);
+         for (var i = 0; i < this._elements.length; ++i) {
+         this._elements[i].setProperties(properties, values);
          }
          } finally {
          // TODO : I18N
