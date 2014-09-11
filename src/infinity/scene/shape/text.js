@@ -70,7 +70,7 @@
     };
 
     /** @override */
-    IFText.Chunk._handleChange = function (change, args) {
+    IFText.Chunk.prototype._handleChange = function (change, args) {
         if (change === IFNode._Change.Store) {
             args.cnt = this._content;
         } else if (change === IFNode._Change.Restore) {

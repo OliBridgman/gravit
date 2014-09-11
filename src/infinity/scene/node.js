@@ -60,7 +60,7 @@
 
             if (node.hasMixin(IFNode.Container)) {
                 // Store children
-                for (var child = node.getFirstChild(true); child !== null; child = child.getNext(true)) {
+                for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
                     var childBlob = IFNode.store(child);
                     if (childBlob) {
                         if (!blob.hasOwnProperty('$')) {
