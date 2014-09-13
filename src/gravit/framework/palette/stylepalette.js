@@ -402,7 +402,15 @@
                         .attr('title', 'Add Stroke')
                         .on('click', function () {
                             this._modifyEachSelectedStyle(function (style) {
-                                style.getActualStyle().appendChild(new IFStrokePaint());
+                                var strokeStyle = new IFStrokePaint();
+                                var actualStyle = style.getActualStyle();
+                                var parent;
+                                for (parent = actualStyle.getParent(); parent !== null && !(parent instanceof IFText); parent = parent.getParent()){
+                                }
+                                if (parent && parent instanceof IFText) {
+                                    strokeStyle.setProperty('slm', 3);
+                                }
+                                actualStyle.appendChild(strokeStyle);
                             });
                         }.bind(this))
                         .append($('<span></span>')

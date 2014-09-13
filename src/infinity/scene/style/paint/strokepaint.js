@@ -77,12 +77,19 @@
 
     /** @override */
     IFStrokePaint.prototype.getPadding = function () {
-        // Padding depends on stroke-width and alignment
+        // Padding depends on stroke-width and alignment and miter limit if miter join is used
         if (this.$sa === IFStrokePaint.Alignment.Center) {
             var val = this.$sw / 2;
+            if (this.$slj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$slm;
+            }
             return [val, val, val, val];
         } else if (this.$sa === IFStrokePaint.Alignment.Outside) {
-            return [this.$sw, this.$sw, this.$sw, this.$sw];
+            var val = this.$sw;
+            if (this.$slj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$slm;
+            }
+            return [val, val, val, val];
         }
         return null;
     };
