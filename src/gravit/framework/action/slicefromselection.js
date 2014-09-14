@@ -38,7 +38,7 @@
      * @override
      */
     GSliceFromSelectionAction.prototype.getGroup = function () {
-        return "structure-slice";
+        return "structure-convert";
     };
 
     /**
