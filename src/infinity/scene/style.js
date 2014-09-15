@@ -118,18 +118,9 @@
      * Visual Properties for a style fill
      * @enum
      */
-    IFStyle.VisualFillProperties = {
+    IFStyle.GeometryFillProperties = {
         /** Fill pattern (IFPattern) */
         _fpt: null
-    };
-
-    /**
-     * Visual Properties for a style stroke
-     * @enum
-     */
-    IFStyle.VisualStrokeProperties = {
-        /** Stroke pattern (IFPattern) */
-        _spt: null
     };
 
     /**
@@ -137,6 +128,8 @@
      * @enum
      */
     IFStyle.GeometryStrokeProperties = {
+        /** Stroke pattern (IFPattern) */
+        _spt: null,
         /** Stroke Width */
         _sw: 1,
         /** Stroke Alignment */

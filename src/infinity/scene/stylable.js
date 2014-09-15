@@ -37,11 +37,11 @@
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-            this._setDefaultProperties(IFStyle.VisualFillProperties);
+            this._setDefaultProperties(IFStyle.GeometryFillProperties);
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-            this._setDefaultProperties(IFStyle.VisualStrokeProperties, IFStyle.GeometryStrokeProperties);
+            this._setDefaultProperties(IFStyle.GeometryStrokeProperties);
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
@@ -131,6 +131,7 @@
             if (change === IFNode._Change.BeforePropertiesChange) {
                 var propertySets = this.getStylePropertySets();
                 if ((propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryStrokeProperties)) ||
+                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryFillProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
                     this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
@@ -141,9 +142,7 @@
                     (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
                     this._notifyChange(IFElement._Change.FinishGeometryUpdate);
-                } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualFillProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStrokeProperties))) {
+                } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties))) {
                     this._notifyChange(IFElement._Change.InvalidationRequest);
                 }
             }
@@ -157,7 +156,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.storeProperties(args, IFStyle.VisualFillProperties, function (property, value) {
+                this.storeProperties(args, IFStyle.GeometryFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.asString(value);
@@ -168,7 +167,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-                this.storeProperties(args, IFStyle.VisualStrokeProperties, function (property, value) {
+                this.storeProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
                             return IFPattern.asString(value);
@@ -176,7 +175,6 @@
                     }
                     return value;
                 });
-                this.storeProperties(args, IFStyle.GeometryStrokeProperties);
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
@@ -194,7 +192,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.restoreProperties(args, IFStyle.VisualFillProperties, function (property, value) {
+                this.restoreProperties(args, IFStyle.GeometryFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.parsePattern(value);
@@ -205,7 +203,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-                this.restoreProperties(args, IFStyle.VisualStrokeProperties, function (property, value) {
+                this.restoreProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
                             return IFPattern.parsePattern(value);
@@ -213,7 +211,6 @@
                     }
                     return value;
                 });
-                this.restoreProperties(args, IFStyle.GeometryStrokeProperties);
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
