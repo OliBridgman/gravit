@@ -118,7 +118,7 @@
      * Visual Properties for a style fill
      * @enum
      */
-    IFStyle.GeometryFillProperties = {
+    IFStyle.VisualFillProperties = {
         /** Fill pattern (IFPattern) */
         _fpt: null
     };

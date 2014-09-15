@@ -11,6 +11,7 @@
     function IFLayer() {
         IFBlock.call(this);
         this._setDefaultProperties(IFLayer.VisualProperties, IFLayer.MetaProperties);
+        this._setStyleDefaultProperties();
     }
 
     IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFStylable]);
@@ -118,6 +119,30 @@
     };
 
     /** @override */
+    IFLayer.prototype._paint = function (context) {
+        this._paintStyle(context, this.getPaintBBox());
+    };
+
+    /** @override */
+    IFLayer.prototype._paintStyleLayer = function (context, layer) {
+        if (layer === IFStyle.Layer.Content) {
+            // Paint children content
+            this._paintChildren(context);
+        }
+    };
+
+    /** @override */
+    IFLayer.prototype._calculatePaintBBox = function () {
+        var childPaintBBox = this.getChildrenPaintBBox();
+
+        if (childPaintBBox) {
+            return this.getStyleBBox(childPaintBBox);
+        }
+
+        return null;
+    };
+
+    /** @override */
     IFLayer.prototype._detailHitTest = function (location, transform, tolerance, force) {
         return new IFElement.HitResultInfo(this);
     };
@@ -168,6 +193,8 @@
                 this._notifyChange(IFElement._Change.InvalidationRequest);
             }
         }
+
+        this._handleStyleChange(change, args);
 
         IFBlock.prototype._handleChange.call(this, change, args);
     };

@@ -37,7 +37,7 @@
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-            this._setDefaultProperties(IFStyle.GeometryFillProperties);
+            this._setDefaultProperties(IFStyle.VisualFillProperties);
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
@@ -131,7 +131,6 @@
             if (change === IFNode._Change.BeforePropertiesChange) {
                 var propertySets = this.getStylePropertySets();
                 if ((propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryStrokeProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryFillProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
                     this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
@@ -142,7 +141,8 @@
                     (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
                     (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
                     this._notifyChange(IFElement._Change.FinishGeometryUpdate);
-                } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties))) {
+                } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties)) ||
+                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualFillProperties))) {
                     this._notifyChange(IFElement._Change.InvalidationRequest);
                 }
             }
@@ -156,7 +156,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.storeProperties(args, IFStyle.GeometryFillProperties, function (property, value) {
+                this.storeProperties(args, IFStyle.VisualFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.asString(value);
@@ -192,7 +192,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.restoreProperties(args, IFStyle.GeometryFillProperties, function (property, value) {
+                this.restoreProperties(args, IFStyle.VisualFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.parsePattern(value);
@@ -226,13 +226,65 @@
     /**
      * Called to paint with style
      * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFRect} contentPaintBBox the paint bbox used for drawing this stylable
+     * @param {Function} [contentPaintCallback] callback to paint contents, defaults to null
      */
-    IFStylable.prototype._paintStyle = function (context) {
-        if (this.getProperty('_opc') > 0.0) {
-            this._paintStyleLayer(context, IFStyle.Layer.Background); // fill
-            this._paintStyleLayer(context, IFStyle.Layer.Content); // innner shapes, image, ...
-            this._paintStyleLayer(context, IFStyle.Layer.Foreground); // stroke
+    IFStylable.prototype._paintStyle = function (context, contentPaintBBox, contentPaintCallback) {
+        var opacity = this.getProperty('_opc');
+        if (opacity > 0.0) {
+            var blendMode = this.getProperty('_blm');
+            if (opacity !== 1.0 || blendMode !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
+                // We need to paint on a separate canvas here
+                var sourceCanvas = context.canvas;
+                var paintBBox = this.getStyleBBox(contentPaintBBox);
+
+                // The canvas our results will be put onto. If we're in fast
+                // mode, we'll try to cache the result and paint at 100%, otherwise
+                // we'll be painting on a temporary canvas, instead
+                var styleCanvas = null;
+                if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
+                    styleCanvas = new IFPaintCanvas();
+                    styleCanvas.resize(paintBBox.getWidth(), paintBBox.getHeight());
+                    styleCanvas.prepare();
+
+                    var topLeft = paintBBox.getSide(IFRect.Side.TOP_LEFT);
+                    styleCanvas.setOrigin(topLeft);
+                    styleCanvas.setOffset(topLeft);
+                } else {
+                    styleCanvas = sourceCanvas.createCanvas(paintBBox, false);
+                }
+                context.canvas = styleCanvas;
+                try {
+                    this._paintStyleLayers(context, contentPaintBBox);
+
+                    if (contentPaintCallback) {
+                        contentPaintCallback(context);
+                    }
+
+                    sourceCanvas.drawCanvas(styleCanvas, 0, 0, opacity, blendMode);
+                    styleCanvas.finish();
+                } finally {
+                    context.canvas = sourceCanvas;
+                }
+            } else {
+                this._paintStyleLayers(context, contentPaintBBox);
+
+                if (contentPaintCallback) {
+                    contentPaintCallback(context);
+                }
+            }
         }
+    };
+
+    /**
+     * Called to paint the style layers
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFRect} bbox the source bbox used for drawing
+     */
+    IFStylable.prototype._paintStyleLayers = function (context, bbox) {
+        this._paintStyleLayer(context, IFStyle.Layer.Background); // fill
+        this._paintStyleLayer(context, IFStyle.Layer.Content); // innner shapes, image, ...
+        this._paintStyleLayer(context, IFStyle.Layer.Foreground); // stroke
     };
 
     /**

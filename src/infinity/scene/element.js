@@ -7,9 +7,6 @@
      * @constructor
      */
     function IFElement() {
-        if (this.hasMixin(IFStylable)) {
-            this._setStyleDefaultProperties();
-        }
     }
 
     IFObject.inherit(IFElement, IFNode);
@@ -771,11 +768,7 @@
      * @param {IFPaintContext} context the context to be used for drawing
      */
     IFElement.prototype._paint = function (context) {
-        if (this.hasMixin(IFStylable)) {
-            this._paintStyle(context);
-        }
-
-        // By default we'll paint our children
+        // By default we'll try to paint any children
         this._paintChildren(context);
     };
 
@@ -834,13 +827,8 @@
      * @private
      */
     IFElement.prototype._calculatePaintBBox = function () {
-        var result = this.getChildrenPaintBBox();
-
-        if (result && this.hasMixin(IFStylable)) {
-            result = this.getStyleBBox(result);
-        }
-
-        return result;
+        // Default action unites all children paint bboxes if this is a container
+        return this.getChildrenPaintBBox();
     };
 
     /**
@@ -1033,10 +1021,6 @@
                     break;
 
             }
-        }
-
-        if (this.hasMixin(IFStylable)) {
-            this._handleStyleChange(change, args);
         }
 
         IFNode.prototype._handleChange.call(this, change, args);

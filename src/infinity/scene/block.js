@@ -30,27 +30,6 @@
     };
 
     /**
-     * The containting owner layer
-     * @type {IFLayer}
-     * @private
-     */
-    IFBlock.prototype._ownerLayer = null;
-
-    /**
-     * The containting root layer
-     * @type {IFLayer}
-     * @private
-     */
-    IFBlock.prototype._rootLayer = null;
-
-    /**
-     * The containting page
-     * @type {IFPage}
-     * @private
-     */
-    IFBlock.prototype._page = null;
-
-    /**
      * Returns the label of the block which is either the name
      * of the block if it has one or the name of the block's type
      * @return {String}
@@ -67,7 +46,12 @@
      * @return {IFLayer}
      */
     IFBlock.prototype.getOwnerLayer = function () {
-        return this._ownerLayer;
+        for (var p = this.getParent(); p !== null; p = p.getParent()) {
+            if (p instanceof IFLayer) {
+                return p;
+            }
+        }
+        return null;
     };
 
     /**
@@ -75,7 +59,13 @@
      * @return {IFLayer}
      */
     IFBlock.prototype.getRootLayer = function () {
-        return this._rootLayer;
+        var lastLayer = null;
+        for (var p = this.getParent(); p !== null; p = p.getParent()) {
+            if (p instanceof IFLayer) {
+                lastLayer = p;
+            }
+        }
+        return lastLayer;
     };
 
     /**
@@ -83,23 +73,12 @@
      * @return {IFPage}
      */
     IFBlock.prototype.getPage = function () {
-        return this._page;
-    };
-
-    /** @override */
-    IFBlock.prototype._setParent = function (parent) {
-        IFElement.prototype._setParent.call(this, parent);
-
-        // update rootLayer, layer, page
-        if (parent) {
-            this._ownerLayer = parent instanceof IFLayer ? parent : parent instanceof IFBlock ? parent.getOwnerLayer() : null;
-            this._rootLayer = parent instanceof IFLayer && !parent.getOwnerLayer() ? parent : parent instanceof IFBlock ? parent.getRootLayer() : null;
-            this._page = parent instanceof IFPage ? parent : parent instanceof IFBlock ? parent.getPage() : null;
-        } else {
-            this._ownerLayer = null;
-            this._rootLayer = null;
-            this._page = null;
+        for (var p = this.getParent(); p !== null; p = p.getParent()) {
+            if (p instanceof IFPage) {
+                return p;
+            }
         }
+        return null;
     };
 
     /** @override */

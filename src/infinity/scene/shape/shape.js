@@ -14,6 +14,7 @@
     function IFShape() {
         IFItem.call(this);
         this._setDefaultProperties(IFShape.GeometryProperties);
+        this._setStyleDefaultProperties();
     }
 
     IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFStylable, IFVertexSource]);
@@ -93,14 +94,14 @@
 
     /** @override */
     IFShape.prototype._paint = function (context) {
-        this._paintStyle(context);
+        this._paintStyle(context, this.getPaintBBox());
     };
 
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
         if (layer === IFStyle.Layer.Background) {
             // TODO : Check fill pattern opacity > 0
-            if (!context.isOutline() && this.hasStyleFill()) {
+            if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
                 context.canvas.putVertices(this);
                 // TODO : Honor fill opacity
                 context.canvas.fillVertices(
@@ -110,7 +111,8 @@
         } else if (layer === IFStyle.Layer.Content) {
             // TODO : Render clipped contents
         } else if (layer === IFStyle.Layer.Foreground) {
-            if (!context.isOutline() && this.hasStyleStroke()) {
+            var outline = context.configuration.isOutline(context);
+            if (!outline && this.hasStyleStroke()) {
                 context.canvas.putVertices(this);
                 // TODO : Honor stroke opacity
                 context.canvas.strokeVertices(
@@ -120,7 +122,7 @@
                     this.$_slj,
                     this.$_slm
                 );
-            } else if (context.isOutline()) {
+            } else if (outline) {
                 // Outline is painted with non-transformed stroke
                 // so we reset transform, transform the vertices
                 // ourself and then re-apply the transformation
@@ -167,6 +169,8 @@
                 return value;
             });
         }
+
+        this._handleStyleChange(change, args);
 
         IFItem.prototype._handleChange.call(this, change, args);
     };
