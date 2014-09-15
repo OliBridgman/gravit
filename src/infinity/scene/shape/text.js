@@ -108,42 +108,28 @@
      * @extends IFNode
      * @mixes IFNode.Properties
      * @mixes IFNode.Store
+     * @mixes IFStylable
      * @private
      */
     IFText.Block = function () {
-        this._setDefaultProperties(IFText.Block.Properties);
+        this._setStyleDefaultProperties();
     };
 
-    IFObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store]);
+    IFObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store, IFStylable]);
 
-    /**
-     * The geometry properties of a block with their default values
-     */
-    IFText.Block.Properties = {
-        /** The font family */
-        ff: null,
-        /** The font size */
-        fi: null,
-        /** The font-weight (IFFont.Weight) */
-        fw: null,
-        /** The font-style (IFFont.Style) */
-        fs: null,
-        /** The font color */
-        fc: null,
-        /** The character spacing */
-        cs: null,
-        /** The word spacing */
-        ws: null
+    /** @override */
+    IFText.Block.prototype.getStylePropertySets = function () {
+        return [IFStyle.PropertySet.Text];
     };
 
     IFText.Block.propertyToCss = function (property, value, css) {
-        if (property === 'ff') {
+        if (property === '_tff') {
             css['font-family'] = value !== null ? value : '';
-        } else if (property === 'fi') {
+        } else if (property === '_tfi') {
             css['font-size'] = value !== null ? value + 'px' : '';
-        } else if (property === 'fw') {
+        } else if (property === '_tfw') {
             css['font-weight'] = value !== null ? value.toString() : '';
-        } else if (property === 'fs') {
+        } else if (property === '_tfs') {
             if (value === null) {
                 css['font-style'] = '';
             } else {
@@ -160,9 +146,9 @@
             }
         } else if (property === 'fc') {
             css['color'] = value !== null ? value.asCSSString() : '';
-        } else if (property === 'cs') {
+        } else if (property === '_tcs') {
             css['letter-spacing'] = value !== null ? value + 'px' : '';
-        } else if (property === 'ws') {
+        } else if (property === '_tws') {
             css['word-spacing'] = value !== null ? value + 'px' : '';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
@@ -170,7 +156,7 @@
     };
 
     IFText.Block.cssToProperty = function (property, css) {
-        if (property === 'ff') {
+        if (property === '_tff') {
             if (css['font-family']) {
                 var family = css['font-family'];
                 if (family.length > 0) {
@@ -188,12 +174,12 @@
                     return family;
                 }
             }
-        } else if (property === 'fi') {
+        } else if (property === '_tfi') {
             var value = parseFloat(css['font-size']);
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'fw') {
+        } else if (property === '_tfw') {
             var value = parseInt(css['font-weight']);
             if (!isNaN(value)) {
                 return value;
@@ -205,7 +191,7 @@
                     return IFFont.Weight.Bold;
                 }
             }
-        } else if (property === 'fs') {
+        } else if (property === '_tfs') {
             if (css['font-style'] === 'normal') {
                 return IFFont.Style.Normal;
             } else if (css['font-style'] === 'italic') {
@@ -216,12 +202,12 @@
             if (value) {
                 return value;
             }
-        } else if (property === 'cs') {
+        } else if (property === '_tcs') {
             var value = parseFloat(css['letter-spacing']);
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'ws') {
+        } else if (property === '_tws') {
             var value = parseFloat(css['word-spacing']);
             if (!isNaN(value)) {
                 return value;
@@ -252,15 +238,13 @@
 
     /** @override */
     IFText.Block.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFText.Block.Properties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFText.Block.Properties);
+        if (change === IFNode._Change.Store || change === IFNode._Change.Restore) {
+            this._handleStyleChange(change, args);
         }
 
         var text = this.getText();
         if (text) {
-            if (text._handleGeometryChangeForProperties(change, args, IFText.Block.Properties) && change == IFNode._Change.BeforePropertiesChange) {
+            if (text._handleGeometryChangeForProperties(change, args, IFStyle.GeometryTextProperties) && change == IFNode._Change.BeforePropertiesChange) {
                 text._runsDirty = true;
             } else if (change == IFNode._Change.BeforeChildInsert || change == IFNode._Change.BeforeChildRemove) {
                 text.beginUpdate();
@@ -278,14 +262,14 @@
      * @returns {{}}
      */
     IFText.Block.prototype.propertiesToCss = function (css) {
-        return this._propertiesToCss(css, IFText.Block.Properties, IFText.Block.propertyToCss);
+        return this._propertiesToCss(css, IFStyle.GeometryTextProperties, IFText.Block.propertyToCss);
     };
 
     /**
      * @param {{}} css
      */
     IFText.Block.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFText.Block.Properties, IFText.Block.cssToProperty);
+        this._cssToProperties(css, IFStyle.GeometryTextProperties, IFText.Block.cssToProperty);
     };
 
     IFText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
@@ -323,7 +307,6 @@
      */
     IFText.Span = function () {
         IFText.Block.call(this);
-        this._setDefaultProperties(IFText.Span.Properties);
     }
 
     IFNode.inheritAndMix("txSpan", IFText.Span, IFText.Block, [IFNode.Container]);
@@ -344,112 +327,66 @@
      */
     IFText.Paragraph = function () {
         IFText.Block.call(this);
-        this._setDefaultProperties(IFText.Paragraph.Properties);
     }
 
     IFNode.inheritAndMix("txPara", IFText.Paragraph, IFText.Block, [IFNode.Container]);
 
-    /**
-     * Alignment of a paragraph
-     * @enum
-     */
-    IFText.Paragraph.Alignment = {
-        Left: 'l',
-        Center: 'c',
-        Right: 'r',
-        Justify: 'j'
-    };
-
-    /**
-     * Wrap-Mode of a paragraph
-     * @enum
-     */
-    IFText.Paragraph.WrapMode = {
-        /**
-         * No word-break
-         */
-        None: 'n',
-
-        /**
-         * Break after words only
-         */
-        Words: 'w',
-
-        /**
-         * Break anywhere including characters
-         */
-        All: 'a'
-    };
-
-    /**
-     * The geometry properties of a paragraph with their default values
-     */
-    IFText.Paragraph.Properties = {
-        /** Column count */
-        cc: null,
-        /** Column gap */
-        cg: null,
-        /** Wrap-Mode of a paragraph (IFText.Paragraph.WrapMode) */
-        wm: null,
-        /** The paragraph's alignment (IFText.Paragraph.Alignment) */
-        al: null,
-        /** The first line intendation */
-        in: null,
-        /** The line height whereas 1 = 100% */
-        lh: null
+    /** @override */
+    IFText.Paragraph.prototype.getStylePropertySets = function () {
+        return [IFStyle.PropertySet.Text, IFStyle.PropertySet.Paragraph];
     };
 
     IFText.Paragraph.propertyToCss = function (property, value, css) {
-        if (property === 'cc') {
+        if (property === '_pcc') {
             value = value !== null ? value : '';
             css['column-count'] = value;
             css['-webkit-column-count'] = value;
             css['-moz-column-count'] = value;
-        } else if (property === 'cg') {
+        } else if (property === '_pcg') {
             value = value !== null ? value : '';
             css['column-gap'] = value;
             css['-webkit-column-gap'] = value;
             css['-moz-column-gap'] = value;
-        } else if (property === 'wm') {
+        } else if (property === '_pwm') {
             if (value === null) {
                 css['white-space'] = '';
                 css['word-break'] = '';
             } else {
                 switch (value) {
-                    case IFText.Paragraph.WrapMode.None:
+                    case IFStyle.ParagraphWrapMode.None:
                         css['white-space'] = 'nowrap';
                         break;
-                    case IFText.Paragraph.WrapMode.Words:
+                    case IFStyle.ParagraphWrapMode.Words:
                         css['white-space'] = 'pre-wrap';
                         break;
-                    case IFText.Paragraph.WrapMode.All:
+                    case IFStyle.ParagraphWrapMode.All:
                         css['white-space'] = 'pre-wrap';
                         css['word-break'] = 'break-all';
                         break;
                 }
             }
-        } else if (property === 'al') {
+        } else if (property === '_pal') {
             if (value === null) {
                 css['text-align'] = '';
             } else {
                 switch (value) {
-                    case IFText.Paragraph.Alignment.Left:
+                    case IFStyle.ParagraphAlignment.Left:
                         css['text-align'] = 'left';
                         break;
-                    case IFText.Paragraph.Alignment.Center:
+                    case IFStyle.ParagraphAlignment.Center:
                         css['text-align'] = 'center';
                         break;
-                    case IFText.Paragraph.Alignment.Right:
+                    case IFStyle.ParagraphAlignment.Right:
                         css['text-align'] = 'right';
                         break;
-                    case IFText.Paragraph.Alignment.Justify:
+                    case IFStyle.ParagraphAlignment.Justify:
                         css['text-align'] = 'justify';
                         break;
                 }
             }
-        } else if (property === 'in') {
+        } else if (property === '_pin') {
             css['text-indent'] = value !== null ? value + 'px' : '';
-        } else if (property === 'lh') {
+        } else if (property === '_plh') {
             css['line-height'] = value !== null ? value : '';
         } else {
             throw new Error('Unimplemented property (propertyToCss): ' + property);
@@ -457,47 +394,47 @@
     };
 
     IFText.Paragraph.cssToProperty = function (property, css) {
-        if (property === 'cc') {
+        if (property === '_pcc') {
             var str = css['column-count'] || css['-webkit-column-count'] || css['-moz-column-count'];
             var value = parseInt(str);
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'cg') {
+        } else if (property === '_pcg') {
             var str = css['column-gap'] || css['-webkit-column-gap'] || css['-moz-column-gap'];
             var value = parseFloat(str);
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'wm') {
+        } else if (property === '_pwm') {
             var wspace = css['white-space'];
             var wbreak = css['word-break'];
 
             if (wspace === 'pre-wrap') {
                 if (wbreak === 'break-all') {
-                    return IFText.Paragraph.WrapMode.All;
+                    return IFStyle.ParagraphWrapMode.All;
                 } else {
-                    return IFText.Paragraph.WrapMode.Words;
+                    return IFStyle.ParagraphWrapMode.Words;
                 }
             } else if (wspace === 'nowrap') {
-                return IFText.Paragraph.WrapMode.None;
+                return IFStyle.ParagraphWrapMode.None;
             }
-        } else if (property === 'al') {
+        } else if (property === '_pal') {
             if (value === 'left') {
-                return IFText.Paragraph.Alignment.Left;
+                return IFStyle.ParagraphAlignment.Left;
             } else if (value === 'center') {
-                return IFText.Paragraph.Alignment.Center;
+                return IFStyle.ParagraphAlignment.Center;
             } else if (value === 'right') {
-                return IFText.Paragraph.Alignment.Right;
+                return IFStyle.ParagraphAlignment.Right;
             } else if (value === 'justify') {
-                return IFText.Paragraph.Alignment.Justify;
+                return IFStyle.ParagraphAlignment.Justify;
             }
-        } else if (property === 'in') {
+        } else if (property === '_pin') {
             var value = parseFloat(css['text-indent']);
             if (!isNaN(value)) {
                 return value;
             }
-        } else if (property === 'lh') {
+        } else if (property === '_plh') {
             var lineHeight = parseFloat(css['line-height']);
             if (!isNaN(lineHeight)) {
                 return lineHeight;
@@ -515,7 +452,7 @@
 
     /** @override */
     IFText.Paragraph.prototype.propertiesToCss = function (css) {
-        this._propertiesToCss(css, IFText.Paragraph.Properties, IFText.Paragraph.propertyToCss);
+        this._propertiesToCss(css, IFStyle.GeometryParagraphProperties, IFText.Paragraph.propertyToCss);
         return IFText.Block.prototype.propertiesToCss.call(this, css);
     };
 
@@ -523,21 +460,21 @@
      * @param {{}} css
      */
     IFText.Paragraph.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFText.Paragraph.Properties, IFText.Paragraph.cssToProperty);
+        this._cssToProperties(css, IFStyle.GeometryParagraphProperties, IFText.Paragraph.cssToProperty);
         IFText.Block.prototype.cssToProperties.call(this, css);
     };
 
     /** @override */
     IFText.Paragraph.prototype._handleChange = function (change, args) {
         if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFText.Paragraph.Properties);
+            this.storeProperties(args, IFStyle.GeometryParagraphProperties);
         } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFText.Paragraph.Properties);
+            this.restoreProperties(args, IFStyle.GeometryParagraphProperties);
         }
 
         var text = this.getText();
         if (text) {
-            if (text._handleGeometryChangeForProperties(change, args, IFText.Paragraph.Properties) && change == IFNode._Change.BeforePropertiesChange) {
+            if (text._handleGeometryChangeForProperties(change, args, IFStyle.GeometryParagraphProperties) && change == IFNode._Change.BeforePropertiesChange) {
                 text._runsDirty = true;
             }
         }
@@ -557,12 +494,12 @@
         IFText.Paragraph.call(this);
 
         // Setup default font stuff
-        this.$ff = 'Open Sans';
-        this.$fi = 20;
-        this.$fw = IFFont.Weight.Regular;
-        this.$fs = IFFont.Style.Normal;
-        this.$lh = 1;
-        this.$wm = IFText.Paragraph.WrapMode.All;
+        this.$_tff = 'Open Sans';
+        this.$_tfi = 20;
+        this.$_tfw = IFFont.Weight.Regular;
+        this.$_tfs = IFFont.Style.Normal;
+        this.$_plh = 1;
+        this.$_pwm = IFStyle.ParagraphWrapMode.All;
     };
 
     IFNode.inherit("txContent", IFText.Content, IFText.Paragraph);
@@ -636,6 +573,7 @@
         if (!this._content) {
             this._content = new IFText.Content();
             this._content._parent = this;
+            this._content._setScene(this._scene);
         }
 
         return this._content;
@@ -768,10 +706,10 @@
                     'font-style': $span.css('font-style'),
                     'font-weight': $span.css('font-weight')
                 }
-                var fontFamily = IFText.Block.cssToProperty('ff', css);
-                var fontSize = IFText.Block.cssToProperty('fi', css);
-                var fontStyle = IFText.Block.cssToProperty('fs', css);
-                var fontWeight = IFText.Block.cssToProperty('fw', css);
+                var fontFamily = IFText.Block.cssToProperty('_tff', css);
+                var fontSize = IFText.Block.cssToProperty('_tfi', css);
+                var fontStyle = IFText.Block.cssToProperty('_tfs', css);
+                var fontWeight = IFText.Block.cssToProperty('_tfw', css);
                 var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
                 var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize, char);
 
@@ -1012,9 +950,9 @@
                 parent = span;
 
                 if (nodeName === 'b' || nodeName === 'strong') {
-                    span.setProperty('fw', IFFont.Weight.Bold);
+                    span.setProperty('_tfw', IFFont.Weight.Bold);
                 } else if (nodeName === 'i') {
-                    span.setProperty('fs', IFFont.Style.Italic);
+                    span.setProperty('_tfs', IFFont.Style.Italic);
                 }
             } else if (nodeName === 'br') {
                 parent.appendChild(new IFText.Break());
@@ -1031,6 +969,14 @@
             if (node.textContent !== "") {
                 parent.appendChild(new IFText.Chunk(node.textContent));
             }
+        }
+    };
+
+    /** @override */
+    IFText.prototype._setScene = function (scene) {
+        IFShape.prototype._setScene.call(this, scene);
+        if (this._content) {
+            this._content._setScene(scene);
         }
     };
 

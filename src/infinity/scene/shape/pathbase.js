@@ -17,6 +17,7 @@
         // Add anchor points
         this._anchorPoints = anchorPoints ? anchorPoints : new IFPathBase.AnchorPoints();
         this._anchorPoints._parent = this;
+        this._anchorPoints._setScene(this._scene);
         this._anchorPoints._removalAllowed = false;
 
         this._vertices = new IFVertexContainer();
@@ -1563,6 +1564,12 @@
      */
     IFPathBase.prototype._getAnchorPoints = function () {
         return this._anchorPoints;
+    };
+
+    /** @override */
+    IFPathBase.prototype._setScene = function (scene) {
+        IFShape.prototype._setScene.call(this, scene);
+        this._anchorPoints._setScene(scene);
     };
 
     /** @override */

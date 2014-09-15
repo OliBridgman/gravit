@@ -70,6 +70,38 @@
     };
 
     /**
+     * Alignment of a paragraph
+     * @enum
+     */
+    IFStyle.ParagraphAlignment = {
+        Left: 'l',
+        Center: 'c',
+        Right: 'r',
+        Justify: 'j'
+    };
+
+    /**
+     * Wrap-Mode of a paragraph
+     * @enum
+     */
+    IFStyle.ParagraphWrapMode = {
+        /**
+         * No word-break
+         */
+        None: 'n',
+
+        /**
+         * Break after words only
+         */
+        Words: 'w',
+
+        /**
+         * Break anywhere including characters
+         */
+        All: 'a'
+    };
+
+    /**
      * Visual Properties for a style
      * @enum
      */
@@ -123,17 +155,17 @@
      */
     IFStyle.GeometryTextProperties = {
         /** The font family */
-        ff: null,
+        _tff: null,
         /** The font size */
-        fi: null,
+        _tfi: null,
         /** The font-weight (IFFont.Weight) */
-        fw: null,
+        _tfw: null,
         /** The font-style (IFFont.Style) */
-        fs: null,
+        _tfs: null,
         /** The character spacing */
-        cs: null,
+        _tcs: null,
         /** The word spacing */
-        ws: null
+        _tws: null
     };
 
     /**
@@ -142,17 +174,17 @@
      */
     IFStyle.GeometryParagraphProperties = {
         /** Column count */
-        cc: null,
+        _pcc: null,
         /** Column gap */
-        cg: null,
-        /** Wrap-Mode of a paragraph (IFText.Paragraph.WrapMode) */
-        wm: null,
-        /** The paragraph's alignment (IFText.Paragraph.Alignment) */
-        al: null,
+        _pcg: null,
+        /** Wrap-Mode of a paragraph (IFStyle.ParagraphWrapMode) */
+        _pwm: null,
+        /** The paragraph's alignment (IFStyle.ParagraphAlignment) */
+        _pal: null,
         /** The first line intendation */
-        in: null,
+        _pin: null,
         /** The line height whereas 1 = 100% */
-        lh: null
+        _plh: null
     };
 
     _.IFStyle = IFStyle;

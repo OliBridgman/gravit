@@ -65,20 +65,20 @@
                     })
                     .append($('<span></span>')
                         .addClass('fa ' + icon));
-            } else if (property.indexOf('al-') === 0) {
+            } else if (property.indexOf('_pal-') === 0) {
                 var iconName = '';
-                var alignment = property.substr('al-'.length);
+                var alignment = property.substr('_pal-'.length);
                 switch (alignment) {
-                    case IFText.Paragraph.Alignment.Left:
+                    case IFStyle.ParagraphAlignment.Left:
                         iconName = 'left';
                         break;
-                    case IFText.Paragraph.Alignment.Center:
+                    case IFStyle.ParagraphAlignment.Center:
                         iconName = 'center';
                         break;
-                    case IFText.Paragraph.Alignment.Right:
+                    case IFStyle.ParagraphAlignment.Right:
                         iconName = 'right';
                         break;
-                    case IFText.Paragraph.Alignment.Justify:
+                    case IFStyle.ParagraphAlignment.Justify:
                         iconName = 'justify';
                         break;
                     default:
@@ -88,7 +88,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty('al', $(this).hasClass('g-active') ? null : alignment);
+                        self._assignProperty('_pal', $(this).hasClass('g-active') ? null : alignment);
                     })
                     .append($('<span></span>')
                         .addClass('fa fa-align-' + iconName));
@@ -99,7 +99,7 @@
                     .on('change', function () {
                         self._assignProperty(property, $(this).is(':checked'));
                     });
-            } else if (property === 'ff') {
+            } else if (property === '_tff') {
                 var select = $('<select></select>')
                     .attr('data-property', property)
                     .append(
@@ -134,7 +134,7 @@
                 }
 
                 return select;
-            } else if (property === 'fi' || property === 'ws' || property === 'cs' || property === 'in' || property === 'cg') {
+            } else if (property === '_tfi' || property === '_tws' || property === '_tcs' || property === '_pin' || property === '_pcg') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -146,7 +146,7 @@
                             self._updateProperties();
                         }
                     });
-            } else if (property === 'fw') {
+            } else if (property === '_tfw') {
                 var select = $('<select></select>')
                     .attr('data-property', property)
                     .append(
@@ -166,7 +166,7 @@
                 }
 
                 return select;
-            } else if (property === 'fs') {
+            } else if (property === '_tfs') {
                 return $('<select></select>')
                     .attr('data-property', property)
                     .append($('<option></option>')
@@ -194,29 +194,29 @@
                     .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
-            } else if (property === 'wm') {
+            } else if (property === '_pwm') {
                 return $('<select></select>')
                     .attr('data-property', property)
                     .append($('<option></option>')
                         .attr('value', '')
                         .text(''))
                     .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.WrapMode.None)
+                        .attr('value', IFStyle.ParagraphWrapMode.None)
                         // TODO : I18N
                         .text('None'))
                     .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.WrapMode.Words)
+                        .attr('value', IFStyle.ParagraphWrapMode.Words)
                         // TODO : I18N
                         .text('Words'))
                     .append($('<option></option>')
-                        .attr('value', IFText.Paragraph.WrapMode.All)
+                        .attr('value', IFStyle.ParagraphWrapMode.All)
                         // TODO : I18N
                         .text('All'))
                     .on('change', function () {
                         var val = $(this).val();
                         self._assignProperty(property, val === '' ? null : val);
                     });
-            } else if (property === 'lh') {
+            } else if (property === '_plh') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -229,7 +229,7 @@
                             self._updateProperties();
                         }
                     });
-            } else if (property === 'cc') {
+            } else if (property === '_pcc') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -255,19 +255,19 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createInput('ff')
+                .append(_createInput('_tff')
                     .css({
                         'width': '120px'
                     }))
-                .append(_createInput('fw')
+                .append(_createInput('_tfw')
                     .css({
                         'width': '83px'
                     }))
-                .append(_createInput('fs')
+                .append(_createInput('_tfs')
                     .css({
                         'width': '65px'
                     }))
-                .append(_createInput('fi')
+                .append(_createInput('_tfi')
                     .css({
                         'width': '30px'
                     })))
@@ -278,7 +278,7 @@
                     'left': '5px'
                 })
                 .html('<span class="fa fa-text-width"></span>')
-                .append(_createInput('cs')
+                .append(_createInput('_tcs')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -292,7 +292,7 @@
                     'left': '60px'
                 })
                 .html('<span class="fa fa-text-width"></span>')
-                .append(_createInput('ws')
+                .append(_createInput('_tws')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -306,7 +306,7 @@
                     'left': '115px'
                 })
                 .html('<span class="fa fa-text-height"></span>')
-                .append(_createInput('lh')
+                .append(_createInput('_plh')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -319,16 +319,16 @@
                     'top': '30px',
                     'left': '215px'
                 })
-                .append(_createInput('al-' + IFText.Paragraph.Alignment.Left)
+                .append(_createInput('_pal-' + IFStyle.ParagraphAlignment.Left)
                     // TODO : I18N
                     .attr('title', 'Align Left'))
-                .append(_createInput('al-' + IFText.Paragraph.Alignment.Center)
+                .append(_createInput('_pal-' + IFStyle.ParagraphAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Align Centered'))
-                .append(_createInput('al-' + IFText.Paragraph.Alignment.Right)
+                .append(_createInput('_pal-' + IFStyle.ParagraphAlignment.Right)
                     // TODO : I18N
                     .attr('title', 'Align Right'))
-                .append(_createInput('al-' + IFText.Paragraph.Alignment.Justify)
+                .append(_createInput('_pal-' + IFStyle.ParagraphAlignment.Justify)
                     // TODO : I18N
                     .attr('title', 'Justify')))
             .append($('<hr>')
@@ -360,7 +360,7 @@
                     'left': '85px'
                 })
                 .html('<span class="fa fa-sort-alpha-asc"></span>')
-                .append(_createInput('wm')
+                .append(_createInput('_pwm')
                     .css({
                         'margin-left': '5px',
                         'width': '60px'
@@ -383,7 +383,7 @@
                     'left': '5px'
                 })
                 .html('<span class="fa fa-indent"></span>')
-                .append(_createInput('in')
+                .append(_createInput('_pin')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -397,7 +397,7 @@
                     'left': '60px'
                 })
                 .html('<span class="fa fa-reorder fa-rotate-270"></span>')
-                .append(_createInput('cc')
+                .append(_createInput('_pcc')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -411,7 +411,7 @@
                     'left': '115px'
                 })
                 .html('<span class="fa fa-sort-amount-desc fa-rotate-270"></span>')
-                .append(_createInput('cg')
+                .append(_createInput('_pcg')
                     .css({
                         'margin-left': '5px',
                         'width': '30px'
@@ -515,21 +515,21 @@
             .prop('checked', propertySource.getProperty('aw'));
 
         // Block
-        var fontFamily = propertySource.getProperty('ff', true);
+        var fontFamily = propertySource.getProperty('_tff', true);
 
-        this._panel.find('select[data-property="ff"]').val(propertySource.getProperty('ff'));
-        this._panel.find('input[data-property="fi"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('fi')));
+        this._panel.find('select[data-property="_tff"]').val(propertySource.getProperty('_tff'));
+        this._panel.find('input[data-property="_tfi"]')
+            .val(this._document.getScene().pointToString(propertySource.getProperty('_tfi')));
 
-        var weightSelect = this._panel.find('select[data-property="fw"]');
-        weightSelect.val(propertySource.getProperty('fw'));
+        var weightSelect = this._panel.find('select[data-property="_tfw"]');
+        weightSelect.val(propertySource.getProperty('_tfw'));
         var fontWeights = ifFont.getWeights(fontFamily);
         for (var i = 100; i <= 900; i += 100) {
             weightSelect.find('[value="' + i + '"]').prop('disabled', !fontWeights || fontWeights.indexOf(i) < 0);
         }
 
-        var styleSelect = this._panel.find('select[data-property="fs"]');
-        styleSelect.val(propertySource.getProperty('fs'));
+        var styleSelect = this._panel.find('select[data-property="_tfs"]');
+        styleSelect.val(propertySource.getProperty('_tfs'));
         var fontStyles = ifFont.getStyles(fontFamily);
         styleSelect.find('option').each(function (index, option) {
             var $option = $(option);
@@ -539,32 +539,30 @@
             }
         });
 
-        //this._panel.find('[data-property="fc"]').gColorButton('value', propertySource.getProperty('fc'));
-
-        this._panel.find('input[data-property="ws"]').val(
-            this._document.getScene().pointToString(propertySource.getProperty('ws')));
-        this._panel.find('input[data-property="cs"]').val(
-            this._document.getScene().pointToString(propertySource.getProperty('cs')));
+        this._panel.find('input[data-property="_tws"]').val(
+            this._document.getScene().pointToString(propertySource.getProperty('_tws')));
+        this._panel.find('input[data-property="_tcs"]').val(
+            this._document.getScene().pointToString(propertySource.getProperty('_tcs')));
 
 
         // Paragraph
-        this._panel.find('input[data-property="cc"]').val(propertySource.getProperty('cc'));
-        this._panel.find('input[data-property="cg"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('cg')));
+        this._panel.find('input[data-property="_pcc"]').val(propertySource.getProperty('_pcc'));
+        this._panel.find('input[data-property="_pcg"]')
+            .val(this._document.getScene().pointToString(propertySource.getProperty('_pcg')));
 
-        var alignVal = propertySource.getProperty('al') || '';
-        this._panel.find('button[data-property^="al"]').each(function (index, element) {
+        var alignVal = propertySource.getProperty('_pal') || '';
+        this._panel.find('button[data-property^="_pal"]').each(function (index, element) {
             var $element = $(element);
-            $element.toggleClass('g-active', $element.attr('data-property') === 'al-' + alignVal);
+            $element.toggleClass('g-active', $element.attr('data-property') === '_pal-' + alignVal);
         });
 
-        this._panel.find('select[data-property="wm"]').val(propertySource.getProperty('wm'));
+        this._panel.find('select[data-property="_pwm"]').val(propertySource.getProperty('_pwm'));
 
-        this._panel.find('input[data-property="in"]')
-            .val(this._document.getScene().pointToString(propertySource.getProperty('in')));
+        this._panel.find('input[data-property="_pin"]')
+            .val(this._document.getScene().pointToString(propertySource.getProperty('_pin')));
 
-        var lh = propertySource.getProperty('lh');
-        this._panel.find('input[data-property="lh"]').val(lh !== null ? ifUtil.formatNumber(lh) : "");
+        var lh = propertySource.getProperty('_plh');
+        this._panel.find('input[data-property="_plh"]').val(lh !== null ? ifUtil.formatNumber(lh) : "");
     };
 
     /**
