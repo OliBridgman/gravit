@@ -100,13 +100,19 @@
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
         if (layer === IFStyle.Layer.Background) {
-            // TODO : Check fill pattern opacity > 0
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-                context.canvas.putVertices(this);
-                // TODO : Honor fill opacity
-                context.canvas.fillVertices(
-                    this.$_fpt
-                );
+                var fill = this._createFillPaint(context.canvas, this.getGeometryBBox());
+                if (fill && fill.paint) {
+                    context.canvas.putVertices(this);
+
+                    if (fill.transform) {
+                        var oldTransform = context.canvas.setTransform(context.canvas.getTransform(true).preMultiplied(fill.transform));
+                        context.canvas.fillVertices(fill.paint, this.$_fop);
+                        context.canvas.setTransform(oldTransform);
+                    } else {
+                        context.canvas.fillVertices(fill.paint, this.$_fop);
+                    }
+                }
             }
         } else if (layer === IFStyle.Layer.Content) {
             // TODO : Render clipped contents

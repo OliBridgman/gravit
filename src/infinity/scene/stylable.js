@@ -41,7 +41,7 @@
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-            this._setDefaultProperties(IFStyle.GeometryStrokeProperties);
+            this._setDefaultProperties(IFStyle.VisualStrokeProperties, IFStyle.GeometryStrokeProperties);
         }
 
         if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
@@ -58,8 +58,7 @@
      * @returns {boolean}
      */
     IFStylable.prototype.hasStyleStroke = function () {
-        // TODO : Test stroke pattern opacity
-        return !!this.$_spt && this.$_sw > 0;
+        return !!this.$_spt && this.$_sw > 0.0 && this.$_sop > 0.0;
     };
 
     /**
@@ -67,8 +66,7 @@
      * @returns {boolean}
      */
     IFStylable.prototype.hasStyleFill = function (stylable) {
-        // TODO : Test fill pattern opacity
-        return !!this.$_fpt;
+        return !!this.$_fpt && this.$_fop > 0.0;
     };
 
     /**
@@ -142,7 +140,8 @@
                     (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
                     this._notifyChange(IFElement._Change.FinishGeometryUpdate);
                 } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualFillProperties))) {
+                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualFillProperties)) ||
+                    (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStrokeProperties))) {
                     this._notifyChange(IFElement._Change.InvalidationRequest);
                 }
             }
@@ -167,6 +166,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
+                this.storeProperties(args, IFStyle.VisualStrokeProperties);
                 this.storeProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
@@ -203,6 +203,7 @@
             }
 
             if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
+                this.restoreProperties(args, IFStyle.VisualStrokeProperties);
                 this.restoreProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
@@ -227,13 +228,10 @@
      * Called to paint with style
      * @param {IFPaintContext} context the context to be used for drawing
      * @param {IFRect} contentPaintBBox the paint bbox used for drawing this stylable
-     * @param {Function} [contentPaintCallback] callback to paint contents, defaults to null
      */
-    IFStylable.prototype._paintStyle = function (context, contentPaintBBox, contentPaintCallback) {
-        var opacity = this.getProperty('_opc');
-        if (opacity > 0.0) {
-            var blendMode = this.getProperty('_blm');
-            if (opacity !== 1.0 || blendMode !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
+    IFStylable.prototype._paintStyle = function (context, contentPaintBBox) {
+        if (this.$_stop > 0.0) {
+            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
                 // We need to paint on a separate canvas here
                 var sourceCanvas = context.canvas;
                 var paintBBox = this.getStyleBBox(contentPaintBBox);
@@ -256,22 +254,13 @@
                 context.canvas = styleCanvas;
                 try {
                     this._paintStyleLayers(context, contentPaintBBox);
-
-                    if (contentPaintCallback) {
-                        contentPaintCallback(context);
-                    }
-
-                    sourceCanvas.drawCanvas(styleCanvas, 0, 0, opacity, blendMode);
+                    sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, this.$_sbl);
                     styleCanvas.finish();
                 } finally {
                     context.canvas = sourceCanvas;
                 }
             } else {
                 this._paintStyleLayers(context, contentPaintBBox);
-
-                if (contentPaintCallback) {
-                    contentPaintCallback(context);
-                }
             }
         }
     };
@@ -294,6 +283,67 @@
      */
     IFStylable.prototype._paintStyleLayer = function (context, layer) {
         // NO-OP
+    };
+
+    /**
+     * Create and return the fill paint pattern used for painting
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFStylable.prototype._createFillPaint = function (canvas, bbox) {
+        if (this.$_fpt) {
+            return this._createPatternPaint(canvas, this.$_fpt, bbox, this.$_ftx, this.$_fty, this.$_fsx, this.$_fsy, this.$_frt);
+        }
+        return null;
+    };
+
+    /**
+     * Create and return the stroke paint pattern used for painting
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFStylable.prototype._createStrokePaint = function (canvas, bbox) {
+        if (this.$_spt) {
+            return this._createPatternPaint(canvas, this.$_spt, bbox, this.$_stx, this.$_sty, this.$_ssx, this.$_ssy, this.$_srt);
+        }
+        return null;
+    };
+
+    /**
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFStylable.prototype._createPatternPaint = function (canvas, pattern, bbox, tx, ty, sx, sy, rt) {
+        var result = {
+            paint: null,
+            transform: null
+        };
+
+        if (pattern instanceof IFColor) {
+            result.paint = pattern;
+        } else if (pattern instanceof IFGradient) {
+            var gradient = null;
+
+            if (pattern.getType() === IFGradient.Type.Linear) {
+                result.paint = canvas.createLinearGradient(-0.5, 0, 0.5, 0, pattern);
+            } else if (pattern.getType() === IFGradient.Type.Radial) {
+                result.paint = canvas.createRadialGradient(0, 0, 0.5, pattern);
+            }
+
+            var left = bbox.getX();
+            var top = bbox.getY();
+            var width = bbox.getWidth();
+            var height = bbox.getHeight();
+
+            result.transform = IFTransform()
+                .scaled(sx, sy)
+                .rotated(rt)
+                .translated(tx, ty)
+                .scaled(width, height)
+                .translated(left, top);
+        }
+
+        return result;
     };
 
     /** @override */

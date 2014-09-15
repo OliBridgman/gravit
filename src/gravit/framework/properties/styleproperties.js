@@ -35,14 +35,14 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === '_blm') {
+            if (property === '_sbl') {
                 return $('<select></select>')
                     .attr('data-property', property)
                     .gBlendMode()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
                     });
-            } else if (property === '_opc' || property === '_fop') {
+            } else if (property === '_stop' || property === '_sfop') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
@@ -67,7 +67,7 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createInput('_blm')
+                .append(_createInput('_sbl')
                     .css({
                         'width': '117px'
                     })))
@@ -79,7 +79,7 @@
                 })
                 // TODO : I18N
                 .text('Opacity:')
-                .append(_createInput('_opc')
+                .append(_createInput('_stop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -115,7 +115,7 @@
                 })
                 // TODO : I18N
                 .text('Fill:')
-                .append(_createInput('_fop')
+                .append(_createInput('_sfop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -170,9 +170,9 @@
         var scene = this._document.getScene();
         var stylable = this._elements[0];
 
-        this._panel.find('[data-property="_blm"]').val(stylable.getProperty('_blm'));
-        this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
-        this._panel.find('[data-property="_opc"]').val(ifUtil.formatNumber(stylable.getProperty('_opc') * 100, 0));
+        this._panel.find('[data-property="_sbl"]').val(stylable.getProperty('_sbl'));
+        this._panel.find('[data-property="_sfop"]').val(ifUtil.formatNumber(stylable.getProperty('_sfop') * 100, 0));
+        this._panel.find('[data-property="_stop"]').val(ifUtil.formatNumber(stylable.getProperty('_stop') * 100, 0));
     };
 
     /**

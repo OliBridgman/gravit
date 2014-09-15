@@ -107,11 +107,11 @@
      */
     IFStyle.VisualStyleProperties = {
         /** Blend Mode */
-        _blm: IFPaintCanvas.BlendMode.Normal,
+        _sbl: IFPaintCanvas.BlendMode.Normal,
         /** Fill Opacity (= w/o effects) */
-        _fop: 1,
+        _sfop: 1,
         /** Opacity (= total opacity w/ effects) */
-        _opc: 1
+        _stop: 1
     };
 
     /**
@@ -120,7 +120,38 @@
      */
     IFStyle.VisualFillProperties = {
         /** Fill pattern (IFPattern) */
-        _fpt: null
+        _fpt: null,
+        /** Fill opacity */
+        _fop: 1,
+        /** Horizontal Fill translation (0..1) % */
+        _ftx: 0,
+        /** Vertical Fill translation (0..1) % */
+        _fty: 0,
+        /** Horizontal Fill Scalation (0..1) % */
+        _fsx: 1,
+        /** Vertical Fill Scalation (0..1) % */
+        _fsy: 1,
+        /** Fill Rotation in radians */
+        _frt: 0
+    };
+
+    /**
+     * Visual Properties for a style stroke
+     * @enum
+     */
+    IFStyle.VisualStrokeProperties = {
+        /** Stroke opacity */
+        _sop: 1,
+        /** Horizontal Stroke translation (0..1) % */
+        _stx: 0,
+        /** Vertical Stroke translation (0..1) % */
+        _sty: 0,
+        /** Horizontal Stroke Scalation (0..1) % */
+        _ssx: 1,
+        /** Vertical Stroke Scalation (0..1) % */
+        _ssy: 1,
+        /** Stroke Rotation in radians */
+        _srt: 0
     };
 
     /**
