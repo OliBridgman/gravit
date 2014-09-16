@@ -12,6 +12,17 @@
     IFObject.inherit(GPalette, GView);
 
     /**
+     * Whether this palette wants to be auto-resized,
+     * means it eats up all remaining space if possible.
+     * Use this wisely and only if your palette _really_
+     * requires an auto-height!!
+     * @return {Boolean}
+     */
+    GPalette.prototype.isAutoSize = function () {
+        return false;
+    };
+
+    /**
      * Get the default group of the palette, null for none
      * @return {String}
      */

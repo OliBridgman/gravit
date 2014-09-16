@@ -4,7 +4,8 @@
   padding: 2px;
 
   .layers {
-    height: 184px;
+    min-height: 184px;
+    height: 100%;
 
     div.jqtree-element {
       padding: 0px;

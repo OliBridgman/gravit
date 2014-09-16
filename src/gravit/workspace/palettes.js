@@ -24,7 +24,7 @@
     GPalettes.prototype._palettesInfo = null;
 
     /**
-     * @type {Array<{{expanded: Boolean, visible: Boolean, activePalette: String, palettes: []}}>}
+     * @type {Array<{{expanded: Boolean, activePalette: String, palettes: [], container: JQuery}}>}
      * @private
      */
     GPalettes.prototype._groupsInfo = null;
@@ -75,49 +75,45 @@
      * will ensure that a) the sidebar is visible b) the palette is visible
      * and c) the palette's group is expanded
      * @param {String} paletteId
-     * @param {Boolean} active whether to activate or deactivate
      */
-    GPalettes.prototype.setPaletteActive = function (paletteId, active) {
+    GPalettes.prototype.setPaletteActive = function (paletteId) {
         var groupInfo = this._getGroupInfoForPalette(paletteId);
 
         if (groupInfo && (groupInfo.activePalette !== paletteId || !active || !groupInfo.visible || !groupInfo.expanded)) {
-            if (!active) {
-                // Simply hide our group and be done w/ it
-                this._setGroupVisible(groupInfo, false);
-            } else {
-                var paletteInfo = this._getPaletteInfo(paletteId);
+            var paletteInfo = this._getPaletteInfo(paletteId);
 
-                // Assign active palette
-                groupInfo.activePalette = paletteId;
+            // Assign active palette
+            groupInfo.activePalette = paletteId;
 
-                // Iterate each tab and mark active/non-active
-                groupInfo.container.find('.palette-group-tabs > button').each(function (index, element) {
-                    var el = $(element);
-                    if (el.attr('data-palette-id') === paletteId) {
-                        el.addClass('g-active');
-                    } else {
-                        el.removeClass('g-active');
-                    }
-                }.bind(this));
+            // Iterate each tab and mark active/non-active
+            groupInfo.container.find('.palette-group-tabs > button').each(function (index, element) {
+                var el = $(element);
+                if (el.attr('data-palette-id') === paletteId) {
+                    el.addClass('g-active');
+                } else {
+                    el.removeClass('g-active');
+                }
+            }.bind(this));
 
-                // Iterate each panel and mark visible/hidden
-                groupInfo.container.find('.palette-group-panels > div').each(function (index, element) {
-                    var el = $(element);
-                    if (el.attr('data-palette-id') === paletteId) {
-                        el.css('display', '');
-                    } else {
-                        el.css('display', 'none');
-                    }
-                });
+            // Iterate each panel and mark visible/hidden
+            groupInfo.container.find('.palette-group-panels > div').each(function (index, element) {
+                var el = $(element);
+                if (el.attr('data-palette-id') === paletteId) {
+                    el.css('display', '');
+                } else {
+                    el.css('display', 'none');
+                }
+            });
 
-                // Empty and re-assign controls
-                var controls = groupInfo.container.find('.palette-group-controls');
-                controls.children().detach();
-                controls.append(paletteInfo.controls);
+            // Empty and re-assign controls
+            var controls = groupInfo.container.find('.palette-group-controls');
+            controls.children().detach();
+            controls.append(paletteInfo.controls);
 
-                // Group needs to be visible and expanded
-                this._setGroupVisible(groupInfo, true);
+            if (!groupInfo.expanded) {
                 this._setGroupExpanded(groupInfo, true);
+            } else {
+                this._layoutPalettes();
             }
         }
     };
@@ -214,8 +210,9 @@
      * Called from the workspace to relayout
      */
     GPalettes.prototype.relayout = function () {
-        // NO-OP
+        this._layoutPalettes();
     };
+
     GPalettes.prototype._addPaletteInfo = function (palette) {
         // Create panel
         var panel = $('<div></div>')
@@ -347,17 +344,51 @@
                 groupInfo.container.height(header.outerHeight());
                 groupInfo.container.addClass('collapsed-palette');
             }
+
+            this._layoutPalettes();
         }
     };
 
-    GPalettes.prototype._setGroupVisible = function (groupInfo, visible) {
-        if (visible !== groupInfo.visible) {
-            groupInfo.visible = visible;
+    GPalettes.prototype._layoutPalettes = function () {
+        // Calculate our remaining space and collect all palettes
+        var availSpace = this._htmlElement.height();
+        var autosizePalettes = 0;
+        var activePalettesInfo = [];
+        for (var i = 0; i < this._groupsInfo.length; ++i) {
+            var groupInfo = this._groupsInfo[i];
+            availSpace -= groupInfo.container.find('.palette-group-header').outerHeight();
 
-            if (groupInfo.visible) {
-                groupInfo.container.css('display', '');
+            if (groupInfo.expanded && groupInfo.activePalette) {
+                for (var j = 0; j < this._palettesInfo.length; ++j) {
+                    var paletteInfo = this._palettesInfo[j];
+                    if (paletteInfo.palette.getId() === groupInfo.activePalette) {
+                        if (paletteInfo.palette.isAutoSize()) {
+                            autosizePalettes++;
+                        } else {
+                            availSpace -= paletteInfo.panel.outerHeight();
+                        }
+                        activePalettesInfo.push(paletteInfo);
+                    }
+                }
+            }
+        }
+
+        var spacePerPalette = 0;
+        if (availSpace > 0 && autosizePalettes > 0) {
+            // TODO: Fix this -- 3px removal for css border-bottom
+            availSpace -= (activePalettesInfo.length+1) * 3;
+
+            spacePerPalette = availSpace / autosizePalettes;
+        }
+
+        // Resize if necessary
+        for (var i = 0; i < activePalettesInfo.length; ++i) {
+            var paletteInfo = activePalettesInfo[i];
+            if (spacePerPalette > 0 && paletteInfo.palette.isAutoSize()) {
+                paletteInfo.savedHeight = paletteInfo.panel.css('height');
+                paletteInfo.panel.css('height', spacePerPalette.toString() + 'px');
             } else {
-                groupInfo.container.css('display', 'none');
+                paletteInfo.panel.css('height', paletteInfo.savedHeight);
             }
         }
     };

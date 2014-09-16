@@ -10,7 +10,10 @@
 
   .palette-group {
     overflow: hidden;
-    border-bottom: 3px solid $darkShadowColor;
+
+    &:not(:last-child) {
+      border-bottom: 3px solid $darkShadowColor;
+    }
 
     > .palette-group-header {
       height: 21px;
