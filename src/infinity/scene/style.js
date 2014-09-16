@@ -172,7 +172,7 @@
         /** Line-Join */
         _slj: IFPaintCanvas.LineJoin.Miter,
         /** Line-Miter-Limit */
-        _slm: 10
+        _slm: 1
     };
 
     /**
