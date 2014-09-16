@@ -116,7 +116,32 @@
                 }
             }
         } else if (layer === IFStyle.Layer.Content) {
-            // TODO : Render clipped contents
+            // TODO : Check intersection of children paintbbox and if it is
+            // fully contained by this shape then don't clip
+            // Paint our contents if any and clip 'em to ourself
+            // TODO : Use clipPath() when supporting AA in chrome instead
+            // of composite painting and separate canvas!!
+            var oldContentsCanvas = null;
+            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFElement) {
+                    // Create temporary canvas if none yet
+                    if (!oldContentsCanvas) {
+                        oldContentsCanvas = context.canvas;
+                        context.canvas = oldContentsCanvas.createCanvas(this.getGeometryBBox());
+                    }
+
+                    child.paint(context);
+                }
+            }
+
+            // If we have a old contents canvas, clip our contents and swap canvas back
+            if (oldContentsCanvas) {
+                context.canvas.putVertices(this);
+                context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                oldContentsCanvas.drawCanvas(context.canvas);
+                context.canvas.finish();
+                context.canvas = oldContentsCanvas;
+            }
         } else if (layer === IFStyle.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleStroke()) {
@@ -134,7 +159,7 @@
                     // Except center alignment we need to double the stroke width
                     // as we're gonna clip half away
                     if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
-                        strokeWidth *= 2
+                        strokeWidth *= 2;
                     }
 
                     context.canvas.putVertices(this);
@@ -158,6 +183,8 @@
                         canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, this.$_sop);
                     }
 
+                    // TODO : Use clipPath() when supporting AA in chrome instead
+                    // of composite painting and separate canvas!!
                     // Depending on the stroke alignment we might need to clip now
                     if (this.$_sa === IFStyle.StrokeAlignment.Inside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
