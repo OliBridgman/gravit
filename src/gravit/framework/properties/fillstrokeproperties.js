@@ -58,8 +58,18 @@
                         .text('Texture'))
                     .append($('<option></option>')
                         .text('Noise'));
-            } else if (property === 'opc') {
-                return $('<input>');
+            } else if (property === '_fop') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        var opacity = IFLength.parseEquationValue($(this).val());
+                        if (opacity !== null && opacity >= 0.0 && opacity <= 100) {
+                            self._assignProperty(property, opacity / 100);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
             } else if (property === '_sw') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -185,7 +195,7 @@
                     'top': '5px',
                     'left': '134px'
                 })
-                .append(_createInput('opc')
+                .append(_createInput('_fop')
                     .css({
                         'width': '30px'
                     })))
@@ -331,6 +341,8 @@
         this._panel.find('[data-property="_fpt"]')
             .gColorButton('value', stylable.getProperty('_fpt'))
             .gColorButton('scene', scene);
+
+        this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 
         this._panel.find('[data-property="_spt"]')
             .gColorButton('value', stylable.getProperty('_spt'))
