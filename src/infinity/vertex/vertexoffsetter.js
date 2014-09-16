@@ -1004,7 +1004,7 @@
             }
         }
 
-        if (!(inset && outset)) {
+        if (!(inset && outset) && !this._polyline.closed) {
             // Step 2. General closest point pair (GCPP) clipping
             this._gcppClipping(tmpArray1Out, this._polyline, offset, this._polyoutset);
             this._gcppClipping(tmpArray1In, this._polyline, offset, this._polyinset);
@@ -1676,7 +1676,11 @@
         for (var i = 0; i < polyLn.count - 2; ++i) {
             s2 = s1.next;
             for (var j = i + 1; j < polyLn.count - 1; ++j) {
-                this._calcSegmIntersectionPoints(s1, s2, i, j, intPts, intPts, j == i + 1);
+                if (!(i == 0 && j == polyLn.count - 2) || !this._polyline.closed) {
+                    this._calcSegmIntersectionPoints(s1, s2, i, j, intPts, intPts, j == i + 1);
+                } else {
+                    this._calcSegmIntersectionPoints(s2, s1, j, i, intPts, intPts, true);
+                }
                 s2 = s2.next;
             }
             s1 = s1.next;
@@ -1823,7 +1827,7 @@
      * @private
      */
     IFVertexOffsetter.prototype._splitForClipping = function (polyLn, intPts) {
-        var eps = 0.000001;
+        var eps = 0.0001; // TODO: make this eps calculated
         var startSegm = polyLn.head;
         var startIdx = 0;
         var segm = startSegm;
@@ -1892,11 +1896,11 @@
                 segmOrig = segm;
             }
         } else {
-            joinends = false;
+            //joinends = false;
         }
         if (split[0].count == 1) {
             split = split.slice(1);
-            joinends = false;
+            //joinends = false;
         }
         if (joinends) {
             var len = split.length;

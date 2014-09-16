@@ -229,7 +229,6 @@
 
             new GDuplicateAction(),
             new GCloneAction(),
-            new GConvertToPathAction(),
 
             new GSelectAllAction(),
             new GInvertSelectionAction(),
@@ -267,6 +266,7 @@
             new GGroupAction(),
             new GUngroupAction(),
 
+            new GConvertToPathAction(),
             new GSliceFromSelectionAction(),
 
             new GAddPageAction(),

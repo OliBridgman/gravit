@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GConvertToPathAction, GAction);
 
-    GConvertToPathAction.ID = 'edit.converttopath';
+    GConvertToPathAction.ID = 'modify.converttopath';
     GConvertToPathAction.TITLE = new IFLocale.Key(GConvertToPathAction, "title");
 
     /**
@@ -31,14 +31,14 @@
      * @override
      */
     GConvertToPathAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_EDIT;
+        return GApplication.CATEGORY_MODIFY;
     };
 
     /**
      * @override
      */
     GConvertToPathAction.prototype.getGroup = function () {
-        return "ccp";
+        return "structure-convert";
     };
 
     /**
