@@ -70,6 +70,28 @@
     };
 
     /**
+     * Returns the required padding for the currently setup stroke
+     * @returns {Number}
+     */
+    IFStylable.prototype.getStyleStrokePadding = function () {
+        // Padding depends on stroke-width and alignment and miter limit if miter join is used
+        if (this.$_sa === IFStyle.StrokeAlignment.Center) {
+            var val = this.$_sw / 2;
+            if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$_slm;
+            }
+            return val;
+        } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
+            var val = this.$_sw;
+            if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$_slm;
+            }
+            return val;
+        }
+        return 0;
+    }
+
+    /**
      * Returns the painted style bounding box
      * @param {IFRect} source the source bbox
      * @returns {IFRect}
@@ -84,17 +106,12 @@
 
         // Add stroke to paddings
         if (this.hasStyleStroke() && propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-            if (this.$_sa === IFStyle.StrokeAlignment.Center) {
-                var sw2 = this.$_sw / 2;
-                left += sw2;
-                top += sw2;
-                right += sw2;
-                bottom += sw2;
-            } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
-                left += this.$_sw;
-                top += this.$_sw;
-                right += this.$_sw;
-                bottom += this.$_sw;
+            var strokePadding = this.getStyleStrokePadding();
+            if (strokePadding) {
+                left += strokePadding;
+                top += strokePadding;
+                right += strokePadding;
+                bottom += strokePadding;
             }
         }
 
@@ -234,23 +251,7 @@
             if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
                 // We need to paint on a separate canvas here
                 var sourceCanvas = context.canvas;
-                var paintBBox = this.getStyleBBox(contentPaintBBox);
-
-                // The canvas our results will be put onto. If we're in fast
-                // mode, we'll try to cache the result and paint at 100%, otherwise
-                // we'll be painting on a temporary canvas, instead
-                var styleCanvas = null;
-                if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
-                    styleCanvas = new IFPaintCanvas();
-                    styleCanvas.resize(paintBBox.getWidth(), paintBBox.getHeight());
-                    styleCanvas.prepare();
-
-                    var topLeft = paintBBox.getSide(IFRect.Side.TOP_LEFT);
-                    styleCanvas.setOrigin(topLeft);
-                    styleCanvas.setOffset(topLeft);
-                } else {
-                    styleCanvas = sourceCanvas.createCanvas(paintBBox, false);
-                }
+                var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
                 context.canvas = styleCanvas;
                 try {
                     this._paintStyleLayers(context, contentPaintBBox);
@@ -268,12 +269,26 @@
     /**
      * Called to paint the style layers
      * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFRect} bbox the source bbox used for drawing
+     * @param {IFRect} contentPaintBBox the source bbox used for drawing
      */
-    IFStylable.prototype._paintStyleLayers = function (context, bbox) {
-        this._paintStyleLayer(context, IFStyle.Layer.Background); // fill
-        this._paintStyleLayer(context, IFStyle.Layer.Content); // innner shapes, image, ...
-        this._paintStyleLayer(context, IFStyle.Layer.Foreground); // stroke
+    IFStylable.prototype._paintStyleLayers = function (context, contentPaintBBox) {
+        for (var i = 0; i < IFStyle.LAYER_ORDER.length; ++i) {
+            var layer = IFStyle.LAYER_ORDER[i];
+            if (this._isSeparateStyleLayer(context, layer)) {
+                var sourceCanvas = context.canvas;
+                var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                context.canvas = styleCanvas;
+                try {
+                    this._paintStyleLayer(context, layer);
+                    sourceCanvas.drawCanvas(styleCanvas);
+                    styleCanvas.finish();
+                } finally {
+                    context.canvas = sourceCanvas;
+                }
+            } else {
+                this._paintStyleLayer(context, layer);
+            }
+        }
     };
 
     /**
@@ -283,6 +298,16 @@
      */
     IFStylable.prototype._paintStyleLayer = function (context, layer) {
         // NO-OP
+    };
+
+    /**
+     * Called to test whether a given style layer requires a separate canvas or not
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFStyle.Layer} layer the actual layer to be painted
+     * @return {Boolean} true if layer is separated, false if not
+     */
+    IFStylable.prototype._isSeparateStyleLayer = function (context, layer) {
+        return false;
     };
 
     /**
@@ -344,6 +369,33 @@
         }
 
         return result;
+    };
+
+    /**
+     * Creates a temporary canvas for style drawing. This function will actually
+     * honor the Fast-Paint-Mode and if set, will return a canvas that paints at
+     * 100% instead.
+     * @param {IFPaintContext} context the paint context in use
+     * @param {IFRect} extents the extents for the temporary canvas
+     * @return {IFPaintCanvas}
+     * @private
+     */
+    IFStylable.prototype._createStyleCanvas = function (context, extents) {
+        if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
+            var result = new IFPaintCanvas();
+            result.resize(extents.getWidth(), extents.getHeight());
+            result.prepare();
+
+            var topLeft = extents.getSide(IFRect.Side.TOP_LEFT);
+            result.setOrigin(topLeft);
+            result.setOffset(topLeft);
+
+            // TODO : Support clipping dirty areas
+
+            return result;
+        } else {
+            return context.canvas.createCanvas(extents, true);
+        }
     };
 
     /** @override */

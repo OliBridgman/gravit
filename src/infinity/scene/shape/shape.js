@@ -101,16 +101,17 @@
     IFShape.prototype._paintStyleLayer = function (context, layer) {
         if (layer === IFStyle.Layer.Background) {
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-                var fill = this._createFillPaint(context.canvas, this.getGeometryBBox());
+                var canvas = context.canvas;
+                var fill = this._createFillPaint(canvas, this.getGeometryBBox());
                 if (fill && fill.paint) {
-                    context.canvas.putVertices(this);
+                    canvas.putVertices(this);
 
                     if (fill.transform) {
-                        var oldTransform = context.canvas.setTransform(context.canvas.getTransform(true).preMultiplied(fill.transform));
-                        context.canvas.fillVertices(fill.paint, this.$_fop);
-                        context.canvas.setTransform(oldTransform);
+                        var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(fill.transform));
+                        canvas.fillVertices(fill.paint, this.$_fop);
+                        canvas.setTransform(oldTransform);
                     } else {
-                        context.canvas.fillVertices(fill.paint, this.$_fop);
+                        canvas.fillVertices(fill.paint, this.$_fop);
                     }
                 }
             }
@@ -119,15 +120,51 @@
         } else if (layer === IFStyle.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleStroke()) {
-                context.canvas.putVertices(this);
-                // TODO : Honor stroke opacity
-                context.canvas.strokeVertices(
-                    this.$_spt,
-                    this.$_sw,
-                    this.$_slc,
-                    this.$_slj,
-                    this.$_slm
-                );
+                var canvas = context.canvas;
+                var strokeBBox = this.getGeometryBBox();
+                var strokePadding = this.getStyleStrokePadding();
+                if (strokePadding) {
+                    strokeBBox = strokeBBox.expanded(strokePadding, strokePadding, strokePadding, strokePadding);
+                }
+                var stroke = this._createStrokePaint(context.canvas, strokeBBox);
+
+                if (stroke && stroke.paint) {
+                    var strokeWidth = this.$_sw;
+
+                    // Except center alignment we need to double the stroke width
+                    // as we're gonna clip half away
+                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                        strokeWidth *= 2
+                    }
+
+                    context.canvas.putVertices(this);
+
+                    if (stroke.transform) {
+                        // If any scale factor is != 1.0 we need to fill the whole area
+                        // and clip our stroke away to ensure stroke width consistency
+                        if (this.$_ssx !== 1.0 || this.$_ssy !== 1.0) {
+                            // Fill everything with the stroke.paint, then clip with the stroke
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
+                            var patternFillArea = stroke.transform.inverted().mapRect(strokeBBox);
+                            canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), stroke.paint, this.$_sop);
+                            canvas.setTransform(oldTransform);
+                            canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                        } else {
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
+                            canvas.strokeVertices(stroke.paint, strokeWidth / stroke.transform.getScaleFactor(), this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                            canvas.setTransform(oldTransform);
+                        }
+                    } else {
+                        canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                    }
+
+                    // Depending on the stroke alignment we might need to clip now
+                    if (this.$_sa === IFStyle.StrokeAlignment.Inside) {
+                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                    } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
+                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+                    }
+                }
             } else if (outline) {
                 // Outline is painted with non-transformed stroke
                 // so we reset transform, transform the vertices
@@ -139,6 +176,27 @@
                 context.canvas.setTransform(transform);
             }
         }
+    };
+
+    /** @override */
+    IFShape.prototype._isSeparateStyleLayer = function (context, layer) {
+        var result = IFStylable.prototype._isSeparateStyleLayer(context, layer);
+        if (!result) {
+            if (layer === IFStyle.Layer.Foreground) {
+                var outline = context.configuration.isOutline(context);
+                if (!outline && this.hasStyleStroke()) {
+                    // If we're not having a center-aligned stroke then
+                    // we need a separate canvas here
+                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                        return true;
+                    }
+
+                    // Having a scale of !== 0 always requires a separate canvas
+                    return this.$_ssx !== 1.0 || this.$_ssy !== 1.0;
+                }
+            }
+        }
+        return false;
     };
 
     /** @override */

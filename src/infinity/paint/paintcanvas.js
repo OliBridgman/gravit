@@ -519,6 +519,8 @@
      * should never be used i.e. for effects as they might be cut off.
      * @param {IFRect} extents the extents for the requested canvas
      * Defaults to false.
+     * @param {Boolean} [clipDirty] whether to clip dirty areas, defaults
+     * to false
      */
     IFPaintCanvas.prototype.createCanvas = function (extents, clipDirty) {
         var result = new IFPaintCanvas();

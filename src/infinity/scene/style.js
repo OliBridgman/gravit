@@ -48,6 +48,8 @@
         Foreground: 'F'
     };
 
+    IFStyle.LAYER_ORDER = [IFStyle.Layer.Background, IFStyle.Layer.Content, IFStyle.Layer.Foreground];
+
     /**
      * Alignment of a stroke
      * @enum
