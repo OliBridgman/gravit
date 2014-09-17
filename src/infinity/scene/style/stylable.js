@@ -97,13 +97,13 @@
         if (this.$_ba === IFStyleDefinition.BorderAlignment.Center) {
             var val = this.$_bw / 2;
             if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
-                val *= this.$_blm;
+                val *= 2;
             }
             return val;
         } else if (this.$_ba === IFStyleDefinition.BorderAlignment.Outside) {
             var val = this.$_bw;
             if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
-                val *= this.$_blm;
+                val *= 2;
             }
             return val;
         }

@@ -164,9 +164,7 @@
         /** Line-Caption */
         _blc: IFPaintCanvas.LineCap.Square,
         /** Line-Join */
-        _blj: IFPaintCanvas.LineJoin.Miter,
-        /** Line-Miter-Limit */
-        _blm: 1
+        _blj: IFPaintCanvas.LineJoin.Miter
     };
 
     /**
