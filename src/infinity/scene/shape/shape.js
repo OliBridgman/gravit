@@ -7,7 +7,7 @@
      * @extends IFItem
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
-     * @mixes IFStylable
+     * @mixes IFStyledElement
      * @mixes IFVertexSource
      * @constructor
      */
@@ -17,7 +17,7 @@
         this._setStyleDefaultProperties();
     }
 
-    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFStylable, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFStyledElement, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -65,8 +65,8 @@
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
     IFShape.prototype.getStylePropertySets = function () {
-        return IFStylable.prototype.getStylePropertySets.call(this)
-            .concat(IFStyle.PropertySet.Fill, IFStyle.PropertySet.Stroke);
+        return IFStyledElement.prototype.getStylePropertySets.call(this)
+            .concat(IFStyleDefinition.PropertySet.Fill, IFStyleDefinition.PropertySet.Stroke);
     };
 
     /** @override */
@@ -99,7 +99,7 @@
 
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStyle.Layer.Background) {
+        if (layer === IFStyleDefinition.Layer.Background) {
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
                 var canvas = context.canvas;
                 var fill = this._createFillPaint(canvas, this.getGeometryBBox());
@@ -115,7 +115,7 @@
                     }
                 }
             }
-        } else if (layer === IFStyle.Layer.Content) {
+        } else if (layer === IFStyleDefinition.Layer.Content) {
             // TODO : Check intersection of children paintbbox and if it is
             // fully contained by this shape then don't clip
             // Paint our contents if any and clip 'em to ourself
@@ -142,7 +142,7 @@
                 context.canvas.finish();
                 context.canvas = oldContentsCanvas;
             }
-        } else if (layer === IFStyle.Layer.Foreground) {
+        } else if (layer === IFStyleDefinition.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleStroke()) {
                 var canvas = context.canvas;
@@ -158,7 +158,7 @@
 
                     // Except center alignment we need to double the stroke width
                     // as we're gonna clip half away
-                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                    if (this.$_sa !== IFStyleDefinition.StrokeAlignment.Center) {
                         strokeWidth *= 2;
                     }
 
@@ -186,9 +186,9 @@
                     // TODO : Use clipPath() when supporting AA in chrome instead
                     // of composite painting and separate canvas!!
                     // Depending on the stroke alignment we might need to clip now
-                    if (this.$_sa === IFStyle.StrokeAlignment.Inside) {
+                    if (this.$_sa === IFStyleDefinition.StrokeAlignment.Inside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
+                    } else if (this.$_sa === IFStyleDefinition.StrokeAlignment.Outside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
                     }
                 }
@@ -207,14 +207,14 @@
 
     /** @override */
     IFShape.prototype._isSeparateStyleLayer = function (context, layer) {
-        var result = IFStylable.prototype._isSeparateStyleLayer(context, layer);
+        var result = IFStyledElement.prototype._isSeparateStyleLayer(context, layer);
         if (!result) {
-            if (layer === IFStyle.Layer.Foreground) {
+            if (layer === IFStyleDefinition.Layer.Foreground) {
                 var outline = context.configuration.isOutline(context);
                 if (!outline && this.hasStyleStroke()) {
                     // If we're not having a center-aligned stroke then
                     // we need a separate canvas here
-                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                    if (this.$_sa !== IFStyleDefinition.StrokeAlignment.Center) {
                         return true;
                     }
 

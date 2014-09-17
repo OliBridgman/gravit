@@ -60,22 +60,23 @@
         }.bind(this);
 
         panel
-            .css('width', '210px')
+            .css('width', '142px')
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '5px',
-                    'left': '5px'
+                    'left': '5px',
+                    'right': '5px'
                 })
                 .append(_createInput('_sbl')
                     .css({
-                        'width': '117px'
+                        'width': '100%'
                     })))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
-                    'top': '5px',
-                    'right': '5px'
+                    'top': '30px',
+                    'left': '5px'
                 })
                 // TODO : I18N
                 .text('Opacity:')
@@ -88,30 +89,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '30px',
-                    'left': '5px'
-                })
-                .append($('<select></select>')
-                    .append($('<option>No Style</option>'))
-                    .css({
-                        'width': '95px'
-                    })))
-            .append($('<div></div>')
-                .css({
-                    'position': 'absolute',
-                    'top': '30px',
-                    'left': '103px'
-                })
-                .append($('<button></button>')
-                    .append($('<span></span>')
-                        .addClass('fa fa-plus')))
-                .append($('<button></button>')
-                    .append($('<span></span>')
-                        .addClass('fa fa-trash-o'))))
-            .append($('<label></label>')
-                .css({
-                    'position': 'absolute',
-                    'top': '30px',
-                    'right': '5px'
+                    'left': '86px'
                 })
                 // TODO : I18N
                 .text('Fill:')
@@ -126,7 +104,58 @@
                     'left': '0px',
                     'right': '0px',
                     'top': '50px'
-                }));
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px',
+                    'right': '5px'
+                })
+                .append($('<select></select>')
+                    .append($('<option>No Style</option>'))
+                    .css({
+                        'width': '100%'
+                    })))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'New Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-plus')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Redefine Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-check')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Remove Style Differences')
+                    .append($('<span></span>')
+                        .addClass('fa fa-remove')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Disconnect Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-chain-broken')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Delete Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-trash-o')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Set As Default Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-thumb-tack'))
+                    .on('click', function () {
+                        IFStyleDefinition.transfer(this._elements[0], this._document.getEditor().getDefaultStyle());
+                    }.bind(this))));
     };
 
     /** @override */
@@ -138,7 +167,7 @@
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Style) >= 0) {
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
                 this._elements.push(elements[i]);
             }
         }

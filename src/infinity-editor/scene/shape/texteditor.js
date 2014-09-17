@@ -60,7 +60,7 @@
                 }
             }
 
-            if (IFStyle.GeometryTextProperties.hasOwnProperty(property)) {
+            if (IFStyleDefinition.GeometryTextProperties.hasOwnProperty(property)) {
                 if (activeSpan) {
                     return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeSpan) : activeSpan.style);
                 } else if (activeParagraph) {
@@ -68,7 +68,7 @@
                 } else {
                     return this.getElement().getContent().getProperty(property);
                 }
-            } else if (IFStyle.GeometryParagraphProperties.hasOwnProperty(property)) {
+            } else if (IFStyleDefinition.GeometryParagraphProperties.hasOwnProperty(property)) {
                 if (activeParagraph) {
                     return IFText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
@@ -93,7 +93,7 @@
             if (IFText.GeometryProperties.hasOwnProperty(properties[i])) {
                 textProperties.push(properties[i]);
                 textValues.push(values[i]);
-            } else if (IFStyle.GeometryTextProperties.hasOwnProperty(properties[i])) {
+            } else if (IFStyleDefinition.GeometryTextProperties.hasOwnProperty(properties[i])) {
                 blockProperties.push(properties[i]);
                 blockValues.push(values[i]);
             } else {

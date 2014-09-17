@@ -1,24 +1,18 @@
 (function (_) {
     /**
-     * The style class
-     * @class IFStyle
-     * @extends IFNode
-     * @mixes IFNode.Store
-     * @mixes IFNode.Properties
+     * The style definition class
+     * @class IFStyleDefinition
      * @constructor
      */
-    function IFStyle() {
+    function IFStyleDefinition() {
         IFNode.call(this);
-        IFStyle.setDefaultProperties(this);
     }
-
-    IFNode.inheritAndMix("style", IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
      * The property set of a style
      * @enum
      */
-    IFStyle.PropertySet = {
+    IFStyleDefinition.PropertySet = {
         Style: 'S',
         Effects: 'E',
         Fill: 'F',
@@ -31,7 +25,7 @@
      * The layer of a style rendering
      * @enum
      */
-    IFStyle.Layer = {
+    IFStyleDefinition.Layer = {
         /**
          * Background Layer
          */
@@ -48,13 +42,13 @@
         Foreground: 'F'
     };
 
-    IFStyle.LAYER_ORDER = [IFStyle.Layer.Background, IFStyle.Layer.Content, IFStyle.Layer.Foreground];
+    IFStyleDefinition.LAYER_ORDER = [IFStyleDefinition.Layer.Background, IFStyleDefinition.Layer.Content, IFStyleDefinition.Layer.Foreground];
 
     /**
      * Alignment of a stroke
      * @enum
      */
-    IFStyle.StrokeAlignment = {
+    IFStyleDefinition.StrokeAlignment = {
         /**
          * Center alignment
          */
@@ -75,7 +69,7 @@
      * Alignment of a paragraph
      * @enum
      */
-    IFStyle.ParagraphAlignment = {
+    IFStyleDefinition.ParagraphAlignment = {
         Left: 'l',
         Center: 'c',
         Right: 'r',
@@ -86,7 +80,7 @@
      * Wrap-Mode of a paragraph
      * @enum
      */
-    IFStyle.ParagraphWrapMode = {
+    IFStyleDefinition.ParagraphWrapMode = {
         /**
          * No word-break
          */
@@ -107,7 +101,7 @@
      * Visual Properties for a style
      * @enum
      */
-    IFStyle.VisualStyleProperties = {
+    IFStyleDefinition.VisualStyleProperties = {
         /** Blend Mode */
         _sbl: IFPaintCanvas.BlendMode.Normal,
         /** Fill Opacity (= w/o effects) */
@@ -120,7 +114,7 @@
      * Visual Properties for a style fill
      * @enum
      */
-    IFStyle.VisualFillProperties = {
+    IFStyleDefinition.VisualFillProperties = {
         /** Fill pattern (IFPattern) */
         _fpt: null,
         /** Fill opacity */
@@ -141,7 +135,7 @@
      * Visual Properties for a style stroke
      * @enum
      */
-    IFStyle.VisualStrokeProperties = {
+    IFStyleDefinition.VisualStrokeProperties = {
         /** Stroke opacity */
         _sop: 1,
         /** Horizontal Stroke translation (0..1) % */
@@ -160,13 +154,13 @@
      * Geometry Properties for a style stroke
      * @enum
      */
-    IFStyle.GeometryStrokeProperties = {
+    IFStyleDefinition.GeometryStrokeProperties = {
         /** Stroke pattern (IFPattern) */
         _spt: null,
         /** Stroke Width */
         _sw: 1,
         /** Stroke Alignment */
-        _sa: IFStyle.StrokeAlignment.Center,
+        _sa: IFStyleDefinition.StrokeAlignment.Center,
         /** Line-Caption */
         _slc: IFPaintCanvas.LineCap.Square,
         /** Line-Join */
@@ -179,7 +173,7 @@
      * Geometry Properties for a style text
      * @enum
      */
-    IFStyle.GeometryTextProperties = {
+    IFStyleDefinition.GeometryTextProperties = {
         /** The font family */
         _tff: null,
         /** The font size */
@@ -198,14 +192,14 @@
      * Geometry Properties for a style paragraph
      * @enum
      */
-    IFStyle.GeometryParagraphProperties = {
+    IFStyleDefinition.GeometryParagraphProperties = {
         /** Column count */
         _pcc: null,
         /** Column gap */
         _pcg: null,
-        /** Wrap-Mode of a paragraph (IFStyle.ParagraphWrapMode) */
+        /** Wrap-Mode of a paragraph (IFStyleDefinition.ParagraphWrapMode) */
         _pwm: null,
-        /** The paragraph's alignment (IFStyle.ParagraphAlignment) */
+        /** The paragraph's alignment (IFStyleDefinition.ParagraphAlignment) */
         _pal: null,
         /** The first line intendation */
         _pin: null,
@@ -213,5 +207,5 @@
         _plh: null
     };
 
-    _.IFStyle = IFStyle;
+    _.IFStyleDefinition = IFStyleDefinition;
 })(this);

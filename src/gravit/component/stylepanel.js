@@ -32,7 +32,7 @@
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+        if (evt.node instanceof IFStyleDefinition && evt.node.getParent() === container) {
             methods.insertStyle.call(this, evt.node);
         }
     };
@@ -40,7 +40,7 @@
     function beforeRemoveEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+        if (evt.node instanceof IFStyleDefinition && evt.node.getParent() === container) {
             methods.removeStyle.call(this, evt.node);
         }
     };
@@ -61,7 +61,7 @@
         }
     };
 
-    /** @type {IFStyle} */
+    /** @type {IFStyleDefinition} */
     var dragStyle = null;
 
     function canDrop($this, target) {
@@ -380,7 +380,7 @@
 
             if (container) {
                 for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFStyle) {
+                    if (child instanceof IFStyleDefinition) {
                         methods.insertStyle.call(this, child);
                     }
                 }
@@ -395,7 +395,7 @@
                     scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.addEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
+                    scene.addEventListener(IFStyleDefinition.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
             return this;
@@ -413,7 +413,7 @@
                     scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.removeEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
+                    scene.removeEventListener(IFStyleDefinition.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
 

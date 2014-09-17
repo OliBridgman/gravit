@@ -9,21 +9,16 @@
     };
 
     // --------------------------------------------------------------------------------------------
-    // IFStylable.Paint Mixin
-    // --------------------------------------------------------------------------------------------
-
-
-    // --------------------------------------------------------------------------------------------
     // IFStylable Mixin
     // --------------------------------------------------------------------------------------------
     /**
      * The property-sets this stylable supports
-     * @returns {Array<IFStyle.PropertySet>} list of supported
+     * @returns {Array<IFStyleDefinition.PropertySet>} list of supported
      * property sets
      * @private
      */
     IFStylable.prototype.getStylePropertySets = function () {
-        return [IFStyle.PropertySet.Style, IFStyle.PropertySet.Effects];
+        return [IFStyleDefinition.PropertySet.Style, IFStyleDefinition.PropertySet.Effects];
     };
 
     /**
@@ -32,24 +27,24 @@
     IFStylable.prototype._setStyleDefaultProperties = function () {
         var propertySets = this.getStylePropertySets();
 
-        if (propertySets.indexOf(IFStyle.PropertySet.Style) >= 0) {
-            this._setDefaultProperties(IFStyle.VisualStyleProperties);
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualStyleProperties);
         }
 
-        if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-            this._setDefaultProperties(IFStyle.VisualFillProperties);
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualFillProperties);
         }
 
-        if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-            this._setDefaultProperties(IFStyle.VisualStrokeProperties, IFStyle.GeometryStrokeProperties);
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualStrokeProperties, IFStyleDefinition.GeometryStrokeProperties);
         }
 
-        if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
-            this._setDefaultProperties(IFStyle.GeometryTextProperties);
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.GeometryTextProperties);
         }
 
-        if (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0) {
-            this._setDefaultProperties(IFStyle.GeometryParagraphProperties);
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.GeometryParagraphProperties);
         }
     };
 
@@ -75,13 +70,13 @@
      */
     IFStylable.prototype.getStyleStrokePadding = function () {
         // Padding depends on stroke-width and alignment and miter limit if miter join is used
-        if (this.$_sa === IFStyle.StrokeAlignment.Center) {
+        if (this.$_sa === IFStyleDefinition.StrokeAlignment.Center) {
             var val = this.$_sw / 2;
             if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
                 val *= this.$_slm;
             }
             return val;
-        } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
+        } else if (this.$_sa === IFStyleDefinition.StrokeAlignment.Outside) {
             var val = this.$_sw;
             if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
                 val *= this.$_slm;
@@ -105,7 +100,7 @@
         var bottom = 0;
 
         // Add stroke to paddings
-        if (this.hasStyleStroke() && propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
+        if (this.hasStyleStroke() && propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
             var strokePadding = this.getStyleStrokePadding();
             if (strokePadding) {
                 left += strokePadding;
@@ -142,37 +137,33 @@
      * @param {*} args
      */
     IFStylable.prototype._handleStyleChange = function (change, args) {
-        if (this instanceof IFElement) {
-            if (change === IFNode._Change.BeforePropertiesChange) {
-                var propertySets = this.getStylePropertySets();
-                if ((propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryStrokeProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
-                    this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
-                }
-            } else if (change === IFNode._Change.AfterPropertiesChange) {
-                var propertySets = this.getStylePropertySets();
-                if ((propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryStrokeProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryTextProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.GeometryParagraphProperties))) {
-                    this._notifyChange(IFElement._Change.FinishGeometryUpdate);
-                } else if ((propertySets.indexOf(IFStyle.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStyleProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualFillProperties)) ||
-                    (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyle.VisualStrokeProperties))) {
-                    this._notifyChange(IFElement._Change.InvalidationRequest);
-                }
+        if (change === IFNode._Change.BeforePropertiesChange) {
+            var propertySets = this.getStylePropertySets();
+            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryStrokeProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
+                this._stylePrepareGeometryChange();
             }
-        }
-
-        if (change === IFNode._Change.Store) {
+        } else if (change === IFNode._Change.AfterPropertiesChange) {
+            var propertySets = this.getStylePropertySets();
+            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryStrokeProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
+                this._styleFinishGeometryChange();
+            } else if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStyleProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualFillProperties)) ||
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStrokeProperties))) {
+                this._styleRepaint();
+            }
+        } else if (change === IFNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Style) >= 0) {
-                this.storeProperties(args, IFStyle.VisualStyleProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.VisualStyleProperties);
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.storeProperties(args, IFStyle.VisualFillProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.VisualFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.asString(value);
@@ -182,9 +173,9 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-                this.storeProperties(args, IFStyle.VisualStrokeProperties);
-                this.storeProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.VisualStrokeProperties);
+                this.storeProperties(args, IFStyleDefinition.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
                             return IFPattern.asString(value);
@@ -194,22 +185,22 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
-                this.storeProperties(args, IFStyle.GeometryTextProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.GeometryTextProperties);
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0) {
-                this.storeProperties(args, IFStyle.GeometryParagraphProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.GeometryParagraphProperties);
             }
         } else if (change === IFNode._Change.Restore) {
             var propertySets = this.getStylePropertySets();
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Style) >= 0) {
-                this.restoreProperties(args, IFStyle.VisualStyleProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.VisualStyleProperties);
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Fill) >= 0) {
-                this.restoreProperties(args, IFStyle.VisualFillProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.VisualFillProperties, function (property, value) {
                     if (value) {
                         if (property === '_fpt') {
                             return IFPattern.parsePattern(value);
@@ -219,9 +210,9 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Stroke) >= 0) {
-                this.restoreProperties(args, IFStyle.VisualStrokeProperties);
-                this.restoreProperties(args, IFStyle.GeometryStrokeProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.VisualStrokeProperties);
+                this.restoreProperties(args, IFStyleDefinition.GeometryStrokeProperties, function (property, value) {
                     if (value) {
                         if (property === '_spt') {
                             return IFPattern.parsePattern(value);
@@ -231,12 +222,12 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Text) >= 0) {
-                this.restoreProperties(args, IFStyle.GeometryTextProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.GeometryTextProperties);
             }
 
-            if (propertySets.indexOf(IFStyle.PropertySet.Paragraph) >= 0) {
-                this.restoreProperties(args, IFStyle.GeometryParagraphProperties);
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.GeometryParagraphProperties);
             }
         }
     };
@@ -272,8 +263,8 @@
      * @param {IFRect} contentPaintBBox the source bbox used for drawing
      */
     IFStylable.prototype._paintStyleLayers = function (context, contentPaintBBox) {
-        for (var i = 0; i < IFStyle.LAYER_ORDER.length; ++i) {
-            var layer = IFStyle.LAYER_ORDER[i];
+        for (var i = 0; i < IFStyleDefinition.LAYER_ORDER.length; ++i) {
+            var layer = IFStyleDefinition.LAYER_ORDER[i];
             if (this._isSeparateStyleLayer(context, layer)) {
                 var sourceCanvas = context.canvas;
                 var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
@@ -294,7 +285,7 @@
     /**
      * Called whenever this should paint a specific style layer
      * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFStyle.Layer} layer the actual layer to be painted
+     * @param {IFStyleDefinition.Layer} layer the actual layer to be painted
      */
     IFStylable.prototype._paintStyleLayer = function (context, layer) {
         // NO-OP
@@ -303,7 +294,7 @@
     /**
      * Called to test whether a given style layer requires a separate canvas or not
      * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFStyle.Layer} layer the actual layer to be painted
+     * @param {IFStyleDefinition.Layer} layer the actual layer to be painted
      * @return {Boolean} true if layer is separated, false if not
      */
     IFStylable.prototype._isSeparateStyleLayer = function (context, layer) {
@@ -396,6 +387,21 @@
         } else {
             return context.canvas.createCanvas(extents, true);
         }
+    };
+
+    /** @private */
+    IFStylable.prototype._stylePrepareGeometryChange = function () {
+        // NO-OP
+    };
+
+    /** @private */
+    IFStylable.prototype._styleFinishGeometryChange = function () {
+        // NO-OP
+    };
+
+    /** @private */
+    IFStylable.prototype._styleRepaint = function () {
+        // NO-OP
     };
 
     /** @override */

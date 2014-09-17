@@ -86,13 +86,13 @@
                 var icon = '';
                 var align = property.substr('_sa-'.length);
                 switch (align) {
-                    case IFStyle.StrokeAlignment.Inside:
+                    case IFStyleDefinition.StrokeAlignment.Inside:
                         icon = 'gicon-stroke-inside';
                         break;
-                    case IFStyle.StrokeAlignment.Center:
+                    case IFStyleDefinition.StrokeAlignment.Center:
                         icon = 'gicon-stroke-center';
                         break;
-                    case IFStyle.StrokeAlignment.Outside:
+                    case IFStyleDefinition.StrokeAlignment.Outside:
                         icon = 'gicon-stroke-outside';
                         break;
                     default:
@@ -233,13 +233,13 @@
                     'top': '30px',
                     'left': '86px'
                 })
-                .append(_createInput('_sa-' + IFStyle.StrokeAlignment.Inside)
+                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Inside)
                     // TODO : I18N
                     .attr('title', 'Stroke Inside'))
-                .append(_createInput('_sa-' + IFStyle.StrokeAlignment.Center)
+                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Stroke Centered'))
-                .append(_createInput('_sa-' + IFStyle.StrokeAlignment.Outside)
+                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Outside)
                     // TODO : I18N
                     .attr('title', 'Stroke Outside')))
             .append($('<hr>')
@@ -306,7 +306,7 @@
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Fill) >= 0) {
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
                 this._elements.push(elements[i]);
             }
         }

@@ -5,7 +5,7 @@
      * @extends IFBlock
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
-     * @mixes IFStylable
+     * @mixes IFStyledElement
      * @constructor
      */
     function IFLayer() {
@@ -14,7 +14,7 @@
         this._setStyleDefaultProperties();
     }
 
-    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFStylable]);
+    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFStyledElement]);
 
     IFLayer.GUIDE_COLOR_DEFAULT = new IFColor(IFColor.Type.RGB, [0, 255, 255, 100]);
 
@@ -125,7 +125,7 @@
 
     /** @override */
     IFLayer.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStyle.Layer.Content) {
+        if (layer === IFStyleDefinition.Layer.Content) {
             // Paint children content
             this._paintChildren(context);
         }

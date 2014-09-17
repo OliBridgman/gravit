@@ -207,7 +207,7 @@
     IFImage.prototype._paintStyleLayer = function (context, layer) {
         IFShape.prototype._paintStyleLayer.call(this, context, layer);
 
-        if (layer === IFStyle.Layer.Background && !context.configuration.isOutline(context)) {
+        if (layer === IFStyleDefinition.Layer.Background && !context.configuration.isOutline(context)) {
             // Apply our transformation (if any) before the canvas transformation
             var canvasTransform = context.canvas.getTransform(true);
             if (this.$trf) {
