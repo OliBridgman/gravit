@@ -18,6 +18,13 @@
         sref: null
     };
 
+    IFStylable.prototype.assignStyleFrom = function (source) {
+        if (source.hasMixin(IFStyledElement)) {
+            this.setProperty('sref', source.getProperty('sref'));
+        }
+        IFStylable.prototype.assignStyleFrom.call(this, source);
+    };
+
     /** @override */
     IFStyledElement.prototype._stylePrepareGeometryChange = function () {
         this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
