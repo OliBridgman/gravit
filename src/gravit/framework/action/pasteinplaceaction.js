@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GPasteInPlaceAction, GPasteAction);
 
-    GPasteInPlaceAction.ID = 'edit.paste-in-place';
+    GPasteInPlaceAction.ID = 'edit.paste.in-place';
     GPasteInPlaceAction.TITLE = new IFLocale.Key(GPasteInPlaceAction, "title");
 
     /**
@@ -25,6 +25,13 @@
      */
     GPasteInPlaceAction.prototype.getTitle = function () {
         return GPasteInPlaceAction.TITLE;
+    };
+
+    /**
+     * @override
+     */
+    GPasteInPlaceAction.prototype.getGroup = function () {
+        return "paste";
     };
 
     /**

@@ -220,12 +220,11 @@
             new GCutAction(),
             new GCopyAction(),
             new GPasteAction(),
-            new GPasteInPlaceAction(),
-            new GPasteInsideAction(),
             new GDeleteAction(),
 
-            new GCopyAttributesAction(),
-            new GPasteAttributesAction(),
+            new GPasteInPlaceAction(),
+            new GPasteInsideAction(),
+            new GPasteStyleAction(),
 
             new GDuplicateAction(),
             new GCloneAction(),

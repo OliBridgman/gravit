@@ -7,7 +7,6 @@ ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
 ifLocale.setValues(GCopyAction, IFLocale.Language.English, ["title"], ["Copy"]);
-ifLocale.setValues(GCopyAttributesAction, IFLocale.Language.English, ["title"], ["Copy Attributes"]);
 ifLocale.setValues(GCutAction, IFLocale.Language.English, ["title"], ["Cut"]);
 ifLocale.setValues(GDeleteAction, IFLocale.Language.English, ["title"], ["Delete"]);
 ifLocale.setValues(GDeleteLayerAction, IFLocale.Language.English, ["title"], ["Delete Layer"]);
@@ -31,7 +30,7 @@ ifLocale.setValues(GPaintModeAction, IFLocale.Language.English, ["title"], ["%na
 ifLocale.setValues(GPasteAction, IFLocale.Language.English, ["title"], ["Paste"]);
 ifLocale.setValues(GPasteInPlaceAction, IFLocale.Language.English, ["title"], ["Paste In Place"]);
 ifLocale.setValues(GPasteInsideAction, IFLocale.Language.English, ["title"], ["Paste Inside Selection"]);
-ifLocale.setValues(GPasteAttributesAction, IFLocale.Language.English, ["title"], ["Paste Attributes"]);
+ifLocale.setValues(GPasteStyleAction, IFLocale.Language.English, ["title"], ["Paste Style"]);
 ifLocale.setValues(GPixelPreviewAction, IFLocale.Language.English, ["title"], ["Pixel Preview"]);
 ifLocale.setValues(GRedoAction, IFLocale.Language.English, ["title"], ["Redo"]);
 ifLocale.setValues(GSaveAction, IFLocale.Language.English, ["title"], ["Save"]);
