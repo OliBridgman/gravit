@@ -382,7 +382,20 @@
          * args = the blob to restore from
          * @type {Number}
          */
-        Restore: 43
+        Restore: 43,
+
+        /**
+         * Called when the node got attached
+         * @type {Number}
+         */
+        Attached: 50,
+
+        /**
+         * Called before the node gets detached
+         * args = none
+         * @type {Number}
+         */
+        Detach: 51
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -1691,6 +1704,10 @@
      */
     IFNode.prototype._setScene = function (scene) {
         if (scene !== this._scene) {
+            if (this._scene) {
+                node._notifyChange(IFNode._Change.Detach);
+            }
+
             if (this.hasMixin(IFNode.Reference)) {
                 if (scene) {
                     scene.addReference(this);
@@ -1700,6 +1717,10 @@
             }
 
             this._scene = scene;
+
+            if (this._scene) {
+                node._notifyChange(IFNode._Change.Attached);
+            }
         }
     };
 

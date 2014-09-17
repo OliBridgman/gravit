@@ -190,17 +190,13 @@
             if (args.properties.indexOf('url') >= 0) {
                 this._updateImage();
             }
+        } else if (change === IFNode._Change.Attached) {
+            if (this._status === IFImage.ImageStatus.Delayed) {
+                this._updateImage();
+            }
         }
 
         IFShape.prototype._handleChange.call(this, change, args);
-    };
-
-    /** @override */
-    IFImage.prototype._setScene = function (scene) {
-        IFShape.prototype._setScene.call(this, scene);
-        if (this._scene && this._status === IFImage.ImageStatus.Delayed) {
-            this._updateImage();
-        }
     };
 
     /** @override */
