@@ -30,9 +30,7 @@
      * @returns {*}
      */
     IFTextEditor.prototype.getProperty = function (property, computed) {
-        if (IFText.GeometryProperties.hasOwnProperty(property)) {
-            return this.getElement().getProperty(property);
-        } else if (this.isInlineEdit()) {
+        if (this.isInlineEdit()) {
             var activeParagraph = null;
             var activeSpan = null;
 
@@ -66,17 +64,17 @@
                 } else if (activeParagraph) {
                     return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
-                    return this.getElement().getContent().getProperty(property);
+                    return this.getElement().getProperty(property);
                 }
             } else if (IFStyleDefinition.GeometryParagraphProperties.hasOwnProperty(property)) {
                 if (activeParagraph) {
                     return IFText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
-                    return this.getElement().getContent().getProperty(property);
+                    return this.getElement().getProperty(property);
                 }
             }
         } else {
-            return this.getElement().getContent().getProperty(property);
+            return this.getElement().getProperty(property);
         }
     };
 
@@ -162,8 +160,8 @@
             }.bind(this), 0);
         } else {
             // Apply to outer element
-            this.getElement().getContent().setProperties(blockProperties, blockValues);
-            this.getElement().getContent().setProperties(paragraphProperties, paragraphValues);
+            this.getElement().setProperties(blockProperties, blockValues);
+            this.getElement().setProperties(paragraphProperties, paragraphValues);
         }
 
         // Apply text properties if any

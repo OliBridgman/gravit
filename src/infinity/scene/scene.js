@@ -168,7 +168,7 @@
         IFNode.call(this);
     }
 
-    IFNode.inheritAndMix("styleCollection", IFScene.StyleCollection, IFNode, [IFNode.Container, IFNode.Store]);
+    IFNode.inheritAndMix("styles", IFScene.StyleCollection, IFNode, [IFNode.Container, IFNode.Store]);
 
     /** @override */
     IFScene.StyleCollection.prototype.validateInsertion = function (parent, reference) {
@@ -189,7 +189,7 @@
         IFNode.call(this);
     }
 
-    IFNode.inheritAndMix("swatchCollection", IFScene.SwatchCollection, IFNode, [IFNode.Container, IFNode.Store]);
+    IFNode.inheritAndMix("swatches", IFScene.SwatchCollection, IFNode, [IFNode.Container, IFNode.Store]);
 
     /** @override */
     IFScene.SwatchCollection.prototype.validateInsertion = function (parent, reference) {

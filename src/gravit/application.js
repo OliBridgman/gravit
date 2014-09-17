@@ -419,7 +419,39 @@
     GApplication.prototype.createNewDocument = function () {
         // Create scene, add it and call add page to insert a default page
         var scene = new IFScene();
+
+        // Setup scene defaults
         scene.setProperty('unit', IFLength.Unit.PX);
+
+        // Add a default style
+        var defaultStyle = new IFStyle();
+        defaultStyle.setProperties(
+            [
+                'name',
+                '_tff',
+                '_tfi',
+                '_tfw',
+                '_tfs',
+                '_plh',
+                '_pwm',
+                '_bpt',
+                '_fpt'
+            ],
+            [
+                'Default',
+                'Open Sans',
+                20,
+                IFFont.Weight.Regular,
+                IFFont.Style.Normal,
+                1,
+                IFStyleDefinition.ParagraphWrapMode.All,
+                null,
+                IFColor.BLACK
+            ]
+        );
+        scene.getStyleCollection().appendChild(defaultStyle);
+
+        // Create and add our document now
         var document = this.addDocument(scene);
         document.createNewPage(true/*no-undo*/);
     };

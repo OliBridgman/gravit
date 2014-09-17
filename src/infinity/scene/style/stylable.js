@@ -22,38 +22,62 @@
     };
 
     /**
-     * Set the style default properties
+     * Assign style from a source style
+     * @param {IFStylable} source
      */
-    IFStylable.prototype._setStyleDefaultProperties = function () {
-        var propertySets = this.getStylePropertySets();
+    IFStylable.prototype.assignStyleFrom = function (source) {
+        // Collect union property sets
+        var sourcePS = source.getStylePropertySets();
+        var myPS = this.getStylePropertySets();
+        var unionPS = [];
 
-        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
-            this._setDefaultProperties(IFStyleDefinition.VisualStyleProperties);
+        for (var i = 0; i < sourcePS.length; ++i) {
+            var ps = sourcePS[i];
+            for (var j = 0; j < myPS.length; ++j) {
+                if (myPS[j] === ps) {
+                    unionPS.push(ps);
+                    break;
+                }
+            }
         }
 
-        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
-            this._setDefaultProperties(IFStyleDefinition.VisualFillProperties);
-        }
+        if (unionPS.length > 0) {
+            var sourceProperties = [];
 
-        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
-            this._setDefaultProperties(IFStyleDefinition.VisualStrokeProperties, IFStyleDefinition.GeometryStrokeProperties);
-        }
+            for (var i = 0; i < unionPS.length; ++i) {
+                switch (unionPS[i]) {
+                    case IFStyleDefinition.PropertySet.Style:
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualStyleProperties));
+                        break;
+                    case IFStyleDefinition.PropertySet.Fill:
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualFillProperties));
+                        break;
+                    case IFStyleDefinition.PropertySet.Border:
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualBorderProperties));
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryBorderProperties));
+                        break;
+                    case IFStyleDefinition.PropertySet.Text:
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryTextProperties));
+                        break;
+                    case IFStyleDefinition.PropertySet.Paragraph:
+                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryParagraphProperties));
+                        break;
+                }
+            }
 
-        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0) {
-            this._setDefaultProperties(IFStyleDefinition.GeometryTextProperties);
-        }
-
-        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0) {
-            this._setDefaultProperties(IFStyleDefinition.GeometryParagraphProperties);
+            if (sourceProperties.length > 0) {
+                var sourceValues = source.getProperties(sourceProperties);
+                this.setProperties(sourceProperties, sourceValues);
+            }
         }
     };
 
     /**
-     * Returns whether a paintable stroke is available or not
+     * Returns whether a paintable border is available or not
      * @returns {boolean}
      */
-    IFStylable.prototype.hasStyleStroke = function () {
-        return !!this.$_spt && this.$_sw > 0.0 && this.$_sop > 0.0;
+    IFStylable.prototype.hasStyleBorder = function () {
+        return !!this.$_bpt && this.$_bw > 0.0 && this.$_bop > 0.0;
     };
 
     /**
@@ -65,21 +89,21 @@
     };
 
     /**
-     * Returns the required padding for the currently setup stroke
+     * Returns the required padding for the currently setup border
      * @returns {Number}
      */
-    IFStylable.prototype.getStyleStrokePadding = function () {
-        // Padding depends on stroke-width and alignment and miter limit if miter join is used
-        if (this.$_sa === IFStyleDefinition.StrokeAlignment.Center) {
-            var val = this.$_sw / 2;
-            if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
-                val *= this.$_slm;
+    IFStylable.prototype.getStyleBorderPadding = function () {
+        // Padding depends on border-width and alignment and miter limit if miter join is used
+        if (this.$_ba === IFStyleDefinition.BorderAlignment.Center) {
+            var val = this.$_bw / 2;
+            if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$_blm;
             }
             return val;
-        } else if (this.$_sa === IFStyleDefinition.StrokeAlignment.Outside) {
-            var val = this.$_sw;
-            if (this.$_slj == IFPaintCanvas.LineJoin.Miter) {
-                val *= this.$_slm;
+        } else if (this.$_ba === IFStyleDefinition.BorderAlignment.Outside) {
+            var val = this.$_bw;
+            if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
+                val *= this.$_blm;
             }
             return val;
         }
@@ -99,14 +123,14 @@
         var right = 0;
         var bottom = 0;
 
-        // Add stroke to paddings
-        if (this.hasStyleStroke() && propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
-            var strokePadding = this.getStyleStrokePadding();
-            if (strokePadding) {
-                left += strokePadding;
-                top += strokePadding;
-                right += strokePadding;
-                bottom += strokePadding;
+        // Add border to paddings
+        if (this.hasStyleBorder() && propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0) {
+            var borderPadding = this.getStyleBorderPadding();
+            if (borderPadding) {
+                left += borderPadding;
+                top += borderPadding;
+                right += borderPadding;
+                bottom += borderPadding;
             }
         }
 
@@ -132,6 +156,33 @@
     };
 
     /**
+     * Set the style default properties
+     */
+    IFStylable.prototype._setStyleDefaultProperties = function () {
+        var propertySets = this.getStylePropertySets();
+
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualStyleProperties);
+        }
+
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualFillProperties);
+        }
+
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.VisualBorderProperties, IFStyleDefinition.GeometryBorderProperties);
+        }
+
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.GeometryTextProperties);
+        }
+
+        if (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0) {
+            this._setDefaultProperties(IFStyleDefinition.GeometryParagraphProperties);
+        }
+    };
+
+    /**
      * Change handler for styles
      * @param {Number} change
      * @param {*} args
@@ -139,20 +190,20 @@
     IFStylable.prototype._handleStyleChange = function (change, args) {
         if (change === IFNode._Change.BeforePropertiesChange) {
             var propertySets = this.getStylePropertySets();
-            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryStrokeProperties)) ||
+            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryBorderProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
                 this._stylePrepareGeometryChange();
             }
         } else if (change === IFNode._Change.AfterPropertiesChange) {
             var propertySets = this.getStylePropertySets();
-            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryStrokeProperties)) ||
+            if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryBorderProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
                 this._styleFinishGeometryChange();
             } else if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStyleProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualFillProperties)) ||
-                (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStrokeProperties))) {
+                (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualBorderProperties))) {
                 this._styleRepaint();
             }
         } else if (change === IFNode._Change.Store) {
@@ -173,11 +224,11 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
-                this.storeProperties(args, IFStyleDefinition.VisualStrokeProperties);
-                this.storeProperties(args, IFStyleDefinition.GeometryStrokeProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0) {
+                this.storeProperties(args, IFStyleDefinition.VisualBorderProperties);
+                this.storeProperties(args, IFStyleDefinition.GeometryBorderProperties, function (property, value) {
                     if (value) {
-                        if (property === '_spt') {
+                        if (property === '_bpt') {
                             return IFPattern.asString(value);
                         }
                     }
@@ -210,11 +261,11 @@
                 });
             }
 
-            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Stroke) >= 0) {
-                this.restoreProperties(args, IFStyleDefinition.VisualStrokeProperties);
-                this.restoreProperties(args, IFStyleDefinition.GeometryStrokeProperties, function (property, value) {
+            if (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0) {
+                this.restoreProperties(args, IFStyleDefinition.VisualBorderProperties);
+                this.restoreProperties(args, IFStyleDefinition.GeometryBorderProperties, function (property, value) {
                     if (value) {
-                        if (property === '_spt') {
+                        if (property === '_bpt') {
                             return IFPattern.parsePattern(value);
                         }
                     }
@@ -314,13 +365,13 @@
     };
 
     /**
-     * Create and return the stroke paint pattern used for painting
+     * Create and return the border paint pattern used for painting
      * @return {{paint: *, transform: IFTransform}}
      * @private
      */
-    IFStylable.prototype._createStrokePaint = function (canvas, bbox) {
-        if (this.$_spt) {
-            return this._createPatternPaint(canvas, this.$_spt, bbox, this.$_stx, this.$_sty, this.$_ssx, this.$_ssy, this.$_srt);
+    IFStylable.prototype._createBorderPaint = function (canvas, bbox) {
+        if (this.$_bpt) {
+            return this._createPatternPaint(canvas, this.$_bpt, bbox, this.$_btx, this.$_bty, this.$_bsx, this.$_bsy, this.$_brt);
         }
         return null;
     };

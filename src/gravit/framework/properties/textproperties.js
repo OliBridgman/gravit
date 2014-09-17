@@ -535,7 +535,7 @@
             var $option = $(option);
             var value = $option.attr('value');
             if (value !== '') {
-                $option.prop('disabled', fontStyles.indexOf(value) < 0);
+                $option.prop('disabled', fontStyles && fontStyles.indexOf(value) < 0);
             }
         });
 

@@ -193,7 +193,7 @@
             new GPageProperties(),
 
             // last
-            new GFillStrokeProperties(),
+            new GFillBorderProperties(),
             new GEffectProperties(),
             new GStyleProperties()
         );

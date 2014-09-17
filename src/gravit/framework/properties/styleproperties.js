@@ -154,7 +154,7 @@
                     .append($('<span></span>')
                         .addClass('fa fa-thumb-tack'))
                     .on('click', function () {
-                        IFStyleDefinition.transfer(this._elements[0], this._document.getEditor().getDefaultStyle());
+                        this._document.getScene().getStyleCollection().getFirstChild().assignStyleFrom(this._elements[0]);
                     }.bind(this))));
     };
 

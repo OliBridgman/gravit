@@ -2,40 +2,40 @@
 
     /**
      * Shape properties panel
-     * @class GFillStrokeProperties
+     * @class GFillBorderProperties
      * @extends GProperties
      * @constructor
      */
-    function GFillStrokeProperties() {
+    function GFillBorderProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GFillStrokeProperties, GProperties);
+    IFObject.inherit(GFillBorderProperties, GProperties);
 
     /**
      * @type {JQuery}
      * @private
      */
-    GFillStrokeProperties.prototype._panel = null;
+    GFillBorderProperties.prototype._panel = null;
 
     /**
      * @type {GDocument}
      * @private
      */
-    GFillStrokeProperties.prototype._document = null;
+    GFillBorderProperties.prototype._document = null;
 
     /**
      * @type {Array<IFStylable>}
      * @private
      */
-    GFillStrokeProperties.prototype._elements = null;
+    GFillBorderProperties.prototype._elements = null;
 
     /** @override */
-    GFillStrokeProperties.prototype.init = function (panel) {
+    GFillBorderProperties.prototype.init = function (panel) {
         this._panel = panel;
 
         var _createInput = function (property) {
             var self = this;
-            if (property === '_fpt' || property === '_spt') {
+            if (property === '_fpt' || property === '_bpt') {
                 return $('<button></button>')
                     .attr('data-property', property)
                     .gColorButton({
@@ -70,29 +70,29 @@
                             self._updateProperties();
                         }
                     });
-            } else if (property === '_sw') {
+            } else if (property === '_bw') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var strokeWidth = IFLength.parseEquationValue($(this).val());
-                        if (strokeWidth !== null && strokeWidth >= 0.0) {
-                            self._assignProperty(property, strokeWidth);
+                        var width = IFLength.parseEquationValue($(this).val());
+                        if (width !== null && width >= 0.0) {
+                            self._assignProperty(property, width);
                         } else {
                             self._updateProperties();
                         }
                     });
-            } else if (property.indexOf('_sa-') === 0) {
+            } else if (property.indexOf('_ba-') === 0) {
                 var icon = '';
-                var align = property.substr('_sa-'.length);
+                var align = property.substr('_ba-'.length);
                 switch (align) {
-                    case IFStyleDefinition.StrokeAlignment.Inside:
+                    case IFStyleDefinition.BorderAlignment.Inside:
                         icon = 'gicon-stroke-inside';
                         break;
-                    case IFStyleDefinition.StrokeAlignment.Center:
+                    case IFStyleDefinition.BorderAlignment.Center:
                         icon = 'gicon-stroke-center';
                         break;
-                    case IFStyleDefinition.StrokeAlignment.Outside:
+                    case IFStyleDefinition.BorderAlignment.Outside:
                         icon = 'gicon-stroke-outside';
                         break;
                     default:
@@ -102,13 +102,13 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty('_sa', align);
+                        self._assignProperty('_ba', align);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
-            } else if (property.indexOf('_slc-') === 0) {
+            } else if (property.indexOf('_blc-') === 0) {
                 var icon = '';
-                var cap = property.substr('_slc-'.length);
+                var cap = property.substr('_blc-'.length);
                 switch (cap) {
                     case IFPaintCanvas.LineCap.Butt:
                         icon = 'gicon-line-cap-butt';
@@ -126,13 +126,13 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty('_slc', cap);
+                        self._assignProperty('_blc', cap);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
-            } else if (property.indexOf('_slj-') === 0) {
+            } else if (property.indexOf('_blj-') === 0) {
                 var icon = '';
-                var join = property.substr('_slj-'.length);
+                var join = property.substr('_blj-'.length);
                 switch (join) {
                     case IFPaintCanvas.LineJoin.Bevel:
                         icon = 'gicon-line-join-bevel';
@@ -150,7 +150,7 @@
                 return $('<button></button>')
                     .attr('data-property', property)
                     .on('click', function () {
-                        self._assignProperty('_slj', join);
+                        self._assignProperty('_blj', join);
                     })
                     .append($('<span></span>')
                         .addClass(icon));
@@ -212,7 +212,7 @@
                         'width': '16px',
                         'text-align': 'center'
                     }))
-                .append(_createInput('_spt')
+                .append(_createInput('_bpt')
                     .css({
                         'margin-left': '5px',
                         'width': '20px'
@@ -223,7 +223,7 @@
                     'top': '30px',
                     'left': '50px'
                 })
-                .append(_createInput('_sw')
+                .append(_createInput('_bw')
                     .css({
                         'width': '30px'
                     })))
@@ -233,15 +233,15 @@
                     'top': '30px',
                     'left': '86px'
                 })
-                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Inside)
+                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Inside)
                     // TODO : I18N
-                    .attr('title', 'Stroke Inside'))
-                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Center)
+                    .attr('title', 'Border Inside'))
+                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Center)
                     // TODO : I18N
-                    .attr('title', 'Stroke Centered'))
-                .append(_createInput('_sa-' + IFStyleDefinition.StrokeAlignment.Outside)
+                    .attr('title', 'Border Centered'))
+                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Outside)
                     // TODO : I18N
-                    .attr('title', 'Stroke Outside')))
+                    .attr('title', 'Border Outside')))
             .append($('<hr>')
                 .css({
                     'position': 'absolute',
@@ -263,13 +263,13 @@
                     'top': '65px',
                     'right': '5px'
                 })
-                .append(_createInput('_slc-' + IFPaintCanvas.LineCap.Butt)
+                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Butt)
                     // TODO : I18N
                     .attr('title', 'Butt'))
-                .append(_createInput('_slc-' + IFPaintCanvas.LineCap.Round)
+                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Round)
                     // TODO : I18N
                     .attr('title', 'Round'))
-                .append(_createInput('_slc-' + IFPaintCanvas.LineCap.Square)
+                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Square)
                     // TODO : I18N
                     .attr('title', 'Square')))
             .append($('<label></label>')
@@ -286,19 +286,19 @@
                     'top': '89px',
                     'right': '5px'
                 })
-                .append(_createInput('_slj-' + IFPaintCanvas.LineJoin.Bevel)
+                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Bevel)
                     // TODO : I18N
                     .attr('title', 'Bevel'))
-                .append(_createInput('_slj-' + IFPaintCanvas.LineJoin.Round)
+                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Round)
                     // TODO : I18N
                     .attr('title', 'Round'))
-                .append(_createInput('_slj-' + IFPaintCanvas.LineJoin.Miter)
+                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Miter)
                     // TODO : I18N
                     .attr('title', 'Miter')));
     };
 
     /** @override */
-    GFillStrokeProperties.prototype.update = function (document, elements) {
+    GFillBorderProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
@@ -325,7 +325,7 @@
      * @param {IFNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GFillStrokeProperties.prototype._afterPropertiesChange = function (event) {
+    GFillBorderProperties.prototype._afterPropertiesChange = function (event) {
         if (event.node === this._elements[0]) {
             this._updateProperties();
         }
@@ -334,7 +334,7 @@
     /**
      * @private
      */
-    GFillStrokeProperties.prototype._updateProperties = function () {
+    GFillBorderProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
         var stylable = this._elements[0];
 
@@ -344,28 +344,28 @@
 
         this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 
-        this._panel.find('[data-property="_spt"]')
-            .gColorButton('value', stylable.getProperty('_spt'))
+        this._panel.find('[data-property="_bpt"]')
+            .gColorButton('value', stylable.getProperty('_bpt'))
             .gColorButton('scene', scene);
 
-        this._panel.find('[data-property="_sw"]').val(ifUtil.formatNumber(stylable.getProperty('_sw')));
+        this._panel.find('[data-property="_bw"]').val(ifUtil.formatNumber(stylable.getProperty('_bw')));
 
-        this._panel.find('[data-property^="_sa"]').each(function (index, element) {
+        this._panel.find('[data-property^="_ba"]').each(function (index, element) {
             var $element = $(element);
-            var value = $element.attr('data-property').substr('_sa-'.length);
-            $element.toggleClass('g-active', stylable.getProperty('_sa') === value);
+            var value = $element.attr('data-property').substr('_ba-'.length);
+            $element.toggleClass('g-active', stylable.getProperty('_ba') === value);
         });
 
-        this._panel.find('[data-property^="_slc"]').each(function (index, element) {
+        this._panel.find('[data-property^="_blc"]').each(function (index, element) {
             var $element = $(element);
-            var value = $element.attr('data-property').substr('_slc-'.length);
-            $element.toggleClass('g-active', stylable.getProperty('_slc') === value);
+            var value = $element.attr('data-property').substr('_blc-'.length);
+            $element.toggleClass('g-active', stylable.getProperty('_blc') === value);
         });
 
-        this._panel.find('[data-property^="_slj"]').each(function (index, element) {
+        this._panel.find('[data-property^="_blj"]').each(function (index, element) {
             var $element = $(element);
-            var value = $element.attr('data-property').substr('_slj-'.length);
-            $element.toggleClass('g-active', stylable.getProperty('_slj') === value);
+            var value = $element.attr('data-property').substr('_blj-'.length);
+            $element.toggleClass('g-active', stylable.getProperty('_blj') === value);
         });
     };
 
@@ -374,7 +374,7 @@
      * @param {*} value
      * @private
      */
-    GFillStrokeProperties.prototype._assignProperty = function (property, value) {
+    GFillBorderProperties.prototype._assignProperty = function (property, value) {
         this._assignProperties([property], [value]);
     };
 
@@ -383,7 +383,7 @@
      * @param {Array<*>} values
      * @private
      */
-    GFillStrokeProperties.prototype._assignProperties = function (properties, values) {
+    GFillBorderProperties.prototype._assignProperties = function (properties, values) {
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
@@ -392,14 +392,14 @@
             }
         } finally {
             // TODO : I18N
-            editor.commitTransaction('Modify Fill/Stroke Properties');
+            editor.commitTransaction('Modify Fill/Border Properties');
         }
     };
 
     /** @override */
-    GFillStrokeProperties.prototype.toString = function () {
-        return "[Object GFillStrokeProperties]";
+    GFillBorderProperties.prototype.toString = function () {
+        return "[Object GFillBorderProperties]";
     };
 
-    _.GFillStrokeProperties = GFillStrokeProperties;
+    _.GFillBorderProperties = GFillBorderProperties;
 })(this);

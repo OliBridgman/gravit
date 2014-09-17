@@ -18,8 +18,8 @@
                     editor.beginTransaction();
                     try {
                         switch (hitData.type) {
-                            case IFShape.HitResult.Type.Stroke:
-                                this.getElement().setProperty('_spt', source);
+                            case IFShape.HitResult.Type.Border:
+                                this.getElement().setProperty('_bpt', source);
                                 break;
                             default:
                                 this.getElement().setProperty('_fpt', source);

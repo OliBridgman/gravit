@@ -66,7 +66,7 @@
     /** @override */
     IFShape.prototype.getStylePropertySets = function () {
         return IFStyledElement.prototype.getStylePropertySets.call(this)
-            .concat(IFStyleDefinition.PropertySet.Fill, IFStyleDefinition.PropertySet.Stroke);
+            .concat(IFStyleDefinition.PropertySet.Fill, IFStyleDefinition.PropertySet.Border);
     };
 
     /** @override */
@@ -144,62 +144,62 @@
             }
         } else if (layer === IFStyleDefinition.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
-            if (!outline && this.hasStyleStroke()) {
+            if (!outline && this.hasStyleBorder()) {
                 var canvas = context.canvas;
-                var strokeBBox = this.getGeometryBBox();
-                var strokePadding = this.getStyleStrokePadding();
-                if (strokePadding) {
-                    strokeBBox = strokeBBox.expanded(strokePadding, strokePadding, strokePadding, strokePadding);
+                var borderBBox = this.getGeometryBBox();
+                var borderPadding = this.getStyleBorderPadding();
+                if (borderPadding) {
+                    borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
                 }
-                var stroke = this._createStrokePaint(context.canvas, strokeBBox);
+                var border = this._createBorderPaint(context.canvas, borderBBox);
 
-                if (stroke && stroke.paint) {
-                    var strokeWidth = this.$_sw;
+                if (border && border.paint) {
+                    var borderWidth = this.$_bw;
 
-                    // Except center alignment we need to double the stroke width
+                    // Except center alignment we need to double the border width
                     // as we're gonna clip half away
-                    if (this.$_sa !== IFStyleDefinition.StrokeAlignment.Center) {
-                        strokeWidth *= 2;
+                    if (this.$_ba !== IFStyleDefinition.BorderAlignment.Center) {
+                        borderWidth *= 2;
                     }
 
                     context.canvas.putVertices(this);
 
-                    if (stroke.transform) {
+                    if (border.transform) {
                         // If any scale factor is != 1.0 we need to fill the whole area
-                        // and clip our stroke away to ensure stroke width consistency
-                        if (this.$_ssx !== 1.0 || this.$_ssy !== 1.0) {
-                            // Fill everything with the stroke.paint, then clip with the stroke
-                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
-                            var patternFillArea = stroke.transform.inverted().mapRect(strokeBBox);
-                            canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), stroke.paint, this.$_sop);
+                        // and clip our border away to ensure border width consistency
+                        if (this.$_bsx !== 1.0 || this.$_bsy !== 1.0) {
+                            // Fill everything with the border.paint, then clip with the border
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
+                            var patternFillArea = border.transform.inverted().mapRect(borderBBox);
+                            canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
                             canvas.setTransform(oldTransform);
-                            canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                            canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_blm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                         } else {
-                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
-                            canvas.strokeVertices(stroke.paint, strokeWidth / stroke.transform.getScaleFactor(), this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
+                            canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, this.$_blm, this.$_bop);
                             canvas.setTransform(oldTransform);
                         }
                     } else {
-                        canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_blm, this.$_bop);
                     }
 
                     // TODO : Use clipPath() when supporting AA in chrome instead
                     // of composite painting and separate canvas!!
-                    // Depending on the stroke alignment we might need to clip now
-                    if (this.$_sa === IFStyleDefinition.StrokeAlignment.Inside) {
+                    // Depending on the border alignment we might need to clip now
+                    if (this.$_ba === IFStyleDefinition.BorderAlignment.Inside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    } else if (this.$_sa === IFStyleDefinition.StrokeAlignment.Outside) {
+                    } else if (this.$_ba === IFStyleDefinition.BorderAlignment.Outside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
                     }
                 }
             } else if (outline) {
-                // Outline is painted with non-transformed stroke
+                // Outline is painted with non-transformed border
                 // so we reset transform, transform the vertices
                 // ourself and then re-apply the transformation
                 var transform = context.canvas.resetTransform();
                 var transformedVertices = new IFVertexTransformer(this, transform);
                 context.canvas.putVertices(transformedVertices);
-                context.canvas.strokeVertices(context.getOutlineColor());
+                context.canvas.borderVertices(context.getOutlineColor());
                 context.canvas.setTransform(transform);
             }
         }
@@ -211,15 +211,15 @@
         if (!result) {
             if (layer === IFStyleDefinition.Layer.Foreground) {
                 var outline = context.configuration.isOutline(context);
-                if (!outline && this.hasStyleStroke()) {
-                    // If we're not having a center-aligned stroke then
+                if (!outline && this.hasStyleBorder()) {
+                    // If we're not having a center-aligned border then
                     // we need a separate canvas here
-                    if (this.$_sa !== IFStyleDefinition.StrokeAlignment.Center) {
+                    if (this.$_ba !== IFStyleDefinition.BorderAlignment.Center) {
                         return true;
                     }
 
                     // Having a scale of !== 0 always requires a separate canvas
-                    return this.$_ssx !== 1.0 || this.$_ssy !== 1.0;
+                    return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
                 }
             }
         }
@@ -268,11 +268,11 @@
 
     /** @override */
     IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        if (this.hasStyleStroke()) {
-            var outlineWidth = this.$_sw * transform.getScaleFactor() + tolerance * 2;
+        if (this.hasStyleBorder()) {
+            var outlineWidth = this.$_bw * transform.getScaleFactor() + tolerance * 2;
             var vertexHit = new IFVertexInfo.HitResult();
             if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), outlineWidth, false, vertexHit)) {
-                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Stroke, vertexHit));
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Border, vertexHit));
             }
         }
 
