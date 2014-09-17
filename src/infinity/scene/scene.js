@@ -38,7 +38,7 @@
         /** Version of the scene */
         version: IFScene.VERSION,
         /** The default color space */
-        clspace: IFColorSpace.RGB,
+        clspace: IFColor.Space.RGB,
         /** The unit used externally */
         unit: IFLength.Unit.PT,
         /** Whether to snap to units or not */

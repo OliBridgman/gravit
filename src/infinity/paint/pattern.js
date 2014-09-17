@@ -22,7 +22,8 @@
         Color: 'C',
         Gradient: 'G',
         Texture: 'T',
-        Noise: 'N'
+        Noise: 'N',
+        Background: 'B'
     };
 
     /**

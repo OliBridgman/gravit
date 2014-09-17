@@ -3,7 +3,7 @@
 #toolbar {
   @include box-sizing(border-box);
   position: absolute;
-  width: 31px; // + border size
+  width: 33px; // + border size
   background: $baseColor;
   border-right: 1px solid $darkShadowColor;
   border-top: 3px solid $darkColor;

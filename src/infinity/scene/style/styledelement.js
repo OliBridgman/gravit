@@ -18,7 +18,8 @@
         sref: null
     };
 
-    IFStylable.prototype.assignStyleFrom = function (source) {
+    /** @override */
+    IFStyledElement.prototype.assignStyleFrom = function (source) {
         if (source.hasMixin(IFStyledElement)) {
             this.setProperty('sref', source.getProperty('sref'));
         }
