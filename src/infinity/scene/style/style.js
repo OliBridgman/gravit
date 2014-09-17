@@ -5,6 +5,7 @@
      * @extends IFNode
      * @mixes IFNode.Properties
      * @mixes IFNode.Store
+     * @mixes IFNode.Reference
      * @mixes IFStylable
      * @constructor
      */
@@ -13,7 +14,7 @@
         this._setDefaultProperties(IFStyle.MetaProperties);
         this._setStyleDefaultProperties();
     };
-    IFNode.inheritAndMix('style', IFStyle, IFNode, [IFNode.Properties, IFNode.Store, IFStylable]);
+    IFNode.inheritAndMix('style', IFStyle, IFNode, [IFNode.Properties, IFNode.Store, IFNode.Reference, IFStylable]);
 
     /**
      * The meta properties of a style with their default values
@@ -55,6 +56,19 @@
     /** @override */
     IFStyle.prototype._styleRepaint = function () {
         // TODO
+    };
+
+    /** @private */
+    IFStyle.prototype._stylePropertiesUpdated = function (properties) {
+        var scene = this.getScene();
+        if (scene) {
+            var self = this;
+            scene.visitLinks(this, function (link) {
+                if (link.hasMixin(IFStylable)) {
+                    link.assignStyleFrom(self);
+                }
+            });
+        }
     };
 
     /** @override */

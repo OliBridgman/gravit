@@ -201,10 +201,12 @@
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
                 this._styleFinishGeometryChange();
+                this._stylePropertiesUpdated(args.properties);
             } else if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStyleProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualFillProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualBorderProperties))) {
                 this._styleRepaint();
+                this._stylePropertiesUpdated(args.properties);
             }
         } else if (change === IFNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
@@ -452,6 +454,11 @@
 
     /** @private */
     IFStylable.prototype._styleRepaint = function () {
+        // NO-OP
+    };
+
+    /** @private */
+    IFStylable.prototype._stylePropertiesUpdated = function (properties) {
         // NO-OP
     };
 
