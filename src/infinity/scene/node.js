@@ -1705,7 +1705,7 @@
     IFNode.prototype._setScene = function (scene) {
         if (scene !== this._scene) {
             if (this._scene) {
-                node._notifyChange(IFNode._Change.Detach);
+                this._notifyChange(IFNode._Change.Detach);
             }
 
             if (this.hasMixin(IFNode.Reference)) {
@@ -1719,7 +1719,7 @@
             this._scene = scene;
 
             if (this._scene) {
-                node._notifyChange(IFNode._Change.Attached);
+                this._notifyChange(IFNode._Change.Attached);
             }
         }
     };
