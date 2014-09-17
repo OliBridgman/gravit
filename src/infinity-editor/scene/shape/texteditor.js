@@ -168,41 +168,7 @@
 
         // Apply text properties if any
         if (textProperties.length > 0) {
-            var oldAutoWidth = this.getElement().getProperty('aw');
-            var oldAutoHeight = this.getElement().getProperty('ah');
-
             this.getElement().setProperties(textProperties, textValues);
-
-            // Hack: For changing height/width settings we
-            // need to re-calculate the transformation
-            var awIdx = textProperties.indexOf('aw');
-            var ahIdx = textProperties.indexOf('ah');
-
-            if (awIdx >= 0 || ahIdx >= 0) {
-                var newHeight = false;
-                var newWidth = false;
-
-                if (awIdx >= 0 && textValues[awIdx] === false && oldAutoWidth === true) {
-                    newWidth = true;
-                }
-                if (ahIdx >= 0 && textValues[ahIdx] === false && oldAutoHeight === true) {
-                    newHeight = true;
-                }
-
-                if (newWidth || newHeight) {
-                    var bbox = this.getElement().getGeometryBBox();
-                    var cbox = this.getElement().getContentBBox();
-
-                    if (bbox && cbox) {
-                        var transform = new IFTransform()
-                            .translated(-bbox.getX(), -bbox.getY())
-                            .scaled(newWidth ? cbox.getWidth() / bbox.getWidth() : 1, newHeight ? cbox.getHeight() / bbox.getHeight() : 1)
-                            .translated(bbox.getX(), bbox.getY());
-
-                        this.getElement().transform(transform);
-                    }
-                }
-            }
         }
     };
 
@@ -415,6 +381,18 @@
 
         // TODO : I18N
         return 'Modify Text Content';
+    };
+
+    /** @override */
+    IFTextEditor.prototype.applyPartMove = function (partId, partData) {
+        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
+            if (!this._transform.isIdentity()) {
+                // By default we'll simply transfer the transformation to the element
+                this._element.textBoxTransform(this._transform);
+            }
+            this.resetTransform();
+        }
+        IFElementEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */

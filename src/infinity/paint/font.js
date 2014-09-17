@@ -259,15 +259,29 @@
      * @param family
      * @param variant
      * @param size
-     * @param char
      * @returns {number}
      */
-    IFFont.prototype.getGlyphBaseline = function (family, variant, size, char) {
+    IFFont.prototype.getGlyphBaseline = function (family, variant, size) {
+        var font = this._types[family].variants[variant].font;
+        var scale = 1 / font.unitsPerEm * size;
+        return font.ascender * scale;
+    };
+
+    /**
+     * Returns the char bounding rectangle with (0, 0) at baseline origin
+     * @param family
+     * @param variant
+     * @param size
+     * @param char
+     * @returns {IFRect}
+     */
+    IFFont.prototype.getGlyphCharSzRect = function (family, variant, size, char) {
         var font = this._types[family].variants[variant].font;
         var glyph = font.charToGlyph(char);
         var scale = 1 / font.unitsPerEm * size;
         var height = (glyph.yMax - glyph.yMin) * scale;
-        return height + (((font.ascender) * scale) - height);
+        var width = (glyph.xMax - glyph.xMin) * scale;
+        return new IFRect(glyph.xMin * scale, -glyph.yMax * scale, width, height);
     };
 
     /**

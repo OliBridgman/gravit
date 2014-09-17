@@ -10,6 +10,10 @@
         this._setDefaultProperties(IFText.GeometryProperties);
         this._runs = [];
         this._runsDirty = false;
+        this._tl = new IFPoint(0, 0);
+        this._tr = new IFPoint(1, 0);
+        this._br = new IFPoint(1, 1);
+        this._bl = new IFPoint(0, 1);
     }
 
     IFNode.inherit("text", IFText, IFShape);
@@ -32,7 +36,9 @@
         /** Auto-height or not */
         ah: true,
         /** Vertical alignment */
-        va: IFText.VerticalAlign.Top
+        va: IFText.VerticalAlign.Top,
+        /** Text transformation (not the same as transformation of the text box, which is $trf) */
+        ttrf: null
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -629,10 +635,39 @@
     IFText.prototype._content = null;
 
     /**
+     * The top left point of the text box (after some transformations applied the text box may be not rectangular)
      * @type {IFPoint}
      * @private
      */
-    IFText.prototype._size = null;
+    IFText.prototype._tl = null;
+
+    /**
+     * The top right point of the text box (after some transformations applied the text box may be not rectangular)
+     * @type {IFPoint}
+     * @private
+     */
+    IFText.prototype._tr = null;
+
+    /**
+     * The bottom left point of the text box (after some transformations applied the text box may be not rectangular)
+     * @type {IFPoint}
+     * @private
+     */
+    IFText.prototype._bl = null;
+
+    /**
+     * The bottom right point of the text box (after some transformations applied the text box may be not rectangular)
+     * @type {IFPoint}
+     * @private
+     */
+    IFText.prototype._br = null;
+
+    /**
+     * Used to store the shift of chars between calls of rewindVertices() and following readVertex()
+     * @type {Number}
+     * @private
+     */
+    IFText.prototype._verticalShift = 0;
 
     /**
      * @type {Array<{}>}
@@ -692,7 +727,7 @@
      * @return {IFRect} null if there's no bbox or a valid bbox
      */
     IFText.prototype.getContentBBox = function () {
-        return this._size ? new IFRect(0, 0, this._size.getX(), this._size.getY()) : null;
+        return this._sizeBox ? this._sizeBox : null;
     };
 
     /**
@@ -737,7 +772,20 @@
     /** @override */
     IFText.prototype.store = function (blob) {
         if (IFShape.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFText.GeometryProperties);
+            this.storeProperties(blob, IFText.GeometryProperties, function (property, value) {
+                if (property === 'ttrf' && value) {
+                    return IFTransform.serialize(value);
+                }
+                return value;
+            });
+            blob.tlx = this._tl.getX();
+            blob.tly = this._tl.getY();
+            blob.trx = this._tr.getX();
+            blob.try = this._tr.getY();
+            blob.blx = this._bl.getX();
+            blob.bly = this._bl.getY();
+            blob.brx = this._br.getX();
+            blob.bry = this._br.getY();
             return true;
         }
         return false;
@@ -746,11 +794,30 @@
     /** @override */
     IFText.prototype.restore = function (blob) {
         if (IFShape.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFText.GeometryProperties);
+            this.restoreProperties(blob, IFText.GeometryProperties, function (property, value) {
+                if (property === 'ttrf' && value) {
+                    return IFTransform.deserialize(value);
+                }
+                return value;
+            });
+            this._tl = new IFPoint(blob.tlx, blob.tly);
+            this._tr = new IFPoint(blob.trx, blob.try);
+            this._br = new IFPoint(blob.brx, blob.bry);
+            this._bl = new IFPoint(blob.blx, blob.bly);
             this._runsDirty = true;
             return true;
         }
         return false;
+    };
+
+    /** @override */
+    IFText.prototype.transform = function (transform) {
+        if (transform && !transform.isIdentity()) {
+            this.setProperties(['trf', 'ttrf'],
+                [this.$trf ? this.$trf.multiplied(transform) : transform,
+                this.$ttrf ? this.$ttrf.multiplied(transform) : transform]);
+        }
+        IFElement.Transform.prototype._transformChildren.call(this, transform);
     };
 
     /** @override */
@@ -759,102 +826,167 @@
             this._runs = [];
 
             // Calculate our actual text box and line length
-            var textBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
+            var tl = this._tl;
+            var tr = this._tr;
+            var bl = this._bl;
+            var br = this._br;
             if (this.$trf) {
-                textBox = this.$trf.mapRect(textBox);
+                tl = this.$trf.mapPoint(tl);
+                tr = this.$trf.mapPoint(tr);
+                bl = this.$trf.mapPoint(bl);
+                br = this.$trf.mapPoint(br);
             }
+            this._textBox = new IFRect.fromPoints(tl, tr, br, bl);// this.$ah ? this._textBox : new IFRect.fromPoints(tl, tr, br, bl);
+            var textBoxOrig = this._textBox;
+            if (this.$ttrf) {
+                var ittrf = this.$ttrf.inverted();
+                tl = ittrf.mapPoint(tl);
+                tr = ittrf.mapPoint(tr);
+                bl = ittrf.mapPoint(bl);
+                br = ittrf.mapPoint(br);
+                var maxlx = null;
+                var minrx = null;
+                var maxty = null;
+                var minby = null;
+                if (tl.getX() < br.getX() && tl.getX() < tr.getX() &&
+                        bl.getX() < br.getX() && bl.getX() < tr.getX()) {
 
-            // Create our temporary container for holding our html contents
-            var container = $('<div></div>')
-                .addClass('contenteditable')
-                .css(this.getContent().propertiesToCss({}))
-                .css({
-                    'position': 'absolute',
-                    'top': '0px',
-                    'left': '0px',
-                    'visibility': 'hidden',
-                    'width': textBox.getWidth() > 1 && !this.$aw ? textBox.getWidth() + 'px' : '',
-                    'height': textBox.getHeight() > 1 && this.$ah ? textBox.getHeight() + 'px' : ''
-                })
-                .html(this.asHtml(true))
-                .appendTo($('body'));
+                    maxlx = tl.getX() >= bl.getX() ? tl.getX() : bl.getX();
+                    minrx = br.getX() <= tr.getX() ? br.getX() : tr.getX();
+                } else if (tl.getX() > br.getX() && tl.getX() > tr.getX() &&
+                        bl.getX() > br.getX() && bl.getX() > tr.getX()) {
 
-            // Calculate dimensions, first
-            var maxWidth = null;
-            var maxHeight = null;
-            container.find('p,span').each(function (index, element) {
-                var $element = $(element);
-                var offset = $element.offset();
-                var width = $element.outerWidth();
-                var height = $element.outerHeight();
-
-                if (maxWidth === null || (offset.left + width) > maxWidth) {
-                    maxWidth = offset.left + width;
+                    minrx = tl.getX() <= bl.getX() ? tl.getX() : bl.getX();
+                    maxlx = br.getX() >= tr.getX() ? br.getX() : tr.getX();
                 }
-                if (maxHeight === null || (offset.top + height) > maxHeight) {
-                    maxHeight = offset.top + height;
+                if (tl.getY() < bl.getY() && tl.getY() < br.getY() &&
+                        tr.getY() < bl.getY() && tr.getY() < br.getY()) {
+
+                    maxty = tl.getY() >= tr.getY() ? tl.getY() : tr.getY();
+                    minby = bl.getY() <= br.getY() ? bl.getY() : br.getY();
+                } else if (tl.getY() > bl.getY() && tl.getY() > br.getY() &&
+                    tr.getY() > bl.getY() && tr.getY() > br.getY()) {
+
+                    minby = tl.getY() <= tr.getY() ? tl.getY() : tr.getY();
+                    maxty = bl.getY() >= br.getY() ? bl.getY() : br.getY();
                 }
-            }.bind(this));
 
-            // Assign calculated dimensions
-            this._size = maxWidth !== null && maxHeight !== null ? new IFPoint(maxWidth, maxHeight) : null;
-
-            // Calculate vertical shift depending on vertical alignment
-            var verticalShift = 0;
-            if (!this.$ah && this._size && this._size.getY() < textBox.getHeight()) {
-                switch (this.$va) {
-                    case IFText.VerticalAlign.Middle:
-                        verticalShift = (textBox.getHeight() - this._size.getY()) / 2;
-                        break;
-
-                    case IFText.VerticalAlign.Bottom:
-                        verticalShift = textBox.getHeight() - this._size.getY();
-                        break;
+                if (maxlx !== null && minrx !== null && maxty !== null && minby!== null) {
+                    textBoxOrig = new IFRect.fromPoints(new IFPoint(maxlx, maxty), new IFPoint(minrx, minby));
+                } else {
+                    textBoxOrig = null;
                 }
             }
 
-            container.find('span:not(:has(span))').each(function (index, span) {
-                var $span = $(span);
-                var rect = span.getBoundingClientRect();
-                var textContent = $span.text();
-                if (textContent.length === 0) {
-                    return;
+            if (textBoxOrig) {
+                // Create our temporary container for holding our html contents
+                var container = $('<div></div>')
+                    .addClass('contenteditable')
+                    .css(this.getContent().propertiesToCss({}))
+                    .css({
+                        'position': 'absolute',
+                        'top': '0px',
+                        'left': '0px',
+                        'visibility': 'hidden',
+                        'width': textBoxOrig.getWidth() > 1 && !this.$aw ? textBoxOrig.getWidth() + 'px' : '',
+                        'height': textBoxOrig.getHeight() > 1 && this.$ah ? textBoxOrig.getHeight() + 'px' : ''
+                    })
+                    .html(this.asHtml(true))
+                    .appendTo($('body'));
+
+                var sizeBox = null;
+                container.find('span:not(:has(span))').each(function (index, span) {
+                    var $span = $(span);
+                    var rect = span.getBoundingClientRect();
+                    var textContent = $span.text();
+                    if (textContent.length === 0) {
+                        return;
+                    }
+                    var char = textContent[0];
+
+                    // Ignore zero height/width, spaces and binary chars
+                    if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
+                        return;
+                    }
+
+                    var css = {
+                        'font-family': $span.css('font-family'),
+                        'font-size': $span.css('font-size'),
+                        'font-style': $span.css('font-style'),
+                        'font-weight': $span.css('font-weight')
+                    }
+                    var fontFamily = IFText.Block.cssToProperty('ff', css);
+                    var fontSize = IFText.Block.cssToProperty('fi', css);
+                    var fontStyle = IFText.Block.cssToProperty('fs', css);
+                    var fontWeight = IFText.Block.cssToProperty('fw', css);
+                    var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
+                    var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize);
+
+                    this._runs.push({
+                        x: textBoxOrig.getX() + rect.left,
+                        y: textBoxOrig.getY() + rect.top + baseline,
+                        char: char,
+                        family: fontFamily,
+                        variant: fontVariant,
+                        size: fontSize
+                    });
+
+                    var charSz = ifFont.getGlyphCharSzRect(fontFamily, fontVariant, fontSize, char);
+                    var charRect = new IFRect(rect.left + charSz.getX(), rect.top + baseline + charSz.getY(),
+                        charSz.getWidth(), charSz.getHeight());
+
+                    sizeBox = sizeBox ? sizeBox.united(charRect) : charRect;
+                }.bind(this));
+
+                var verticalShift = 0;
+                if (sizeBox) {
+                    this._sizeBox = new IFRect(sizeBox.getX() + textBoxOrig.getX(), sizeBox.getY() + textBoxOrig.getY(),
+                        sizeBox.getWidth(), sizeBox.getHeight());
+
+                    if (this.$ttrf) {
+                        this._sizeBox = this.$ttrf.mapRect(this._sizeBox);
+                    }
+                    // Calculate vertical shift depending on vertical alignment
+                    if (this._sizeBox && this._sizeBox.getHeight() < this._textBox.getHeight()) {
+                        switch (this.$va) {
+                            case IFText.VerticalAlign.Top:
+                                verticalShift = this._textBox.getY() - this._sizeBox.getY();
+                                break;
+
+                            case IFText.VerticalAlign.Middle:
+                                verticalShift = this._textBox.getY() - this._sizeBox.getY() +
+                                    (this._textBox.getHeight() - this._sizeBox.getHeight()) / 2;
+                                break;
+
+                            case IFText.VerticalAlign.Bottom:
+                                verticalShift = this._textBox.getY() - this._sizeBox.getY() +
+                                    this._textBox.getHeight() - this._sizeBox.getHeight();
+                                break;
+                        }
+                    } else if (this._sizeBox) {
+                        verticalShift = this._textBox.getY() - this._sizeBox.getY();
+                    }
+                    this._sizeBox = this._sizeBox.translated(0, verticalShift);
+                } else {
+                    this._sizeBox = null;
                 }
-                var char = textContent[0];
 
-                // Ignore zero height/width, spaces and binary chars
-                if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
-                    return;
+                this._verticalShift = verticalShift;
+
+                // Remove our container now
+                container.remove();
+
+                // We're done here
+                this._runsDirty = false;
+
+                if (this._sizeBox && (this.$ah || this.$aw)) {
+                    var lx = this.$aw ? this._sizeBox.getX() : this._textBox.getX();
+                    var w = this.$aw ? this._sizeBox.getWidth() : this._textBox.getWidth();
+                    var ty = this.$ah ? this._sizeBox.getY() : this._textBox.getY();
+                    var h = this.$ah ? this._sizeBox.getHeight() : this._textBox.getHeight();
+                    this._textBox = new IFRect(lx, ty, w, h);
                 }
-
-                var css = {
-                    'font-family': $span.css('font-family'),
-                    'font-size': $span.css('font-size'),
-                    'font-style': $span.css('font-style'),
-                    'font-weight': $span.css('font-weight')
-                }
-                var fontFamily = IFText.Block.cssToProperty('ff', css);
-                var fontSize = IFText.Block.cssToProperty('fi', css);
-                var fontStyle = IFText.Block.cssToProperty('fs', css);
-                var fontWeight = IFText.Block.cssToProperty('fw', css);
-                var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
-                var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize, char);
-
-                this._runs.push({
-                    x: textBox.getX() + rect.left,
-                    y: textBox.getY() + rect.top + verticalShift + baseline,
-                    char: char,
-                    family: fontFamily,
-                    variant: fontVariant,
-                    size: fontSize
-                });
-            }.bind(this));
-
-            // Remove our container now
-            container.remove();
-
-            // We're done here
-            this._runsDirty = false;
+            }
         }
 
         if (this._runs && this._runs.length > 0) {
@@ -885,6 +1017,14 @@
                 return false;
             }
             this._runItOutline = ifFont.getGlyphOutline(run.family, run.variant, run.size, run.x, run.y, run.char);
+            var transform = this.$ttrf && !this.$ttrf.isIdentity() ? this.$ttrf : null;
+            if (this._verticalShift) {
+                var vtrans = new IFTransform(1, 0, 0, 1, 0, this._verticalShift);
+                transform = transform ? transform.multiplied(vtrans) : vtrans;
+            }
+            if (transform) {
+                this._runItOutline = new IFVertexTransformer(this._runItOutline, transform);
+            }
             if (!this._runItOutline.rewindVertices(0)) {
                 throw new Error('Unexpected end of outline');
             }
@@ -892,25 +1032,79 @@
         }
     };
 
+    /**
+     * Intended to be called for text box resize transformations
+     * @param {IFTransform} transform
+     */
+    IFText.prototype.textBoxTransform = function (transform) {
+        if (transform && !transform.isIdentity()) {
+            var trf = transform;
+            if (this.$ah || this.$aw) {
+                var oldVisualTextBox = this._textBox;
+                var newVisualTextBox = transform.mapRect(oldVisualTextBox);
+                var tl = this._tl;
+                var tr = this._tr;
+                var bl = this._bl;
+                var br = this._br;
+                if (this.$trf) {
+                    tl = this.$trf.mapPoint(tl);
+                    tr = this.$trf.mapPoint(tr);
+                    bl = this.$trf.mapPoint(bl);
+                    br = this.$trf.mapPoint(br);
+                }
+                var textBox = new IFRect.fromPoints(tl, tr, br, bl);
+                trf = new IFTransform()
+                    .translated(-textBox.getX(), -textBox.getY())
+                    .scaled(this.$aw ? newVisualTextBox.getWidth() / textBox.getWidth() : 1,
+                        this.$ah ? newVisualTextBox.getHeight() / textBox.getHeight() : 1)
+                    .translated(newVisualTextBox.getX(), newVisualTextBox.getY());
+
+            }
+
+            this.setProperties(['ah', 'aw', 'trf'],
+                [false, false, this.$trf ? this.$trf.multiplied(trf) : trf]);
+        }
+    };
+
+    /**
+     * Remember the current text box as a starting box for all the text transformations,
+     * and set the 'trf' property to null
+     */
+    IFText.prototype.useTextBoxAsBase = function () {
+        var textBox = null;
+        if (this._textBox && !this._runsDirty) {
+            textBox = this._textBox;
+        } else {
+            // this._tl, this._tr, this._bl, and this._br may be not the corners of the correct rectangle,
+            // so it is important always to map them individually, and only after that to construct a new rectangle
+            var tl = this._tl;
+            var tr = this._tr;
+            var bl = this._bl;
+            var br = this._br;
+            if (this.$trf) {
+                tl = this.$trf.mapPoint(tl);
+                tr = this.$trf.mapPoint(tr);
+                bl = this.$trf.mapPoint(bl);
+                br = this.$trf.mapPoint(br);
+            }
+            textBox = new IFRect.fromPoints(tl, tr, br, bl);
+        }
+        this._tl = textBox.getSide(IFRect.Side.TOP_LEFT);
+        this._tr = textBox.getSide(IFRect.Side.TOP_RIGHT);
+        this._br = textBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+        this._bl = textBox.getSide(IFRect.Side.BOTTOM_LEFT);
+        this.setProperty('trf', null);
+    };
+
     /** @override */
     IFText.prototype._calculateGeometryBBox = function () {
         // Always rewind to ensure integrity
         this.rewindVertices(0);
-
-        // Not having a size means not having a bbox
-        if (!this._size) {
-            return null;
+        var bbox = this._textBox;
+        if (this._sizeBox) {
+            bbox = bbox.united(this._sizeBox);
         }
-
-        var textBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
-        if (this.$trf) {
-            textBox = this.$trf.mapRect(textBox);
-        }
-
-        var width = !this.$aw ? textBox.getWidth() : this._size.getX();
-        var height = !this.$ah ? textBox.getHeight() : this._size.getY();
-
-        return new IFRect(textBox.getX(), textBox.getY(), width, height);
+        return bbox;
     };
 
     /** @override */
@@ -949,29 +1143,28 @@
         IFShape.prototype._handleChange.call(this, change, args);
 
         if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {
+            var ahIdx = args.properties.indexOf('ah');
+            if (ahIdx >= 0 && args.values[ahIdx] === true && !this.$ah && this._textBox && !this._runsDirty) {
+                // As 'ah' changes to true, we need to substitute our original text box such a way,
+                // that after the transformation it will be identical to our current visual text box.
+                this._tl = this._textBox.getSide(IFRect.Side.TOP_LEFT);
+                this._tr = this._textBox.getSide(IFRect.Side.TOP_RIGHT);
+                this._br = this._textBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+                this._bl = this._textBox.getSide(IFRect.Side.BOTTOM_LEFT);
+                if (this.$trf) {
+                    var itrf = this.$trf.inverted();
+                    this._tl = itrf.mapPoint(this._tl);
+                    this._tr = itrf.mapPoint(this._tr);
+                    this._bl = itrf.mapPoint(this._bl);
+                    this._br = itrf.mapPoint(this._br);
+                }
+            }
             this._runsDirty = true;
         }
 
         if (change === IFNode._Change.BeforePropertiesChange) {
             var transformIdx = args.properties.indexOf('trf');
-            if (transformIdx >= 0 && !this._runsDirty) {
-                // TODO : Optimize for cases where no invalidation of vertices is required
-                /*
-                 // Check whether only translation was changed and if that's
-                 // the case we'll simply translate our existing vertices,
-                 // otherwise we'll invalidate the vertices
-                 var newTransform = args.values[transformIdx];
-                 var inverseTransform = this.$trf ? this.$trf.inverted() : new IFTransform(1, 0, 0, 1, 0, 0);
-                 var deltaTransform = newTransform.multiplied(inverseTransform);
-                 if (deltaTransform.isIdentity(true)) {
-                 if (this._vertices) {
-                 var translation = deltaTransform.getTranslation();
-                 this._vertices.transformVertices(new IFTransform(1, 0, 0, 1, translation.getX(), translation.getY()));
-                 }
-                 } else {
-                 this._runsDirty = true;
-                 }
-                 */
+            if (transformIdx >= 0) {
                 this._runsDirty = true;
             }
         }
@@ -984,15 +1177,6 @@
      * @private
      */
     IFText.prototype._getClipBox = function (context) {
-        var bbox = this.getGeometryBBox();
-        if (this._size &&
-            ((!this.$aw && this._size.getX() >= bbox.getWidth()) ||
-                (!this.$ah && this._size.getY() >= bbox.getHeight()))) {
-
-            return new IFRect(bbox.getX(), bbox.getY(),
-                !this.$aw ? bbox.getWidth() : context.canvas.getWidth(),
-                !this.$ah ? bbox.getHeight() : context.canvas.getHeight());
-        }
         return null;
     };
 
