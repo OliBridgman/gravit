@@ -788,14 +788,8 @@
             return false;
         }
 
-        // Construct an event args object as it may be modified
-        var changeArgs = {
-            properties: propertiesToModify,
-            values: valuesToModify
-        };
-
         // Notify before change
-        this._notifyChange(IFNode._Change.BeforePropertiesChange, changeArgs);
+        this._notifyChange(IFNode._Change.BeforePropertiesChange, { properties: propertiesToModify, values: valuesToModify });
 
         // Assign new property values now
         var previousValues = [];
@@ -806,7 +800,7 @@
         }
 
         // Notify after change
-        this._notifyChange(IFNode._Change.AfterPropertiesChange, changeArgs);
+        this._notifyChange(IFNode._Change.AfterPropertiesChange, { properties: propertiesToModify, values: previousValues });
 
         return true;
     };
