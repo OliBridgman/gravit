@@ -506,7 +506,7 @@
                             scene = null;
                             document = null;
                             console.log(e);
-                            alert('An error has ocurred while trying to open the document.');
+                            vex.dialog.alert('An error has ocurred while trying to open the document.');
                         }
 
                         if (document) {

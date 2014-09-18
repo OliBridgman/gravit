@@ -145,23 +145,28 @@
                                 }
 
                                 // Ask for a name
-                                // TODO : I18N
                                 var sourceName = pattern instanceof IFColor ? pattern.asString() : 'pattern';
-                                var name = prompt('Enter a name for the new swatch:', sourceName);
-                                if (name === null) {
-                                    return; // leave here, user has canceled
-                                }
-                                if (name.trim() === '') {
-                                    name = sourceName;
-                                }
+                                vex.dialog.prompt({
+                                    // TODO : I18N
+                                    message: 'Enter a name for the new swatch:',
+                                    value: sourceName,
+                                    callback: function (name) {
+                                        if (!name) {
+                                            return;
+                                        }
+                                        if (name.trim() === '') {
+                                            name = sourceName;
+                                        }
 
-                                // Add pattern as swatch
-                                // TODO : I18N
-                                IFEditor.tryRunTransaction(scene, function () {
-                                    var swatch = new IFSwatch();
-                                    swatch.setProperties(['name', 'pat'], [name, pattern]);
-                                    swatches.appendChild(swatch);
-                                }, 'Add Swatch');
+                                        // Add pattern as swatch
+                                        // TODO : I18N
+                                        IFEditor.tryRunTransaction(scene, function () {
+                                            var swatch = new IFSwatch();
+                                            swatch.setProperties(['name', 'pat'], [name, pattern]);
+                                            swatches.appendChild(swatch);
+                                        }, 'Add Swatch');
+                                    }
+                                });
                             }
                         }
                     });

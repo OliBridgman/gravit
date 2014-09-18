@@ -2,12 +2,16 @@
     gDevelopment.tests.push({
         title: 'Deserialize Scene',
         test: function () {
-            var str = prompt('Enter JSON String');
-            if (str && str !== '') {
-                var blob = JSON.parse(str);
-                var scene = IFNode.restore(blob);
-                gApp.addDocument(scene, 'From-String');
-            }
+            vex.dialog.prompt({
+                message: 'Enter JSON String',
+                callback: function (value) {
+                    if (value) {
+                        var blob = JSON.parse(value);
+                        var scene = IFNode.restore(blob);
+                        gApp.addDocument(scene, 'From-String');
+                    }
+                }
+            });
         }
     });
 })();

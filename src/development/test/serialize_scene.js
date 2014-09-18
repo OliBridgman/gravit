@@ -2,7 +2,10 @@
     gDevelopment.tests.push({
         title: 'Serialize Scene',
         test: function () {
-            prompt('JSON-String:', IFNode.serialize(gApp.getActiveDocument().getScene()));
+            vex.dialog.prompt({
+                message: 'Serializd JSON String:',
+                value: IFNode.serialize(gApp.getActiveDocument().getScene())
+            });
         }
     });
 })();

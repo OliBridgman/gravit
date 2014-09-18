@@ -141,4 +141,5 @@ $(document).ready(function () {
 
 $(window).load(function () {
     rangy.init();
+    //vex.defaultOptions.className = 'vex-theme-plain';
 });

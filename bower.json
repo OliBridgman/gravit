@@ -12,7 +12,8 @@
         "color-thief": "latest",
         "uri.js": "latest",
         "Blob.js": "git://github.com/eligrey/Blob.js.git#latest",
-        "canvas-toBlob.js": "git://github.com/eligrey/canvas-toBlob.js.git#latest"
+        "canvas-toBlob.js": "git://github.com/eligrey/canvas-toBlob.js.git#latest",
+        "vex": "latest"
     },
     "devDependencies": {},
     "private": true
