@@ -778,10 +778,7 @@
         return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
     };
 
-    /**
-     * Return string representation of the underlying color
-     * @return {String}
-     */
+    /** @override */
     IFColor.prototype.asString = function () {
         var result = this._type.key;
         if (this._type.asString) {

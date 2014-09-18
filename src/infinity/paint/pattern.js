@@ -6,13 +6,10 @@
     /**
      * A base class for patterns like color, gradients, etc.
      * @mixin IFGradient
-     * @extends IFObject
      * @constructor
      */
     function IFPattern() {
     }
-
-    IFObject.inherit(IFPattern, IFObject);
 
     /**
      * The type of the pattern
@@ -22,8 +19,7 @@
         Color: 'C',
         Gradient: 'G',
         Texture: 'T',
-        Noise: 'N',
-        Background: 'B'
+        Noise: 'N'
     };
 
     /**
@@ -102,6 +98,13 @@
      */
     IFPattern.prototype.getPatternType = function () {
         throw new Error('Not supported');
+    };
+
+    /**
+     * @return {String}
+     */
+    IFPattern.prototype.asString = function () {
+        return '';
     };
 
     _.IFPattern = IFPattern;

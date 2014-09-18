@@ -127,10 +127,7 @@
         return this._stops;
     };
 
-    /**
-     * Return string representation of the underlying gradient
-     * @return {String}
-     */
+    /** @override */
     IFGradient.prototype.asString = function () {
         var stops = [];
         for (var i = 0; i < this._stops.length; ++i) {
