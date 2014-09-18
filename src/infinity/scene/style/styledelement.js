@@ -61,6 +61,17 @@
                     }
                 }
             }
+
+
+            if (change === IFNode._Change.AfterPropertiesChange) {
+                var styleBlendModeIdx = args.properties.indexOf('_sbl');
+                if (styleBlendModeIdx >= 0 && args.values[styleBlendModeIdx] === 'mask' || this.$_sbl === 'mask') {
+                    var myPage = this.getPage();
+                    if (myPage) {
+                        myPage._requestInvalidation();
+                    }
+                }
+            }
         }
 
         if (change === IFNode._Change.Store) {
@@ -72,6 +83,14 @@
         }
 
         IFStylable.prototype._handleStyleChange.call(this, change, args);
+    };
+
+    /** @override */
+    IFStyledElement.prototype._getStyleMaskClipArea = function (context) {
+        var myPage = this.getPage();
+        if (myPage) {
+            return myPage.getPageClipBBox();
+        }
     };
 
     /** @override */

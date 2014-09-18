@@ -299,7 +299,23 @@
                 context.canvas = styleCanvas;
                 try {
                     this._paintStyleLayers(context, contentPaintBBox);
-                    sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, this.$_sbl);
+
+                    if (this.$_sbl === 'mask') {
+                        var area = this._getStyleMaskClipArea();
+                        if (area) {
+                            sourceCanvas.clipRect(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+                        }
+                        try {
+                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, IFPaintCanvas.CompositeOperator.DestinationIn);
+                        } finally {
+                            if (area) {
+                                sourceCanvas.resetClip();
+                            }
+                        }
+                    } else {
+                        sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, this.$_sbl);
+                    }
+
                     styleCanvas.finish();
                 } finally {
                     context.canvas = sourceCanvas;
@@ -352,6 +368,16 @@
      */
     IFStylable.prototype._isSeparateStyleLayer = function (context, layer) {
         return false;
+    };
+
+    /**
+     * Should return the clip-area for masked styles
+     * @param {IFPaintContext} context
+     * @return {IFRect}
+     * @private
+     */
+    IFStylable.prototype._getStyleMaskClipArea = function (context) {
+        return null;
     };
 
     /**

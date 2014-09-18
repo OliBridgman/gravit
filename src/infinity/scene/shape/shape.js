@@ -199,7 +199,7 @@
                 var transform = context.canvas.resetTransform();
                 var transformedVertices = new IFVertexTransformer(this, transform);
                 context.canvas.putVertices(transformedVertices);
-                context.canvas.borderVertices(context.getOutlineColor());
+                context.canvas.strokeVertices(context.getOutlineColor());
                 context.canvas.setTransform(transform);
             }
         }

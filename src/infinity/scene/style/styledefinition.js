@@ -102,7 +102,7 @@
      * @enum
      */
     IFStyleDefinition.VisualStyleProperties = {
-        /** Blend Mode */
+        /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
         _sbl: IFPaintCanvas.BlendMode.Normal,
         /** Fill Opacity (= w/o effects) */
         _sfop: 1,

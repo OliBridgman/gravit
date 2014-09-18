@@ -38,6 +38,12 @@
             if (property === '_sbl') {
                 return $('<select></select>')
                     .attr('data-property', property)
+                    .append($('<option></option>')
+                        .attr('value', 'mask')
+                        // TODO : I18N
+                        .text('Mask'))
+                    // TODO : I18N
+                    .append($('<optgroup label="Blending"></optgroup>'))
                     .gBlendMode()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
