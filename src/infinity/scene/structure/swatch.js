@@ -35,9 +35,14 @@
     };
 
     /** @override */
-    IFSwatch.prototype.store = function (blob) {
-        if (IFNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFSwatch.VisualProperties, function (property, value) {
+    IFSwatch.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof IFScene.SwatchCollection;
+    };
+
+    /** @override */
+    IFSwatch.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
                         return IFPattern.asString(value);
@@ -45,31 +50,19 @@
                 }
                 return value;
             });
-            this.storeProperties(blob, IFSwatch.MetaProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFSwatch.prototype.restore = function (blob) {
-        if (IFNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFSwatch.VisualProperties, function (property, value) {
+            this.storeProperties(args, IFSwatch.MetaProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
                         return IFPattern.parsePattern(value);
                     }
                 }
             });
-            this.restoreProperties(blob, IFSwatch.MetaProperties);
-            return true;
+            this.restoreProperties(args, IFSwatch.MetaProperties);
         }
-        return false;
-    };
 
-    /** @override */
-    IFSwatch.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFScene.SwatchCollection;
+        IFNode.prototype._handleChange.call(this, change, args);
     };
 
     _.IFSwatch = IFSwatch;

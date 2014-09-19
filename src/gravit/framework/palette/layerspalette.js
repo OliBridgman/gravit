@@ -60,6 +60,11 @@
     };
 
     /** @override */
+    GLayersPalette.prototype.isAutoSize = function () {
+        return true;
+    };
+
+    /** @override */
     GLayersPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 

@@ -91,24 +91,8 @@
 <script src="infinity/scene/scene.js"></script>
 <script src="infinity/scene/scenepaintconfiguration.js"></script>
 <script src="infinity/scene/selector.js"></script>
-<script src="infinity/scene/style/style.js"></script>
-<script src="infinity/scene/style/sharedstyle.js"></script>
-<script src="infinity/scene/style/appliedstyle.js"></script>
-<script src="infinity/scene/style/inlinestyle.js"></script>
-<script src="infinity/scene/style/linkedstyle.js"></script>
-<script src="infinity/scene/style/styleset.js"></script>
-<script src="infinity/scene/style/styleentry.js"></script>
-<script src="infinity/scene/style/filterentry.js"></script>
-<script src="infinity/scene/style/effectentry.js"></script>
-<script src="infinity/scene/style/paintentry.js"></script>
-<script src="infinity/scene/style/veffectentry.js"></script>
-<script src="infinity/scene/style/effect/shadoweffect.js"></script>
-<script src="infinity/scene/style/filter/blurfilter.js"></script>
-<script src="infinity/scene/style/paint/patternpaint.js"></script>
-<script src="infinity/scene/style/paint/areapaint.js"></script>
-<script src="infinity/scene/style/paint/fillpaint.js"></script>
-<script src="infinity/scene/style/paint/strokepaint.js"></script>
-<script src="infinity/scene/style/veffect/offsetveffect.js"></script>
+<script src="infinity/scene/stylable.js"></script>
+<script src="infinity/scene/style.js"></script>
 <script src="infinity/scene/structure/page.js"></script>
 <script src="infinity/scene/structure/layer.js"></script>
 <script src="infinity/scene/structure/slice.js"></script>
@@ -230,7 +214,6 @@
 <script src="gravit/extension/properties.js"></script>
 <script src="gravit/extension/sidebar.js"></script>
 <script src="gravit/extension/storage.js"></script>
-<script src="gravit/extension/styleentry.js"></script>
 <!-- Workspace -->
 <script src="gravit/workspace/header.js"></script>
 <script src="gravit/workspace/palettes.js"></script>
@@ -315,7 +298,6 @@
 <script src="gravit/framework/palette/exportpalette.js"></script>
 <script src="gravit/framework/palette/layerspalette.js"></script>
 <script src="gravit/framework/palette/pagespalette.js"></script>
-<script src="gravit/framework/palette/stylepalette.js"></script>
 <script src="gravit/framework/palette/stylespalette.js"></script>
 <script src="gravit/framework/palette/swatchespalette.js"></script>
 <script src="gravit/framework/palette/transformpalette.js"></script>
@@ -331,19 +313,11 @@
 <script src="gravit/framework/properties/infoproperties.js"></script>
 <script src="gravit/framework/properties/pageproperties.js"></script>
 <script src="gravit/framework/properties/textproperties.js"></script>
-<script src="gravit/framework/properties/shapeproperties.js"></script>
+<script src="gravit/framework/properties/fillstrokeproperties.js"></script>
 <script src="gravit/framework/properties/styleproperties.js"></script>
 <script src="gravit/framework/properties/sliceproperties.js"></script>
 <!-- Sidebar -->
 <script src="gravit/framework/sidebar/documentsidebar.js"></script>
-<!-- Style-Entry -->
-<script src="gravit/framework/styleentry/patternpaintentry.js"></script>
-<script src="gravit/framework/styleentry/areapaintentry.js"></script>
-<script src="gravit/framework/styleentry/fillpaintentry.js"></script>
-<script src="gravit/framework/styleentry/strokepaintentry.js"></script>
-<script src="gravit/framework/styleentry/blurfilterentry.js"></script>
-<script src="gravit/framework/styleentry/offsetveffectentry.js"></script>
-<script src="gravit/framework/styleentry/shadoweffectentry.js"></script>
 <!-- I18N -->
 <script src="gravit/framework/i18n/i18n_en.js"></script>
 <script src="gravit/framework/i18n/i18n_de.js"></script>
@@ -363,6 +337,7 @@
 <script src="development/test/create_rect_grid_page.js"></script>
 <script src="development/test/serialize_scene.js"></script>
 <script src="development/test/deserialize_scene.js"></script>
+<script src="development/test/create_styled_shape.js"></script>
 <!-- Root -->
 <script src="development/testaction.js"></script>
 <script src="development/development.js"></script>

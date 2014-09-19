@@ -56,9 +56,39 @@
                 '@': IFNode._nodeClassToNameMap[IFObject.getTypeId(node)]
             };
 
-            if (node.store(blob)) {
-                return blob;
+            node._notifyChange(IFNode._Change.PrepareStore, blob);
+
+            if (node.hasMixin(IFNode.Container)) {
+                // Store children
+                for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
+                    var childBlob = IFNode.store(child);
+                    if (childBlob) {
+                        if (!blob.hasOwnProperty('$')) {
+                            blob['$'] = [childBlob];
+                        } else {
+                            blob['$'].push(childBlob);
+                        }
+                    }
+                }
             }
+
+            if (node.hasMixin(IFNode.Properties)) {
+                // Store custom properties if any
+                for (var property in node) {
+                    if (node.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
+                        blob[property] = node[property];
+                    }
+                }
+            }
+
+            if (node.hasMixin(IFNode.Reference) && node._referenceId) {
+                // Restore referenceId
+                blob['#'] = node._referenceId;
+            }
+
+            node._notifyChange(IFNode._Change.Store, blob);
+
+            return blob;
         }
         return null;
     };
@@ -81,9 +111,37 @@
 
         // Create our node instance now and let it restore
         var node = new nodeClass();
-        if (!node || !node.restore(blob)) {
-            return null;
+
+        node._notifyChange(IFNode._Change.PrepareRestore, blob);
+
+        // Restore children if any
+        if (blob.hasOwnProperty('$') && node.hasMixin(IFNode.Container)) {
+            var children = blob['$'];
+            if (children.length > 0) {
+                for (var i = 0; i < children.length; ++i) {
+                    var child = IFNode.restore(children[i]);
+                    if (child) {
+                        node.appendChild(child);
+                    }
+                }
+            }
         }
+
+        if (node.hasMixin(IFNode.Properties)) {
+            // Restore custom properties if any
+            for (var property in blob) {
+                if (blob.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
+                    node[property] = blob[property];
+                }
+            }
+        }
+
+        if (node.hasMixin(IFNode.Reference) && blob.hasOwnProperty('#')) {
+            // Restore referenceId
+            node._referenceId = blob['#'];
+        }
+
+        node._notifyChange(IFNode._Change.Restore, blob);
 
         return node;
     };
@@ -195,15 +253,6 @@
      */
     IFNode.Flag = {
         /**
-         * Flag marking a node to be a shadow which means
-         * that if not explicitely requesting, the user
-         * won't see the node when iterating the model
-         * @type {Number}
-         * @version 1.0
-         */
-        Shadow: 1 << 0,
-
-        /**
          * Flag marking a node to be selected
          * @type {Number}
          * @version 1.0
@@ -303,7 +352,37 @@
          * }
          * @type {Number}
          */
-        AfterFlagChange: 31
+        AfterFlagChange: 31,
+
+        /**
+         * Called before storing a node into a given blob.
+         * args = the blob to store into
+         * @type {Number}
+         */
+        PrepareStore: 40,
+
+        /**
+         * Called to store a node into a given blob.
+         * The caller will already take care about storing any children.
+         * args = the blob to store into
+         * @type {Number}
+         */
+        Store: 41,
+
+        /**
+         * Called before restoring a node from a given blob.
+         * args = the blob to restore from
+         * @type {Number}
+         */
+        PrepareRestore: 42,
+
+        /**
+         * Called to restore a node from a given blob.
+         * The caller will already take care about restoring any children.
+         * args = the blob to restore from
+         * @type {Number}
+         */
+        Restore: 43
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -919,42 +998,18 @@
 
     /**
      * Access the first child of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the first child of this node or null for none
-     * @version 1.0
      */
-    IFNode.Container.prototype.getFirstChild = function (shadow) {
-        if (shadow || !this._firstChild) {
-            return this._firstChild;
-        } else {
-            for (var c = this._firstChild; c != null; c = c._next) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.Container.prototype.getFirstChild = function () {
+        return this._firstChild;
     };
 
     /**
      * Access the last child of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the last child of this node or null for none
-     * @version 1.0
      */
-    IFNode.Container.prototype.getLastChild = function (shadow) {
-        if (shadow || !this._lastChild) {
-            return this._lastChild;
-        } else {
-            for (var c = this._lastChild; c != null; c = c._previous) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.Container.prototype.getLastChild = function () {
+        return this._lastChild;
     };
 
     /**
@@ -1161,83 +1216,6 @@
     };
 
     /**
-     * Called to store this node into a given blob.
-     * The caller will already take care about storing any children.
-     * @param {*} blob the blob to store into
-     * @return {boolean} true if node could be stored, false if not
-     */
-    IFNode.Store.prototype.store = function (blob) {
-        if (this.hasMixin(IFNode.Container)) {
-            // Store children
-            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                var childBlob = IFNode.store(child);
-                if (childBlob) {
-                    if (!blob.hasOwnProperty('$')) {
-                        blob['$'] = [childBlob];
-                    } else {
-                        blob['$'].push(childBlob);
-                    }
-                }
-            }
-        }
-
-        if (this.hasMixin(IFNode.Properties)) {
-            // Store custom properties if any
-            for (var property in this) {
-                if (this.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
-                    blob[property] = this[property];
-                }
-            }
-        }
-
-        if (this.hasMixin(IFNode.Reference) && this._referenceId) {
-            // Restore referenceId
-            blob['#'] = this._referenceId;
-        }
-
-        // Return true by default
-        return true;
-    };
-
-    /**
-     * Called to restore this node from a given blob.
-     * The caller will already take care about restoring any children.
-     * @param {*} blob the blob to restore from
-     * @return {boolean} true if node could be restored, false if not
-     */
-    IFNode.Store.prototype.restore = function (blob) {
-        // Restore children if any
-        if (blob.hasOwnProperty('$') && this.hasMixin(IFNode.Container)) {
-            var children = blob['$'];
-            if (children.length > 0) {
-                for (var i = 0; i < children.length; ++i) {
-                    var child = IFNode.restore(children[i]);
-                    if (child) {
-                        this.appendChild(child);
-                    }
-                }
-            }
-        }
-
-        if (this.hasMixin(IFNode.Properties)) {
-            // Restore custom properties if any
-            for (var property in blob) {
-                if (blob.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
-                    this[property] = blob[property];
-                }
-            }
-        }
-
-        if (this.hasMixin(IFNode.Reference) && blob.hasOwnProperty('#')) {
-            // Restore referenceId
-            this._referenceId = blob['#'];
-        }
-
-        // Return true by default
-        return true;
-    };
-
-    /**
      * Called to clone this node and return a new instance out of it
      * @returns {IFNode}
      */
@@ -1338,42 +1316,18 @@
 
     /**
      * Access the previous sibling of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the previous sibling of this node or null for none
-     * @version 1.0
      */
-    IFNode.prototype.getPrevious = function (shadow) {
-        if (shadow || !this._previous) {
-            return this._previous;
-        } else {
-            for (var c = this._previous; c != null; c = c._previous) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.prototype.getPrevious = function () {
+        return this._previous;
     };
 
     /**
      * Access the next sibling of this node if any
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {IFNode} the next sibling of this node or null for none
-     * @version 1.0
      */
-    IFNode.prototype.getNext = function (shadow) {
-        if (shadow || !this._next) {
-            return this._next;
-        } else {
-            for (var c = this._next; c != null; c = c._next) {
-                if (!c.hasFlag(IFNode.Flag.Shadow)) {
-                    return c;
-                }
-            }
-            return null;
-        }
+    IFNode.prototype.getNext = function () {
+        return this._next;
     };
 
     /**
@@ -1459,20 +1413,15 @@
      * node as first parameter. The function may return a boolean value indicating whether to
      * return visiting (true) or whether to cancel visiting (false). Not returning anything or
      * returning anything else than a Boolean will be ignored.
-     * @param {Boolean} [shadow] if true, visits shadow nodes as well.
-     * This defaults to false.
      * @return {Boolean} result of visiting (false = canceled, true = went through)
-     * @version 1.0
      */
-    IFNode.prototype.accept = function (visitor, shadow) {
-        if (shadow || !this.hasFlag(IFNode.Flag.Shadow)) {
-            if (visitor.call(null, this) === false) {
-                return false;
-            }
+    IFNode.prototype.accept = function (visitor) {
+        if (visitor.call(null, this) === false) {
+            return false;
         }
 
         if (this.hasMixin(IFNode.Container)) {
-            return this.acceptChildren(visitor, shadow);
+            return this.acceptChildren(visitor);
         }
 
         return true;

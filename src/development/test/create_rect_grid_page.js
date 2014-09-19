@@ -17,10 +17,6 @@
             for (var x = 0; x + RECT_SIZE < page.getProperty('w'); x += RECT_SIZE + RECT_SPACE) {
                 for (var y = 0; y + RECT_SIZE < page.getProperty('h'); y += RECT_SIZE + RECT_SPACE) {
                     var rectangle = new IFRectangle();
-                    var style = new IFInlineStyle();
-                    style.appendChild(new IFStrokePaint());
-                    rectangle.getStyleSet().appendChild(style);
-
                     rectangle.setProperty('trf', new IFTransform(RECT_SIZE / 2, 0, 0, RECT_SIZE / 2, x + RECT_SIZE / 2, y + RECT_SIZE / 2));
 
                     layer.appendChild(rectangle);

@@ -7,7 +7,7 @@
      * @constructor
      */
     function GStyleProperties() {
-        this._styleElements = [];
+        this._elements = [];
     };
     IFObject.inherit(GStyleProperties, GProperties);
 
@@ -27,7 +27,7 @@
      * @type {Array<IFElement>}
      * @private
      */
-    GStyleProperties.prototype._styleElements = null;
+    GStyleProperties.prototype._elements = null;
 
     /** @override */
     GStyleProperties.prototype.init = function (panel) {
@@ -35,17 +35,25 @@
 
         var _createInput = function (property) {
             var self = this;
-            if (property === 'blm') {
+            if (property === '_sbl') {
                 return $('<select></select>')
-                    .append($('<option></option>')
-                        .text('Mask'))
-                    .append($('<option></option>')
-                        .text('Background'))
-                    .append($('<optgroup></optgroup>')
-                        .attr('label', 'Regular'))
-                    .gBlendMode();
-            } else if (property === 'opc') {
-                return $('<input>');
+                    .attr('data-property', property)
+                    .gBlendMode()
+                    .on('change', function () {
+                        self._assignProperty(property, $(this).val());
+                    });
+            } else if (property === '_stop' || property === '_sfop') {
+                return $('<input>')
+                    .attr('type', 'text')
+                    .attr('data-property', property)
+                    .on('change', function () {
+                        var opacity = IFLength.parseEquationValue($(this).val());
+                        if (opacity !== null && opacity >= 0.0 && opacity <= 100) {
+                            self._assignProperty(property, opacity / 100);
+                        } else {
+                            self._updateProperties();
+                        }
+                    });
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
@@ -59,7 +67,7 @@
                     'top': '5px',
                     'left': '5px'
                 })
-                .append(_createInput('blm')
+                .append(_createInput('_sbl')
                     .css({
                         'width': '117px'
                     })))
@@ -71,7 +79,7 @@
                 })
                 // TODO : I18N
                 .text('Opacity:')
-                .append(_createInput('opc')
+                .append(_createInput('_stop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -107,7 +115,7 @@
                 })
                 // TODO : I18N
                 .text('Fill:')
-                .append(_createInput('opc')
+                .append(_createInput('_sfop')
                     .css({
                         'margin-left': '3px',
                         'width': '30px'
@@ -128,15 +136,14 @@
             this._document = null;
         }
 
-        // Collect all shape elements
-        this._styleElements = [];
+        this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFElement && elements[i].hasMixin(IFElement.Style)) {
-                this._styleElements.push(elements[i]);
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Style) >= 0) {
+                this._elements.push(elements[i]);
             }
         }
 
-        if (this._styleElements.length === elements.length) {
+        if (this._elements.length === elements.length) {
             this._document = document;
             this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
@@ -151,14 +158,21 @@
      * @private
      */
     GStyleProperties.prototype._afterPropertiesChange = function (event) {
-        // TODO
+        if (event.node === this._elements[0]) {
+            this._updateProperties();
+        }
     };
 
     /**
      * @private
      */
     GStyleProperties.prototype._updateProperties = function () {
-        // TODO
+        var scene = this._document.getScene();
+        var stylable = this._elements[0];
+
+        this._panel.find('[data-property="_sbl"]').val(stylable.getProperty('_sbl'));
+        this._panel.find('[data-property="_sfop"]').val(ifUtil.formatNumber(stylable.getProperty('_sfop') * 100, 0));
+        this._panel.find('[data-property="_stop"]').val(ifUtil.formatNumber(stylable.getProperty('_stop') * 100, 0));
     };
 
     /**
@@ -176,17 +190,16 @@
      * @private
      */
     GStyleProperties.prototype._assignProperties = function (properties, values) {
-        /* TODO
-         var editor = this._document.getEditor();
-         editor.beginTransaction();
-         try {
-         for (var i = 0; i < this._styleElements.length; ++i) {
-         this._styleElements[i].setProperties(properties, values);
-         }
-         } finally {
-         // TODO : I18N
-         editor.commitTransaction('Modify Ellipse Properties');
-         }*/
+        var editor = this._document.getEditor();
+        editor.beginTransaction();
+        try {
+            for (var i = 0; i < this._elements.length; ++i) {
+                this._elements[i].setProperties(properties, values);
+            }
+        } finally {
+            // TODO : I18N
+            editor.commitTransaction('Modify Style');
+        }
     };
 
     /** @override */

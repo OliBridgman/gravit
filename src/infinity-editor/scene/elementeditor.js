@@ -836,7 +836,7 @@
      * @param {IFPoint} position the drop position in scene coordinates
      * @param {IFElementEditor.DropType} type
      * @param {*} source the drop source, the type depends on type
-     * @param {*} hitData the IFElement.HitResult.data that was gathered
+     * @param {*} hitData the IFElement.HitResultInfo.data that was gathered
      * when hitting the element for this editor, might be null
      */
     IFElementEditor.prototype.acceptDrop = function (position, type, source, hitData) {
@@ -849,26 +849,7 @@
             }
         }
 
-        // Dropping a style on stylable elements will be handled as well
-        if (type === IFElementEditor.DropType.Node && source && source instanceof IFStyle) {
-            if (this._element.hasMixin(IFElement.Style)) {
-                var editor = IFEditor.getEditor(this._element.getScene());
-                editor.beginTransaction();
-                try {
-                    if (source instanceof IFSharedStyle) {
-                        var linkedStyle = new IFLinkedStyle();
-                        linkedStyle.setProperty('ref', source.getReferenceId());
-                        this._element.getStyleSet().appendChild(linkedStyle);
-                    } else {
-                        this._element.getStyleSet().appendChild(source);
-                    }
-                } finally {
-                    // TODO : I18N
-                    editor.commitTransaction('Drag Style');
-                }
-                return true;
-            }
-        }
+        // TODO
 
         return false;
     };

@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * IFView is a widget to render a scene
+     * IFView is a widget to paint a scene
      * @param {IFScene} [scene] the scene this view is bound too, defaults to null
      * @class IFView
      * @extends GUIWidget
@@ -172,7 +172,7 @@
     };
 
     /**
-     * Return the scene this view is rendering
+     * Return the scene this view is painting
      * @returns {IFScene}
      */
     IFView.prototype.getScene = function () {

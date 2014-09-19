@@ -109,7 +109,7 @@
                     var reader = new FileReader();
                     reader.onload = function (event) {
                         var image = new IFImage();
-                        image.setProperties(['name', 'url', 'transform'],
+                        image.setProperties(['name', 'url', 'trf'],
                             [name, event.target.result, new IFTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY())]);
                         this._editor.insertElements([image]);
                     }.bind(this)

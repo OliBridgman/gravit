@@ -33,32 +33,6 @@
     };
 
     /** @override */
-    IFPath.prototype.store = function (blob) {
-        if (IFPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPath.GeometryProperties);
-
-            // Store our anchor points
-            blob.pts = this.getAnchorPoints().serialize();
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPath.prototype.restore = function (blob) {
-        if (IFPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFPath.GeometryProperties);
-
-            // Restore our anchor points
-            if (blob.hasOwnProperty('pts')) {
-                this.getAnchorPoints().deserialize(blob.pts);
-            }
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFPath.prototype.clone = function () {
         var clone = IFPathBase.prototype.clone.call(this);
 
@@ -82,7 +56,7 @@
      * path internal transformation, if any
      * @param {Boolean} area - indicates if path inside should be tested
      * @param {Boolean} [tolerance] optional hit test tolerance, defaults to zero
-     * @returns {IFElement.HitResult} if hit, or null otherwise; hit result contains all data
+     * @returns {IFElement.HitResultInfo} if hit, or null otherwise; hit result contains all data
      * in the path native anchor points coordinates
      */
     IFPath.prototype.pathHitTest = function (location, transform, area, tolerance) {
@@ -116,7 +90,7 @@
 
         if (ifVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {
-            elemHitRes = new IFElement.HitResult(this, hitResult);
+            elemHitRes = new IFElement.HitResultInfo(this, hitResult);
         }
 
         if (origTransform) {
@@ -307,7 +281,18 @@
 
     /** @override */
     IFPath.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPath.GeometryProperties);
+            args.pts = this.getAnchorPoints().serialize();
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPath.GeometryProperties);
+            if (args.hasOwnProperty('pts')) {
+                this.getAnchorPoints().deserialize(args.pts);
+            }
+        }
+
         IFPathBase.prototype._handleChange.call(this, change, args);
+
         this._handleGeometryChangeForProperties(change, args, IFPath.GeometryProperties);
         this._handleGeometryChangeForProperties(change, args, IFPathBase.GeometryProperties);
     };

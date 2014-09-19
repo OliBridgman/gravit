@@ -55,31 +55,18 @@
     };
 
     /** @override */
-    IFEllipse.prototype.store = function (blob) {
-        if (IFPathBase.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFEllipse.GeometryProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFEllipse.prototype.restore = function (blob) {
-        if (IFPathBase.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFEllipse.GeometryProperties);
-
-            this._invalidatePath();
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
     IFEllipse.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFEllipse.GeometryProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFEllipse.GeometryProperties);
+            this._invalidatePath();
+        }
+
         if (this._handleGeometryChangeForProperties(change, args, IFEllipse.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
             this._invalidatePath();
         }
+
         IFPathBase.prototype._handleChange.call(this, change, args);
     };
 

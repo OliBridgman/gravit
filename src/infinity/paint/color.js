@@ -40,7 +40,7 @@
                 }
                 return result;
             },
-            toString: function (value) {
+            asString: function (value) {
                 return value.join(',');
             }
         },
@@ -66,7 +66,7 @@
                 }
                 return result;
             },
-            toString: function (value) {
+            asString: function (value) {
                 return value.join(',');
             }
         },
@@ -92,7 +92,7 @@
                 }
                 return result;
             },
-            toString: function (value) {
+            asString: function (value) {
                 return value.join(',');
             }
         },
@@ -118,7 +118,7 @@
                 }
                 return result;
             },
-            toString: function (value) {
+            asString: function (value) {
                 return value.join(',');
             }
         },
@@ -130,7 +130,7 @@
             fromString: function (string) {
                 return string;
             },
-            toString: function (value) {
+            asString: function (value) {
                 return value;
             }
         },
@@ -773,8 +773,8 @@
      */
     IFColor.prototype.asString = function () {
         var result = this._type.key;
-        if (this._type.toString) {
-            result += this._type.toString(this._value);
+        if (this._type.asString) {
+            result += this._type.asString(this._value);
         }
         return result;
     };

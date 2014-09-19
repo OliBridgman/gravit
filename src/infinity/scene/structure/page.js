@@ -83,63 +83,15 @@
     };
 
     /** @override */
-    IFPage.prototype.store = function (blob) {
-        if (IFBlock.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFPage.GeometryProperties);
-            this.storeProperties(blob, IFPage.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
-                    return value.asString();
-                }
-                return value;
-            });
-
-            // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(IFNode.Flag.Active)) {
-                blob.__active = true;
-            }
-
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFPage.prototype.restore = function (blob) {
-        // Ugly hack to prevent transforming children when restoring
-        this.__restoring = true;
-        try {
-            if (IFBlock.prototype.restore.call(this, blob)) {
-                this.restoreProperties(blob, IFPage.GeometryProperties);
-                this.restoreProperties(blob, IFPage.VisualProperties, function (property, value) {
-                    if (property === 'cls' && value) {
-                        return IFColor.parseColor(value);
-                    }
-                    return value;
-                });
-
-                // Restore activeness flag which is special to pages and layers
-                if (blob.__active) {
-                    this.setFlag(IFNode.Flag.Active);
-                }
-
-                return true;
-            }
-            return false;
-        } finally {
-            delete this.__restoring;
-        }
-    };
-
-    /** @override */
     IFPage.prototype._getBitmapPaintArea = function () {
         return this.getPageClipBBox();
     };
 
     /** @override */
-    IFPage.prototype._renderToBitmap = function (context) {
+    IFPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
         paintConfig.pagesClip = true;
-        return IFBlock.prototype._renderToBitmap(context);
+        return IFBlock.prototype._paintToBitmap(context);
     };
 
     /** @override */
@@ -178,7 +130,7 @@
         // Assign original transform again
         context.canvas.setTransform(canvasTransform);
 
-        // Render master page if any
+        // Paint master page if any
         if (masterPage) {
             var canvasTransform = context.canvas.getTransform(true);
             var mx = masterPage.getProperty('x');
@@ -193,17 +145,17 @@
             context.canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
             context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
 
-            // Let our master render now
-            masterPage.render(context);
+            // Let our master paint now
+            masterPage.paint(context);
 
             // Restore in reverse order of preparation
             context.dirtyMatcher.transform(masterTransform);
             context.canvas.setTransform(canvasTransform);
         }
 
-        // Render contents if any
+        // Paint contents if any
         if (hasContents) {
-            this._renderChildren(context);
+            this._paintChildren(context);
         }
 
         // Reset clipping if we've clipped
@@ -244,7 +196,7 @@
         }
 
         if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return new IFBlock.HitResult(this);
+            return new IFElement.HitResultInfo(this);
         }
 
         return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
@@ -253,6 +205,38 @@
 
     /** @override */
     IFPage.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFPage.GeometryProperties);
+            this.storeProperties(args, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return value.asString();
+                }
+                return value;
+            });
+
+            // Store activeness flag which is special to pages and layers
+            if (this.hasFlag(IFNode.Flag.Active)) {
+                args.__active = true;
+            }
+        } else if (change === IFNode._Change.PrepareRestore) {
+            // Ugly hack to prevent transforming children when restoring
+            this.__restoring = true;
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFPage.GeometryProperties);
+            this.restoreProperties(args, IFPage.VisualProperties, function (property, value) {
+                if (property === 'cls' && value) {
+                    return IFColor.parseColor(value);
+                }
+                return value;
+            });
+
+            // Restore activeness flag which is special to pages and layers
+            if (args.__active) {
+                this.setFlag(IFNode.Flag.Active);
+            }
+            delete this.__restoring;
+        }
+
         if (this._handleGeometryChangeForProperties(change, args, IFPage.GeometryProperties)) {
             if (change === IFNode._Change.BeforePropertiesChange && !this.__restoring) {
                 // Check for position change in page
@@ -298,11 +282,11 @@
             // Handle invalidation if we're a master
             if (area && !area.isEmpty() && this.isMaster() && this.getScene().getProperty('singlePage') === false) {
                 // If the invalidation area intersects with our page clipping box then
-                // we need to invalidate the same area on all renderable linked pages as well
+                // we need to invalidate the same area on all paintable linked pages as well
                 var clipBBox = this.getPageClipBBox();
                 if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
                     this.getScene().visitLinks(this, function (link) {
-                        if (link instanceof IFPage && link.isRenderable()) {
+                        if (link instanceof IFPage && link.isPaintable()) {
                             // Move invalidation area relative to the linked page and let the
                             // page invalidate the area which by itself my trigger more invalidations
                             // when the linked page is also a master

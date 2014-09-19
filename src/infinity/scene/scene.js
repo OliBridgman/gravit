@@ -281,24 +281,6 @@
         return this._swatchCollection;
     };
 
-    /** @override */
-    IFScene.prototype.store = function (blob) {
-        if (IFNode.Store.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFScene.MetaProperties);
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFScene.prototype.restore = function (blob) {
-        if (IFNode.Store.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFScene.MetaProperties);
-            return true;
-        }
-        return false;
-    };
-
     /**
      * Converts a string into a length with the document's unit.
      * @param {string} string a number, a length or an equation
@@ -623,7 +605,7 @@
     };
 
     /** @override */
-    IFScene.prototype._renderChildren = function (context) {
+    IFScene.prototype._paintChildren = function (context) {
         if (context.configuration.clipArea) {
             var r = context.configuration.clipArea;
             context.canvas.clipRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
@@ -633,10 +615,10 @@
             if (node instanceof IFPage) {
                 // Handle single-page mode if set
                 if (!this.$singlePage || node.hasFlag(IFNode.Flag.Active)) {
-                    node.render(context);
+                    node.paint(context);
                 }
             } else if (node instanceof IFElement) {
-                node.render(context);
+                node.paint(context);
             }
         }
 
@@ -669,6 +651,12 @@
 
     /** @override */
     IFScene.prototype._handleChange = function (change, args) {
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFScene.MetaProperties);
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFScene.MetaProperties);
+        }
+
         IFElement.prototype._handleChange.call(this, change, args);
     };
 

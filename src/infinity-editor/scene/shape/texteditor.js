@@ -60,7 +60,7 @@
                 }
             }
 
-            if (IFText.Block.Properties.hasOwnProperty(property)) {
+            if (IFStyle.GeometryTextProperties.hasOwnProperty(property)) {
                 if (activeSpan) {
                     return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeSpan) : activeSpan.style);
                 } else if (activeParagraph) {
@@ -68,7 +68,7 @@
                 } else {
                     return this.getElement().getContent().getProperty(property);
                 }
-            } else if (IFText.Paragraph.Properties.hasOwnProperty(property)) {
+            } else if (IFStyle.GeometryParagraphProperties.hasOwnProperty(property)) {
                 if (activeParagraph) {
                     return IFText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
@@ -93,7 +93,7 @@
             if (IFText.GeometryProperties.hasOwnProperty(properties[i])) {
                 textProperties.push(properties[i]);
                 textValues.push(values[i]);
-            } else if (IFText.Block.Properties.hasOwnProperty(properties[i])) {
+            } else if (IFStyle.GeometryTextProperties.hasOwnProperty(properties[i])) {
                 blockProperties.push(properties[i]);
                 blockValues.push(values[i]);
             } else {
@@ -170,14 +170,6 @@
         if (textProperties.length > 0) {
             this.getElement().setProperties(textProperties, textValues);
         }
-    };
-
-    /** @override */
-    IFTextEditor.prototype.initialSetup = function () {
-        // Add a default style with a default fill
-        var style = new IFInlineStyle();
-        style.appendChild(new IFFillPaint());
-        this.getElement().getStyleSet().appendChild(style);
     };
 
     /** @override */

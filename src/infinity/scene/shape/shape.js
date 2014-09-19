@@ -7,18 +7,17 @@
      * @extends IFItem
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
-     * @mixes IFElement.Style
+     * @mixes IFStylable
      * @mixes IFVertexSource
      * @constructor
      */
     function IFShape() {
         IFItem.call(this);
-
-        // Assign default properties
         this._setDefaultProperties(IFShape.GeometryProperties);
+        this._setStyleDefaultProperties();
     }
 
-    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Style, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFStylable, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -28,53 +27,46 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFShape._StyleSet Class
+    // IFShape.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFShape._StyleSet
-     * @extends IFStyleSet
-     * @private
+     * @class IFShape.HitResult
+     * @param {IFShape.HitResult.Type} type
+     * @param {IFVertexInfo.HitResult} vertexHit
+     * @constructor
      */
-    IFShape._StyleSet = function () {
-        this._flags |= IFNode.Flag.Shadow;
-    }
-
-    IFNode.inherit("shpStylSet", IFShape._StyleSet, IFStyleSet);
-
-    /** @override */
-    IFShape._StyleSet.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFShape;
+    IFShape.HitResult = function (type, vertexHit) {
+        this.type = type;
+        this.vertex = vertexHit;
     };
+
+    /**
+     * @enum
+     */
+    IFShape.HitResult.Type = {
+        Stroke: 0,
+        Fill: 1,
+        Outline: 2,
+        Other: 3
+    };
+
+    /**
+     * @type {IFShape.HitResult.Type}
+     */
+    IFShape.HitResult.prototype.type = null;
+
+    /**
+     * @type {IFVertexInfo.HitResult}
+     */
+    IFShape.HitResult.prototype.vertexHit = null;
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
-    IFShape.prototype.getStyleSet = function () {
-        var styleSet = IFElement.Style.prototype.getStyleSet.call(this);
-        if (!styleSet) {
-            styleSet = new IFShape._StyleSet();
-            this.appendChild(styleSet);
-        }
-        return styleSet;
-    };
-
-    /**
-     * Replaces the shape's style set with the new one
-     * @param {IFShape._StyleSet} [styleSet] a new style set; may be null, then the old style set will be cleaned
-     */
-    IFShape.prototype.setStyleSet = function (styleSet) {
-        var oldStyleSet = this.getStyleSet();
-        if (styleSet && styleSet instanceof IFShape._StyleSet) {
-            // Insert the ne styleSet at the place of previous one
-            var nextItem = oldStyleSet.getNext(true);
-            this.removeChild(oldStyleSet);
-            this.insertChild(styleSet, nextItem);
-            this._styleSet = styleSet;
-        } else {
-            this.removeChild(oldStyleSet);
-            this._styleSet = null;
-        }
+    IFShape.prototype.getStylePropertySets = function () {
+        return IFStylable.prototype.getStylePropertySets.call(this)
+            .concat(IFStyle.PropertySet.Fill, IFStyle.PropertySet.Stroke);
     };
 
     /** @override */
@@ -101,174 +93,137 @@
     };
 
     /** @override */
-    IFShape.prototype.store = function (blob) {
-        if (IFItem.prototype.store.call(this, blob)) {
-            this.storeProperties(blob, IFShape.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.serialize(value);
+    IFShape.prototype._paint = function (context) {
+        this._paintStyle(context, this.getPaintBBox());
+    };
+
+    /** @override */
+    IFShape.prototype._paintStyleLayer = function (context, layer) {
+        if (layer === IFStyle.Layer.Background) {
+            if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
+                var canvas = context.canvas;
+                var fill = this._createFillPaint(canvas, this.getGeometryBBox());
+                if (fill && fill.paint) {
+                    canvas.putVertices(this);
+
+                    if (fill.transform) {
+                        var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(fill.transform));
+                        canvas.fillVertices(fill.paint, this.$_fop);
+                        canvas.setTransform(oldTransform);
+                    } else {
+                        canvas.fillVertices(fill.paint, this.$_fop);
+                    }
                 }
-                return value;
-            });
-            return true;
+            }
+        } else if (layer === IFStyle.Layer.Content) {
+            // TODO : Check intersection of children paintbbox and if it is
+            // fully contained by this shape then don't clip
+            // Paint our contents if any and clip 'em to ourself
+            // TODO : Use clipPath() when supporting AA in chrome instead
+            // of composite painting and separate canvas!!
+            var oldContentsCanvas = null;
+            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFElement) {
+                    // Create temporary canvas if none yet
+                    if (!oldContentsCanvas) {
+                        oldContentsCanvas = context.canvas;
+                        context.canvas = oldContentsCanvas.createCanvas(this.getGeometryBBox());
+                    }
+
+                    child.paint(context);
+                }
+            }
+
+            // If we have a old contents canvas, clip our contents and swap canvas back
+            if (oldContentsCanvas) {
+                context.canvas.putVertices(this);
+                context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                oldContentsCanvas.drawCanvas(context.canvas);
+                context.canvas.finish();
+                context.canvas = oldContentsCanvas;
+            }
+        } else if (layer === IFStyle.Layer.Foreground) {
+            var outline = context.configuration.isOutline(context);
+            if (!outline && this.hasStyleStroke()) {
+                var canvas = context.canvas;
+                var strokeBBox = this.getGeometryBBox();
+                var strokePadding = this.getStyleStrokePadding();
+                if (strokePadding) {
+                    strokeBBox = strokeBBox.expanded(strokePadding, strokePadding, strokePadding, strokePadding);
+                }
+                var stroke = this._createStrokePaint(context.canvas, strokeBBox);
+
+                if (stroke && stroke.paint) {
+                    var strokeWidth = this.$_sw;
+
+                    // Except center alignment we need to double the stroke width
+                    // as we're gonna clip half away
+                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                        strokeWidth *= 2;
+                    }
+
+                    context.canvas.putVertices(this);
+
+                    if (stroke.transform) {
+                        // If any scale factor is != 1.0 we need to fill the whole area
+                        // and clip our stroke away to ensure stroke width consistency
+                        if (this.$_ssx !== 1.0 || this.$_ssy !== 1.0) {
+                            // Fill everything with the stroke.paint, then clip with the stroke
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
+                            var patternFillArea = stroke.transform.inverted().mapRect(strokeBBox);
+                            canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), stroke.paint, this.$_sop);
+                            canvas.setTransform(oldTransform);
+                            canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                        } else {
+                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(stroke.transform));
+                            canvas.strokeVertices(stroke.paint, strokeWidth / stroke.transform.getScaleFactor(), this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                            canvas.setTransform(oldTransform);
+                        }
+                    } else {
+                        canvas.strokeVertices(stroke.paint, strokeWidth, this.$_slc, this.$_slj, this.$_slm, this.$_sop);
+                    }
+
+                    // TODO : Use clipPath() when supporting AA in chrome instead
+                    // of composite painting and separate canvas!!
+                    // Depending on the stroke alignment we might need to clip now
+                    if (this.$_sa === IFStyle.StrokeAlignment.Inside) {
+                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                    } else if (this.$_sa === IFStyle.StrokeAlignment.Outside) {
+                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+                    }
+                }
+            } else if (outline) {
+                // Outline is painted with non-transformed stroke
+                // so we reset transform, transform the vertices
+                // ourself and then re-apply the transformation
+                var transform = context.canvas.resetTransform();
+                var transformedVertices = new IFVertexTransformer(this, transform);
+                context.canvas.putVertices(transformedVertices);
+                context.canvas.strokeVertices(context.getOutlineColor());
+                context.canvas.setTransform(transform);
+            }
+        }
+    };
+
+    /** @override */
+    IFShape.prototype._isSeparateStyleLayer = function (context, layer) {
+        var result = IFStylable.prototype._isSeparateStyleLayer(context, layer);
+        if (!result) {
+            if (layer === IFStyle.Layer.Foreground) {
+                var outline = context.configuration.isOutline(context);
+                if (!outline && this.hasStyleStroke()) {
+                    // If we're not having a center-aligned stroke then
+                    // we need a separate canvas here
+                    if (this.$_sa !== IFStyle.StrokeAlignment.Center) {
+                        return true;
+                    }
+
+                    // Having a scale of !== 0 always requires a separate canvas
+                    return this.$_ssx !== 1.0 || this.$_ssy !== 1.0;
+                }
+            }
         }
         return false;
-    };
-
-    /** @override */
-    IFShape.prototype.restore = function (blob) {
-        if (IFItem.prototype.restore.call(this, blob)) {
-            this.restoreProperties(blob, IFShape.GeometryProperties, function (property, value) {
-                if (property === 'trf' && value) {
-                    return IFTransform.deserialize(value);
-                }
-                return value;
-            });
-            return true;
-        }
-        return false;
-    };
-
-    /** @override */
-    IFShape.prototype._paint = function (context, style, styleIndex) {
-        if (!this.rewindVertices(0)) {
-            return;
-        }
-
-        // Paint our background before anything else
-        this._paintBackground(context, style, styleIndex);
-
-        // Handle different painting routes depending on outline mode
-        if (context.configuration.isOutline(context)) {
-            // Outline is painted with non-transformed stroke
-            // so we reset transform, transform the vertices
-            // ourself and then re-apply the transformation
-            var transform = context.canvas.resetTransform();
-            var transformedVertices = new IFVertexTransformer(style ? style.createVertexSource(this) : this, transform);
-            context.canvas.putVertices(transformedVertices);
-            context.canvas.strokeVertices(context.getOutlineColor());
-            context.canvas.setTransform(transform);
-
-            // Paint contents
-            this._paintContents(context, style, styleIndex);
-        } else if (style) {
-            this._paintStyle(context, style, styleIndex);
-        }
-
-        // Paint our foreground
-        this._paintForeground(context, style, styleIndex);
-    };
-
-    /**
-     * Called to paint any backgrounds painted at
-     * first before any styling and contents
-     * @param {IFPaintContext} context
-     * @private
-     */
-    IFShape.prototype._paintBackground = function (context, style, styleIndex) {
-        // NO-OP
-    };
-
-    /**
-     * Called to paint the foreground painted after
-     * any styling and everything else
-     * @param {IFPaintContext} context
-     * @private
-     */
-    IFShape.prototype._paintForeground = function (context, style, styleIndex) {
-    };
-
-
-    /**
-     * Called to paint with a given style
-     * @param {IFPaintContext} context
-     * @param {IFStyle} style
-     * @param {Number} styleIndex
-     * @private
-     */
-    IFShape.prototype._paintStyle = function (context, style, styleIndex) {
-        // Iterate all (visible) paints
-        var paints = null;
-        for (var entry = style.getActualStyle().getFirstChild(); entry !== null; entry = entry.getNext()) {
-            if (entry instanceof IFPaintEntry && entry.getProperty('vs') === true) {
-                if (!paints) {
-                    paints = [];
-                }
-                paints.push(entry);
-            }
-        }
-
-        if (paints) {
-            // Create vertex source and put 'em onto canvas
-            var vertexSource = style.createVertexSource(this);
-            context.canvas.putVertices(vertexSource);
-
-            var paintBBox = style.getBBox(this.getGeometryBBox());
-
-            // Paint all paints npw
-            for (var i = 0; i < paints.length; ++i) {
-                var paint = paints[i];
-
-                // Check whether to create a separate canvas
-                if (paint.isSeparate()) {
-                    // Create temporary canvas
-                    var paintCanvas = context.canvas.createCanvas(paintBBox);
-
-                    // Put our vertex source onto it
-                    paintCanvas.putVertices(vertexSource);
-
-                    // Paint
-                    paint.paint(paintCanvas, paintBBox);
-
-                    // Draw the temporary canvas back
-                    context.canvas.drawCanvas(paintCanvas, 0, 0, paint.getPaintOpacity(), paint.getPaintCmpOrBlend());
-                } else {
-                    // Regular painting on main canvas
-                    paint.paint(context.canvas, paintBBox);
-                }
-            }
-        }
-    };
-
-    /**
-     * Paint and clip any contents of this shape
-     * @param {IFPaintContext} context
-     * @private
-     */
-    IFShape.prototype._paintContents = function (context, style, styleIndex) {
-        // TODO : Check intersection of children paintbbox and if it is
-        // fully contained by this shape then don't clip
-        // Paint our contents if any and clip 'em to ourself
-        var oldContentsCanvas = null;
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFElement) {
-                // Create temporary canvas if none yet
-                if (!oldContentsCanvas) {
-                    oldContentsCanvas = context.canvas;
-                    context.canvas = oldContentsCanvas.createCanvas(this.getGeometryBBox());
-                }
-
-                child.render(context);
-            }
-        }
-
-        // If we have a old contents canvas, clip our contents and swap canvas back
-        if (oldContentsCanvas) {
-            context.canvas.putVertices(this);
-            context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-            oldContentsCanvas.drawCanvas(context.canvas);
-            context.canvas.finish();
-            context.canvas = oldContentsCanvas;
-        }
-    };
-
-    /** @override */
-    IFShape.prototype.renderStyle = function (context, style, styleIndex) {
-        IFElement.Style.prototype.renderStyle.call(this, context, style, styleIndex);
-
-        // Render our contents here and clip' em if any after first style
-        if (styleIndex === 0) {
-            this._paintContents(context);
-        }
     };
 
     /** @override */
@@ -283,37 +238,58 @@
             return null;
         }
 
-        return this.getStyleSet().getBBox(source);
+        return this.getStyleBBox(source);
     };
 
     /** @override */
     IFShape.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFShape.GeometryProperties);
+
+        if (change === IFNode._Change.Store) {
+            this.storeProperties(args, IFShape.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.serialize(value);
+                }
+                return value;
+            });
+        } else if (change === IFNode._Change.Restore) {
+            this.restoreProperties(args, IFShape.GeometryProperties, function (property, value) {
+                if (property === 'trf' && value) {
+                    return IFTransform.deserialize(value);
+                }
+                return value;
+            });
+        }
+
+        this._handleStyleChange(change, args);
+
         IFItem.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
     IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        // Hit-Test styles, first
-        var styleHit = this.getStyleSet().hitTest(this, location, transform, tolerance);
-
-        if (styleHit) {
-            return new IFElement.HitResult(this, styleHit);
-        } else if (force) {
-            // When forced we'll always hit-test our whole "invisible" outline / fill area
+        if (this.hasStyleStroke()) {
+            var outlineWidth = this.$_sw * transform.getScaleFactor() + tolerance * 2;
             var vertexHit = new IFVertexInfo.HitResult();
-            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
-                return new IFElement.HitResult(this, vertexHit);
-            }
-        } else {
-            // If we didn't hit a style entry, then hit-test our "invisible" tolerance outline area if any
-            if (tolerance) {
-                var vertexHit = new IFVertexInfo.HitResult();
-                if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, false, vertexHit)) {
-                    return new IFElement.HitResult(this, vertexHit);
-                }
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), outlineWidth, false, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Stroke, vertexHit));
             }
         }
+
+        if (this.hasStyleFill() || force) {
+            var vertexHit = new IFVertexInfo.HitResult();
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), tolerance, true, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(this.hasStyleFill() ? IFShape.HitResult.Type.Fill : IFShape.HitResult.Type.Other, vertexHit));
+            }
+        }
+
+        if (tolerance) {
+            var vertexHit = new IFVertexInfo.HitResult();
+            if (ifVertexInfo.hitTest(location.getX(), location.getY(), new IFVertexTransformer(this, transform), transform.getScaleFactor() + tolerance * 2, false, vertexHit)) {
+                return new IFElement.HitResultInfo(this, new IFShape.HitResult(IFShape.HitResult.Type.Outline, vertexHit));
+            }
+        }
+
         return null;
     };
 
