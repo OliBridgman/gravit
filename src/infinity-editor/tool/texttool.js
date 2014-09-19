@@ -91,7 +91,7 @@
         // Create our text out of our rectangle here
         var text = new IFText();
         text.setProperties(['aw', 'ah', 'trf'], [false, false, shape.getProperty('trf')]);
-
+        text.useTextBoxAsBase();
         this._insertText(text);
     };
 
