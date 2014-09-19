@@ -36,6 +36,9 @@
 
 <script src="../bower_components/Blob.js/Blob.js"></script>
 <script src="../bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
+
+<script src="../bower_components/vex/js/vex.js"></script>
+<script src="../bower_components/vex/js/vex.dialog.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
@@ -75,9 +78,7 @@
 <script src="infinity/paint/annotation.js"></script>
 <script src="infinity/paint/bitmap.js"></script>
 <script src="infinity/paint/font.js"></script>
-<script src="infinity/paint/colorspace.js"></script>
 <script src="infinity/paint/color.js"></script>
-<script src="infinity/paint/colorprofile.js"></script>
 <script src="infinity/paint/dirtylist.js"></script>
 <script src="infinity/paint/gradient.js"></script>
 <script src="infinity/paint/paintcanvas.js"></script>
@@ -91,8 +92,10 @@
 <script src="infinity/scene/scene.js"></script>
 <script src="infinity/scene/scenepaintconfiguration.js"></script>
 <script src="infinity/scene/selector.js"></script>
-<script src="infinity/scene/stylable.js"></script>
-<script src="infinity/scene/style.js"></script>
+<script src="infinity/scene/style/styledefinition.js"></script>
+<script src="infinity/scene/style/stylable.js"></script>
+<script src="infinity/scene/style/style.js"></script>
+<script src="infinity/scene/style/styledelement.js"></script>
 <script src="infinity/scene/structure/page.js"></script>
 <script src="infinity/scene/structure/layer.js"></script>
 <script src="infinity/scene/structure/slice.js"></script>
@@ -247,7 +250,6 @@
 <script src="gravit/framework/action/closeaction.js"></script>
 <script src="gravit/framework/action/closeallaction.js"></script>
 <script src="gravit/framework/action/copyaction.js"></script>
-<script src="gravit/framework/action/copyattributesaction.js"></script>
 <script src="gravit/framework/action/cutaction.js"></script>
 <script src="gravit/framework/action/deleteaction.js"></script>
 <script src="gravit/framework/action/deletepageaction.js"></script>
@@ -272,7 +274,7 @@
 <script src="gravit/framework/action/pasteaction.js"></script>
 <script src="gravit/framework/action/pasteinplaceaction.js"></script>
 <script src="gravit/framework/action/pasteinsideaction.js"></script>
-<script src="gravit/framework/action/pasteattributesaction.js"></script>
+<script src="gravit/framework/action/pastestyleaction.js"></script>
 <script src="gravit/framework/action/redoaction.js"></script>
 <script src="gravit/framework/action/saveaction.js"></script>
 <script src="gravit/framework/action/saveallaction.js"></script>
@@ -291,6 +293,8 @@
 <!-- Colormatcher -->
 <script src="gravit/framework/colormatcher/analogousmatcher.js"></script>
 <script src="gravit/framework/colormatcher/complementarymatcher.js"></script>
+<!-- Dialog -->
+<script src="gravit/framework/dialog/styledialog.js"></script>
 <!-- Exporter -->
 <script src="gravit/framework/exporter/imagexporter.js"></script>
 <!-- Palette -->
@@ -313,7 +317,7 @@
 <script src="gravit/framework/properties/infoproperties.js"></script>
 <script src="gravit/framework/properties/pageproperties.js"></script>
 <script src="gravit/framework/properties/textproperties.js"></script>
-<script src="gravit/framework/properties/fillstrokeproperties.js"></script>
+<script src="gravit/framework/properties/fillborderproperties.js"></script>
 <script src="gravit/framework/properties/styleproperties.js"></script>
 <script src="gravit/framework/properties/sliceproperties.js"></script>
 <!-- Sidebar -->

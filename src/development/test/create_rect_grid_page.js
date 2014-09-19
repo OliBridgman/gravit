@@ -26,7 +26,7 @@
             }
 
             var end = new Date().getTime() - start;
-            alert('Created ' + numberOfRects.toString() + ' Rectangles in ' + (end > 1000 ? ((end / 1000).toString() + 'sec') : (end.toString() + 'ms')));
+            vex.dialog.alert('Created ' + numberOfRects.toString() + ' Rectangles in ' + (end > 1000 ? ((end / 1000).toString() + 'sec') : (end.toString() + 'ms')));
         }
     });
 })();

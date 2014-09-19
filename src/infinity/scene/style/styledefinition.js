@@ -1,28 +1,22 @@
 (function (_) {
     /**
-     * The style class
-     * @class IFStyle
-     * @extends IFNode
-     * @mixes IFNode.Store
-     * @mixes IFNode.Properties
+     * The style definition class
+     * @class IFStyleDefinition
      * @constructor
      */
-    function IFStyle() {
+    function IFStyleDefinition() {
         IFNode.call(this);
-        IFStyle.setDefaultProperties(this);
     }
-
-    IFNode.inheritAndMix("style", IFStyle, IFNode, [IFNode.Store, IFNode.Properties]);
 
     /**
      * The property set of a style
      * @enum
      */
-    IFStyle.PropertySet = {
+    IFStyleDefinition.PropertySet = {
         Style: 'S',
         Effects: 'E',
         Fill: 'F',
-        Stroke: 'S',
+        Border: 'B',
         Text: 'T',
         Paragraph: 'P'
     };
@@ -31,7 +25,7 @@
      * The layer of a style rendering
      * @enum
      */
-    IFStyle.Layer = {
+    IFStyleDefinition.Layer = {
         /**
          * Background Layer
          */
@@ -48,13 +42,13 @@
         Foreground: 'F'
     };
 
-    IFStyle.LAYER_ORDER = [IFStyle.Layer.Background, IFStyle.Layer.Content, IFStyle.Layer.Foreground];
+    IFStyleDefinition.LAYER_ORDER = [IFStyleDefinition.Layer.Background, IFStyleDefinition.Layer.Content, IFStyleDefinition.Layer.Foreground];
 
     /**
-     * Alignment of a stroke
+     * Alignment of a border
      * @enum
      */
-    IFStyle.StrokeAlignment = {
+    IFStyleDefinition.BorderAlignment = {
         /**
          * Center alignment
          */
@@ -75,7 +69,7 @@
      * Alignment of a paragraph
      * @enum
      */
-    IFStyle.ParagraphAlignment = {
+    IFStyleDefinition.ParagraphAlignment = {
         Left: 'l',
         Center: 'c',
         Right: 'r',
@@ -86,7 +80,7 @@
      * Wrap-Mode of a paragraph
      * @enum
      */
-    IFStyle.ParagraphWrapMode = {
+    IFStyleDefinition.ParagraphWrapMode = {
         /**
          * No word-break
          */
@@ -107,8 +101,8 @@
      * Visual Properties for a style
      * @enum
      */
-    IFStyle.VisualStyleProperties = {
-        /** Blend Mode */
+    IFStyleDefinition.VisualStyleProperties = {
+        /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
         _sbl: IFPaintCanvas.BlendMode.Normal,
         /** Fill Opacity (= w/o effects) */
         _sfop: 1,
@@ -120,7 +114,7 @@
      * Visual Properties for a style fill
      * @enum
      */
-    IFStyle.VisualFillProperties = {
+    IFStyleDefinition.VisualFillProperties = {
         /** Fill pattern (IFPattern) */
         _fpt: null,
         /** Fill opacity */
@@ -138,48 +132,46 @@
     };
 
     /**
-     * Visual Properties for a style stroke
+     * Visual Properties for a style border
      * @enum
      */
-    IFStyle.VisualStrokeProperties = {
-        /** Stroke opacity */
-        _sop: 1,
-        /** Horizontal Stroke translation (0..1) % */
-        _stx: 0,
-        /** Vertical Stroke translation (0..1) % */
-        _sty: 0,
-        /** Horizontal Stroke Scalation (0..1) % */
-        _ssx: 1,
-        /** Vertical Stroke Scalation (0..1) % */
-        _ssy: 1,
-        /** Stroke Rotation in radians */
-        _srt: 0
+    IFStyleDefinition.VisualBorderProperties = {
+        /** Border opacity */
+        _bop: 1,
+        /** Horizontal Border translation (0..1) % */
+        _btx: 0,
+        /** Vertical Border translation (0..1) % */
+        _bty: 0,
+        /** Horizontal Border Scalation (0..1) % */
+        _bsx: 1,
+        /** Vertical Border Scalation (0..1) % */
+        _bsy: 1,
+        /** Border Rotation in radians */
+        _brt: 0
     };
 
     /**
-     * Geometry Properties for a style stroke
+     * Geometry Properties for a style border
      * @enum
      */
-    IFStyle.GeometryStrokeProperties = {
-        /** Stroke pattern (IFPattern) */
-        _spt: null,
-        /** Stroke Width */
-        _sw: 1,
-        /** Stroke Alignment */
-        _sa: IFStyle.StrokeAlignment.Center,
+    IFStyleDefinition.GeometryBorderProperties = {
+        /** Border pattern (IFPattern) */
+        _bpt: null,
+        /** Border Width */
+        _bw: 1,
+        /** Border Alignment */
+        _ba: IFStyleDefinition.BorderAlignment.Center,
         /** Line-Caption */
-        _slc: IFPaintCanvas.LineCap.Square,
+        _blc: IFPaintCanvas.LineCap.Square,
         /** Line-Join */
-        _slj: IFPaintCanvas.LineJoin.Miter,
-        /** Line-Miter-Limit */
-        _slm: 1
+        _blj: IFPaintCanvas.LineJoin.Miter
     };
 
     /**
      * Geometry Properties for a style text
      * @enum
      */
-    IFStyle.GeometryTextProperties = {
+    IFStyleDefinition.GeometryTextProperties = {
         /** The font family */
         _tff: null,
         /** The font size */
@@ -198,14 +190,14 @@
      * Geometry Properties for a style paragraph
      * @enum
      */
-    IFStyle.GeometryParagraphProperties = {
+    IFStyleDefinition.GeometryParagraphProperties = {
         /** Column count */
         _pcc: null,
         /** Column gap */
         _pcg: null,
-        /** Wrap-Mode of a paragraph (IFStyle.ParagraphWrapMode) */
+        /** Wrap-Mode of a paragraph (IFStyleDefinition.ParagraphWrapMode) */
         _pwm: null,
-        /** The paragraph's alignment (IFStyle.ParagraphAlignment) */
+        /** The paragraph's alignment (IFStyleDefinition.ParagraphAlignment) */
         _pal: null,
         /** The first line intendation */
         _pin: null,
@@ -213,5 +205,5 @@
         _plh: null
     };
 
-    _.IFStyle = IFStyle;
+    _.IFStyleDefinition = IFStyleDefinition;
 })(this);

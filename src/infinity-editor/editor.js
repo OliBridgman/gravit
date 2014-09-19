@@ -969,7 +969,7 @@
                         var path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'),
                             anchorPoints);
                         path.setTransform(shape.getTransform());
-                        // TODO : Transfer Style
+                        path.assignStyleFrom(shape);
                         var pathEditor = new IFPathEditor(path);
                         shape = null;
 

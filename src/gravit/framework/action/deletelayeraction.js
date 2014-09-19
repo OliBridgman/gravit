@@ -91,7 +91,7 @@
         // If there's no other layer, stop here as we need at least one layer in the scene
         if (!otherLayer) {
             // TODO : I18N
-            alert('Unable to delete - the page needs to contain at least one layer.');
+            vex.dialog.alert('Unable to delete - the page needs to contain at least one layer.');
             return;
         }
 

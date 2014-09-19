@@ -190,24 +190,20 @@
             if (args.properties.indexOf('url') >= 0) {
                 this._updateImage();
             }
+        } else if (change === IFNode._Change.Attached) {
+            if (this._status === IFImage.ImageStatus.Delayed) {
+                this._updateImage();
+            }
         }
 
         IFShape.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFImage.prototype._setScene = function (scene) {
-        IFShape.prototype._setScene.call(this, scene);
-        if (this._scene && this._status === IFImage.ImageStatus.Delayed) {
-            this._updateImage();
-        }
-    };
-
-    /** @override */
     IFImage.prototype._paintStyleLayer = function (context, layer) {
         IFShape.prototype._paintStyleLayer.call(this, context, layer);
 
-        if (layer === IFStyle.Layer.Background && !context.configuration.isOutline(context)) {
+        if (layer === IFStyleDefinition.Layer.Background && !context.configuration.isOutline(context)) {
             // Apply our transformation (if any) before the canvas transformation
             var canvasTransform = context.canvas.getTransform(true);
             if (this.$trf) {

@@ -141,6 +141,18 @@
                         target.prototype.__gmixins__[mixin_id] = true;
                     }
                 }
+
+                // Iterate the prototype chain up and add all inherited mixins as well
+                for (var superProto = Object.getPrototypeOf(mixinPrototype);
+                     superProto != null && superProto !== Object.prototype;
+                     superProto = Object.getPrototypeOf(superProto)) {
+
+                    if (!superProto.__gtype_id__) {
+                        superProto.__gtype_id__ = IFObject._internalTypeIdCounter++;
+                    }
+
+                    target.prototype.__gmixins__[superProto.__gtype_id__] = true;
+                }
             }
         }
     };

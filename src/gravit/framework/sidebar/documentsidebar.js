@@ -127,10 +127,10 @@
                 return $('<select></select>')
                     .attr('data-property', property)
                     .append($('<option></option>')
-                        .attr('value', IFColorSpace.RGB)
+                        .attr('value', IFColor.Space.RGB)
                         .text('RGB'))
                     .append($('<option></option>')
-                        .attr('value', IFColorSpace.CMYK)
+                        .attr('value', IFColor.Space.CMYK)
                         .text('CMYK'))
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());

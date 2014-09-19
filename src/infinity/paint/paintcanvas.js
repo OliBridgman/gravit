@@ -500,16 +500,6 @@
     };
 
     /**
-     * Trim the canvas size for either a given area or
-     * if no area is provided trims the canvas to remove
-     * all transparent pixels on each side
-     * @param {IFRect} [area]
-     */
-    IFPaintCanvas.prototype.trim = function (area) {
-        alert('todo: trim_canvas');
-    };
-
-    /**
      * Creates a temporary canvas with the given extents.
      * The returned canvas will be compatible to this canvas
      * and thus, will prepared in the same way as this one

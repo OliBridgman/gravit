@@ -30,9 +30,7 @@
      * @returns {*}
      */
     IFTextEditor.prototype.getProperty = function (property, computed) {
-        if (IFText.GeometryProperties.hasOwnProperty(property)) {
-            return this.getElement().getProperty(property);
-        } else if (this.isInlineEdit()) {
+        if (this.isInlineEdit()) {
             var activeParagraph = null;
             var activeSpan = null;
 
@@ -60,23 +58,23 @@
                 }
             }
 
-            if (IFStyle.GeometryTextProperties.hasOwnProperty(property)) {
+            if (IFStyleDefinition.GeometryTextProperties.hasOwnProperty(property)) {
                 if (activeSpan) {
                     return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeSpan) : activeSpan.style);
                 } else if (activeParagraph) {
                     return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
-                    return this.getElement().getContent().getProperty(property);
+                    return this.getElement().getProperty(property);
                 }
-            } else if (IFStyle.GeometryParagraphProperties.hasOwnProperty(property)) {
+            } else if (IFStyleDefinition.GeometryParagraphProperties.hasOwnProperty(property)) {
                 if (activeParagraph) {
                     return IFText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
-                    return this.getElement().getContent().getProperty(property);
+                    return this.getElement().getProperty(property);
                 }
             }
         } else {
-            return this.getElement().getContent().getProperty(property);
+            return this.getElement().getProperty(property);
         }
     };
 
@@ -93,7 +91,7 @@
             if (IFText.GeometryProperties.hasOwnProperty(properties[i])) {
                 textProperties.push(properties[i]);
                 textValues.push(values[i]);
-            } else if (IFStyle.GeometryTextProperties.hasOwnProperty(properties[i])) {
+            } else if (IFStyleDefinition.GeometryTextProperties.hasOwnProperty(properties[i])) {
                 blockProperties.push(properties[i]);
                 blockValues.push(values[i]);
             } else {
@@ -162,8 +160,8 @@
             }.bind(this), 0);
         } else {
             // Apply to outer element
-            this.getElement().getContent().setProperties(blockProperties, blockValues);
-            this.getElement().getContent().setProperties(paragraphProperties, paragraphValues);
+            this.getElement().setProperties(blockProperties, blockValues);
+            this.getElement().setProperties(paragraphProperties, paragraphValues);
         }
 
         // Apply text properties if any

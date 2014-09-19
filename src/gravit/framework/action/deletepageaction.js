@@ -87,7 +87,7 @@
         // If there's no other page, stop here as we need at least one page in the scene
         if (!otherPage) {
             // TODO : I18N
-            alert('Unable to delete - the document needs to contain at least one page.');
+            vex.dialog.alert('Unable to delete - the document needs to contain at least one page.');
             return;
         }
 

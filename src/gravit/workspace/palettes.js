@@ -79,7 +79,7 @@
     GPalettes.prototype.setPaletteActive = function (paletteId) {
         var groupInfo = this._getGroupInfoForPalette(paletteId);
 
-        if (groupInfo && (groupInfo.activePalette !== paletteId || !active || !groupInfo.visible || !groupInfo.expanded)) {
+        if (groupInfo && (groupInfo.activePalette !== paletteId || !groupInfo.visible || !groupInfo.expanded)) {
             var paletteInfo = this._getPaletteInfo(paletteId);
 
             // Assign active palette

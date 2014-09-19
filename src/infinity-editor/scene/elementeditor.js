@@ -857,11 +857,16 @@
     /**
      * Called whenever a newly inserted element should become
      * some default setup
-     * @param {IFColor} fillColor the current default fill color
-     * @param {IFColor} strokeColor the current default stroke color
      */
     IFElementEditor.prototype.initialSetup = function () {
-        // NO-OP
+        // If we're having a stylable then transfer default style
+        var element = this.getElement();
+        if (element.hasMixin(IFStylable)) {
+            var defaultStyle = element.getScene().getStyleCollection().getFirstChild();
+            if (defaultStyle) {
+                element.assignStyleFrom(defaultStyle);
+            }
+        }
     };
 
     /**

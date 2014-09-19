@@ -38,6 +38,12 @@
             if (property === '_sbl') {
                 return $('<select></select>')
                     .attr('data-property', property)
+                    .append($('<option></option>')
+                        .attr('value', 'mask')
+                        // TODO : I18N
+                        .text('Mask'))
+                    // TODO : I18N
+                    .append($('<optgroup label="Blending"></optgroup>'))
                     .gBlendMode()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
@@ -54,28 +60,35 @@
                             self._updateProperties();
                         }
                     });
+            } else if (property === 'sref') {
+                return $('<button></button>')
+                    .attr('data-property', property)
+                    .append($('<span></span>'))
+                    .append($('<span></span>')
+                        .addClass('fa fa-caret-down'));
             } else {
                 throw new Error('Unknown input property: ' + property);
             }
         }.bind(this);
 
         panel
-            .css('width', '210px')
+            .css('width', '142px')
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
                     'top': '5px',
-                    'left': '5px'
+                    'left': '5px',
+                    'right': '5px'
                 })
                 .append(_createInput('_sbl')
                     .css({
-                        'width': '117px'
+                        'width': '100%'
                     })))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
-                    'top': '5px',
-                    'right': '5px'
+                    'top': '30px',
+                    'left': '5px'
                 })
                 // TODO : I18N
                 .text('Opacity:')
@@ -88,30 +101,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '30px',
-                    'left': '5px'
-                })
-                .append($('<select></select>')
-                    .append($('<option>No Style</option>'))
-                    .css({
-                        'width': '95px'
-                    })))
-            .append($('<div></div>')
-                .css({
-                    'position': 'absolute',
-                    'top': '30px',
-                    'left': '103px'
-                })
-                .append($('<button></button>')
-                    .append($('<span></span>')
-                        .addClass('fa fa-plus')))
-                .append($('<button></button>')
-                    .append($('<span></span>')
-                        .addClass('fa fa-trash-o'))))
-            .append($('<label></label>')
-                .css({
-                    'position': 'absolute',
-                    'top': '30px',
-                    'right': '5px'
+                    'left': '86px'
                 })
                 // TODO : I18N
                 .text('Fill:')
@@ -126,7 +116,103 @@
                     'left': '0px',
                     'right': '0px',
                     'top': '50px'
-                }));
+                }))
+            .append($('<label></label>')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px',
+                    'right': '5px'
+                })
+                .append(_createInput('sref')
+                    .css({
+                        'width': '100%'
+                    })))
+            .append($('<div></div>')
+                .css({
+                    'position': 'absolute',
+                    'top': '89px',
+                    'left': '5px'
+                })
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'New Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-plus'))
+                    .on('click', function () {
+                        var scene = this._document.getScene();
+                        var newStyle = new IFStyle();
+                        newStyle.setProperty('name', 'Style-' + (scene.getStyleCollection().queryCount('> style')).toString());
+                        newStyle.assignStyleFrom(this._elements[0]);
+                        new GStyleDialog(newStyle).open(function (result) {
+                            if (result) {
+                                // TODO : I18N
+                                IFEditor.tryRunTransaction(scene, function () {
+                                    scene.getStyleCollection().appendChild(newStyle);
+                                    for (var i = 0; i < this._elements.length; ++i) {
+                                        this._elements[i].setProperty('sref', newStyle.getReferenceId());
+                                    }
+                                }.bind(this), 'Add Style');
+                            }
+                        }.bind(this));
+                    }.bind(this)))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Redefine Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-check'))
+                    .on('click', function () {
+                        var stylesToUpdate = [];
+                        for (var i = 0; i < this._elements.length; ++i) {
+                            var style = this._elements[i].getReferencedStyle();
+                            if (style && stylesToUpdate.indexOf(style) < 0) {
+                                stylesToUpdate.push({style: style, element: this._elements[i]});
+                            }
+                        }
+
+                        if (stylesToUpdate.length) {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(stylesToUpdate[0].element, function () {
+                                for (var i = 0; i < stylesToUpdate.length; ++i) {
+                                    stylesToUpdate[i].style.assignStyleFrom(stylesToUpdate[i].element);
+                                }
+                            }.bind(this), 'Update Style');
+                        }
+                    }.bind(this)))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Remove Style Differences')
+                    .append($('<span></span>')
+                        .addClass('fa fa-remove'))
+                    .on('click', function () {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(this._elements[0], function () {
+                            for (var i = 0; i < this._elements.length; ++i) {
+                                var style = this._elements[i].getReferencedStyle();
+                                if (style) {
+                                    this._elements[i].assignStyleFrom(style);
+                                }
+                            }
+                        }.bind(this), 'Reset Style');
+                    }.bind(this)))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Disconnect Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-chain-broken')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Delete Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-trash-o')))
+                .append($('<button></button>')
+                    // TODO : I18N
+                    .attr('title', 'Set As Default Style')
+                    .append($('<span></span>')
+                        .addClass('fa fa-thumb-tack'))
+                    .on('click', function () {
+                        this._document.getScene().getStyleCollection().getFirstChild().assignStyleFrom(this._elements[0]);
+                    }.bind(this))));
     };
 
     /** @override */
@@ -138,7 +224,7 @@
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyle.PropertySet.Style) >= 0) {
+            if (elements[i].hasMixin(IFStyledElement) && elements[i].getStylePropertySets().indexOf(IFStyleDefinition.PropertySet.Style) >= 0) {
                 this._elements.push(elements[i]);
             }
         }
@@ -168,11 +254,15 @@
      */
     GStyleProperties.prototype._updateProperties = function () {
         var scene = this._document.getScene();
-        var stylable = this._elements[0];
+        var styledElement = this._elements[0];
 
-        this._panel.find('[data-property="_sbl"]').val(stylable.getProperty('_sbl'));
-        this._panel.find('[data-property="_sfop"]').val(ifUtil.formatNumber(stylable.getProperty('_sfop') * 100, 0));
-        this._panel.find('[data-property="_stop"]').val(ifUtil.formatNumber(stylable.getProperty('_stop') * 100, 0));
+        this._panel.find('[data-property="_sbl"]').val(styledElement.getProperty('_sbl'));
+        this._panel.find('[data-property="_sfop"]').val(ifUtil.formatNumber(styledElement.getProperty('_sfop') * 100, 0));
+        this._panel.find('[data-property="_stop"]').val(ifUtil.formatNumber(styledElement.getProperty('_stop') * 100, 0));
+
+        var style = styledElement.getReferencedStyle();
+        // TODO : I18N
+        this._panel.find('[data-property="sref"] > :first-child').text(style ? style.getProperty('name') : 'No Style');
     };
 
     /**

@@ -284,30 +284,37 @@
                     }
 
                     // Ask for a name
-                    var name = prompt('Enter a name for the new swatch:', data.color.asString());
-                    if (name === null) {
-                        return; // leave here, user has canceled
-                    }
-                    if (name.trim() === '') {
-                        name = data.color.asString();
-                    }
+                    vex.dialog.prompt({
+                        // TODO : I18N
+                        message: 'Enter a name for the new swatch:',
+                        value: data.color.asString(),
+                        callback: function (name) {
+                            if (!name) {
+                                return;
+                            }
 
-                    // Add current color as swatch
-                    var editor = IFEditor.getEditor(data.scene);
+                            if (name.trim() === '') {
+                                name = data.color.asString();
+                            }
 
-                    if (editor) {
-                        editor.beginTransaction();
-                    }
+                            // Add current color as swatch
+                            var editor = IFEditor.getEditor(data.scene);
 
-                    try {
-                        var swatch = new IFSwatch();
-                        swatch.setProperties(['name', 'pat'], [name, data.color]);
-                        swatches.appendChild(swatch);
-                    } finally {
-                        if (editor) {
-                            editor.commitTransaction('Add Swatch');
+                            if (editor) {
+                                editor.beginTransaction();
+                            }
+
+                            try {
+                                var swatch = new IFSwatch();
+                                swatch.setProperties(['name', 'pat'], [name, data.color]);
+                                swatches.appendChild(swatch);
+                            } finally {
+                                if (editor) {
+                                    editor.commitTransaction('Add Swatch');
+                                }
+                            }
                         }
-                    }
+                    });
                 } else {
                     var color = swatch.getProperty('pat');
                     assignValue($this, color, false);
@@ -1064,7 +1071,7 @@
                 var data = $this.data('gcolorpanel');
                 assignValue($this, value, true);
 
-                if (data.scene && (!data.color || data.color.getType() === IFColor.Type.Black || data.color.getType() === IFColor.Type.White || data.color.getType() === IFColor.Type.Registration)) {
+                if (data.scene && (!data.color || data.color.getType() === IFColor.Type.Black || data.color.getType() === IFColor.Type.White || data.color.getType() === IFColor.Type.Registration)) {
                     var clspace = data.scene.getProperty('clspace');
                     if (clspace) {
                         for (var i = 0; i < ColorModes.length; ++i) {

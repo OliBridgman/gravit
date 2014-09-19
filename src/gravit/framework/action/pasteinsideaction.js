@@ -10,7 +10,7 @@
     };
     IFObject.inherit(GPasteInsideAction, GAction);
 
-    GPasteInsideAction.ID = 'edit.paste-inside';
+    GPasteInsideAction.ID = 'edit.paste.inside';
     GPasteInsideAction.TITLE = new IFLocale.Key(GPasteInsideAction, "title");
 
     /**
@@ -38,7 +38,7 @@
      * @override
      */
     GPasteInsideAction.prototype.getGroup = function () {
-        return "ccp";
+        return "paste";
     };
 
     /**

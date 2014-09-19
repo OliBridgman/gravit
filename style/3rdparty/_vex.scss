@@ -1,0 +1,54 @@
+@import '../../bower_components/vex/sass/vex.sass';
+@import 'compass/css3';
+@import 'compass/utilities/general/clearfix';
+@import '../variables';
+
+.vex {
+  padding-top: 160px;
+  padding-bottom: 160px;
+
+  .vex-content {
+    background: $baseColor;
+    color: $textColor;
+    padding: 1em;
+    position: relative;
+    margin: 0 auto;
+    max-width: 100%;
+    min-width: 300px;
+    display: table;
+
+    border: 1px solid $borderColor;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.50);
+  }
+
+  .vex-dialog-form {
+    .vex-dialog-message {
+      margin-bottom: .5em;
+    }
+
+    .vex-dialog-input {
+      margin-bottom: 1em;
+
+      .vex-dialog-prompt-input {
+        width: 100%;
+      }
+    }
+
+    .vex-dialog-buttons {
+      @include pie-clearfix();
+    }
+  }
+
+  .vex-dialog-button {
+    float: right;
+    margin: 0 0 0 .5em;
+    padding-left: 2em;
+    padding-right: 2em;
+    text-transform: uppercase;
+    cursor: default !important;
+
+    &.vex-last {
+      margin-left: 0;
+    }
+  }
+}

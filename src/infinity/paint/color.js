@@ -17,11 +17,22 @@
     /**
      * @enum
      */
+    IFColor.Space = {
+        None: 'n',
+        RGB: 'rgb',
+        CMYK: 'cmyk',
+        LAB: 'lab',
+        XYZ: 'xyz'
+    };
+
+    /**
+     * @enum
+     */
     IFColor.Type = {
         /** RGB Color - "rgb(0..255, 0..255, 0..255, 0..100)" */
         RGB: {
             key: 'rgb',
-            space: IFColorSpace.RGB,
+            space: IFColor.Space.RGB,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -47,7 +58,7 @@
         /** HSL Color - "hsl(0..360, 0..100, 0..100, 0..100)" */
         HSL: {
             key: 'hsl',
-            space: IFColorSpace.RGB,
+            space: IFColor.Space.RGB,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -73,7 +84,7 @@
         /** Tone Color - "tone(0..100, 0..100)" */
         Tone: {
             key: 'tone',
-            space: IFColorSpace.RGB,
+            space: IFColor.Space.RGB,
             fromString: function (string) {
                 var result = [0, 0];
                 var values = string.split(',');
@@ -99,7 +110,7 @@
         /** CMYK Color - "cmyk(0..100, 0..100, 0..100)" */
         CMYK: {
             key: 'cmyk',
-            space: IFColorSpace.CMYK,
+            space: IFColor.Space.CMYK,
             fromString: function (string) {
                 var result = [0, 0, 0, 0];
                 var values = string.split(',');
@@ -126,7 +137,7 @@
         /** Reference to another color - "#ReferenceId" */
         Reference: {
             key: '#',
-            space: IFColorSpace.None,
+            space: IFColor.Space.None,
             fromString: function (string) {
                 return string;
             },
@@ -138,17 +149,17 @@
         /** Special white point - "white" - value = null */
         White: {
             key: 'white',
-            space: IFColorSpace.None
+            space: IFColor.Space.None
         },
         /** Special black point - "black"- value = null */
         Black: {
             key: 'black',
-            space: IFColorSpace.None
+            space: IFColor.Space.None
         },
         /** Special registration point - "registration" - value = null */
         Registration: {
             key: 'registration',
-            space: IFColorSpace.None
+            space: IFColor.Space.None
         }
     };
 
@@ -444,7 +455,7 @@
     };
 
     /**
-     * @return {IFColorSpace}
+     * @return {IFColor.Space}
      */
     IFColor.prototype.getSpace = function () {
         return this._type.space;
@@ -767,10 +778,7 @@
         return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
     };
 
-    /**
-     * Return string representation of the underlying color
-     * @return {String}
-     */
+    /** @override */
     IFColor.prototype.asString = function () {
         var result = this._type.key;
         if (this._type.asString) {

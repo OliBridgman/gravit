@@ -23,7 +23,7 @@ button, .g-button, input, textArea, select, .g-input, .g-list {
   }
 }
 
-button, .g-button {
+button, input[type=button], input[type=submit], .g-button {
   border: 1px solid $inputBorderColor;
   box-shadow: inset 1px 1px 1px $lightShadowColor;
 
@@ -67,7 +67,7 @@ button, .g-button {
   }
 }
 
-select, input, textArea, .g-input, .g-list {
+select, input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textArea, .g-input, .g-list {
   border-radius: 0px;
   box-shadow: inset 1px 1px 1px $darkShadowColor;
   background: $inputColor;
@@ -122,9 +122,7 @@ input[type="range"] {
 
 input[type=checkbox], input[type=radio] {
   vertical-align: middle;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none;
+  line-height: $baseline;
 
   &:not(:last-child) {
     margin-right: 0px;
