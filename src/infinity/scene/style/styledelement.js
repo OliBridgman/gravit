@@ -18,12 +18,20 @@
         sref: null
     };
 
+    /**
+     * Return the referenced style if any
+     * @returns {IFStyle}
+     */
+    IFStyledElement.prototype.getReferencedStyle = function () {
+        return this.isAttached() && this.$sref ? this.getScene().getReference(this.$sref) : null;
+    };
+
     /** @override */
-    IFStyledElement.prototype.assignStyleFrom = function (source) {
+    IFStyledElement.prototype.assignStyleFrom = function (source, diffOnly) {
         if (source.hasMixin(IFStyledElement)) {
             this.setProperty('sref', source.getProperty('sref'));
         }
-        IFStylable.prototype.assignStyleFrom.call(this, source);
+        IFStylable.prototype.assignStyleFrom.call(this, source, diffOnly);
     };
 
     /** @override */
@@ -47,7 +55,7 @@
             if (((change === IFNode._Change.BeforePropertiesChange || change === IFNode._Change.AfterPropertiesChange) && args.properties.indexOf('sref') >= 0) ||
                 change === IFNode._Change.Attached || change === IFNode._Change.Detach) {
                 var scene = this.getScene();
-                var referencedStyle = this.$sref ? scene.getReference(this.$sref) : null;
+                var referencedStyle = this.getReferencedStyle();
                 if (referencedStyle) {
                     switch (change) {
                         case IFNode._Change.BeforePropertiesChange:
@@ -57,6 +65,9 @@
                         case IFNode._Change.AfterPropertiesChange:
                         case IFNode._Change.Attached:
                             scene.link(referencedStyle, this);
+                            if (change === IFNode._Change.AfterPropertiesChange) {
+                                this.assignStyleFrom(referencedStyle);
+                            }
                             break;
                     }
                 }
@@ -79,7 +90,7 @@
                 args.sref = this.$sref;
             }
         } else if (change === IFNode._Change.Restore) {
-            this.$ref = args.sref;
+            this.$sref = args.sref;
         }
 
         IFStylable.prototype._handleStyleChange.call(this, change, args);

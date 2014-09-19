@@ -24,8 +24,11 @@
     /**
      * Assign style from a source style
      * @param {IFStylable} source
+     * @param {Boolean} [diffOnly] if set, only properties from source
+     * are assigned to this stylable that are non-existent on this stylable or
+     * if they're pointing to the default style values. Defaults to false.
      */
-    IFStylable.prototype.assignStyleFrom = function (source) {
+    IFStylable.prototype.assignStyleFrom = function (source, diffOnly) {
         // Collect union property sets
         var sourcePS = source.getStylePropertySets();
         var myPS = this.getStylePropertySets();
@@ -42,26 +45,39 @@
         }
 
         if (unionPS.length > 0) {
-            var sourceProperties = [];
-
+            var propertySets = [];
             for (var i = 0; i < unionPS.length; ++i) {
                 switch (unionPS[i]) {
                     case IFStyleDefinition.PropertySet.Style:
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualStyleProperties));
+                        propertySets.push(IFStyleDefinition.VisualStyleProperties);
                         break;
                     case IFStyleDefinition.PropertySet.Fill:
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualFillProperties));
+                        propertySets.push(IFStyleDefinition.VisualFillProperties);
                         break;
                     case IFStyleDefinition.PropertySet.Border:
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.VisualBorderProperties));
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryBorderProperties));
+                        propertySets.push(IFStyleDefinition.VisualBorderProperties);
+                        propertySets.push(IFStyleDefinition.GeometryBorderProperties);
                         break;
                     case IFStyleDefinition.PropertySet.Text:
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryTextProperties));
+                        propertySets.push(IFStyleDefinition.GeometryTextProperties);
                         break;
                     case IFStyleDefinition.PropertySet.Paragraph:
-                        sourceProperties = sourceProperties.concat(Object.keys(IFStyleDefinition.GeometryParagraphProperties));
+                        propertySets.push(IFStyleDefinition.GeometryParagraphProperties);
                         break;
+                }
+            }
+
+            var sourceProperties = [];
+            for (var p = 0; p < propertySets.length; ++p) {
+                var propertySet = propertySets[p];
+                for (var property in propertySet) {
+                    if (diffOnly) {
+                        if (!this.hasProperty(property) || ifUtil.equals(this.getProperty(property), propertySet[property], true)) {
+                            sourceProperties.push(property);
+                        }
+                    } else {
+                        sourceProperties.push(property);
+                    }
                 }
             }
 

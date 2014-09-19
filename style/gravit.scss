@@ -3,6 +3,7 @@
 @import "compass/reset";
 
 @import '3rdparty/vex';
+@import '3rdparty/jqtree';
 
 @import 'fonts';
 @import 'base';
@@ -12,7 +13,6 @@
 
 @import 'component/form';
 @import 'component/menu';
-@import 'component/tree';
 @import 'component/overlay';
 @import 'component/panel';
 @import 'component/colorswatch';

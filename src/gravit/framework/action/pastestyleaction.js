@@ -91,7 +91,7 @@
                 for (var i = 0; i < selection.length; ++i) {
                     var target = selection[i];
                     if (target.hasMixin(IFStylable)) {
-                        target.assignStyleFrom(stylableSource);
+                        IFStylable.prototype.assignStyleFrom.call(target, stylableSource);
                     }
                 }
             } finally {
