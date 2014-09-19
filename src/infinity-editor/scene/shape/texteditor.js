@@ -205,6 +205,15 @@
     };
 
     /** @override */
+    IFTextEditor.prototype.initialSetup = function () {
+        var element = this.getElement();
+        var defStyle = element.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
+        if (defStyle) {
+            element.assignStyleFrom(defStyle);
+        }
+    };
+
+    /** @override */
     IFTextEditor.prototype.canInlineEdit = function () {
         return true;
     };

@@ -498,6 +498,7 @@
     IFScene.prototype.visitLinks = function (target, visitor) {
         var links = this._links[target.getReferenceId()];
         if (links) {
+            links = links.slice();
             for (var i = 0; i < links.length; ++i) {
                 visitor(links[i]);
             }

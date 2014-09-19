@@ -11,6 +11,15 @@
     IFObject.inherit(IFShapeEditor, IFBlockEditor);
 
     /** @override */
+    IFShapeEditor.prototype.initialSetup = function () {
+        var element = this.getElement();
+        var defStyle = element.getScene().getStyleCollection().querySingle('style[_sdf="shape"]');
+        if (defStyle) {
+            element.assignStyleFrom(defStyle);
+        }
+    };
+
+    /** @override */
     IFShapeEditor.prototype.acceptDrop = function (position, type, source, hitData) {
         if (IFElementEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
             if (source instanceof IFPattern && hitData instanceof IFShape.HitResult) {

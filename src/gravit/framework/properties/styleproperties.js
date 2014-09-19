@@ -143,6 +143,7 @@
                         var scene = this._document.getScene();
                         var newStyle = new IFStyle();
                         newStyle.setProperty('name', 'Style-' + (scene.getStyleCollection().queryCount('> style')).toString());
+                        newStyle.setProperty('ps', this._elements[0].getStylePropertySets().slice());
                         newStyle.assignStyleFrom(this._elements[0]);
                         new GStyleDialog(newStyle).open(function (result) {
                             if (result) {
@@ -199,19 +200,52 @@
                     // TODO : I18N
                     .attr('title', 'Disconnect Style')
                     .append($('<span></span>')
-                        .addClass('fa fa-chain-broken')))
+                        .addClass('fa fa-chain-broken'))
+                    .on('click', function () {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(this._elements[0], function () {
+                            for (var i = 0; i < this._elements.length; ++i) {
+                                this._elements[i].setProperty('sref', null);
+                            }
+                        }.bind(this), 'Disconnect Style');
+                    }.bind(this)))
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Delete Style')
                     .append($('<span></span>')
-                        .addClass('fa fa-trash-o')))
+                        .addClass('fa fa-trash-o'))
+                    .on('click', function () {
+                        vex.dialog.confirm({
+                            // TODO : I18N
+                            message: 'Are you sure you want to delete the selected style?',
+                            callback: function (value) {
+                                var style = this._elements[0].getReferencedStyle();
+                                if (style) {
+                                    // TODO : I18N
+                                    IFEditor.tryRunTransaction(style, function () {
+                                        style.disconnectStyle();
+                                        style.getParent().removeChild(style);
+                                    }, 'Delete Style');
+                                }
+                            }.bind(this)
+                        });
+                    }.bind(this)))
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Set As Default Style')
                     .append($('<span></span>')
                         .addClass('fa fa-thumb-tack'))
                     .on('click', function () {
-                        this._document.getScene().getStyleCollection().getFirstChild().assignStyleFrom(this._elements[0]);
+                        var defStyle = null;
+                        if (this._elements[0] instanceof IFText) {
+                            defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
+                        } else if (this._elements[0] instanceof IFShape) {
+                            defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="shape"]');
+                        }
+
+                        if (defStyle) {
+                            defStyle.assignStyleFrom(this._elements[0]);
+                        }
                     }.bind(this))));
     };
 

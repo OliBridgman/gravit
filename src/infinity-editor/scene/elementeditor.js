@@ -859,14 +859,7 @@
      * some default setup
      */
     IFElementEditor.prototype.initialSetup = function () {
-        // If we're having a stylable then transfer default style
-        var element = this.getElement();
-        if (element.hasMixin(IFStylable)) {
-            var defaultStyle = element.getScene().getStyleCollection().getFirstChild();
-            if (defaultStyle) {
-                element.assignStyleFrom(defaultStyle);
-            }
-        }
+        // NO-OP
     };
 
     /**

@@ -33,6 +33,21 @@
         ]
     };
 
+    /**
+     * Disconnect this style from all the ones it is linked to
+     */
+    IFStyle.prototype.disconnectStyle = function () {
+        var scene = this.getScene();
+        if (scene) {
+            var self = this;
+            scene.visitLinks(this, function (link) {
+                if (link.hasMixin(IFStyledElement)) {
+                    link.setProperty('sref', null);
+                }
+            });
+        }
+    };
+
     /** @override */
     IFStyle.prototype.getStylePropertySets = function () {
         return this.$ps;
@@ -41,21 +56,6 @@
     /** @override */
     IFStyle.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFScene.StyleCollection;
-    };
-
-    /** @override */
-    IFStyle.prototype._stylePrepareGeometryChange = function () {
-        // TODO
-    };
-
-    /** @override */
-    IFStyle.prototype._styleFinishGeometryChange = function () {
-        // TODO
-    };
-
-    /** @override */
-    IFStyle.prototype._styleRepaint = function () {
-        // TODO
     };
 
     /** @private */

@@ -102,6 +102,8 @@
      * @enum
      */
     IFStyleDefinition.VisualStyleProperties = {
+        /** Internal default style marker */
+        _sdf: null,
         /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
         _sbl: IFPaintCanvas.BlendMode.Normal,
         /** Fill Opacity (= w/o effects) */
@@ -173,13 +175,13 @@
      */
     IFStyleDefinition.GeometryTextProperties = {
         /** The font family */
-        _tff: null,
+        _tff: 'Open Sans',
         /** The font size */
-        _tfi: null,
+        _tfi: 20,
         /** The font-weight (IFFont.Weight) */
-        _tfw: null,
+        _tfw: IFFont.Weight.Regular,
         /** The font-style (IFFont.Style) */
-        _tfs: null,
+        _tfs: IFFont.Style.Normal,
         /** The character spacing */
         _tcs: null,
         /** The word spacing */
@@ -196,13 +198,13 @@
         /** Column gap */
         _pcg: null,
         /** Wrap-Mode of a paragraph (IFStyleDefinition.ParagraphWrapMode) */
-        _pwm: null,
+        _pwm: IFStyleDefinition.ParagraphWrapMode.Words,
         /** The paragraph's alignment (IFStyleDefinition.ParagraphAlignment) */
         _pal: null,
         /** The first line intendation */
         _pin: null,
         /** The line height whereas 1 = 100% */
-        _plh: null
+        _plh: 1
     };
 
     _.IFStyleDefinition = IFStyleDefinition;

@@ -423,33 +423,14 @@
         // Setup scene defaults
         scene.setProperty('unit', IFLength.Unit.PX);
 
-        // Add a default style
-        var defaultStyle = new IFStyle();
-        defaultStyle.setProperties(
-            [
-                'name',
-                '_tff',
-                '_tfi',
-                '_tfw',
-                '_tfs',
-                '_plh',
-                '_pwm',
-                '_bpt',
-                '_fpt'
-            ],
-            [
-                'Default',
-                'Open Sans',
-                20,
-                IFFont.Weight.Regular,
-                IFFont.Style.Normal,
-                1,
-                IFStyleDefinition.ParagraphWrapMode.All,
-                null,
-                IFColor.BLACK
-            ]
-        );
-        scene.getStyleCollection().appendChild(defaultStyle);
+        // Add default styles for shapes & text
+        var defShapeStyle = new IFStyle();
+        defShapeStyle.setProperties(['_sdf', '_bpt', '_fpt'], ['shape', IFColor.BLACK, IFColor.WHITE]);
+        var defTextStyle = new IFStyle();
+        defTextStyle.setProperties(['_sdf', '_fpt'], ['text', IFColor.BLACK]);
+
+        scene.getStyleCollection().appendChild(defShapeStyle);
+        scene.getStyleCollection().appendChild(defTextStyle);
 
         // Create and add our document now
         var document = this.addDocument(scene);
