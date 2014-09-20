@@ -87,6 +87,7 @@
         this._handleStyleChange(change, args);
 
         IFNode.prototype._handleChange.call(this, change, args);
+
     };
 
     /** @override */

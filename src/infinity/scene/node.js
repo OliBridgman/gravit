@@ -749,10 +749,12 @@
      * @param {*} value the new value of the property
      * @param {Boolean} [custom] whether property is a custom one or not, defaults to false
      * Defaults to false.
+     * @param {Boolean} [force] if set, the property will always be set even if
+     * it's value hasn't been changed. Defaults to false.
      * @see setProperties
      */
-    IFNode.Properties.prototype.setProperty = function (property, value, custom) {
-        return this.setProperties([property], [value], custom);
+    IFNode.Properties.prototype.setProperty = function (property, value, custom, force) {
+        return this.setProperties([property], [value], custom, force);
     };
 
     /**
@@ -761,10 +763,12 @@
      * @param {Array<*>} values the new values in the same order as property names
      * @param {Boolean} [custom] whether properties are a custom ones or not, defaults to false
      * Defaults to false.
+     * @param {Boolean} [force] if set, the properties will always be set even if
+     * it's value hasn't been changed. Defaults to false.
      * @return {Boolean} true if at least one property has been modified, false if not (i.e. because
      * the property was already set to the specified value)
      */
-    IFNode.Properties.prototype.setProperties = function (properties, values, custom) {
+    IFNode.Properties.prototype.setProperties = function (properties, values, custom, force) {
         if (properties.length !== values.length) {
             throw new Error('Properties length does not match values length');
         }
@@ -777,7 +781,7 @@
             var propName = (custom ? '@' : '$') + properties[i];
             var oldValue = this[propName];
 
-            if (!ifUtil.equals(value, oldValue, false)) {
+            if (force || !ifUtil.equals(value, oldValue, false)) {
                 propertiesToModify.push(properties[i]);
                 valuesToModify.push(values[i])
             }

@@ -18,7 +18,7 @@
         // Subscribe to various scene changes
         this._scene.addEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
         this._scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-        this._scene.addEventListener(IFNode.BeforePropertiesChangeEvent, this._beforePropertiesChange, this);
+        this._scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
         this._scene.addEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
         this._scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
@@ -417,12 +417,12 @@
     IFEditor.prototype.release = function () {
         delete this._scene.__graphic_editor__;
 
-        this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert);
-        this._scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove);
-        this._scene.removeEventListener(IFNode.BeforePropertiesChangeEvent, this._beforePropertiesChange);
-        this._scene.removeEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange);
-        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange);
-        this._scene.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange);
+        this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
+        this._scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+        this._scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        this._scene.removeEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
+        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
     };
 
     /**
@@ -1369,19 +1369,16 @@
     };
 
     /**
-     * @param {IFNode.BeforePropertiesChangeEvent} evt
+     * @param {IFNode.AfterPropertiesChangeEvent} evt
      * @private
      */
-    IFEditor.prototype._beforePropertiesChange = function (evt) {
+    IFEditor.prototype._afterPropertiesChange = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transactionStack.length) {
             var node = evt.node;
             var properties = evt.properties;
-            var values = evt.values;
-            var oldValues = [];
-            for (var i = 0; i < evt.properties.length; ++i) {
-                oldValues.push(node.getProperty(evt.properties[i]));
-            }
+            var values = node.getProperties(evt.properties);
+            var oldValues = evt.values.slice();
 
             this._transactionStack[this._transactionStack.length - 1].actions.push({
                 isPropertyChangeAction: true,

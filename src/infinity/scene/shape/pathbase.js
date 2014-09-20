@@ -641,14 +641,14 @@
                     hx = this.$x + (nextPt.$x - this.$x) * offs;
                     hy = this.$y + (nextPt.$y - this.$y) * offs;
                     this.setProperties(['hlx', 'hly', 'hrx', 'hry'],
-                        [this.$x + this.$x - hx, this.$y + this.$y - hy, hx, hy], false, true);
+                        [this.$x + this.$x - hx, this.$y + this.$y - hy, hx, hy]);
                 } else if (prevPt && !nextPt ||
                     prevPt && this.$x == nextPt.$x && this.$y == nextPt.$y) {
 
                     hx = this.$x + (prevPt.$x - this.$x) * offs;
                     hy = this.$y + (prevPt.$y - this.$y) * offs;
                     this.setProperties(['hlx', 'hly', 'hrx', 'hry'],
-                        [hx, hy, this.$x + this.$x - hx, this.$y + this.$y - hy], false, true);
+                        [hx, hy, this.$x + this.$x - hx, this.$y + this.$y - hy]);
                 } else if (prevPt && nextPt) {
                     // calculate handles to be tangent circle(triag(prevPt, this, nextPt))
                     ccntr = ifMath.getCircumcircleCenter(
@@ -658,7 +658,7 @@
                         dx = (this.$y - prevPt.$y) * offs;
                         dy = (prevPt.$x - this.$x) * offs;
                         this.setProperties(['hlx', 'hly', 'hrx', 'hry'],
-                            [this.$x - dx, this.$y - dy, this.$x + dx, this.$y + dy], false, true);
+                            [this.$x - dx, this.$y - dy, this.$x + dx, this.$y + dy]);
                     }
                     else {
                         dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));

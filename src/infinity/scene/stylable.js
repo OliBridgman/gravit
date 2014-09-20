@@ -249,7 +249,10 @@
                     if (diffProperties) {
                         // Only assign property if it is contained in diff properties and
                         // when it has the same value as in diff properties
-                        if (diffProperties.hasOwnProperty(property) && ifUtil.equals(this.getProperty(property), diffProperties[property])) {
+                        var myPropVal = this.getProperty(property);
+                        var diffPropVal = diffProperties[property];
+                        var srcPropVal = source.getProperty(property);
+                        if (diffProperties.hasOwnProperty(property) && (ifUtil.equals(myPropVal, diffPropVal) || ifUtil.equals(myPropVal, srcPropVal))) {
                             sourceProperties.push(property);
                         }
                     } else {
@@ -260,7 +263,7 @@
 
             if (sourceProperties.length > 0) {
                 var sourceValues = source.getProperties(sourceProperties);
-                this.setProperties(sourceProperties, sourceValues);
+                this.setProperties(sourceProperties, sourceValues, false, true /*force*/);
             }
         }
     };
