@@ -1,4 +1,24 @@
 (function ($) {
+    function createStylePreviewImage (style, width, height) {
+        // Create either a temporary rectangle or text depending on the property sets
+        var previewBox = style.getStyleBBox(new IFRect(0, 0, width, height));
+        var propertySets = style.getStylePropertySets();
+
+        var previewElement = null;
+        if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0 || propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0) {
+            previewElement = new IFText();
+            previewElement.fromHtml('<p style="font-size:30">A</p>');
+        } else {
+            previewElement = new IFRectangle();
+            var rectWidth = previewBox.getWidth() - previewBox.getX();
+            var rectHeight = previewBox.getHeight() - previewBox.getY();
+            previewElement.setProperty('trf', new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2, rectWidth / 2, rectHeight / 2));
+        }
+
+        previewElement.assignFrom(style);
+
+        return previewElement.toBitmap(new IFLength(width), new IFLength(height), 2).toImageDataUrl(IFBitmap.ImageType.PNG);
+    };
 
     function updateSelectedStyle($this, style) {
         $this.find('.style-block').each(function (index, element) {
@@ -53,14 +73,6 @@
         }
     };
 
-    function styleChangeEvent(evt) {
-        var $this = $(this);
-        var container = $this.data('gstylepanel').container;
-        if (evt.style.getParent() === container) {
-            methods.updateStyle.call(this, evt.style);
-        }
-    };
-
     /** @type {IFStyle} */
     var dragStyle = null;
 
@@ -92,11 +104,6 @@
                 allowReorder: true,
                 // Allow editing the style name or not
                 allowNameEdit: false,
-                // The html code or Jquery for the null style, if set to null,
-                // no null style will be provided for choosing
-                nullStyle: null,
-                // The name of the null style if any
-                nullName: null,
                 // The placeholder text if there's no content
                 placeholder: null,
                 // The width of the style preview
@@ -115,34 +122,6 @@
                         options: options
                     });
 
-                if (options.nullStyle) {
-                    $('<div></div>')
-                        .addClass('style-block style-null')
-                        .data('style', null)
-                        .attr('title', options.nullName ? options.nullName : '')
-                        .append($('<div></div>')
-                            .addClass('style-content')
-                            .append($('<div></div>')
-                                .addClass('style-preview')
-                                .append($('<div></div>')
-                                    .css({
-                                        'display': 'inline-block',
-                                        'width': options.previewWidth + 'px',
-                                        'height': options.previewHeight + 'px',
-                                        'line-height': options.previewHeight + 'px'
-                                    })
-                                    .append(options.nullStyle)))
-                            .append($('<div></div>')
-                                .addClass('style-name')
-                                .text(options.nullName ? options.nullName : '')))
-                        .on('click', function () {
-                            $this.data('gstylepanel').selected = null;
-                            updateSelectedStyle($this, null);
-                            $this.trigger('stylechange', null);
-                        })
-                        .appendTo($this);
-                }
-
                 updatePlaceholder($this);
             });
         },
@@ -155,9 +134,6 @@
             var insertBefore = null;
 
             if (typeof index === 'number') {
-                if (data.options.nullStyle) {
-                    index += 1;
-                }
                 insertBefore = $this.children('.style-block').eq(index);
             } else {
                 if (style.getNext()) {
@@ -316,11 +292,12 @@
                 if ($element.data('style') === style) {
                     $element
                         .find('.style-preview > img')
-                        /*.attr('src', style.createPreviewImage(data.options.previewWidth, data.options.previewHeight))*/;
+                        .attr('src', createStylePreviewImage(style, data.options.previewWidth, data.options.previewHeight));
 
 
+                    var name = style.getProperty('name');
                     $element.attr('title', name);
-                    $element.find('.style-name').text(style.getProperty('name'));
+                    $element.find('.style-name').text(name);
                     return false;
                 }
             });
@@ -386,12 +363,10 @@
                 if (scene) {
                     data.afterInsertHandler = afterInsertEvent.bind(this);
                     data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
-                    data.styleChangeHandler = styleChangeEvent.bind(this);
                     data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
                     scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.addEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
             return this;
@@ -409,7 +384,6 @@
                     scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.removeEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
 
@@ -417,7 +391,6 @@
             data.afterInsertHandler = null;
             data.beforeRemoveHandler = null;
             data.afterPropertiesChangeHandler = null;
-            data.styleChangeHandler = null;
 
             methods.clear.call(this);
 

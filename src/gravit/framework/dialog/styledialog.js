@@ -98,8 +98,9 @@
                 if (data) {
                     var ps = [];
                     for (var propertySet in IFStylable.PropertySet) {
-                        if (form.find('[data-property-set="' + propertySet + '"]').is(':checked')) {
-                            ps.push(propertySet);
+                        var propertySetVal = IFStylable.PropertySet[propertySet];
+                        if (form.find('[data-property-set="' + propertySetVal + '"]').is(':checked')) {
+                            ps.push(propertySetVal);
                         }
                     }
 

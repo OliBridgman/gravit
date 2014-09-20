@@ -425,9 +425,9 @@
 
         // Add default styles for shapes & text
         var defShapeStyle = new IFStyle();
-        defShapeStyle.setProperties(['_sdf', '_bpt', '_fpt'], ['shape', IFColor.BLACK, IFColor.WHITE]);
+        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border], IFColor.BLACK, IFColor.WHITE]);
         var defTextStyle = new IFStyle();
-        defTextStyle.setProperties(['_sdf', '_fpt'], ['text', IFColor.BLACK]);
+        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border, IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph], IFColor.BLACK]);
 
         scene.getStyleCollection().appendChild(defShapeStyle);
         scene.getStyleCollection().appendChild(defTextStyle);
