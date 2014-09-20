@@ -246,16 +246,18 @@
             for (var p = 0; p < propertySets.length; ++p) {
                 var propertySet = propertySets[p];
                 for (var property in propertySet) {
+                    var addProperty = true;
+
                     if (diffProperties) {
                         // Only assign property if it is contained in diff properties and
                         // when it has the same value as in diff properties
                         var myPropVal = this.getProperty(property);
                         var diffPropVal = diffProperties[property];
                         var srcPropVal = source.getProperty(property);
-                        if (diffProperties.hasOwnProperty(property) && (ifUtil.equals(myPropVal, diffPropVal) || ifUtil.equals(myPropVal, srcPropVal))) {
-                            sourceProperties.push(property);
-                        }
-                    } else {
+                        addProperty = diffProperties.hasOwnProperty(property) && (ifUtil.equals(myPropVal, diffPropVal) || ifUtil.equals(myPropVal, srcPropVal));
+                    }
+
+                    if (addProperty && property !== '_sdf') {
                         sourceProperties.push(property);
                     }
                 }

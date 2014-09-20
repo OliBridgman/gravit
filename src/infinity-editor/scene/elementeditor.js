@@ -855,7 +855,7 @@
             editor.beginTransaction();
             try {
                 this._element.assignFrom(source);
-                this._element.setProperty('sref', source.getReferenceId());
+                this._element.setProperty('sref', source.getProperty('_sdf') !== null ? null : source.getReferenceId());
             } finally {
                 // TODO : I18N
                 editor.commitTransaction('Drag Style');

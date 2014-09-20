@@ -125,6 +125,33 @@
                     'right': '5px'
                 })
                 .append(_createInput('sref')
+                    .on('click', function (evt) {
+                        $('<div></div>')
+                            .css({
+                                'width': '250px'
+                            })
+                            .addClass('g-style-list')
+                            .gStylePanel()
+                            .gStylePanel('attach', this._document.getScene().getStyleCollection())
+                            .gOverlay({
+                                releaseOnClose: true
+                            })
+                            .gOverlay('open', evt.target)
+                            .on('close', function () {
+                                $(this).gStylePanel('detach');
+                            })
+                            .on('stylechange', function (evt, style) {
+                                $(evt.target).gOverlay('close');
+
+                                // TODO : I18N
+                                IFEditor.tryRunTransaction(this._elements[0], function () {
+                                    for (var i = 0; i < this._elements.length; ++i) {
+                                        this._elements[i].assignStyleFrom(style);
+                                        this._elements[i].setProperty('sref', style.getProperty('_sdf') !== null ? null : style.getReferenceId());
+                                    }
+                                }.bind(this), 'Disconnect Style');
+                            }.bind(this));
+                    }.bind(this))
                     .css({
                         'width': '100%'
                     })))
@@ -160,6 +187,7 @@
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Redefine Style')
+                    .attr('data-link-action', 'redefine')
                     .append($('<span></span>')
                         .addClass('fa fa-check'))
                     .on('click', function () {
@@ -183,6 +211,7 @@
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Remove Style Differences')
+                    .attr('data-link-action', 'removediff')
                     .append($('<span></span>')
                         .addClass('fa fa-remove'))
                     .on('click', function () {
@@ -199,6 +228,7 @@
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Disconnect Style')
+                    .attr('data-link-action', 'disconnect')
                     .append($('<span></span>')
                         .addClass('fa fa-chain-broken'))
                     .on('click', function () {
@@ -212,6 +242,7 @@
                 .append($('<button></button>')
                     // TODO : I18N
                     .attr('title', 'Delete Style')
+                    .attr('data-link-action', 'delete')
                     .append($('<span></span>')
                         .addClass('fa fa-trash-o'))
                     .on('click', function () {
@@ -297,6 +328,8 @@
         var style = styledElement.getReferencedStyle();
         // TODO : I18N
         this._panel.find('[data-property="sref"] > :first-child').text(style ? style.getProperty('name') : 'No Style');
+
+        this._panel.find('button[data-link-action]').prop('disabled', !style);
     };
 
     /**
