@@ -968,6 +968,7 @@
      * thus eventually adjusting  width or height and making one larger and
      * 2 means to keep the width/height but center the element on bitmap
      * if it's bbox ratio doesn't match the one of width / height
+     * @return {IFBitmap}
      */
     IFElement.prototype.toBitmap = function (width, height, ratio) {
         var paintArea = this._getBitmapPaintArea();
@@ -996,8 +997,8 @@
             }
         }
 
-        var canvasWidth = paintArea.getWidth() * scaleX;
-        var canvasHeight = paintArea.getHeight() * scaleY;
+        var canvasWidth = Math.round(paintArea.getWidth() * scaleX);
+        var canvasHeight = Math.round(paintArea.getHeight() * scaleY);
 
         // Handle ratio
         if (scaleX !== scaleY) {
