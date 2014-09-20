@@ -59,13 +59,18 @@
     };
 
     /** @private */
-    IFStyle.prototype._stylePropertiesUpdated = function (properties) {
+    IFStyle.prototype._stylePropertiesUpdated = function (properties, previousValues) {
         var scene = this.getScene();
         if (scene) {
+            var diffProperties = {};
+            for (var i = 0; i < properties.length; ++i) {
+                diffProperties[properties[i]] = previousValues[i];
+            }
+
             var self = this;
             scene.visitLinks(this, function (link) {
                 if (link.hasMixin(IFStylable)) {
-                    link.assignStyleFrom(self);
+                    link.assignStyleFrom(self, diffProperties);
                 }
             });
         }

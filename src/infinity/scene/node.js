@@ -1481,6 +1481,18 @@
     };
 
     /**
+     * Called to assign this node from another one to make
+     * it equal. This is i.e. called when a node's type has
+     * been changed.
+     * @param {IFNode} other
+     */
+    IFNode.prototype.assignFrom = function (other) {
+        if (this.hasMixin(IFNode.Reference) && other.hasMixin(IFNode.Reference)) {
+            this._referenceId = other._referenceId;
+        }
+    };
+
+    /**
      * Validates whether this node could be inserted into a given parent
      * @param {IFNode} parent the parent to validate against
      * @param {IFNode} reference optional reference to insert be for,

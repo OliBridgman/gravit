@@ -959,23 +959,22 @@
                 var newElems = [];
                 for (var i = 0; i < shapesToTransform.length; ++i) {
                     var shape = shapesToTransform[i];
-                    if (!shape.hasFlag(IFElement.Flag.Locked)) {
-                        shape.removeFlag(IFNode.Flag.Selected);
-                        var parent = shape.getParent();
-                        var next = shape.getNext(true);
-                        parent.removeChild(shape);
+                    shape.removeFlag(IFNode.Flag.Selected);
+                    var parent = shape.getParent();
+                    var next = shape.getNext(true);
+                    parent.removeChild(shape);
 
-                        var anchorPoints = shape.clearAnchorPoints();
-                        var path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'),
-                            anchorPoints);
-                        path.setTransform(shape.getTransform());
-                        path.assignStyleFrom(shape);
-                        var pathEditor = new IFPathEditor(path);
-                        shape = null;
+                    var anchorPoints = shape.clearAnchorPoints();
+                    var path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'),
+                        anchorPoints);
 
-                        parent.insertChild(path, next);
-                        newSelection.push(path);
-                    }
+                    path.assignFrom(shape);
+
+                    var pathEditor = new IFPathEditor(path);
+                    shape = null;
+
+                    parent.insertChild(path, next);
+                    newSelection.push(path);
                 }
                 shapesToTransform = null;
                 this.updateSelection(false, newSelection);

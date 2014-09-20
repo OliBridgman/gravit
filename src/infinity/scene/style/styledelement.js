@@ -27,11 +27,11 @@
     };
 
     /** @override */
-    IFStyledElement.prototype.assignStyleFrom = function (source, diffOnly) {
+    IFStyledElement.prototype.assignStyleFrom = function (source, diffProperties) {
         if (source.hasMixin(IFStyledElement)) {
             this.setProperty('sref', source.getProperty('sref'));
         }
-        IFStylable.prototype.assignStyleFrom.call(this, source, diffOnly);
+        IFStylable.prototype.assignStyleFrom.call(this, source, diffProperties);
     };
 
     /** @override */
@@ -65,9 +65,6 @@
                         case IFNode._Change.AfterPropertiesChange:
                         case IFNode._Change.Attached:
                             scene.link(referencedStyle, this);
-                            if (change === IFNode._Change.AfterPropertiesChange) {
-                                this.assignStyleFrom(referencedStyle);
-                            }
                             break;
                     }
                 }

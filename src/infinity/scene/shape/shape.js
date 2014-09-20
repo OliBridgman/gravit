@@ -64,6 +64,15 @@
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
     /** @override */
+    IFShape.prototype.assignFrom = function (other) {
+        IFBlock.prototype.assignFrom.call(this, other);
+
+        if (other instanceof IFShape) {
+            this.transferProperties(other, [IFShape.GeometryProperties]);
+        }
+    };
+
+    /** @override */
     IFShape.prototype.getStylePropertySets = function () {
         return IFStyledElement.prototype.getStylePropertySets.call(this)
             .concat(IFStyleDefinition.PropertySet.Fill, IFStyleDefinition.PropertySet.Border);

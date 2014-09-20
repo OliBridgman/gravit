@@ -743,6 +743,18 @@
         }
     };
 
+    /** @override */
+    IFElement.prototype.assignFrom = function (other) {
+        IFNode.prototype.assignFrom.call(this, other);
+        if (this.hasMixin(IFStylable) && other.hasMixin(IFStylable)) {
+            this.assignStyleFrom(other);
+        }
+
+        if (this.hasMixin(IFStyledElement) && other.hasMixin(IFStyledElement)) {
+            this.$sref = other.$sref;
+        }
+    };
+
     /**
      * Called to return the area for this element for painting into bitmap
      * @returns {IFRect}

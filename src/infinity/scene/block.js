@@ -29,6 +29,15 @@
         locked: false
     };
 
+    /** @override */
+    IFBlock.prototype.assignFrom = function (other) {
+        IFElement.prototype.assignFrom.call(this, other);
+
+        if (other instanceof IFBlock) {
+            this.transferProperties(other, [IFBlock.VisualProperties, IFBlock.MetaProperties]);
+        }
+    };
+
     /**
      * Returns the label of the block which is either the name
      * of the block if it has one or the name of the block's type

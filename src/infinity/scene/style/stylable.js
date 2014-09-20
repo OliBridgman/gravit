@@ -24,11 +24,13 @@
     /**
      * Assign style from a source style
      * @param {IFStylable} source
-     * @param {Boolean} [diffOnly] if set, only properties from source
-     * are assigned to this stylable that are non-existent on this stylable or
-     * if they're pointing to the default style values. Defaults to false.
+     * @param {*} [diffProperties] If provided, should contain property->value
+     * entries that are used for comparing whether to assign a property value or not.
+     * If the property value to be assigned doesn't equal the one in this parameter,
+     * it will not be overwritten. If this is provided, also only the given properties
+     * will be assigned, all others will be ignored.
      */
-    IFStylable.prototype.assignStyleFrom = function (source, diffOnly) {
+    IFStylable.prototype.assignStyleFrom = function (source, diffProperties) {
         // Collect union property sets
         var sourcePS = source.getStylePropertySets();
         var myPS = this.getStylePropertySets();
@@ -71,8 +73,10 @@
             for (var p = 0; p < propertySets.length; ++p) {
                 var propertySet = propertySets[p];
                 for (var property in propertySet) {
-                    if (diffOnly) {
-                        if (!this.hasProperty(property) || ifUtil.equals(this.getProperty(property), propertySet[property], true)) {
+                    if (diffProperties) {
+                        // Only assign property if it is contained in diff properties and
+                        // when it has the same value as in diff properties
+                        if (diffProperties.hasOwnProperty(property) && ifUtil.equals(this.getProperty(property), diffProperties[property])) {
                             sourceProperties.push(property);
                         }
                     } else {
@@ -217,12 +221,12 @@
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryTextProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.GeometryParagraphProperties))) {
                 this._styleFinishGeometryChange();
-                this._stylePropertiesUpdated(args.properties);
+                this._stylePropertiesUpdated(args.properties, args.values);
             } else if ((propertySets.indexOf(IFStyleDefinition.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualStyleProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualFillProperties)) ||
                 (propertySets.indexOf(IFStyleDefinition.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStyleDefinition.VisualBorderProperties))) {
                 this._styleRepaint();
-                this._stylePropertiesUpdated(args.properties);
+                this._stylePropertiesUpdated(args.properties, args.values);
             }
         } else if (change === IFNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
@@ -500,7 +504,7 @@
     };
 
     /** @private */
-    IFStylable.prototype._stylePropertiesUpdated = function (properties) {
+    IFStylable.prototype._stylePropertiesUpdated = function (properties, previousValues) {
         // NO-OP
     };
 
