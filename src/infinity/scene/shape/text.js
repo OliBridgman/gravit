@@ -1028,8 +1028,6 @@
             this._runsDirty = true;
         }
 
-        this._handleStyleChange(change, args);
-
         IFShape.prototype._handleChange.call(this, change, args);
 
         if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {
