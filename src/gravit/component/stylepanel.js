@@ -32,7 +32,7 @@
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyleDefinition && evt.node.getParent() === container) {
+        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
             methods.insertStyle.call(this, evt.node);
         }
     };
@@ -40,7 +40,7 @@
     function beforeRemoveEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyleDefinition && evt.node.getParent() === container) {
+        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
             methods.removeStyle.call(this, evt.node);
         }
     };
@@ -61,7 +61,7 @@
         }
     };
 
-    /** @type {IFStyleDefinition} */
+    /** @type {IFStyle} */
     var dragStyle = null;
 
     function canDrop($this, target) {
@@ -189,7 +189,7 @@
                     $this.trigger('stylechange', style);
                 });
 
-            if (data.options.allowNameEdit && style instanceof IFSharedStyle) {
+            if (data.options.allowNameEdit) {
                 block
                     .gAutoEdit({
                         selector: '.style-name'
@@ -316,15 +316,11 @@
                 if ($element.data('style') === style) {
                     $element
                         .find('.style-preview > img')
-                        .attr('src', style.createPreviewImage(data.options.previewWidth, data.options.previewHeight));
+                        /*.attr('src', style.createPreviewImage(data.options.previewWidth, data.options.previewHeight))*/;
 
-                    var name = '';
-                    if (style instanceof IFSharedStyle) {
-                        name = style.getProperty('name');
-                    }
 
                     $element.attr('title', name);
-                    $element.find('.style-name').text(name);
+                    $element.find('.style-name').text(style.getProperty('name'));
                     return false;
                 }
             });
@@ -380,7 +376,7 @@
 
             if (container) {
                 for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFStyleDefinition) {
+                    if (child instanceof IFStyle) {
                         methods.insertStyle.call(this, child);
                     }
                 }
@@ -395,7 +391,7 @@
                     scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.addEventListener(IFStyleDefinition.StyleChangeEvent, data.styleChangeHandler);
+                    scene.addEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
             return this;
@@ -413,7 +409,7 @@
                     scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                     scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                     scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                    scene.removeEventListener(IFStyleDefinition.StyleChangeEvent, data.styleChangeHandler);
+                    scene.removeEventListener(IFStyle.StyleChangeEvent, data.styleChangeHandler);
                 }
             }
 

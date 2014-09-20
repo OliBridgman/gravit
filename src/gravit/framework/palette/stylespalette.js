@@ -93,7 +93,7 @@
             this._document = event.document;
             var scene = this._document.getScene();
             this._stylePanel.gStylePanel('attach', scene.getStyleCollection());
-            this._stylePanel.gStylePanel('value', scene.getStyleCollection().querySingle('sharedStyle:selected'));
+            this._stylePanel.gStylePanel('value', scene.getStyleCollection().querySingle('style:selected'));
             this._updateControls();
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {

@@ -28,22 +28,22 @@
 
             // TODO : I18N
             switch (propertySet) {
-                case IFStyleDefinition.PropertySet.Style:
+                case IFStylable.PropertySet.Style:
                     title = "Style Settings";
                     break;
-                case IFStyleDefinition.PropertySet.Effects:
+                case IFStylable.PropertySet.Effects:
                     title = "Effects";
                     break;
-                case IFStyleDefinition.PropertySet.Fill:
+                case IFStylable.PropertySet.Fill:
                     title = "Fill";
                     break;
-                case IFStyleDefinition.PropertySet.Border:
+                case IFStylable.PropertySet.Border:
                     title = "Border";
                     break;
-                case IFStyleDefinition.PropertySet.Text:
+                case IFStylable.PropertySet.Text:
                     title = "Text";
                     break;
-                case IFStyleDefinition.PropertySet.Paragraph:
+                case IFStylable.PropertySet.Paragraph:
                     title = "Paragraph";
                     break;
             }
@@ -82,14 +82,14 @@
                     // TODO : I18N
                     .text('Properties:'))
                 .append($('<td></td>')
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Style))
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Effects))
+                    .append(_createPropertyInput(IFStylable.PropertySet.Style))
+                    .append(_createPropertyInput(IFStylable.PropertySet.Effects))
                     .append('<br/>')
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Fill))
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Border))
+                    .append(_createPropertyInput(IFStylable.PropertySet.Fill))
+                    .append(_createPropertyInput(IFStylable.PropertySet.Border))
                     .append('<br/>')
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Text))
-                    .append(_createPropertyInput(IFStyleDefinition.PropertySet.Paragraph))));
+                    .append(_createPropertyInput(IFStylable.PropertySet.Text))
+                    .append(_createPropertyInput(IFStylable.PropertySet.Paragraph))));
 
         vex.dialog.open({
             input: form,
@@ -97,7 +97,7 @@
             callback: function (data) {
                 if (data) {
                     var ps = [];
-                    for (var propertySet in IFStyleDefinition.PropertySet) {
+                    for (var propertySet in IFStylable.PropertySet) {
                         if (form.find('[data-property-set="' + propertySet + '"]').is(':checked')) {
                             ps.push(propertySet);
                         }

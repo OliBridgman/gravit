@@ -86,13 +86,13 @@
                 var icon = '';
                 var align = property.substr('_ba-'.length);
                 switch (align) {
-                    case IFStyleDefinition.BorderAlignment.Inside:
+                    case IFStylable.BorderAlignment.Inside:
                         icon = 'gicon-stroke-inside';
                         break;
-                    case IFStyleDefinition.BorderAlignment.Center:
+                    case IFStylable.BorderAlignment.Center:
                         icon = 'gicon-stroke-center';
                         break;
-                    case IFStyleDefinition.BorderAlignment.Outside:
+                    case IFStylable.BorderAlignment.Outside:
                         icon = 'gicon-stroke-outside';
                         break;
                     default:
@@ -233,13 +233,13 @@
                     'top': '30px',
                     'left': '86px'
                 })
-                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Inside)
+                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Inside)
                     // TODO : I18N
                     .attr('title', 'Border Inside'))
-                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Center)
+                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Border Centered'))
-                .append(_createInput('_ba-' + IFStyleDefinition.BorderAlignment.Outside)
+                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Outside)
                     // TODO : I18N
                     .attr('title', 'Border Outside')))
             .append($('<hr>')
@@ -306,7 +306,7 @@
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyleDefinition.PropertySet.Fill) >= 0) {
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStylable.PropertySet.Fill) >= 0) {
                 this._elements.push(elements[i]);
             }
         }

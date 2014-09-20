@@ -67,7 +67,7 @@
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStyleDefinition.PropertySet.Effects) >= 0) {
+            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStylable.PropertySet.Effects) >= 0) {
                 this._elements.push(elements[i]);
             }
         }

@@ -7,6 +7,9 @@
      * @constructor
      */
     function IFElement() {
+        if (this.hasMixin(IFElement.Stylable)) {
+            this._setStyleDefaultProperties();
+        }
     }
 
     IFObject.inherit(IFElement, IFNode);
@@ -239,6 +242,326 @@
     /** @override */
     IFElement.Transform.prototype.toString = function () {
         return "[Mixin IFElement.Transform]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFElement.Stylable Mixin
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * Mixin to mark an element being stylable
+     * @class IFElement.Stylable
+     * @extends IFStylable
+     * @constructor
+     * @mixin
+     */
+    IFElement.Stylable = function () {
+    };
+    IFObject.inherit(IFElement.Stylable, IFStylable);
+
+    /**
+     * The layer of a style rendering
+     * @enum
+     */
+    IFElement.Stylable.PaintLayer = {
+        /**
+         * Background Layer
+         */
+        Background: 'B',
+
+        /**
+         * Content Layer
+         */
+        Content: 'C',
+
+        /**
+         * Foreground Layer
+         */
+        Foreground: 'F'
+    };
+
+    IFElement.Stylable._PAINT_LAYER_ORDER = [
+        IFElement.Stylable.PaintLayer.Background,
+        IFElement.Stylable.PaintLayer.Content,
+        IFElement.Stylable.PaintLayer.Foreground
+    ];
+
+    /**
+     * Geometry properties
+     */
+    IFElement.Stylable.GeometryProperties = {
+        // The linked style reference id if any
+        sref: null
+    };
+
+    /**
+     * Return the referenced style if any
+     * @returns {IFStyle}
+     */
+    IFElement.Stylable.prototype.getReferencedStyle = function () {
+        return this.isAttached() && this.$sref ? this.getScene().getReference(this.$sref) : null;
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype.assignStyleFrom = function (source, diffProperties) {
+        if (source.hasMixin(IFElement.Stylable)) {
+            this.setProperty('sref', source.getProperty('sref'));
+        }
+        IFStylable.prototype.assignStyleFrom.call(this, source, diffProperties);
+    };
+
+    /**
+     * Called to paint with style
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFRect} contentPaintBBox the paint bbox used for drawing this stylable
+     */
+    IFElement.Stylable.prototype._paintStyle = function (context, contentPaintBBox) {
+        if (this.$_stop > 0.0) {
+            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
+                // We need to paint on a separate canvas here
+                var sourceCanvas = context.canvas;
+                var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                context.canvas = styleCanvas;
+                try {
+                    this._paintStyleLayers(context, contentPaintBBox);
+
+                    if (this.$_sbl === 'mask') {
+                        var area = this._getStyleMaskClipArea();
+                        if (area) {
+                            sourceCanvas.clipRect(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+                        }
+                        try {
+                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, IFPaintCanvas.CompositeOperator.DestinationIn);
+                        } finally {
+                            if (area) {
+                                sourceCanvas.resetClip();
+                            }
+                        }
+                    } else {
+                        sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, this.$_sbl);
+                    }
+
+                    styleCanvas.finish();
+                } finally {
+                    context.canvas = sourceCanvas;
+                }
+            } else {
+                this._paintStyleLayers(context, contentPaintBBox);
+            }
+        }
+    };
+
+    /**
+     * Called to paint the style layers
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFRect} contentPaintBBox the source bbox used for drawing
+     */
+    IFElement.Stylable.prototype._paintStyleLayers = function (context, contentPaintBBox) {
+        for (var i = 0; i < IFElement.Stylable._PAINT_LAYER_ORDER.length; ++i) {
+            var layer = IFElement.Stylable._PAINT_LAYER_ORDER[i];
+            if (this._isSeparateStylePaintLayer(context, layer)) {
+                var sourceCanvas = context.canvas;
+                var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                context.canvas = styleCanvas;
+                try {
+                    this._paintStyleLayer(context, layer);
+                    sourceCanvas.drawCanvas(styleCanvas);
+                    styleCanvas.finish();
+                } finally {
+                    context.canvas = sourceCanvas;
+                }
+            } else {
+                this._paintStyleLayer(context, layer);
+            }
+        }
+    };
+
+    /**
+     * Called whenever this should paint a specific style layer
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFElement.Stylable.PaintLayer} layer the actual layer to be painted
+     */
+    IFElement.Stylable.prototype._paintStyleLayer = function (context, layer) {
+        // NO-OP
+    };
+
+    /**
+     * Called to test whether a given style layer requires a separate canvas or not
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFElement.Stylable.PaintLayer} layer the actual layer to be painted
+     * @return {Boolean} true if layer is separated, false if not
+     */
+    IFElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
+        return false;
+    };
+
+    /**
+     * Should return the clip-area for masked styles
+     * @param {IFPaintContext} context
+     * @return {IFRect}
+     * @private
+     */
+    IFElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
+        return null;
+    };
+
+    /**
+     * Create and return the fill paint pattern used for painting
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFElement.Stylable.prototype._createFillPaint = function (canvas, bbox) {
+        if (this.$_fpt) {
+            return this._createPatternPaint(canvas, this.$_fpt, bbox, this.$_ftx, this.$_fty, this.$_fsx, this.$_fsy, this.$_frt);
+        }
+        return null;
+    };
+
+    /**
+     * Create and return the border paint pattern used for painting
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFElement.Stylable.prototype._createBorderPaint = function (canvas, bbox) {
+        if (this.$_bpt) {
+            return this._createPatternPaint(canvas, this.$_bpt, bbox, this.$_btx, this.$_bty, this.$_bsx, this.$_bsy, this.$_brt);
+        }
+        return null;
+    };
+
+    /**
+     * @return {{paint: *, transform: IFTransform}}
+     * @private
+     */
+    IFElement.Stylable.prototype._createPatternPaint = function (canvas, pattern, bbox, tx, ty, sx, sy, rt) {
+        var result = {
+            paint: null,
+            transform: null
+        };
+
+        if (pattern instanceof IFColor) {
+            result.paint = pattern;
+        } else if (pattern instanceof IFGradient) {
+            var gradient = null;
+
+            if (pattern.getType() === IFGradient.Type.Linear) {
+                result.paint = canvas.createLinearGradient(-0.5, 0, 0.5, 0, pattern);
+            } else if (pattern.getType() === IFGradient.Type.Radial) {
+                result.paint = canvas.createRadialGradient(0, 0, 0.5, pattern);
+            }
+
+            var left = bbox.getX();
+            var top = bbox.getY();
+            var width = bbox.getWidth();
+            var height = bbox.getHeight();
+
+            result.transform = IFTransform()
+                .scaled(sx, sy)
+                .rotated(rt)
+                .translated(tx, ty)
+                .scaled(width, height)
+                .translated(left, top);
+        }
+
+        return result;
+    };
+
+    /**
+     * Creates a temporary canvas for style drawing. This function will actually
+     * honor the Fast-Paint-Mode and if set, will return a canvas that paints at
+     * 100% instead.
+     * @param {IFPaintContext} context the paint context in use
+     * @param {IFRect} extents the extents for the temporary canvas
+     * @return {IFPaintCanvas}
+     * @private
+     */
+    IFElement.Stylable.prototype._createStyleCanvas = function (context, extents) {
+        if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
+            var result = new IFPaintCanvas();
+            result.resize(extents.getWidth(), extents.getHeight());
+            result.prepare();
+
+            var topLeft = extents.getSide(IFRect.Side.TOP_LEFT);
+            result.setOrigin(topLeft);
+            result.setOffset(topLeft);
+
+            // TODO : Support clipping dirty areas
+
+            return result;
+        } else {
+            return context.canvas.createCanvas(extents, true);
+        }
+    };    
+
+    /** @override */
+    IFElement.Stylable.prototype._stylePrepareGeometryChange = function () {
+        this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype._styleFinishGeometryChange = function () {
+        this._notifyChange(IFElement._Change.FinishGeometryUpdate);
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype._styleRepaint = function () {
+        this._notifyChange(IFElement._Change.InvalidationRequest);
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype._handleStyleChange = function (change, args) {
+        if (this.isAttached()) {
+            if (((change === IFNode._Change.BeforePropertiesChange || change === IFNode._Change.AfterPropertiesChange) && args.properties.indexOf('sref') >= 0) ||
+                change === IFNode._Change.Attached || change === IFNode._Change.Detach) {
+                var scene = this.getScene();
+                var referencedStyle = this.getReferencedStyle();
+                if (referencedStyle) {
+                    switch (change) {
+                        case IFNode._Change.BeforePropertiesChange:
+                        case IFNode._Change.Detach:
+                            scene.unlink(referencedStyle, this);
+                            break;
+                        case IFNode._Change.AfterPropertiesChange:
+                        case IFNode._Change.Attached:
+                            scene.link(referencedStyle, this);
+                            break;
+                    }
+                }
+            }
+
+
+            if (change === IFNode._Change.AfterPropertiesChange) {
+                var styleBlendModeIdx = args.properties.indexOf('_sbl');
+                if (styleBlendModeIdx >= 0 && args.values[styleBlendModeIdx] === 'mask' || this.$_sbl === 'mask') {
+                    var myPage = this.getPage();
+                    if (myPage) {
+                        myPage._requestInvalidation();
+                    }
+                }
+            }
+        }
+
+        if (change === IFNode._Change.Store) {
+            if (this.$sref) {
+                args.sref = this.$sref;
+            }
+        } else if (change === IFNode._Change.Restore) {
+            this.$sref = args.sref;
+        }
+
+        IFStylable.prototype._handleStyleChange.call(this, change, args);
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
+        var myPage = this.getPage();
+        if (myPage) {
+            return myPage.getPageClipBBox();
+        }
+    };
+
+    /** @override */
+    IFElement.Stylable.prototype.toString = function () {
+        return "[Mixin IFElement.Stylable]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -750,7 +1073,7 @@
             this.assignStyleFrom(other);
         }
 
-        if (this.hasMixin(IFStyledElement) && other.hasMixin(IFStyledElement)) {
+        if (this.hasMixin(IFElement.Stylable) && other.hasMixin(IFElement.Stylable)) {
             this.$sref = other.$sref;
         }
     };
@@ -780,8 +1103,11 @@
      * @param {IFPaintContext} context the context to be used for drawing
      */
     IFElement.prototype._paint = function (context) {
-        // By default we'll try to paint any children
-        this._paintChildren(context);
+        if (this.hasMixin(IFElement.Stylable)) {
+            this._paintStyle(context, this.getPaintBBox());
+        } else {
+            this._paintChildren(context);
+        }
     };
 
     /**
@@ -839,8 +1165,13 @@
      * @private
      */
     IFElement.prototype._calculatePaintBBox = function () {
-        // Default action unites all children paint bboxes if this is a container
-        return this.getChildrenPaintBBox();
+        var childPaintBBox = this.getChildrenPaintBBox();
+
+        if (this.hasMixin(IFElement.Stylable) && childPaintBBox) {
+            childPaintBBox = this.getStyleBBox(childPaintBBox);
+        }
+
+        return childPaintBBox;
     };
 
     /**
@@ -1033,6 +1364,10 @@
                     break;
 
             }
+        }
+
+        if (this.hasMixin(IFElement.Stylable)) {
+            this._handleStyleChange(change, args);
         }
 
         IFNode.prototype._handleChange.call(this, change, args);

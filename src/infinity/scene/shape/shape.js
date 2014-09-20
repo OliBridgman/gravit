@@ -7,17 +7,16 @@
      * @extends IFItem
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
-     * @mixes IFStyledElement
+     * @mixes IFElement.Stylable
      * @mixes IFVertexSource
      * @constructor
      */
     function IFShape() {
         IFItem.call(this);
         this._setDefaultProperties(IFShape.GeometryProperties);
-        this._setStyleDefaultProperties();
     }
 
-    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFStyledElement, IFVertexSource]);
+    IFObject.inheritAndMix(IFShape, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Stylable, IFVertexSource]);
 
     /**
      * The geometry properties of a shape with their default values
@@ -74,8 +73,8 @@
 
     /** @override */
     IFShape.prototype.getStylePropertySets = function () {
-        return IFStyledElement.prototype.getStylePropertySets.call(this)
-            .concat(IFStyleDefinition.PropertySet.Fill, IFStyleDefinition.PropertySet.Border);
+        return IFElement.Stylable.prototype.getStylePropertySets.call(this)
+            .concat(IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border);
     };
 
     /** @override */
@@ -102,13 +101,8 @@
     };
 
     /** @override */
-    IFShape.prototype._paint = function (context) {
-        this._paintStyle(context, this.getPaintBBox());
-    };
-
-    /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStyleDefinition.Layer.Background) {
+        if (layer === IFElement.Stylable.PaintLayer.Background) {
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
                 var canvas = context.canvas;
                 var fill = this._createFillPaint(canvas, this.getGeometryBBox());
@@ -124,7 +118,7 @@
                     }
                 }
             }
-        } else if (layer === IFStyleDefinition.Layer.Content) {
+        } else if (layer === IFElement.Stylable.PaintLayer.Content) {
             // TODO : Check intersection of children paintbbox and if it is
             // fully contained by this shape then don't clip
             // Paint our contents if any and clip 'em to ourself
@@ -151,7 +145,7 @@
                 context.canvas.finish();
                 context.canvas = oldContentsCanvas;
             }
-        } else if (layer === IFStyleDefinition.Layer.Foreground) {
+        } else if (layer === IFElement.Stylable.PaintLayer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleBorder()) {
                 var canvas = context.canvas;
@@ -167,7 +161,7 @@
 
                     // Except center alignment we need to double the border width
                     // as we're gonna clip half away
-                    if (this.$_ba !== IFStyleDefinition.BorderAlignment.Center) {
+                    if (this.$_ba !== IFStylable.BorderAlignment.Center) {
                         borderWidth *= 2;
                     }
 
@@ -195,9 +189,9 @@
                     // TODO : Use clipPath() when supporting AA in chrome instead
                     // of composite painting and separate canvas!!
                     // Depending on the border alignment we might need to clip now
-                    if (this.$_ba === IFStyleDefinition.BorderAlignment.Inside) {
+                    if (this.$_ba === IFStylable.BorderAlignment.Inside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    } else if (this.$_ba === IFStyleDefinition.BorderAlignment.Outside) {
+                    } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
                         canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
                     }
                 }
@@ -215,15 +209,15 @@
     };
 
     /** @override */
-    IFShape.prototype._isSeparateStyleLayer = function (context, layer) {
-        var result = IFStyledElement.prototype._isSeparateStyleLayer(context, layer);
+    IFShape.prototype._isSeparateStylePaintLayer = function (context, layer) {
+        var result = IFElement.Stylable.prototype._isSeparateStylePaintLayer(context, layer);
         if (!result) {
-            if (layer === IFStyleDefinition.Layer.Foreground) {
+            if (layer === IFElement.Stylable.PaintLayer.Foreground) {
                 var outline = context.configuration.isOutline(context);
                 if (!outline && this.hasStyleBorder()) {
                     // If we're not having a center-aligned border then
                     // we need a separate canvas here
-                    if (this.$_ba !== IFStyleDefinition.BorderAlignment.Center) {
+                    if (this.$_ba !== IFStylable.BorderAlignment.Center) {
                         return true;
                     }
 
@@ -269,8 +263,6 @@
                 return value;
             });
         }
-
-        this._handleStyleChange(change, args);
 
         IFItem.prototype._handleChange.call(this, change, args);
     };

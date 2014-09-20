@@ -24,12 +24,12 @@
         name: null,
         /** Property-Sets of the style */
         ps: [
-            IFStyleDefinition.PropertySet.Style,
-            IFStyleDefinition.PropertySet.Effects,
-            IFStyleDefinition.PropertySet.Fill,
-            IFStyleDefinition.PropertySet.Border,
-            IFStyleDefinition.PropertySet.Text,
-            IFStyleDefinition.PropertySet.Paragraph
+            IFStylable.PropertySet.Style,
+            IFStylable.PropertySet.Effects,
+            IFStylable.PropertySet.Fill,
+            IFStylable.PropertySet.Border,
+            IFStylable.PropertySet.Text,
+            IFStylable.PropertySet.Paragraph
         ]
     };
 
@@ -41,7 +41,7 @@
         if (scene) {
             var self = this;
             scene.visitLinks(this, function (link) {
-                if (link.hasMixin(IFStyledElement)) {
+                if (link.hasMixin(IFElement.Stylable)) {
                     link.setProperty('sref', null);
                 }
             });

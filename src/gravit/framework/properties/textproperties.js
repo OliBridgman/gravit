@@ -69,16 +69,16 @@
                 var iconName = '';
                 var alignment = property.substr('_pal-'.length);
                 switch (alignment) {
-                    case IFStyleDefinition.ParagraphAlignment.Left:
+                    case IFStylable.ParagraphAlignment.Left:
                         iconName = 'left';
                         break;
-                    case IFStyleDefinition.ParagraphAlignment.Center:
+                    case IFStylable.ParagraphAlignment.Center:
                         iconName = 'center';
                         break;
-                    case IFStyleDefinition.ParagraphAlignment.Right:
+                    case IFStylable.ParagraphAlignment.Right:
                         iconName = 'right';
                         break;
-                    case IFStyleDefinition.ParagraphAlignment.Justify:
+                    case IFStylable.ParagraphAlignment.Justify:
                         iconName = 'justify';
                         break;
                     default:
@@ -201,15 +201,15 @@
                         .attr('value', '')
                         .text(''))
                     .append($('<option></option>')
-                        .attr('value', IFStyleDefinition.ParagraphWrapMode.None)
+                        .attr('value', IFStylable.ParagraphWrapMode.None)
                         // TODO : I18N
                         .text('None'))
                     .append($('<option></option>')
-                        .attr('value', IFStyleDefinition.ParagraphWrapMode.Words)
+                        .attr('value', IFStylable.ParagraphWrapMode.Words)
                         // TODO : I18N
                         .text('Words'))
                     .append($('<option></option>')
-                        .attr('value', IFStyleDefinition.ParagraphWrapMode.All)
+                        .attr('value', IFStylable.ParagraphWrapMode.All)
                         // TODO : I18N
                         .text('All'))
                     .on('change', function () {
@@ -319,16 +319,16 @@
                     'top': '30px',
                     'left': '215px'
                 })
-                .append(_createInput('_pal-' + IFStyleDefinition.ParagraphAlignment.Left)
+                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Left)
                     // TODO : I18N
                     .attr('title', 'Align Left'))
-                .append(_createInput('_pal-' + IFStyleDefinition.ParagraphAlignment.Center)
+                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Align Centered'))
-                .append(_createInput('_pal-' + IFStyleDefinition.ParagraphAlignment.Right)
+                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Right)
                     // TODO : I18N
                     .attr('title', 'Align Right'))
-                .append(_createInput('_pal-' + IFStyleDefinition.ParagraphAlignment.Justify)
+                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Justify)
                     // TODO : I18N
                     .attr('title', 'Justify')))
             .append($('<hr>')

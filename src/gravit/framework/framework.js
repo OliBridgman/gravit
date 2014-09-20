@@ -24,7 +24,7 @@
             new GAlignPalette(),
             new GTransformPalette(),
             new GExportPalette(),
-            //new GStylesPalette(),
+            new GStylesPalette(),
             new GSwatchesPalette()
         );
 
