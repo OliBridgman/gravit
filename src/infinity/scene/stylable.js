@@ -288,17 +288,9 @@
     IFStylable.prototype.getStyleBorderPadding = function () {
         // Padding depends on border-width and alignment and miter limit if miter join is used
         if (this.$_ba === IFStylable.BorderAlignment.Center) {
-            var val = this.$_bw / 2;
-            if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
-                val *= 2;
-            }
-            return val;
+            return this.$_bw / 2;
         } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
-            var val = this.$_bw;
-            if (this.$_blj == IFPaintCanvas.LineJoin.Miter) {
-                val *= 2;
-            }
-            return val;
+            return this.$_bw;
         }
         return 0;
     }
