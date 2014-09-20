@@ -849,7 +849,19 @@
             }
         }
 
-        // TODO
+        // Dropping a style on stylable elements will be handled as well
+        if (type === IFElementEditor.DropType.Node && source && source instanceof IFStyle && this._element.hasMixin(IFElement.Stylable)) {
+            var editor = IFEditor.getEditor(this._element.getScene());
+            editor.beginTransaction();
+            try {
+                this._element.assignFrom(source);
+                this._element.setProperty('sref', source.getReferenceId());
+            } finally {
+                // TODO : I18N
+                editor.commitTransaction('Drag Style');
+            }
+            return true;
+        }
 
         return false;
     };
