@@ -775,8 +775,7 @@
                     });
 
                     var charSz = ifFont.getGlyphCharSzRect(fontFamily, fontVariant, fontSize, char);
-                    var charRect = new IFRect(rect.left + charSz.getX(), rect.top + baseline + charSz.getY(),
-                        charSz.getWidth(), charSz.getHeight());
+                    var charRect = new IFRect(rect.left + charSz.getX(), rect.top, charSz.getWidth(), rect.height);
 
                     sizeBox = sizeBox ? sizeBox.united(charRect) : charRect;
                 }.bind(this));
