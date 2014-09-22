@@ -58,7 +58,9 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof IFPathBase && !(selection[i] instanceof IFPath)) {
+                    if (selection[i] instanceof IFPathBase && !(selection[i] instanceof IFPath) ||
+                            selection[i] instanceof IFText) {
+
                         return true;
                     }
                 }
