@@ -1169,7 +1169,7 @@
         var childPaintBBox = this.getChildrenPaintBBox();
 
         if (this.hasMixin(IFElement.Stylable) && childPaintBBox) {
-            childPaintBBox = this.getStyleBBox(childPaintBBox);
+            childPaintBBox = this.getStyleBBox(childPaintBBox, true);
         }
 
         return childPaintBBox;

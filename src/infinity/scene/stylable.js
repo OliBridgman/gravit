@@ -143,7 +143,9 @@
         /** Line-Caption */
         _blc: IFPaintCanvas.LineCap.Square,
         /** Line-Join */
-        _blj: IFPaintCanvas.LineJoin.Miter
+        _blj: IFPaintCanvas.LineJoin.Miter,
+        /** Miter-Limit */
+        _bml: 3
     };
 
     /**
@@ -303,9 +305,11 @@
     /**
      * Returns the painted style bounding box
      * @param {IFRect} source the source bbox
+     * @param {Boolean} [approximate] if true, approximates the bbox which
+     * may result in bigger bboxes than actually required. Defaults to false.
      * @returns {IFRect}
      */
-    IFStylable.prototype.getStyleBBox = function (source) {
+    IFStylable.prototype.getStyleBBox = function (source, approximate) {
         var propertySets = this.getStylePropertySets();
 
         var left = 0;
@@ -317,6 +321,10 @@
         if (this.hasStyleBorder() && propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
             var borderPadding = this.getStyleBorderPadding();
             if (borderPadding) {
+                if (approximate && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
+                    borderPadding *= this.$_bml;
+                }
+
                 left += borderPadding;
                 top += borderPadding;
                 right += borderPadding;

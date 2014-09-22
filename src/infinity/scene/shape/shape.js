@@ -176,14 +176,14 @@
                             var patternFillArea = border.transform.inverted().mapRect(borderBBox);
                             canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
                             canvas.setTransform(oldTransform);
-                            canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, borderWidth, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                            canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                         } else {
                             var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
-                            canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, borderWidth, this.$_bop);
+                            canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, this.$_bml, this.$_bop);
                             canvas.setTransform(oldTransform);
                         }
                     } else {
-                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, borderWidth, this.$_bop);
+                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, this.$_bop);
                     }
 
                     // TODO : Use clipPath() when supporting AA in chrome instead
@@ -241,7 +241,7 @@
             return null;
         }
 
-        return this.getStyleBBox(source);
+        return this.getStyleBBox(source, true);
     };
 
     /** @override */

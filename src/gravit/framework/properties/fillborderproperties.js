@@ -70,14 +70,14 @@
                             self._updateProperties();
                         }
                     });
-            } else if (property === '_bw') {
+            } else if (property === '_bw' || property === '_bml') {
                 return $('<input>')
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var width = IFLength.parseEquationValue($(this).val());
-                        if (width !== null && width >= 0.0) {
-                            self._assignProperty(property, width);
+                        var value = IFLength.parseEquationValue($(this).val());
+                        if (value !== null && value >= 0.0) {
+                            self._assignProperty(property, value);
                         } else {
                             self._updateProperties();
                         }
@@ -253,7 +253,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '65px',
-                    'right': '86px'
+                    'left': '5px'
                 })
                 // TODO : I18N
                 .text('Ending:'))
@@ -261,7 +261,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '65px',
-                    'right': '5px'
+                    'left': '50px'
                 })
                 .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Butt)
                     // TODO : I18N
@@ -276,7 +276,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '89px',
-                    'right': '86px'
+                    'left': '5px'
                 })
                 // TODO : I18N
                 .text('Join:'))
@@ -284,7 +284,7 @@
                 .css({
                     'position': 'absolute',
                     'top': '89px',
-                    'right': '5px'
+                    'left': '50px'
                 })
                 .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Bevel)
                     // TODO : I18N
@@ -294,7 +294,11 @@
                     .attr('title', 'Round'))
                 .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Miter)
                     // TODO : I18N
-                    .attr('title', 'Miter')));
+                    .attr('title', 'Miter'))
+                .append(_createInput('_bml')
+                    // TODO : I18N
+                    .attr('title', 'Miter-Limit')
+                    .css('width', '30px')));
     };
 
     /** @override */
@@ -367,6 +371,10 @@
             var value = $element.attr('data-property').substr('_blj-'.length);
             $element.toggleClass('g-active', stylable.getProperty('_blj') === value);
         });
+
+        this._panel.find('[data-property="_bml"]')
+            .css('display', stylable.getProperty('_blj') === IFPaintCanvas.LineJoin.Miter ? '' : ' none')
+            .val(ifUtil.formatNumber(stylable.getProperty('_bml')));
     };
 
     /**
