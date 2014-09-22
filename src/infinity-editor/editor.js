@@ -942,7 +942,7 @@
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var elem = this._selection[i];
-                if (elem instanceof IFPathBase && !(elem instanceof IFPath) || elem instanceof IFText) {
+                if (elem instanceof IFPathBase && !(elem instanceof IFPath) || elem.hasMixin(IFVertexSource)) {
                     shapesToTransform.push(elem);
                 } else {
                     newSelection.push(elem);
@@ -975,8 +975,8 @@
 
                         parent.insertChild(path, next);
                         newSelection.push(path);
-                    } else { // shape instanceof IFText
-                        this._insertPathsFromText(shape, parent, next, newSelection);
+                    } else { // shape.hasMixin(IFVertexSource)
+                        this._insertPathsFromVertices(shape, parent, next, newSelection);
                         shape = null;
                     }
                 }
@@ -992,16 +992,16 @@
         }
     };
 
-    IFEditor.prototype._insertPathsFromText = function (text, parent, next, newSelection) {
-        text.rewindVertices(0);
+    IFEditor.prototype._insertPathsFromVertices = function (source, parent, next, newSelection) {
+        source.rewindVertices(0);
         var vertex = new IFVertex();
         var path;
         var done = false;
-        while (!done && text.readVertex(vertex)) {
+        while (!done && source.readVertex(vertex)) {
             switch (vertex.command) {
                 case IFVertex.Command.Move:
                     if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-                        path.assignFrom(text);
+                        path.assignFrom(source);
                         var pathEditor = new IFPathEditor(path);
                         parent.insertChild(path, next);
                         newSelection.push(path);
@@ -1020,7 +1020,7 @@
                 case IFVertex.Command.Curve:
                     anchorPoint = new IFPathBase.AnchorPoint();
                     var vertex2 = new IFVertex();
-                    if (text.readVertex(vertex2)) {
+                    if (source.readVertex(vertex2)) {
                         anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
                         anchorPoints.appendChild(anchorPoint);
                     } else {
@@ -1032,11 +1032,11 @@
                     break;
                 case IFVertex.Command.Curve2:
                     var vertex2 = new IFVertex();
-                    if (text.readVertex(vertex2)) {
+                    if (source.readVertex(vertex2)) {
                         if (anchorPoint) {
                             anchorPoint.setProperty(['hrx', 'hry'], [vertex2.x, vertex2.y]);
                         }
-                        if (text.readVertex(vertex2)) {
+                        if (source.readVertex(vertex2)) {
                             anchorPoint = new IFPathBase.AnchorPoint();
                             anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
                         } else {
@@ -1062,7 +1062,7 @@
             }
         }
         if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-            path.assignFrom(text);
+            path.assignFrom(source);
             var pathEditor = new IFPathEditor(path);
             parent.insertChild(path, next);
             newSelection.push(path);

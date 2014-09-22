@@ -59,7 +59,7 @@
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
                     if (selection[i] instanceof IFPathBase && !(selection[i] instanceof IFPath) ||
-                            selection[i] instanceof IFText) {
+                            selection[i].hasMixin(IFVertexSource)) {
 
                         return true;
                     }
