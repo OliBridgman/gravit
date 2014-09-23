@@ -1276,13 +1276,6 @@
                 this.getParent()._notifyChange(IFElement._Change.InvalidationRequested, args);
             }
         } else if (change == IFElement._Change.PrepareGeometryUpdate) {
-            if (this.isPaintable()) {
-                var paintBBox = this.getPaintBBox();
-                if (paintBBox && !paintBBox.isEmpty()) {
-                    this._savedPaintBBox = paintBBox;
-                }
-            }
-
             if (this.isVisible()) {
                 if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
                     this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Before));
@@ -1290,6 +1283,14 @@
             }
         } else if (change == IFElement._Change.FinishGeometryUpdate) {
             if (this.isVisible()) {
+                var savedPaintBBox = null;
+                if (this.isPaintable()) {
+                    var paintBBox = this.getPaintBBox();
+                    if (paintBBox && !paintBBox.isEmpty()) {
+                        savedPaintBBox = paintBBox;
+                    }
+                }
+
                 // Avoid invalidation only of args is explicitely set to false
                 if (!(false === args)) {
                     this._invalidateGeometry();
@@ -1297,7 +1298,7 @@
 
                 if (this.isPaintable()) {
                     var newPaintBBox = this.getPaintBBox();
-                    if (!IFRect.equals(newPaintBBox, this._savedPaintBBox)) {
+                    if (!IFRect.equals(newPaintBBox, savedPaintBBox)) {
 
                         // Deliver child geometry update to parent
                         if (this.getParent()) {
@@ -1305,8 +1306,8 @@
                         }
 
                         // Request repaint of old paint bbox if there was any
-                        if (this._savedPaintBBox) {
-                            this._requestInvalidationArea(this._savedPaintBBox);
+                        if (savedPaintBBox) {
+                            this._requestInvalidationArea(savedPaintBBox);
                         }
 
                         // Request a repaint of our new geometry
@@ -1319,10 +1320,6 @@
 
                 if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
                     this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.After));
-                }
-
-                if (this._savedPaintBBox) {
-                    delete this._savedPaintBBox;
                 }
             }
         } else if (change == IFElement._Change.ChildGeometryUpdate) {
