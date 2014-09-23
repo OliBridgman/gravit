@@ -92,7 +92,9 @@
 
         /**
          * A geometry update is finished
-         * args = Boolean whether to invalidate geometry or not, defaults to true
+         * args = If not provided or set to zero, invalidates all geometry. If set
+         * to 1 (one) then invalidates only the paint-bbox and if set to -1 then
+         * does not invalidate any geometry at all
          * @type {Number}
          */
         FinishGeometryUpdate: 221,
@@ -499,7 +501,7 @@
 
     /** @override */
     IFElement.Stylable.prototype._styleFinishGeometryChange = function () {
-        this._notifyChange(IFElement._Change.FinishGeometryUpdate);
+        this._notifyChange(IFElement._Change.FinishGeometryUpdate, 1 /* invalidate only paint bbox */);
     };
 
     /** @override */
@@ -887,7 +889,7 @@
     IFElement.prototype.endUpdate = function (noGeometryInvalidation) {
         if (this._updateCounter != null && --this._updateCounter == 0) {
             this._releaseUpdateChanges();
-            this._notifyChange(IFElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? false : true);
+            this._notifyChange(IFElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? -1 : 0);
             delete this._updateCounter;
         }
     };
@@ -1291,9 +1293,16 @@
                     }
                 }
 
-                // Avoid invalidation only of args is explicitely set to false
-                if (!(false === args)) {
-                    this._invalidateGeometry();
+                var invalidateArgs = 0;
+                if (typeof args === 'number') {
+                    invalidateArgs = args;
+                }
+
+                if (invalidateArgs === 1) {
+                    this._paintBBox = null;
+                } else if (invalidateArgs === 0) {
+                    this._geometryBBbox = null;
+                    this._paintBBox = null;
                 }
 
                 if (this.isPaintable()) {
@@ -1324,7 +1333,7 @@
             }
         } else if (change == IFElement._Change.ChildGeometryUpdate) {
             if (this.isVisible()) {
-                this._invalidateGeometry();
+                this._invalidateGeometryForChildUpdate();
 
                 if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
                     this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Child));
@@ -1369,6 +1378,18 @@
         }
 
         IFNode.prototype._handleChange.call(this, change, args);
+    };
+
+    /**
+     * Called whenever this element's geometry should be invalidated
+     * because any of it's child's geometry has been changed
+     * @private
+     */
+    IFElement.prototype._invalidateGeometryForChildUpdate = function () {
+        if (this.hasMixin(IFNode.Container)) {
+            this._geometryBBbox = null;
+            this._paintBBox = null;
+        }
     };
 
     /**

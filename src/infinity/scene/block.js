@@ -109,7 +109,7 @@
                 // Save our old paint bbox if we're getting hidden
                 var oldPaintBBox = !isVisible ? this.getPaintBBox() : null;
 
-                // Change hidden flag of this and all elemental children and invalidate their geometry
+                // Change hidden flag of this and all elemental children
                 this.accept(function (node) {
                     if (node instanceof IFElement) {
                         if (isVisible) {
@@ -117,7 +117,7 @@
                         } else {
                             node.setFlag(IFElement.Flag.Hidden);
                         }
-                        node._invalidateGeometry();
+                        node._requestInvalidation();
                     }
                 });
 

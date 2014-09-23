@@ -268,6 +268,11 @@
     };
 
     /** @override */
+    IFShape.prototype._invalidateGeometryForChildUpdate = function () {
+        // NO-OP as we're independant from our children's geometry
+    };
+
+    /** @override */
     IFShape.prototype._detailHitTest = function (location, transform, tolerance, force) {
         if (this.hasStyleBorder()) {
             var outlineWidth = this.$_bw * transform.getScaleFactor() + tolerance * 2;
