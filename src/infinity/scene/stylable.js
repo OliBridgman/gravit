@@ -305,11 +305,11 @@
     /**
      * Returns the painted style bounding box
      * @param {IFRect} source the source bbox
-     * @param {Boolean} [approximate] if true, approximates the bbox which
-     * may result in bigger bboxes than actually required. Defaults to false.
+     * @param {Boolean} [miterLimitApproximation] if true, takes the miter limit
+     * into account calculating a bigger style bbox than it actually might be.
      * @returns {IFRect}
      */
-    IFStylable.prototype.getStyleBBox = function (source, approximate) {
+    IFStylable.prototype.getStyleBBox = function (source, miterLimitApproximation) {
         var propertySets = this.getStylePropertySets();
 
         var left = 0;
@@ -321,7 +321,7 @@
         if (this.hasStyleBorder() && propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
             var borderPadding = this.getStyleBorderPadding();
             if (borderPadding) {
-                if (approximate && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
+                if (miterLimitApproximation && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
                     borderPadding *= this.$_bml;
                 }
 

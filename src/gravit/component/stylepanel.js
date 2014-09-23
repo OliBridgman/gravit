@@ -1,7 +1,7 @@
 (function ($) {
     function createStylePreviewImage (style, width, height) {
         // Create either a temporary rectangle or text depending on the property sets
-        var previewBox = style.getStyleBBox(new IFRect(0, 0, width, height));
+        var previewBox = style.getStyleBBox(new IFRect(0, 0, width, height), false);
         var propertySets = style.getStylePropertySets();
 
         var previewElement = null;

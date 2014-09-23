@@ -145,6 +145,11 @@
     };
 
     /** @override */
+    IFPolygon.prototype._requireMiterLimitApproximation = function () {
+        return true;
+    };
+
+    /** @override */
     IFPolygon.prototype.toString = function () {
         return "[IFPolygon]";
     };

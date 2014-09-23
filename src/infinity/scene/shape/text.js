@@ -1154,6 +1154,11 @@
     };
 
     /** @override */
+    IFText.prototype._requireMiterLimitApproximation = function () {
+        return true;
+    };
+
+    /** @override */
     IFText.prototype._setScene = function (scene) {
         IFShape.prototype._setScene.call(this, scene);
         if (this._content) {

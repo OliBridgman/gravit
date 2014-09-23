@@ -298,20 +298,9 @@
     };
 
     /** @override */
-    /*IFPath.prototype.assignFrom = function (other) {
-        if (other instanceof IFText) {
-            IFElement.prototype.assignFrom.call(this, other);
-            if (other instanceof IFBlock) {
-                this.transferProperties(other, [IFBlock.VisualProperties]);
-            }
-        } else {
-            IFBlock.prototype.assignFrom.call(this, other);
-
-            if (other instanceof IFShape) {
-                this.transferProperties(other, [IFShape.GeometryProperties]);
-            }
-        }
-    };   */
+    IFPath.prototype._requireMiterLimitApproximation = function () {
+        return true;
+    };
 
     /** @override */
     IFPath.prototype.toString = function () {

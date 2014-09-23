@@ -241,7 +241,17 @@
             return null;
         }
 
-        return this.getStyleBBox(source, true);
+        return this.getStyleBBox(source, this._requireMiterLimitApproximation());
+    };
+
+    /**
+     * Whether this kind of shape requires approximation of
+     * the miter limit when calculating the style bounding box or not.
+     * @returns {boolean}
+     * @private
+     */
+    IFShape.prototype._requireMiterLimitApproximation = function () {
+        return false;
     };
 
     /** @override */
