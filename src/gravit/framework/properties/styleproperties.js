@@ -278,7 +278,7 @@
                             // TODO : I18N
                             IFEditor.tryRunTransaction(defStyle, function () {
                                 defStyle.assignStyleFrom(this._elements[0]);
-                            }, 'Change Default Style');
+                            }.bind(this), 'Change Default Style');
                         }
                     }.bind(this))));
     };
