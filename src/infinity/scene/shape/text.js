@@ -1018,6 +1018,7 @@
             if (args.ct) {
                 this._content = IFNode.restore(args.ct);
                 this._content._parent = this;
+                this._content._scene = this._scene;
             }
 
             this._tl = new IFPoint(args.tlx, args.tly);
@@ -1025,6 +1026,14 @@
             this._br = new IFPoint(args.brx, args.bry);
             this._bl = new IFPoint(args.blx, args.bly);
             this._runsDirty = true;
+        } else if (change === IFNode._Change.Attached) {
+            if (this._content) {
+                this._content._setScene(this._scene);
+            }
+        } else if (change === IFNode._Change.Detach) {
+            if (this._content) {
+                this._content._setScene(null);
+            }
         }
 
         IFShape.prototype._handleChange.call(this, change, args);
@@ -1156,14 +1165,6 @@
     /** @override */
     IFText.prototype._requireMiterLimitApproximation = function () {
         return true;
-    };
-
-    /** @override */
-    IFText.prototype._setScene = function (scene) {
-        IFShape.prototype._setScene.call(this, scene);
-        if (this._content) {
-            this._content._setScene(scene);
-        }
     };
 
     /** @override */

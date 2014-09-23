@@ -18,6 +18,9 @@
 
             rectangle.setProperty('_bpt', IFColor.BLACK);
             rectangle.setProperty('_bw', 10);
+            var blur = new IFBlurEffect();
+            blur.setProperties(['vs', 'ly'], [true, IFStylable.Layer.Foreground]);
+            rectangle.getEffects().appendChild(blur);
 
             layer.appendChild(rectangle);
         }

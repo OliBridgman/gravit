@@ -1554,7 +1554,16 @@
             } else if (args.properties.indexOf('trf') >= 0) {
                 this._verticesDirty = true;
             }
+        } else if (change === IFNode._Change.Attached) {
+            if (this._anchorPoints) {
+                this._anchorPoints._setScene(this._scene);
+            }
+        } else if (change === IFNode._Change.Detach) {
+            if (this._anchorPoints) {
+                this._anchorPoints._setScene(null);
+            }
         }
+
         IFShape.prototype._handleChange.call(this, change, args);
     };
 
@@ -1564,12 +1573,6 @@
      */
     IFPathBase.prototype._getAnchorPoints = function () {
         return this._anchorPoints;
-    };
-
-    /** @override */
-    IFPathBase.prototype._setScene = function (scene) {
-        IFShape.prototype._setScene.call(this, scene);
-        this._anchorPoints._setScene(scene);
     };
 
     /** @override */

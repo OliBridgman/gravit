@@ -215,18 +215,15 @@
             return true;
         }
 
-        if (layer === IFStylable.Layer.Foreground) {
-            var outline = context.configuration.isOutline(context);
-            if (!outline && this.hasStyleBorder()) {
-                // If we're not having a center-aligned border then
-                // we need a separate canvas here
-                if (this.$_ba !== IFStylable.BorderAlignment.Center) {
-                    return true;
-                }
-
-                // Having a scale of !== 0 always requires a separate canvas
-                return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
+        if (layer === IFStylable.Layer.Foreground && this.hasStyleBorder()) {
+            // If we're not having a center-aligned border then
+            // we need a separate canvas here
+            if (this.$_ba !== IFStylable.BorderAlignment.Center) {
+                return true;
             }
+
+            // Having a scale of !== 0 always requires a separate canvas
+            return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
         }
     };
 

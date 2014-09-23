@@ -288,14 +288,24 @@
      * @param {IFRect} contentPaintBBox the paint bbox used for drawing this stylable
      */
     IFElement.Stylable.prototype._paintStyle = function (context, contentPaintBBox) {
-        if (this.$_stop > 0.0) {
-            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal && !context.configuration.isOutline(context)) {
+        if (context.configuration.isOutline(context)) {
+            this._paintStyleLayers(context, contentPaintBBox);
+        } else if (this.$_stop > 0.0) {
+            var effects = this._effects ? this._effects.byLayer(null, true) : null;
+
+            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal || effects) {
                 // We need to paint on a separate canvas here
                 var sourceCanvas = context.canvas;
                 var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
                 context.canvas = styleCanvas;
                 try {
                     this._paintStyleLayers(context, contentPaintBBox);
+
+                    if (effects) {
+                        for (var e = 0; e < effects.length; ++e) {
+                            effects[e].render(context);
+                        }
+                    }
 
                     if (this.$_sbl === 'mask') {
                         var area = this._getStyleMaskClipArea();
@@ -329,21 +339,36 @@
      * @param {IFRect} contentPaintBBox the source bbox used for drawing
      */
     IFElement.Stylable.prototype._paintStyleLayers = function (context, contentPaintBBox) {
+        var outlined = context.configuration.isOutline(context);
         for (var i = 0; i < IFElement.Stylable._PAINT_LAYER_ORDER.length; ++i) {
             var layer = IFElement.Stylable._PAINT_LAYER_ORDER[i];
-            if (this._isSeparateStylePaintLayer(context, layer)) {
-                var sourceCanvas = context.canvas;
-                var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
-                context.canvas = styleCanvas;
-                try {
-                    this._paintStyleLayer(context, layer);
-                    sourceCanvas.drawCanvas(styleCanvas);
-                    styleCanvas.finish();
-                } finally {
-                    context.canvas = sourceCanvas;
-                }
-            } else {
+
+            if (outlined) {
                 this._paintStyleLayer(context, layer);
+            } else {
+                var effects = this._effects ? this._effects.byLayer(layer, true) : null;
+
+                if (effects || this._isSeparateStylePaintLayer(context, layer)) {
+                    var sourceCanvas = context.canvas;
+                    var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                    context.canvas = styleCanvas;
+                    try {
+                        this._paintStyleLayer(context, layer);
+
+                        if (effects) {
+                            for (var e = 0; e < effects.length; ++e) {
+                                effects[e].render(context);
+                            }
+                        }
+
+                        sourceCanvas.drawCanvas(styleCanvas);
+                        styleCanvas.finish();
+                    } finally {
+                        context.canvas = sourceCanvas;
+                    }
+                } else {
+                    this._paintStyleLayer(context, layer);
+                }
             }
         }
     };
@@ -463,7 +488,7 @@
         } else {
             return context.canvas.createCanvas(extents, true);
         }
-    };    
+    };
 
     /** @override */
     IFElement.Stylable.prototype._stylePrepareGeometryChange = function () {

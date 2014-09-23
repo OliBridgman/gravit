@@ -9,6 +9,12 @@
     };
 
     /**
+     * @type {IFStylable.Effects}
+     * @private
+     */
+    IFStylable._effects = null;
+
+    /**
      * The layer of a style
      * @enum
      */
@@ -109,7 +115,16 @@
             }
         },
         'E': {
-
+            visualProperties: {
+                /** Visibility */
+                _vs: true
+            },
+            geometryProperties: {
+                /** Layer (null=all) */
+                _ly: null,
+                /** Blur radius */
+                _bl_r: 5
+            }
         },
         'F': {
             visualProperties: {
@@ -242,6 +257,45 @@
         }
     }
 
+    // --------------------------------------------------------------------------------------------
+    // IFStylable.Effects Class
+    // --------------------------------------------------------------------------------------------
+    /**
+     * Effects Class
+     * @class IFStylable.Effects
+     * @inherit IFNode
+     * @mixes IFNode.Container
+     * @mixes IFNode.Store
+     * @constructor
+     */
+    IFStylable.Effects = function () {
+    };
+    IFNode.inheritAndMix('effects', IFStylable.Effects, IFNode, [IFNode.Container, IFNode.Store]);
+
+    IFStylable.Effects.prototype.byLayer = function (layer, visibleOnly) {
+        var result = null;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFEffect) {
+                var childLayer = child.getProperty('ly');
+                if (visibleOnly && child.getProperty('vs') === false) {
+                    continue;
+                }
+
+                if (childLayer === layer) {
+                    if (!result) {
+                        result = [];
+                    }
+                    result.push(child);
+                }
+            }
+        }
+        return result;
+    };
+
+    // --------------------------------------------------------------------------------------------
+    // IFStylable Mixin
+    // --------------------------------------------------------------------------------------------
+
     /**
      * The property-sets this stylable supports
      * @returns {Array<IFStylable.PropertySet>} list of supported
@@ -250,6 +304,22 @@
      */
     IFStylable.prototype.getStylePropertySets = function () {
         return [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects];
+    };
+
+    /**
+     * Returns the style effects. If the style doesn't support effects
+     * then this will return null.
+     * @returns {IFStylable.Effects}
+     */
+    IFStylable.prototype.getEffects = function () {
+        if (this.getStylePropertySets().indexOf(IFStylable.PropertySet.Effects) >= 0) {
+            if (!this._effects) {
+                this._effects = new IFStylable.Effects();
+                this._effects._parent = this;
+                this._effects._setScene(this._scene);
+            }
+            return this._effects;
+        }
     };
 
     /**
@@ -375,6 +445,29 @@
             }
         }
 
+        if (this._effects) {
+            for (var child = this._effects.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFEffect) {
+                    var effectPadding = child.getEffectPadding();
+                    if (!effectPadding) {
+                        continue;
+                    }
+
+                    if (effectPadding instanceof Array) {
+                        left += effectPadding[0];
+                        top += effectPadding[1];
+                        right += effectPadding[2];
+                        bottom += effectPadding[3];
+                    } else {
+                        left += effectPadding;
+                        top += effectPadding;
+                        right += effectPadding;
+                        bottom += effectPadding;
+                    }
+                }
+            }
+        }
+
         var bbox = source.expanded(left, top, right, bottom);
 
         // Due to pixel aligning, we may need extra half pixel in some cases
@@ -446,24 +539,48 @@
         } else if (change === IFNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
             for (var p = 0; p < propertySets.length; ++p) {
-                var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
-                if (propertySetInfo.visualProperties) {
-                    this.storeProperties(args, propertySetInfo.visualProperties, propertySetInfo.storeFilter);
-                }
-                if (propertySetInfo.geometryProperties) {
-                    this.storeProperties(propertySetInfo.geometryProperties, propertySetInfo.storeFilter);
+                var propertySet = propertySets[p];
+                if (propertySet === IFStylable.PropertySet.Effects) {
+                    if (this._effects) {
+                        args._eff = IFNode.store(this._effects);
+                    }
+                } else {
+                    var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+                    if (propertySetInfo.visualProperties) {
+                        this.storeProperties(args, propertySetInfo.visualProperties, propertySetInfo.storeFilter);
+                    }
+                    if (propertySetInfo.geometryProperties) {
+                        this.storeProperties(args, propertySetInfo.geometryProperties, propertySetInfo.storeFilter);
+                    }
                 }
             }
         } else if (change === IFNode._Change.Restore) {
             var propertySets = this.getStylePropertySets();
             for (var p = 0; p < propertySets.length; ++p) {
-                var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
-                if (propertySetInfo.visualProperties) {
-                    this.restoreProperties(args, propertySetInfo.visualProperties, propertySetInfo.restoreFilter);
+                var propertySet = propertySets[p];
+                if (propertySet === IFStylable.PropertySet.Effects) {
+                    if (args._eff) {
+                        this._effects = IFNode.restore(args._eff);
+                        this._effects._parent = this;
+                        this._effects._setScene(this._scene);
+                    }
+                } else {
+                    var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+                    if (propertySetInfo.visualProperties) {
+                        this.restoreProperties(args, propertySetInfo.visualProperties, propertySetInfo.restoreFilter);
+                    }
+                    if (propertySetInfo.geometryProperties) {
+                        this.restoreProperties(args, propertySetInfo.geometryProperties, propertySetInfo.restoreFilter);
+                    }
                 }
-                if (propertySetInfo.geometryProperties) {
-                    this.restoreProperties(propertySetInfo.geometryProperties, propertySetInfo.restoreFilter);
-                }
+            }
+        } else if (change === IFNode._Change.Attached) {
+            if (this._effects) {
+                this._effects._setScene(this._scene);
+            }
+        } else if (change === IFNode._Change.Detach) {
+            if (this._effects) {
+                this._effects._setScene(null);
             }
         }
     };
