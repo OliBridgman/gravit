@@ -9,6 +9,27 @@
     };
 
     /**
+     * The layer of a style
+     * @enum
+     */
+    IFStylable.Layer = {
+        /**
+         * Background Layer
+         */
+        Background: 'B',
+
+        /**
+         * Content Layer
+         */
+        Content: 'C',
+
+        /**
+         * Foreground Layer
+         */
+        Foreground: 'F'
+    };
+
+    /**
      * The property set of a style
      * @enum
      */

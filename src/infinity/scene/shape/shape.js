@@ -102,7 +102,7 @@
 
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFElement.Stylable.PaintLayer.Background) {
+        if (layer === IFStylable.Layer.Background) {
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
                 var canvas = context.canvas;
                 var fill = this._createFillPaint(canvas, this.getGeometryBBox());
@@ -118,7 +118,7 @@
                     }
                 }
             }
-        } else if (layer === IFElement.Stylable.PaintLayer.Content) {
+        } else if (layer === IFStylable.Layer.Content) {
             // TODO : Check intersection of children paintbbox and if it is
             // fully contained by this shape then don't clip
             // Paint our contents if any and clip 'em to ourself
@@ -145,7 +145,7 @@
                 context.canvas.finish();
                 context.canvas = oldContentsCanvas;
             }
-        } else if (layer === IFElement.Stylable.PaintLayer.Foreground) {
+        } else if (layer === IFStylable.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleBorder()) {
                 var canvas = context.canvas;
@@ -210,23 +210,24 @@
 
     /** @override */
     IFShape.prototype._isSeparateStylePaintLayer = function (context, layer) {
-        var result = IFElement.Stylable.prototype._isSeparateStylePaintLayer(context, layer);
-        if (!result) {
-            if (layer === IFElement.Stylable.PaintLayer.Foreground) {
-                var outline = context.configuration.isOutline(context);
-                if (!outline && this.hasStyleBorder()) {
-                    // If we're not having a center-aligned border then
-                    // we need a separate canvas here
-                    if (this.$_ba !== IFStylable.BorderAlignment.Center) {
-                        return true;
-                    }
+        var result = IFElement.Stylable.prototype._isSeparateStylePaintLayer.call(this, context, layer);
+        if (result) {
+            return true;
+        }
 
-                    // Having a scale of !== 0 always requires a separate canvas
-                    return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
+        if (layer === IFStylable.Layer.Foreground) {
+            var outline = context.configuration.isOutline(context);
+            if (!outline && this.hasStyleBorder()) {
+                // If we're not having a center-aligned border then
+                // we need a separate canvas here
+                if (this.$_ba !== IFStylable.BorderAlignment.Center) {
+                    return true;
                 }
+
+                // Having a scale of !== 0 always requires a separate canvas
+                return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
             }
         }
-        return false;
     };
 
     /** @override */

@@ -17,7 +17,7 @@
             rectangle.setProperty('trf', new IFTransform(w / 2, 0, 0, h / 2, x + w / 2, y + h / 2));
 
             rectangle.setProperty('_bpt', IFColor.BLACK);
-            rectangle.setProperty('_sbl', 'mask');
+            rectangle.setProperty('_bw', 10);
 
             layer.appendChild(rectangle);
         }

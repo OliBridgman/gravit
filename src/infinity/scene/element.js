@@ -260,31 +260,10 @@
     };
     IFObject.inherit(IFElement.Stylable, IFStylable);
 
-    /**
-     * The layer of a style rendering
-     * @enum
-     */
-    IFElement.Stylable.PaintLayer = {
-        /**
-         * Background Layer
-         */
-        Background: 'B',
-
-        /**
-         * Content Layer
-         */
-        Content: 'C',
-
-        /**
-         * Foreground Layer
-         */
-        Foreground: 'F'
-    };
-
     IFElement.Stylable._PAINT_LAYER_ORDER = [
-        IFElement.Stylable.PaintLayer.Background,
-        IFElement.Stylable.PaintLayer.Content,
-        IFElement.Stylable.PaintLayer.Foreground
+        IFStylable.Layer.Background,
+        IFStylable.Layer.Content,
+        IFStylable.Layer.Foreground
     ];
 
     /**
@@ -380,7 +359,7 @@
     /**
      * Called whenever this should paint a specific style layer
      * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFElement.Stylable.PaintLayer} layer the actual layer to be painted
+     * @param {IFStylable.Layer} layer the actual layer to be painted
      */
     IFElement.Stylable.prototype._paintStyleLayer = function (context, layer) {
         // NO-OP
@@ -389,7 +368,7 @@
     /**
      * Called to test whether a given style layer requires a separate canvas or not
      * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFElement.Stylable.PaintLayer} layer the actual layer to be painted
+     * @param {IFStylable.Layer} layer the actual layer to be painted
      * @return {Boolean} true if layer is separated, false if not
      */
     IFElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
