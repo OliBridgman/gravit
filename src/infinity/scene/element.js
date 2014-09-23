@@ -1257,15 +1257,6 @@
         this._requestInvalidateNode(this);
     };
 
-    /**
-     * Invalidate the geometry to enforce a re-calculation
-     * @private
-     */
-    IFElement.prototype._invalidateGeometry = function () {
-        this._geometryBBbox = null;
-        this._paintBBox = null;
-    };
-
     /** @override */
     IFElement.prototype._handleChange = function (change, args) {
         if (change == IFElement._Change.InvalidationRequest) {

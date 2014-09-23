@@ -90,6 +90,15 @@
     };
 
     /**
+     * Geometry Properties for effects
+     * @enum
+     */
+    IFStylable.GeometryFilterProperties = {
+        /** Blurs ({}) */
+        _eblr: null
+    };
+
+    /**
      * Visual Properties for a style fill
      * @enum
      */
