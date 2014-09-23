@@ -153,7 +153,6 @@
             var valuesToSet = [];
 
             var props = args.properties;
-            var vals = args.values;
 
             if (this.$uf) {
                 var newSVal = null;
@@ -167,13 +166,13 @@
                         var prop = prefix + '_sx';
                         var idx = props.indexOf(prop);
                         if (idx >= 0) {
-                            newSVal = vals[idx];
+                            newSVal = this['$' + prop];
                             sValAssigned = true;
                         } else {
                             var prop = prefix + '_sy';
                             var idx = props.indexOf(prop);
                             if (idx >= 0) {
-                                newSVal = vals[idx];
+                                newSVal = this['$' + prop];
                                 sValAssigned = true;
                             }
                         }
@@ -182,7 +181,7 @@
                         var prop = prefix + '_ct';
                         var idx = props.indexOf(prop);
                         if (idx >= 0) {
-                            newTVal = vals[idx];
+                            newTVal = this['$' + prop];
                             tValAssigned = true;
                         }
                     }
@@ -213,13 +212,13 @@
                         var prop = prefix + '_sx';
                         var idx = props.indexOf(prop);
                         if (idx >= 0) {
-                            newSVal = vals[idx];
+                            newSVal = this['$' + prop];
                             sValAssigned = true;
                         } else {
                             var prop = prefix + '_sy';
                             var idx = props.indexOf(prop);
                             if (idx >= 0) {
-                                newSVal = vals[idx];
+                                newSVal = this['$' + prop];
                                 sValAssigned = true;
                             }
                         }
