@@ -30,19 +30,6 @@
     };
 
     /**
-     * The property set of a style
-     * @enum
-     */
-    IFStylable.PropertySet = {
-        Style: 'S',
-        Effects: 'E',
-        Fill: 'F',
-        Border: 'B',
-        Text: 'T',
-        Paragraph: 'P'
-    };
-
-    /**
      * Alignment of a border
      * @enum
      */
@@ -96,125 +83,164 @@
     };
 
     /**
-     * Visual Properties for a style
+     * The property set of a style
      * @enum
      */
-    IFStylable.VisualStyleProperties = {
-        /** Internal default style marker */
-        _sdf: null,
-        /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
-        _sbl: IFPaintCanvas.BlendMode.Normal,
-        /** Fill Opacity (= w/o effects) */
-        _sfop: 1,
-        /** Opacity (= total opacity w/ effects) */
-        _stop: 1
+    IFStylable.PropertySet = {
+        Style: 'S',
+        Effects: 'E',
+        Fill: 'F',
+        Border: 'B',
+        Text: 'T',
+        Paragraph: 'P'
     };
 
-    /**
-     * Geometry Properties for effects
-     * @enum
-     */
-    IFStylable.GeometryFilterProperties = {
-        /** Blurs ({}) */
-        _eblr: null
+    IFStylable.PropertySetInfo = {
+        'S': {
+            visualProperties: {
+                /** Internal default style marker */
+                _sdf: null,
+                /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
+                _sbl: IFPaintCanvas.BlendMode.Normal,
+                /** Fill Opacity (= w/o effects) */
+                _sfop: 1,
+                /** Opacity (= total opacity w/ effects) */
+                _stop: 1
+            }
+        },
+        'E': {
+
+        },
+        'F': {
+            visualProperties: {
+                /** Fill pattern (IFPattern) */
+                _fpt: null,
+                /** Fill opacity */
+                _fop: 1,
+                /** Horizontal Fill translation (0..1) % */
+                _ftx: 0,
+                /** Vertical Fill translation (0..1) % */
+                _fty: 0,
+                /** Horizontal Fill Scalation (0..1) % */
+                _fsx: 1,
+                /** Vertical Fill Scalation (0..1) % */
+                _fsy: 1,
+                /** Fill Rotation in radians */
+                _frt: 0
+            },
+            storeFilter: function (property, value) {
+                if (value) {
+                    if (property === '_fpt') {
+                        return IFPattern.asString(value);
+                    }
+                }
+                return value;
+            },
+            restoreFilter: function (property, value) {
+                if (value) {
+                    if (property === '_fpt') {
+                        return IFPattern.parsePattern(value);
+                    }
+                }
+                return value;
+            }
+        },
+        'B': {
+            visualProperties: {
+                /** Border opacity */
+                _bop: 1,
+                /** Horizontal Border translation (0..1) % */
+                _btx: 0,
+                /** Vertical Border translation (0..1) % */
+                _bty: 0,
+                /** Horizontal Border Scalation (0..1) % */
+                _bsx: 1,
+                /** Vertical Border Scalation (0..1) % */
+                _bsy: 1,
+                /** Border Rotation in radians */
+                _brt: 0
+            },
+            geometryProperties: {
+                /** Border pattern (IFPattern) */
+                _bpt: null,
+                /** Border Width */
+                _bw: 1,
+                /** Border Alignment */
+                _ba: IFStylable.BorderAlignment.Center,
+                /** Line-Caption */
+                _blc: IFPaintCanvas.LineCap.Square,
+                /** Line-Join */
+                _blj: IFPaintCanvas.LineJoin.Miter,
+                /** Miter-Limit */
+                _bml: 3
+            },
+            storeFilter: function (property, value) {
+                if (value) {
+                    if (property === '_bpt') {
+                        return IFPattern.asString(value);
+                    }
+                }
+                return value;
+            },
+            restoreFilter: function (property, value) {
+                if (value) {
+                    if (property === '_bpt') {
+                        return IFPattern.parsePattern(value);
+                    }
+                }
+                return value;
+            }
+        },
+        'T': {
+            geometryProperties: {
+                /** The font family */
+                _tff: 'Open Sans',
+                /** The font size */
+                _tfi: 20,
+                /** The font-weight (IFFont.Weight) */
+                _tfw: IFFont.Weight.Regular,
+                /** The font-style (IFFont.Style) */
+                _tfs: IFFont.Style.Normal,
+                /** The character spacing */
+                _tcs: null,
+                /** The word spacing */
+                _tws: null
+            }
+        },
+        'P': {
+            geometryProperties: {
+                /** Column count */
+                _pcc: null,
+                /** Column gap */
+                _pcg: null,
+                /** Wrap-Mode of a paragraph (IFStylable.ParagraphWrapMode) */
+                _pwm: IFStylable.ParagraphWrapMode.Words,
+                /** The paragraph's alignment (IFStylable.ParagraphAlignment) */
+                _pal: null,
+                /** The first line intendation */
+                _pin: null,
+                /** The line height whereas 1 = 100% */
+                _plh: 1
+            }
+        }
     };
 
-    /**
-     * Visual Properties for a style fill
-     * @enum
-     */
-    IFStylable.VisualFillProperties = {
-        /** Fill pattern (IFPattern) */
-        _fpt: null,
-        /** Fill opacity */
-        _fop: 1,
-        /** Horizontal Fill translation (0..1) % */
-        _ftx: 0,
-        /** Vertical Fill translation (0..1) % */
-        _fty: 0,
-        /** Horizontal Fill Scalation (0..1) % */
-        _fsx: 1,
-        /** Vertical Fill Scalation (0..1) % */
-        _fsy: 1,
-        /** Fill Rotation in radians */
-        _frt: 0
-    };
+    IFStylable.AllVisualProperties = {};
+    IFStylable.AllGeometryProperties = {};
 
-    /**
-     * Visual Properties for a style border
-     * @enum
-     */
-    IFStylable.VisualBorderProperties = {
-        /** Border opacity */
-        _bop: 1,
-        /** Horizontal Border translation (0..1) % */
-        _btx: 0,
-        /** Vertical Border translation (0..1) % */
-        _bty: 0,
-        /** Horizontal Border Scalation (0..1) % */
-        _bsx: 1,
-        /** Vertical Border Scalation (0..1) % */
-        _bsy: 1,
-        /** Border Rotation in radians */
-        _brt: 0
-    };
-
-    /**
-     * Geometry Properties for a style border
-     * @enum
-     */
-    IFStylable.GeometryBorderProperties = {
-        /** Border pattern (IFPattern) */
-        _bpt: null,
-        /** Border Width */
-        _bw: 1,
-        /** Border Alignment */
-        _ba: IFStylable.BorderAlignment.Center,
-        /** Line-Caption */
-        _blc: IFPaintCanvas.LineCap.Square,
-        /** Line-Join */
-        _blj: IFPaintCanvas.LineJoin.Miter,
-        /** Miter-Limit */
-        _bml: 3
-    };
-
-    /**
-     * Geometry Properties for a style text
-     * @enum
-     */
-    IFStylable.GeometryTextProperties = {
-        /** The font family */
-        _tff: 'Open Sans',
-        /** The font size */
-        _tfi: 20,
-        /** The font-weight (IFFont.Weight) */
-        _tfw: IFFont.Weight.Regular,
-        /** The font-style (IFFont.Style) */
-        _tfs: IFFont.Style.Normal,
-        /** The character spacing */
-        _tcs: null,
-        /** The word spacing */
-        _tws: null
-    };
-
-    /**
-     * Geometry Properties for a style paragraph
-     * @enum
-     */
-    IFStylable.GeometryParagraphProperties = {
-        /** Column count */
-        _pcc: null,
-        /** Column gap */
-        _pcg: null,
-        /** Wrap-Mode of a paragraph (IFStylable.ParagraphWrapMode) */
-        _pwm: IFStylable.ParagraphWrapMode.Words,
-        /** The paragraph's alignment (IFStylable.ParagraphAlignment) */
-        _pal: null,
-        /** The first line intendation */
-        _pin: null,
-        /** The line height whereas 1 = 100% */
-        _plh: 1
-    };
+    for (var propertySet in IFStylable.PropertySetInfo) {
+        var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+        if (propertySetInfo.visualProperties) {
+            for (var property in propertySetInfo.visualProperties) {
+                IFStylable.AllVisualProperties[property] = propertySetInfo.visualProperties[property];
+            }
+        }
+        if (propertySetInfo.geometryProperties) {
+            for (var property in propertySetInfo.geometryProperties) {
+                IFStylable.AllGeometryProperties[property] = propertySetInfo.geometryProperties[property];
+            }
+        }
+    }
 
     /**
      * The property-sets this stylable supports
@@ -252,32 +278,19 @@
         }
 
         if (unionPS.length > 0) {
-            var propertySets = [];
-            for (var i = 0; i < unionPS.length; ++i) {
-                switch (unionPS[i]) {
-                    case IFStylable.PropertySet.Style:
-                        propertySets.push(IFStylable.VisualStyleProperties);
-                        break;
-                    case IFStylable.PropertySet.Fill:
-                        propertySets.push(IFStylable.VisualFillProperties);
-                        break;
-                    case IFStylable.PropertySet.Border:
-                        propertySets.push(IFStylable.VisualBorderProperties);
-                        propertySets.push(IFStylable.GeometryBorderProperties);
-                        break;
-                    case IFStylable.PropertySet.Text:
-                        propertySets.push(IFStylable.GeometryTextProperties);
-                        break;
-                    case IFStylable.PropertySet.Paragraph:
-                        propertySets.push(IFStylable.GeometryParagraphProperties);
-                        break;
-                }
-            }
-
             var sourceProperties = [];
-            for (var p = 0; p < propertySets.length; ++p) {
-                var propertySet = propertySets[p];
-                for (var property in propertySet) {
+            for (var p = 0; p < unionPS.length; ++p) {
+                var propertySetInfo = IFStylable.PropertySetInfo[unionPS[p]];
+                var properties = [];
+                if (propertySetInfo.visualProperties) {
+                    properties = properties.concat(Object.keys(propertySetInfo.visualProperties));
+                }
+                if (propertySetInfo.geometryProperties) {
+                    properties = properties.concat(Object.keys(propertySetInfo.geometryProperties));
+                }
+
+                for (var i = 0; i < properties.length; ++i) {
+                    var property = properties[i];
                     var addProperty = true;
 
                     if (diffProperties) {
@@ -388,25 +401,14 @@
      */
     IFStylable.prototype._setStyleDefaultProperties = function () {
         var propertySets = this.getStylePropertySets();
-
-        if (propertySets.indexOf(IFStylable.PropertySet.Style) >= 0) {
-            this._setDefaultProperties(IFStylable.VisualStyleProperties);
-        }
-
-        if (propertySets.indexOf(IFStylable.PropertySet.Fill) >= 0) {
-            this._setDefaultProperties(IFStylable.VisualFillProperties);
-        }
-
-        if (propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
-            this._setDefaultProperties(IFStylable.VisualBorderProperties, IFStylable.GeometryBorderProperties);
-        }
-
-        if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0) {
-            this._setDefaultProperties(IFStylable.GeometryTextProperties);
-        }
-
-        if (propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0) {
-            this._setDefaultProperties(IFStylable.GeometryParagraphProperties);
+        for (var p = 0; p < propertySets.length; ++p) {
+            var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
+            if (propertySetInfo.visualProperties) {
+                this._setDefaultProperties(propertySetInfo.visualProperties);
+            }
+            if (propertySetInfo.geometryProperties) {
+                this._setDefaultProperties(propertySetInfo.geometryProperties);
+            }
         }
     };
 
@@ -416,99 +418,52 @@
      * @param {*} args
      */
     IFStylable.prototype._handleStyleChange = function (change, args) {
-        if (change === IFNode._Change.BeforePropertiesChange) {
-            var propertySets = this.getStylePropertySets();
-            if ((propertySets.indexOf(IFStylable.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryBorderProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryTextProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryParagraphProperties))) {
-                this._stylePrepareGeometryChange();
+        if (change === IFNode._Change.BeforePropertiesChange || change === IFNode._Change.AfterPropertiesChange) {
+            var visualChange = false;
+            var geometryChange = false;
+            for (var i = 0; i < args.properties.length; ++i) {
+                var property = args.properties[i];
+                if (IFStylable.AllGeometryProperties.hasOwnProperty(property)) {
+                    geometryChange = true;
+                    if (change === IFNode._Change.BeforePropertiesChange) {
+                        this._stylePrepareGeometryChange();
+                    } else {
+                        this._styleFinishGeometryChange();
+                        this._stylePropertiesUpdated(args.properties, args.values);
+                    }
+                    break;
+                } else if (IFStylable.AllVisualProperties.hasOwnProperty(property)) {
+                    if (change === IFNode._Change.AfterPropertiesChange) {
+                        visualChange = true;
+                    }
+                }
             }
-        } else if (change === IFNode._Change.AfterPropertiesChange) {
-            var propertySets = this.getStylePropertySets();
-            if ((propertySets.indexOf(IFStylable.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryBorderProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryTextProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.GeometryParagraphProperties))) {
-                this._styleFinishGeometryChange();
-                this._stylePropertiesUpdated(args.properties, args.values);
-            } else if ((propertySets.indexOf(IFStylable.PropertySet.Style) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.VisualStyleProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Fill) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.VisualFillProperties)) ||
-                (propertySets.indexOf(IFStylable.PropertySet.Border) >= 0 && ifUtil.containsObjectKey(args.properties, IFStylable.VisualBorderProperties))) {
+
+            if (!geometryChange && visualChange) {
                 this._styleRepaint();
                 this._stylePropertiesUpdated(args.properties, args.values);
             }
         } else if (change === IFNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Style) >= 0) {
-                this.storeProperties(args, IFStylable.VisualStyleProperties);
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Fill) >= 0) {
-                this.storeProperties(args, IFStylable.VisualFillProperties, function (property, value) {
-                    if (value) {
-                        if (property === '_fpt') {
-                            return IFPattern.asString(value);
-                        }
-                    }
-                    return value;
-                });
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
-                this.storeProperties(args, IFStylable.VisualBorderProperties);
-                this.storeProperties(args, IFStylable.GeometryBorderProperties, function (property, value) {
-                    if (value) {
-                        if (property === '_bpt') {
-                            return IFPattern.asString(value);
-                        }
-                    }
-                    return value;
-                });
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0) {
-                this.storeProperties(args, IFStylable.GeometryTextProperties);
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0) {
-                this.storeProperties(args, IFStylable.GeometryParagraphProperties);
+            for (var p = 0; p < propertySets.length; ++p) {
+                var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
+                if (propertySetInfo.visualProperties) {
+                    this.storeProperties(args, propertySetInfo.visualProperties, propertySetInfo.storeFilter);
+                }
+                if (propertySetInfo.geometryProperties) {
+                    this.storeProperties(propertySetInfo.geometryProperties, propertySetInfo.storeFilter);
+                }
             }
         } else if (change === IFNode._Change.Restore) {
             var propertySets = this.getStylePropertySets();
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Style) >= 0) {
-                this.restoreProperties(args, IFStylable.VisualStyleProperties);
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Fill) >= 0) {
-                this.restoreProperties(args, IFStylable.VisualFillProperties, function (property, value) {
-                    if (value) {
-                        if (property === '_fpt') {
-                            return IFPattern.parsePattern(value);
-                        }
-                    }
-                    return value;
-                });
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
-                this.restoreProperties(args, IFStylable.VisualBorderProperties);
-                this.restoreProperties(args, IFStylable.GeometryBorderProperties, function (property, value) {
-                    if (value) {
-                        if (property === '_bpt') {
-                            return IFPattern.parsePattern(value);
-                        }
-                    }
-                    return value;
-                });
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0) {
-                this.restoreProperties(args, IFStylable.GeometryTextProperties);
-            }
-
-            if (propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0) {
-                this.restoreProperties(args, IFStylable.GeometryParagraphProperties);
+            for (var p = 0; p < propertySets.length; ++p) {
+                var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
+                if (propertySetInfo.visualProperties) {
+                    this.restoreProperties(args, propertySetInfo.visualProperties, propertySetInfo.restoreFilter);
+                }
+                if (propertySetInfo.geometryProperties) {
+                    this.restoreProperties(propertySetInfo.geometryProperties, propertySetInfo.restoreFilter);
+                }
             }
         }
     };

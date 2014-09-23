@@ -272,14 +272,14 @@
      * @returns {{}}
      */
     IFText.Block.prototype.propertiesToCss = function (css) {
-        return this._propertiesToCss(css, IFStylable.GeometryTextProperties, IFText.Block.propertyToCss);
+        return this._propertiesToCss(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.propertyToCss);
     };
 
     /**
      * @param {{}} css
      */
     IFText.Block.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFStylable.GeometryTextProperties, IFText.Block.cssToProperty);
+        this._cssToProperties(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.cssToProperty);
     };
 
     IFText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
@@ -463,7 +463,7 @@
 
     /** @override */
     IFText.Paragraph.prototype.propertiesToCss = function (css) {
-        this._propertiesToCss(css, IFStylable.GeometryParagraphProperties, IFText.Paragraph.propertyToCss);
+        this._propertiesToCss(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.propertyToCss);
         return IFText.Block.prototype.propertiesToCss.call(this, css);
     };
 
@@ -471,7 +471,7 @@
      * @param {{}} css
      */
     IFText.Paragraph.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFStylable.GeometryParagraphProperties, IFText.Paragraph.cssToProperty);
+        this._cssToProperties(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.cssToProperty);
         IFText.Block.prototype.cssToProperties.call(this, css);
     };
 
@@ -510,8 +510,8 @@
             }
 
             // Call property convert with our text as property source
-            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.GeometryTextProperties, IFText.Block.propertyToCss);
-            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.GeometryParagraphProperties, IFText.Paragraph.propertyToCss);
+            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.propertyToCss);
+            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.propertyToCss);
         }
 
         return css;
@@ -651,7 +651,7 @@
         if (transform && !transform.isIdentity()) {
             this.setProperties(['trf', 'ttrf'],
                 [this.$trf ? this.$trf.multiplied(transform) : transform,
-                this.$ttrf ? this.$ttrf.multiplied(transform) : transform]);
+                    this.$ttrf ? this.$ttrf.multiplied(transform) : transform]);
         }
         IFElement.Transform.prototype._transformChildren.call(this, transform);
     };
@@ -691,18 +691,18 @@
                 var maxty = null;
                 var minby = null;
                 if (tl.getX() < br.getX() && tl.getX() < tr.getX() &&
-                        bl.getX() < br.getX() && bl.getX() < tr.getX()) {
+                    bl.getX() < br.getX() && bl.getX() < tr.getX()) {
 
                     maxlx = tl.getX() >= bl.getX() ? tl.getX() : bl.getX();
                     minrx = br.getX() <= tr.getX() ? br.getX() : tr.getX();
                 } else if (tl.getX() > br.getX() && tl.getX() > tr.getX() &&
-                        bl.getX() > br.getX() && bl.getX() > tr.getX()) {
+                    bl.getX() > br.getX() && bl.getX() > tr.getX()) {
 
                     minrx = tl.getX() <= bl.getX() ? tl.getX() : bl.getX();
                     maxlx = br.getX() >= tr.getX() ? br.getX() : tr.getX();
                 }
                 if (tl.getY() < bl.getY() && tl.getY() < br.getY() &&
-                        tr.getY() < bl.getY() && tr.getY() < br.getY()) {
+                    tr.getY() < bl.getY() && tr.getY() < br.getY()) {
 
                     maxty = tl.getY() >= tr.getY() ? tl.getY() : tr.getY();
                     minby = bl.getY() <= br.getY() ? bl.getY() : br.getY();
@@ -713,7 +713,7 @@
                     maxty = bl.getY() >= br.getY() ? bl.getY() : br.getY();
                 }
 
-                if (maxlx !== null && minrx !== null && maxty !== null && minby!== null) {
+                if (maxlx !== null && minrx !== null && maxty !== null && minby !== null) {
                     textBoxOrig = new IFRect.fromPoints(new IFPoint(maxlx, maxty), new IFPoint(minrx, minby));
                 } else {
                     textBoxOrig = null;
@@ -747,7 +747,7 @@
                     var char = textContent[0];
 
                     // Ignore zero height/width, spaces and binary chars
-                    if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
+                    if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
                         return;
                     }
 

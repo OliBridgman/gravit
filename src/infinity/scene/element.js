@@ -282,14 +282,6 @@
         return this.isAttached() && this.$sref ? this.getScene().getReference(this.$sref) : null;
     };
 
-    /** @override */
-    IFElement.Stylable.prototype.assignStyleFrom = function (source, diffProperties) {
-        if (source.hasMixin(IFElement.Stylable)) {
-            this.setProperty('sref', source.getProperty('sref'));
-        }
-        IFStylable.prototype.assignStyleFrom.call(this, source, diffProperties);
-    };
-
     /**
      * Called to paint with style
      * @param {IFPaintContext} context the context to be used for drawing
