@@ -823,10 +823,12 @@
     /**
      * Function to fill the whole canvas with a given fill.
      * @param {*} [fill] the fill, defaults to full opaque black
+     * @param {Number} [opacity] optional opacity to use for filling
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.fillCanvas = function (fill) {
+    IFPaintCanvas.prototype.fillCanvas = function (fill, opacity, cmpOrBlend) {
         var fillRect = this.getTransform(false).inverted().mapRect(new IFRect(0, 0, this.getWidth(), this.getHeight()));
-        this.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill);
+        this.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill, opacity, cmpOrBlend);
     };
 
     /**
@@ -840,10 +842,11 @@
      * @param {Number} height height of rectangle
      * @param {*} [fill] the fill, defaults to full opaque black
      * @param {Number} [opacity] optional opacity to use for filling
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity) {
+    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity, cmpOrBlend) {
         fill = this._convertStyle(fill ? fill : IFColor.BLACK);
-        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
@@ -861,11 +864,12 @@
      * @param {Number} [strokeWidth] the width of the stroke, defaults to 1.0
      * @param {Number} [stroke] the stroke, defaults to full opaque black
      * @param {Number} [opacity] optional opacity to use for stroking
+     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity) {
+    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity, cmpOrBlend) {
         stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
-        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;

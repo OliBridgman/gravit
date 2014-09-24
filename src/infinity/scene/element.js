@@ -260,12 +260,6 @@
     };
     IFObject.inherit(IFElement.Stylable, IFStylable);
 
-    IFElement.Stylable._PAINT_LAYER_ORDER = [
-        IFStylable.Layer.Background,
-        IFStylable.Layer.Content,
-        IFStylable.Layer.Foreground
-    ];
-
     /**
      * Geometry properties
      */
@@ -289,23 +283,33 @@
      */
     IFElement.Stylable.prototype._paintStyle = function (context, contentPaintBBox) {
         if (context.configuration.isOutline(context)) {
-            this._paintStyleLayers(context, contentPaintBBox);
+            this._paintStyleFillLayer(context, contentPaintBBox);
         } else if (this.$_stop > 0.0) {
-            var effects = this._effects ? this._effects.byLayer(null, true) : null;
+            var orderedEffects = this._effects ? this._effects.getLayersEffects(true) : null;
 
-            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal || effects) {
+            // If we have any pre- or post-effect then we'll be creating an effect canvas here
+            // to be re-used by every effect renderer
+            var effectCanvas = null;
+            if (orderedEffects) {
+                for (var i = 0; i < orderedEffects.length; ++i) {
+                    if (orderedEffects[i]) {
+                        for (var j = 0; j < orderedEffects[i].length; ++j) {
+                            var effectType = orderedEffects[i][j].getEffectType();
+                            if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
+                                effectCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal) {
                 // We need to paint on a separate canvas here
                 var sourceCanvas = context.canvas;
                 var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
                 context.canvas = styleCanvas;
                 try {
-                    this._paintStyleLayers(context, contentPaintBBox);
-
-                    if (effects) {
-                        for (var e = 0; e < effects.length; ++e) {
-                            effects[e].render(context);
-                        }
-                    }
+                    this._paintStyleFillLayer(context, contentPaintBBox, orderedEffects, effectCanvas);
 
                     if (this.$_sbl === 'mask') {
                         var area = this._getStyleMaskClipArea();
@@ -328,41 +332,78 @@
                     context.canvas = sourceCanvas;
                 }
             } else {
-                this._paintStyleLayers(context, contentPaintBBox);
+                this._paintStyleFillLayer(context, contentPaintBBox, orderedEffects, effectCanvas);
             }
         }
     };
 
     /**
-     * Called to paint the style layers
+     * Called to paint the fill layer
      * @param {IFPaintContext} context the context to be used for drawing
      * @param {IFRect} contentPaintBBox the source bbox used for drawing
+     * @param {Array} orderedEffects the ordered effects for all layers
+     * @param {IFPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
      */
-    IFElement.Stylable.prototype._paintStyleLayers = function (context, contentPaintBBox) {
+    IFElement.Stylable.prototype._paintStyleFillLayer = function (context, contentPaintBBox, orderedEffects, effectCanvas) {
+        if (context.configuration.isOutline(context)) {
+            this._paintStyleContentLayers(context, contentPaintBBox, orderedEffects, effectCanvas);
+        } else {
+            var fillEffects = orderedEffects ? orderedEffects[IFStylable.LAYER_ORDER.length] : null;
+            if (this.$_sfop !== 1.0 || fillEffects) {
+                // We need to paint on a separate canvas here
+                var sourceCanvas = context.canvas;
+                var fillCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                context.canvas = fillCanvas;
+                try {
+                    this._paintStyleContentLayers(context, contentPaintBBox, orderedEffects, effectCanvas);
+
+                    if (fillEffects) {
+                        this._paintWithEffects(fillCanvas, sourceCanvas, this.$_sfop, fillEffects, effectCanvas);
+                    } else {
+                        sourceCanvas.drawCanvas(fillCanvas, 0, 0, this.$_sfop);
+                    }
+
+                    fillCanvas.finish();
+                } finally {
+                    context.canvas = sourceCanvas;
+                }
+            } else if (this.$_sfop > 0.0) {
+                this._paintStyleContentLayers(context, contentPaintBBox, orderedEffects, effectCanvas);
+            }
+        }
+    };
+
+    /**
+     * Called to paint the content layers
+     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {IFRect} contentPaintBBox the source bbox used for drawing
+     * @param {Array} orderedEffects the ordered effects for all layers
+     * @param {IFPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
+     */
+    IFElement.Stylable.prototype._paintStyleContentLayers = function (context, contentPaintBBox, orderedEffects, effectCanvas) {
         var outlined = context.configuration.isOutline(context);
-        for (var i = 0; i < IFElement.Stylable._PAINT_LAYER_ORDER.length; ++i) {
-            var layer = IFElement.Stylable._PAINT_LAYER_ORDER[i];
+        for (var i = 0; i < IFStylable.LAYER_ORDER.length; ++i) {
+            var layer = IFStylable.LAYER_ORDER[i];
 
             if (outlined) {
                 this._paintStyleLayer(context, layer);
             } else {
-                var effects = this._effects ? this._effects.byLayer(layer, true) : null;
+                var effects = orderedEffects ? orderedEffects[IFStylable.LAYER_ORDER.indexOf(layer)] : null;
 
                 if (effects || this._isSeparateStylePaintLayer(context, layer)) {
                     var sourceCanvas = context.canvas;
-                    var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
-                    context.canvas = styleCanvas;
+                    var layerCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                    context.canvas = layerCanvas;
                     try {
                         this._paintStyleLayer(context, layer);
 
                         if (effects) {
-                            for (var e = 0; e < effects.length; ++e) {
-                                effects[e].render(context);
-                            }
+                            this._paintWithEffects(layerCanvas, sourceCanvas, 1, effects, effectCanvas);
+                        } else {
+                            sourceCanvas.drawCanvas(layerCanvas);
                         }
 
-                        sourceCanvas.drawCanvas(styleCanvas);
-                        styleCanvas.finish();
+                        layerCanvas.finish();
                     } finally {
                         context.canvas = sourceCanvas;
                     }
@@ -370,6 +411,56 @@
                     this._paintStyleLayer(context, layer);
                 }
             }
+        }
+    };
+
+    /**
+     * Called to paint and composite effects and contents onto a target
+     * @param {IFPaintCanvas} contents the canvas holding the contents
+     * @param {IFPaintCanvas} target the target canvas for compositing everything
+     * @param {Number} targetOpacity the opacity for painting the contents onto the target
+     * @param {Array<IFEffect>} effects the effects to paint
+     * @param {IFPaintCanvas} effectCanvas the effect canvas if there're any pre/post-effects
+     * @private
+     */
+    IFElement.Stylable.prototype._paintWithEffects = function (contents, target, targetOpacity, effects, effectCanvas) {
+        var filterContents = contents;
+        var paintedContents = false;
+
+        for (var i = 0; i < effects.length; ++i) {
+            var effect = effects[i];
+            var effectType = effect.getEffectType();
+
+            if (effectType === IFEffect.Type.Filter) {
+                effect.render(filterContents, null, filterContents.getScale());
+            } else if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
+                if (effectType === IFEffect.Type.PostEffect && !paintedContents && targetOpacity > 0.0) {
+                    target.drawCanvas(contents, 0, 0, targetOpacity);
+                    paintedContents = true;
+                }
+
+                // Clear previous effect contents
+                effectCanvas.clear();
+
+                // Render effect on effects canvas
+                var effectResult = effect.render(contents, effectCanvas, effectCanvas.getScale());
+                var effectBlendType = IFPaintCanvas.BlendMode.Normal;
+
+                // Post effects may return a custom blend mode
+                if (effectType === IFEffect.Type.PostEffect && effectResult) {
+                    effectBlendType = effectResult;
+                }
+
+                // Render effects canvas on target
+                target.drawCanvas(effectCanvas, 0, 0, effectBlendType);
+
+                // Make target new filter contents
+                filterContents = target;
+            }
+        }
+
+        if (!paintedContents && targetOpacity > 0.0) {
+            target.drawCanvas(contents, 0, 0, targetOpacity);
         }
     };
 

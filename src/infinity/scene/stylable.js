@@ -35,6 +35,12 @@
         Foreground: 'F'
     };
 
+    IFStylable.LAYER_ORDER = [
+        IFStylable.Layer.Background,
+        IFStylable.Layer.Content,
+        IFStylable.Layer.Foreground
+    ];
+
     /**
      * Alignment of a border
      * @enum
@@ -272,7 +278,29 @@
     };
     IFNode.inheritAndMix('effects', IFStylable.Effects, IFNode, [IFNode.Container, IFNode.Store]);
 
-    IFStylable.Effects.prototype.byLayer = function (layer, visibleOnly) {
+    /**
+     * Returns an ordered list of effects for each layer. For the order see IFStylable.LAYER_ORDER
+     * whereas the null layer is IFStylable.LAYER_ORDER.length
+     * @param {Boolean} [visibleOnly] if set, only visible effects will be returned.
+     * @returns {Array} array keeping an ordered list of layers and their effects
+     * array or null if there're no effects for that layer. The last layer is the "null" layer.
+     */
+    IFStylable.Effects.prototype.getLayersEffects = function (visibleOnly) {
+        var result = [];
+        for (var pl = 0; pl <= IFStylable.LAYER_ORDER.length; ++pl) {
+            var layer = pl < IFStylable.LAYER_ORDER.length ? IFStylable.LAYER_ORDER[pl] : null;
+            result.push(this.getEffectsForLayer(layer, visibleOnly));
+        }
+        return result;
+    };
+
+    /**
+     * Returns all effects for a given layer
+     * @param {IFStylable.Layer} layer
+     * @param {Boolean} [visibleOnly] if set, only visible effects will be returned.
+     * @returns {Array<IFEffect>} an array of effects or null if there're no effects
+     */
+    IFStylable.Effects.prototype.getEffectsForLayer = function (layer, visibleOnly) {
         var result = null;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
             if (child instanceof IFEffect) {
@@ -290,6 +318,23 @@
             }
         }
         return result;
+    };
+
+    IFStylable.Effects.prototype.insertChild = function (child, reference) {
+        if (child instanceof IFEffect && child.getEffectType() === IFEffect.Type.PreEffect) {
+            for (var prev = reference ? reference : this.getLastChild(); prev !== null; prev = prev.getPrevious()) {
+                if (prev instanceof IFEffect) {
+                    if (prev.getEffectType() === IFEffect.Type.PreEffect) {
+                        reference = prev.getNext();
+                        break;
+                    } else if (prev.getEffectType() === IFEffect.Type.PostEffect) {
+                        reference = prev;
+                    }
+                }
+            }
+        }
+
+        IFNode.Container.prototype.insertChild.call(this, child, reference);
     };
 
     // --------------------------------------------------------------------------------------------
@@ -425,50 +470,130 @@
     IFStylable.prototype.getStyleBBox = function (source, miterLimitApproximation) {
         var propertySets = this.getStylePropertySets();
 
-        var left = 0;
-        var top = 0;
-        var right = 0;
-        var bottom = 0;
+        var layerPaddings = [];
+        var layerEffects = this._effects ? this._effects.getLayersEffects(true) : null;
 
-        // Add border to paddings
-        if (this.hasStyleBorder() && propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
-            var borderPadding = this.getStyleBorderPadding();
-            if (borderPadding) {
-                if (miterLimitApproximation && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
-                    borderPadding *= this.$_bml;
+        for (var pl = 0; pl <= IFStylable.LAYER_ORDER.length; ++pl) {
+            // Paint layer may be null defining our total layer
+            var paintLayer = pl < IFStylable.LAYER_ORDER.length ? IFStylable.LAYER_ORDER[pl] : null;
+            var padding = [0, 0, 0, 0];
+
+            if (IFStylable.Layer.Foreground === paintLayer && this.hasStyleBorder() && propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
+                var borderPadding = this.getStyleBorderPadding();
+                if (borderPadding) {
+                    if (miterLimitApproximation && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
+                        borderPadding *= this.$_bml;
+                    }
+
+                    padding = [
+                        padding[0] + borderPadding,
+                        padding[1] + borderPadding,
+                        padding[2] + borderPadding,
+                        padding[3] + borderPadding
+                    ];
                 }
-
-                left += borderPadding;
-                top += borderPadding;
-                right += borderPadding;
-                bottom += borderPadding;
             }
-        }
 
-        if (this._effects) {
-            for (var child = this._effects.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFEffect) {
-                    var effectPadding = child.getEffectPadding();
-                    if (!effectPadding) {
+            if (layerEffects && layerEffects[pl] !== null) {
+                var effects = layerEffects[pl];
+                var effectPadding = [0, 0, 0, 0];
+                var approxEffectPadding = [0, 0, 0, 0];
+                var lastEffect = null;
+
+                for (var ef = 0; ef < effects.length; ++ef) {
+                    var effect = effects[ef];
+                    var currEffectPadding = effect.getEffectPadding();
+                    if (!currEffectPadding) {
                         continue;
                     }
 
-                    if (effectPadding instanceof Array) {
-                        left += effectPadding[0];
-                        top += effectPadding[1];
-                        right += effectPadding[2];
-                        bottom += effectPadding[3];
-                    } else {
-                        left += effectPadding;
-                        top += effectPadding;
-                        right += effectPadding;
-                        bottom += effectPadding;
+                    if (!(currEffectPadding instanceof Array)) {
+                        currEffectPadding = [currEffectPadding, currEffectPadding, currEffectPadding, currEffectPadding];
                     }
+
+                    switch (effect.getEffectType()) {
+                        case IFEffect.Type.PreEffect:
+                        case IFEffect.Type.PostEffect:
+                            // Effects approximate
+                            approxEffectPadding = [
+                                Math.max(approxEffectPadding[0], currEffectPadding[0]),
+                                Math.max(approxEffectPadding[1], currEffectPadding[1]),
+                                Math.max(approxEffectPadding[2], currEffectPadding[2]),
+                                Math.max(approxEffectPadding[3], currEffectPadding[3])
+                            ];
+                            break;
+
+                        case IFEffect.Type.Filter:
+                            // If we had a non-filter effect before this one then
+                            // add the approximated sum before our filter padding
+                            if (lastEffect && lastEffect.getEffectType() !== IFEffect.Type.Filter) {
+                                effectPadding = [
+                                    effectPadding[0] + approxEffectPadding[0],
+                                    effectPadding[1] + approxEffectPadding[1],
+                                    effectPadding[2] + approxEffectPadding[2],
+                                    effectPadding[3] + approxEffectPadding[3]
+                                ];
+                                approxEffectPadding = [0, 0, 0, 0];
+                            }
+
+                            // Filters sum up
+                            effectPadding = [
+                                effectPadding[0] + currEffectPadding[0],
+                                effectPadding[1] + currEffectPadding[1],
+                                effectPadding[2] + currEffectPadding[2],
+                                effectPadding[3] + currEffectPadding[3]
+                            ];
+                            break;
+                    }
+
+                    lastEffect = effect;
                 }
+
+                // If we had a non-filter effect as last one then
+                // add the approximated sum to our effect paddings
+                if (lastEffect && lastEffect.getEffectType() !== IFEffect.Type.Filter) {
+                    effectPadding = [
+                        effectPadding[0] + approxEffectPadding[0],
+                        effectPadding[1] + approxEffectPadding[1],
+                        effectPadding[2] + approxEffectPadding[2],
+                        effectPadding[3] + approxEffectPadding[3]
+                    ];
+                }
+
+                padding = [
+                    padding[0] + effectPadding[0],
+                    padding[1] + effectPadding[1],
+                    padding[2] + effectPadding[2],
+                    padding[3] + effectPadding[3]
+                ];
             }
+
+            layerPaddings.push(padding);
         }
 
-        var bbox = source.expanded(left, top, right, bottom);
+        // Calculate the total padding which takes the largest padding of
+        // each layer and then sums up the "total" (null) layer's padding on top
+        var totalPadding = [0, 0, 0, 0];
+
+        for (var pl = 0; pl < IFStylable.LAYER_ORDER.length; ++pl) {
+            totalPadding = [
+                Math.max(totalPadding[0], layerPaddings[pl][0]),
+                Math.max(totalPadding[1], layerPaddings[pl][1]),
+                Math.max(totalPadding[2], layerPaddings[pl][2]),
+                Math.max(totalPadding[3], layerPaddings[pl][3])
+            ];
+        }
+
+        // Sum up our fill layer paddings
+        totalPadding = [
+            totalPadding[0] + layerPaddings[IFStylable.LAYER_ORDER.length][0],
+            totalPadding[1] + layerPaddings[IFStylable.LAYER_ORDER.length][1],
+            totalPadding[2] + layerPaddings[IFStylable.LAYER_ORDER.length][2],
+            totalPadding[3] + layerPaddings[IFStylable.LAYER_ORDER.length][3]
+        ];
+
+        // Build our bbox now
+        var bbox = source.expanded(totalPadding[0], totalPadding[1], totalPadding[2], totalPadding[3]);
 
         // Due to pixel aligning, we may need extra half pixel in some cases
         var paintExtraExpand = [0, 0, 0, 0];
