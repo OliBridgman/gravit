@@ -452,7 +452,7 @@
                 }
 
                 // Render effects canvas on target
-                target.drawCanvas(effectCanvas, 0, 0, effectBlendType);
+                target.drawCanvas(effectCanvas, 0, 0, 1, effectBlendType);
 
                 // Make target new filter contents
                 filterContents = target;

@@ -32,7 +32,7 @@
             //rectangle.getEffects().appendChild(overlay);
 
             var fi = new IFInnerShadowEffect();
-            fi.setProperty('ly', IFStylable.Layer.Background);
+            //fi.setProperty('ly', IFStylable.Layer.Background);
             rectangle.getEffects().appendChild(fi);
 
 
