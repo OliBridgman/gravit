@@ -13,7 +13,8 @@
         "uri.js": "latest",
         "Blob.js": "git://github.com/eligrey/Blob.js.git#latest",
         "canvas-toBlob.js": "git://github.com/eligrey/canvas-toBlob.js.git#latest",
-        "vex": "latest"
+        "vex": "latest",
+        "jdataview": "latest"
     },
     "devDependencies": {},
     "private": true

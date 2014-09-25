@@ -140,6 +140,8 @@ $(document).ready(function () {
 });
 
 $(window).load(function () {
+    // Init rangy
     rangy.init();
-    //vex.defaultOptions.className = 'vex-theme-plain';
+
+    // Setup 'jDataView'
 });

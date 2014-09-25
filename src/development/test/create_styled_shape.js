@@ -35,6 +35,23 @@
             //fi.setProperty('ly', IFStylable.Layer.Background);
             rectangle.getEffects().appendChild(fi);
 
+            /*
+            $.ajax({
+                url: 'acv/1977.acv',
+                async: false,
+                dataType: 'arraybuffer',
+                success: function(data) {
+                    var fl = new IFColorGradingEffect();
+                    fl.setProperty('cp', IFColorGradingFilter.parseACV(data));
+                    rectangle.getEffects().appendChild(fl);
+                }
+            });
+            */
+
+            var clMtx = new IFColorMatrixEffect();
+            clMtx.setProperty('cm', IFColorMatrixFilter.COLOR_MATRIX_INVERT);
+            //rectangle.getEffects().appendChild(clMtx);
+
 
             layer.appendChild(rectangle);
         }

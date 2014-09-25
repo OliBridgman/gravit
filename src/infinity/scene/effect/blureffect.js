@@ -32,7 +32,7 @@
     /** @override */
     IFBlurEffect.prototype.render = function (contents, output, scale) {
         if (this.$r) {
-            contents.getBitmap().blur(this.$r * scale);
+            contents.getBitmap().applyFilter(IFStackBlurFilter, this.$r * scale);
         }
     };
 

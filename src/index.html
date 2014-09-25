@@ -37,6 +37,8 @@
 <script src="../bower_components/Blob.js/Blob.js"></script>
 <script src="../bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
 
+<script src="../bower_components/jdataview/dist/browser/jdataview.js"></script>
+
 <script src="../bower_components/vex/js/vex.js"></script>
 <script src="../bower_components/vex/js/vex.dialog.js"></script>
 <!-- endbuild -->
@@ -73,10 +75,15 @@
 <script src="infinity/vertex/vertexpixelaligner.js"></script>
 <script src="infinity/vertex/vertextransformer.js"></script>
 <script src="infinity/vertex/vertexoffsetter.js"></script>
+<!-- Bitmap -->
+<script src="infinity/bitmap/filter/colorgradingfilter.js"></script>
+<script src="infinity/bitmap/filter/colormatrixfilter.js"></script>
+<script src="infinity/bitmap/filter/colortransformfilter.js"></script>
+<script src="infinity/bitmap/filter/stackblurfilter.js"></script>
+<script src="infinity/bitmap/bitmap.js"></script>
 <!-- Paint -->
 <script src="infinity/paint/pattern.js"></script>
 <script src="infinity/paint/annotation.js"></script>
-<script src="infinity/paint/bitmap.js"></script>
 <script src="infinity/paint/font.js"></script>
 <script src="infinity/paint/color.js"></script>
 <script src="infinity/paint/dirtylist.js"></script>
@@ -94,8 +101,11 @@
 <script src="infinity/scene/scenepaintconfiguration.js"></script>
 <script src="infinity/scene/selector.js"></script>
 <script src="infinity/scene/effect/effect.js"></script>
-<script src="infinity/scene/effect/dropshadoweffect.js"></script>
 <script src="infinity/scene/effect/blureffect.js"></script>
+<script src="infinity/scene/effect/colorgradingeffect.js"></script>
+<script src="infinity/scene/effect/colormatrixeffect.js"></script>
+<script src="infinity/scene/effect/colortransformeffect.js"></script>
+<script src="infinity/scene/effect/dropshadoweffect.js"></script>
 <script src="infinity/scene/effect/innershadoweffect.js"></script>
 <script src="infinity/scene/effect/overlayeffect.js"></script>
 <script src="infinity/scene/structure/page.js"></script>
@@ -231,7 +241,8 @@
 <!-- Util -->
 <script src="gravit/util/ciede2000.js"></script>
 <script src="gravit/util/image.js"></script>
-<script src="gravit/util/selectors.js"></script>
+<script src="gravit/util/jqueryext.js"></script>
+<script src="gravit/util/spline.js"></script>
 <!-- Root -->
 <script src="gravit/shell.js"></script>
 <script src="gravit/application.js"></script>

@@ -12,7 +12,7 @@
     IFNode.inherit('blurEffect', IFOverlayEffect, IFEffect);
 
     /**
-     * Geometry properties of a blur effect
+     * Geometry properties of an overlay effect
      */
     IFOverlayEffect.GeometryProperties = {
         /** The overlay pattern (IFPattern) */

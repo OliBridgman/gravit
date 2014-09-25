@@ -51,7 +51,7 @@
         var r = this.$r * scale;
 
         output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-        output.getBitmap().blur(r);
+        output.getBitmap().applyFilter(IFStackBlurFilter, r);
     };
 
     /** @override */
