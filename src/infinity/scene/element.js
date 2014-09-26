@@ -536,7 +536,7 @@
             var gradient = null;
 
             if (pattern.getType() === IFGradient.Type.Linear) {
-                result.paint = context.canvas.createLinearGradient(-0.5, 0, 0.5, 0, pattern);
+                result.paint = context.canvas.createLinearGradient(0, 0, 1, 0, pattern);
             } else if (pattern.getType() === IFGradient.Type.Radial) {
                 result.paint = context.canvas.createRadialGradient(0, 0, 0.5, pattern);
             }
