@@ -68,12 +68,13 @@
      * it should not modify the contents and put results on the output
      * @param {IFPaintCanvas} output the canvas to put the effect result onto.
      * This is null if this effect is a filter effect.
+     * @param {IFPaintCanvas} background the background canvas
      * @param {Number} scale the scaling factor used
      * @return {IFPaintCanvas.BlendMode} a blend-mode for blending output
      * into the contents. This is only honored when this effect's type
      * is actually set to IFEffect.Type.PostEffect
      */
-    IFEffect.prototype.render = function (contents, output, scale) {
+    IFEffect.prototype.render = function (contents, output, background, scale) {
         // NO-OP
     };
 

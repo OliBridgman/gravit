@@ -27,7 +27,7 @@
     };
 
     /** @override */
-    IFColorTransformEffect.prototype.render = function (contents, output, scale) {
+    IFColorTransformEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$m && this.$o) {
             contents.getBitmap().applyFilter(IFColorMatrixFilter, {multiplier: this.$m, offsets: this.$o});
         }

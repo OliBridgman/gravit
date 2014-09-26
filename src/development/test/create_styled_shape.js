@@ -16,7 +16,7 @@
             var rectangle = new IFRectangle();
             rectangle.setProperty('trf', new IFTransform(w / 2, 0, 0, h / 2, x + w / 2, y + h / 2));
 
-            rectangle.setProperties(['_bpt', '_fpt', '_bw', '_sfop'], [IFColor.BLACK, IFColor.BLACK, 10, 0]);
+            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [IFPattern.BACKGROUND, IFColor.BLACK, 0.75, 10, 1]);
 
             var blur = new IFBlurEffect();
             blur.setProperties(['vs', 'ly'], [true, IFStylable.Layer.Foreground]);
@@ -33,7 +33,7 @@
 
             var fi = new IFInnerShadowEffect();
             //fi.setProperty('ly', IFStylable.Layer.Background);
-            rectangle.getEffects().appendChild(fi);
+            //rectangle.getEffects().appendChild(fi);
 
             /*
             $.ajax({
@@ -51,6 +51,11 @@
             var clMtx = new IFColorMatrixEffect();
             clMtx.setProperty('cm', IFColorMatrixFilter.COLOR_MATRIX_INVERT);
             //rectangle.getEffects().appendChild(clMtx);
+
+            var bl = new IFBlurEffect();
+            bl.setProperty('r', 7);
+            bl.setProperty('ly', IFStylable.Layer.Foreground);
+            rectangle.getEffects().appendChild(bl);
 
 
             layer.appendChild(rectangle);

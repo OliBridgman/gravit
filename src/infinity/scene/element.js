@@ -305,9 +305,8 @@
 
             if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal) {
                 // We need to paint on a separate canvas here
-                var sourceCanvas = context.canvas;
                 var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
-                context.canvas = styleCanvas;
+                var sourceCanvas = context.pushCanvas(styleCanvas);
                 try {
                     this._paintStyleFillLayer(context, contentPaintBBox, orderedEffects, effectCanvas);
 
@@ -329,7 +328,7 @@
 
                     styleCanvas.finish();
                 } finally {
-                    context.canvas = sourceCanvas;
+                    context.popCanvas();
                 }
             } else {
                 this._paintStyleFillLayer(context, contentPaintBBox, orderedEffects, effectCanvas);
@@ -351,21 +350,20 @@
             var fillEffects = orderedEffects ? orderedEffects[IFStylable.LAYER_ORDER.length] : null;
             if (this.$_sfop !== 1.0 || fillEffects) {
                 // We need to paint on a separate canvas here
-                var sourceCanvas = context.canvas;
                 var fillCanvas = this._createStyleCanvas(context, contentPaintBBox);
-                context.canvas = fillCanvas;
+                var sourceCanvas = context.pushCanvas(fillCanvas);
                 try {
                     this._paintStyleContentLayers(context, contentPaintBBox, orderedEffects, effectCanvas);
 
                     if (fillEffects) {
-                        this._paintWithEffects(fillCanvas, sourceCanvas, this.$_sfop, fillEffects, effectCanvas);
+                        this._paintWithEffects(fillCanvas, context.getRootCanvas(), sourceCanvas, this.$_sfop, fillEffects, effectCanvas);
                     } else {
                         sourceCanvas.drawCanvas(fillCanvas, 0, 0, this.$_sfop);
                     }
 
                     fillCanvas.finish();
                 } finally {
-                    context.canvas = sourceCanvas;
+                    context.popCanvas();
                 }
             } else if (this.$_sfop > 0.0) {
                 this._paintStyleContentLayers(context, contentPaintBBox, orderedEffects, effectCanvas);
@@ -391,21 +389,20 @@
                 var effects = orderedEffects ? orderedEffects[IFStylable.LAYER_ORDER.indexOf(layer)] : null;
 
                 if (effects || this._isSeparateStylePaintLayer(context, layer)) {
-                    var sourceCanvas = context.canvas;
                     var layerCanvas = this._createStyleCanvas(context, contentPaintBBox);
-                    context.canvas = layerCanvas;
+                    var sourceCanvas = context.pushCanvas(layerCanvas);
                     try {
                         this._paintStyleLayer(context, layer);
 
                         if (effects) {
-                            this._paintWithEffects(layerCanvas, sourceCanvas, 1, effects, effectCanvas);
+                            this._paintWithEffects(layerCanvas, context.getRootCanvas(), sourceCanvas, 1, effects, effectCanvas);
                         } else {
                             sourceCanvas.drawCanvas(layerCanvas);
                         }
 
                         layerCanvas.finish();
                     } finally {
-                        context.canvas = sourceCanvas;
+                        context.popCanvas();
                     }
                 } else {
                     this._paintStyleLayer(context, layer);
@@ -417,13 +414,14 @@
     /**
      * Called to paint and composite effects and contents onto a target
      * @param {IFPaintCanvas} contents the canvas holding the contents
+     * @param {IFPaintCanvas} background the background canvas
      * @param {IFPaintCanvas} target the target canvas for compositing everything
      * @param {Number} targetOpacity the opacity for painting the contents onto the target
      * @param {Array<IFEffect>} effects the effects to paint
      * @param {IFPaintCanvas} effectCanvas the effect canvas if there're any pre/post-effects
      * @private
      */
-    IFElement.Stylable.prototype._paintWithEffects = function (contents, target, targetOpacity, effects, effectCanvas) {
+    IFElement.Stylable.prototype._paintWithEffects = function (contents, background, target, targetOpacity, effects, effectCanvas) {
         var filterContents = contents;
         var paintedContents = false;
 
@@ -432,7 +430,7 @@
             var effectType = effect.getEffectType();
 
             if (effectType === IFEffect.Type.Filter) {
-                effect.render(filterContents, null, filterContents.getScale());
+                effect.render(filterContents, null, background, filterContents.getScale());
             } else if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
                 if (effectType === IFEffect.Type.PostEffect && !paintedContents && targetOpacity > 0.0) {
                     target.drawCanvas(contents, 0, 0, targetOpacity);
@@ -443,7 +441,7 @@
                 effectCanvas.clear();
 
                 // Render effect on effects canvas
-                var effectResult = effect.render(contents, effectCanvas, effectCanvas.getScale());
+                var effectResult = effect.render(contents, effectCanvas, background, effectCanvas.getScale());
                 var effectBlendType = IFPaintCanvas.BlendMode.Normal;
 
                 // Post effects may return a custom blend mode
@@ -495,47 +493,52 @@
 
     /**
      * Create and return the fill paint pattern used for painting
+     * @param {IFPaintContext} context
      * @return {{paint: *, transform: IFTransform}}
      * @private
      */
-    IFElement.Stylable.prototype._createFillPaint = function (canvas, bbox) {
+    IFElement.Stylable.prototype._createFillPaint = function (context, bbox) {
         if (this.$_fpt) {
-            return this._createPatternPaint(canvas, this.$_fpt, bbox, this.$_ftx, this.$_fty, this.$_fsx, this.$_fsy, this.$_frt);
+            return this._createPatternPaint(context, this.$_fpt, bbox, this.$_ftx, this.$_fty, this.$_fsx, this.$_fsy, this.$_frt);
         }
         return null;
     };
 
     /**
      * Create and return the border paint pattern used for painting
+     * @param {IFPaintContext} context
      * @return {{paint: *, transform: IFTransform}}
      * @private
      */
-    IFElement.Stylable.prototype._createBorderPaint = function (canvas, bbox) {
+    IFElement.Stylable.prototype._createBorderPaint = function (context, bbox) {
         if (this.$_bpt) {
-            return this._createPatternPaint(canvas, this.$_bpt, bbox, this.$_btx, this.$_bty, this.$_bsx, this.$_bsy, this.$_brt);
+            return this._createPatternPaint(context, this.$_bpt, bbox, this.$_btx, this.$_bty, this.$_bsx, this.$_bsy, this.$_brt);
         }
         return null;
     };
 
     /**
      * @return {{paint: *, transform: IFTransform}}
+     * @param {IFPaintContext} context
      * @private
      */
-    IFElement.Stylable.prototype._createPatternPaint = function (canvas, pattern, bbox, tx, ty, sx, sy, rt) {
+    IFElement.Stylable.prototype._createPatternPaint = function (context, pattern, bbox, tx, ty, sx, sy, rt) {
         var result = {
             paint: null,
             transform: null
         };
 
-        if (pattern instanceof IFColor) {
+        var patternType = pattern.getPatternType();
+
+        if (patternType === IFPattern.Type.Color) {
             result.paint = pattern;
-        } else if (pattern instanceof IFGradient) {
+        } else if (patternType === IFPattern.Type.Gradient) {
             var gradient = null;
 
             if (pattern.getType() === IFGradient.Type.Linear) {
-                result.paint = canvas.createLinearGradient(-0.5, 0, 0.5, 0, pattern);
+                result.paint = context.canvas.createLinearGradient(-0.5, 0, 0.5, 0, pattern);
             } else if (pattern.getType() === IFGradient.Type.Radial) {
-                result.paint = canvas.createRadialGradient(0, 0, 0.5, pattern);
+                result.paint = context.canvas.createRadialGradient(0, 0, 0.5, pattern);
             }
 
             var left = bbox.getX();
@@ -543,12 +546,21 @@
             var width = bbox.getWidth();
             var height = bbox.getHeight();
 
-            result.transform = IFTransform()
+            result.transform = new IFTransform()
                 .scaled(sx, sy)
                 .rotated(rt)
                 .translated(tx, ty)
                 .scaled(width, height)
                 .translated(left, top);
+        } else if (patternType === IFPattern.Type.Background) {
+            var root = context.getRootCanvas();
+            var origin = root.getOrigin();
+            var scale = root.getScale();
+
+            result.paint = context.canvas.createTexture(root, IFPaintCanvas.RepeatMode.None);
+            result.transform = new IFTransform()
+                .translated(origin.getX(), origin.getY())
+                .scaled(1 / scale, 1 / scale);
         }
 
         return result;

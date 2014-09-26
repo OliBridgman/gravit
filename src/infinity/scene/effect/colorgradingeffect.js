@@ -25,7 +25,7 @@
     };
 
     /** @override */
-    IFColorGradingEffect.prototype.render = function (contents, output, scale) {
+    IFColorGradingEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$cp) {
             contents.getBitmap().applyFilter(IFColorGradingFilter, this.$cp);
         }

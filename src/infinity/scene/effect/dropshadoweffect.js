@@ -42,7 +42,7 @@
     };
 
     /** @override */
-    IFDropShadowEffect.prototype.render = function (contents, output, scale) {
+    IFDropShadowEffect.prototype.render = function (contents, output, background, scale) {
         // Fill our whole output with the shadow color
         output.fillCanvas(this.$cls);
 

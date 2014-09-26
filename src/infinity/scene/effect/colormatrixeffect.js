@@ -25,7 +25,7 @@
     };
 
     /** @override */
-    IFColorMatrixEffect.prototype.render = function (contents, output, scale) {
+    IFColorMatrixEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$cm) {
             contents.getBitmap().applyFilter(IFColorMatrixFilter, this.$cm);
         }

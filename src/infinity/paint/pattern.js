@@ -16,6 +16,7 @@
      * @enum
      */
     IFPattern.Type = {
+        Background: 'B',
         Color: 'C',
         Gradient: 'G',
         Texture: 'T',
@@ -27,6 +28,25 @@
      * @type {string}
      */
     IFPattern.MIME_TYPE = "application/infinity+pattern";
+
+    // --------------------------------------------------------------------------------------------
+    // IFPattern._Background Class
+    // --------------------------------------------------------------------------------------------
+    /**
+     * @class IFPattern._Background
+     * @extends IFPattern
+     * @private
+     */
+    IFPattern._Background = function () {
+    }
+    IFObject.inherit(IFPattern._Background, IFPattern);
+
+    /** @override */
+    IFPattern._Background.prototype.getPatternType = function () {
+        return IFPattern.Type.Background;
+    };
+
+    IFPattern.BACKGROUND = new IFPattern._Background();
 
     /**
      * Compares if two patterns are equal or not
@@ -91,6 +111,10 @@
         }
         return result;
     };
+
+    // --------------------------------------------------------------------------------------------
+    // IFPattern Class
+    // --------------------------------------------------------------------------------------------
 
     /**
      * Returns the pattern type

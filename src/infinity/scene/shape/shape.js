@@ -104,9 +104,9 @@
     IFShape.prototype._paintStyleLayer = function (context, layer) {
         if (layer === IFStylable.Layer.Background) {
             if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-                var canvas = context.canvas;
-                var fill = this._createFillPaint(canvas, this.getGeometryBBox());
+                var fill = this._createFillPaint(context, this.getGeometryBBox());
                 if (fill && fill.paint) {
+                    var canvas = context.canvas;
                     canvas.putVertices(this);
 
                     if (fill.transform) {
@@ -129,8 +129,7 @@
                 if (child instanceof IFElement) {
                     // Create temporary canvas if none yet
                     if (!oldContentsCanvas) {
-                        oldContentsCanvas = context.canvas;
-                        context.canvas = oldContentsCanvas.createCanvas(this.getGeometryBBox());
+                        oldContentsCanvas = context.pushCanvas(oldContentsCanvas.createCanvas(this.getGeometryBBox()));
                     }
 
                     child.paint(context);
@@ -143,20 +142,20 @@
                 context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                 oldContentsCanvas.drawCanvas(context.canvas);
                 context.canvas.finish();
-                context.canvas = oldContentsCanvas;
+                context.popCanvas();
             }
         } else if (layer === IFStylable.Layer.Foreground) {
             var outline = context.configuration.isOutline(context);
             if (!outline && this.hasStyleBorder()) {
-                var canvas = context.canvas;
                 var borderBBox = this.getGeometryBBox();
                 var borderPadding = this.getStyleBorderPadding();
                 if (borderPadding) {
                     borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
                 }
-                var border = this._createBorderPaint(context.canvas, borderBBox);
+                var border = this._createBorderPaint(context, borderBBox);
 
                 if (border && border.paint) {
+                    var canvas = context.canvas;
                     var borderWidth = this.$_bw;
 
                     // Except center alignment we need to double the border width

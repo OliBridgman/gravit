@@ -95,6 +95,16 @@
      */
     GEffectProperties.prototype._updateProperties = function () {
         // TODO
+        var element = this._elements[0];
+        var list = this._panel.find('.g-list');
+        list.empty();
+        for (var child = element.getEffects().getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFEffect) {
+                $('<div></div>')
+                    .text(child.getNodeNameTranslated())
+                    .appendTo(list);
+            }
+        }
     };
 
     /**

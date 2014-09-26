@@ -30,7 +30,7 @@
     };
 
     /** @override */
-    IFBlurEffect.prototype.render = function (contents, output, scale) {
+    IFBlurEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$r) {
             contents.getBitmap().applyFilter(IFStackBlurFilter, this.$r * scale);
         }

@@ -57,8 +57,7 @@
             this._pixelContentCanvas.resize(width, height);
 
             // Save source canvas, exchange it with pixel content canvas and paint the scene
-            var sourceCanvas = context.canvas;
-            context.canvas = this._pixelContentCanvas;
+            var sourceCanvas = context.pushCanvas(this._pixelContentCanvas);
             this._view.getScene().paint(context);
 
             // Now paint our pixel content canvas at the given scale on our source canvas
@@ -67,7 +66,7 @@
 
             // Finally reset our source canvas
             this._pixelContentCanvas.finish();
-            context.canvas = sourceCanvas;
+            context.popCanvas();
         } else {
             // Paint regular vectors
             this._pixelContentCanvas = null;

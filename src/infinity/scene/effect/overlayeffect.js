@@ -9,7 +9,7 @@
         IFEffect.call(this);
         this._setDefaultProperties(IFOverlayEffect.GeometryProperties);
     };
-    IFNode.inherit('blurEffect', IFOverlayEffect, IFEffect);
+    IFNode.inherit('overlayEffect', IFOverlayEffect, IFEffect);
 
     /**
      * Geometry properties of an overlay effect
@@ -18,9 +18,7 @@
         /** The overlay pattern (IFPattern) */
         pat: IFColor.BLACK,
         /** Overlay opacity */
-        opc: 1,
-        /** Blend mode */
-        blm: IFPaintCanvas.BlendMode.Normal
+        opc: 1
     };
 
     /** @override */
@@ -29,9 +27,9 @@
     };
 
     /** @override */
-    IFOverlayEffect.prototype.render = function (contents, output, scale) {
+    IFOverlayEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$pat && this.$opc > 0.0) {
-            // Fill our whole output with the pattern
+            // Fill our whole canvas with the pattern clipped by the source
             contents.fillCanvas(this.$pat, this.$opc, IFPaintCanvas.CompositeOperator.SourceIn);
         }
     };

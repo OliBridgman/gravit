@@ -121,20 +121,10 @@
             }
         },
         'E': {
-            visualProperties: {
-                /** Visibility */
-                _vs: true
-            },
-            geometryProperties: {
-                /** Layer (null=all) */
-                _ly: null,
-                /** Blur radius */
-                _bl_r: 5
-            }
         },
         'F': {
             visualProperties: {
-                /** Fill pattern (IFPattern) */
+                /** Fill pattern (IFPattern|'bck'|null) */
                 _fpt: null,
                 /** Fill opacity */
                 _fop: 1,
@@ -182,7 +172,7 @@
                 _brt: 0
             },
             geometryProperties: {
-                /** Border pattern (IFPattern) */
+                /** Border pattern (IFPattern|'bck'|null) */
                 _bpt: null,
                 /** Border Width */
                 _bw: 1,

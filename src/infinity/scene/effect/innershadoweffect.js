@@ -42,7 +42,7 @@
     };
 
     /** @override */
-    IFInnerShadowEffect.prototype.render = function (contents, output, scale) {
+    IFInnerShadowEffect.prototype.render = function (contents, output, background, scale) {
         // Fill our whole output with the shadow color
         output.fillCanvas(this.$cls);
 

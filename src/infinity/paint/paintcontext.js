@@ -6,6 +6,7 @@
      */
     function IFPaintContext() {
         this.outlineColors = [];
+        this.canvasStack = [];
     }
 
     /**
@@ -20,6 +21,12 @@
      * @version 1.0
      */
     IFPaintContext.prototype.canvas = null;
+
+    /**
+     * A stack of canvases
+     * @type {Array<IFPaintCanvas>}
+     */
+    IFPaintContext.prototype.canvasStack = null;
 
     /**
      * A dirty list matcher if painting dirty, may be null
@@ -74,6 +81,38 @@
             // TODO : Take this from configuration, instead?
             return IFColor.BLACK;
         }
+    };
+
+    /**
+     * Return the root canvas
+     * @returns {IFPaintCanvas}
+     */
+    IFPaintContext.prototype.getRootCanvas = function () {
+        return this.canvasStack.length > 0 ? this.canvasStack[0] : this.canvas;
+    };
+
+    /**
+     * Puts a new canvas to be the active one and pushes the previously
+     * active one into the canvas stack and returns the previously active one
+     * @param {IFPaintCanvas} canvas
+     * @return {IFPaintCanvas}
+     */
+    IFPaintContext.prototype.pushCanvas = function (canvas) {
+        var oldCanvas = this.canvas;
+        this.canvasStack.push(this.canvas);
+        this.canvas = canvas;
+        return oldCanvas;
+    };
+
+    /**
+     * Pop the active canvas making the previous one from the stack the active one
+     */
+    IFPaintContext.prototype.popCanvas = function () {
+        if (this.canvasStack.length <= 0) {
+            throw new Error('Invalid call, stack length is zero.');
+        }
+
+        this.canvas = this.canvasStack.pop();
     };
 
     /** @override */
