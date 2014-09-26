@@ -100,6 +100,12 @@
     };
 
     /**
+     * @type {IFGradient.Type}
+     * @private
+     */
+    IFGradient.prototype._type = null;
+
+    /**
      * @type {Array<{{position: Number, color: IFColor}}>}
      * @private
      */
