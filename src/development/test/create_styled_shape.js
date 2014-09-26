@@ -16,8 +16,9 @@
             var rectangle = new IFRectangle();
             rectangle.setProperty('trf', new IFTransform(w / 2, 0, 0, h / 2, x + w / 2, y + h / 2));
 
-            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [IFPattern.BACKGROUND, IFColor.BLACK, 0.75, 10, 1]);
+            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [IFPattern.BACKGROUND, new IFGradient([{position:0,color:IFColor.BLACK}, {position: 100, color: IFColor.WHITE}]), 1, 10, 1]);
 
+            /*
             var blur = new IFBlurEffect();
             blur.setProperties(['vs', 'ly'], [true, IFStylable.Layer.Foreground]);
             //rectangle.getEffects().appendChild(blur);
@@ -34,7 +35,7 @@
             var fi = new IFInnerShadowEffect();
             //fi.setProperty('ly', IFStylable.Layer.Background);
             //rectangle.getEffects().appendChild(fi);
-
+*/
             /*
             $.ajax({
                 url: 'acv/1977.acv',
@@ -47,7 +48,7 @@
                 }
             });
             */
-
+/*
             var clMtx = new IFColorMatrixEffect();
             clMtx.setProperty('cm', IFColorMatrixFilter.COLOR_MATRIX_INVERT);
             //rectangle.getEffects().appendChild(clMtx);
@@ -56,7 +57,7 @@
             bl.setProperty('r', 7);
             bl.setProperty('ly', IFStylable.Layer.Foreground);
             rectangle.getEffects().appendChild(bl);
-
+*/
 
             layer.appendChild(rectangle);
         }
