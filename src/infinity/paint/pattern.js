@@ -2,6 +2,9 @@
     var SVG_CHESSBOARD_CSS_URL = 'url("data:image/svg+xml;base64,' +
         btoa('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="white"/><rect width="4" height="4" fill="#CDCDCD"/><rect x="4" y="4" width="4" height="4" fill="#CDCDCD"/></svg>') +
         '")';
+    var SVG_BACKGROUND_CSS_URL = 'url("data:image/svg+xml;base64,' +
+        btoa('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="20" viewBox="0 0 5 10"><rect width="110%" x="-5%" y="-5%" height="110%" fill="#545454"/><line x1="-2" y1="1" x2="7" y2="10" stroke="#6e6e6e" stroke-width="2"/><line x1="-2" y1="6" x2="7" y2="15" stroke="#6e6e6e" stroke-width="2"/><line x1="-2" y1="-4" x2="7" y2="5" stroke="#6e6e6e" stroke-width="2"/></svg>') +
+        '")';
 
     /**
      * A base class for patterns like color, gradients, etc.
@@ -18,9 +21,7 @@
     IFPattern.Type = {
         Background: 'B',
         Color: 'C',
-        Gradient: 'G',
-        Texture: 'T',
-        Noise: 'N'
+        Gradient: 'G'
     };
 
     /**
@@ -62,6 +63,8 @@
                 return IFColor.equals(left, right);
             } else if (left instanceof IFGradient && right instanceof IFGradient) {
                 return IFGradient.equals(left, right);
+            } else if (left instanceof IFPattern && right instanceof IFPattern && left.getPatternType() === right.getPatternType() && left.getPatternType() === IFPattern.Type.Background) {
+                return true;
             }
         }
         return false;
@@ -76,7 +79,9 @@
         if (string && string.length > 0) {
             var type = string.charAt(0);
             string = string.substring(1);
-            if (type === IFPattern.Type.Color) {
+            if (type === IFPattern.Type.Background) {
+                return IFPattern.BACKGROUND;
+            } else if (type === IFPattern.Type.Color) {
                 return IFColor.parseColor(string);
             } else if (type === IFPattern.Type.Gradient) {
                 return IFGradient.parseGradient(string);
@@ -101,6 +106,9 @@
         var result = SVG_CHESSBOARD_CSS_URL;
         if (pattern) {
             switch (pattern.getPatternType()) {
+                case IFPattern.Type.Background:
+                    result = SVG_BACKGROUND_CSS_URL;
+                    break;
                 case IFPattern.Type.Color:
                     result = 'linear-gradient(' + pattern.asCSSString() + ', ' + pattern.asCSSString() + '), ' + result;
                     break;
