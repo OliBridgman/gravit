@@ -897,6 +897,7 @@
                         if (color && !assignedColor) {
                             this._assignPreviousColor(color);
                             this._assignCurrentColor(color, true);
+                            this._activateColorMode(color.getType().key);
                             this._syncColorElement = element;
                             assignedColor = true;
                         }
