@@ -11,7 +11,7 @@
             stops,
             typeof r === 'number' ? r : 0,
             typeof tx === 'number' ? tx : 0,
-            typeof ty === 'number' ? ty : 0.5,
+            typeof ty === 'number' ? ty : 0,
             typeof sx === 'number' ? sx : 1,
             typeof sy === 'number' ? sy : 1
         );
