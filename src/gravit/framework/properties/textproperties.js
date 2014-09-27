@@ -185,7 +185,7 @@
                         self._assignProperty(property, val === '' ? null : val);
                     });
             } else if (property === 'fc') {
-                return $('<button></button>')
+                return $('<div></div>')
                     .attr('data-property', property)
                     .gColorButton({
                         allowClear: true,

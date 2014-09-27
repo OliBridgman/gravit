@@ -24,8 +24,9 @@
             new GAlignPalette(),
             new GTransformPalette(),
             new GExportPalette(),
-            new GStylesPalette(),
-            new GSwatchesPalette()
+            new GColorPalette(),
+            new GSwatchesPalette(),
+            new GStylesPalette()
         );
 
         // Register default panels

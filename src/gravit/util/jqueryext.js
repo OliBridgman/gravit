@@ -8,7 +8,21 @@
      */
     $.expr[':'].editable = function(obj){
         var $this = $(obj);
-        return $this.is(':input') || $this.attr('contenteditable') === 'true' || obj.isContentEditable;
+
+        if ($this.attr('contenteditable') === 'true' || obj.isContentEditable) {
+            return true;
+        }
+
+        if ($this.is(':input')) {
+            var type = $this.attr('type');
+            return !type || type === '' || type === 'text';
+        }
+
+        if ($this.is('textArea')) {
+            return true;
+        }
+
+        return false;
     };
 
     /**

@@ -153,7 +153,7 @@
 
                 return result;
             } else if (property === 'cls') {
-                return $('<button></button>')
+                return $('<div></div>')
                     .attr('data-property', property)
                     .gColorButton({
                         allowClear: true

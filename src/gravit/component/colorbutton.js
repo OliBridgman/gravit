@@ -25,7 +25,7 @@
                 // Whether to allow clearing the color or not
                 allowClear: false,
                 // Whether to immediately close after color has changed or not
-                immediateClose: false,
+                immediateClose: true,
                 // Scene to be used for swatches
                 scene: null
                 // see options of gPatternTarget

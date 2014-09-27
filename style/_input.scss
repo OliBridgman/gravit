@@ -13,6 +13,7 @@ button, .g-button, input, textArea, select, .g-input, .g-list {
   color: $textColor;
   height: $baseline;
   line-height: $baseline - 2px;
+  display: inline-block;
 
   &:not(:last-child) {
     margin-right: 3px;

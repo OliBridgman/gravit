@@ -36,7 +36,7 @@
         var _createInput = function (property) {
             var self = this;
             if (property === 'cls') {
-                return $('<button></button>')
+                return $('<div></div>')
                     .attr('data-property', property)
                     .gColorButton({
                         allowClear: true

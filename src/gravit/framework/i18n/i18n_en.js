@@ -54,6 +54,7 @@ ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], 
 
 // Palette
 ifLocale.setValues(GAlignPalette, IFLocale.Language.English, ["title"], ["Align"]);
+ifLocale.setValues(GColorPalette, IFLocale.Language.English, ["title"], ["Color"]);
 ifLocale.setValues(GExportPalette, IFLocale.Language.English, ["title"], ["Export"]);
 ifLocale.setValues(GLayersPalette, IFLocale.Language.English, ["title"], ["Layers"]);
 ifLocale.setValues(GPagesPalette, IFLocale.Language.English, ["title"], ["Pages"]);
