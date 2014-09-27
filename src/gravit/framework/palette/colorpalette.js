@@ -20,8 +20,8 @@
      */
     GColorPalette._ColorModes = [
         {
-            type: IFColor.Type.RGB,
             name: 'RGB',
+            key: 'rgb',
             components: [
                 {
                     label: 'R',
@@ -69,13 +69,16 @@
                     unit: '%'
                 }
             ],
+            getComponents: function (color) {
+                return color.asRGB();
+            },
             makeColor: function (components) {
                 return new IFColor(IFColor.Type.RGB, components);
             }
         },
         {
-            type: IFColor.Type.HSL,
             name: 'HSL',
+            key: 'hsl',
             components: [
                 {
                     label: 'H',
@@ -125,13 +128,16 @@
                     unit: '%'
                 }
             ],
+            getComponents: function (color) {
+                return color.asHSL();
+            },
             makeColor: function (components) {
                 return new IFColor(IFColor.Type.HSL, components);
             }
         },
         {
-            type: IFColor.Type.Tone,
             name: 'Tone',
+            key: 'tone',
             components: [
                 {
                     label: 'T',
@@ -149,14 +155,16 @@
                     unit: '%'
                 }
             ],
+            getComponents: function (color) {
+                return color.asTone();
+            },
             makeColor: function (components) {
                 return new IFColor(IFColor.Type.Tone, components);
             }
         },
-
         {
-            type: IFColor.Type.CMYK,
             name: 'CMYK',
+            key: 'cmyk',
             components: [
                 {
                     label: 'C',
@@ -211,8 +219,82 @@
                     }
                 }
             ],
+            getComponents: function (color) {
+                return color.asCMYK();
+            },
             makeColor: function (components) {
                 return new IFColor(IFColor.Type.CMYK, components);
+            }
+        },
+        {
+            name: 'Mixins',
+            key: 'mixins',
+            previousColor: true,
+            _values: [0, 0, 0],
+            components: [
+                {
+                    label: 'Ti',
+                    min: 0,
+                    max: 100,
+                    step: 10,
+                    unit: '%',
+                    stops: function (components, previousColor) {
+                        var result = [];
+                        for (var i = 0; i <= 100; i += 10) {
+                            result.push(previousColor.withTint(i));
+                        }
+                        return result;
+                    }
+                },
+                {
+                    label: 'Sh',
+                    min: 0,
+                    max: 100,
+                    step: 10,
+                    unit: '%',
+                    stops: function (components, previousColor) {
+                        var result = [];
+                        for (var i = 0; i <= 100; i += 10) {
+                            result.push(previousColor.withShade(i));
+                        }
+                        return result;
+                    }
+                },
+                {
+                    label: 'To',
+                    min: 0,
+                    max: 100,
+                    step: 10,
+                    unit: '%',
+                    stops: function (components, previousColor) {
+                        var result = [];
+                        for (var i = 0; i <= 100; i += 10) {
+                            result.push(previousColor.withTone(i));
+                        }
+                        return result;
+                    }
+                }
+            ],
+            getComponents: function (color) {
+                return this._values;
+            },
+            makeColor: function (components, previousColor) {
+                this._values = components;
+                var result = previousColor;
+
+                if (components[0] > 0) {
+                    result = result.withTint(components[0]);
+                }
+
+                if (components[1] > 0) {
+                    result = result.withShade(components[1]);
+                }
+
+                if (components[2] > 0) {
+                    result = result.withTone(components[2]);
+                }
+
+                return result;
             }
         }
     ];
@@ -472,7 +554,7 @@
         for (var i = 0; i < GColorPalette._ColorModes.length; ++i) {
             var modeInfo = GColorPalette._ColorModes[i];
             $('<option></option>')
-                .attr('value', modeInfo.type.key)
+                .attr('value', modeInfo.key)
                 .text(modeInfo.name)
                 .appendTo(colorModeSelect);
         }
@@ -520,14 +602,14 @@
     GColorPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
-            var scene = this._document.getScene();
+            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document.getEditor().addEventListener(IFEditor.SelectionChangedEvent, this._syncMode, this);
             this._htmlElement.find('.current-color').gColorButton('scene', this._document.getScene());
             this._htmlElement.find('.previous-color').gColorButton('scene', this._document.getScene());
             this._syncMode();
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
-            var scene = this._document.getScene();
+            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document.getEditor().removeEventListener(IFEditor.SelectionChangedEvent, this._syncMode, this);
             this._document = null;
             this._htmlElement.find('.current-color').gColorButton('scene', null);
@@ -536,11 +618,24 @@
         }
     };
 
+    /**
+     * @param {IFNode.AfterPropertiesChangeEvent} evt
+     * @private
+     */
+    GColorPalette.prototype._afterPropertiesChange = function (evt) {
+        var syncMode = this._getSyncMode();
+        if ((syncMode && syncMode === 'fill' && evt.properties.indexOf('_fpt') >= 0) ||
+            (syncMode && syncMode === 'border' && evt.properties.indexOf('_bpt') >= 0) ||
+            (!syncMode && evt.node === this._document.getScene() && evt.properties.indexOf('cltp') >= 0)) {
+            this._syncMode();
+        }
+    };
+
     GColorPalette.prototype._activateColorMode = function (colorMode) {
-        if (!this._colorMode || colorMode !== this._colorMode.type.key) {
+        if (!this._colorMode || colorMode !== this._colorMode.key) {
             for (var i = 0; i < GColorPalette._ColorModes.length; ++i) {
                 var modeInfo = GColorPalette._ColorModes[i];
-                if (modeInfo.type.key === colorMode) {
+                if (modeInfo.key === colorMode) {
                     this._colorMode = modeInfo;
 
                     // Activate sliders
@@ -563,6 +658,7 @@
 
                             range.attr('min', component.min);
                             range.attr('max', component.max);
+                            range.attr('step', component.step ? component.step.toString() : '')
                         }
                     }
 
@@ -573,7 +669,7 @@
                 }
             }
         }
-        this._htmlElement.find('.color-mode-select').val(this._colorMode ? this._colorMode.type.key : IFColor.Type.RGB.key);
+        this._htmlElement.find('.color-mode-select').val(this._colorMode ? this._colorMode.key : 'rgb');
     };
 
     GColorPalette.prototype._updateFromComponents = function() {
@@ -600,7 +696,7 @@
             rangeInput.val(value);
         }
 
-        var color = this._colorMode.makeColor(components);
+        var color = this._colorMode.makeColor(components, this._previousColor);
         this._assignCurrentColor(color);
         return color;
     };
@@ -609,19 +705,7 @@
         var color = this._currentColor ? this._currentColor : IFColor.TRANSPARENT_WHITE;
 
         // Get the components in the right format
-        var components = null;
-        if (this._colorMode.type === IFColor.Type.RGB) {
-            components = color.asRGB();
-        } else if (this._colorMode.type === IFColor.Type.HSL) {
-            components = color.asHSL();
-        } else if (this._colorMode.type === IFColor.Type.Tone) {
-            components = color.asTone();
-        } else if (this._colorMode.type === IFColor.Type.CMYK) {
-            components = color.asCMYK();
-        } else {
-            throw new Error('Unknown mode.');
-        }
-
+        var components = this._colorMode.getComponents(color);
         if (components) {
             for (var i = 0; i < this._colorMode.components.length; ++i) {
                 var component = this._colorMode.components[i];
@@ -631,7 +715,7 @@
                 var val = Math.min(component.max, Math.max(component.min, components[i])).toFixed(0);
 
                 var stopsFunc = this._colorMode.components[i].stops;
-                var stops = stopsFunc ? stopsFunc(components) : null;
+                var stops = stopsFunc ? stopsFunc(components, this._previousColor) : null;
 
                 if (stops) {
                     if (stops.length === 1) {
@@ -672,7 +756,6 @@
 
         this._updateColorDifference();
 
-        this._activateColorMode(value ? value.getType().key : IFColor.Type.RGB.key);
         this._updateToComponents();
 
         if (!noSync) {
@@ -692,6 +775,10 @@
         this._htmlElement.find('.previous-color').gColorButton('value', this._previousColor);
 
         this._updateColorDifference();
+
+        if (this._colorMode && this._colorMode.previousColor) {
+            this._updateToComponents();
+        }
 
         this._updateMatches();
     };
@@ -733,7 +820,7 @@
                 var width = 100 / len;
                 for (var i = 0; i < len; ++i) {
                     // Convert match color to same type as curent color if any
-                    var match = this._currentColor ? matches[i].toType(this._colorMode.type) : matches[i];
+                    var match = this._currentColor ? matches[i].toType(this._currentColor.getType()) : matches[i];
                     _addMatchColor(match, width);
                 }
             }
@@ -745,7 +832,11 @@
      * @private
      */
     GColorPalette.prototype._getSyncMode = function () {
-        return this._htmlElement.find('[data-sync].g-active').attr('data-sync');
+        var result = this._htmlElement.find('[data-sync].g-active').attr('data-sync');
+        if (!result || !result.length) {
+            return null;
+        }
+        return result;
     };
 
     /**
@@ -769,7 +860,8 @@
     GColorPalette.prototype._syncMode = function () {
         var mode = this._getSyncMode();
         this._syncElements = null;
-        if (mode && mode.length > 0) {
+        this._syncColorElement = null;
+        if (mode) {
             var selection = this._document.getEditor().getSelection();
             if (selection) {
                 var assignedColor = false;
@@ -805,18 +897,21 @@
                         if (color && !assignedColor) {
                             this._assignPreviousColor(color);
                             this._assignCurrentColor(color, true);
+                            this._syncColorElement = element;
                             assignedColor = true;
                         }
                     }
                 }
             }
+        } else {
+            this._activateColorMode(this._document.getScene().getProperty('cltp'));
         }
     };
 
     /** @private */
     GColorPalette.prototype._assignSyncMode = function () {
         var mode = this._getSyncMode();
-        if (mode && mode.length > 0 && this._syncElements && this._syncElements.length > 0) {
+        if (mode && this._syncElements && this._syncElements.length > 0) {
             var editor = this._document.getEditor();
             editor.beginTransaction();
             try {

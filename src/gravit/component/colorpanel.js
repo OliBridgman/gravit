@@ -1070,19 +1070,6 @@
             } else {
                 var data = $this.data('gcolorpanel');
                 assignValue($this, value, true);
-
-                if (data.scene && (!data.color || data.color.getType() === IFColor.Type.Black || data.color.getType() === IFColor.Type.White || data.color.getType() === IFColor.Type.Registration)) {
-                    var clspace = data.scene.getProperty('clspace');
-                    if (clspace) {
-                        for (var i = 0; i < ColorModes.length; ++i) {
-                            if (ColorModes[i].type.space === clspace) {
-                                activateColorMode($this, ColorModes[i].type.key);
-                                break;
-                            }
-                        }
-                    }
-                }
-
                 return this;
             }
         }
