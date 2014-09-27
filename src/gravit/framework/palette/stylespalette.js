@@ -39,6 +39,12 @@
      */
     GStylesPalette.prototype._stylePanel = null;
 
+    /**
+     * @type {JQuery}
+     * @private
+     */
+    GStylesPalette.prototype._styleDeleteControl = null;
+
     /** @override */
     GStylesPalette.prototype.getId = function () {
         return GStylesPalette.ID;
@@ -84,6 +90,31 @@
             }.bind(this))
             .appendTo(htmlElement);
 
+
+        this._styleDeleteControl = $('<button></button>')
+            // TODO : I18N
+            .attr('title', 'Delete Selected Style')
+            .attr('data-action', 'delete')
+            .on('click', function () {
+                var style = this._stylePanel.gStylePanel('value');
+                vex.dialog.confirm({
+                    // TODO : I18N
+                    message: 'Are you sure you want to delete the selected style?',
+                    callback: function (value) {
+                        if (value) {
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(style, function () {
+                                style.disconnectStyle();
+                                style.getParent().removeChild(style);
+                            }, 'Delete Style');
+                        }
+                    }.bind(this)
+                });
+            }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-trash-o'))
+            .appendTo(controls);
+
         this._updateControls();
     };
 
@@ -108,7 +139,7 @@
     /** @private */
     GStylesPalette.prototype._updateControls = function () {
         var style = this._stylePanel.gStylePanel('value');
-        //TODO...
+        this._styleDeleteControl.prop('disabled', !style || style.getProperty('_sdf') !== null);
     };
 
     /** @override */

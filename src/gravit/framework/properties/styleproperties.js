@@ -250,13 +250,15 @@
                             // TODO : I18N
                             message: 'Are you sure you want to delete the selected style?',
                             callback: function (value) {
-                                var style = this._elements[0].getReferencedStyle();
-                                if (style) {
-                                    // TODO : I18N
-                                    IFEditor.tryRunTransaction(style, function () {
-                                        style.disconnectStyle();
-                                        style.getParent().removeChild(style);
-                                    }, 'Delete Style');
+                                if (value) {
+                                    var style = this._elements[0].getReferencedStyle();
+                                    if (style) {
+                                        // TODO : I18N
+                                        IFEditor.tryRunTransaction(style, function () {
+                                            style.disconnectStyle();
+                                            style.getParent().removeChild(style);
+                                        }, 'Delete Style');
+                                    }
                                 }
                             }.bind(this)
                         });
