@@ -132,18 +132,8 @@
                         var scene = data.container.getScene();
                         var sourcePattern = event.dataTransfer.getData(IFPattern.MIME_TYPE);
                         if (sourcePattern) {
-                            var pattern = IFPattern.parsePattern(sourcePattern);
+                            var pattern = IFPattern.deserialize(sourcePattern);
                             if (pattern) {
-                                // Make sure there's no such swatch, yet
-                                var swatches = scene.getSwatchCollection();
-                                for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
-                                    if (node instanceof IFSwatch) {
-                                        if (IFPattern.equals(pattern, node.getProperty('pat'))) {
-                                            return; // leave here, patterns are equal
-                                        }
-                                    }
-                                }
-
                                 // Ask for a name
                                 var sourceName = pattern instanceof IFColor ? pattern.asString() : 'pattern';
                                 vex.dialog.prompt({
@@ -163,7 +153,7 @@
                                         IFEditor.tryRunTransaction(scene, function () {
                                             var swatch = new IFSwatch();
                                             swatch.setProperties(['name', 'pat'], [name, pattern]);
-                                            swatches.appendChild(swatch);
+                                            scene.getSwatchCollection().appendChild(swatch);
                                         }, 'Add Swatch');
                                     }
                                 });
@@ -209,8 +199,17 @@
 
             // don't add if type is not right
             var types = data.options.types;
-            if (types !== null && types.length > 0 && types.indexOf(swatch.getPatternType()) < 0) {
-                return;
+            if (types && types.length > 0) {
+                var isCompatible = false;
+                for (var i = 0; i < types.length; ++i) {
+                    if (swatch instanceof types[i]) {
+                        isCompatible = true;
+                        break;
+                    }
+                }
+                if (!isCompatible) {
+                    return;
+                }
             }
 
             var insertBefore = null;
@@ -288,7 +287,7 @@
 
                             // Setup our drag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.asString(pattern));
+                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
                             event.dataTransfer.setDragImage(block.find('.swatch-preview > div')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
                         }
                     })

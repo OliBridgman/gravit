@@ -419,16 +419,6 @@
                         .on('click', function (evt) {
                             var scene = this._document.getScene();
 
-                            // Make sure there's no such color, yet
-                            var swatches = scene.getSwatchCollection();
-                            for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
-                                if (node instanceof IFSwatch && node.getPatternType() === IFPattern.Type.Color) {
-                                    if (IFColor.equals(this._currentColor, node.getProperty('pat'))) {
-                                        return; // leave here, colors are equal
-                                    }
-                                }
-                            }
-
                             // Ask for a name
                             vex.dialog.prompt({
                                 // TODO : I18N
@@ -447,7 +437,7 @@
                                     IFEditor.tryRunTransaction(scene, function () {
                                         var swatch = new IFSwatch();
                                         swatch.setProperties(['name', 'pat'], [name, this._currentColor]);
-                                        swatches.appendChild(swatch);
+                                        scene.getSwatchCollection().appendChild(swatch);
                                     }.bind(this), 'Add Swatch');
                                 }.bind(this)
                             });

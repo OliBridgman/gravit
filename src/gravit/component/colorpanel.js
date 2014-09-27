@@ -264,23 +264,13 @@
                     .addClass('fa fa-plus-circle'),
                 // TODO : I18N
                 nullName: 'Add current color as new swatch',
-                types: [IFPattern.Type.Color],
+                types: [IFColor],
                 allowSelect: false
             })
             .on('swatchchange', function (evt, swatch) {
                 if (!swatch) {
                     if (!data.scene || !data.color) {
                         return; // leave here, no color or scene
-                    }
-
-                    // Make sure there's no such color, yet
-                    var swatches = data.scene.getSwatchCollection();
-                    for (var node = swatches.getFirstChild(); node !== null; node = node.getNext()) {
-                        if (node instanceof IFSwatch && node.getPatternType() === IFPattern.Type.Color) {
-                            if (IFColor.equals(data.color, node.getProperty('pat'))) {
-                                return; // leave here, colors are equal
-                            }
-                        }
                     }
 
                     // Ask for a name

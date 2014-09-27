@@ -528,31 +528,21 @@
             transform: null
         };
 
-        var patternType = pattern.getPatternType();
-
-        if (patternType === IFPattern.Type.Color) {
+        if (pattern instanceof IFColor) {
             result.paint = pattern;
-        } else if (patternType === IFPattern.Type.Gradient) {
-            var gradient = null;
-
-            if (pattern.getType() === IFGradient.Type.Linear) {
-                result.paint = context.canvas.createLinearGradient(0, 0, 1, 0, pattern);
-            } else if (pattern.getType() === IFGradient.Type.Radial) {
-                result.paint = context.canvas.createRadialGradient(0, 0, 0.5, pattern);
-            }
+        } else if (pattern instanceof IFGradient) {
+            result.paint = context.canvas.createGradient(pattern);
 
             var left = bbox.getX();
             var top = bbox.getY();
             var width = bbox.getWidth();
             var height = bbox.getHeight();
 
-            result.transform = new IFTransform()
-                .scaled(sx, sy)
-                .rotated(rt)
-                .translated(tx, ty)
+            result.transform = pattern
+                .getGradientTransform()
                 .scaled(width, height)
                 .translated(left, top);
-        } else if (patternType === IFPattern.Type.Background) {
+        } else if (pattern instanceof IFBackground) {
             var root = context.getRootCanvas();
             var origin = root.getOrigin();
             var scale = root.getScale();

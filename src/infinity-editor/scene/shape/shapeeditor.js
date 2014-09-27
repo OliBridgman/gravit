@@ -38,7 +38,7 @@
                         editor.commitTransaction('Drop Pattern');
                     }
             }
-            return false;
+            return true;
         }
         return true;
     };

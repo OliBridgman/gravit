@@ -128,7 +128,7 @@
                 if (item.type === IFPattern.MIME_TYPE) {
                     type = IFElementEditor.DropType.Pattern;
                     source = dataTransfer.getData(IFPattern.MIME_TYPE);
-                    source = source && source !== "" ? IFPattern.parsePattern(source) : null;
+                    source = source && source !== "" ? IFPattern.deserialize(source) : null;
                 } else if (item.type === IFNode.MIME_TYPE) {
                     type = IFElementEditor.DropType.Node;
                     source = dataTransfer.getData(IFNode.MIME_TYPE);

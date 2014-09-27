@@ -30,11 +30,6 @@
     };
 
     /** @override */
-    IFSwatch.prototype.getPatternType = function () {
-        return this.$pat ? this.$pat.getPatternType() : null;
-    };
-
-    /** @override */
     IFSwatch.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof IFScene.SwatchCollection;
     };
@@ -45,7 +40,7 @@
             this.storeProperties(args, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.asString(value);
+                        return IFPattern.serialize(value);
                     }
                 }
                 return value;
@@ -55,7 +50,7 @@
             this.restoreProperties(args, IFSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.parsePattern(value);
+                        return IFPattern.deserialize(value);
                     }
                 }
             });

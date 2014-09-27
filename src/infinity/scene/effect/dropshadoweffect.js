@@ -70,7 +70,7 @@
             this.restoreProperties(args, IFDropShadowEffect.GeometryProperties);
             this.restoreProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'cls') {
+                    if (property === 'cls' && value) {
                         return IFColor.parseColor(value);
                     }
                 }

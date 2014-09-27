@@ -56,7 +56,7 @@
 
                             // Setup our allowDrag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.asString(pattern));
+                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
                             event.dataTransfer.setDragImage(dragImage[0], previewBoxSize / 2, previewBoxSize / 2);
                             event.dataTransfer.sourceElement = this;
                         })
@@ -79,16 +79,29 @@
 
                             var source = event.dataTransfer.getData(IFPattern.MIME_TYPE);
                             if (source) {
-                                source = IFPattern.parsePattern(source);
-                                if (source && (!options.types || options.types.length === 0 || options.types.indexOf(source.getPatternType()) >= 0)) {
-                                    var myPattern = $this.data('gpatterntarget').pattern;
-                                    if (!IFPattern.equals(source, myPattern)) {
-                                        methods.value.call(self, source);
-                                        $this.trigger('patternchange', source);
+                                source = IFPattern.deserialize(source);
+                                if (source) {
+                                    var isCompatible = true;
+                                    if (options.types && options.types.length > 0) {
+                                        isCompatible = false;
+                                        for (var i = 0; i < options.types.length; ++i) {
+                                            if (source instanceof options.types[i]) {
+                                                isCompatible = true;
+                                                break;
+                                            }
+                                        }
                                     }
 
-                                    // allowDrop will always fire
-                                    $this.trigger('patterndrop', [source, event]);
+                                    if (isCompatible) {
+                                        var myPattern = $this.data('gpatterntarget').pattern;
+                                        if (!ifUtil.equals(source, myPattern)) {
+                                            methods.value.call(self, source);
+                                            $this.trigger('patternchange', source);
+                                        }
+
+                                        // allowDrop will always fire
+                                        $this.trigger('patterndrop', [source, event]);
+                                    }
                                 }
                             }
 
@@ -105,7 +118,7 @@
             if (!arguments.length) {
                 return data.pattern;
             } else {
-                value = typeof value === 'string' ? IFPattern.parsePattern(value) : value;
+                value = typeof value === 'string' ? IFPattern.deserialize(value) : value;
                 data.pattern = value;
                 return this;
             }

@@ -5,7 +5,7 @@
      * @extends IFPattern
      * @constructor
      */
-    function IFGradient(stops, type) {
+    function IFGradient(stops, r, tx, ty, sx, sy) {
         if (stops) {
             this._stops = [];
             for (var i = 0; i < stops.length; ++i) {
@@ -15,52 +15,17 @@
                 });
             }
         } else {
-            this._stops = [new IFColor(IFColor.Type.Black), new IFColor(IFColor.Type.White)];
+            this._stops = [];
         }
 
-        this._type = type ? type : IFGradient.Type.Linear;
+        this._r = typeof r === 'number' ? r : 0;
+        this._tx = typeof tx === 'number' ? tx : 0;
+        this._ty = typeof ty === 'number' ? ty : 0;
+        this._sx = typeof sx === 'number' ? sx : 1;
+        this._sy = typeof sy === 'number' ? sy : 1;
     }
 
     IFObject.inherit(IFGradient, IFPattern);
-
-    /**
-     * @enum
-     */
-    IFGradient.Type = {
-        Linear: 'L',
-        Radial: 'R'
-    };
-
-    /**
-     * Parse a string into a IFGradient
-     * @param {String} string
-     * @return {IFGradient}
-     */
-    IFGradient.parseGradient = function (string) {
-        if (!string || string === "") {
-            return null;
-        }
-
-        var blob = JSON.parse(string);
-        if (blob) {
-            var result = new IFGradient();
-
-            result._type = blob.t;
-            result._stops = [];
-
-            for (var i = 0; i < blob.s.length; ++i) {
-                var stop = blob.s[i];
-                result._stops.push({
-                    position: stop.p,
-                    color: IFColor.parseColor(stop.c)
-                })
-            }
-
-            return result;
-        }
-
-        return null;
-    };
 
     /**
      * Compare two gradients for equality Also takes care of null parameters
@@ -75,7 +40,11 @@
             return true;
         } else if (left && right) {
             if (!stopsOnly) {
-                if (left._type !== right._type) {
+                if (left._tx !== right._tx ||
+                    left._ty !== right._ty ||
+                    left._sx !== right._sx ||
+                    left._sy !== right._sy ||
+                    left._r !== right._r) {
                     return false;
                 }
             }
@@ -100,28 +69,40 @@
     };
 
     /**
-     * @type {IFGradient.Type}
-     * @private
-     */
-    IFGradient.prototype._type = null;
-
-    /**
      * @type {Array<{{position: Number, color: IFColor}}>}
      * @private
      */
     IFGradient.prototype._stops = null;
 
-    /** @override */
-    IFGradient.prototype.getPatternType = function () {
-        return IFPattern.Type.Gradient;
-    };
+    /**
+     * @type {number}
+     * @private
+     */
+    IFGradient.prototype._r = null;
 
     /**
-     * @return {IFGradient.Type}
+     * @type {number}
+     * @private
      */
-    IFGradient.prototype.getType = function () {
-        return this._type;
-    };
+    IFGradient.prototype._tx = null;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    IFGradient.prototype._ty = null;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    IFGradient.prototype._sx = null;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    IFGradient.prototype._sy = null;
 
     /**
      * You may modify the return value though this class
@@ -134,21 +115,43 @@
     };
 
     /** @override */
-    IFGradient.prototype.asString = function () {
-        var stops = [];
+    IFGradient.prototype.serialize = function () {
+        var blob = {};
+
+        blob.t = [this._tx, this._ty, this._sx, this._sy, this._r];
+        blob.s = [];
+
         for (var i = 0; i < this._stops.length; ++i) {
-            stops.push({
+            blob.s.push({
                 p: this._stops[i].position,
                 c: this._stops[i].color.asString()
             })
         }
 
-        var blob = {
-            t: this._type,
-            s: stops
-        };
-
         return JSON.stringify(blob);
+    };
+
+    /** @override */
+    IFGradient.prototype.deserialize = function (string) {
+        var blob = JSON.parse(string);
+
+        if (blob) {
+            this._tx = blob.t[0];
+            this._ty = blob.t[1];
+            this._sx = blob.t[2];
+            this._sy = blob.t[3];
+            this._r = blob.t[4];
+
+            this._stops = [];
+
+            for (var i = 0; i < blob.s.length; ++i) {
+                var stop = blob.s[i];
+                this._stops.push({
+                    position: stop.p,
+                    color: IFColor.parseColor(stop.c)
+                })
+            }
+        }
     };
 
     /**
@@ -168,18 +171,15 @@
     };
 
     /**
-     * Return CSS-Compatible string representation of the underlying gradient
-     * including the gradient declaration used for css background
-     * @return {String}
+     * Returns a transformation for the gradient
+     * @param width
+     * @param height
      */
-    IFGradient.prototype.asCSSBackgroundString = function () {
-        var cssStops = this.asCSSString();
-        switch (this._type) {
-            case IFGradient.Type.Radial:
-                return 'radial-gradient(ellipse at center, ' + cssStops + ')';
-            default:
-                return 'linear-gradient(90deg, ' + cssStops + ')';
-        }
+    IFGradient.prototype.getGradientTransform = function (width, height) {
+        return new IFTransform()
+            .scaled(this._sx, this._sy)
+            .rotated(this._r)
+            .translated(this._tx, this._ty);
     };
 
     /** @override */

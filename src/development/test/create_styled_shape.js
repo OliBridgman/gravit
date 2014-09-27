@@ -16,7 +16,7 @@
             var rectangle = new IFRectangle();
             rectangle.setProperty('trf', new IFTransform(w / 2, 0, 0, h / 2, x + w / 2, y + h / 2));
 
-            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [IFPattern.BACKGROUND, new IFGradient([{position:0,color:IFColor.BLACK}, {position: 100, color: IFColor.WHITE}]), 1, 10, 1]);
+            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [new IFBackground(), new IFRadialGradient([{position:0,color:IFColor.BLACK}, {position: 100, color: IFColor.WHITE}]), 1, 10, 1]);
 
             /*
             var blur = new IFBlurEffect();

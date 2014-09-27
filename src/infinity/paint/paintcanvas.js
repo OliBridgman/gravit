@@ -648,35 +648,22 @@
     };
 
     /**
-     * Creates and returns a linear gradient pattern
-     * @param {Number} x1 horizontal start position
-     * @param {Number} y1 vertical start position
-     * @param {Number} x2 horizontal end position
-     * @param {Number} y2 vertical end position
+     * Creates and returns a gradient pattern. The gradient
+     * will be a unit gradient and thus requires a separate
+     * transformation when being painted.
      * @param {IFGradient} gradient the gradient to be used
      * @return {*} a pattern specific to this canvas-type
      */
-    IFPaintCanvas.prototype.createLinearGradient = function (x1, y1, x2, y2, gradient) {
-        var result = this._canvasContext.createLinearGradient(x1, y1, x2, y2);
-        var stops = gradient.getStops();
-
-        for (var i = 0; i < stops.length; ++i) {
-            result.addColorStop(stops[i].position / 100.0, stops[i].color.asCSSString());
+    IFPaintCanvas.prototype.createGradient = function (gradient) {
+        var result = null;
+        if (gradient instanceof IFLinearGradient) {
+            result = this._canvasContext.createLinearGradient(0, 0, 1, 0);
+        } else if (gradient instanceof IFRadialGradient) {
+            result = this._canvasContext.createRadialGradient(0, 0, 0, 0, 0, 0.5);
+        } else {
+            throw new Error('Unknown gradient');
         }
 
-        return result;
-    };
-
-    /**
-     * Creates and returns a radial gradient pattern
-     * @param {Number} cx the radial gradient's horizontal center position
-     * @param {Number} cy the radial gradient's vertical center position
-     * @param {Number} radius the radial gradient's radius
-     * @param {IFGradient} gradient the gradient to be used
-     * @return {*} a pattern specific to this canvas-type
-     */
-    IFPaintCanvas.prototype.createRadialGradient = function (cx, cy, radius, gradient) {
-        var result = this._canvasContext.createRadialGradient(cx, cy, 0, cx, cy, radius);
         var stops = gradient.getStops();
 
         for (var i = 0; i < stops.length; ++i) {

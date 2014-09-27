@@ -41,7 +41,7 @@
                     .addClass('g-gradient-editor')
                     .data('ggradienteditor', data)
                     .gPatternTarget({
-                        types: [IFPattern.Type.Color, IFPattern.Type.Gradient]
+                        types: [IFColor, IFGradient]
                     })
                     .on('patterndrop', function (evt, pattern, mouseEvent) {
                         if (pattern && pattern instanceof IFColor) {

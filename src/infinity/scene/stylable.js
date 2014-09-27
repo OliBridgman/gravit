@@ -142,7 +142,7 @@
             storeFilter: function (property, value) {
                 if (value) {
                     if (property === '_fpt') {
-                        return IFPattern.asString(value);
+                        return IFPattern.serialize(value);
                     }
                 }
                 return value;
@@ -150,7 +150,7 @@
             restoreFilter: function (property, value) {
                 if (value) {
                     if (property === '_fpt') {
-                        return IFPattern.parsePattern(value);
+                        return IFPattern.deserialize(value);
                     }
                 }
                 return value;
@@ -188,7 +188,7 @@
             storeFilter: function (property, value) {
                 if (value) {
                     if (property === '_bpt') {
-                        return IFPattern.asString(value);
+                        return IFPattern.serialize(value);
                     }
                 }
                 return value;
@@ -196,7 +196,7 @@
             restoreFilter: function (property, value) {
                 if (value) {
                     if (property === '_bpt') {
-                        return IFPattern.parsePattern(value);
+                        return IFPattern.deserialize(value);
                     }
                 }
                 return value;

@@ -44,21 +44,6 @@
     };
 
     /** @override */
-    IFPageEditor.prototype.acceptDrop = function (position, type, source, hitData) {
-        if (IFBlockEditor.prototype.acceptDrop.call(this, position, type, source, hitData) === false) {
-            // TODO : Make optional as most of the time this sucks
-            /*
-             // We can handle colors so check for a color
-             if (type === IFElementEditor.DropType.Color) {
-             this.getElement().setProperty('color', source ? source.asString() : null);
-             return true;
-             }
-             */
-        }
-        return true;
-    };
-
-    /** @override */
     IFPageEditor.prototype._prePaint = function (transform, context) {
         if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             this._paintBBoxOutline(transform, context);

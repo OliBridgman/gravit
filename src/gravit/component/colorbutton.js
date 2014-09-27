@@ -32,7 +32,7 @@
             }, options);
 
             // always overwrite types to allow colors, only
-            options.types = [IFPattern.Type.Color];
+            options.types = [IFColor];
 
             return this.each(function () {
                 var self = this;

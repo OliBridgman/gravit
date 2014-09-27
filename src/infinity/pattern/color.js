@@ -11,8 +11,7 @@
         this._type = type;
         this._value = value && value instanceof Array ? value.slice() : value;
     }
-
-    IFObject.inherit(IFColor, IFPattern);
+    IFPattern.inherit('C', IFColor);
 
     /**
      * @enum
@@ -186,6 +185,10 @@
         for (var typeKey in IFColor.Type) {
             var type = IFColor.Type[typeKey];
             if (string.indexOf(type.key) === 0) {
+                var color = new IFColor();
+                color.deserialize(string);
+                return color;
+
                 if (type.fromString) {
                     var value = type.fromString(string.substring(type.key.length));
                     if (value) {
@@ -433,11 +436,6 @@
      * @private
      */
     IFColor.prototype._value = null;
-
-    /** @override */
-    IFColor.prototype.getPatternType = function () {
-        return IFPattern.Type.Color;
-    };
 
     /**
      * @returns {IFColor.Type}
@@ -778,7 +776,10 @@
         return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
     };
 
-    /** @override */
+    /**
+     * Return color as compact, human readable string
+     * @return {String}
+     */
     IFColor.prototype.asString = function () {
         var result = this._type.key;
         if (this._type.asString) {
@@ -869,6 +870,32 @@
      */
     IFColor.prototype.withTone = function (tone) {
         return this.withTint(tone).withShade(tone);
+    };
+
+    /** @override */
+    IFColor.prototype.serialize = function () {
+        return this.asString();
+    };
+
+    /** @override */
+    IFColor.prototype.deserialize = function (string) {
+        this._type = null;
+        this._value = null;
+
+        for (var typeKey in IFColor.Type) {
+            var type = IFColor.Type[typeKey];
+            if (string.indexOf(type.key) === 0) {
+                this._type = type;
+                if (type.fromString) {
+                    this._value = type.fromString(string.substring(type.key.length));
+                }
+            }
+        }
+    };
+
+    /** @override */
+    IFColor.prototype.asCSSBackground = function () {
+        return 'linear-gradient(' + this.asCSSString() + ', ' + this.asCSSString() + ')';
     };
 
     /** @override */
