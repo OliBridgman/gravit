@@ -8,8 +8,8 @@
      * @constructor
      */
     function IFColor(type, value) {
-        this._type = type;
-        this._value = value && value instanceof Array ? value.slice() : value;
+        this._type = type ? type : IFColor.Type.Black;
+        this._value = value && value instanceof Array ? value.slice() : (typeof value === 'number' ? value : null);
     }
     IFPattern.inherit('C', IFColor);
 

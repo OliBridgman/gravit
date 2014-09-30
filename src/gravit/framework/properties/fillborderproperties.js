@@ -44,20 +44,13 @@
                     .on('colorchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
-            } else if (property === 'tp') {
+            } else if (property === 'fill-type') {
                 return $('<select></select>')
-                    .append($('<option></option>')
-                        .text('None'))
-                    .append($('<option></option>')
-                        .text('Color'))
-                    .append($('<option></option>')
-                        .text('Linear'))
-                    .append($('<option></option>')
-                        .text('Radial'))
-                    .append($('<option></option>')
-                        .text('Texture'))
-                    .append($('<option></option>')
-                        .text('Noise'));
+                    .attr('data-property', property)
+                    .gPatternTypes()
+                    .on('patternchange', function (evt, patternClass) {
+                        self._assignProperty('_fpt', patternClass ? new patternClass() : null);
+                    });
             } else if (property === '_fop') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -185,7 +178,7 @@
                     'top': '5px',
                     'left': '50px'
                 })
-                .append(_createInput('tp')
+                .append(_createInput('fill-type')
                     .css({
                         'width': '80px'
                     })))
@@ -342,9 +335,13 @@
         var scene = this._document.getScene();
         var stylable = this._elements[0];
 
+        var fillPattern = stylable.getProperty('_fpt');
+
         this._panel.find('[data-property="_fpt"]')
-            .gColorButton('value', stylable.getProperty('_fpt'))
+            .gColorButton('value', fillPattern)
             .gColorButton('scene', scene);
+
+        this._panel.find('[data-property="fill-type"]').gPatternTypes('value', !fillPattern ? null : fillPattern.constructor);
 
         this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 

@@ -15,7 +15,7 @@
                 });
             }
         } else {
-            this._stops = [];
+            this._stops = [{color: IFColor.WHITE, position: 0}, {color: IFColor.BLACK, position: 100}];
         }
 
         this._r = typeof r === 'number' ? r : 0;
