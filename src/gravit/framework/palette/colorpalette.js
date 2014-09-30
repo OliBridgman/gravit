@@ -796,6 +796,11 @@
         if (this._matcher && this._previousColor) {
             var _addMatchColor = function (color, width) {
                 $('<div></div>')
+                    .gPatternTarget({
+                        allowDrop: false,
+                        types: [IFColor]
+                    })
+                    .gPatternTarget('value', color)
                     .css('width', width.toString() + '%')
                     .css('background', IFPattern.asCSSBackground(color))
                     .on('click', function () {
