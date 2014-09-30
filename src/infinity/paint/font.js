@@ -143,6 +143,8 @@
                     $('<span></span>')
                         .css({
                             'position': 'absolute',
+                            'left': '0px',
+                            'top': '0px',
                             'opacity': '0',
                             'font-family': family,
                             'font-weight': weight.toString(),

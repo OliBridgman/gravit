@@ -821,7 +821,8 @@
 
             var toolbarPart = this.getPart(GApplication.Part.Toolbar);
             toolbarPart.css('top', topOffset.toString() + 'px');
-            toolbarPart.height(this._view.height() - topOffset);
+            // hack: remove 3px for border-top style
+            toolbarPart.height(this._view.height() - topOffset - 3);
             leftOffset += this.isPartVisible(GApplication.Part.Toolbar) ? toolbarPart.outerWidth() : 0;
 
             var sidebarsPart = this.getPart(GApplication.Part.Sidebars);
