@@ -10,7 +10,7 @@ actual Application and the core Module called "Gravit".
 We'd like to encourage everyone in getting involved with this project. You can
 develop new features or take a ticket and fix it. Or if you're a UX/Designer, you
 could help designing new icons or improving the UI. To get started contributing,
-read the [GitHub Guide](https://guides.github.com/activities/contributing-to-open-source/)
+read the [GitHub Guide](https://guides.github.com/activities/contributing-to-open-source/).
 
 ## Prerequisites
 
@@ -23,8 +23,8 @@ read the [GitHub Guide](https://guides.github.com/activities/contributing-to-ope
 
 Install all prerequisites and make sure they're available on your path.
 
-Then run `npm install` to install all nodejs dependencies
-Then run `bower install` to install all client javascript libraries
+Then run `npm install` to install all nodejs dependencies.
+Then run `bower install` to install all client javascript libraries.
 
 Finally run `grunt`. You can then open Gravit in your
 webbrowser at http://127.0.0.1:8999/.
