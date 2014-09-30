@@ -104,7 +104,84 @@
                         IFEditor.tryRunTransaction(this._image, function () {
                             this._image.setProperty('trf', new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY()));
                         }.bind(this), 'Reset Size');
-                    }.bind(this))));
+                    }.bind(this))))
+            .append($('<hr>')
+                .css({
+                    'position': 'absolute',
+                    'left': '0px',
+                    'right': '0px',
+                    'top': '50px'
+                }))
+            .append($('<button></button>')
+                .attr('data-image-palette', 'button')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px'
+                })
+                // TODO : I18N
+                .text('Get Image Palette')
+                .on('click', this._updateImagePalette.bind(this)))
+            .append($('<div></div>')
+                .attr('data-image-palette', 'palette')
+                .css({
+                    'position': 'absolute',
+                    'top': '65px',
+                    'left': '5px',
+                    'right': '5px',
+                    'height': '27px'
+                }));
+    };
+
+    GImageProperties.prototype._updateImagePalette = function () {
+        var image = this._image.getImage();
+
+        var palettePanel = this._panel.find('[data-image-palette="palette"]');
+        palettePanel.empty();
+
+        function cvColorThiefColor(color) {
+            return new IFColor(IFColor.Type.RGB, [color[0], color[1], color[2], 100]);
+        };
+
+        var _addPaletteColor = function (color) {
+            $('<div></div>')
+                .gPatternTarget({
+                    allowDrop: false,
+                    types: [IFColor]
+                })
+                .gPatternTarget('value', color)
+                .css({
+                    'display': 'inline-block',
+                    'height': '100%',
+                    'width': '12.5%',
+                    'background': IFPattern.asCSSBackground(color)
+                })
+                .appendTo(palettePanel);
+        }.bind(this);
+
+        if (image) {
+            palettePanel.css('display', '');
+            this._panel.find('[data-image-palette="button"]').css('display', 'none');
+
+            var colorThief = new ColorThief();
+            var mainColor = cvColorThiefColor(colorThief.getColor(image));
+            _addPaletteColor(mainColor);
+
+            var palette = colorThief.getPalette(image, 16);
+            var addedColors = 1;
+            for (var i = 0; i < palette.length; ++i) {
+                var convertedColor = cvColorThiefColor(palette[i]);
+
+                // Take care to avoid duplications with dominant color
+                if (!IFColor.equals(convertedColor, mainColor)) {
+                    _addPaletteColor(convertedColor);
+
+                    if (++addedColors >= 8) {
+                        break;
+                    }
+                }
+            }
+        }
     };
 
     /** @override */
@@ -177,6 +254,12 @@
         this._panel.find('button[data-action="replace"]').prop('disabled', !this._document.isSaveable());
         this._panel.find('button[data-action="export"]').prop('disabled', !hasImage || !this._document.isSaveable());
         this._panel.find('button[data-action="reset-size"]').prop('disabled', !hasImage || (image.naturalWidth === imgBBox.getWidth() && image.naturalHeight === imgBBox.getHeight()));
+
+        this._panel.find('[data-image-palette="button"]')
+            .prop('disabled', !hasImage)
+            .css('display', '');
+
+        this._panel.find('[data-image-palette="palette"]').css('display', 'none');
     };
 
     /** @override */
