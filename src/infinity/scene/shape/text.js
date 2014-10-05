@@ -731,7 +731,7 @@
                         'left': '0px',
                         'visibility': 'hidden',
                         'width': textBoxOrig.getWidth() > 1 && !this.$aw ? textBoxOrig.getWidth() + 'px' : '',
-                        'height': textBoxOrig.getHeight() > 1 && this.$ah ? textBoxOrig.getHeight() + 'px' : ''
+                        'height': textBoxOrig.getHeight() > 1 && !this.$ah ? textBoxOrig.getHeight() + 'px' : ''
                     })
                     .html(this.asHtml(true))
                     .appendTo($('body'));
@@ -746,8 +746,8 @@
                     }
                     var char = textContent[0];
 
-                    // Ignore zero height/width, spaces and binary chars
-                    if (rect.height <= 0 || rect.width <= 0 || char === ' ' || char >= '\x00' && char <= '\x1F') {
+                    // Ignore zero height/width, and binary chars
+                    if (rect.height <= 0 || rect.width <= 0 || char >= '\x00' && char <= '\x1F') {
                         return;
                     }
 
@@ -765,14 +765,16 @@
                     var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
                     var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize);
 
-                    this._runs.push({
-                        x: textBoxOrig.getX() + rect.left,
-                        y: textBoxOrig.getY() + rect.top + baseline,
-                        char: char,
-                        family: fontFamily,
-                        variant: fontVariant,
-                        size: fontSize
-                    });
+                    if (char !== ' ') {
+                        this._runs.push({
+                            x: textBoxOrig.getX() + rect.left,
+                            y: textBoxOrig.getY() + rect.top + baseline,
+                            char: char,
+                            family: fontFamily,
+                            variant: fontVariant,
+                            size: fontSize
+                        });
+                    }
 
                     var charSz = ifFont.getGlyphCharSzRect(fontFamily, fontVariant, fontSize, char);
                     var charRect = new IFRect(rect.left + charSz.getX(), rect.top, charSz.getWidth(), rect.height);
@@ -821,11 +823,17 @@
                 // We're done here
                 this._runsDirty = false;
 
-                if (this._sizeBox && (this.$ah || this.$aw)) {
+                if (this._sizeBox && (this.$ah || this.$aw || this._sizeBox.getWidth() > this._textBox.getWidth() ||
+                    this._sizeBox.getHeight() > this._textBox.getHeight())) {
+
                     var lx = this.$aw ? this._sizeBox.getX() : this._textBox.getX();
-                    var w = this.$aw ? this._sizeBox.getWidth() : this._textBox.getWidth();
+                    var w = this.$aw || this._sizeBox.getWidth() > this._textBox.getWidth() ?
+                        this._sizeBox.getWidth() : this._textBox.getWidth();
+
                     var ty = this.$ah ? this._sizeBox.getY() : this._textBox.getY();
-                    var h = this.$ah ? this._sizeBox.getHeight() : this._textBox.getHeight();
+                    var h = this.$ah || this._sizeBox.getHeight() > this._textBox.getHeight() ?
+                        this._sizeBox.getHeight() : this._textBox.getHeight();
+
                     this._textBox = new IFRect(lx, ty, w, h);
                 }
             }
@@ -881,27 +889,24 @@
     IFText.prototype.textBoxTransform = function (transform) {
         if (transform && !transform.isIdentity()) {
             var trf = transform;
-            if (this.$ah || this.$aw) {
-                var oldVisualTextBox = this._textBox;
-                var newVisualTextBox = transform.mapRect(oldVisualTextBox);
-                var tl = this._tl;
-                var tr = this._tr;
-                var bl = this._bl;
-                var br = this._br;
-                if (this.$trf) {
-                    tl = this.$trf.mapPoint(tl);
-                    tr = this.$trf.mapPoint(tr);
-                    bl = this.$trf.mapPoint(bl);
-                    br = this.$trf.mapPoint(br);
-                }
-                var textBox = new IFRect.fromPoints(tl, tr, br, bl);
-                trf = new IFTransform()
-                    .translated(-textBox.getX(), -textBox.getY())
-                    .scaled(this.$aw ? newVisualTextBox.getWidth() / textBox.getWidth() : 1,
-                        this.$ah ? newVisualTextBox.getHeight() / textBox.getHeight() : 1)
-                    .translated(newVisualTextBox.getX(), newVisualTextBox.getY());
-
+            var oldVisualTextBox = this._textBox;
+            var newVisualTextBox = transform.mapRect(oldVisualTextBox);
+            var tl = this._tl;
+            var tr = this._tr;
+            var bl = this._bl;
+            var br = this._br;
+            if (this.$trf) {
+                tl = this.$trf.mapPoint(tl);
+                tr = this.$trf.mapPoint(tr);
+                bl = this.$trf.mapPoint(bl);
+                br = this.$trf.mapPoint(br);
             }
+            var textBox = new IFRect.fromPoints(tl, tr, br, bl);
+            trf = new IFTransform()
+                .translated(-textBox.getX(), -textBox.getY())
+                .scaled(newVisualTextBox.getWidth() / textBox.getWidth(),
+                    newVisualTextBox.getHeight() / textBox.getHeight())
+                .translated(newVisualTextBox.getX(), newVisualTextBox.getY());
 
             this.setProperties(['ah', 'aw', 'trf'],
                 [false, false, this.$trf ? this.$trf.multiplied(trf) : trf]);
@@ -1038,7 +1043,10 @@
 
         IFShape.prototype._handleChange.call(this, change, args);
 
-        if (this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) && change == IFNode._Change.BeforePropertiesChange) {
+        if ((this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) ||
+            this._handleGeometryChangeForProperties(change, args, IFStylable.AllGeometryProperties)) &&
+            change == IFNode._Change.BeforePropertiesChange) {
+
             var ahIdx = args.properties.indexOf('ah');
             if (ahIdx >= 0 && args.values[ahIdx] === true && !this.$ah && this._textBox && !this._runsDirty) {
                 // As 'ah' changes to true, we need to substitute our original text box such a way,
