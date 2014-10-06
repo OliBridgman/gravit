@@ -22,7 +22,7 @@
                 var x = evt.pageX - offset.left;
                 var y = evt.pageY - offset.top;
 
-                if (x < 0 || y < 0 || x > offset.left + containerWidth || y > offset.top + containerHeight) {
+                if (x < 0 || y < 0 || x > containerWidth || y > containerHeight) {
                     overlay.gOverlay('close');
                 }
             }
