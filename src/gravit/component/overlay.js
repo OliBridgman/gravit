@@ -1,13 +1,32 @@
 (function ($) {
     var openOverlayStack = [];
 
-    document.addEventListener('keydown', function (evt) {
-        if (openOverlayStack.length > 0) {
-            if (evt.keyCode === 27) {
-                openOverlayStack[openOverlayStack.length - 1].gOverlay('close');
+    document
+        .addEventListener('keydown', function (evt) {
+            if (openOverlayStack.length > 0) {
+                if (evt.keyCode === 27) {
+                    openOverlayStack[openOverlayStack.length - 1].gOverlay('close');
+                }
             }
-        }
-    });
+        });
+
+    document
+        .addEventListener('mousedown', function (evt) {
+            if (openOverlayStack.length > 0) {
+                var overlay = openOverlayStack[openOverlayStack.length - 1];
+                var container = overlay.parents('.g-overlay');
+                var containerWidth = container.outerWidth();
+                var containerHeight = container.outerHeight();
+                var offset = overlay.offset();
+
+                var x = evt.pageX - offset.left;
+                var y = evt.pageY - offset.top;
+
+                if (x < 0 || y < 0 || x > offset.left + containerWidth || y > offset.top + containerHeight) {
+                    overlay.gOverlay('close');
+                }
+            }
+        });
 
     var methods = {
         init: function (options) {
@@ -24,32 +43,22 @@
                         releaseOnClose: options.releaseOnClose
                     });
 
-                var overlay = $('<div></div>')
-                    .addClass('g-modal-background')
-                    .on('click', function (evt) {
-                        if ($(evt.target).hasClass('g-modal-background')) {
-                            methods.close.call(self);
-                        }
-                    });
-
                 var container = $('<div></div>')
                     .addClass('g-overlay')
                     .css('position', 'absolute')
-                    .append($this)
-                    .appendTo(overlay);
+                    .append($this);
             });
         },
 
         open: function (target) {
             var $this = $(this);
-            var data = $this.data('goverlay');
-
-            $this.parents('.g-modal-background').appendTo($('body'));
+            var container = $this
+                .parents('.g-overlay')
+                .appendTo($('body'));
 
             var $window = $(window);
             var windowWidth = $window.width();
             var windowHeight = $window.height();
-            var container = $this.parents('.g-overlay');
             var containerWidth = container.outerWidth();
             var containerHeight = container.outerHeight();
             var $target = $(target);
@@ -57,7 +66,7 @@
             var top = offset.top;
             var left = offset.left;
             var right = offset.left + $target.outerWidth();
-            var bottom = offset.top +  + $target.outerHeight();
+            var bottom = offset.top + +$target.outerHeight();
 
             // By default we try to position at left-bottom
             // but need to check whether we run out of window
@@ -102,9 +111,9 @@
             $this.trigger('close');
 
             if (data.releaseOnClose) {
-                $this.parents('.g-modal-background').remove();
+                $this.parents('.g-overlay').remove();
             } else {
-                $this.parents('.g-modal-background').detach();
+                $this.parents('.g-overlay').detach();
             }
 
             openOverlayStack.pop();
