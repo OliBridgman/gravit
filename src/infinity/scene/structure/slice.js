@@ -149,7 +149,7 @@
 
     /** @override */
     IFSlice.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return new IFItem.HitResult(this);
+        return new IFElement.HitResultInfo(this);
     };
 
     _.IFSlice = IFSlice;
