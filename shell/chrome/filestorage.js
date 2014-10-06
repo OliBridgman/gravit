@@ -174,7 +174,7 @@
     /** @private */
     GFileStorage.prototype._addEntryMapping = function (entry, done) {
         chrome.fileSystem.getDisplayPath(entry, function (path) {
-            var url = this.getProtocol() + '://' + ifUtil.replaceAll(path, '\\', '/');
+            var url = this.getProtocol() + '://' + IFUtil.replaceAll(path, '\\', '/');
 
             if (!this._urlEntryMap.hasOwnProperty(url)) {
                 this._urlEntryMap[url] = {

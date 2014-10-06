@@ -98,10 +98,10 @@
                     continue;
                 }
 
-                var x = ifMath.round(bbox.getX(), true);
-                var y = ifMath.round(bbox.getY(), true);
-                var w = ifMath.round(bbox.getWidth(), true);
-                var h = ifMath.round(bbox.getHeight(), true);
+                var x = IFMath.round(bbox.getX(), true);
+                var y = IFMath.round(bbox.getY(), true);
+                var w = IFMath.round(bbox.getWidth(), true);
+                var h = IFMath.round(bbox.getHeight(), true);
 
                 if (this._type === GSnapUnitAction.Type.HalfUnit) {
                     x += 0.5;

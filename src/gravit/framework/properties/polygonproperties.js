@@ -42,11 +42,11 @@
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
-                            var innerAngle = ifMath.normalizeAngleRadians(
+                            var innerAngle = IFMath.normalizeAngleRadians(
                                 self._polygons[0].getProperty('oa') + Math.PI / points);
 
                             self._assignProperties([property, 'ia'],
-                                [ifMath.normalizeValue(points, 2, 360), innerAngle]);
+                                [IFMath.normalizeValue(points, 2, 360), innerAngle]);
                         } else {
                             self._updateProperties();
                         }
@@ -77,8 +77,8 @@
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
-                            self._assignProperty(property, ifMath.PI2 - angle);
+                            angle = IFMath.normalizeAngleRadians(IFMath.toRadians(angle));
+                            self._assignProperty(property, IFMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -263,9 +263,9 @@
         this._panel.find('input[data-property="ir"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ir')));
         this._panel.find('input[data-property="oa"]').val(
-            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('oa')), 2));
+            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
-            ifUtil.formatNumber(ifMath.toDegrees(ifMath.PI2 - polygon.getProperty('ia')), 2));
+            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('ia')), 2));
         this._panel.find('button[data-property="oct"]').gCornerType('value', polygon.getProperty('oct'));
         this._panel.find('button[data-property="ict"]').gCornerType('value', polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(

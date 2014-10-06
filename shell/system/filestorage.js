@@ -13,7 +13,7 @@
                 var files = this._fileInput[0].files;
                 if (files && files.length > 0) {
                     var file = this._fileInput[0].files[0];
-                    var location = ifUtil.replaceAll(file.path, '\\', '/');
+                    var location = IFUtil.replaceAll(file.path, '\\', '/');
 
                     if (this._fileInputMode === 'open_resource') {
                         this._fileInputCallback(this.getProtocol() + '://' + location);
@@ -184,8 +184,8 @@
         if (reference && reference !== '') {
             var directory = new URI(reference).directory();
             if (directory && directory !== '') {
-                if (ifSystem.operatingSystem === IFSystem.OperatingSystem.Windows) {
-                    directory = ifUtil.replaceAll(directory, '/', '\\');
+                if (IFSystem.operatingSystem === IFSystem.OperatingSystem.Windows) {
+                    directory = IFUtil.replaceAll(directory, '/', '\\');
                 }
                 workingDir = directory;
             }

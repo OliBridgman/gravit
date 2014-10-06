@@ -311,7 +311,7 @@
      * @returns {string} the resulting string without unit postfix
      */
     IFScene.prototype.lengthToString = function (length) {
-        return ifUtil.formatNumber(length.toUnit(this.$unit));
+        return IFUtil.formatNumber(length.toUnit(this.$unit));
     };
 
     /**

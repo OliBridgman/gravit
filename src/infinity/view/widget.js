@@ -582,7 +582,7 @@
 
         // Prevent default action for certain events that may trigger browser default behaviors
         if (domEvent.type === 'keydown') {
-            var key = ifKey.translateKey(domEvent.which || domEvent.keyCode);
+            var key = IFKey.translateKey(domEvent.which || domEvent.keyCode);
             switch (key) {
                 case IFKey.Constant.TAB:
                     domEvent.preventDefault();
@@ -623,7 +623,7 @@
         /** @type IFKeyEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
 
-        cachedEvent.key = ifKey.translateKey(domEvent.which || domEvent.keyCode);
+        cachedEvent.key = IFKey.translateKey(domEvent.which || domEvent.keyCode);
 
         this._triggerWidgetEventFromDom(domEvent, cachedEvent);
     };

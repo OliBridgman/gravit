@@ -327,8 +327,8 @@
         var styledElement = this._elements[0];
 
         this._panel.find('[data-property="_sbl"]').val(styledElement.getProperty('_sbl'));
-        this._panel.find('[data-property="_sfop"]').val(ifUtil.formatNumber(styledElement.getProperty('_sfop') * 100, 0));
-        this._panel.find('[data-property="_stop"]').val(ifUtil.formatNumber(styledElement.getProperty('_stop') * 100, 0));
+        this._panel.find('[data-property="_sfop"]').val(IFUtil.formatNumber(styledElement.getProperty('_sfop') * 100, 0));
+        this._panel.find('[data-property="_stop"]').val(IFUtil.formatNumber(styledElement.getProperty('_stop') * 100, 0));
 
         var style = styledElement.getReferencedStyle();
         // TODO : I18N

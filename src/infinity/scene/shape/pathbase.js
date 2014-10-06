@@ -200,8 +200,8 @@
         }
 
         // Corner shoulder
-        if ((this.$cl !== null && !ifMath.isEqualEps(this.$cl, IFPathBase.AnchorPoint.GeometryProperties.cl)) ||
-            (this.$cr !== null && !ifMath.isEqualEps(this.$cr, IFPathBase.AnchorPoint.GeometryProperties.cr))) {
+        if ((this.$cl !== null && !IFMath.isEqualEps(this.$cl, IFPathBase.AnchorPoint.GeometryProperties.cl)) ||
+            (this.$cr !== null && !IFMath.isEqualEps(this.$cr, IFPathBase.AnchorPoint.GeometryProperties.cr))) {
             stream.push('C');
             stream.push(this.$cl);
             stream.push(this.$cr);
@@ -385,7 +385,7 @@
     IFPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
         var path = this.getPath();
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (ifUtil.containsObjectKey(args.properties, IFPathBase.AnchorPoint.GeometryProperties)) {
+            if (IFUtil.containsObjectKey(args.properties, IFPathBase.AnchorPoint.GeometryProperties)) {
                 if (change === IFNode._Change.BeforePropertiesChange) {
                     // Handle uniformity of corner lengths
                     var cuIndex = args.properties.indexOf('cu');
@@ -518,18 +518,18 @@
             var dirLenNext = 0;
 
             if (nextPt) {
-                dirLenNext = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y));
+                dirLenNext = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y));
             }
 
             if (prevPt) {
-                dirLenPrev = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y));
+                dirLenPrev = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y));
             }
 
             var hLen;
             var hx, hy;
             if (this.$ah) {
                 if (nextPt && prevPt && (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
+                    nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !IFMath.isEqualEps(dirLenNext, 0) && !IFMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenNext * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
@@ -539,7 +539,7 @@
                     this.setProperties(['hrx', 'hry'], [null, null]);
                 }
                 if (prevPt && nextPt && (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !ifMath.isEqualEps(dirLenNext, 0) && !ifMath.isEqualEps(dirLenPrev, 0)) {
+                    prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !IFMath.isEqualEps(dirLenNext, 0) && !IFMath.isEqualEps(dirLenPrev, 0)) {
 
                     hLen = dirLenPrev * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
@@ -549,24 +549,24 @@
                     this.setProperties(['hlx', 'hly'], [null, null]);
                 }
             } else {
-                if (this.$hlx != null && nextPt && !ifMath.isEqualEps(dirLenNext, 0)) {
+                if (this.$hlx != null && nextPt && !IFMath.isEqualEps(dirLenNext, 0)) {
                     // Use rotation if handle is already set
-                    hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
                     hy = this.$y + (this.$y - nextPt.$y) / dirLenNext * hLen;
                     // TODO: use projection in editor when modifying handle
-                    //var hnd = ifMath.getPositiveProjection(this.$x, this.$y,
+                    //var hnd = IFMath.getPositiveProjection(this.$x, this.$y,
                     //    this.$x + (this.$x - nextPt.$x), this.$y + (this.$y - nextPt.$y), this.$hlx, this.$hly);
                     this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
 
-                if (this.$hrx != null && prevPt && !ifMath.isEqualEps(dirLenPrev, 0)) {
+                if (this.$hrx != null && prevPt && !IFMath.isEqualEps(dirLenPrev, 0)) {
                     // Use rotation if handle is already set
-                    hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
                     hy = this.$y + (this.$y - prevPt.$y) / dirLenPrev * hLen;
                     // TODO: use projection in editor when modifying handle
-                    //var hnd = ifMath.getPositiveProjection(this.$x, this.$y,
+                    //var hnd = IFMath.getPositiveProjection(this.$x, this.$y,
                     //   this.$x + (this.$x - prevPt.$x), this.$y + (this.$y - prevPt.$y), this.$hrx, this.$hry);
                     this.setProperties(['hrx', 'hry'], [hx, hy]);
                 }
@@ -581,17 +581,17 @@
         // we have two handles, and we need to rotate one of them to be in line with the other
         if (this.$hlx != null && this.$hrx != null) {
             if (this._leadHr) { // the left handle shall be rotated to be in line with the right one
-                dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
-                if (!ifMath.isEqualEps(dirLen, 0)) {
-                    hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                if (!IFMath.isEqualEps(dirLen, 0)) {
+                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - this.$hrx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hry) / dirLen * hLen;
                     this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
             } else { // the right handle shall be rotated to be in line with the left one
-                dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
-                if (!ifMath.isEqualEps(dirLen, 0)) {
-                    hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                if (!IFMath.isEqualEps(dirLen, 0)) {
+                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - this.$hlx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hly) / dirLen * hLen;
                     this.setProperties(['hrx', 'hry'], [hx, hy]);
@@ -651,7 +651,7 @@
                         [hx, hy, this.$x + this.$x - hx, this.$y + this.$y - hy]);
                 } else if (prevPt && nextPt) {
                     // calculate handles to be tangent circle(triag(prevPt, this, nextPt))
-                    ccntr = ifMath.getCircumcircleCenter(
+                    ccntr = IFMath.getCircumcircleCenter(
                         prevPt.$x, prevPt.$y, this.$x, this.$y, nextPt.$x, nextPt.$y);
 
                     if (ccntr == null) { // prev and next points are the same, make handles to be perpendicular
@@ -661,7 +661,7 @@
                             [this.$x - dx, this.$y - dy, this.$x + dx, this.$y + dy]);
                     }
                     else {
-                        dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                        dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                         // no need to check dirLen for 0, as ccntr != this
                         dx = (this.$y - ccntr.getY()) / dirLen;
                         dy = (ccntr.getX() - this.$x) / dirLen;
@@ -669,16 +669,16 @@
                         // check handles side
                         px = (prevPt.$x + nextPt.$x) / 2;
                         py = (prevPt.$y + nextPt.$y) / 2;
-                        if (ifMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
-                            ifMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
+                        if (IFMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
+                            IFMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
                             dx = -dx;
                             dy = -dy;
                         }
 
-                        hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
+                        hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
                         this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
 
-                        hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
+                        hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
                         this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                     }
                 }
@@ -694,7 +694,7 @@
                             this.setProperties(['hlx', 'hly'], [hx, hy]);
                         } else {
                             // calculate left handle to be tangent circle(triag(this, prevPt, prevprevPt))
-                            ccntr = ifMath.getCircumcircleCenter(
+                            ccntr = IFMath.getCircumcircleCenter(
                                 this.$x, this.$y, prevPt.$x, prevPt.$y, prevprevPt.$x, prevprevPt.$y);
 
                             if (ccntr == null) { // this and prevprev points are the same, make handle to be perpendicular
@@ -703,7 +703,7 @@
                                 this.setProperties(['hlx', 'hly'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
-                                dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                                 // no need to check dirLen for 0, as ccntr != this
                                 dx = (this.$y - ccntr.getY()) / dirLen;
                                 dy = (ccntr.getX() - this.$x) / dirLen;
@@ -711,13 +711,13 @@
                                 // check handle side
                                 px = (prevPt.$x + prevprevPt.$x) / 2;
                                 py = (prevPt.$y + prevprevPt.$y) / 2;
-                                if (ifMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
-                                    ifMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
+                                if (IFMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
+                                    IFMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
                                     dx = -dx;
                                     dy = -dy;
                                 }
 
-                                hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
+                                hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
                                 this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
                             }
                         }
@@ -737,7 +737,7 @@
                             this.setProperties(['hrx', 'hry'], [hx, hy]);
                         } else {
                             // calculate right handle to be tangent circle(triag(this, nextPt, nextnextPt))
-                            ccntr = ifMath.getCircumcircleCenter(
+                            ccntr = IFMath.getCircumcircleCenter(
                                 this.$x, this.$y, nextPt.$x, nextPt.$y, nextnextPt.$x, nextnextPt.$y);
 
                             if (ccntr == null) { // this and nextnext points are the same, make handle to be perpendicular
@@ -746,7 +746,7 @@
                                 this.setProperties(['hrx', 'hry'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
-                                dirLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                                 // no need to check dirLen for 0, as ccntr != this
                                 dx = (this.$y - ccntr.getY()) / dirLen;
                                 dy = (ccntr.getX() - this.$x) / dirLen;
@@ -754,13 +754,13 @@
                                 // check handle side
                                 px = (nextPt.$x + nextnextPt.$x) / 2;
                                 py = (nextPt.$y + nextnextPt.$y) / 2;
-                                if (ifMath.segmentSide(this.$x, this.$y, px, py, nextPt.$x, nextPt.$y) !=
-                                    ifMath.segmentSide(this.$x, this.$y, px, py, this.$x + dx, this.$y + dy)) {
+                                if (IFMath.segmentSide(this.$x, this.$y, px, py, nextPt.$x, nextPt.$y) !=
+                                    IFMath.segmentSide(this.$x, this.$y, px, py, this.$x + dx, this.$y + dy)) {
                                     dx = -dx;
                                     dy = -dy;
                                 }
 
-                                hLen = Math.sqrt(ifMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
+                                hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
                                 this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                             }
                         }
@@ -1033,7 +1033,7 @@
      * @private
      */
     IFPathBase.AnchorPoints.prototype._getShoulderPoint = function (pt1x, pt1y, pt1s, pt2x, pt2y, pt2s) {
-        var dist = ifMath.ptDist(pt1x, pt1y, pt2x, pt2y);
+        var dist = IFMath.ptDist(pt1x, pt1y, pt2x, pt2y);
         var sptdst;
         var p1s, p2s;
         if (pt1s == null || pt1s <= 0) {
@@ -1055,7 +1055,7 @@
         } else {
             sptdst = dist * p1s / len;
         }
-        return ifMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
+        return IFMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
     };
 
     /**
@@ -1081,7 +1081,7 @@
             if (maxLen) {
                 pt = new IFPoint(hx, hy);
             } else {
-                pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
+                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
             }
         } else {
             if (maxLen) {
@@ -1116,7 +1116,7 @@
             if (maxLen) {
                 pt = new IFPoint(hx, hy);
             } else {
-                pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
             }
         } else {
             if (maxLen) {
@@ -1185,11 +1185,11 @@
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
                 target.addVertex(IFVertex.Command.Line, pt.getX(), pt.getY());
             } else if (h2x == null) {
-                pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
                 target.addVertex(IFVertex.Command.Curve, pt.getX(), pt.getY());
                 target.addVertex(IFVertex.Command.Curve, hx, hy);
             } else {
-                pt = ifMath.getPointAtLength(curPt.$x, curPt.$y, h2x, h2y, curPt.$cl);
+                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, h2x, h2y, curPt.$cl);
                 target.addVertex(IFVertex.Command.Curve2, pt.getX(), pt.getY());
                 target.addVertex(IFVertex.Command.Curve2, hx, hy);
                 target.addVertex(IFVertex.Command.Curve2, h2x, h2y);
@@ -1354,7 +1354,7 @@
                 if (prevPt && prevPt.$hrx != null && anchorPoint.$tp == IFPathBase.AnchorPoint.Type.Connector) {
                     hx = anchorPoint.$x + (prevPt.$x - anchorPoint.$x) * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hy = anchorPoint.$y + (prevPt.$y - anchorPoint.$y) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    if (!ifMath.isEqualEps(anchorPoint.$x - hx, 0) || !ifMath.isEqualEps(anchorPoint.$y - hy, 0)) {
+                    if (!IFMath.isEqualEps(anchorPoint.$x - hx, 0) || !IFMath.isEqualEps(anchorPoint.$y - hy, 0)) {
                         anchorPoint.setProperties(['hlx', 'hly'], [hx, hy]);
                     }
                 }
@@ -1363,7 +1363,7 @@
                 if (nextPt && nextPt.$hlx != null && anchorPoint.$tp == IFPathBase.AnchorPoint.Type.Connector) {
                     hx = anchorPoint.$x + (nextPt.$x - anchorPoint.$x) * IFPathBase.AnchorPoint.HANDLE_COEFF;
                     hy = anchorPoint.$y + (nextPt.$y - anchorPoint.$y) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    if (!ifMath.isEqualEps(anchorPoint.$x - hx, 0) || !ifMath.isEqualEps(anchorPoint.$y - hy, 0)) {
+                    if (!IFMath.isEqualEps(anchorPoint.$x - hx, 0) || !IFMath.isEqualEps(anchorPoint.$y - hy, 0)) {
                         anchorPoint.setProperties(['hrx', 'hry'], [hx, hy]);
                     }
                 }

@@ -781,7 +781,7 @@
             var propName = (custom ? '@' : '$') + properties[i];
             var oldValue = this[propName];
 
-            if (force || !ifUtil.equals(value, oldValue, false)) {
+            if (force || !IFUtil.equals(value, oldValue, false)) {
                 propertiesToModify.push(properties[i]);
                 valuesToModify.push(values[i])
             }
@@ -823,7 +823,7 @@
         for (var property in properties) {
             var defaultValue = properties[property];
             var value = this['$' + property];
-            if (!ifUtil.equals(value, defaultValue, true)) {
+            if (!IFUtil.equals(value, defaultValue, true)) {
                 var myValue = filter(property, value);
                 blob[property] = myValue;
             }
@@ -962,7 +962,7 @@
      */
     IFNode.Reference.prototype.getReferenceId = function () {
         if (!this._referenceId) {
-            this._referenceId = ifUtil.uuid();
+            this._referenceId = IFUtil.uuid();
         }
         return this._referenceId;
     };

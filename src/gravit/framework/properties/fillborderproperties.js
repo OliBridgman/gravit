@@ -343,13 +343,13 @@
 
         this._panel.find('[data-property="fill-type"]').gPatternTypes('value', !fillPattern ? null : fillPattern.constructor);
 
-        this._panel.find('[data-property="_fop"]').val(ifUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
+        this._panel.find('[data-property="_fop"]').val(IFUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 
         this._panel.find('[data-property="_bpt"]')
             .gColorButton('value', stylable.getProperty('_bpt'))
             .gColorButton('scene', scene);
 
-        this._panel.find('[data-property="_bw"]').val(ifUtil.formatNumber(stylable.getProperty('_bw')));
+        this._panel.find('[data-property="_bw"]').val(IFUtil.formatNumber(stylable.getProperty('_bw')));
 
         this._panel.find('[data-property^="_ba"]').each(function (index, element) {
             var $element = $(element);
@@ -371,7 +371,7 @@
 
         this._panel.find('[data-property="_bml"]')
             .css('display', stylable.getProperty('_blj') === IFPaintCanvas.LineJoin.Miter ? '' : ' none')
-            .val(ifUtil.formatNumber(stylable.getProperty('_bml')));
+            .val(IFUtil.formatNumber(stylable.getProperty('_bml')));
     };
 
     /**

@@ -720,7 +720,7 @@
         this._palettes = new GPalettes(palettesPart);
 
         // Append the corresponding hardware class to our body
-        switch (ifSystem.hardware) {
+        switch (IFSystem.hardware) {
             case IFSystem.Hardware.Desktop:
                 body.addClass('g-desktop');
                 break;

@@ -207,7 +207,7 @@
         REMOVE: 102
     };
 
-    IFKey.prototype.translateKey = function (keyCode) {
+    IFKey.translateKey = function (keyCode) {
         var result = null;
         switch (keyCode) {
             case 32 :
@@ -308,9 +308,9 @@
         return result;
     };
 
-    IFKey.prototype.transformKey = function (keyCode) {
+    IFKey.transformKey = function (keyCode) {
         if (keyCode === IFKey.Constant.META || keyCode === IFKey.Constant.COMMAND) {
-            if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
+            if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
                 return IFKey.Constant.COMMAND;
             } else {
                 return IFKey.Constant.CONTROL;
@@ -318,7 +318,7 @@
         } else if (keyCode === IFKey.Constant.OPTION) {
             return IFKey.Constant.ALT;
         } else if (keyCode === IFKey.Constant.REMOVE) {
-            if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS) {
+            if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS) {
                 return IFKey.Constant.BACKSPACE;
             } else {
                 return IFKey.Constant.DELETE;
@@ -328,14 +328,14 @@
         }
     };
 
-    IFKey.prototype.toLocalizedName = function (keyCode) {
-        keyCode = this.transformKey(keyCode);
+    IFKey.toLocalizedName = function (keyCode) {
+        keyCode = IFKey.transformKey(keyCode);
         return ifLocale.getValue(IFKey, "key." + keyCode.toString());
     };
 
-    IFKey.prototype.toLocalizedShort = function (keyCode) {
+    IFKey.toLocalizedShort = function (keyCode) {
         // Handle special chars on mac
-        if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
+        if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
             if (keyCode == IFKey.Constant.TAB) {
                 return '\u21E5';
             } else if (keyCode == IFKey.Constant.OPTION || keyCode == IFKey.Constant.ALT) {
@@ -363,7 +363,7 @@
             }
         }
 
-        keyCode = this.transformKey(keyCode);
+        keyCode = IFKey.transformKey(keyCode);
         var name = ifLocale.getValue(IFKey, "key." + keyCode.toString() + ".short", null);
         if (!name) {
             return ifLocale.getValue(IFKey, "key." + keyCode.toString());
@@ -372,8 +372,8 @@
         }
     };
 
-    IFKey.prototype.toSystemShortcut = function (character) {
-        if (ifSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && ifSystem.hardware === IFSystem.Hardware.Desktop) {
+    IFKey.toSystemShortcut = function (character) {
+        if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
             if (character === '-') {
                 return '\u2212';
             } else if (character === '+') {
@@ -383,25 +383,24 @@
         return character.toUpperCase();
     }
 
-    IFKey.prototype.shortcutToString = function (shortcut) {
+    IFKey.shortcutToString = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
                 // On platform others than mac we'll use a separator
-                if (ifSystem.operatingSystem != IFSystem.OperatingSystem.OSX_IOS) {
+                if (IFSystem.operatingSystem != IFSystem.OperatingSystem.OSX_IOS) {
                     result += "+";
                 }
             }
             if (typeof shortcut[i] == 'number') {
-                result += this.toLocalizedShort(shortcut[i]);
+                result += IFKey.toLocalizedShort(shortcut[i]);
             } else {
                 // Return uppercase chars
-                result += this.toSystemShortcut(shortcut[i]);
+                result += IFKey.toSystemShortcut(shortcut[i]);
             }
         }
         return result;
     };
 
     _.IFKey = IFKey;
-    _.ifKey = new IFKey();
 })(this);

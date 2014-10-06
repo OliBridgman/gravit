@@ -31,7 +31,7 @@
         /** Outer Angle */
         oa: 0,
         /** Inner Angle */
-        ia: ifMath.PI2 - Math.PI / 3,
+        ia: IFMath.PI2 - Math.PI / 3,
         /** Outer Corner Type */
         oct: IFPathBase.CornerType.Rounded,
         /** Inner Corner Type */
@@ -52,8 +52,8 @@
     IFPolygon.prototype.iterateSegments = function (iterator, includeTransform) {
         // Accuracy or considering start and end angles the same (2*PI overall)
         var ACC = 1.0e-6;
-        var endArc = this.$oa + ifMath.PI2;
-        var stepArc = ifMath.PI2 / this.$pts;
+        var endArc = this.$oa + IFMath.PI2;
+        var stepArc = IFMath.PI2 / this.$pts;
         var deltaArc = this.$ia - this.$oa;
 
         var transform = includeTransform ? this.$trf : null;

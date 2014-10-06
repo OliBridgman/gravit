@@ -11,9 +11,9 @@
         this._functions = {};
 
         // Try to setup default language using system
-        if ("en" === ifSystem.language) {
+        if ("en" === IFSystem.language) {
             this.setLanguage(IFLocale.Language.English);
-        } else if ("de" === ifSystem.language) {
+        } else if ("de" === IFSystem.language) {
             this.setLanguage(IFLocale.Language.German);
         }
     };

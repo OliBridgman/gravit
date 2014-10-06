@@ -167,7 +167,7 @@
     /** @private */
     GLayersPalette.prototype._insertLayer = function (layerOrItem) {
         // Create an unique treeId for the new tree node
-        var treeId = ifUtil.uuid();
+        var treeId = IFUtil.uuid();
 
         // Either insert before or append
         var nextNode = layerOrItem.getNext() ? this._getLayerTreeNode(layerOrItem.getNext()) : null;

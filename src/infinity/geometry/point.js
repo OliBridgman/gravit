@@ -24,7 +24,7 @@
         if (left && left == right) {
             return true;
         } else if (left && right) {
-            return ifMath.isEqualEps(left._x, right._x) && ifMath.isEqualEps(left._y, right._y);
+            return IFMath.isEqualEps(left._x, right._x) && IFMath.isEqualEps(left._y, right._y);
         } else {
             return false;
         }

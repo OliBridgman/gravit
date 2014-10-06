@@ -60,9 +60,9 @@
     /**
      * The identifiers of the locations relatively to transform box
      */
-    IFTransformBox.OUTLINE = ifUtil.uuid();
-    IFTransformBox.INSIDE = ifUtil.uuid();
-    IFTransformBox.OUTSIDE = ifUtil.uuid();
+    IFTransformBox.OUTLINE = IFUtil.uuid();
+    IFTransformBox.INSIDE = IFUtil.uuid();
+    IFTransformBox.OUTSIDE = IFUtil.uuid();
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFTransformBox Class
@@ -293,7 +293,7 @@
         var cntr = transform.mapPoint(new IFPoint(this.cx, this.cy));
         var angle = Math.atan2(location.getY() - cntr.getY(), location.getX() - cntr.getX()) + Math.PI * 7 / 8;
         if (angle < 0) {
-            angle += ifMath.PI2;
+            angle += IFMath.PI2;
         }
         rotSegm = Math.floor(angle / (Math.PI / 4));
         if (rotSegm < 0 || rotSegm > 7) {

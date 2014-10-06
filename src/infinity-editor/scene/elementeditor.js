@@ -528,7 +528,7 @@
                 }
             }
 
-            if (!ifUtil.equals(newSelection, this._partSelection, false)) {
+            if (!IFUtil.equals(newSelection, this._partSelection, false)) {
                 this._updatePartSelection(newSelection);
             }
         }

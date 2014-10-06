@@ -52,9 +52,9 @@
         if (left && left == right) {
             return true;
         } else if (left && right) {
-            return ifMath.isEqualEps(left._sx, right._sx) && ifMath.isEqualEps(left._shy, right._shy) &&
-                ifMath.isEqualEps(left._shx, right._shx) && ifMath.isEqualEps(left._sy, right._sy) &&
-                ifMath.isEqualEps(left._tx, right._tx) && ifMath.isEqualEps(left._ty, right._ty);
+            return IFMath.isEqualEps(left._sx, right._sx) && IFMath.isEqualEps(left._shy, right._shy) &&
+                IFMath.isEqualEps(left._shx, right._shx) && IFMath.isEqualEps(left._sy, right._sy) &&
+                IFMath.isEqualEps(left._tx, right._tx) && IFMath.isEqualEps(left._ty, right._ty);
         } else {
             return false;
         }
@@ -107,9 +107,9 @@
      * @version 1.0
      */
     IFTransform.prototype.isIdentity = function () {
-        return ifMath.isEqualEps(this._sx, 1.0) && ifMath.isEqualEps(this._shy, 0.0) &&
-            ifMath.isEqualEps(this._shx, 0.0) && ifMath.isEqualEps(this._sy, 1.0) &&
-            ifMath.isEqualEps(this._tx, 0.0) && ifMath.isEqualEps(this._ty, 0.0);
+        return IFMath.isEqualEps(this._sx, 1.0) && IFMath.isEqualEps(this._shy, 0.0) &&
+            IFMath.isEqualEps(this._shx, 0.0) && IFMath.isEqualEps(this._sy, 1.0) &&
+            IFMath.isEqualEps(this._tx, 0.0) && IFMath.isEqualEps(this._ty, 0.0);
     };
 
     /**
@@ -117,7 +117,7 @@
      * @version 1.0
      */
     IFTransform.prototype.isValid = function () {
-        return Math.abs(this._sx) > ifMath.defaultEps && Math.abs(this._sy) > ifMath.defaultEps;
+        return Math.abs(this._sx) > IFMath.defaultEps && Math.abs(this._sy) > IFMath.defaultEps;
     };
 
     /**

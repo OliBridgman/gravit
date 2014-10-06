@@ -94,7 +94,7 @@
 
                                     if (isCompatible) {
                                         var myPattern = $this.data('gpatterntarget').pattern;
-                                        if (!ifUtil.equals(source, myPattern)) {
+                                        if (!IFUtil.equals(source, myPattern)) {
                                             methods.value.call(self, source);
                                             $this.trigger('patternchange', source);
                                         }

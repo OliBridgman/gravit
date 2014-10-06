@@ -1486,7 +1486,7 @@
      */
     IFElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (ifUtil.containsObjectKey(args.properties, properties)) {
+            if (IFUtil.containsObjectKey(args.properties, properties)) {
                 switch (change) {
                     case IFNode._Change.BeforePropertiesChange:
                         this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
@@ -1515,16 +1515,12 @@
      */
     IFElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
         if (change == IFNode._Change.AfterPropertiesChange) {
-            if (ifUtil.containsObjectKey(args.properties, properties)) {
+            if (IFUtil.containsObjectKey(args.properties, properties)) {
                 this._notifyChange(IFElement._Change.InvalidationRequest);
                 return true;
             }
         }
         return false;
-    };
-
-    IFElement.prototype.validateSelectionChange = function () {
-        return true;
     };
 
     _.IFElement = IFElement;

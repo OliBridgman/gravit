@@ -18,8 +18,8 @@
         // Snap to units if desired
         if (this._scene.getProperty('unitSnap') === true) {
             return result = {
-                x: {value: ifMath.round(x, true), guide: null},
-                y: {value: ifMath.round(y, true), guide: null}};
+                x: {value: IFMath.round(x, true), guide: null},
+                y: {value: IFMath.round(y, true), guide: null}};
         }
 
         return null;

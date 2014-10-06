@@ -25,7 +25,7 @@
     /** @override */
     GComplementaryMatcher.prototype.match = function (referenceColor) {
         var hsl = referenceColor.asHSL();
-        hsl[0] = ifMath.normalizeAngleDegrees(hsl[0] + 180);
+        hsl[0] = IFMath.normalizeAngleDegrees(hsl[0] + 180);
         return [new IFColor(IFColor.Type.HSL, hsl)];
     };
 

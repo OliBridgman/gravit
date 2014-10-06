@@ -148,7 +148,7 @@
         var metaKey = false;
         var spaceKey = false;
 
-        var _evMetaKey  = (ifSystem.operatingSystem !== IFSystem.OperatingSystem.OSX_IOS || ifSystem.hardware !== IFSystem.Hardware.Desktop) ? event.ctrlKey : event.metaKey;
+        var _evMetaKey  = (IFSystem.operatingSystem !== IFSystem.OperatingSystem.OSX_IOS || IFSystem.hardware !== IFSystem.Hardware.Desktop) ? event.ctrlKey : event.metaKey;
 
         // Update global modifiers
         if (_evMetaKey != this.modifiers.metaKey) {

@@ -153,7 +153,7 @@
 
             if (typeof key == 'number') {
                 // we want a system-translated key here
-                var key = ifKey.transformKey(key);
+                var key = IFKey.transformKey(key);
                 switch (key) {
                     // Modifiers
                     case IFKey.Constant.CONTROL:

@@ -851,7 +851,7 @@
         var b = rgb[2];
         var a = Math.round(rgb[3] * 2.55);
 
-        if (ifSystem.littleEndian) {
+        if (IFSystem.littleEndian) {
             return (a << 24) | (b << 16) | (g << 8) | r;
         } else {
             return (r << 24) | (g << 16) | (b << 8) | a;

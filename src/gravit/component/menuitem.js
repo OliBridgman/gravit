@@ -294,7 +294,7 @@
         this._shortcutHint = hint;
         var shortcutElement = this._htmlElement.find('.g-menu-item-shortcut');
         if (this._shortcutHint && this._shortcutHint.length > 0) {
-            shortcutElement.text(ifKey.shortcutToString(hint));
+            shortcutElement.text(IFKey.shortcutToString(hint));
             shortcutElement.css('display', '');
         } else {
             shortcutElement.empty();
@@ -472,7 +472,7 @@
         //      - or -
         //    Are a root item and part of a menu-bar which' menu is opened
         if (this._type == GMenuItem.Type.Menu &&
-            ifSystem.hardware === IFSystem.Hardware.Desktop &&
+            IFSystem.hardware === IFSystem.Hardware.Desktop &&
             (!this.isRootItem() || (this.isRootMenuBarItem() && this.getMenuBar().isActive()))) {
             this._openMenu();
         }
@@ -512,7 +512,7 @@
             evt.preventDefault();
 
             // Open Sub-Menu if we're a Sub-Item and on Root or not on Desktop which doesn't have mouse-over
-            if (this._type === GMenuItem.Type.Menu && (this.isRootItem() || ifSystem.hardware !== IFSystem.Hardware.Desktop)) {
+            if (this._type === GMenuItem.Type.Menu && (this.isRootItem() || IFSystem.hardware !== IFSystem.Hardware.Desktop)) {
                 // Toggle our menu
                 if (this._htmlElement.hasClass('g-active')) {
                     this.getMenu().close();

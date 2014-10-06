@@ -94,7 +94,7 @@
     IFVertexInfo.prototype._hitTestSegment = function (px1, py1, px2, py2, x, y, sqrOutline, chainIdx, result) {
         // ptMin[0] for [a, b]: 0 - min dist in a; 1 - min dist in b; 0 < t < 1- min dist in a+t*(b-a) ==
         var ptMin = [];
-        var sqrDst = ifMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
+        var sqrDst = IFMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
 
         if (sqrDst <= sqrOutline) {
             // Fill result
@@ -176,12 +176,12 @@
         middlePtx = (px1 + px2 + cx) / 3;
         middlePty = (py1 + py2 + cy) / 3;
 
-        d1 = ifMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
+        d1 = IFMath.sqrSegmentDist(px1, py1, px2, py2, x, y, ptMin, sqrOutline);
         if (d1 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (ifMath.segmentSide(px1, py1, px2, py2, x, y) *
-            ifMath.segmentSide(px1, py1, px2, py2, middlePtx, middlePty) < 0) {
+        else if (IFMath.segmentSide(px1, py1, px2, py2, x, y) *
+            IFMath.segmentSide(px1, py1, px2, py2, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
@@ -204,21 +204,21 @@
             return true;
         }
 
-        d2 = ifMath.sqrSegmentDist(px1, py1, cx, cy, x, y);
+        d2 = IFMath.sqrSegmentDist(px1, py1, cx, cy, x, y);
         if (d2 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (ifMath.segmentSide(px1, py1, cx, cy, x, y) *
-            ifMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) < 0) {
+        else if (IFMath.segmentSide(px1, py1, cx, cy, x, y) *
+            IFMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
-        d3 = ifMath.sqrSegmentDist(cx, cy, px2, py2, x, y);
+        d3 = IFMath.sqrSegmentDist(cx, cy, px2, py2, x, y);
         if (d3 <= sqrOutline) {
             hitPossible = true;
         }
-        else if (ifMath.segmentSide(cx, cy, px2, py2, x, y) *
-            ifMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) < 0) {
+        else if (IFMath.segmentSide(cx, cy, px2, py2, x, y) *
+            IFMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) < 0) {
             insideFlag = false;
         }
 
@@ -279,7 +279,7 @@
         coeffG[3] = d;
 
         inclEnds = false;
-        gRootsN = ifMath.getCubicRoots(coeffG, 0.0, 1.0, gRoots, inclEnds, acc);
+        gRootsN = IFMath.getCubicRoots(coeffG, 0.0, 1.0, gRoots, inclEnds, acc);
 
         if (gRootsN == 0) {
             // ends are already checked
@@ -290,7 +290,7 @@
         hitPtIdx = gRootsN + 1;
         // calculate F(t) in g(t) roots, find min
         for (i = 0; i < gRootsN; ++i) {
-            tmp1 = ifMath.evalPoly(coeffF, 4, gRoots[i]);
+            tmp1 = IFMath.evalPoly(coeffF, 4, gRoots[i]);
             if (min > tmp1) {
                 min = tmp1;
                 hitPtIdx = i;
@@ -475,13 +475,13 @@
         coeffF[5] = (c1x * d1 + c1y * d2) * 2;
         coeffF[6] = d1 * d1 + d2 * d2;
 
-        ifMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
+        IFMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
 
-        ifMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
+        IFMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
 
-        if (ifMath.estimPositiveRootsDescartes(coeffInversed, 5) == 0) {
-            sqrDst1 = ifMath.ptSqrDist(px1, py1, x, y);
-            sqrDst2 = ifMath.ptSqrDist(px2, py2, x, y);
+        if (IFMath.estimPositiveRootsDescartes(coeffInversed, 5) == 0) {
+            sqrDst1 = IFMath.ptSqrDist(px1, py1, x, y);
+            sqrDst2 = IFMath.ptSqrDist(px2, py2, x, y);
 
             if (sqrDst1 <= sqrOutline || sqrDst2 <= sqrOutline) {
                 if (result) {
@@ -506,7 +506,7 @@
         // 2. Find initial interval (curve) splitPoints at [0, 1],
         // which are curve inflate points, or such points,
         // that P'x = 0 or P'y = 0
-        nPoints = ifMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPtsNew);
+        nPoints = IFMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPtsNew);
 
         // 3. Based on splitPoints iterate through intervals,
         // and for each interval perform the following steps:
@@ -521,9 +521,9 @@
 
             if (i == 0) {
                 A1 = sPtsNew[i];
-                pA1x = ifMath.evalCubic(ax, b1x, c1x, px1, A1);
-                pA1y = ifMath.evalCubic(ay, b1y, c1y, py1, A1);
-                dA1 = ifMath.ptSqrDist(pA1x, pA1y, x, y);
+                pA1x = IFMath.evalCubic(ax, b1x, c1x, px1, A1);
+                pA1y = IFMath.evalCubic(ay, b1y, c1y, py1, A1);
+                dA1 = IFMath.ptSqrDist(pA1x, pA1y, x, y);
                 if (dA1 <= sqrOutline) {
                     if (result) {
                         result.segment = chainIdx;
@@ -542,9 +542,9 @@
                 dA1 = dA2;
             }
             A2 = sPtsNew[i + 1];
-            pA2x = ifMath.evalCubic(ax, b1x, c1x, px1, A2);
-            pA2y = ifMath.evalCubic(ay, b1y, c1y, py1, A2);
-            dA2 = ifMath.ptSqrDist(pA2x, pA2y, x, y);
+            pA2x = IFMath.evalCubic(ax, b1x, c1x, px1, A2);
+            pA2y = IFMath.evalCubic(ay, b1y, c1y, py1, A2);
+            dA2 = IFMath.ptSqrDist(pA2x, pA2y, x, y);
             if (dA2 <= sqrOutline) {
                 if (result) {
                     result.segment = chainIdx;
@@ -556,8 +556,8 @@
                 return true;
             }
 
-            ifMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
-            ifMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
+            IFMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
+            IFMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
 
             // splitPoints were received such a way, that curve parts don't change curvature direction,
             // and winding angle from one end to the other is not more than 90 degrees.
@@ -576,12 +576,12 @@
                 else {
                     k = j + 1;
                 }
-                if (ifMath.sqrSegmentDist(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) <= sqrOutline) {
+                if (IFMath.sqrSegmentDist(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) <= sqrOutline) {
                     hitPossible = true;
                     break;
                 }
-                if (ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) *
-                    ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
+                if (IFMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y) *
+                    IFMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
                     insideFlag = false;
                 }
             }
@@ -595,16 +595,16 @@
             // If f5(Ai) = 0, set Ai = Ai + eps
             // If f5(Ai+1) = 0, set Ai+1 = Ai+1 - eps
 
-            v51 = ifMath.evalPoly(coeffFDeriv, 5, A1);
+            v51 = IFMath.evalPoly(coeffFDeriv, 5, A1);
             // TODO: change 0.005 with the correct value, which guarantees accuracy
-            if (ifMath.isEqualEps(v51, 0)) {
+            if (IFMath.isEqualEps(v51, 0)) {
                 A1 += 0.005;
-                v51 = ifMath.evalPoly(coeffFDeriv, 5, A1);
+                v51 = IFMath.evalPoly(coeffFDeriv, 5, A1);
             }
-            v52 = ifMath.evalPoly(coeffFDeriv, 5, A2);
-            if (ifMath.isEqualEps(v52, 0)) {
+            v52 = IFMath.evalPoly(coeffFDeriv, 5, A2);
+            if (IFMath.isEqualEps(v52, 0)) {
                 A2 -= 0.005;
-                v52 = ifMath.evalPoly(coeffFDeriv, 5, A2);
+                v52 = IFMath.evalPoly(coeffFDeriv, 5, A2);
             }
 
             // 6. Inverse interval [Ai, Ai+1] to [0, inf) and estimate by Descartes rule of sign
@@ -613,9 +613,9 @@
             // Actually, no such check is needed due to step 4.
             // If N = 1 , proceed to step 7.
             // If N > 1, proceed to step 8.
-            ifMath.inversePolyInterval(coeffFDeriv, 5, A1, A2, coeffInversed);
+            IFMath.inversePolyInterval(coeffFDeriv, 5, A1, A2, coeffInversed);
 
-            nRoots = ifMath.estimPositiveRootsDescartes(coeffInversed, 5);
+            nRoots = IFMath.estimPositiveRootsDescartes(coeffInversed, 5);
             if (nRoots == 0) {
                 continue;
             }
@@ -625,22 +625,22 @@
             // calculate distance for this root, return true if <= sqrOutline
             if (!coeffFDeriv2) {
                 coeffFDeriv2 = new Float64Array(5);
-                ifMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
+                IFMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
             }
 
             if (!coeffFDeriv3) {
                 coeffFDeriv3 = new Float64Array(4);
-                ifMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
+                IFMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
             }
 
             if (nRoots == 1) {
-                r1 = ifMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
+                r1 = IFMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
                 if (r1 == null) {
                     r1 = (A1 + A2) / 2;
                 }
-                r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
-                r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
-                sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
+                r1x = IFMath.evalCubic(ax, b1x, c1x, px1, r1);
+                r1y = IFMath.evalCubic(ay, b1y, c1y, py1, r1);
+                sqrDst = IFMath.ptSqrDist(r1x, r1y, x, y);
                 if (sqrDst <= sqrOutline) {
                     if (result) {
                         result.segment = chainIdx;
@@ -661,12 +661,12 @@
 
             if (nRoots > 1) {
                 if (sturmSeq.length == 0) {
-                    ifMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
+                    IFMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
                 }
 
                 nSignVars = [];
                 fVals = [v51, v52];
-                nRootsNew = ifMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2,
+                nRootsNew = IFMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2,
                     sturmSeq, nSignVars, fVals);
 
                 if (nRootsNew == 0) {
@@ -674,14 +674,14 @@
                 }
 
                 if (nRootsNew == 1) {
-                    r1 = ifMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
+                    r1 = IFMath.locateByNewton(A1, A2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                         sturmSeq, nSignVars);
                     if (r1 == null) {
                         r1 = (A1 + A2) / 2;
                     }
-                    r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
-                    r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
-                    sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
+                    r1x = IFMath.evalCubic(ax, b1x, c1x, px1, r1);
+                    r1y = IFMath.evalCubic(ay, b1y, c1y, py1, r1);
+                    sqrDst = IFMath.ptSqrDist(r1x, r1y, x, y);
                     if (sqrDst <= sqrOutline) {
                         if (result) {
                             result.segment = chainIdx;
@@ -696,19 +696,19 @@
 
                 if (nRootsNew > 1) {
                     var rIntervals = [];
-                    ifMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2, sturmSeq, nRootsNew,
+                    IFMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, A1, A2, sturmSeq, nRootsNew,
                         nSignVars, fVals, rIntervals);
 
                     for (var s = 0; s < rIntervals.length; ++s) {
-                        r1 = ifMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
+                        r1 = IFMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
                             rIntervals[s][2], rIntervals[s][3], coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                             sturmSeq);
                         if (r1 == null) {
                             r1 = (rIntervals[s][0] + rIntervals[s][1]) / 2;
                         }
-                        r1x = ifMath.evalCubic(ax, b1x, c1x, px1, r1);
-                        r1y = ifMath.evalCubic(ay, b1y, c1y, py1, r1);
-                        sqrDst = ifMath.ptSqrDist(r1x, r1y, x, y);
+                        r1x = IFMath.evalCubic(ax, b1x, c1x, px1, r1);
+                        r1y = IFMath.evalCubic(ay, b1y, c1y, py1, r1);
+                        sqrDst = IFMath.ptSqrDist(r1x, r1y, x, y);
                         if (sqrDst <= sqrOutline) {
                             if (result) {
                                 result.segment = chainIdx;
@@ -746,9 +746,9 @@
     IFVertexInfo.prototype._hitUnderSegment = function (px1, py1, px2, py2, x, y, countSegm) {
         var s1, s2, s3;
 
-        s1 = ifMath.segmentSide(0, 0, px1, py1, x, y);
-        s2 = ifMath.segmentSide(px1, py1, px2, py2, x, y);
-        s3 = ifMath.segmentSide(px2, py2, 0, 0, x, y);
+        s1 = IFMath.segmentSide(0, 0, px1, py1, x, y);
+        s2 = IFMath.segmentSide(px1, py1, px2, py2, x, y);
+        s3 = IFMath.segmentSide(px2, py2, 0, 0, x, y);
 
         if (s1 > 0 && s2 > 0 && s3 > 0) {
             return 2;
@@ -814,7 +814,7 @@
         var chullres; // result of checking against controls convex hull
         var sideC; // value of curve function in the control point
         var sidePt; // value of curve function in the point to test
-        var signReg = -ifMath.segmentSide(px1, py1, px2, py2, cx, cy); // the region sign
+        var signReg = -IFMath.segmentSide(px1, py1, px2, py2, cx, cy); // the region sign
 
         if (signReg == 0) {
             // mirrored Y is noticed
@@ -886,17 +886,17 @@
             var middlePtx = (px1 + cx + px2) / 3;
             var middlePty = (py1 + cy + py2) / 3;
 
-            s3 = ifMath.segmentSide(px2, py2, px1, py1, x, y);
+            s3 = IFMath.segmentSide(px2, py2, px1, py1, x, y);
             if (s3 == 0) {
                 return 0;
             }
 
-            s1 = ifMath.segmentSide(px1, py1, cx, cy, x, y);
-            s2 = ifMath.segmentSide(cx, cy, px2, py2, x, y);
+            s1 = IFMath.segmentSide(px1, py1, cx, cy, x, y);
+            s2 = IFMath.segmentSide(cx, cy, px2, py2, x, y);
 
-            if (s1 != ifMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) ||
-                s2 != ifMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) ||
-                s3 != ifMath.segmentSide(px2, py2, px1, py1, middlePtx, middlePty)) {
+            if (s1 != IFMath.segmentSide(px1, py1, cx, cy, middlePtx, middlePty) ||
+                s2 != IFMath.segmentSide(cx, cy, px2, py2, middlePtx, middlePty) ||
+                s3 != IFMath.segmentSide(px2, py2, px1, py1, middlePtx, middlePty)) {
 
                 return -1;
             }
@@ -993,7 +993,7 @@
         A = bx * ay - by * ax;
         B = 2 * (cx * ay - cy * ax);
         C = cx * by - cy * bx;
-        ifMath.getQuadraticRoots(A, B, C, splitPoints);
+        IFMath.getQuadraticRoots(A, B, C, splitPoints);
 
         // a curve may have a self-intersection point only if it doesn't have inflate points
         if (splitPoints.length == 0) {
@@ -1014,8 +1014,8 @@
             coeffPY[2] = c1y;
             coeffPY[3] = py1;
 
-            ifMath.shiftPoly(coeffPX, 3, 0.5, coeffPShiftedX);
-            ifMath.shiftPoly(coeffPY, 3, 0.5, coeffPShiftedY);
+            IFMath.shiftPoly(coeffPX, 3, 0.5, coeffPShiftedX);
+            IFMath.shiftPoly(coeffPY, 3, 0.5, coeffPShiftedY);
 
             // ^t1,2 = (Cac +- sqrt(12Cab*Cbc - 3Cac^2)) / 2Cab
             Xa = -coeffPShiftedX[0];
@@ -1054,7 +1054,7 @@
         splitPoints.push(0.0);
         splitPoints.push(1.0);
         var sPtsNew = [];
-        var nPoints = ifUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
+        var nPoints = IFUtil.uSortSegment(0, 1, splitPoints, sPtsNew);
 
         // 2. Implicitize each peace
         ctrlsx = new Float64Array(4);
@@ -1081,8 +1081,8 @@
                 ctrlsy[3] = py2;
             }
             else {
-                ifMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
-                ifMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
+                IFMath.getCtrlPts(px1, px2, cx1, cx2, A1, A2, ctrlsx);
+                IFMath.getCtrlPts(py1, py2, cy1, cy2, A1, A2, ctrlsy);
             }
 
             // splitPoints were received such a way, that curve parts don't change curvature direction,
@@ -1160,11 +1160,11 @@
                         k = j + 1;
                     }
 
-                    s1 = ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y);
+                    s1 = IFMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], x, y);
                     if (j == 3 && s1 == 0) {
                         return 0;
                     }
-                    if (s1 * ifMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
+                    if (s1 * IFMath.segmentSide(ctrlsx[j], ctrlsy[j], ctrlsx[k], ctrlsy[k], middlePtx, middlePty) < 0) {
                         return -1;
                     }
                 }
@@ -1172,7 +1172,7 @@
                 return 1;
             }
 
-            if (ifMath.isEqualEps(ctrlsx[0], ctrlsx[1]) && ifMath.isEqualEps(ctrlsy[0], ctrlsy[1])) {
+            if (IFMath.isEqualEps(ctrlsx[0], ctrlsx[1]) && IFMath.isEqualEps(ctrlsy[0], ctrlsy[1])) {
                 tot += this._evalConicReg(ctrlsx[0], ctrlsy[0], ctrlsx[3], ctrlsy[3], ctrlsx[2], ctrlsy[2],
                     cHullCheck, curvFunc, x, y);
             }
@@ -1193,7 +1193,7 @@
      * @param {Number} y the y-position of the point to hit-test against
      * @param {IFVertexSource} source the vertex source used for hit-testing
      * @param {Number} outlineWidth the width of the outline. If this is
-     * zero, it is assumed that it is sqrt(ifMath.defaultEps)
+     * zero, it is assumed that it is sqrt(IFMath.defaultEps)
      * @param {Boolean} area if true, the fill area will be tested as well,
      * otherwise only the outline will be considered
      * @param {IFVertexInfo.HitResult} result if the function returns true, means
@@ -1210,7 +1210,7 @@
         var chainIdx = 0;
         var res = false;
         var vertex = new IFVertex();
-        var sqrOutline = outlineWidth ? (outlineWidth / 2) * (outlineWidth / 2) : ifMath.defaultEps;
+        var sqrOutline = outlineWidth ? (outlineWidth / 2) * (outlineWidth / 2) : IFMath.defaultEps;
         var tot = 0;
         var xshift = 0;
 
@@ -1222,7 +1222,7 @@
         // With the change while counting result: [-1, -1/2, 0, 1/2, 1] -> [-2, -1, 0, 1, 2]
 
         // if x == 0 and y == 0, everything must be shifted for inside testing
-        if (ifMath.isEqualEps(x, 0.0) && ifMath.isEqualEps(y, 0.0)) {
+        if (IFMath.isEqualEps(x, 0.0) && IFMath.isEqualEps(y, 0.0)) {
             xshift = 1;
         }
 
@@ -1386,7 +1386,7 @@
                     t = (px1 - cx) / s;
                     if (t > 0 && t < 1) {
                         px = (px1 * px2 - cx * cx) / (px2 - 2 * cx + px1);
-                        py = ifMath.getCurveAtT(py1, py2, cy, t);
+                        py = IFMath.getCurveAtT(py1, py2, cy, t);
                         measurePoint(px, py);
                     }
                 }
@@ -1399,7 +1399,7 @@
                     t = (py1 - cy) / s;
                     if (t > 0 && t < 1) {
                         py = (py1 * py2 - cy * cy) / (py2 - 2 * cy + py1);
-                        px = ifMath.getCurveAtT(px1, px2, cx, t);
+                        px = IFMath.getCurveAtT(px1, px2, cx, t);
                         measurePoint(px, py);
                     }
                 }
@@ -1431,8 +1431,8 @@
                     var py = 0;
 
                     if (t > 0 && t < 1) {
-                        px = ifMath.getCubicCurveAtT(px1, px2, cx1, cx2, t);
-                        py = ifMath.getCubicCurveAtT(py1, py2, cy1, cy2, t);
+                        px = IFMath.getCubicCurveAtT(px1, px2, cx1, cx2, t);
+                        py = IFMath.getCubicCurveAtT(py1, py2, cy1, cy2, t);
                         measurePoint(px, py);
                     }
                 };

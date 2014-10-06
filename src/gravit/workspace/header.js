@@ -181,7 +181,7 @@
             .find('*').prop('disabled', !window);
 
         if (window) {
-            var zoomLevel = ifMath.round(window.getView().getZoom() * 100, false, 0);
+            var zoomLevel = IFMath.round(window.getView().getZoom() * 100, false, 0);
             zoom
                 .find('option:first-child')
                 .text(zoomLevel.toString() + '%')

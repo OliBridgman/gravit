@@ -13,9 +13,9 @@
     IFObject.inherit(IFRectangleEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFRectangleEditor, IFRectangle);
 
-    IFRectangleEditor.LEFT_SHOULDER_PART_ID = ifUtil.uuid();
-    IFRectangleEditor.RIGHT_SHOULDER_PART_ID = ifUtil.uuid();
-    IFRectangleEditor.ANY_SHOULDER_PART_ID = ifUtil.uuid();
+    IFRectangleEditor.LEFT_SHOULDER_PART_ID = IFUtil.uuid();
+    IFRectangleEditor.RIGHT_SHOULDER_PART_ID = IFUtil.uuid();
+    IFRectangleEditor.ANY_SHOULDER_PART_ID = IFUtil.uuid();
 
     /** @override */
     IFEllipseEditor.prototype.getBBoxMargin = function () {
@@ -57,10 +57,10 @@
                 var nearLPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearLPosition = sourceTransform ? sourceTransform.mapPoint(nearLPosition) : nearLPosition;
 
-                var newLShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newLShoulderPt = IFMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearLPosition.getX(), nearLPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newLVal = ifMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
+                newLVal = IFMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
             if (partId.id === IFRectangleEditor.RIGHT_SHOULDER_PART_ID ||
@@ -70,10 +70,10 @@
                 var nearRPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearRPosition = sourceTransform ? sourceTransform.mapPoint(nearRPosition) : nearRPosition;
 
-                var newRShoulderPt = ifMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newRShoulderPt = IFMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearRPosition.getX(), nearRPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newRVal = ifMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
+                newRVal = IFMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
 

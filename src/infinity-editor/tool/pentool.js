@@ -345,11 +345,11 @@
                     if (prevPt) {
                         var prevX = prevPt.getProperty('x');
                         var prevY = prevPt.getProperty('y');
-                        var dirLen = Math.sqrt(ifMath.ptSqrDist(ptx, pty, prevX, prevY));
-                        if (!ifMath.isEqualEps(dirLen, 0)) {
+                        var dirLen = Math.sqrt(IFMath.ptSqrDist(ptx, pty, prevX, prevY));
+                        if (!IFMath.isEqualEps(dirLen, 0)) {
                             var ex = (ptx - prevX) / dirLen;
                             var ey = (pty - prevY) / dirLen;
-                            var hLen = ifMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            var hLen = IFMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
                             if (hLen > 0) {
                                 hrx = ptx + ex * hLen;
                                 hry = pty + ey * hLen;
@@ -376,11 +376,11 @@
                     if (nextPt) {
                         var nextX = nextPt.getProperty('x');
                         var nextY = nextPt.getProperty('y');
-                        var dirLen = Math.sqrt(ifMath.ptSqrDist(ptx, pty, nextX, nextY));
-                        if (!ifMath.isEqualEps(dirLen, 0)) {
+                        var dirLen = Math.sqrt(IFMath.ptSqrDist(ptx, pty, nextX, nextY));
+                        if (!IFMath.isEqualEps(dirLen, 0)) {
                             var ex = (ptx - nextX) / dirLen;
                             var ey = (pty - nextY) / dirLen;
-                            var hLen = ifMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
+                            var hLen = IFMath.vDotProduct(ex, ey, newNativePos.getX() - ptx, newNativePos.getY() - pty);
                             if (hLen > 0) {
                                 hlx = ptx + ex * hLen;
                                 hly = pty + ey * hLen;
@@ -549,7 +549,7 @@
             var transformToNewPos = this._pathEditor.getTransformFromNative(this._view.getWorldTransform());
             var sourcePos = new IFPoint(this._editPt.getProperty('x'), this._editPt.getProperty('y'));
             sourcePos = transformToNewPos.mapPoint(sourcePos);
-            var newVal = ifMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
+            var newVal = IFMath.ptDist(sourcePos.getX(), sourcePos.getY(), newPos.getX(), newPos.getY());
 
             if (this._mode == IFPathTool.Mode.Append) {
                 this._editPt.setProperty('cr', newVal);

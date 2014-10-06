@@ -10,7 +10,7 @@
 
     /**
      * This is equal to the Array.indexOf function except that for
-     * comparing the values in the array, the ifUtil.equals function
+     * comparing the values in the array, the IFUtil.equals function
      * is used instead
      * @param {Array} array the array to get an index for an element
      * @param {*} element the element to get the index for
@@ -19,9 +19,9 @@
      * @return {Number} a value less than zero if element is not found or
      * the index of the given element in the given array
      */
-    IFUtil.prototype.indexOfEquals = function (array, element, objectByValue) {
+    IFUtil.indexOfEquals = function (array, element, objectByValue) {
         for (var i = 0; i < array.length; ++i) {
-            if (this.equals(array[i], element, objectByValue)) {
+            if (IFUtil.equals(array[i], element, objectByValue)) {
                 return i;
             }
         }
@@ -43,7 +43,7 @@
      * not by their reference. Defaults to false if not provided.
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    IFUtil.prototype.equals = function (left, right, objectByValue) {
+    IFUtil.equals = function (left, right, objectByValue) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -63,7 +63,7 @@
                     }
 
                     for (var i = 0; i < left.length; ++i) {
-                        if (!this.equals(left[i], right[i], objectByValue)) {
+                        if (!IFUtil.equals(left[i], right[i], objectByValue)) {
                             return false;
                         }
                     }
@@ -84,7 +84,7 @@
                     if (isNaN(left) || isNaN(right)) {
                         return isNaN(left) && isNaN(right);
                     } else {
-                        return ifMath.isEqualEps(left, right);
+                        return IFMath.isEqualEps(left, right);
                     }
                 } else if (leftType === 'string') {
                     return left.localeCompare(right) === 0;
@@ -97,12 +97,12 @@
                         var leftKeys = Object.keys(left);
                         var rightKeys = Object.keys(right);
 
-                        if (!this.equals(leftKeys, rightKeys, objectByValue)) {
+                        if (!IFUtil.equals(leftKeys, rightKeys, objectByValue)) {
                             return false;
                         }
 
                         for (var i = 0; i < leftKeys.length; ++i) {
-                            if (!this.equals(left[leftKeys[i]], right[leftKeys[i]]), objectByValue) {
+                            if (!IFUtil.equals(left[leftKeys[i]], right[leftKeys[i]]), objectByValue) {
                                 return false;
                             }
                         }
@@ -124,18 +124,9 @@
      * @param {Array<*>} array
      * @param {*} object
      */
-    IFUtil.prototype.containsObjectKey = function (array, object) {
+    IFUtil.containsObjectKey = function (array, object) {
         for (var key in object) {
             if (array.indexOf(key) >= 0) {
-                return true;
-            }
-        }
-        return false;
-    };
-
-    IFUtil.prototype.dictionaryContainsValue = function (dictionary, value) {
-        for (var key in dictionary) {
-            if (dictionary[key] === value) {
                 return true;
             }
         }
@@ -149,7 +140,7 @@
      * @param {Number} [len] the desired length of the uid, defaults to 32
      * @returns {String} more or less unique id depending on the desired length
      */
-    IFUtil.prototype.uuid = function (len) {
+    IFUtil.uuid = function (len) {
         var chars = CHARS, uuid = [], i;
         var radix = chars.length;
         var len = len ? len : 32;
@@ -166,7 +157,7 @@
      * @param {String} with_ the string to replace with
      * @returns {String}
      */
-    IFUtil.prototype.replaceAll = function (string, what_, with_) {
+    IFUtil.replaceAll = function (string, what_, with_) {
         var result = string;
         while (result.indexOf(what_) >= 0) {
             result = result.replace(what_, with_);
@@ -176,7 +167,7 @@
 
     // Makes unique sort of array elements, leaving only the elements from [a,b] segment
     // New array is written into newnums
-    IFUtil.prototype.uSortSegment = function (a, b, nums, newnums) {
+    IFUtil.uSortSegment = function (a, b, nums, newnums) {
         var nElms = 0;
         nums.sort(function (s, k) {
             return s - k;
@@ -206,7 +197,7 @@
      * @param {String} html
      * @returns {String}
      */
-    IFUtil.prototype.escape = function (html) {
+    IFUtil.escape = function (html) {
         return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     };
 
@@ -215,12 +206,12 @@
      * @param {String} html
      * @returns {String}
      */
-    IFUtil.prototype.unescape = function (html) {
-        var result = ifUtil.replaceAll(html, "&lt;", '<');
-        result = ifUtil.replaceAll(result, "&gt;", '>');
-        result = ifUtil.replaceAll(result, "&quot;", '"');
-        result = ifUtil.replaceAll(result, "&#039;", "'");
-        result = ifUtil.replaceAll(result, "&amp;", '&');
+    IFUtil.unescape = function (html) {
+        var result = IFUtil.replaceAll(html, "&lt;", '<');
+        result = IFUtil.replaceAll(result, "&gt;", '>');
+        result = IFUtil.replaceAll(result, "&quot;", '"');
+        result = IFUtil.replaceAll(result, "&#039;", "'");
+        result = IFUtil.replaceAll(result, "&amp;", '&');
         return result;
     };
 
@@ -229,7 +220,7 @@
      * @param {string} string
      * @returns {boolean}
      */
-    IFUtil.prototype.isNumeric = function (string) {
+    IFUtil.isNumeric = function (string) {
         // parseFloat NaNs numeric-cast false positives (null|true|false|"")
         // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
         // subtraction forces infinities to NaN
@@ -245,10 +236,10 @@
      * if not provided defaults to ','
      * @returns {string}
      */
-    IFUtil.prototype.formatNumber = function (number, decimalPlaces, decimalSeparator) {
+    IFUtil.formatNumber = function (number, decimalPlaces, decimalSeparator) {
         decimalSeparator = decimalSeparator || ',';
         decimalPlaces = typeof decimalPlaces === 'number' ? decimalPlaces : 3;
-        return ifMath.round(number, false, decimalPlaces).toString().replace('.', decimalSeparator);
+        return IFMath.round(number, false, decimalPlaces).toString().replace('.', decimalSeparator);
     };
 
     /**
@@ -256,19 +247,19 @@
      * @param {string} the string to be parsed as number
      * @returns {Number}
      */
-    IFUtil.prototype.parseNumber = function (string) {
+    IFUtil.parseNumber = function (string) {
         var parseString = "";
         var foundDecSep = false;
         for (var i = string.length; i >= 0; --i) {
             var char = string.charAt(i);
             if (char === ',' && !foundDecSep) {
                 parseString = '.' + parseString;
-            } else if (this.isNumeric(char)) {
+            } else if (IFUtil.isNumeric(char)) {
                 parseString = char + parseString;
             }
         }
         return parseFloat(parseString);
     };
 
-    _.ifUtil = new IFUtil();
+    _.IFUtil = IFUtil;
 })(this);

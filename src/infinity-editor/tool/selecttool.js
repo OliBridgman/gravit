@@ -651,7 +651,7 @@
                 if (ifPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
                     var crConstraint = this._scene.getProperty('crConstraint');
-                    position = ifMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
+                    position = IFMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
                         position.getX(), position.getY(), crConstraint);
                 }
 

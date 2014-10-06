@@ -659,7 +659,7 @@
      * from the selection or null for none
      */
     IFEditor.prototype.clearSelection = function (exclusion) {
-        if (ifUtil.equals(exclusion, this._selection)) {
+        if (IFUtil.equals(exclusion, this._selection)) {
             return;
         }
 
@@ -969,6 +969,8 @@
                             anchorPoints);
 
                         path.assignFrom(shape);
+
+                        var pathEditor = new IFPathEditor(path);
                         shape = null;
 
                         parent.insertChild(path, next);
@@ -993,14 +995,16 @@
     IFEditor.prototype._insertPathsFromVertices = function (source, parent, next, newSelection) {
         source.rewindVertices(0);
         var vertex = new IFVertex();
-        var megaPath = new IFMegaPath();
         var path;
         var done = false;
         while (!done && source.readVertex(vertex)) {
             switch (vertex.command) {
                 case IFVertex.Command.Move:
                     if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-                        megaPath.getAnchorPaths().appendChild(path);
+                        path.assignFrom(source);
+                        var pathEditor = new IFPathEditor(path);
+                        parent.insertChild(path, next);
+                        newSelection.push(path);
                     }
                     path = new IFPath();
                     var anchorPoints = path.getAnchorPoints();
@@ -1058,12 +1062,10 @@
             }
         }
         if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-            megaPath.getAnchorPaths().appendChild(path);
-        }
-        if (megaPath.getAnchorPaths().getFirstChild()) {
-            megaPath.assignFrom(source);
-            parent.insertChild(megaPath, next);
-            newSelection.push(megaPath);
+            path.assignFrom(source);
+            var pathEditor = new IFPathEditor(path);
+            parent.insertChild(path, next);
+            newSelection.push(path);
         }
     };
 
@@ -1603,14 +1605,12 @@
                 }
 
                 // Always add the node to our internal selection array
-                if (node.validateSelectionChange()) {
-                    if (!this._selection) {
-                        this._selection = [];
-                    }
-                    this._selection.push(node);
-
-                    this._updatedSelection();
+                if (!this._selection) {
+                    this._selection = [];
                 }
+                this._selection.push(node);
+
+                this._updatedSelection();
             }
         }
     };
@@ -1630,7 +1630,7 @@
             }
 
             // Always remove the node from our selection array if we find it
-            if (this._selection && node.validateSelectionChange()) {
+            if (this._selection) {
                 var sameParentInSelection = false;
                 var removeIndex = -1;
 

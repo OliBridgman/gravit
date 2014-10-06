@@ -22,7 +22,7 @@
                 return null;
             }
 
-            var number = ifUtil.parseNumber(value);
+            var number = IFUtil.parseNumber(value);
             if (typeof number != "number") {
                 return null;
             }

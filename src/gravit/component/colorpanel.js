@@ -643,7 +643,7 @@
             if (!arguments.length) {
                 return data.previousColor;
             } else {
-                if (!ifUtil.equals(data.previousColor, previousColor)) {
+                if (!IFUtil.equals(data.previousColor, previousColor)) {
                     data.previousColor = previousColor;
                     $this.find('.color-preview > .previous-color').css('background', IFPattern.asCSSBackground(data.previousColor));
                 }
@@ -659,7 +659,7 @@
             if (!arguments.length) {
                 return data.currentColor;
             } else {
-                if (!ifUtil.equals(data.currentColor, currentColor)) {
+                if (!IFUtil.equals(data.currentColor, currentColor)) {
                     data.currentColor = currentColor;
                     $this.find('.color-preview > .current-color').css('background', IFPattern.asCSSBackground(data.currentColor));
 
@@ -854,26 +854,26 @@
                 hueHighlights = [hueStart];
 
                 if ('triadic' === highlight) {
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart - 120));
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 120));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 120));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 120));
                 } else if ('tetradic' === highlight) {
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 90));
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 180));
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 270));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 90));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 270));
                 } else if ('split_complements' === highlight) {
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart - 150));
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 150));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 150));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 150));
                 } else if ('analogous' === highlight) {
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart - 30));
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 30));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 30));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 30));
                 } else if ('complement' === highlight) {
-                    hueHighlights.push(ifMath.normalizeAngleDegrees(hueStart + 180));
+                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
                 }
             }
 
             for (var i = segments - 1; i >= 0; --i) {
 
-                var hue = ifMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
+                var hue = IFMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
                 var arcRadius = radius;
                 var finalRadius = arcRadius;
 
@@ -889,7 +889,7 @@
                 var mixes = options.mix ? diffSegs : 1;
                 for (var k = 0; k < mixes; ++k) {
 
-                    var oppHue = ifMath.normalizeAngleDegrees(hueStart + 60 + i * segmentAngleDeg);
+                    var oppHue = IFMath.normalizeAngleDegrees(hueStart + 60 + i * segmentAngleDeg);
                     var sat = startColor[1] - (k/diffSegs);
                     var val = startColor[2];// - (k/diffSegs);
                     var hsv = [hue, sat, val];
@@ -919,7 +919,7 @@
             }
 
             for (var i = segments - 1; i >= 0; --i) {
-                var hue = ifMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
+                var hue = IFMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
                 var arcAngleStart = i * segmentAngleRad - segmentAngleRad / 2 - Math.PI / 2;
 
                 if (hueHighlights && hueHighlights.indexOf(hue) >= 0) {

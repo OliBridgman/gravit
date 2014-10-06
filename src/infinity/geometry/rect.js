@@ -97,7 +97,7 @@
         if (!left && left === right) {
             return true;
         } else if (left && right) {
-            return ifMath.isEqualEps(left._x, right._x) && ifMath.isEqualEps(left._y, right._y) && ifMath.isEqualEps(left._width, right._width) && ifMath.isEqualEps(left._height, right._height);
+            return IFMath.isEqualEps(left._x, right._x) && IFMath.isEqualEps(left._y, right._y) && IFMath.isEqualEps(left._width, right._width) && IFMath.isEqualEps(left._height, right._height);
         } else {
             return false;
         }
@@ -640,13 +640,13 @@
                     break;
                 default:
                     if (Math.abs(sx) > Math.abs(sy)) {
-                        if (ifMath.isEqualEps(sy, 0)) {
+                        if (IFMath.isEqualEps(sy, 0)) {
                             sy = sx;
                         } else {
                             sy = sy * Math.abs(sx) / Math.abs(sy);
                         }
                     } else {
-                        if (ifMath.isEqualEps(sx, 0)) {
+                        if (IFMath.isEqualEps(sx, 0)) {
                             sx = sy;
                         } else {
                             sx = sx * Math.abs(sy) / Math.abs(sx);

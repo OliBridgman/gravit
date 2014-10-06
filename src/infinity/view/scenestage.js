@@ -40,7 +40,7 @@
         }
 
         // Handle painting in pixel mode but only if we're not at 100%
-        if (this._view.getViewConfiguration().pixelMode && !ifMath.isEqualEps(this._view.getZoom(), 1.0)) {
+        if (this._view.getViewConfiguration().pixelMode && !IFMath.isEqualEps(this._view.getZoom(), 1.0)) {
             // Create and size our pixel content canvas
             if (!this._pixelContentCanvas) {
                 this._pixelContentCanvas = new IFPaintCanvas();

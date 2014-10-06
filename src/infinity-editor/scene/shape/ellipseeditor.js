@@ -13,8 +13,8 @@
     IFObject.inherit(IFEllipseEditor, IFPathBaseEditor);
     IFElementEditor.exports(IFEllipseEditor, IFEllipse);
 
-    IFEllipseEditor.START_ANGLE_PART_ID = ifUtil.uuid();
-    IFEllipseEditor.END_ANGLE_PART_ID = ifUtil.uuid();
+    IFEllipseEditor.START_ANGLE_PART_ID = IFUtil.uuid();
+    IFEllipseEditor.END_ANGLE_PART_ID = IFUtil.uuid();
 
     /** @override */
     IFEllipseEditor.prototype.getBBoxMargin = function () {
@@ -76,8 +76,8 @@
 
             if (moveStart || moveEnd) {
                 this._elementPreview.setProperties(['sa', 'ea'],
-                    [moveStart ? ifMath.normalizeAngleRadians(sa + aDelta) : sa,
-                        moveEnd ? ifMath.normalizeAngleRadians(ea + aDelta) : ea]);
+                    [moveStart ? IFMath.normalizeAngleRadians(sa + aDelta) : sa,
+                        moveEnd ? IFMath.normalizeAngleRadians(ea + aDelta) : ea]);
 
                 this.requestInvalidation();
             }

@@ -317,14 +317,14 @@
         }
 
         // 1. approximate curve by bi-arc
-        var a = ifMath.ptDist(B0.getX(), B0.getY(), B1.getX(), B1.getY());
-        var b = ifMath.ptDist(B1.getX(), B1.getY(), B2.getX(), B2.getY());
-        var d = ifMath.ptDist(B0.getX(), B0.getY(), B2.getX(), B2.getY());
+        var a = IFMath.ptDist(B0.getX(), B0.getY(), B1.getX(), B1.getY());
+        var b = IFMath.ptDist(B1.getX(), B1.getY(), B2.getX(), B2.getY());
+        var d = IFMath.ptDist(B0.getX(), B0.getY(), B2.getX(), B2.getY());
         // TODO: check for zeros
         var T0 = new IFPoint((B1.getX() - B0.getX()) / a, (B1.getY() - B0.getY()) / a);
         var T1 = new IFPoint((B2.getX() - B1.getX()) / b, (B2.getY() - B1.getY()) / b);
         var T = new IFPoint((B2.getX() - B0.getX()) / d, (B2.getY() - B0.getY()) / d);
-        var cosEtha = ifMath.vDotProduct(T0.getX(), T0.getY(), T1.getX(), T1.getY());
+        var cosEtha = IFMath.vDotProduct(T0.getX(), T0.getY(), T1.getX(), T1.getY());
 
         // D(u) = a*(T1 - T0*cosEtha) + ((a*cosEtha - b)T0 + (b*cosEtha - a)T1)*u
         // N(u) = D(u) / ||D(u)||
@@ -334,8 +334,8 @@
         var D1 = new IFPoint(
             D0.getX() + tmp1 * T0.getX() + tmp2 * T1.getX(), D0.getY() + tmp1 * T0.getY() + tmp2 * T1.getY());
 
-        tmp1 = Math.sqrt(ifMath.vDotProduct(D0.getX(), D0.getY(), D0.getX(), D0.getY()));
-        tmp2 = Math.sqrt(ifMath.vDotProduct(D1.getX(), D1.getY(), D1.getX(), D1.getY()));
+        tmp1 = Math.sqrt(IFMath.vDotProduct(D0.getX(), D0.getY(), D0.getX(), D0.getY()));
+        tmp2 = Math.sqrt(IFMath.vDotProduct(D1.getX(), D1.getY(), D1.getX(), D1.getY()));
         // TODO: check for zeros
         var N0 = new IFPoint(D0.getX() / tmp1, D0.getY() / tmp1);
         var N1 = new IFPoint(D1.getX() / tmp2, D1.getY() / tmp2);
@@ -346,16 +346,16 @@
         // lambda*T0N1 = s*d*TN1
         // myu*T1N0 = s*d*TN0
         var a1 = 1 - cosEtha;
-        var T1N0 = ifMath.vDotProduct(T1.getX(), T1.getY(), N0.getX(), N0.getY());
-        var TT0 = ifMath.vDotProduct(T.getX(), T.getY(), T0.getX(), T0.getY());
-        var TN0 = ifMath.vDotProduct(T.getX(), T.getY(), N0.getX(), N0.getY());
-        var T0N1 = ifMath.vDotProduct(T0.getX(), T0.getY(), N1.getX(), N1.getY());
-        var TT1 = ifMath.vDotProduct(T.getX(), T.getY(), T1.getX(), T1.getY());
-        var TN1 = ifMath.vDotProduct(T.getX(), T.getY(), N1.getX(), N1.getY());
+        var T1N0 = IFMath.vDotProduct(T1.getX(), T1.getY(), N0.getX(), N0.getY());
+        var TT0 = IFMath.vDotProduct(T.getX(), T.getY(), T0.getX(), T0.getY());
+        var TN0 = IFMath.vDotProduct(T.getX(), T.getY(), N0.getX(), N0.getY());
+        var T0N1 = IFMath.vDotProduct(T0.getX(), T0.getY(), N1.getX(), N1.getY());
+        var TT1 = IFMath.vDotProduct(T.getX(), T.getY(), T1.getX(), T1.getY());
+        var TN1 = IFMath.vDotProduct(T.getX(), T.getY(), N1.getX(), N1.getY());
         var b1 = T1N0 * TT0 / TN0 + T0N1 * TT1 / TN1;
         var c1 = -(T1N0 * T0N1) / (TN0 * TN1 * 2);
         var roots = [];
-        ifMath.getQuadraticRoots(a1, b1, c1, roots);
+        IFMath.getQuadraticRoots(a1, b1, c1, roots);
         var s = null;
         if (roots[0] != null && roots[0] < 1 && roots[0] > 0) {
             s = roots[0];
@@ -390,7 +390,7 @@
         // By Theorem 2: sigma from (0,1): g(u) = (d - 2a*cos(phi))u^2 + 2a*cos(phi)u - lambda*(1 + cos(phi)) = 0
         tmp1 = 2 * a * TT0;
         roots = [];
-        ifMath.getQuadraticRoots(d - tmp1, tmp1, -lambda * (1 + TT0), roots);
+        IFMath.getQuadraticRoots(d - tmp1, tmp1, -lambda * (1 + TT0), roots);
         var sigma = 0.5;
         if (roots[0] != null && roots[0] < 1 && roots[0] > 0) {
             sigma = roots[0];
@@ -418,20 +418,20 @@
         var delta = kSigma;
         var tMax = sigma;
         roots = [];
-        ifMath.getQuadraticRoots(tmp1, 3 * (abcosEtha - aSqr), 2 * aSqr - Rb0 * b * sinEtha, roots);
+        IFMath.getQuadraticRoots(tmp1, 3 * (abcosEtha - aSqr), 2 * aSqr - Rb0 * b * sinEtha, roots);
         if (roots[0] != null && roots[0] < sigma && roots[0] > 0) {
-            var Qt01 = new IFPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
-                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
-            var pho01 = Math.abs(Rb0 - ifMath.ptDist(Qt01.getX(), Qt01.getY(), C0.getX(), C0.getY()));
+            var Qt01 = new IFPoint(IFMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
+                IFMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
+            var pho01 = Math.abs(Rb0 - IFMath.ptDist(Qt01.getX(), Qt01.getY(), C0.getX(), C0.getY()));
             if (delta < pho01) {
                 delta = pho01;
                 tMax = roots[0];
             }
         }
         if (roots[1] != null && roots[1] < sigma && roots[1] > 0) {
-            var Qt02 = new IFPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
-                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
-            var pho02 = Math.abs(Rb0 - ifMath.ptDist(Qt02.getX(), Qt02.getY(), C0.getX(), C0.getY()));
+            var Qt02 = new IFPoint(IFMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
+                IFMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
+            var pho02 = Math.abs(Rb0 - IFMath.ptDist(Qt02.getX(), Qt02.getY(), C0.getX(), C0.getY()));
             if (delta < pho02) {
                 delta = pho02;
                 tMax = roots[1];
@@ -439,20 +439,20 @@
         }
 
         roots = [];
-        ifMath.getQuadraticRoots(tmp1, -2 * aSqr + bSqr + abcosEtha, aSqr + abcosEtha - Rb2 * a * sinEtha, roots);
+        IFMath.getQuadraticRoots(tmp1, -2 * aSqr + bSqr + abcosEtha, aSqr + abcosEtha - Rb2 * a * sinEtha, roots);
         if (roots[0] != null && roots[0] < 1 && roots[0] > sigma) {
-            var Qt11 = new IFPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
-                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
-            var pho11 = Math.abs(Rb2 - ifMath.ptDist(Qt11.getX(), Qt11.getY(), C1.getX(), C1.getY()));
+            var Qt11 = new IFPoint(IFMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[0]),
+                IFMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[0]));
+            var pho11 = Math.abs(Rb2 - IFMath.ptDist(Qt11.getX(), Qt11.getY(), C1.getX(), C1.getY()));
             if (delta < pho11) {
                 delta = pho11;
                 tMax = roots[0];
             }
         }
         if (roots[1] != null && roots[1] < 1 && roots[1] > sigma) {
-            var Qt12 = new IFPoint(ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
-                ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
-            var pho12 = Math.abs(Rb2 - ifMath.ptDist(Qt12.getX(), Qt12.getY(), C1.getX(), C1.getY()));
+            var Qt12 = new IFPoint(IFMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), roots[1]),
+                IFMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), roots[1]));
+            var pho12 = Math.abs(Rb2 - IFMath.ptDist(Qt12.getX(), Qt12.getY(), C1.getX(), C1.getY()));
             if (delta < pho12) {
                 delta = pho12;
                 tMax = roots[1];
@@ -466,8 +466,8 @@
             var ctrls1Y = new Float64Array(3);
             var ctrls2X = new Float64Array(3);
             var ctrls2Y = new Float64Array(3);
-            ifMath.divideQuadraticCurve(B0.getX(), B1.getX(), B2.getX(), tMax, ctrls1X, ctrls2X);
-            ifMath.divideQuadraticCurve(B0.getY(), B1.getY(), B2.getY(), tMax, ctrls1Y, ctrls2Y);
+            IFMath.divideQuadraticCurve(B0.getX(), B1.getX(), B2.getX(), tMax, ctrls1X, ctrls2X);
+            IFMath.divideQuadraticCurve(B0.getY(), B1.getY(), B2.getY(), tMax, ctrls1Y, ctrls2Y);
             this.addCurveToPolyline(B0, new IFPoint(ctrls1X[1], ctrls1Y[1]), new IFPoint(ctrls1X[2], ctrls1Y[2]), tolerance, counter);
             this.addCurveToPolyline(new IFPoint(ctrls2X[0], ctrls2Y[0]), new IFPoint(ctrls2X[1], ctrls2Y[1]), B2, tolerance, counter);
         } else {
@@ -478,7 +478,7 @@
             // Define curve orientation
             // We can check arc center location against B0G
             var tgHalfGamma = sinGamma / (cosGamma + 1);
-            if (ifMath.segmentSide(B0.getX(), B0.getY(), G.getX(), G.getY(), C0.getX(), C0.getY()) > 0) {
+            if (IFMath.segmentSide(B0.getX(), B0.getY(), G.getX(), G.getY(), C0.getX(), C0.getY()) > 0) {
                 tgHalfGamma = -tgHalfGamma;
             }
             var segm = new IFVertexOffsetter.PolySegment(B0, tgHalfGamma, C0, Rb0);
@@ -526,7 +526,7 @@
         var ax = B3.getX() - B2.getX() - cx - bx;
         var ay = B3.getY() - B2.getY() - cy - by;
         var sPts = [];
-        var nPoints = ifMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPts);
+        var nPoints = IFMath.getCubicCurveSplits(ax, bx, cx, ay, by, cy, sPts);
 
         // 2. Based on splitPoints iterate through intervals,
         // and for each interval perform the curve approximation with a biArc:
@@ -536,17 +536,17 @@
         for (var i = 0; i < nPoints - 1; ++i) {
             t1 = sPts[i];
             t2 = sPts[i + 1];
-            ifMath.getCtrlPts(B0.getX(), B3.getX(), B1.getX(), B2.getX(), t1, t2, ctrlsx);
-            ifMath.getCtrlPts(B0.getY(), B3.getY(), B1.getY(), B2.getY(), t1, t2, ctrlsy);
+            IFMath.getCtrlPts(B0.getX(), B3.getX(), B1.getX(), B2.getX(), t1, t2, ctrlsx);
+            IFMath.getCtrlPts(B0.getY(), B3.getY(), B1.getY(), B2.getY(), t1, t2, ctrlsy);
             var counter = 0;
             this._addCubicSegmToPolyline(ctrlsx, ctrlsy, tolerance, counter);
         }
     };
 
     IFVertexOffsetter.prototype._isQudraticCurveFlat = function (B0, B1, B2, tolerance) {
-        var xB = ifMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), 0.5);
-        var yB = ifMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), 0.5);
-        var dst = ifMath.ptSqrDist(xB, yB, (B0.getX() + B2.getX()) / 2, (B0.getY() + B2.getY()) / 2);
+        var xB = IFMath.getCurveAtT(B0.getX(), B2.getX(), B1.getX(), 0.5);
+        var yB = IFMath.getCurveAtT(B0.getY(), B2.getY(), B1.getY(), 0.5);
+        var dst = IFMath.ptSqrDist(xB, yB, (B0.getX() + B2.getX()) / 2, (B0.getY() + B2.getY()) / 2);
         return (dst <= tolerance * tolerance);
     };
 
@@ -597,11 +597,11 @@
 
         // 1. Construct approximating arc
         var C;
-        var hndl1 = !ifMath.isEqualEps(xA, ctrlsx[1]) || !ifMath.isEqualEps(yA, ctrlsy[1]);
-        var hndl2 = !ifMath.isEqualEps(xB, ctrlsx[2]) || !ifMath.isEqualEps(yB, ctrlsy[2]);
+        var hndl1 = !IFMath.isEqualEps(xA, ctrlsx[1]) || !IFMath.isEqualEps(yA, ctrlsy[1]);
+        var hndl2 = !IFMath.isEqualEps(xB, ctrlsx[2]) || !IFMath.isEqualEps(yB, ctrlsy[2]);
         if (hndl1 && hndl2) {
             var result = [];
-            C = ifMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
+            C = IFMath.getIntersectionPoint(xA, yA, ctrlsx[1], ctrlsy[1], ctrlsx[2], ctrlsy[2], xB, yB, result);
         } else if (hndl1) {
             C = new IFPoint(ctrlsx[1], ctrlsy[1]);
         } else if (hndl2) {
@@ -610,14 +610,14 @@
             this._polyline.insertSegment(new IFVertexOffsetter.PolySegment(new IFPoint(xA, yA), 0));
             return;
         }
-        var ab = ifMath.ptDist(xA, yA, xB, yB);
-        var ac = ifMath.ptDist(xA, yA, C.getX(), C.getY());
-        var bc = ifMath.ptDist(xB, yB, C.getX(), C.getY());
+        var ab = IFMath.ptDist(xA, yA, xB, yB);
+        var ac = IFMath.ptDist(xA, yA, C.getX(), C.getY());
+        var bc = IFMath.ptDist(xB, yB, C.getX(), C.getY());
         var p = ab + ac + bc;
         var xG = (xA * bc + xB * ac + C.getX() * ab) / p;
         var yG = (yA * bc + yB * ac + C.getY() * ab) / p;
-        if (ifMath.isEqualEps(xA, xG) || ifMath.isEqualEps(yA, yG) ||
-            ifMath.isEqualEps(xB, xG) || ifMath.isEqualEps(yB, yG)) {
+        if (IFMath.isEqualEps(xA, xG) || IFMath.isEqualEps(yA, yG) ||
+            IFMath.isEqualEps(xB, xG) || IFMath.isEqualEps(yB, yG)) {
             // Might be some error, as the original cubic curve has been split to not contain parts,
             // where tangent line is parallel to X axis or Y axis.
             var segm = new IFVertexOffsetter.PolySegment(new IFPoint(xA, yA), 0);
@@ -627,7 +627,7 @@
             var mB = (yB - yG) / (xB - xG);
             var xO = (mA * mB * (yA - yB) + mB * (xA + xG) - mA * (xG + xB)) / 2 / (mB - mA);
             var yO = -1 / mA * (xO - (xA + xG) / 2) + (yA + yG) / 2;
-            var R = ifMath.ptDist(xA, yA, xO, yO);
+            var R = IFMath.ptDist(xA, yA, xO, yO);
 
             // 2. Evaluate error by measuring minimal and maximal distance from curve to point O
             // P(t) = P1 + 3t(C1 - P1) + 3t^2*(C2 - 2C1 + P1) + t^3*(P2 - 3C2 + 3C1 - P1)
@@ -669,17 +669,17 @@
 
             // Coefficients of 5 degree derivative polynomial
             var coeffFDeriv = new Float64Array(6);
-            ifMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
+            IFMath.getCoeffPolyDeriv(coeffF, 6, coeffFDeriv);
             // Coeffitients of the second and third derivative polynomials
             var coeffFDeriv2 = new Float64Array(5);
-            ifMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
+            IFMath.getCoeffPolyDeriv(coeffFDeriv, 5, coeffFDeriv2);
             var coeffFDeriv3 = new Float64Array(4);
-            ifMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
+            IFMath.getCoeffPolyDeriv(coeffFDeriv2, 4, coeffFDeriv3);
 
             // Coefficients of 5 degree polynomial, calculated from derivative polynomial and interval transformation
             var coeffInversed = new Float64Array(6);
-            ifMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
-            var nRoots = ifMath.estimPositiveRootsDescartes(coeffInversed, 5);
+            IFMath.inversePolyUnaryInterval(coeffFDeriv, 5, coeffInversed);
+            var nRoots = IFMath.estimPositiveRootsDescartes(coeffInversed, 5);
             var maxDst = 0;
             var v51, v52;
             // generalized Sturm sequence (array of polynomial coefficients arrays)
@@ -691,50 +691,50 @@
             if (nRoots > 0) {
                 var t1 = 0.0;
                 var t2 = 1.0;
-                v51 = ifMath.evalPoly(coeffFDeriv, 5, t1);
-                if (ifMath.isEqualEps(v51, 0)) {
+                v51 = IFMath.evalPoly(coeffFDeriv, 5, t1);
+                if (IFMath.isEqualEps(v51, 0)) {
                     t1 += 0.005;
-                    v51 = ifMath.evalPoly(coeffFDeriv, 5, t1);
+                    v51 = IFMath.evalPoly(coeffFDeriv, 5, t1);
                 }
-                v52 = ifMath.evalPoly(coeffFDeriv, 5, t2);
-                if (ifMath.isEqualEps(v52, 0)) {
+                v52 = IFMath.evalPoly(coeffFDeriv, 5, t2);
+                if (IFMath.isEqualEps(v52, 0)) {
                     t2 -= 0.005;
-                    v52 = ifMath.evalPoly(coeffFDeriv, 5, t2);
+                    v52 = IFMath.evalPoly(coeffFDeriv, 5, t2);
                 }
 
                 if (nRoots > 1) {
-                    ifMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
+                    IFMath.getSturmPRS(coeffFDeriv, 5, coeffFDeriv2, sturmSeq);
                     nSignVars = [];
                     fVals = [v51, v52];
-                    nRoots = ifMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2,
+                    nRoots = IFMath.countRootsNSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2,
                         sturmSeq, nSignVars, fVals);
                 }
             }
             if (nRoots == 0) {
                 // Might be some error, return the arc
             } else if (nRoots == 1) {
-                var r1 = ifMath.locateByNewton(t1, t2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
+                var r1 = IFMath.locateByNewton(t1, t2, v51, v52, coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005);
                 if (r1 == null) {
                     r1 = (t1 + t2) / 2;
                 }
-                var r1x = ifMath.evalCubic(a1x, b1x, c1x, xA, r1);
-                var r1y = ifMath.evalCubic(a1y, b1y, c1y, yA, r1);
-                maxDst = Math.abs(ifMath.ptDist(r1x, r1y, xO, yO) - R);
+                var r1x = IFMath.evalCubic(a1x, b1x, c1x, xA, r1);
+                var r1y = IFMath.evalCubic(a1y, b1y, c1y, yA, r1);
+                maxDst = Math.abs(IFMath.ptDist(r1x, r1y, xO, yO) - R);
             } else {
                 var rIntervals = [];
-                ifMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2, sturmSeq, nRoots,
+                IFMath.locRootsSturm(coeffFDeriv, 5, coeffFDeriv2, t1, t2, sturmSeq, nRoots,
                     nSignVars, fVals, rIntervals);
 
                 for (var s = 0; s < rIntervals.length; ++s) {
-                    r1 = ifMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
+                    r1 = IFMath.locateByNewton(rIntervals[s][0], rIntervals[s][1],
                         rIntervals[s][2], rIntervals[s][3], coeffFDeriv, 5, coeffFDeriv2, coeffFDeriv3, 0.005,
                         sturmSeq);
                     if (r1 == null) {
                         r1 = (rIntervals[s][0] + rIntervals[s][1]) / 2;
                     }
-                    r1x = ifMath.evalCubic(a1x, b1x, c1x, xA, r1);
-                    r1y = ifMath.evalCubic(a1y, b1y, c1y, yA, r1);
-                    var dst = Math.abs(ifMath.ptDist(r1x, r1y, xO, yO) - R);
+                    r1x = IFMath.evalCubic(a1x, b1x, c1x, xA, r1);
+                    r1y = IFMath.evalCubic(a1y, b1y, c1y, yA, r1);
+                    var dst = Math.abs(IFMath.ptDist(r1x, r1y, xO, yO) - R);
                     if (dst > maxDst) {
                         maxDst = dst;
                     }
@@ -748,8 +748,8 @@
                 var ctrlsNew1Y = new Float64Array(4);
                 var ctrlsNew2X = new Float64Array(4);
                 var ctrlsNew2Y = new Float64Array(4);
-                ifMath.getCtrlPtsCasteljau(ctrlsx[0], ctrlsx[1], ctrlsx[2], ctrlsx[3], 0.5, null, ctrlsNew1X, ctrlsNew2X);
-                ifMath.getCtrlPtsCasteljau(ctrlsy[0], ctrlsy[1], ctrlsy[2], ctrlsy[3], 0.5, null, ctrlsNew1Y, ctrlsNew2Y);
+                IFMath.getCtrlPtsCasteljau(ctrlsx[0], ctrlsx[1], ctrlsx[2], ctrlsx[3], 0.5, null, ctrlsNew1X, ctrlsNew2X);
+                IFMath.getCtrlPtsCasteljau(ctrlsy[0], ctrlsy[1], ctrlsy[2], ctrlsy[3], 0.5, null, ctrlsNew1Y, ctrlsNew2Y);
                 this._addCubicSegmToPolyline(ctrlsNew1X, ctrlsNew1Y, tolerance, counter);
                 this._addCubicSegmToPolyline(ctrlsNew2X, ctrlsNew2Y, tolerance, counter);
             } else {
@@ -758,7 +758,7 @@
                 var tgHalfGamma = sinGamma / (Math.sqrt(1 - sinGamma * sinGamma) + 1);
                 // Define curve orientation
                 // We can check arc center location against AB
-                if (ifMath.segmentSide(xA, yA, xB, yB, xO, yO) > 0) {
+                if (IFMath.segmentSide(xA, yA, xB, yB, xO, yO) > 0) {
                     tgHalfGamma = -tgHalfGamma;
                 }
                 //tgHalfGamma = this._calculateBulge(xA, yA, xB, yB, xO, yO);
@@ -877,8 +877,8 @@
         if (vertex1 && this._polyline.count) {
             polySegm = new IFVertexOffsetter.PolySegment(new IFPoint(vertex1.x, vertex1.y), 0);
             this._polyline.insertSegment(polySegm);
-            if (ifMath.isEqualEps(vertex1.x, this._polyline.head.point.getX()) &&
-                    ifMath.isEqualEps(vertex1.y, this._polyline.head.point.getY())) {
+            if (IFMath.isEqualEps(vertex1.x, this._polyline.head.point.getX()) &&
+                    IFMath.isEqualEps(vertex1.y, this._polyline.head.point.getY())) {
 
                 this._polyline.closed = true;
             }
@@ -1102,8 +1102,8 @@
                     x2 = this._polyline.head.point.getX();
                     y2 = this._polyline.head.point.getY();
                 }
-                var dist = ifMath.ptDist(x1, y1, x2, y2);
-                if (!ifMath.isEqualEps(dist, 0)) {
+                var dist = IFMath.ptDist(x1, y1, x2, y2);
+                if (!IFMath.isEqualEps(dist, 0)) {
                     var delta = new IFPoint(-offset * (y2 - y1) / dist, -offset * (x1 - x2) / dist);
                     var newPt1 = new IFPoint(x1 + delta.getX(), y1 + delta.getY());
                     var newPt2 = new IFPoint(x2 + delta.getX(), y2 + delta.getY());
@@ -1116,7 +1116,7 @@
             if (offset * segm.bulge > 0) {
                 radius += absOffs;
                 k = radius / segm.radius;
-            } else if (!ifMath.isEqualEps(segm.radius, absOffs, tolerance)) {
+            } else if (!IFMath.isEqualEps(segm.radius, absOffs, tolerance)) {
                 if (segm.radius > absOffs) {
                     radius -= absOffs;
                     k = radius / segm.radius;
@@ -1156,7 +1156,7 @@
     IFVertexOffsetter.prototype._insersectOffsetSegments = function (psegm1, psegm2, intResult) {
         if (psegm1.bulge == 0 && psegm2.bulge == 0) { // line segments
             var res = [null, null];
-            var pt = ifMath.getIntersectionPoint(
+            var pt = IFMath.getIntersectionPoint(
                 psegm1.point.getX(), psegm1.point.getY(), psegm1.point2.getX(), psegm1.point2.getY(),
                 psegm2.point.getX(), psegm2.point.getY(), psegm2.point2.getX(), psegm2.point2.getY(), res);
 
@@ -1176,7 +1176,7 @@
                 var yL = psegm1.point.getY();
                 var dxL = psegm1.point2.getX() - psegm1.point.getX();
                 var dyL = psegm1.point2.getY() - psegm1.point.getY();
-                ifMath.circleLineIntersection(xL, yL, dxL, dyL,
+                IFMath.circleLineIntersection(xL, yL, dxL, dyL,
                     psegm2.center.getX(), psegm2.center.getY(), psegm2.radius, res);
 
                 if (res[0] != null) {
@@ -1187,8 +1187,8 @@
                 if (res[0] != null && res[1] != null) {
                     var x2 = xL + dxL * res[1];
                     var y2 = yL + dyL * res[1];
-                    var sDst1 = ifMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
-                    var sDst2 = ifMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst1 = IFMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst2 = IFMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
                     if (sDst2 < sDst1) {
                         x = x2;
                         y = y2;
@@ -1206,7 +1206,7 @@
                 var yL = psegm2.point.getY();
                 var dxL = psegm2.point2.getX() - psegm2.point.getX();
                 var dyL = psegm2.point2.getY() - psegm2.point.getY();
-                ifMath.circleLineIntersection(xL, yL, dxL, dyL,
+                IFMath.circleLineIntersection(xL, yL, dxL, dyL,
                     psegm1.center.getX(), psegm1.center.getY(), psegm1.radius, res);
 
                 if (res[0] != null) {
@@ -1217,8 +1217,8 @@
                 if (res[0] != null && res[1] != null) {
                     var x2 = xL + dxL * res[1];
                     var y2 = yL + dyL * res[1];
-                    var sDst1 = ifMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
-                    var sDst2 = ifMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst1 = IFMath.ptSqrDist(x, y, psegm2.basepoint.getX(), psegm2.basepoint.getY());
+                    var sDst2 = IFMath.ptSqrDist(x2, y2, psegm2.basepoint.getX(), psegm2.basepoint.getY());
                     if (sDst2 < sDst1) {
                         x = x2;
                         y = y2;
@@ -1234,7 +1234,7 @@
             }
         } else { // two arcs
             var res = [null, null];
-            ifMath.circleCircleIntersection(psegm1.center.getX(), psegm1.center.getY(), psegm1.radius,
+            IFMath.circleCircleIntersection(psegm1.center.getX(), psegm1.center.getY(), psegm1.radius,
                 psegm2.center.getX(), psegm2.center.getY(), psegm2.radius, res);
 
             var ptIdx = null;
@@ -1242,10 +1242,10 @@
                 ptIdx = 0;
             }
             if (res[0] != null && res[1] != null) {
-                var sDst1 = ifMath.ptSqrDist(res[0].getX(), res[0].getY(),
+                var sDst1 = IFMath.ptSqrDist(res[0].getX(), res[0].getY(),
                     psegm2.basepoint.getX(), psegm2.basepoint.getY());
 
-                var sDst2 = ifMath.ptSqrDist(res[1].getX(), res[1].getY(),
+                var sDst2 = IFMath.ptSqrDist(res[1].getX(), res[1].getY(),
                     psegm2.basepoint.getX(), psegm2.basepoint.getY());
 
                 if (sDst2 < sDst1) {
@@ -1279,16 +1279,16 @@
         var cX = psegm.center.getX();
         var cY = psegm.center.getY();
         // TODO: process accurately, when segment side is not evident
-        if (ifMath.segmentSide(sp1x, sp1y, sp2x, sp2y, x, y) ==
-            ifMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
+        if (IFMath.segmentSide(sp1x, sp1y, sp2x, sp2y, x, y) ==
+            IFMath.segmentSide(sp1x, sp1y, sp2x, sp2y, cX, cY)) {
 
             var pMx = (sp1x + sp2x) / 2;
             var pMy = (sp1y + sp2y) / 2;
-            var tmp = psegm.radius / ifMath.ptDist(pMx, pMy, cX, cY);
+            var tmp = psegm.radius / IFMath.ptDist(pMx, pMy, cX, cY);
             var pOppX = cX + (cX - pMx) * tmp;
             var pOppY = cY + (cY - pMy) * tmp;
-            if (ifMath.segmentSide(sp1x, sp1y, pOppX, pOppY, x, y) ==
-                ifMath.segmentSide(sp1x, sp1y, pOppX, pOppY, cX, cY)) {
+            if (IFMath.segmentSide(sp1x, sp1y, pOppX, pOppY, x, y) ==
+                IFMath.segmentSide(sp1x, sp1y, pOppX, pOppY, cX, cY)) {
                 intType.FIP = true;
                 intType.PFIP = true;
             } else {
@@ -1335,8 +1335,8 @@
                     polyONew.end.bulge, segm2.center, segm2.radius);
                 segm2 = segm2.next;
 
-                if (!ifMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
-                        !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
+                if (!IFMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
+                        !IFMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
 
                     iRes.clear();
                     this._insersectOffsetSegments(segm1, segm2, iRes);
@@ -1456,8 +1456,8 @@
                     polyONew.end.bulge, segm2.center, segm2.radius);
 
                 segm2 = polyOffset.head;
-                if (!ifMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
-                        !ifMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
+                if (!IFMath.isEqualEps(segm1.point2.getX(), segm2.point.getX(), eps) ||
+                        !IFMath.isEqualEps(segm1.point2.getY(), segm2.point.getY(), eps)) {
 
                     iRes.clear();
                     this._insersectOffsetSegments(segm1, segm2, iRes);
@@ -1589,11 +1589,11 @@
                 dx = -dx;
                 dy = -dy;
             }*/
-            sign = -ifMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
+            sign = -IFMath.segmentSide(segm1.point2.getX(), segm1.point2.getY(),
                 segm1.point2.getX() + dx, segm1.point2.getY() + dy,
                 segm2.point.getX(), segm2.point.getY()); // * segm1.bulge;
         } else {
-            sign = -ifMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
+            sign = -IFMath.segmentSide(segm1.point.getX(), segm1.point.getY(), segm1.point2.getX(), segm1.point2.getY(),
                 segm2.point.getX(), segm2.point.getY());
         }
 
@@ -1609,7 +1609,7 @@
         }
         if (bulge) {
             arc = new IFVertexOffsetter.PolySegment(segm1.point2, bulge, segm2.basepoint,
-                ifMath.ptDist(segm1.point2.getX(), segm1.point2.getY(), segm2.basepoint.getX(), segm2.basepoint.getY()));
+                IFMath.ptDist(segm1.point2.getX(), segm1.point2.getY(), segm2.basepoint.getX(), segm2.basepoint.getY()));
         } else {
             arc = new IFVertexOffsetter.PolySegment(segm1.point2, 0);
         }
@@ -1617,13 +1617,13 @@
     };
 
     IFVertexOffsetter.prototype._calculateBulge = function (p1x, p1y, p2x, p2y, cx, cy, exampBulge) {
-        var d1 = ifMath.ptSqrDist(p1x, p1y, cx, cy);
-        var d2 = ifMath.ptSqrDist(p2x, p2y, cx, cy);
+        var d1 = IFMath.ptSqrDist(p1x, p1y, cx, cy);
+        var d2 = IFMath.ptSqrDist(p2x, p2y, cx, cy);
         var bulge = 0;
-        if (ifMath.isEqualEps(d1, d2, 0.00000001)) {
+        if (IFMath.isEqualEps(d1, d2, 0.00000001)) {
             // bulge = tg(alpha / 4): dividing 4 is necessary here, because angles > 180 degrees are possible
-            var a = ifMath.ptSqrDist((p1x + p2x) / 2, (p1y + p2y) / 2, cx, cy);
-            if (ifMath.isEqualEps(a, 0, 0.00000001)) {
+            var a = IFMath.ptSqrDist((p1x + p2x) / 2, (p1y + p2y) / 2, cx, cy);
+            if (IFMath.isEqualEps(a, 0, 0.00000001)) {
                 bulge = 1;
             } else {
                 var cos2alpha = Math.sqrt(a / d1);
@@ -1693,7 +1693,7 @@
         if (!s1.bulge && !s2.bulge) {
             if (!ignoreCommonEnd) {
                 var res = [null, null];
-                var iPt = ifMath.getIntersectionPoint(s1.point.getX(), s1.point.getY(),
+                var iPt = IFMath.getIntersectionPoint(s1.point.getX(), s1.point.getY(),
                     s1.next.point.getX(), s1.next.point.getY(), s2.point.getX(), s2.point.getY(),
                     s2.next.point.getX(), s2.next.point.getY(), res);
                 if (iPt && (0 <= res[0]) && (res[0] <= 1) && (0 <= res[1]) && (res[1] <= 1)) {
@@ -1705,10 +1705,10 @@
             var res = [null, null];
             var dLx = s1.next.point.getX() - s1.point.getX();
             var dLy = s1.next.point.getY() - s1.point.getY();
-            ifMath.circleLineIntersection(s1.point.getX(), s1.point.getY(), dLx, dLy,
+            IFMath.circleLineIntersection(s1.point.getX(), s1.point.getY(), dLx, dLy,
                 s2.center.getX(), s2.center.getY(), s2.radius, res);
 
-            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[0], 1))) {
+            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !IFMath.isEqualEps(res[0], 1))) {
                 var x = s1.point.getX() + dLx * res[0];
                 var y = s1.point.getY() + dLy * res[0];
 
@@ -1721,7 +1721,7 @@
                 }
             }
 
-            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[1], 1))) {
+            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !IFMath.isEqualEps(res[1], 1))) {
                 var x = s1.point.getX() + dLx * res[1];
                 var y = s1.point.getY() + dLy * res[1];
 
@@ -1737,10 +1737,10 @@
             var res = [null, null];
             var dLx = s2.next.point.getX() - s2.point.getX();
             var dLy = s2.next.point.getY() - s2.point.getY();
-            ifMath.circleLineIntersection(s2.point.getX(), s2.point.getY(), dLx, dLy,
+            IFMath.circleLineIntersection(s2.point.getX(), s2.point.getY(), dLx, dLy,
                 s1.center.getX(), s1.center.getY(), s1.radius, res);
 
-            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[0], 0))) {
+            if (res[0] != null && res[0] >= 0 && res[0] <= 1 && (!ignoreCommonEnd || !IFMath.isEqualEps(res[0], 0))) {
                 var x = s2.point.getX() + dLx * res[0];
                 var y = s2.point.getY() + dLy * res[0];
                 var bulge = this. _calculateBulge(s1.point.getX(), s1.point.getY(), x, y,
@@ -1752,7 +1752,7 @@
                 }
             }
 
-            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !ifMath.isEqualEps(res[1], 0))) {
+            if (res[1] != null && res[1] >= 0 && res[1] <= 1 && (!ignoreCommonEnd || !IFMath.isEqualEps(res[1], 0))) {
                 var x = s2.point.getX() + dLx * res[1];
                 var y = s2.point.getY() + dLy * res[1];
                 var bulge = this. _calculateBulge(s1.point.getX(), s1.point.getY(), x, y,
@@ -1765,12 +1765,12 @@
             }
         } else { // s1.bulge && s2.bulge
             var res = [null, null];
-            ifMath.circleCircleIntersection(s1.center.getX(), s1.center.getY(), s1.radius,
+            IFMath.circleCircleIntersection(s1.center.getX(), s1.center.getY(), s1.radius,
                 s2.center.getX(), s2.center.getY(), s2.radius, res);
 
             if (res[0] && (!ignoreCommonEnd ||
-                    !ifMath.isEqualEps(res[0].getX(), s2.point.getX()) &&
-                    !ifMath.isEqualEps(res[0].getY(), s2.point.getY()))) {
+                    !IFMath.isEqualEps(res[0].getX(), s2.point.getX()) &&
+                    !IFMath.isEqualEps(res[0].getY(), s2.point.getY()))) {
 
                 var bulge01 = this. _calculateBulge(s1.point.getX(), s1.point.getY(),
                     res[0].getX(), res[0].getY(), s1.center.getX(), s1.center.getY(), s1.bulge);
@@ -1790,8 +1790,8 @@
             }
 
             if (res[1] && (!ignoreCommonEnd ||
-                    !ifMath.isEqualEps(res[1].getX(), s2.point.getX()) &&
-                    !ifMath.isEqualEps(res[1].getY(), s2.point.getY()))) {
+                    !IFMath.isEqualEps(res[1].getX(), s2.point.getX()) &&
+                    !IFMath.isEqualEps(res[1].getY(), s2.point.getY()))) {
 
                 var bulge11 = this. _calculateBulge(s1.point.getX(), s1.point.getY(),
                     res[1].getX(), res[1].getY(), s1.center.getX(), s1.center.getY(), s1.bulge);
@@ -1846,15 +1846,15 @@
             }
             if (!segm.bulge) {
                 split[i].insertSegment(new IFVertexOffsetter.PolySegment(segm.point, 0));
-                if (!ifMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
-                        !ifMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
+                if (!IFMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
+                        !IFMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
 
                     segm = new IFVertexOffsetter.PolySegment(new IFPoint(intPts[i].x, intPts[i].y), 0);
                     split[i].insertSegment(segm);
                 }
             } else {
-                if (!ifMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
-                    !ifMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
+                if (!IFMath.isEqualEps(intPts[i].x, segm.point.getX(), eps) ||
+                    !IFMath.isEqualEps(intPts[i].y, segm.point.getY(), eps)) {
 
                     if (segm == segmOrig) {
                         split[i].insertSegment(new IFVertexOffsetter.PolySegment(
@@ -1877,8 +1877,8 @@
                 }
             }
             startIdx = j;
-            if (segmOrig.next && ifMath.isEqualEps(intPts[i].x, segmOrig.next.point.getX(), eps) &&
-                    ifMath.isEqualEps(intPts[i].y, segmOrig.next.point.getY(), eps)) {
+            if (segmOrig.next && IFMath.isEqualEps(intPts[i].x, segmOrig.next.point.getX(), eps) &&
+                    IFMath.isEqualEps(intPts[i].y, segmOrig.next.point.getY(), eps)) {
 
                 ++startIdx;
                 segm = segmOrig.next;
@@ -1907,8 +1907,8 @@
             var lastPLn = split[len-1];
             var endPt = lastPLn.end.point;
             var startPt = split[0].head.point;
-            if (len > 1 && ifMath.isEqualEps(endPt.getX(), startPt.getX(), eps) &&
-                    ifMath.isEqualEps(endPt.getY(), startPt.getY(), eps)) {
+            if (len > 1 && IFMath.isEqualEps(endPt.getX(), startPt.getX(), eps) &&
+                    IFMath.isEqualEps(endPt.getY(), startPt.getY(), eps)) {
 
                 lastPLn.deleteSegment(lastPLn.end);
                 segm = split[0].head;
@@ -1954,7 +1954,7 @@
                 var res = [null, null];
                 var dLx = s.next.point.getX() - segm.point.getX();
                 var dLy = s.next.point.getY() - segm.point.getY();
-                ifMath.circleLineIntersection(segm.point.getX(), segm.point.getY(), dLx, dLy,
+                IFMath.circleLineIntersection(segm.point.getX(), segm.point.getY(), dLx, dLy,
                     intPtsMain[i].x, intPtsMain[i].y, offset, res);
 
                 if (res[0] != null) {
@@ -1983,7 +1983,7 @@
                 }
             } else {
                 var res = [null, null];
-                ifMath.circleCircleIntersection(s.center.getX(), s.center.getY(), s.radius,
+                IFMath.circleCircleIntersection(s.center.getX(), s.center.getY(), s.radius,
                     intPtsMain[i].x, intPtsMain[i].y, offset, res);
 
                 if (res[0] != null) {
@@ -2094,7 +2094,7 @@
     IFVertexOffsetter.prototype._getPlSegmSqrDist = function (s1, pt12, s2, pt22, threshold) {
         var res;
         if (!s1.bulge && !s2.bulge) {
-            res = ifMath.getSegmToSegmSqrDist(s1.point, pt12, s2.point, pt22);
+            res = IFMath.getSegmToSegmSqrDist(s1.point, pt12, s2.point, pt22);
         } else if (!s2.bulge) {
             res = this._getSegmToArcSqrDist(s1.point, s1.bulge, s1.center, s1.radius, pt12, s2.point, pt22, threshold * threshold);
         } else if (!s1.bulge) {
@@ -2106,7 +2106,7 @@
     };
 
     IFVertexOffsetter.prototype._getSegmToArcSqrDist = function (apt1, bulge, cntr, rd, apt2, spt1, spt2, threshold) {
-        if (ifMath.isEqualEps(spt1.getX(), spt2.getX()) && ifMath.isEqualEps(spt1.getY(), spt2.getY())) {
+        if (IFMath.isEqualEps(spt1.getX(), spt2.getX()) && IFMath.isEqualEps(spt1.getY(), spt2.getY())) {
             return this._getPtToArcSqrDist(apt1, bulge, cntr, rd, apt2, spt1);
         }
 
@@ -2115,7 +2115,7 @@
         var intRes = [null, null];
         var dxL = spt2.getX() - spt1.getX();
         var dyL = spt2.getY() - spt1.getY();
-        ifMath.circleLineIntersection(spt1.getX(), spt1.getY(), dxL, dyL, cntr.getX(), cntr.getY(), rd, intRes);
+        IFMath.circleLineIntersection(spt1.getX(), spt1.getY(), dxL, dyL, cntr.getX(), cntr.getY(), rd, intRes);
         if (intRes[0] != null && intRes[1] == null) {
             // Check if distance is 0
             var ptBulge = this._calculateBulge(apt1.getX(), apt1.getY(), intRes[0].getX(), intRes[0].getY(),
@@ -2130,10 +2130,10 @@
                 if (ptBulge < 0 && bulge <= ptBulge || ptBulge >= 0 && bulge >= ptBulge) {
                     res = 0;
                 } else {
-                    res = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                    res = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                         apt1.getX(), apt1.getY());
 
-                    dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                    dst = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                         apt2.getX(), apt2.getY());
 
                     if (dst < res) {
@@ -2152,7 +2152,7 @@
             if (intRes[0] == null) {
                 // Find a circle point at which tangential line is parallel to segment
                 var ptMin = [null];
-                dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                dst = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                     cntr.getX(), cntr.getY(), ptMin);
 
                 if (ptMin[0] > 0 && ptMin < 1) {
@@ -2165,12 +2165,12 @@
                         cntr.getX(), cntr.getY(), bulge);
 
                     if (tptBulge < 0 && bulge <= tptBulge || tptBulge >= 0 && bulge >= tptBulge) {
-                        res = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                        res = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                             tptX, tptY);
                     }
                 }
             }
-            dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+            dst = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                 apt1.getX(), apt1.getY());
 
             if (dst < res) {
@@ -2178,7 +2178,7 @@
             }
 
             if (res > 0) {
-                dst = ifMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
+                dst = IFMath.sqrSegmentDist(spt1.getX(), spt1.getY(), spt2.getX(), spt2.getY(),
                     apt2.getX(), apt2.getY());
 
                 if (dst < res) {
@@ -2205,8 +2205,8 @@
 
     IFVertexOffsetter.prototype._getPtToArcSqrDist = function (apt1, bulge, cntr, rd, apt2, pt) {
         var res;
-        var sqrDst = ifMath.ptSqrDist(pt.getX(), pt.getY(), cntr.getX(), cntr.getY());
-        if (ifMath.isEqualEps(sqrDst, 0)) {
+        var sqrDst = IFMath.ptSqrDist(pt.getX(), pt.getY(), cntr.getX(), cntr.getY());
+        if (IFMath.isEqualEps(sqrDst, 0)) {
             res = rd * rd;
         } else {
             var tmp = rd / Math.sqrt(sqrDst);
@@ -2216,10 +2216,10 @@
                 cntr.getX(), cntr.getY(), bulge);
 
             if (tptBulge < 0 && bulge <= tptBulge || tptBulge >= 0 && bulge >= tptBulge) {
-                res = ifMath.ptSqrDist(pt.getX(), pt.getY(), tptX, tptY);
+                res = IFMath.ptSqrDist(pt.getX(), pt.getY(), tptX, tptY);
             } else {
-                res = ifMath.ptSqrDist(pt.getX(), pt.getY(), apt1.getX(), apt1.getY());
-                sqrDst = ifMath.ptSqrDist(pt.getX(), pt.getY(), apt2.getX(), apt2.getY());
+                res = IFMath.ptSqrDist(pt.getX(), pt.getY(), apt1.getX(), apt1.getY());
+                sqrDst = IFMath.ptSqrDist(pt.getX(), pt.getY(), apt2.getX(), apt2.getY());
                 if (sqrDst < res) {
                     res = sqrDst;
                 }
@@ -2236,7 +2236,7 @@
         var tmp = s1.radius + s2.radius + threshold;
         var sqrTrsh = threshold * threshold;
 
-        if (ifMath.ptSqrDist(c1x, c1y, c2x, c2y) > tmp * tmp) {
+        if (IFMath.ptSqrDist(c1x, c1y, c2x, c2y) > tmp * tmp) {
             return sqrTrsh;
         }
 
@@ -2244,7 +2244,7 @@
         var pts1 = [s1.point, pt12];
         var pts2 = [s2.point, pt22];
         var intRes = [null, null];
-        ifMath.circleCircleIntersection(c1x, c1y, s1.radius, c2x, c2y, s2.radius, intRes);
+        IFMath.circleCircleIntersection(c1x, c1y, s1.radius, c2x, c2y, s2.radius, intRes);
 
         var ptBulge;
         var ata1;
@@ -2268,11 +2268,11 @@
                 pts2.push(intRes[i]);
             }
         }
-        if (!intRes[0] && (!ifMath.isEqualEps(c1x, c2x) || !ifMath.isEqualEps(c1y, c2y))){
+        if (!intRes[0] && (!IFMath.isEqualEps(c1x, c2x) || !IFMath.isEqualEps(c1y, c2y))){
             var dxL = c2x - c1x;
             var dyL = c2y - c1y;
             var intLRes = [null, null];
-            ifMath.circleLineIntersection(c1x, c1y, dxL, dyL, c2x, c2y, s2.radius, intLRes);
+            IFMath.circleLineIntersection(c1x, c1y, dxL, dyL, c2x, c2y, s2.radius, intLRes);
             var ptx;
             var pty;
             for (var i = 0; i < 2 && intLRes[i] != null; ++i) {
@@ -2291,7 +2291,7 @@
             dxL = -dxL;
             dyL = -dyL;
             intLRes = [null, null];
-            ifMath.circleLineIntersection(c2x, c2y, dxL, dyL, c1x, c1y, s1.radius, intLRes);
+            IFMath.circleLineIntersection(c2x, c2y, dxL, dyL, c1x, c1y, s1.radius, intLRes);
             for (var i = 0; i < 2 && intLRes[i] != null; ++i) {
                 ptx = c2x + dxL * intLRes[i];
                 pty = c2y + dyL * intLRes[i];

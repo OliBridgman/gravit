@@ -13,19 +13,19 @@
      * @type {Number}
      * @version 1.0
      */
-    IFMath.prototype.PI2 = 2 * Math.PI;
+    IFMath.PI2 = 2 * Math.PI;
 
     /**
      * 0.5 * Math.PI
      * @type {Number}
      * @version 1.0
      */
-    IFMath.prototype.PIHALF = 0.5 * Math.PI;
+    IFMath.PIHALF = 0.5 * Math.PI;
 
     /**
      * The default epsilon to compare, defaults to 1.0e-14
      */
-    IFMath.prototype.defaultEps = 1e-14;
+    IFMath.defaultEps = 1e-14;
 
     /**
      * Convert an angle in degrees into radians
@@ -33,7 +33,7 @@
      * @return {Number} angle in radians
      * @version 1.0
      */
-    IFMath.prototype.toRadians = function (angle) {
+    IFMath.toRadians = function (angle) {
         return angle * Math.PI / 180;
     };
 
@@ -43,7 +43,7 @@
      * @return {Number} angle in degrees
      * @version 1.0
      */
-    IFMath.prototype.toDegrees = function (angle) {
+    IFMath.toDegrees = function (angle) {
         return angle * 180 / Math.PI;
     };
 
@@ -52,11 +52,11 @@
      * @param {Number} angle the angle to adjust in radians
      * @return {Number} an adjusted angle
      */
-    IFMath.prototype.normalizeAngleRadians = function (angle) {
+    IFMath.normalizeAngleRadians = function (angle) {
         if (angle >= 0) {
-            return this.mod(angle, this.PI2);
+            return IFMath.mod(angle, IFMath.PI2);
         } else {
-            return angle + this.PI2 * Math.floor(-angle / this.PI2 + 1);
+            return angle + IFMath.PI2 * Math.floor(-angle / IFMath.PI2 + 1);
         }
     };
 
@@ -65,9 +65,9 @@
      * @param {Number} angle the angle to adjust in degrees
      * @return {Number} an adjusted angle
      */
-    IFMath.prototype.normalizeAngleDegrees = function (angle) {
+    IFMath.normalizeAngleDegrees = function (angle) {
         if (angle >= 0) {
-            return this.mod(angle, 360);
+            return IFMath.mod(angle, 360);
         } else {
             return angle + 360 * Math.floor(-angle / 360 + 1);
         }
@@ -80,7 +80,7 @@
      * @param {Number} max
      * @return {Number} min <= value >= max
      */
-    IFMath.prototype.normalizeValue = function (value, min, max) {
+    IFMath.normalizeValue = function (value, min, max) {
         return value < min ? min : (value > max ? max : value);
     };
 
@@ -88,12 +88,12 @@
      * Compare two values for equality using an epsilon value
      * @param {Number} v1 value one
      * @param {Number} v2 value two
-     * @param {Number} [epsilon] the epsilon to compare, defaults to IFMath.prototype.defaultEps
+     * @param {Number} [epsilon] the epsilon to compare, defaults to IFMath.defaultEps
      * @return {Boolean} true if v1 == v2 using epsilon, otherwise false
      * @version 1.0
      */
-    IFMath.prototype.isEqualEps = function (v1, v2, epsilon) {
-        if (!epsilon) epsilon = this.defaultEps;
+    IFMath.isEqualEps = function (v1, v2, epsilon) {
+        if (!epsilon) epsilon = IFMath.defaultEps;
         return Math.abs(v1 - v2) <= epsilon;
     };
 
@@ -106,7 +106,7 @@
      * to use. A value of zero (default) rounds to integers
      * @returns {Number}
      */
-    IFMath.prototype.round = function (value, halfDown, precision) {
+    IFMath.round = function (value, halfDown, precision) {
         precision = Math.abs(precision) || 0;
         var coefficient = precision ? Math.pow(10, precision) : 1;
         if (halfDown) {
@@ -120,9 +120,9 @@
      * @return {Number} x mod y
      * @version 1.0
      */
-    IFMath.prototype.mod = function (x, y) {
+    IFMath.mod = function (x, y) {
         if (x < 0) {
-            return -this.mod(-x, y);
+            return -IFMath.mod(-x, y);
         } else {
             return x - Math.floor(x / y) * y;
         }
@@ -132,7 +132,7 @@
      * @return {Number} x div y
      * @version 1.0
      */
-    IFMath.prototype.div = function (x, y) {
+    IFMath.div = function (x, y) {
         if (x < 0) {
             return -Math.floor(-x / y);
         } else {
@@ -149,7 +149,7 @@
      * intersect and parameter values for both segments are written into this array
      * @return {IFPoint} an intersection point if the segments intersect, null otherwise
      */
-    IFMath.prototype.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
+    IFMath.getIntersectionPoint = function (a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, result) {
         // segments intersect when the system below has the only one solution (ta, tb):
         // a1x + ta (a2x - a1x) = a1x + tb (b2x - b1x)
         // a1y + ta (a2y - a1y) = a1y + tb (b2y - b1y)
@@ -158,7 +158,7 @@
         var da = (a1x - b1x) * (b2y - b1y) - (a1y - b1y) * (b2x - b1x);
         var db = (a1x - a2x) * (a1y - b1y) - (a1y - a2y) * (a1x - b1x);
 
-        if (Math.abs(d) < this.defaultEps) {
+        if (Math.abs(d) < IFMath.defaultEps) {
             // segments are parallel
             return null;
         } else {
@@ -190,7 +190,7 @@
      * @param {Number} rC - circle radius
      * @param {Array{Number}} result - array of 0 - 2 line parameter values
      */
-    IFMath.prototype.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
+    IFMath.circleLineIntersection = function (xL, yL, dxL, dyL, xC, yC, rC, result) {
         // (x - xC)^2 + (y - yC)^2 - rC^2 = 0
         // x = xL + dxL * t
         // y = yL + dyL * t
@@ -199,14 +199,14 @@
         var dxLSqr = dxL * dxL;
         var dyLSqr = dyL * dyL;
         var dev = dxLSqr + dyLSqr;
-        if (this.isEqualEps(dev, 0)) {
+        if (IFMath.isEqualEps(dev, 0)) {
             return;
         }
 
         var tmp = dxL * (yC - yL) - dyL * (xC - xL);
         var discr = rSqr * dev - (tmp * tmp);
 
-        if (this.isEqualEps(discr, 0)) { // line is tangent to circle
+        if (IFMath.isEqualEps(discr, 0)) { // line is tangent to circle
             result[0] = (dxL * (xC - xL) + dyL * (yC - yL)) / dev;
         } else if (discr > 0) { // line intersects circle in two points
             tmp = dxL * (xC - xL) + dyL * (yC - yL);
@@ -225,19 +225,19 @@
      * @param {Number} rC2 - the second circle radius
      * @param {Array{IFPoint}} result
      */
-    IFMath.prototype.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
+    IFMath.circleCircleIntersection = function (xC1, yC1, rC1, xC2, yC2, rC2, result) {
         // To find intersection points, the formulas from here are used:
         // http://www.sonoma.edu/users/w/wilsonst/papers/Geometry/circles/default.html
-        var dSqr = this.ptSqrDist(xC1, yC1, xC2, yC2);
+        var dSqr = IFMath.ptSqrDist(xC1, yC1, xC2, yC2);
         var resid = Math.abs(rC1 - rC2);
         var rSqr = resid * resid;
         var rSum = rC1 + rC2;
         var rSumSqr = rSum * rSum;
-        if (!this.isEqualEps(dSqr, 0)) {
+        if (!IFMath.isEqualEps(dSqr, 0)) {
             var tmp = (rC1 * rC1 - rC2 * rC2) / (2 * dSqr);
             var x = (xC1 + xC2) / 2 + (xC2 - xC1) * tmp;
             var y = (yC1 + yC2) / 2 + (yC2 - yC1) * tmp;
-            if (this.isEqualEps(dSqr, rSumSqr) || !this.isEqualEps(dSqr, 0) && this.isEqualEps(dSqr, rSqr)) {
+            if (IFMath.isEqualEps(dSqr, rSumSqr) || !IFMath.isEqualEps(dSqr, 0) && IFMath.isEqualEps(dSqr, rSqr)) {
                 result[0] = new IFPoint(x, y);
             } else if (rSqr < dSqr && dSqr < rSumSqr ) {
                 tmp = Math.sqrt((rSumSqr - dSqr) * (dSqr - rSqr)) / (2 * dSqr);
@@ -257,9 +257,9 @@
      * @return {IFPoint} an intersection point if the lines intersection, null otherwise
      * @version 1.0
      */
-    IFMath.prototype.getLinesIntersection = function (a1, b1, c1, a2, b2, c2) {
+    IFMath.getLinesIntersection = function (a1, b1, c1, a2, b2, c2) {
         var d = a1 * b2 - a2 * b1;
-        if (this.isEqualEps(d, 0)) {
+        if (IFMath.isEqualEps(d, 0)) {
             return null;
         }
         return new IFPoint((b1 * c2 - b2 * c1) / d, (c1 * a2 - c2 * a1) / d);
@@ -277,7 +277,7 @@
      * @returns {IFPoint} - center coordinates
      * @version 1.0
      */
-    IFMath.prototype.getCircumcircleCenter = function (x1, y1, x2, y2, x3, y3) {
+    IFMath.getCircumcircleCenter = function (x1, y1, x2, y2, x3, y3) {
         // Center of circumcircle of the triangle is an intersection point of perpendicular bisectors
         // Perpendicular bisector (x1,x2)(y1,y2): (x1 - x2)*(x - (x1+x2)/2) + (y1 - y2)*(y - (y1*y2)/2) = 0
         var dx1 = x1 - x2;
@@ -285,7 +285,7 @@
         var dx2 = x2 - x3;
         var dy2 = y2 - y3;
 
-        return this.getLinesIntersection(dx1, dy1, -dx1 * (x1 + x2) / 2 - dy1 * (y1 + y2) / 2,
+        return IFMath.getLinesIntersection(dx1, dy1, -dx1 * (x1 + x2) / 2 - dy1 * (y1 + y2) / 2,
             dx2, dy2, -dx2 * (x2 + x3) / 2 - dy2 * (y2 + y3) / 2);
     };
 
@@ -297,7 +297,7 @@
      *  or the nearest to offset end-point otherwise
      * @version 1.0
      */
-    IFMath.prototype.getPointAtLength = function (x1, y1, x2, y2, offs) {
+    IFMath.getPointAtLength = function (x1, y1, x2, y2, offs) {
         var len;
         var t;
 
@@ -322,7 +322,7 @@
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
-    IFMath.prototype.getCurveAtT = function (p1, p2, c, t) {
+    IFMath.getCurveAtT = function (p1, p2, c, t) {
         var a = p1 + t * (c - p1);
         var b = c + t * (p2 - c);
         return a + t * (b - a);
@@ -338,7 +338,7 @@
      * @return {Number} a coordinate of a point on curve at parameter value t
      * @version 1.0
      */
-    IFMath.prototype.getCubicCurveAtT = function (p1, p2, c1, c2, t) {
+    IFMath.getCubicCurveAtT = function (p1, p2, c1, c2, t) {
         var a = p1 + t * (c1 - p1);
         var b = c1 + t * (c2 - c1);
         var c = c2 + t * (p2 - c2);
@@ -356,7 +356,7 @@
      * @return {Number} dot product
      * @version 1.0
      */
-    IFMath.prototype.vDotProduct = function (x1, y1, x2, y2) {
+    IFMath.vDotProduct = function (x1, y1, x2, y2) {
         return (x1 == null || y1 == null || x2 == null || y2 == null)
             ? 0.0
             : (x1 * x2) + (y1 * y2);
@@ -370,7 +370,7 @@
      * @param {Number} y2 y-coordinate of the second point
      * @return {Number} squared distance
      */
-    IFMath.prototype.ptSqrDist = function (x1, y1, x2, y2) {
+    IFMath.ptSqrDist = function (x1, y1, x2, y2) {
         var tmp1, tmp2;
 
         if (x1 == null || y1 == null || x2 == null || y2 == null) {
@@ -390,8 +390,8 @@
      * @param {Number} y2 y-coordinate of the second point
      * @return {Number} distance
      */
-    IFMath.prototype.ptDist = function (x1, y1, x2, y2) {
-        return Math.sqrt(this.ptSqrDist(x1, y1, x2, y2));
+    IFMath.ptDist = function (x1, y1, x2, y2) {
+        return Math.sqrt(IFMath.ptSqrDist(x1, y1, x2, y2));
     };
 
     /**
@@ -409,9 +409,9 @@
      * @return {Number} relative position of a point against a segment
      * @version 1.0
      */
-    IFMath.prototype.segmentSide = function (px1, py1, px2, py2, x, y) {
+    IFMath.segmentSide = function (px1, py1, px2, py2, x, y) {
         var val = (y - py1) * (px2 - px1) + (x - px1) * (py1 - py2);
-        if (this.isEqualEps(val, 0)) {
+        if (IFMath.isEqualEps(val, 0)) {
             return 0;
         }
         if (val > 0) {
@@ -436,9 +436,9 @@
      * @return {Number} squared distance from a point to a segment
      * @version 1.0
      */
-    IFMath.prototype.sqrSegmentDist = function (px1, py1, px2, py2, x, y, ptMin, sqrEndAcc) {
-        if (this.isEqualEps(px1, px2) && this.isEqualEps(py1, py2)) {
-            return this.ptSqrDist(px1, py1, x, y);
+    IFMath.sqrSegmentDist = function (px1, py1, px2, py2, x, y, ptMin, sqrEndAcc) {
+        if (IFMath.isEqualEps(px1, px2) && IFMath.isEqualEps(py1, py2)) {
+            return IFMath.ptSqrDist(px1, py1, x, y);
         }
 
         // Calculate distance using this approach:
@@ -453,14 +453,14 @@
         ay = y - py1;
 
         if (px1 == px2 && py1 == py2) {
-            sqrDst = this.vDotProduct(ax, ay, ax, ay);
+            sqrDst = IFMath.vDotProduct(ax, ay, ax, ay);
             if (ptMin) {
                 ptMin[0] = 0;
             }
-        } else if (ptMin && sqrEndAcc && this.vDotProduct(ax, ay, ax, ay) <= sqrEndAcc) {
+        } else if (ptMin && sqrEndAcc && IFMath.vDotProduct(ax, ay, ax, ay) <= sqrEndAcc) {
             ptMin[0] = 0;
             sqrDst = 0.0;
-        } else if (ptMin && sqrEndAcc && this.ptSqrDist(x, y, px2, py2) <= sqrEndAcc) {
+        } else if (ptMin && sqrEndAcc && IFMath.ptSqrDist(x, y, px2, py2) <= sqrEndAcc) {
             ptMin[0] = 1;
             sqrDst = 0.0;
         } else {
@@ -472,15 +472,15 @@
             //
             //c = ((a * b)/(|b|^2))*b
             //
-            tmp = this.vDotProduct(ax, ay, bx, by) / this.vDotProduct(bx, by, bx, by);
+            tmp = IFMath.vDotProduct(ax, ay, bx, by) / IFMath.vDotProduct(bx, by, bx, by);
             if (tmp <= 0.0) {
-                sqrDst = this.vDotProduct(ax, ay, ax, ay);
+                sqrDst = IFMath.vDotProduct(ax, ay, ax, ay);
                 if (ptMin) {
                     ptMin[0] = 0;
                 }
             }
             else if (tmp >= 1.0) {
-                sqrDst = this.vDotProduct(x - px2, y - py2, x - px2, y - py2);
+                sqrDst = IFMath.vDotProduct(x - px2, y - py2, x - px2, y - py2);
                 if (ptMin) {
                     ptMin[0] = 1;
                 }
@@ -495,7 +495,7 @@
                 nx = ax - cx;
                 ny = ay - cy;
 
-                sqrDst = this.vDotProduct(nx, ny, nx, ny);
+                sqrDst = IFMath.vDotProduct(nx, ny, nx, ny);
                 if (ptMin) {
                     ptMin[0] = tmp;
                 }
@@ -513,21 +513,21 @@
      * @param {IFPoint} pt22 - an end point of the second segment
      * @return {Number} squared distance between two line segments
      */
-    IFMath.prototype.getSegmToSegmSqrDist = function (pt11, pt12, pt21, pt22) {
-        var dst = this.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt21.getX(), pt21.getY());
+    IFMath.getSegmToSegmSqrDist = function (pt11, pt12, pt21, pt22) {
+        var dst = IFMath.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt21.getX(), pt21.getY());
         var res = dst;
         if (res > 0) {
-            dst = this.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt22.getX(), pt22.getY());
+            dst = IFMath.sqrSegmentDist(pt11.getX(), pt11.getY(), pt12.getX(), pt12.getY(), pt22.getX(), pt22.getY());
             if (dst < res) {
                 res = dst;
             }
             if (res > 0) {
-                dst = this.sqrSegmentDist(pt21.getX(), pt21.getY(), pt22.getX(), pt22.getY(), pt11.getX(), pt11.getY());
+                dst = IFMath.sqrSegmentDist(pt21.getX(), pt21.getY(), pt22.getX(), pt22.getY(), pt11.getX(), pt11.getY());
                 if (dst < res) {
                     res = dst;
                 }
                 if (res > 0) {
-                    dst = this.sqrSegmentDist(
+                    dst = IFMath.sqrSegmentDist(
                         pt21.getX(), pt21.getY(), pt22.getX(), pt22.getY(), pt12.getX(), pt12.getY());
 
                     if (dst < res) {
@@ -551,7 +551,7 @@
      * @param {Boolean} positiveOnly indicates if only positive projection is needed
      * @return (IFPoint}
      */
-    IFMath.prototype.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
+    IFMath.getVectorProjection = function (x1, y1, x2, y2, x3, y3, positiveOnly) {
         var ax = x3 - x1;
         var ay = y3 - y1;
         var bx = x2 - x1;
@@ -559,12 +559,12 @@
         // projection vector a onto b
         //c = ((a * b)/(|b|^2))*b
 
-        var norm = this.vDotProduct(bx, by, bx, by);
+        var norm = IFMath.vDotProduct(bx, by, bx, by);
         var res;
-        if (this.isEqualEps(norm, 0)) {
+        if (IFMath.isEqualEps(norm, 0)) {
             res = new IFPoint(x3, y3);
         } else {
-            var tmp = this.vDotProduct(ax, ay, bx, by) / norm;
+            var tmp = IFMath.vDotProduct(ax, ay, bx, by) / norm;
 
             if (tmp <= 0.0 && positiveOnly) {
                 res  = new IFPoint(x1, y1);
@@ -577,26 +577,26 @@
         return res;
     };
 
-    IFMath.prototype.solveLinear2Pseudo = function (a11, a12, b1, a21, a22, b2) {
-        var res = this.getLinesIntersection(a11, a12, -b1, a21, a22, -b2);
+    IFMath.solveLinear2Pseudo = function (a11, a12, b1, a21, a22, b2) {
+        var res = IFMath.getLinesIntersection(a11, a12, -b1, a21, a22, -b2);
         if (res == null) { // try to find pseudo solution
             var r1, r2;
-            if (!this.isEqualEps(a11 + a12, 0) && (!this.isEqualEps(b1, 0) || this.isEqualEps(b2, 0))) {
+            if (!IFMath.isEqualEps(a11 + a12, 0) && (!IFMath.isEqualEps(b1, 0) || IFMath.isEqualEps(b2, 0))) {
                 r1 = b1 / (a11 + a12);
                 r2 = r1;
-            } else if (!this.isEqualEps(a21 + a22, 0) && (!this.isEqualEps(b2, 0) || this.isEqualEps(b1, 0))) {
+            } else if (!IFMath.isEqualEps(a21 + a22, 0) && (!IFMath.isEqualEps(b2, 0) || IFMath.isEqualEps(b1, 0))) {
                 r1 = b2 / (a21 + a22);
                 r2 = r1;
-            } else if (!this.isEqualEps(a12, 0) || !this.isEqualEps(a22, 0)) {
+            } else if (!IFMath.isEqualEps(a12, 0) || !IFMath.isEqualEps(a22, 0)) {
                 r1 = 0.0;
-                if (!ifMath.isEqualEps(a12, 0)) {
+                if (!IFMath.isEqualEps(a12, 0)) {
                     r2 = b1 / a12;
                 } else {
                     r2 = b2 / a22;
                 }
-            } else if (!this.isEqualEps(a11, 0) || !this.isEqualEps(a21, 0)) {
+            } else if (!IFMath.isEqualEps(a11, 0) || !IFMath.isEqualEps(a21, 0)) {
                 r2 = 0.0;
-                if (!this.isEqualEps(a11, 0)) {
+                if (!IFMath.isEqualEps(a11, 0)) {
                     r1 = b1 / a11;
                 } else {
                     r1 = b2 / a21;
@@ -606,7 +606,7 @@
                 r2 = 0.0;
             }
 
-            if (this.isEqualEps(a11 * r1 + a12 * r2, b1) && this.isEqualEps(a21 * r1 + a22 * r2, b2)) {
+            if (IFMath.isEqualEps(a11 * r1 + a12 * r2, b1) && IFMath.isEqualEps(a21 * r1 + a22 * r2, b2)) {
                 res = new IFPoint(r1, r2);
             }
         }
@@ -624,7 +624,7 @@
      * @param {Float64Array(3)} ctrls1 - array of the control points of the first part to be passed out
      * @param {Float64Array(3)} ctrls2 - array of the control points of the second part to be passed out
      */
-    IFMath.prototype.divideQuadraticCurve = function (p1, c, p2, t, ctrls1, ctrls2) {
+    IFMath.divideQuadraticCurve = function (p1, c, p2, t, ctrls1, ctrls2) {
         var a = p1 + t * (c - p1);
         var b = c + t * (p2 - c);
         var m = a + t * (b - a);
@@ -647,7 +647,7 @@
      * @return {Number} evaluation result
      * @version 1.0
      */
-    IFMath.prototype.evalCubic = function (a, b, c, d, x) {
+    IFMath.evalCubic = function (a, b, c, d, x) {
         if (x == 0) {
             return d;
         }
@@ -672,7 +672,7 @@
      * @param {Array} sPts - split points (parameter values) plus two end points, sorted in ascending order
      * @returns {Number} nPoints - the number of split points (including two original end points)
      */
-    IFMath.prototype.getCubicCurveSplits = function(ax, bx, cx, ay, by, cy, sPts) {
+    IFMath.getCubicCurveSplits = function(ax, bx, cx, ay, by, cy, sPts) {
         // Find initial interval (curve) splitPoints at [0, 1],
         // which are curve inflate points, or such points,
         // that P'x = 0 or P'y = 0
@@ -693,8 +693,8 @@
         // P'' = 3(2at + b)
 
         // P' = 0;
-        ifMath.getQuadraticRoots(ax, bx, cx, splitPoints);
-        ifMath.getQuadraticRoots(ay, by, cy, splitPoints);
+        IFMath.getQuadraticRoots(ax, bx, cx, splitPoints);
+        IFMath.getQuadraticRoots(ay, by, cy, splitPoints);
 
         // P'x * P''y - P'y * P''x = 0
         // (2bx*ay -2by*ax + ax*by - ay*bx)t^2 + (2cx*ay - 2cy*ax)t + cx*by - cy*bx = 0
@@ -703,9 +703,9 @@
         var A = bx * ay - by * ax;
         var B = 2 * (cx * ay - cy * ax);
         var C = cx * by - cy * bx;
-        ifMath.getQuadraticRoots(A, B, C, splitPoints);
+        IFMath.getQuadraticRoots(A, B, C, splitPoints);
 
-        return ifUtil.uSortSegment(0, 1, splitPoints, sPts);
+        return IFUtil.uSortSegment(0, 1, splitPoints, sPts);
     };
 
     /**
@@ -719,7 +719,7 @@
      * @param {Number} part indicates which curve part is further needed: 1 - for the first part, 2 - for the second
      * @param {Float64Array(4)} ctrls - array of the control points of needed part to be passed out
      */
-    IFMath.prototype.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls, ctrls2) {
+    IFMath.getCtrlPtsCasteljau = function (p1, c1, c2, p2, t, part, ctrls, ctrls2) {
         var a = p1 + t * (c1 - p1);
         var b = c1 + t * (c2 - c1);
         var c = c2 + t * (p2 - c2);
@@ -757,20 +757,20 @@
      * @param {Float64Array(4)} ctrls - array of the control points of needed part to be passed out
      * @version 1.0
      */
-    IFMath.prototype.getCtrlPts = function (p1, p2, c1, c2, t1, t2, ctrls) {
+    IFMath.getCtrlPts = function (p1, p2, c1, c2, t1, t2, ctrls) {
         var tNew;
 
         if (t1 == 0) {
-            this.getCtrlPtsCasteljau(p1, c1, c2, p2, t2, 1, ctrls);
+            IFMath.getCtrlPtsCasteljau(p1, c1, c2, p2, t2, 1, ctrls);
             return;
         }
         if (t2 == 1) {
-            this.getCtrlPtsCasteljau(p1, c1, c2, p2, t1, 2, ctrls);
+            IFMath.getCtrlPtsCasteljau(p1, c1, c2, p2, t1, 2, ctrls);
             return;
         }
-        this.getCtrlPtsCasteljau(p1, c1, c2, p2, t1, 2, ctrls);
+        IFMath.getCtrlPtsCasteljau(p1, c1, c2, p2, t1, 2, ctrls);
         tNew = (t2 - t1) / (1 - t1);
-        this.getCtrlPtsCasteljau(ctrls[0], ctrls[1], ctrls[2], ctrls[3], tNew, 1, ctrls);
+        IFMath.getCtrlPtsCasteljau(ctrls[0], ctrls[1], ctrls[2], ctrls[3], tNew, 1, ctrls);
     };
 
     /**
@@ -781,7 +781,7 @@
      * @return {Number} evaluation result
      * @version 1.0
      */
-    IFMath.prototype.evalPoly = function (coeffF, degreeF, x) {
+    IFMath.evalPoly = function (coeffF, degreeF, x) {
         var i = 0;
         var res = null;
 
@@ -823,7 +823,7 @@
      * @return {Boolean} true if derivative coefficients were successfully calculated
      * @version 1.0
      */
-    IFMath.prototype.getCoeffPolyDeriv = function (coeffPoly, degreePoly, coeffPolyDeriv) {
+    IFMath.getCoeffPolyDeriv = function (coeffPoly, degreePoly, coeffPolyDeriv) {
         var i = 0;
         var res = false;
 
@@ -849,7 +849,7 @@
      * @return {Number} number of found roots
      * @version 1.0
      */
-    IFMath.prototype.getCubicRoots = function (coeffG, p0, p1, gRoots, inclEnds, acc) {
+    IFMath.getCubicRoots = function (coeffG, p0, p1, gRoots, inclEnds, acc) {
         var t1, t2, discr, sqrtD, nRoots;
         var a, b, c, d;
         var g0, g1, gt1, gt2;
@@ -893,18 +893,18 @@
         d = coeffs[3];
 
         if (p0 == 0 && p1 == 1) {
-            this.inversePolyUnaryInterval(coeffs, 3, coeffInversed);
+            IFMath.inversePolyUnaryInterval(coeffs, 3, coeffInversed);
         }
         else {
-            this.inversePolyInterval(coeffs, 3, p0, p1, coeffInversed);
+            IFMath.inversePolyInterval(coeffs, 3, p0, p1, coeffInversed);
         }
 
 
-        if (this.estimPositiveRootsDescartes(coeffInversed, 3) == 0) {
+        if (IFMath.estimPositiveRootsDescartes(coeffInversed, 3) == 0) {
             return 0;
         }
 
-        this.getCoeffPolyDeriv(coeffs, 3, cDeriv);
+        IFMath.getCoeffPolyDeriv(coeffs, 3, cDeriv);
 
         cDeriv2[0] = 6 * a;
         cDeriv2[1] = 2 * b;
@@ -924,9 +924,9 @@
         }
 
         // value of polinomial at p0
-        g0 = this.evalCubic(a, b, c, d, p0);
+        g0 = IFMath.evalCubic(a, b, c, d, p0);
         // value of polinomial at p1
-        g1 = this.evalCubic(a, b, c, d, p1);
+        g1 = IFMath.evalCubic(a, b, c, d, p1);
 
         // [-inf, t1], [t2, inf]
         if (nRoots == 0 || t1 >= p1 || t2 <= p0) {
@@ -946,7 +946,7 @@
                 // g0 > 0 || g1 < 0 => no root
                 else if (g0 < 0 && g1 > 0) {
 
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         p0, p1, g0, g1,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -979,7 +979,7 @@
                 }
                 // g0 < 0 || g1 > 0 => no root
                 else if (g0 > 0 && g1 < 0) {
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         p0, p1, g0, g1,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -997,7 +997,7 @@
 
         // p0 < t1 < p1 <= t2
         else if (t1 > p0 && t2 >= p1) {
-            gt1 = this.evalCubic(a, b, c, d, t1);
+            gt1 = IFMath.evalCubic(a, b, c, d, t1);
             if (accNeg <= gt1 && gt1 <= acc) {
                 gRoots[gRootsN] = t1;
                 gRootsN += 1;
@@ -1014,7 +1014,7 @@
                 }
                 // g0 > 0 => no root
                 else if (g0 < 0) {
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         p0, t1, g0, gt1,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1037,7 +1037,7 @@
                 }
                 // g1 > 0 => no root
                 else if (g1 < 0) {
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         t1, p1, gt1, g1,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1055,7 +1055,7 @@
 
         // t1 <= p0 < t2 < p1
         else if (t1 <= p0 && t2 < p1) {
-            gt2 = this.evalCubic(a, b, c, d, t2);
+            gt2 = IFMath.evalCubic(a, b, c, d, t2);
             if (accNeg <= gt2 && gt2 <= acc) {
                 gRoots[gRootsN] = t2;
                 gRootsN += 1;
@@ -1072,7 +1072,7 @@
                 }
                 // g0 < 0 => no root
                 else if (g0 > 0) {
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         p0, t2, g0, gt2,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1095,7 +1095,7 @@
                 }
                 // g1 < 0 => no root
                 else if (g1 > 0) {
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         t2, p1, gt2, g1,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1114,7 +1114,7 @@
         // p0 < t1 <= t2 < p1
         else {
             if (t1 == t2) {
-                gt1 = this.evalCubic(a, b, c, d, t1);
+                gt1 = IFMath.evalCubic(a, b, c, d, t1);
                 if (accNeg <= gt1 && gt1 <= acc) {
                     gRoots[gRootsN] = t1;
                     gRootsN += 1;
@@ -1134,7 +1134,7 @@
                             }
                         }
                         else if (gt1 < 0 && g1 > 0) {
-                            r = this.locateByNewton(
+                            r = IFMath.locateByNewton(
                                 t1, p1, gt1, g1,
                                 coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1148,7 +1148,7 @@
                             gRootsN += 1;
                         }
                         else if (g0 < 0 && gt1 > 0) {
-                            r = this.locateByNewton(
+                            r = IFMath.locateByNewton(
                                 p0, t1, g0, gt1,
                                 coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1165,8 +1165,8 @@
                 }
             }
             else { // p0 < t1 < t2 < p1
-                gt1 = this.evalCubic(a, b, c, d, t1);
-                gt2 = this.evalCubic(b, b, c, d, t2);
+                gt1 = IFMath.evalCubic(a, b, c, d, t1);
+                gt2 = IFMath.evalCubic(b, b, c, d, t2);
 
                 if (gt1 <= 0 || gt2 >= 0) {
                     if (accNeg <= gt1 && gt1 <= acc) {
@@ -1183,7 +1183,7 @@
                         }
                         // g1 < 0 => no root
                         else if (gt2 < 0 && g1 > 0) {
-                            r = this.locateByNewton(
+                            r = IFMath.locateByNewton(
                                 t2, p1, gt2, g1,
                                 coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1212,7 +1212,7 @@
                         }
                         // g0 > 0 => no root
                         else if (g0 < 0 && gt1 > 0) {
-                            r = this.locateByNewton(
+                            r = IFMath.locateByNewton(
                                 p0, t1, g0, gt1,
                                 coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1229,7 +1229,7 @@
                 }
 
                 else { // gt1 > 0 && gt2 < 0
-                    r = this.locateByNewton(
+                    r = IFMath.locateByNewton(
                         t1, t2, gt1, gt2,
                         coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1250,7 +1250,7 @@
                     }
                     // g0 > 0 => no root [p0, t1]
                     else if (g0 < 0 && gt1 > 0) {
-                        r = this.locateByNewton(
+                        r = IFMath.locateByNewton(
                             p0, t1, g0, gt1,
                             coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1270,7 +1270,7 @@
                     }
                     // g1 < 0 => no root [t2, p1]
                     else if (gt2 < 0 && g1 > 0) {
-                        r = this.locateByNewton(
+                        r = IFMath.locateByNewton(
                             t2, p1, gt2, g1,
                             coeffs, 3, cDeriv, cDeriv2, acc);
 
@@ -1294,7 +1294,7 @@
      * The maximal number of possible iterations to perform in Newton method (usually 4-10 should be enough)
      * @private
      */
-    IFMath.prototype._maxIter = 100;
+    IFMath._maxIter = 100;
 
     /**
      * Calculates root of a polynomial on a segment using Newton method.
@@ -1316,13 +1316,13 @@
      * @return {Number} root if it was found, or null otherwise
      * @version 1.0
      */
-    IFMath.prototype.locateByNewton = function (a, b, fa, fb, coeffF, degreeF, coeffFDeriv, coeffFDeriv2, acc, sturmSeq, nSignVars) {
+    IFMath.locateByNewton = function (a, b, fa, fb, coeffF, degreeF, coeffFDeriv, coeffFDeriv2, acc, sturmSeq, nSignVars) {
         // TODO: check if the last vars will be set to null, if they are not specified in function call
         var x = null;
         var tmp;
         var degreeDeriv = degreeF - 1;
         var accNeg = -acc;
-        var zeroNeg = -this.defaultEps;
+        var zeroNeg = -IFMath.defaultEps;
         var i = 0;
         var val = acc + 1;
         var valDeriv2;
@@ -1375,7 +1375,7 @@
                 }
             }
             else {
-                val = this.evalPoly(coeffF, degreeF, deriv2Root);
+                val = IFMath.evalPoly(coeffF, degreeF, deriv2Root);
                 if (accNeg <= val && val <= acc) {
                     // solution is found
                     x = deriv2Root;
@@ -1383,7 +1383,7 @@
                 else {
                     if (val > 0 && fa > 0 || val < 0 && fa < 0) {
                         a1 = deriv2Root + acc;
-                        val = this.evalPoly(coeffF, degreeF, a1);
+                        val = IFMath.evalPoly(coeffF, degreeF, a1);
                         valDeriv2 = coeffFDeriv2[0] * a1 + coeffFDeriv2[1];
                         if (valDeriv2 > 0 && val > 0 || valDeriv2 < 0 && val < 0) {
                             x = a1;
@@ -1402,7 +1402,7 @@
                     }
                     else if (val > 0 && fb > 0 || val < 0 && fb < 0) {
                         a2 = deriv2Root - acc;
-                        val = this.evalPoly(coeffF, degreeF, a2);
+                        val = IFMath.evalPoly(coeffF, degreeF, a2);
                         valDeriv2 = coeffFDeriv2[0] * a2 + coeffFDeriv2[1];
                         if (valDeriv2 > 0 && val > 0 || valDeriv2 < 0 && val < 0) {
                             x = a2;
@@ -1445,7 +1445,7 @@
             locateInitial = true;
 
             inclEnds = false;
-            this.getCubicRoots(coeffFDeriv2, a, b, rootsDeriv2, inclEnds, acc);
+            IFMath.getCubicRoots(coeffFDeriv2, a, b, rootsDeriv2, inclEnds, acc);
 
             i = 0;
             if (rootsDeriv2.length == 0) {
@@ -1459,7 +1459,7 @@
                 }
             }
             else {
-                ifUtil.uSortSegment(a, b, rootsDeriv2, rootsD2);
+                IFUtil.uSortSegment(a, b, rootsDeriv2, rootsD2);
                 a1 = a;
                 fVals[0] = fa;
                 if (useSt) {
@@ -1490,10 +1490,10 @@
 
                     if (useSign) {
                         if (fVals[1] == null) {
-                            fVals[1] = this.evalPoly(coeffF, degreeF, a2);
+                            fVals[1] = IFMath.evalPoly(coeffF, degreeF, a2);
                         }
 
-                        if (this.isEqualEps(fVals[1], 0, acc)) {
+                        if (IFMath.isEqualEps(fVals[1], 0, acc)) {
                             x = a2;
                             val = fVals[1];
                             locateInitial = false;
@@ -1503,7 +1503,7 @@
                         }
                     }
                     if (useSt) {
-                        nr = this.countRootsNSturm(
+                        nr = IFMath.countRootsNSturm(
                             coeffF, degreeF, coeffFDeriv, a1, a2, sturmSeq, nSVars, fVals);
 
                         if (nr != 0) {
@@ -1517,7 +1517,7 @@
 
             // Now there is at least one root of F at [a1,a2], and no roots of F'' on (a1, a2)
             if (locateInitial && i == 0) {
-                valDeriv2 = this.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, a);
+                valDeriv2 = IFMath.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, a);
                 if (valDeriv2 > 0 && fa > 0 || valDeriv2 < 0 && fa < 0) {
                     x = a;
                     val = fa;
@@ -1525,7 +1525,7 @@
                 }
             }
             if (locateInitial && i == rootsD2.length) {
-                valDeriv2 = this.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, b);
+                valDeriv2 = IFMath.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, b);
                 if (valDeriv2 > 0 && fb > 0 || valDeriv2 < 0 && fb < 0) {
                     x = b;
                     val = fb;
@@ -1540,11 +1540,11 @@
                 }
 
                 x = (a1 + a2) / 2;
-                valDeriv2 = this.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, x);
+                valDeriv2 = IFMath.evalPoly(coeffFDeriv2, coeffFDeriv2.length - 1, x);
 
                 while (a2 - a1 > acc && locateInitial) {
                     x = (a1 + a2) / 2;
-                    val = this.evalPoly(coeffF, degreeF, x);
+                    val = IFMath.evalPoly(coeffF, degreeF, x);
                     if (accNeg <= val && val <= acc) {
                         locateInitial = false;
                     }
@@ -1577,7 +1577,7 @@
                         fVals = [fa1, val];
                         nSVars = [nsv[0], null];
 
-                        nr = this.countRootsNSturm(
+                        nr = IFMath.countRootsNSturm(
                             coeffF, degreeF, coeffFDeriv, a1, x, sturmSeq, nSVars, fVals);
 
                         if (nr > 0) {
@@ -1602,7 +1602,7 @@
 
                 if (locateInitial) {
                     x = (a1 + a2) / 2;
-                    val = this.evalPoly(coeffF, degreeF, x);
+                    val = IFMath.evalPoly(coeffF, degreeF, x);
                 }
 
             }
@@ -1611,16 +1611,16 @@
 
         // TODO: improve stop rule
         i = 1;
-        while (x != null && (val < accNeg || acc < val) && i < this._maxIter) {
-            tmp = this.evalPoly(coeffFDeriv, degreeDeriv, x);
-            if (zeroNeg < tmp && tmp < this.defaultEps) {
-                val = this.evalPoly(coeffF, degreeF, x);
+        while (x != null && (val < accNeg || acc < val) && i < IFMath._maxIter) {
+            tmp = IFMath.evalPoly(coeffFDeriv, degreeDeriv, x);
+            if (zeroNeg < tmp && tmp < IFMath.defaultEps) {
+                val = IFMath.evalPoly(coeffF, degreeF, x);
                 if (val < accNeg || acc < val) {
                     x = null;
                 }
             }
             else {
-                val = this.evalPoly(coeffF, degreeF, x);
+                val = IFMath.evalPoly(coeffF, degreeF, x);
                 tmp = val / tmp;
                 x1 = x;
                 x = x - tmp;
@@ -1639,7 +1639,7 @@
             ++i;
         }
 
-        if (i == this._maxIter) {
+        if (i == IFMath._maxIter) {
             x = null;
         }
 
@@ -1654,7 +1654,7 @@
      * @param {Array} roots - array of roots to be passed out
      * @version 1.0
      */
-    IFMath.prototype.getQuadraticRoots = function (a, b, c, roots) {
+    IFMath.getQuadraticRoots = function (a, b, c, roots) {
         // ax^2 + bx + c = 0
         var discr;
         var sd;
@@ -1687,7 +1687,7 @@
      * @private
      * @version 1.0
      */
-    IFMath.prototype._pseudoRem = function (coeffP1, coeffP2, prem) {
+    IFMath._pseudoRem = function (coeffP1, coeffP2, prem) {
         var rem1 = [];
         var j;
         var q;
@@ -1755,7 +1755,7 @@
      * @param {Array} sturmPRS - generalized Sturm sequence (array of polynomial coefficients arrays) to be passed out
      * @version 1.0
      */
-    IFMath.prototype.getSturmPRS = function (coeffPoly, degreePoly, coeffPolyDeriv, sturmPRS) {
+    IFMath.getSturmPRS = function (coeffPoly, degreePoly, coeffPolyDeriv, sturmPRS) {
         var a = [];
         var beta = [];
         var delta = [];
@@ -1785,7 +1785,7 @@
 
         for (i = 1; i < degreePoly; ++i) {
             prem = [];
-            pCoeff = this._pseudoRem(sturmPRS[i - 1], sturmPRS[i], prem);
+            pCoeff = IFMath._pseudoRem(sturmPRS[i - 1], sturmPRS[i], prem);
             if (prem.length == 0) {
                 break;
             }
@@ -1838,7 +1838,7 @@
      * @return {Number} number of distinct real roots of a polynomial on an interval
      * @version 1.0
      */
-    IFMath.prototype.countRootsNSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nSignVars, fVals) {
+    IFMath.countRootsNSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nSignVars, fVals) {
         var na = 0;
         var nb = 0;
         var s1;
@@ -1847,11 +1847,11 @@
 
         if (nSignVars[0] == null) {
             if (fVals[0] == null) {
-                fVals[0] = this.evalPoly(sturmSeq[0], sturmSeq[0].length - 1, a);
+                fVals[0] = IFMath.evalPoly(sturmSeq[0], sturmSeq[0].length - 1, a);
             }
             s1 = fVals[0];
             for (i = 1; i < sturmSeq.length; ++i) {
-                s2 = this.evalPoly(sturmSeq[i], sturmSeq[i].length - 1, a);
+                s2 = IFMath.evalPoly(sturmSeq[i], sturmSeq[i].length - 1, a);
                 if (s2 != 0 && (s1 < 0 && s2 > 0 || s1 > 0 && s2 < 0)) {
                     ++na;
                     s1 = s2;
@@ -1866,11 +1866,11 @@
 
         if (nSignVars[1] == null) {
             if (fVals[1] == null) {
-                fVals[1] = this.evalPoly(sturmSeq[0], sturmSeq[0].length - 1, b);
+                fVals[1] = IFMath.evalPoly(sturmSeq[0], sturmSeq[0].length - 1, b);
             }
             s1 = fVals[1];
             for (i = 1; i < sturmSeq.length; ++i) {
-                s2 = this.evalPoly(sturmSeq[i], sturmSeq[i].length - 1, b);
+                s2 = IFMath.evalPoly(sturmSeq[i], sturmSeq[i].length - 1, b);
                 if (s2 != 0 && (s1 < 0 && s2 > 0 || s1 > 0 && s2 < 0)) {
                     ++nb;
                     s1 = s2;
@@ -1909,7 +1909,7 @@
      * @param {Array} rIntervals - array of root location intervals (interval - array of two numbers, interval ends)
      * @version 1.0
      */
-    IFMath.prototype.locRootsSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nRoots, nSignVars, fVals, rIntervals) {
+    IFMath.locRootsSturm = function (coeffF, degreeF, coeffFDeriv, a, b, sturmSeq, nRoots, nSignVars, fVals, rIntervals) {
         var midPt;
         var nSignVars1;
         var fVals1;
@@ -1922,13 +1922,13 @@
         midPt = (a + b) / 2;
         nSignVars1 = [nSignVars[0], null];
         fVals1 = [fVals[0], null];
-        n1 = this.countRootsNSturm(coeffF, degreeF, coeffFDeriv, a, midPt, sturmSeq, nSignVars1, fVals1);
+        n1 = IFMath.countRootsNSturm(coeffF, degreeF, coeffFDeriv, a, midPt, sturmSeq, nSignVars1, fVals1);
         n2 = nRoots - n1;
         if (n1 == 1) {
             rIntervals.push([a, midPt, fVals1[0], fVals1[1]]);
         }
         if (n1 > 1) {
-            this.locRootsSturm(coeffF, degreeF, coeffFDeriv, a, midPt,
+            IFMath.locRootsSturm(coeffF, degreeF, coeffFDeriv, a, midPt,
                 sturmSeq, n1, nSignVars1, fVals1, rIntervals);
         }
         if (n2 == 1) {
@@ -1937,7 +1937,7 @@
         if (n2 > 1) {
             var nSignVars2 = [nSignVars1[1], nSignVars[1]];
             var fVals2 = [fVals1[1], fVals[1]];
-            this.locRootsSturm(coeffF, degreeF, coeffFDeriv, midPt, b,
+            IFMath.locRootsSturm(coeffF, degreeF, coeffFDeriv, midPt, b,
                 sturmSeq, n2, nSignVars2, fVals2, rIntervals);
         }
     };
@@ -1950,7 +1950,7 @@
      * @param {Array} coeffPolyShifted - coefficients of shifted polynomial to be passed out
      * @version 1.0
      */
-    IFMath.prototype.shiftPoly = function (coeffPoly, degreePoly, b, coeffPolyShifted) {
+    IFMath.shiftPoly = function (coeffPoly, degreePoly, b, coeffPolyShifted) {
         // the binomial theorem:
         // (x + b)^n = SUM{i=0, i=n}(n!/(i!*(n-i)!))*x^(n-i)*b^i
         var i, j;
@@ -1965,7 +1965,7 @@
         for (i = 1; i <= degreePoly; ++i) {
             coeffPolyShifted[i] = coeffPoly[i];
             for (j = 0; j < i; ++j) {
-                coeffPolyShifted[i] += this.combNK(degreePoly - j, i - j) * coeffPoly[j] * bD[i - j];
+                coeffPolyShifted[i] += IFMath.combNK(degreePoly - j, i - j) * coeffPoly[j] * bD[i - j];
             }
         }
     };
@@ -1974,31 +1974,31 @@
      * An array with the number combinations from 5
      * @private
      */
-    IFMath.prototype._numComb5 = [1, 5, 10, 10, 5, 1];
+    IFMath._numComb5 = [1, 5, 10, 10, 5, 1];
 
     /**
      * An array with the number combinations from 4
      * @private
      */
-    IFMath.prototype._numComb4 = [1, 4, 6, 4, 1];
+    IFMath._numComb4 = [1, 4, 6, 4, 1];
 
     /**
      * An array with the number combinations from 3
      * @private
      */
-    IFMath.prototype._numComb3 = [1, 3, 3, 1];
+    IFMath._numComb3 = [1, 3, 3, 1];
 
     /**
      * An array with the number combinations from 2
      * @private
      */
-    IFMath.prototype._numComb2 = [1, 2, 1];
+    IFMath._numComb2 = [1, 2, 1];
 
     /**
      * An array with the number combinations from 1
      * @private
      */
-    IFMath.prototype._numComb1 = [1, 1];
+    IFMath._numComb1 = [1, 1];
 
     /**
      * Returns a number of combinations from N by K.
@@ -2008,22 +2008,22 @@
      * @return {Number} number of combinations from N by K
      * @version 1.0
      */
-    IFMath.prototype.combNK = function (N, K) {
+    IFMath.combNK = function (N, K) {
         if (N <= 5 && K <= N) {
             if (N == 5) {
-                return this._numComb5[K];
+                return IFMath._numComb5[K];
             }
             if (N == 4) {
-                return this._numComb4[K];
+                return IFMath._numComb4[K];
             }
             if (N == 3) {
-                return this._numComb3[K];
+                return IFMath._numComb3[K];
             }
             if (N == 2) {
-                return this._numComb2[K];
+                return IFMath._numComb2[K];
             }
             if (N == 1) {
-                return this._numComb1[K];
+                return IFMath._numComb1[K];
             }
         }
         else {
@@ -2039,7 +2039,7 @@
      * @param {Array} coeffPolyShifted - coefficients of shifted polynomial to be passed out
      * @version 1.0
      */
-    IFMath.prototype.shiftPolyOne = function (coeffPoly, degreePoly, coeffPolyShifted) {
+    IFMath.shiftPolyOne = function (coeffPoly, degreePoly, coeffPolyShifted) {
         // the binomial theorem:
         // (x + 1)^n = SUM{i=0, i=n}(n!/(i!*(n-i)!))*x^(n-i)
 
@@ -2050,7 +2050,7 @@
         for (i = 1; i <= degreePoly; ++i) {
             coeffPolyShifted[i] = coeffPoly[i];
             for (j = 0; j < i; ++j) {
-                coeffPolyShifted[i] += this.combNK(degreePoly - j, i - j) * coeffPoly[j];
+                coeffPolyShifted[i] += IFMath.combNK(degreePoly - j, i - j) * coeffPoly[j];
             }
         }
     };
@@ -2066,7 +2066,7 @@
      * @param {Array} coeffPolyInversed - coefficients of transformed polynomial to be passed out
      * @version 1.0
      */
-    IFMath.prototype.inversePolyInterval = function (coeffPoly, degreePoly, a, b, coeffPolyInversed) {
+    IFMath.inversePolyInterval = function (coeffPoly, degreePoly, a, b, coeffPolyInversed) {
         var i;
         var c;
         var aD;
@@ -2079,7 +2079,7 @@
 
         // x = a*x + b
         // 1) x = x + b
-        this.shiftPoly(coeffPoly, degreePoly, a, coeffs);
+        IFMath.shiftPoly(coeffPoly, degreePoly, a, coeffs);
 
         // 2) x = ax
         c = b - a;
@@ -2091,7 +2091,7 @@
             }
         }
 
-        this.inversePolyUnaryInterval(coeffs, degreePoly, coeffPolyInversed);
+        IFMath.inversePolyUnaryInterval(coeffs, degreePoly, coeffPolyInversed);
     };
 
     /**
@@ -2103,7 +2103,7 @@
      * @param {Array} coeffPolyInversed - coefficients of transformed polynomial to be passed out
      * @version 1.0
      */
-    IFMath.prototype.inversePolyUnaryInterval = function (coeffPoly, degreePoly, coeffPolyInversed) {
+    IFMath.inversePolyUnaryInterval = function (coeffPoly, degreePoly, coeffPolyInversed) {
         var i;
         var coeffs = new Float32Array(degreePoly + 1);
         for (i = 0; i <= degreePoly; ++i) {
@@ -2111,7 +2111,7 @@
         }
 
         // x = x+1
-        this.shiftPolyOne(coeffs, degreePoly, coeffPolyInversed);
+        IFMath.shiftPolyOne(coeffs, degreePoly, coeffPolyInversed);
     };
 
     /**
@@ -2121,7 +2121,7 @@
      * @return {Number} maximal number of positive real roots of a polynomial
      * @version 1.0
      */
-    IFMath.prototype.estimPositiveRootsDescartes = function (coeffPoly, degreePoly) {
+    IFMath.estimPositiveRootsDescartes = function (coeffPoly, degreePoly) {
         var nonZeroCoeff = [];
         var num = 0;
         var nVarSign = 0;
@@ -2157,7 +2157,7 @@
      * @returns {IFPoint} new point, making constrain segment with the previous point
      * @version 1.0
      */
-    IFMath.prototype.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
+    IFMath.convertToConstrain = function (prevX, prevY, origX, origY, rotation) {
         // TODO : Move this somewhere else as this is not really but but uses IFTransform which
         // actually is not part of the core
         var dx, dy;
@@ -2177,7 +2177,7 @@
         var origTrY = origTransformed.getY();
         dx = Math.abs(origTrX);
         dy = Math.abs(origTrY);
-        if (!this.isEqualEps(dx, 0) && !this.isEqualEps(dy, 0) && !this.isEqualEps(dx - dy, 0)) {
+        if (!IFMath.isEqualEps(dx, 0) && !IFMath.isEqualEps(dy, 0) && !IFMath.isEqualEps(dx - dy, 0)) {
             if (dx > dy) {
                 newX = origTrX;
                 tan = dy / dx;
@@ -2211,5 +2211,5 @@
         return backTransform.mapPoint(new IFPoint(newX, newY));
     };
 
-    _.ifMath = new IFMath();
+    _.IFMath = IFMath;
 })(this);

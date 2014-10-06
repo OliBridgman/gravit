@@ -7,10 +7,5 @@
     function IFColors() {
     }
 
-    /** @override */
-    IFColors.prototype.toString = function () {
-        return "[Object IFColors]";
-    };
-
-    _.ifColors = new IFColors();
+    _.IFColors = new IFColors();
 })(this);

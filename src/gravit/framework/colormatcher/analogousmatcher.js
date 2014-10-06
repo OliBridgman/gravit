@@ -29,11 +29,11 @@
         var hslRight = hslLeft.slice();
         var step = 180.0 / 8;
         for (var i = 3; i >= 0; --i) {
-            hslRight[0] = ifMath.normalizeAngleDegrees(hslRight[0] + step);
+            hslRight[0] = IFMath.normalizeAngleDegrees(hslRight[0] + step);
             result[i] = (new IFColor(IFColor.Type.HSL, hslRight));
         }
         for (var i = 0; i < 4; ++i) {
-            hslLeft[0] = ifMath.normalizeAngleDegrees(hslLeft[0] - step);
+            hslLeft[0] = IFMath.normalizeAngleDegrees(hslLeft[0] - step);
             result.push(new IFColor(IFColor.Type.HSL, hslLeft));
         }
         return result;

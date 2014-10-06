@@ -76,7 +76,7 @@
             },
             pivot: true,
             transformFunc: function (val1, val2, scene) {
-                var angle = ifMath.toRadians(parseFloat(val1)) || 0;
+                var angle = IFMath.toRadians(parseFloat(val1)) || 0;
 
                 if (angle !== 0) {
                     return function (step, element, origin) {
@@ -101,10 +101,10 @@
             },
             pivot: true,
             transformFunc: function (val1, val2, scene) {
-                var sx = ifMath.toRadians(parseFloat(val1)) || 0;
-                var sy = ifMath.toRadians(parseFloat(val2)) || 0;
+                var sx = IFMath.toRadians(parseFloat(val1)) || 0;
+                var sy = IFMath.toRadians(parseFloat(val2)) || 0;
 
-                if ((sx !== 0 || sy !== 0) && (sx > -ifMath.PIHALF && sy > -ifMath.PIHALF && sx < ifMath.PIHALF && sy < ifMath.PIHALF)) {
+                if ((sx !== 0 || sy !== 0) && (sx > -IFMath.PIHALF && sy > -IFMath.PIHALF && sx < IFMath.PIHALF && sy < IFMath.PIHALF)) {
                     return function (step, element, origin) {
                         element.transform(new IFTransform()
                             .translated(-origin.getX(), -origin.getY())
@@ -124,7 +124,7 @@
             pivot: true,
             transformFunc: function (val1, val2, scene) {
                 var angle = parseFloat(val1) || 0;
-                angle = ifMath.toRadians(-angle);
+                angle = IFMath.toRadians(-angle);
                 var cosA = Math.cos(angle);
                 var sinA = Math.sin(angle);
 

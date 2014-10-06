@@ -41,8 +41,8 @@
     IFPolygonTool.prototype._updateShape = function (shape, area, line) {
         var deltaX = line[1].getX() - line[0].getX();
         var deltaY = line[1].getY() - line[0].getY();
-        var angle = ifMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
-        var distance = ifMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
+        var angle = IFMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
+        var distance = IFMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
 
         // Lock angle to 15° if desired
         if (ifPlatform.modifiers.shiftKey) {
@@ -50,7 +50,7 @@
         }
 
         var outerAngle = angle;
-        var innerAngle = ifMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
+        var innerAngle = IFMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
 
         var outerRadius = distance;
         var innerRadius = distance * Math.cos(Math.PI / this._numberOfPoints);

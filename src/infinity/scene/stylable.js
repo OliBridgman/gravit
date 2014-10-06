@@ -404,7 +404,7 @@
                         var myPropVal = this.getProperty(property);
                         var diffPropVal = diffProperties[property];
                         var srcPropVal = source.getProperty(property);
-                        addProperty = diffProperties.hasOwnProperty(property) && (ifUtil.equals(myPropVal, diffPropVal) || ifUtil.equals(myPropVal, srcPropVal));
+                        addProperty = diffProperties.hasOwnProperty(property) && (IFUtil.equals(myPropVal, diffPropVal) || IFUtil.equals(myPropVal, srcPropVal));
                     }
 
                     if (addProperty && property !== '_sdf') {

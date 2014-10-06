@@ -6,7 +6,7 @@
 
             vex.dialog.prompt({
                 message: 'Serializd JSON String:',
-                value: ifUtil.replaceAll(jsonCode, '"', '&quot;')
+                value: IFUtil.replaceAll(jsonCode, '"', '&quot;')
             });
         }
     });

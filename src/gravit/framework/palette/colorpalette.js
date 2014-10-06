@@ -780,7 +780,7 @@
         var colorDiff = '';
         if (this._previousColor && this._currentColor) {
             var diff = this._currentColor.difference(this._previousColor);
-            colorDiff = (diff < 0 ? ifUtil.formatNumber(diff, 2) : diff.toFixed(0));
+            colorDiff = (diff < 0 ? IFUtil.formatNumber(diff, 2) : diff.toFixed(0));
         }
         // TODO : I18N
         this._htmlElement.find('.current-color').attr('title', 'Color Difference (CIEDE2000): ' + colorDiff);

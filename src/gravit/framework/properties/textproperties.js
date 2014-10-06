@@ -562,7 +562,7 @@
             .val(this._document.getScene().pointToString(propertySource.getProperty('_pin')));
 
         var lh = propertySource.getProperty('_plh');
-        this._panel.find('input[data-property="_plh"]').val(lh !== null ? ifUtil.formatNumber(lh) : "");
+        this._panel.find('input[data-property="_plh"]').val(lh !== null ? IFUtil.formatNumber(lh) : "");
     };
 
     /**

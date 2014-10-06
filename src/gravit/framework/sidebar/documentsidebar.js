@@ -104,7 +104,7 @@
                     .on('change', function () {
                         var angle = IFLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = ifMath.normalizeAngleRadians(ifMath.toRadians(angle));
+                            angle = IFMath.normalizeAngleRadians(IFMath.toRadians(angle));
                             self._assignProperty(property, angle);
                         } else {
                             self._updateProperties();
@@ -320,7 +320,7 @@
         this._htmlElement.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
         this._htmlElement.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
         this._htmlElement.find('input[data-property="crConstraint"]').val(
-            ifUtil.formatNumber(ifMath.toDegrees(scene.getProperty('crConstraint')), 2));
+            IFUtil.formatNumber(IFMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._htmlElement.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._htmlElement.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
         this._htmlElement.find('select[data-property="cltp"]').val(scene.getProperty('cltp'));

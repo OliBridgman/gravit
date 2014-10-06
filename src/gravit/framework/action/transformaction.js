@@ -157,7 +157,7 @@
                     var transform = new IFTransform()
                         .translated(-center.getX(), -center.getY())
                         .scaled(scaleX, scaleY)
-                        .rotated(ifMath.toRadians(rotation))
+                        .rotated(IFMath.toRadians(rotation))
                         .translated(center.getX(), center.getY());
 
                     element.transform(transform);
