@@ -1,11 +1,14 @@
 @import '../variables';
 
+
+
 .g-color-panel {
-  width: 275px;
+  width: 500px;
+  height: 400px;
 
   .toolbar {
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 
     > div {
       display: table-cell;
@@ -20,250 +23,84 @@
       &.section-end {
         text-align: right;
       }
-    }
-  }
 
-  .color-view {
-    margin-bottom: 5px;
-  }
+      > .color-preview {
+        width: 100px;
+        padding: 0px 1px;
 
-  .color-components {
-    margin-bottom: 5px;
-
-    > .color-component {
-      display: table;
-      width: 100%;
-      margin-bottom: 3px;
-
-      > div {
-        display: table-cell;
-        vertical-align: middle;
-      }
-
-      > .color-label {
-        min-width: 1.5em;
-        max-width: 1.5em;
-      }
-
-      > .color-range {
-        width: 100%;
-        padding-right: 5px;
-
-        > input {
-          width: 100%;
+        > div {
+          display: inline-block;
+          width: 50%;
+          height: 100%;
         }
-      }
-
-      > .color-value {
-        min-width: 3em;
-        max-width: 3em;
-        padding-right: 7px;
-
-        > input {
-          width: 100%;
-          text-align: center;
-        }
-      }
-
-      > .color-unit {
-        min-width: 1em;
-        max-width: 1em;
-        text-align: left;
       }
     }
   }
 
-  .color {
-    padding-top: 3px;
-    margin-bottom: 5px;
+  .color-container {
+    display: inline-block;
 
     > div {
       display: table-cell;
-      vertical-align: middle;
+      vertical-align: top;
       white-space: nowrap;
-    }
-
-    > div:last-child {
-      text-align: right;
-      width: 100%;
-    }
-
-    .previous-color, .current-color {
-      display: inline-block;
-      width: 3em;
-    }
-
-    .previous-color {
-      margin-right: 0px;
-      border-right: none;
-    }
-
-    .current-color {
-      border-left: none;
-    }
-
-    .color-difference {
-      display: inline-block;
-      width: 2em;
-      border: none;
-      text-align: center;
-    }
-
-    .color-input {
-      width: 5.5em;
-    }
-
-    .matcher-select {
-      width: 100px;
-    }
-  }
-
-  .matcher-palette {
-    width: 100%;
-    height: 27px;
-    border: 1px solid $borderColor;
-
-    > div {
-      @include box-sizing(border-box);
-      display: inline-block;
       height: 100%;
-    }
 
-    > div:not(:last-child) {
-      border-right: 1px solid $borderColor;
-    }
-  }
-
-  [data-view="palette"] {
-    @include g-cursor(pipette);
-    border-collapse: separate;
-    border-spacing: 1px;
-
-    .swatch {
-      @include g-cursor(pipette);
-      border: 1px solid $borderColor;
-      width: 8px;
-      height: 8px;
-      padding: 1px;
-
-      &:hover {
-        border: 1px solid aquamarine;
-      }
-    }
-  }
-
-  [data-view="swatches"] {
-    padding: 0px;
-
-    .swatch-block {
-      @include g-cursor(pipette);
-
-      .swatch-preview {
-        padding: 0px;
-        border: 1px solid $borderColor;
-
-        > div {
-          box-shadow: none;
-        }
-      }
-
-      &:hover .swatch-preview {
-        border: 1px solid aquamarine;
-      }
-
-      &.swatch-null {
-        cursor: pointer !important;
-
-        .swatch-preview {
-          border: 1px solid $baseColor;
+      &.color {
+        > .map {
+          display: block;
         }
 
-        &:hover .swatch-preview {
-          border: 1px solid $baseColor;
-        }
-      }
-    }
-  }
+        > .color-components {
+          margin-bottom: 5px;
 
-  [data-view="trends"] {
-    > .color-trend-label {
-      margin-bottom: 5px;
-    }
+          > .color-component {
+            display: table;
+            width: 100%;
+            margin-bottom: 3px;
 
-    > .color-trend {
-      display: table;
-      width: 100%;
-      padding-bottom: 7px;
+            > div {
+              display: table-cell;
+              vertical-align: middle;
+            }
 
-      > div, > span {
-        display: table-cell;
-        vertical-align: middle;
-      }
+            > .color-check {
+              min-width: 1.5em;
+              max-width: 1.5em;
+            }
 
-      > .color-palette {
-        width: 100%;
-        padding-right: 7px;
+            > .color-label {
+              min-width: 1.5em;
+              max-width: 1.5em;
+            }
 
-        > div {
-          width: 100%;
-          border: 1px solid $borderColor;
+            > .color-range {
+              width: 100%;
+              padding-right: 5px;
 
-          > div {
-            display: inline-block;
-            height: 100%;
-            margin: 0px;
-            padding-left: 0px;
-            padding-right: 0px;
-            border: none;
-            @include box-sizing(border-box);
-          }
+              > input {
+                width: 100%;
+              }
+            }
 
-          > div:last-child {
-            border-left: 3px solid $borderColor;
+            > .color-value {
+              min-width: 3em;
+              max-width: 3em;
+              padding-right: 7px;
+
+              > input {
+                width: 100%;
+                text-align: center;
+              }
+            }
+
+            > .color-unit {
+              min-width: 1em;
+              max-width: 1em;
+              text-align: left;
+            }
           }
         }
-      }
-
-      > .color-trend-value {
-        min-width: 3em;
-        max-width: 3em;
-        padding-right: 8px;
-
-        > input {
-          width: 100%;
-          text-align: center;
-        }
-      }
-    }
-  }
-
-  [data-view="image"] {
-    .image-panel {
-      height: 150px;
-      line-height: 150px;
-      text-align: center;
-      background-size: contain;
-      background-position: center center;
-      background-repeat: no-repeat;
-      margin: 5px 0px;
-      background-color: #FFF;
-      border: 5px solid #FFF;
-    }
-
-    .image-palette {
-      width: 100%;
-      height: 27px;
-      border: 1px solid $borderColor;
-
-      > div {
-        @include box-sizing(border-box);
-        display: inline-block;
-        height: 100%;
-        width: 12.5%;
-      }
-
-      > div:not(:last-child) {
-        border-right: 1px solid $borderColor;
       }
     }
   }

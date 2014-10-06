@@ -17,7 +17,7 @@
         );
     }
 
-    IFPattern.inherit('GL', IFLinearGradient, IFGradient);
+    IFPattern.inherit('L', IFLinearGradient, IFGradient);
 
     IFLinearGradient.equals = function (left, right, stopsOnly) {
         if (left instanceof IFLinearGradient && right instanceof  IFLinearGradient) {

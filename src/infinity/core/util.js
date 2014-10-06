@@ -261,35 +261,5 @@
         return parseFloat(parseString);
     };
 
-    /**
-     * Blends the fore color with the back color using
-     * a given alpha value
-     * @param {Array<Number>} back [r,g,b] color (0..255)
-     * @param {Array<Number>} fore [r,g,b] color (0..255)
-     * @param {Number} alpha between 0..1
-     * @return {Array<Number>} [r,g,b] blended result
-     */
-    IFUtil.prototype.blendRGBColors = function (back, fore, alpha) {
-        alpha = Math.min(Math.max(alpha, 0), 1);
-
-        return [
-            (back[0] * (1 - alpha)) + (fore[0] * alpha),
-            (back[1] * (1 - alpha)) + (fore[1] * alpha),
-            (back[2] * (1 - alpha)) + (fore[2] * alpha)
-        ];
-    };
-
-    /**
-     * Return a rgb array to a html hex string
-     * @param {Array<Number>} rgb [r,g,b] color (0..255)
-     * @returns {string}
-     */
-    IFUtil.prototype.rgbToHtmlHex = function (rgb) {
-        var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
-        return '#' + (function (h) {
-            return new Array(7 - h.length).join("0") + h
-        })(bin.toString(16).toUpperCase());
-    };
-
     _.ifUtil = new IFUtil();
 })(this);

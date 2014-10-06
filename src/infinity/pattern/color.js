@@ -11,6 +11,7 @@
         this._type = type ? type : IFColor.Type.Black;
         this._value = value && value instanceof Array ? value.slice() : (typeof value === 'number' ? value : null);
     }
+
     IFPattern.inherit('C', IFColor);
 
     /**
@@ -172,6 +173,224 @@
     IFColor.GUIDE_OUTLINE = new IFColor(IFColor.Type.RGB, [46, 204, 64, 100]);
     IFColor.MARGIN_OUTLINE = new IFColor(IFColor.Type.RGB, [255, 0, 255, 100]);
 
+
+    // NEW
+    /**
+     * A RGB Byte Triplet [0 - 255, 0 - 255, 0 - 255]
+     * @typedef {(Array<Number>} RGB
+     */
+    /**
+     * A HSV Triplet [0 - 360, 0 - 1.0, 0 - 1.0]
+     * @typedef {(Array<Number>} HSV
+     */
+    /**
+     * A CMYK Quadlet [0 - 1.0, 0 - 1.0, 0 - 1.0, 0 - 1.0]
+     * @typedef {(Array<Number>} CMYK
+     */
+
+    /**
+     * Convert RGB to HSV
+     * @param {RGB} rgb
+     * @return {HSV}
+     */
+    IFColor.rgbToHSV = function (rgb) {
+        var r = rgb[0] / 255;
+        var g = rgb[1] / 255;
+        var b = rgb[2] / 255;
+        var minRGB = Math.min(r, Math.min(g, b));
+        var maxRGB = Math.max(r, Math.max(g, b));
+
+        // Black-gray-white
+        if (minRGB === maxRGB) {
+            return [0, 0, minRGB];
+        }
+
+        var d = (r === minRGB) ? g - b : ((b === minRGB) ? r - g : b - r);
+        var h = (r === minRGB) ? 3 : ((b === minRGB) ? 1 : 5);
+
+        return [60 * (h - d / (maxRGB - minRGB)), (maxRGB - minRGB) / maxRGB, maxRGB];
+    };
+
+    /**
+     * Convert HSV to RGB
+     * @param {HSV} hsv
+     * @return {RGB}
+     */
+    IFColor.hsvToRGB = function (hsv) {
+        var c = hsv[2] * hsv[1];
+        var h1 = hsv[0] / 60;
+        var x = c * (1 - Math.abs((h1 % 2) - 1));
+        var m = hsv[2] - c;
+        var rgb;
+
+        if (h1 < 1) rgb = [c, x, 0];
+        else if (h1 < 2) rgb = [x, c, 0];
+        else if (h1 < 3) rgb = [0, c, x];
+        else if (h1 < 4) rgb = [0, x, c];
+        else if (h1 < 5) rgb = [x, 0, c];
+        else if (h1 <= 6) rgb = [c, 0, x];
+
+        return [255 * (rgb[0] + m), 255 * (rgb[1] + m), 255 * (rgb[2] + m)];
+    };
+    // END: NEW
+
+
+    function rgb2hsv(r, g, b) {
+        var computedH = 0;
+        var computedS = 0;
+        var computedV = 0;
+
+        //remove spaces from input RGB values, convert to int
+        var r = parseInt(('' + r).replace(/\s/g, ''), 10);
+        var g = parseInt(('' + g).replace(/\s/g, ''), 10);
+        var b = parseInt(('' + b).replace(/\s/g, ''), 10);
+
+        if (r == null || g == null || b == null ||
+            isNaN(r) || isNaN(g) || isNaN(b)) {
+            alert('Please enter numeric RGB values!');
+            return;
+        }
+        if (r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) {
+            alert('RGB values must be in the range 0 to 255.');
+            return;
+        }
+
+    }
+
+
+    /**
+     * Blends the fore color with the back color using
+     * a given alpha value
+     * @param {Array<Number>} back [r,g,b] color (0..255)
+     * @param {Array<Number>} fore [r,g,b] color (0..255)
+     * @param {Number} alpha between 0..1
+     * @return {Array<Number>} [r,g,b] blended result
+     */
+    IFColor.blendRGBColors = function (back, fore, alpha) {
+        alpha = Math.min(Math.max(alpha, 0), 1);
+
+        return [
+            (back[0] * (1 - alpha)) + (fore[0] * alpha),
+            (back[1] * (1 - alpha)) + (fore[1] * alpha),
+            (back[2] * (1 - alpha)) + (fore[2] * alpha)
+        ];
+    };
+
+    /**
+     * Convert a HSL Color into a RGB Color
+     * @param {Array<Number>} hsl (360, 1.0, 1.0)
+     * @returns {Array<Number>} (255, 255, 255)
+     */
+    IFColor.hslToRgb = function (hsl) {
+        var h = hsl[0] / 360;
+        var s = hsl[1] / 100;
+        var l = hsl[2] / 100;
+        var r, g, b;
+        var temp1, temp2, temp3;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            if (l < 0.5) temp2 = l * (1 + s);
+            else temp2 = (l + s) - (s * l);
+            temp1 = 2 * l - temp2;
+
+            // calculate red
+            temp3 = h + (1 / 3);
+            if (temp3 < 0) temp3 += 1;
+            if (temp3 > 1) temp3 -= 1;
+            if ((6 * temp3) < 1) r = temp1 + (temp2 - temp1) * 6 * temp3;
+            else if ((2 * temp3) < 1) r = temp2;
+            else if ((3 * temp3) < 2) r = temp1 + (temp2 - temp1) * ((2 / 3) - temp3) * 6;
+            else r = temp1;
+
+            // calculate green
+            temp3 = h;
+            if (temp3 < 0) temp3 += 1;
+            if (temp3 > 1) temp3 -= 1;
+            if ((6 * temp3) < 1) g = temp1 + (temp2 - temp1) * 6 * temp3;
+            else if ((2 * temp3) < 1) g = temp2;
+            else if ((3 * temp3) < 2) g = temp1 + (temp2 - temp1) * ((2 / 3) - temp3) * 6;
+            else g = temp1;
+
+            // calculate blue
+            temp3 = h - (1 / 3);
+            if (temp3 < 0) temp3 += 1;
+            if (temp3 > 1) temp3 -= 1;
+            if ((6 * temp3) < 1) b = temp1 + (temp2 - temp1) * 6 * temp3;
+            else if ((2 * temp3) < 1) b = temp2;
+            else if ((3 * temp3) < 2) b = temp1 + (temp2 - temp1) * ((2 / 3) - temp3) * 6;
+            else b = temp1;
+        }
+
+        return [
+            Math.min(255, Math.max(0, Math.round(r * 255))),
+            Math.min(255, Math.max(0, Math.round(g * 255))),
+            Math.min(255, Math.max(0, Math.round(b * 255)))
+        ];
+    };
+
+    /**
+     * Convert a CMY/CMYK Color into a RGB Color
+     * @param {Array<Number>} cmy or cmyk (1.0, 1.0, 1.0, 1.0)
+     * @returns {Array<Number>} (255, 255, 255)
+     */
+    IFColor.cmykToRgb = function (cmyk) {
+        var k = cmyk.length === 4 ? cmyk[3] : 0.0;
+        var c = (cmyk[0] * (1 - k) + k);
+        var m = (cmyk[1] * (1 - k) + k);
+        var y = (cmyk[2] * (1 - k) + k);
+
+        return [
+            Math.min(255, Math.max(0, Math.round((1 - c) * 255))),
+            Math.min(255, Math.max(0, Math.round((1 - m) * 255))),
+            Math.min(255, Math.max(0, Math.round((1 - y) * 255)))];
+    };
+
+    /**
+     * Convert a Tone into a RGB Color
+     * @param {Number} tone 0..1.0
+     * @returns {Array<Number>} (255, 255, 255)
+     */
+    IFColor.toneToRgb = function (tone) {
+        var t = 255 - Math.min(255, Math.max(0, Math.round(tone * 255)));
+        return [t, t, t];
+    };
+
+    /**
+     * Maps a color using a given mode
+     * @param {String} mode the mode in use (h,s,v|b,r,g,b,c,m,y,k)
+     * @param {Number} the component value. I.e. if mode is 'h' this
+     * defines the fixed hue value.
+     * @param {Number} x the x-coordinate to map within 0..1.0
+     * @param {Number} y the y-coordinate to map within 0..1.0
+     * @returns {Array<Number>} depending on the mode returns
+     * hsv, rgb or cmy array
+     */
+    IFColor.mapColor = function (mode, value, x, y) {
+        switch (mode) {
+            case 'h':
+                return [value, x, 1 - y];
+            case 's':
+                return [x * 360, value, 1 - y];
+            case 'v':
+                return [x * 360, 1 - y, value];
+            case 'r':
+                return [value, (1.0 - y) * 255, x * 255];
+            case 'g':
+                return [(1.0 - y) * 255, value, x * 255];
+            case 'b':
+                return [x * 255, (1.0 - y) * 255, value];
+            case 'c':
+                return [value, 1.0 - y, x];
+            case 'm':
+                return [1.0 - y, value, x];
+            case 'y':
+                return [1.0 - y, x, value];
+            default:
+                throw new Error('Unsupported Mode.');
+        }
+    };
+
     /**
      * Parse a string into a IFColor
      * @param {String} string
@@ -201,6 +420,18 @@
         }
 
         return null;
+    };
+
+    /**
+     * Convert a rgb color into a hex color
+     * @param {Array<Number>} rgb [r,g,b] color (0..255)
+     * @returns {string}
+     */
+    IFColor.rgbToHtmlHex = function (rgb) {
+        var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+        return '#' + (function (h) {
+            return new Array(7 - h.length).join("0") + h
+        })(bin.toString(16).toUpperCase());
     };
 
     /**
@@ -895,7 +1126,8 @@
 
     /** @override */
     IFColor.prototype.asCSSBackground = function () {
-        return 'linear-gradient(' + this.asCSSString() + ', ' + this.asCSSString() + ')';
+        var cssColor = this.asCSSString();
+        return 'linear-gradient(' + cssColor + ', ' + cssColor + ')';
     };
 
     /** @override */

@@ -17,7 +17,7 @@
         );
     }
 
-    IFPattern.inherit('GR', IFRadialGradient, IFGradient);
+    IFPattern.inherit('R', IFRadialGradient, IFGradient);
 
     IFRadialGradient.equals = function (left, right, stopsOnly) {
         if (left instanceof IFRadialGradient && right instanceof  IFRadialGradient) {

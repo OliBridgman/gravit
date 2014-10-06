@@ -128,7 +128,9 @@ input[type=checkbox], input[type=radio] {
   &:not(:last-child) {
     margin-right: 0px;
   }
+}
 
+input[type=checkbox] {
   &:before {
     text-align: right;
     font-family: FontAwesome !important;
@@ -143,6 +145,30 @@ input[type=checkbox], input[type=radio] {
   &:checked {
     &:before {
       content: $fa-var-toggle-on;
+    }
+  }
+}
+
+input[type=radio] {
+  height: $baseline;
+  width: $baseline;
+  padding: 0px;
+
+  &:before {
+    width: 12px;
+    height: 12px;
+    display: block;
+    border-radius: $baseline;
+    border: 1px solid $inputBorderColor;
+    box-shadow: inset 1px 1px 1px $darkShadowColor;
+    background: $inputColor;
+    margin-top: 3px;
+    content: ' ';
+  }
+
+  &:checked {
+    &:before {
+      background: $activeColor;
     }
   }
 }

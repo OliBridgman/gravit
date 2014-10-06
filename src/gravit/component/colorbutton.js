@@ -5,7 +5,7 @@
     function getColorPanel() {
         if (!COLORPANEL) {
             COLORPANEL = $('<div></div>')
-                .css('padding', '5px')
+                .css('margin', '5px')
                 .gColorPanel()
                 .gOverlay();
         }
@@ -88,8 +88,7 @@
             var colorPanel = getColorPanel();
             colorPanel.gOverlay('close', this);
             colorPanel.gColorPanel('scene', data.scene);
-            colorPanel.gColorPanel('value', methods.value.call(this));
-            colorPanel.gColorPanel('allowClear', data.options.allowClear);
+            colorPanel.gColorPanel('color', methods.value.call(this));
             colorPanel.on('colorchange', data.panelChangeListener);
             colorPanel.on('close', data.panelCloseListener);
             colorPanel.gOverlay('open', this);
