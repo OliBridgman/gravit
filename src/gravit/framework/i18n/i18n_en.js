@@ -48,13 +48,8 @@ ifLocale.setValues(GUngroupAction, IFLocale.Language.English, ["title"], ["Ungro
 ifLocale.setValues(GZoomInAction, IFLocale.Language.English, ["title"], ["Zoom in"]);
 ifLocale.setValues(GZoomOutAction, IFLocale.Language.English, ["title"], ["Zoom out"]);
 
-// Color
-ifLocale.setValues(GAnalogousMatcher, IFLocale.Language.English, ["title"], ["Analogous"]);
-ifLocale.setValues(GComplementaryMatcher, IFLocale.Language.English, ["title"], ["Complementary"]);
-
 // Palette
 ifLocale.setValues(GAlignPalette, IFLocale.Language.English, ["title"], ["Align"]);
-ifLocale.setValues(GColorPalette, IFLocale.Language.English, ["title"], ["Color"]);
 ifLocale.setValues(GExportPalette, IFLocale.Language.English, ["title"], ["Export"]);
 ifLocale.setValues(GLayersPalette, IFLocale.Language.English, ["title"], ["Layers"]);
 ifLocale.setValues(GPagesPalette, IFLocale.Language.English, ["title"], ["Pages"]);

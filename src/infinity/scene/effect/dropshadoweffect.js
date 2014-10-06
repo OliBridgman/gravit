@@ -28,7 +28,7 @@
      */
     IFDropShadowEffect.VisualProperties = {
         /** The color of the shadow */
-        cls: IFColor.parseCSSColor('rgba(0,0,0,0.5)')
+        cls: IFRGBColor.parseCSSColor('rgba(0,0,0,0.5)')
     };
 
     /** @override */
@@ -61,7 +61,7 @@
             this.storeProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'cls') {
-                        return value.asString();
+                        return IFPattern.serialize(value);
                     }
                 }
                 return value;
@@ -71,7 +71,7 @@
             this.restoreProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'cls' && value) {
-                        return IFColor.parseColor(value);
+                        return IFPattern.deserialize(value);
                     }
                 }
             });

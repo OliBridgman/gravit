@@ -204,7 +204,7 @@
                 return IFFont.Style.Italic;
             }
         } else if (property === 'fc') {
-            var value = IFColor.parseCSSColor(css['color']);
+            var value = IFRGBColor.parseCSSColor(css['color']);
             if (value) {
                 return value;
             }
@@ -506,7 +506,7 @@
             // Take color of fill pattern and assign it to editor if any
             var fillPattern = text.getProperty('_fpt');
             if (fillPattern && fillPattern instanceof IFColor) {
-                css['color'] = fillPattern.asCSSString();
+                css['color'] = IFColor.rgbToHtmlHex(fillPattern.toScreen());
             }
 
             // Call property convert with our text as property source

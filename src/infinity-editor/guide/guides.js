@@ -26,7 +26,7 @@
      * The length of snap zone lines in pixels
      * @type {Number}
      */
-    IFGuides.VISUALS_LENGTH = 20;
+    IFGuides.VISUALS_LENGTH = 10;
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFGuides.InvalidationRequestEvent Event

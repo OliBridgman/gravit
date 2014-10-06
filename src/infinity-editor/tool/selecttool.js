@@ -166,6 +166,7 @@
             var h = Math.ceil(this._selectArea.getHeight()) - 1.0;
             context.canvas.strokeRect(x, y, w, h, 1, context.selectionOutlineColor);
         }
+
         if (this._visuals) {
             var visLine;
             for (var i = 0; i < this._visuals.length; ++i) {

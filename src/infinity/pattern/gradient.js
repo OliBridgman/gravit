@@ -15,7 +15,7 @@
                 });
             }
         } else {
-            this._stops = [{color: IFColor.WHITE, position: 0}, {color: IFColor.BLACK, position: 100}];
+            this._stops = [{color: IFRGBColor.WHITE, position: 0}, {color: IFRGBColor.BLACK, position: 100}];
         }
 
         this._r = typeof r === 'number' ? r : 0;
@@ -28,7 +28,8 @@
     IFObject.inherit(IFGradient, IFPattern);
 
     /**
-     * Compare two gradients for equality Also takes care of null parameters
+     * Compare two gradients for equality Also takes care of null parameters.
+     * Note that this does not compare the type of the gradient.
      * @param {IFGradient} left left side gradient
      * @param {IFGradient} right right side gradient
      * @param {Boolean} [stopsOnly] if set, gradients are equal if their stop
@@ -60,7 +61,7 @@
                     return false;
                 }
 
-                if (!IFColor.equals(s1[i].color, s2[i].color)) {
+                if (!IFUtil.equals(s1[i].color, s2[i].color)) {
                     return false;
                 }
             }
@@ -124,7 +125,7 @@
         for (var i = 0; i < this._stops.length; ++i) {
             blob.s.push({
                 p: this._stops[i].position,
-                c: this._stops[i].color.asString()
+                c: IFPattern.serialize(this._stops[i].color)
             })
         }
 
@@ -148,7 +149,7 @@
                 var stop = blob.s[i];
                 this._stops.push({
                     position: stop.p,
-                    color: IFColor.parseColor(stop.c)
+                    color: IFPattern.deserialize(stop.c)
                 })
             }
         }

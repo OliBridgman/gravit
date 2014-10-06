@@ -1,7 +1,3 @@
-// Extensions
-ifLocale.setValues(GColorMatcher, IFLocale.Language.English, ["category.harmony", "category.palette"], ["Harmony", "Palette"]);
-
-// Root
 ifLocale.setValues(GApplication, IFLocale.Language.English, [
     // Actions
     "category.file",

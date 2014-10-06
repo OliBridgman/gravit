@@ -15,6 +15,8 @@
 
     IFObject.inherit(IFEditorBackStage, IFStage);
 
+    IFEditorBackStage.MARGIN_OUTLINE = new IFRGBColor([255, 0, 255]);
+
     /** @override */
     IFEditorBackStage.prototype.release = function () {
         this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
@@ -99,7 +101,7 @@
 
         // Paint margin rect
         if (!IFRect.equals(pageRect, marginRect)) {
-            context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1, IFColor.MARGIN_OUTLINE);
+            context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1, IFEditorBackStage.MARGIN_OUTLINE);
         }
     };
 

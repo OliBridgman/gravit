@@ -139,7 +139,7 @@
             // If we have a old contents canvas, clip our contents and swap canvas back
             if (oldContentsCanvas) {
                 context.canvas.putVertices(this);
-                context.canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                context.canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                 oldContentsCanvas.drawCanvas(context.canvas);
                 context.canvas.finish();
                 context.popCanvas();
@@ -189,9 +189,9 @@
                     // of composite painting and separate canvas!!
                     // Depending on the border alignment we might need to clip now
                     if (this.$_ba === IFStylable.BorderAlignment.Inside) {
-                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                        canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                     } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
-                        canvas.fillVertices(IFColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+                        canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
                     }
                 }
             } else if (outline) {

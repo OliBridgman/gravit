@@ -832,7 +832,7 @@
      * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
     IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity, cmpOrBlend) {
-        fill = this._convertStyle(fill ? fill : IFColor.BLACK);
+        fill = this._convertStyle(fill ? fill : IFRGBColor.BLACK);
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.fillStyle = fill;
@@ -854,7 +854,7 @@
      * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
      */
     IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity, cmpOrBlend) {
-        stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
+        stroke = this._convertStyle(stroke ? stroke : IFRGBColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
@@ -877,7 +877,7 @@
      * @version 1.0
      */
     IFPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
-        stroke = this._convertStyle(stroke ? stroke : IFColor.BLACK);
+        stroke = this._convertStyle(stroke ? stroke : IFRGBColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
         this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = 1.0;
@@ -937,7 +937,7 @@
         if (style instanceof CanvasPattern || style instanceof CanvasGradient) {
             return style;
         } else if (style instanceof IFColor) {
-            return style.asCSSString();
+            return IFColor.rgbToHtmlHex(style.toScreen());
         } else {
             throw new Error('Not Supported.');
         }

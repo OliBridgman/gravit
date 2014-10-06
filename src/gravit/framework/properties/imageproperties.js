@@ -139,10 +139,6 @@
         var palettePanel = this._panel.find('[data-image-palette="palette"]');
         palettePanel.empty();
 
-        function cvColorThiefColor(color) {
-            return new IFColor(IFColor.Type.RGB, [color[0], color[1], color[2], 100]);
-        };
-
         var _addPaletteColor = function (color) {
             $('<div></div>')
                 .gPatternTarget({
@@ -164,16 +160,16 @@
             this._panel.find('[data-image-palette="button"]').css('display', 'none');
 
             var colorThief = new ColorThief();
-            var mainColor = cvColorThiefColor(colorThief.getColor(image));
+            var mainColor = new IFRGBColor(colorThief.getColor(image));
             _addPaletteColor(mainColor);
 
             var palette = colorThief.getPalette(image, 16);
             var addedColors = 1;
             for (var i = 0; i < palette.length; ++i) {
-                var convertedColor = cvColorThiefColor(palette[i]);
+                var convertedColor = new IFRGBColor(palette[i]);
 
                 // Take care to avoid duplications with dominant color
-                if (!IFColor.equals(convertedColor, mainColor)) {
+                if (!IFUtil.equals(convertedColor, mainColor)) {
                     _addPaletteColor(convertedColor);
 
                     if (++addedColors >= 8) {

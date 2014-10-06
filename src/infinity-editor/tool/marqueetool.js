@@ -81,7 +81,7 @@
      */
     IFMarqueeTool._AreaSelector.prototype.paint = function (context) {
         context.canvas.putVertices(this._pixelTransformer);
-        context.canvas.strokeVertices(IFColor.BLACK);
+        context.canvas.strokeVertices(IFRGBColor.BLACK);
     };
 
 

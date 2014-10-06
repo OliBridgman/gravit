@@ -48,19 +48,19 @@
      * The current outline color for the selection
      * @type IFColor
      */
-    IFPaintContext.prototype.selectionOutlineColor = IFColor.SELECTION_OUTLINE;
+    IFPaintContext.prototype.selectionOutlineColor = new IFRGBColor([0, 168, 255]);
 
     /**
      * The current outline color for the highlight
      * @type IFColor
      */
-    IFPaintContext.prototype.highlightOutlineColor = IFColor.HIGHLIGHT_OUTLINE;
+    IFPaintContext.prototype.highlightOutlineColor = new IFRGBColor([255, 0, 0]);
 
     /**
      * The current outline color for the guides
      * @type IFColor
      */
-    IFPaintContext.prototype.guideOutlineColor = IFColor.GUIDE_OUTLINE;
+    IFPaintContext.prototype.guideOutlineColor = new IFRGBColor([46, 204, 64]);
 
     /**
      * Returns whether the paint context is in outline/wireframe mode or not
@@ -79,7 +79,7 @@
             return this.outlineColors[this.outlineColors.length - 1];
         } else {
             // TODO : Take this from configuration, instead?
-            return IFColor.BLACK;
+            return IFRGBColor.BLACK;
         }
     };
 

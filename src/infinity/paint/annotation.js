@@ -44,7 +44,7 @@
         var strokeColor = stroke ? stroke : null;
         if (selected) {
             strokeColor = fillColor;
-            fillColor = IFColor.WHITE;
+            fillColor = IFRGBColor.WHITE;
         }
 
         var cx = Math.floor(center.getX()) + (strokeColor ? 0.5 : 0);

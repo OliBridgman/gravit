@@ -15,7 +15,7 @@
 
     IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFElement.Stylable]);
 
-    IFLayer.GUIDE_COLOR_DEFAULT = new IFColor(IFColor.Type.RGB, [0, 255, 255, 100]);
+    IFLayer.GUIDE_COLOR_DEFAULT = new IFRGBColor([0, 255, 255]);
 
     /**
      * The tp of a layer
@@ -65,7 +65,7 @@
         // Whether layer is outlined or not
         otl: false,
         // The color of the layer
-        cls: new IFColor(IFColor.Type.RGB, [0, 168, 255, 100])
+        cls: new IFRGBColor([0, 168, 255])
     };
 
     /** @override */
@@ -135,7 +135,7 @@
         if (change === IFNode._Change.Store) {
             this.storeProperties(args, IFLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return value.asString();
+                    return IFPattern.serialize(value);
                 }
                 return value;
             });
@@ -148,7 +148,7 @@
         } else if (change === IFNode._Change.Restore) {
             this.restoreProperties(args, IFLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
+                    return IFPattern.deserialize(value);
                 }
                 return value;
             });

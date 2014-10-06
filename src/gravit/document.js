@@ -181,7 +181,7 @@
             insertPos.getY(),
             800,
             600,
-            IFColor.WHITE
+            IFRGBColor.WHITE
         ]);
 
         // Add default layer

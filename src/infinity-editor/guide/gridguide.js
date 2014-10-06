@@ -19,7 +19,7 @@
     /** @override */
     IFGridGuide.prototype.paint = function (transform, context) {
         if (this._scene.getProperty('gridActive') && context.configuration.gridVisible) {
-            var cl = IFColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
+            var cl = IFRGBColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
 
             // Calculate optical cell-size
             var scale  = transform.getScaleFactor();

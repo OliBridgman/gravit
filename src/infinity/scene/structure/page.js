@@ -209,7 +209,7 @@
             this.storeProperties(args, IFPage.GeometryProperties);
             this.storeProperties(args, IFPage.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return value.asString();
+                    return IFPattern.serialize(value);
                 }
                 return value;
             });
@@ -225,7 +225,7 @@
             this.restoreProperties(args, IFPage.GeometryProperties);
             this.restoreProperties(args, IFPage.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
+                    return IFPattern.deserialize(value);
                 }
                 return value;
             });

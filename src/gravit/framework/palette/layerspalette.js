@@ -519,7 +519,7 @@
                             layerOrItem.acceptChildren(function (node) {
                                 if (node instanceof IFLayer) {
                                     var childColor = node.getProperty('cls');
-                                    if (IFColor.equals(childColor, myColor)) {
+                                    if (IFUtil.equals(childColor, myColor)) {
                                         node.setProperty('cls', color);
                                     }
                                 }

@@ -37,8 +37,6 @@
     IFScene.MetaProperties = {
         /** Version of the scene */
         version: IFScene.VERSION,
-        /** The default color type */
-        cltp: IFColor.Type.RGB.key,
         /** The unit used externally */
         unit: IFLength.Unit.PT,
         /** Whether to snap to units or not */

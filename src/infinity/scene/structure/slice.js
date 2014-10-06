@@ -33,7 +33,7 @@
      */
     IFSlice.VisualProperties = {
         // The color of the slice
-        cls: new IFColor(IFColor.Type.RGB, [0, 116, 217, 100])
+        cls: new IFRGBColor([0, 116, 217])
     };
 
     /** @override */
@@ -110,7 +110,7 @@
         if (change === IFNode._Change.Store) {
             this.storeProperties(args, IFSlice.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return value.asString();
+                    return IFPattern.serialize(value);
                 }
                 return value;
             });
@@ -126,7 +126,7 @@
         } else if (change === IFNode._Change.Restore) {
             this.restoreProperties(args, IFSlice.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFColor.parseColor(value);
+                    return IFPattern.deserialize(value);
                 }
                 return value;
             });

@@ -40,11 +40,6 @@ var gravit = {
     tools: [],
 
     /**
-     * Array<GColorMatcher>
-     */
-    colorMatchers: [],
-
-    /**
      * Array<GProperties>
      */
     properties: []

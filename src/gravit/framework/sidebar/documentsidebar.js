@@ -123,24 +123,6 @@
                             self._updateProperties();
                         }
                     });
-            } else if (property === 'cltp') {
-                return $('<select></select>')
-                    .attr('data-property', property)
-                    .append($('<option></option>')
-                        .attr('value', IFColor.Type.RGB.key)
-                        .text('RGB'))
-                    .append($('<option></option>')
-                        .attr('value', IFColor.Type.HSL.key)
-                        .text('HSL'))
-                    .append($('<option></option>')
-                        .attr('value', IFColor.Type.Tone.key)
-                        .text('HSL'))
-                    .append($('<option></option>')
-                        .attr('value', IFColor.Type.CMYK.key)
-                        .text('CMYK'))
-                    .on('change', function () {
-                        self._assignProperty(property, $(this).val());
-                    });
             } else if (property === 'pathImage' || property === 'pathFont' || property === 'pathExport') {
                 return $('<input>')
                     .attr('type', 'text')
@@ -228,16 +210,6 @@
                         .attr('title', 'Snap Distance'))))
             .append($('<tr></tr>')
                 .append($('<td></td>')
-                    .addClass('label')
-                    // TODO : I18N
-                    .text('Color:'))
-                .append($('<td></td>')
-                    .attr('colspan', '3')
-                    .append(_createInput('cltp')
-                        // TODO : I18N
-                        .attr('title', 'Default Color-Type of document'))))
-            .append($('<tr></tr>')
-                .append($('<td></td>')
                     .attr('colspan', '4')
                     .append($('<h1></h1>')
                         .addClass('g-divider')
@@ -323,7 +295,6 @@
             IFUtil.formatNumber(IFMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._htmlElement.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._htmlElement.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
-        this._htmlElement.find('select[data-property="cltp"]').val(scene.getProperty('cltp'));
         this._htmlElement.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
         this._htmlElement.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
         this._htmlElement.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));

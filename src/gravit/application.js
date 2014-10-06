@@ -425,9 +425,9 @@
 
         // Add default styles for shapes & text
         var defShapeStyle = new IFStyle();
-        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border], IFColor.BLACK, IFColor.WHITE]);
+        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border], IFRGBColor.BLACK, IFRGBColor.WHITE]);
         var defTextStyle = new IFStyle();
-        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border, IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph], IFColor.BLACK]);
+        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border, IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph], IFRGBColor.BLACK]);
 
         scene.getStyleCollection().appendChild(defShapeStyle);
         scene.getStyleCollection().appendChild(defTextStyle);

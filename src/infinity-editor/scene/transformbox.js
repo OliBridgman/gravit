@@ -194,17 +194,17 @@
             //context.canvas.setLineDash([5]);
             // TODO: draw dashed line
             context.canvas.putVertices(new IFVertexPixelAligner(this));
-            context.canvas.strokeVertices(IFColor.BLACK, 1);
+            context.canvas.strokeVertices(IFRGBColor.BLACK, 1);
 
             var sides = this._collectResizeHandles(transform);
             for (var i = 0; i < sides.length; ++i) {
                 var pt = this._getPoint(sides[i]);
                 ifAnnotation.paintAnnotation(context, null, pt, ifAnnotation.AnnotType.Rectangle,
-                    false, IFTransformBox.ANNOT_SIZE, IFColor.WHITE, IFColor.BLACK);
+                    false, IFTransformBox.ANNOT_SIZE, IFRGBColor.WHITE, IFRGBColor.BLACK);
             }
         }
         ifAnnotation.paintAnnotation(context, null, this._getPoint(IFTransformBox.Handles.ROTATION_CENTER),
-            ifAnnotation.AnnotType.Circle, false, IFTransformBox.ANNOT_SIZE, IFColor.WHITE, IFColor.BLACK);
+            ifAnnotation.AnnotType.Circle, false, IFTransformBox.ANNOT_SIZE, IFRGBColor.WHITE, IFRGBColor.BLACK);
         context.canvas.setTransform(canvasTransform);
 
         this._extTransform = null;

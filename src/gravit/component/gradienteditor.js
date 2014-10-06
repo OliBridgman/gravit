@@ -85,7 +85,7 @@
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
 
-                                    var finalPosition = methods.insertStop.call(self, percentPos, IFColor.parseCSSColor('black'));
+                                    var finalPosition = methods.insertStop.call(self, percentPos, IFRGBColor.parseCSSColor('black'));
                                     $this.trigger('change');
 
                                     $stops.find('> .stop').each(function (index, element) {

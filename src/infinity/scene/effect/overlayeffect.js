@@ -16,7 +16,7 @@
      */
     IFOverlayEffect.GeometryProperties = {
         /** The overlay pattern (IFPattern) */
-        pat: IFColor.BLACK,
+        pat: IFRGBColor.BLACK,
         /** Overlay opacity */
         opc: 1
     };

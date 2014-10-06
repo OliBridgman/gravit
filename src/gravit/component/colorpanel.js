@@ -15,10 +15,9 @@
                     unit: ' ',
                     map: true,
                     stops: function (components) {
-                        var rgba = components;
                         return [
-                            new IFColor(IFColor.Type.RGB, [0, rgba[1], rgba[2], 100]),
-                            new IFColor(IFColor.Type.RGB, [255, rgba[1], rgba[2], 100]),
+                            IFColor.rgbToHtmlHex([0, components[1], components[2]]),
+                            IFColor.rgbToHtmlHex([255, components[1], components[2]])
                         ];
                     }
                 },
@@ -30,10 +29,9 @@
                     unit: ' ',
                     map: true,
                     stops: function (components) {
-                        var rgba = components;
                         return [
-                            new IFColor(IFColor.Type.RGB, [rgba[0], 0, rgba[2], 100]),
-                            new IFColor(IFColor.Type.RGB, [rgba[0], 255, rgba[2], 100]),
+                            IFColor.rgbToHtmlHex([components[0], 0, components[2]]),
+                            IFColor.rgbToHtmlHex([components[0], 255, components[2]])
                         ];
                     }
                 },
@@ -45,22 +43,24 @@
                     unit: ' ',
                     map: true,
                     stops: function (components) {
-                        var rgba = components;
                         return [
-                            new IFColor(IFColor.Type.RGB, [rgba[0], rgba[1], 0, 100]),
-                            new IFColor(IFColor.Type.RGB, [rgba[0], rgba[1], 255, 100]),
+                            IFColor.rgbToHtmlHex([components[0], components[1], 0]),
+                            IFColor.rgbToHtmlHex([components[0], components[1], 255])
                         ];
                     }
                 }
             ],
-            getMapValue: function (component, componentValue) {
+            componentToValue: function (component, componentValue) {
                 return componentValue;
             },
-            getComponents: function (color) {
-                return color.asRGB();
+            valueToComponent: function (component, value) {
+                return value;
             },
-            makeColor: function (components) {
-                return new IFColor(IFColor.Type.RGB, components);
+            componentsFromColor: function (color) {
+                return color.toScreen();
+            },
+            colorFromComponents: function (components) {
+                return new IFRGBColor(components);
             }
         },
         'hsv': {
@@ -73,11 +73,11 @@
                     unit: '° ',
                     map: true,
                     stops: function (components) {
-                        var hsla = components;
                         var result = [];
                         var steps = 60;
                         for (var i = 0; i <= 360; i += steps) {
-                            result.push(new IFColor(IFColor.Type.HSL, [i, hsla[1], hsla[2], 100]));
+                            var hsv = [i, components[1], components[2]];
+                            result.push(IFColor.rgbToHtmlHex(IFColor.hsvToRGB(hsv)));
                         }
                         return result;
                     }
@@ -90,10 +90,9 @@
                     unit: '%',
                     map: true,
                     stops: function (components) {
-                        var hsla = components;
                         return [
-                            new IFColor(IFColor.Type.HSL, [hsla[0], 0, hsla[2], 100]),
-                            new IFColor(IFColor.Type.HSL, [hsla[0], 100, hsla[2], 100]),
+                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], 0, components[2]])),
+                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], 1, components[2]]))
                         ];
                     }
                 },
@@ -105,15 +104,14 @@
                     unit: '%',
                     map: true,
                     stops: function (components) {
-                        var hsla = components;
                         return [
-                            new IFColor(IFColor.Type.HSL, [hsla[0], hsla[1], 0, 100]),
-                            new IFColor(IFColor.Type.HSL, [hsla[0], hsla[1], 100, 100]),
+                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 0])),
+                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 1]))
                         ];
                     }
                 }
             ],
-            getMapValue: function (component, componentValue) {
+            componentToValue: function (component, componentValue) {
                switch (component) {
                    case 's':
                    case 'v':
@@ -122,11 +120,20 @@
                        return componentValue;
                }
             },
-            getComponents: function (color) {
-                return color.asHSL();
+            valueToComponent: function (component, value) {
+                switch (component) {
+                    case 's':
+                    case 'v':
+                        return value * 100.0;
+                    default:
+                        return value;
+                }
             },
-            makeColor: function (components) {
-                return new IFColor(IFColor.Type.HSL, components);
+            componentsFromColor: function (color) {
+                return IFColor.rgbToHSV(color.toScreen());
+            },
+            colorFromComponents: function (components) {
+                return new IFRGBColor(IFColor.hsvToRGB(components));
             }
         },
         'cmyk': {
@@ -139,10 +146,9 @@
                     unit: '%',
                     map: true,
                     stops: function (components) {
-                        var cmyk = components;
                         return [
-                            new IFColor(IFColor.Type.CMYK, [0, cmyk[1], cmyk[2], cmyk[3]]),
-                            new IFColor(IFColor.Type.CMYK, [100, cmyk[1], cmyk[2], cmyk[3]]),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([0, components[1], components[2], components[3]])),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([1, components[1], components[2], components[3]]))
                         ];
                     }
                 },
@@ -154,10 +160,9 @@
                     unit: '%',
                     map: true,
                     stops: function (components) {
-                        var cmyk = components;
                         return [
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], 0, cmyk[2], cmyk[3]]),
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], 100, cmyk[2], cmyk[3]]),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], 0, components[2], components[3]])),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], 1, components[2], components[3]]))
                         ];
                     }
                 },
@@ -169,10 +174,9 @@
                     unit: '%',
                     map: true,
                     stops: function (components) {
-                        var cmyk = components;
                         return [
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], 0, cmyk[3]]),
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], 100, cmyk[3]]),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], 0, components[3]])),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], 1, components[3]]))
                         ];
                     }
                 },
@@ -184,29 +188,56 @@
                     unit: '%',
                     map: false,
                     stops: function (components) {
-                        var cmyk = components;
                         return [
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 0]),
-                            new IFColor(IFColor.Type.CMYK, [cmyk[0], cmyk[1], cmyk[2], 100]),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], components[2], 0])),
+                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], components[2], 1]))
                         ];
                     }
                 }
             ],
-            getMapValue: function (component, componentValue) {
-                return componentValue / 1.0;
+            componentToValue: function (component, componentValue) {
+                return componentValue / 100.0;
             },
-            getComponents: function (color) {
-                return color.asCMYK();
+            valueToComponent: function (component, value) {
+                return value * 100.0;
             },
-            makeColor: function (components) {
-                return new IFColor(IFColor.Type.CMYK, components);
+            componentsFromColor: function (color) {
+                return color instanceof IFCMYKColor ? color.getValue() : IFColor.rgbToCMYK(color.toScreen(true/*no-cms*/));
+            },
+            colorFromComponents: function (components) {
+                return new IFCMYKColor(components);
             }
+        }
+    };
+
+    function mapColor(mode, value, x, y) {
+        switch (mode) {
+            case 'h':
+                return [value, x, 1 - y];
+            case 's':
+                return [x * 360, value, 1 - y];
+            case 'v':
+                return [x * 360, 1 - y, value];
+            case 'r':
+                return [value, (1.0 - y) * 255, x * 255];
+            case 'g':
+                return [(1.0 - y) * 255, value, x * 255];
+            case 'b':
+                return [x * 255, (1.0 - y) * 255, value];
+            case 'c':
+                return [value, 1.0 - y, x];
+            case 'm':
+                return [1.0 - y, value, x];
+            case 'y':
+                return [1.0 - y, x, value];
+            default:
+                throw new Error('Unsupported Mode.');
         }
     };
 
 
     function mapColorRGB(mode, value, size, x, y) {
-        var color = IFColor.mapColor(mode, value, x / size, y / size);
+        var color = mapColor(mode, value, x / size, y / size);
         switch (mode) {
             case 'h':
             case 's':
@@ -219,7 +250,7 @@
             case 'c':
             case 'm':
             case 'y':
-                return IFColor.cmykToRgb(color);
+                return IFColor.cmykToRGB(color);
         }
     };
 
@@ -321,7 +352,7 @@
                             'visibility': 'hidden'
                         })
                         .on('change', function (evt) {
-                            var color = IFColor.parseCSSColor($(evt.target).val());
+                            var color = IFRGBColor.parseCSSColor($(evt.target).val());
                             methods.currentColor.call(self, color);
                         }.bind(this)))
                     .append($('<div></div>')
@@ -567,7 +598,7 @@
                  var colorRow = COLORS[y];
                  var tableRow = $('<tr></tr>');
                  for (var x = 0; x < 20; ++x) {
-                 var color = x < colorRow.length ? IFColor.parseCSSColor(colorRow[x]) : IFColor.WHITE;
+                 var color = x < colorRow.length ? IFRGBColor.parseCSSColor(colorRow[x]) : IFRGBColor.WHITE;
                  $('<td></td>')
                  .css('background', color.asCSSString())
                  .css('border', '1px solid ' + color.asCSSString())
@@ -630,6 +661,7 @@
                     // Updates
                     methods._updateMap.call(this);
                     methods._updateComponents.call(this);
+                    methods._updateColorFromComponents.call(this);
                 }
 
                 return this;
@@ -662,7 +694,7 @@
                 if (!IFUtil.equals(data.currentColor, currentColor)) {
                     data.currentColor = currentColor;
                     $this.find('.color-preview > .current-color').css('background', IFPattern.asCSSBackground(data.currentColor));
-
+                    $this.find('input[type="color"]').val(IFColor.rgbToHtmlHex(data.currentColor.toScreen()));
 
                     methods._updateMap.call(this);
                     methods._updateWheel.call(this);
@@ -725,7 +757,7 @@
 
             // Get the components in the right format
             var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
-            var components = colorModeInfo.getComponents(data.currentColor);
+            var components = colorModeInfo.componentsFromColor(data.currentColor);
             if (components) {
                 for (var i = 0; i < colorModeInfo.components.length; ++i) {
                     var component = colorModeInfo.components[i];
@@ -733,21 +765,21 @@
                     var checkInput = componentEl.find('input[type="radio"]');
                     var textInput = componentEl.find('input[type="text"]');
                     var rangeInput = componentEl.find('input[type="range"]');
-                    var val = Math.min(component.max, Math.max(component.min, components[i])).toFixed(0);
+                    var val = Math.min(component.max, Math.max(component.min, colorModeInfo.valueToComponent(component.component, components[i]))).toFixed(0);
 
                     var stopsFunc = colorModeInfo.components[i].stops;
-                    var stops = stopsFunc ? stopsFunc(components, this._previousColor) : null;
+                    var stops = stopsFunc ? stopsFunc(components) : null;
 
                     if (stops) {
                         if (stops.length === 1) {
-                            rangeInput.css('background', stops[0].asCSSString());
+                            rangeInput.css('background', stops[0]);
                         } else {
                             var cssStops = '';
                             for (var s = 0; s < stops.length; ++s) {
                                 if (cssStops !== '') {
                                     cssStops += ',';
                                 }
-                                cssStops += stops[s].asCSSString();
+                                cssStops += stops[s];
                             }
                             rangeInput.css('background', 'linear-gradient(90deg, ' + cssStops + ')');
                         }
@@ -781,14 +813,14 @@
                 }
 
                 // Push value
-                components.push(value);
+                components.push(colorModeInfo.componentToValue(component.component, value));
 
                 // Update inputs with correct value
                 textInput.val(value);
                 rangeInput.val(value);
             }
             
-            methods.currentColor.call(this, colorModeInfo.makeColor(components));
+            methods.currentColor.call(this, colorModeInfo.colorFromComponents(components));
         },
 
         _updateMap: function () {
@@ -798,7 +830,7 @@
             var componentEl = $this.find('input[name="component-check"]:checked').closest('.color-component');
             var component = componentEl.attr('data-component');
             var componentValue = componentEl.find('input[type="range"]').val();
-            var mapValue = colorModeInfo.getMapValue(component, componentValue);
+            var mapValue = colorModeInfo.componentToValue(component, componentValue);
             var context = $this.find('canvas.map')[0].getContext('2d');
 
             var pixels = context.getImageData(0, 0, mapSize, mapSize);
@@ -834,7 +866,7 @@
                 cx: wheelSize / 2,
                 cy: wheelSize / 2,
                 radius: (wheelSize - 14) / 2,
-                startColor: IFColor.rgbToHSV(data.currentColor.asRGB()),
+                startColor: IFColor.rgbToHSV(data.currentColor.toScreen()),
                 segments: 24,
                 mixSteps: 10,
                 mix: 30 // either degree or 'tint'|'shade'|'tone'
