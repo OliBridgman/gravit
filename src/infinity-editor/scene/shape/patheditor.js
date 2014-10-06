@@ -1447,6 +1447,10 @@
         }
     };
 
+    IFPathEditor.prototype.getPartSelection = function () {
+        return this._partSelection;
+    };
+
     /**
      * Move coordinate properties of a preview point
      * @param {IFPathBase.AnchorPoint} sourcePoint

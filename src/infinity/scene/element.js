@@ -1523,6 +1523,10 @@
         return false;
     };
 
+    IFElement.prototype.validateSelectionChange = function () {
+        return true;
+    };
+
     _.IFElement = IFElement;
 })
     (this);
