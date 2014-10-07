@@ -745,9 +745,9 @@
                 methods._setCurrentColor.call(this, currentColor);
 
                 methods._updateMap.call(this);
+                methods._updateComponents.call(this);
                 methods._updateMapMarker.call(this);
                 methods._updateWheel.call(this);
-                methods._updateComponents.call(this);
 
                 return this;
             }
