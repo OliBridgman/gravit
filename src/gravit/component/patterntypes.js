@@ -1,29 +1,57 @@
 (function ($) {
     var patternTypes = [
         {
-            clazz: null,
-            // TODO : I18N
-            name: 'None'
+            label: '',
+            types: [
+                {
+                    clazz: null,
+                    // TODO : I18N
+                    name: 'None'
+                }
+            ]
         },
         {
-            clazz: IFColor,
             // TODO : I18N
-            name: 'Color'
+            label: 'Color',
+            types: [
+                {
+                    clazz: IFRGBColor,
+                    // TODO : I18N
+                    name: 'RGB'
+                },
+                {
+                    clazz: IFCMYKColor,
+                    // TODO : I18N
+                    name: 'CMYK'
+                }
+            ]
         },
         {
-            clazz: IFLinearGradient,
             // TODO : I18N
-            name: 'Linear'
+            label: 'Gradient',
+            types: [
+                {
+                    clazz: IFLinearGradient,
+                    // TODO : I18N
+                    name: 'Linear'
+                },
+                {
+                    clazz: IFRadialGradient,
+                    // TODO : I18N
+                    name: 'Radial'
+                }
+            ]
         },
         {
-            clazz: IFRadialGradient,
             // TODO : I18N
-            name: 'Radial'
-        },
-        {
-            clazz: IFBackground,
-            // TODO : I18N
-            name: 'Background'
+            label: 'Pattern',
+            types: [
+                {
+                    clazz: IFBackground,
+                    // TODO : I18N
+                    name: 'Background'
+                }
+            ]
         }
     ];
 
@@ -45,23 +73,38 @@
                         target = lastElement;
                     }
 
+                    var index = 0;
                     for (var i = 0; i < patternTypes.length; ++i) {
-                        var patInfo = patternTypes[i];
-                        if (options.types && options.types.length) {
-                            if (options.types.indexOf(patInfo[i].clazz) < 0) {
-                                continue;
+                        var groupInfo = patternTypes[i];
+                        var group = groupInfo.label ? $('<optgroup></optgroup>')
+                            .attr('label', groupInfo.label).appendTo(target) : target;
+
+                        for (var k = 0; k < groupInfo.types.length; ++k) {
+                            var patInfo = groupInfo.types[k];
+
+                            var isCompatible = true;
+                            if (options.types && options.types.length > 0) {
+                                isCompatible = false;
+                                for (var i = 0; i < options.types.length; ++i) {
+                                    if (patInfo[i].clazz === options.types[i] || patInfo[i].clazz === Object.getPrototypeOf(options.types[i])) {
+                                        isCompatible = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (isCompatible) {
+                                $('<option></option>')
+                                    .attr('value', (++index).toString())
+                                    .data('class', patInfo.clazz)
+                                    .text(patInfo.name)
+                                    .appendTo(group);
                             }
                         }
-
-
-                        target.append($('<option></option>')
-                            .attr('value', i.toString())
-                            .text(patInfo.name));
                     }
 
                     $this.on('change', function (evt) {
-                        var patternClass = patternTypes[parseInt($this.val())].clazz;
-                        $this.trigger('patternchange', patternClass);
+                        $this.trigger('patternchange', methods.value.call(self));
                     });
                 }
             });
@@ -71,14 +114,15 @@
             var $this = $(this);
 
             if (!arguments.length) {
-                return patternTypes[parseInt($this.val())].clazz;
+                return $this.find('option:selected').data('class');
             } else {
-                for (var i = 0; i < patternTypes.length; ++i) {
-                    if (patternTypes[i].clazz === value) {
-                        $this.val(i.toString());
-                        break;
+                $this.find('option').each(function (index, element) {
+                    var $element = $(element);
+                    if ($element.data('class') === value) {
+                        $this.val($element.attr('value'));
+                        return false;
                     }
-                }
+                });
                 return this;
             }
         }
