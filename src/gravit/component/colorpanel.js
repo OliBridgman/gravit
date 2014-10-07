@@ -4,6 +4,9 @@
         ['#1abc9c', '#16a085', '#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#34495e', '#2c3e50', '#f1c40f', '#f39c12', '#e67e22', '#d35400', '#e74c3c', '#c0392b', '#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d'],
     ];
 
+    var wheelSize = 250;
+    var mapSize = 250;
+
     var COLOR_MODES = {
         'rgb': {
             components: [
@@ -61,6 +64,26 @@
             },
             colorFromComponents: function (components) {
                 return new IFRGBColor(components);
+            },
+            componentsFromMap: function (component, value, x, y) {
+                switch (component) {
+                    case 'r':
+                        return [value, (1 - y) * 255, x * 255];
+                    case 'g':
+                        return [(1 - y) * 255, value, x * 255];
+                    case 'b':
+                        return [x * 255, (1 - y) * 255, value];
+                }
+            },
+            mapFromComponents: function (component, components) {
+                switch (component) {
+                    case 'r':
+                        return [components[2] / 255, (1 - components[1] / 255)];
+                    case 'g':
+                        return [components[2] / 255, (1 - components[0] / 255)];
+                    case 'b':
+                        return [components[0] / 255, (1 - components[1] / 255)];
+                }
             }
         },
         'hsv': {
@@ -112,13 +135,13 @@
                 }
             ],
             componentToValue: function (component, componentValue) {
-               switch (component) {
-                   case 's':
-                   case 'v':
-                       return componentValue / 100.0;
-                   default:
-                       return componentValue;
-               }
+                switch (component) {
+                    case 's':
+                    case 'v':
+                        return componentValue / 100.0;
+                    default:
+                        return componentValue;
+                }
             },
             valueToComponent: function (component, value) {
                 switch (component) {
@@ -134,6 +157,26 @@
             },
             colorFromComponents: function (components) {
                 return new IFRGBColor(IFColor.hsvToRGB(components));
+            },
+            componentsFromMap: function (component, value, x, y) {
+                switch (component) {
+                    case 'h':
+                        return [value, x, 1 - y];
+                    case 's':
+                        return [x * 360, value, 1 - y];
+                    case 'v':
+                        return [x * 360, 1 - y, value];
+                }
+            },
+            mapFromComponents: function (component, components) {
+                switch (component) {
+                    case 'h':
+                        return [components[1], 1 - components[2]];
+                    case 's':
+                        return [components[0] / 360, 1 - components[2]];
+                    case 'v':
+                        return [components[0] / 360, 1 - components[1]];
+                }
             }
         },
         'cmyk': {
@@ -206,81 +249,60 @@
             },
             colorFromComponents: function (components) {
                 return new IFCMYKColor(components);
+            },
+            componentsFromMap: function (component, value, x, y, components) {
+                switch (component) {
+                    case 'c':
+                        return [value, 1.0 - y, x, components[3]];
+                    case 'm':
+                        return [1.0 - y, value, x, components[3]];
+                    case 'y':
+                        return [1.0 - y, x, value, components[3]];
+                }
+            },
+            mapFromComponents: function (component, components) {
+                switch (component) {
+                    case 'c':
+                        return [components[2], 1 - components[1]];
+                    case 'm':
+                        return [components[2], 1 - components[0]];
+                    case 'y':
+                        return [components[1], 1 - components[0]];
+                }
             }
         }
     };
 
-    function mapColor(mode, value, x, y) {
-        switch (mode) {
-            case 'h':
-                return [value, x, 1 - y];
-            case 's':
-                return [x * 360, value, 1 - y];
-            case 'v':
-                return [x * 360, 1 - y, value];
-            case 'r':
-                return [value, (1.0 - y) * 255, x * 255];
-            case 'g':
-                return [(1.0 - y) * 255, value, x * 255];
-            case 'b':
-                return [x * 255, (1.0 - y) * 255, value];
-            case 'c':
-                return [value, 1.0 - y, x];
-            case 'm':
-                return [1.0 - y, value, x];
-            case 'y':
-                return [1.0 - y, x, value];
-            default:
-                throw new Error('Unsupported Mode.');
-        }
+    function mapMouseEvent(evt) {
+        var $this = $(this);
+        var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+        var mapContainer = $this.find('.map-container');
+        var offset = $(mapContainer).offset();
+        var x = Math.max(0, Math.min(mapContainer.outerWidth(), evt.pageX - offset.left - 4));
+        var y = Math.max(0, Math.min(mapContainer.outerHeight(), evt.pageY - offset.top - 4));
+
+
+        var $this = $(this);
+        var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+        var components = methods._getComponents.call(this);
+        var mappedComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapSize, y / mapSize, components.components);
+        var mappedColor = colorModeInfo.colorFromComponents(mappedComponents);
+
+        methods._setCurrentColor.call(this, mappedColor);
+        methods._updateComponents.call(this, mappedComponents);
+        methods._updateMapMarker.call(this);
+        methods._updateWheel.call(this);
     };
-
-
-    function mapColorRGB(mode, value, size, x, y) {
-        var color = mapColor(mode, value, x / size, y / size);
-        switch (mode) {
-            case 'h':
-            case 's':
-            case 'v':
-                return IFColor.hsvToRGB(color);
-            case 'r':
-            case 'g':
-            case 'b':
-                return color;
-            case 'c':
-            case 'm':
-            case 'y':
-                return IFColor.cmykToRGB(color);
-        }
-    };
-
-    var wheelSize = 250;
-    var mapSize = 250;
 
     var methods = {
         init: function (options) {
             options = $.extend({
-                // The map mode - h|s|v|r|g|b|c|y|m
-                mapMode: 'h',
-
-                // The wheel's mix mode - angle°|tint|shade|tone
-                wheelMixMode: 'shade',
-                // The wheel's highlight - start|triadic|tetradic|split_complements|analogous|complement
-                wheelHighlight: 'start',
-                // The number of segments in the wheel
-                wheelSegments: 12,
-                // The number of mix segments in the wheel
-                wheelMixSegments: 10,
-
-
-                // Size of the color map
-                mapSize: 240,
-                // Color mode
-                mode: 'h'
             }, options);
 
             return this.each(function () {
                 var self = this;
+
+                var mapMouseHandler = mapMouseEvent.bind(self);
 
                 var _createColorModeButton = function (mode, title) {
                     return $('<button></button>')
@@ -313,7 +335,7 @@
                                     input.val(colorModeInfo.components[index].max);
                                 }
 
-                                methods._updateColorFromComponents.call(self);
+                                input.trigger('input');
                             }))
                         .append($('<div></div>')
                             .addClass('color-range')
@@ -321,15 +343,28 @@
                                 .attr('type', 'range')
                                 .attr('tabIndex', '-1')
                                 .on('input', function (evt) {
-                                    $this.find('.color-component-' + index.toString() + ' input[type="text"]').val($(evt.target).val());
-                                    methods._updateColorFromComponents.call(self);
+                                    $this.find('.color-component-' + index.toString() + ' input[type="text"]')
+                                        .val($(evt.target).val())
+                                        .trigger('input');
                                 })))
                         .append($('<div></div>')
                             .addClass('color-value')
                             .append($('<input>')
                                 .attr('type', 'text')
-                                .on('input', function () {
-                                    methods._updateColorFromComponents.call(self);
+                                .on('input', function (evt) {
+                                    var componentEl = $(evt.target).parents('.color-component');
+                                    var colorModeInfo = COLOR_MODES[methods.colorMode.call(self)];
+                                    var components = methods._getComponents.call(self);
+                                    var color = colorModeInfo.colorFromComponents(components.components);
+
+                                    methods._setCurrentColor.call(self, color);
+                                    methods._updateComponents.call(self, components.components);
+                                    methods._updateMapMarker.call(self);
+                                    methods._updateWheel.call(self);
+
+                                    if (!colorModeInfo.components[index].map || componentEl.find('input[type="radio"]').is(':checked')) {
+                                        methods._updateMap.call(self);
+                                    }
                                 })))
                         .append($('<div></div>')
                             .addClass('color-unit'));
@@ -373,13 +408,13 @@
                         .append($('<div></div>')
                             .addClass('section-center')
                             .append($('<div></div>')
-                                .addClass('g-input color-preview')
+                                .addClass('color-preview')
                                 .append($('<div></div>')
                                     .addClass('previous-color')
                                     .gPatternTarget({
                                         types: [IFColor]
                                     })
-                                    .on('colorchange', function (evt, color) {
+                                    .on('patternchange', function (evt, color) {
                                         if (color) {
                                             methods.previousColor.call(self, color);
                                         }
@@ -389,7 +424,7 @@
                                     .gPatternTarget({
                                         types: [IFColor]
                                     })
-                                    .on('colorchange', function (evt, color) {
+                                    .on('patternchange', function (evt, color) {
                                         if (color) {
                                             methods.color.call(self, color);
                                         }
@@ -480,12 +515,28 @@
                         .addClass('color-container')
                         .append($('<div></div>')
                             .addClass('color')
-                            .append($('<canvas></canvas>')
-                                .addClass('g-list map')
-                                .attr({
-                                    width: mapSize.toString() + 'px',
-                                    height: mapSize.toString() + 'px',
-                                }))
+                            .append($('<div></div>')
+                                .addClass('map-container')
+                                .append($('<canvas></canvas>')
+                                    .addClass('map')
+                                    .attr({
+                                        width: mapSize.toString() + 'px',
+                                        height: mapSize.toString() + 'px',
+                                    })
+                                    .on('mousedown', function (evt) {
+                                        mapMouseHandler(evt);
+
+                                        var upHandler = function (evt) {
+                                            evt.stopPropagation();
+                                            document.removeEventListener('mousemove', mapMouseHandler);
+                                            document.removeEventListener('mouseup', upHandler, true);
+                                        };
+
+                                        document.addEventListener('mousemove', mapMouseHandler);
+                                        document.addEventListener('mouseup', upHandler, true);
+                                    }))
+                                .append($('<div></div>')
+                                    .addClass('marker')))
                             .append($('<div></div>')
                                 .addClass('color-components')
                                 .append(_createColorComponent(0))
@@ -658,10 +709,8 @@
                         }
                     }
 
-                    // Updates
-                    methods._updateMap.call(this);
                     methods._updateComponents.call(this);
-                    methods._updateColorFromComponents.call(this);
+                    methods.currentColor.call(this, methods._getColorFromComponents.call(this));
                 }
 
                 return this;
@@ -677,7 +726,9 @@
             } else {
                 if (!IFUtil.equals(data.previousColor, previousColor)) {
                     data.previousColor = previousColor;
-                    $this.find('.color-preview > .previous-color').css('background', IFPattern.asCSSBackground(data.previousColor));
+                    $this.find('.color-preview > .previous-color')
+                        .css('background', IFPattern.asCSSBackground(data.previousColor))
+                        .gPatternTarget('value', data.previousColor);
                 }
 
                 return this;
@@ -691,30 +742,34 @@
             if (!arguments.length) {
                 return data.currentColor;
             } else {
-                if (!IFUtil.equals(data.currentColor, currentColor)) {
-                    data.currentColor = currentColor;
-                    $this.find('.color-preview > .current-color').css('background', IFPattern.asCSSBackground(data.currentColor));
-                    $this.find('input[type="color"]').val(IFColor.rgbToHtmlHex(data.currentColor.toScreen()));
+                methods._setCurrentColor.call(this, currentColor);
 
-                    methods._updateMap.call(this);
-                    methods._updateWheel.call(this);
-                    methods._updateComponents.call(this);
-                }
+                methods._updateMap.call(this);
+                methods._updateMapMarker.call(this);
+                methods._updateWheel.call(this);
+                methods._updateComponents.call(this);
 
                 return this;
             }
         },
 
-
-        color: function (currentColor) {
+        color: function (color) {
             var $this = $(this);
             var data = $this.data('gcolorpanel');
 
             if (!arguments.length) {
                 return data.currentColor;
             } else {
-                methods.previousColor.call(this, currentColor);
-                methods.currentColor.call(this, currentColor);
+                methods.previousColor.call(this, color);
+                methods.currentColor.call(this, color);
+
+                var colorMode = methods.colorMode.call(this);
+                if (color instanceof IFCMYKColor) {
+                    methods.colorMode.call(this, 'cmyk');
+                } else if (color instanceof IFRGBColor && colorMode === 'cmyk') {
+                    methods.colorMode.call(this, 'hsv');
+                }
+
                 return this;
             }
         },
@@ -748,16 +803,74 @@
             }
         },
 
-        _updateComponents: function () {
+        _setCurrentColor: function (currentColor) {
+            var $this = $(this);
+            var data = $this.data('gcolorpanel');
+            data.currentColor = currentColor;
+            $this.find('input[type="color"]').val(IFColor.rgbToHtmlHex(data.currentColor.toScreen()));
+            $this.find('.color-preview > .current-color')
+                .css('background', IFPattern.asCSSBackground(data.currentColor))
+                .gPatternTarget('value', data.currentColor);
+        },
+
+        /**
+         * @returns {{active: {component: String, value: Number}, components: Array<Number>}}
+         * @private
+         */
+        _getComponents: function () {
+            var $this = $(this);
+            var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+            var activeComponent = $this.find('input[name="component-check"]:checked').closest('.color-component').attr('data-component');
+
+            var result = {
+                active: {
+                    component: activeComponent,
+                    value: null
+                },
+                components: []
+            }
+
+            for (var i = 0; i < colorModeInfo.components.length; ++i) {
+                var component = colorModeInfo.components[i];
+                var componentEl = $this.find('.color-component-' + i.toString());
+                var textInput = componentEl.find('input[type="text"]');
+                var rangeInput = componentEl.find('input[type="range"]');
+                var value = parseInt(textInput.val());
+
+                if (isNaN(value) || value < component.min) {
+                    value = component.min;
+                } else if (value > component.max) {
+                    value = component.max;
+                }
+
+                var componentValue = colorModeInfo.componentToValue(component.component, value);
+                result.components.push(componentValue);
+                if (component.component === activeComponent) {
+                    result.active.value = componentValue;
+                }
+            }
+
+            return result;
+        },
+
+        _getColorFromComponents: function () {
+            var $this = $(this);
+            var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+            var components = methods._getComponents.call(this);
+            return colorModeInfo.colorFromComponents(components.components);
+        },
+
+        _updateComponents: function (components) {
             var $this = $(this);
             var data = $this.data('gcolorpanel');
             if (!data.currentColor) {
                 return;
             }
 
-            // Get the components in the right format
             var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
-            var components = colorModeInfo.componentsFromColor(data.currentColor);
+
+            components = components || colorModeInfo.componentsFromColor(data.currentColor);
+
             if (components) {
                 for (var i = 0; i < colorModeInfo.components.length; ++i) {
                     var component = colorModeInfo.components[i];
@@ -794,49 +907,17 @@
             }
         },
 
-        _updateColorFromComponents: function () {
-            var $this = $(this);
-            var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
-            
-            var components = [];
-            for (var i = 0; i < colorModeInfo.components.length; ++i) {
-                var component = colorModeInfo.components[i];
-                var componentEl = $this.find('.color-component-' + i.toString());
-                var textInput = componentEl.find('input[type="text"]');
-                var rangeInput = componentEl.find('input[type="range"]');
-                var value = parseInt(textInput.val());
-
-                if (isNaN(value) || value < component.min) {
-                    value = component.min;
-                } else if (value > component.max) {
-                    value = component.max;
-                }
-
-                // Push value
-                components.push(colorModeInfo.componentToValue(component.component, value));
-
-                // Update inputs with correct value
-                textInput.val(value);
-                rangeInput.val(value);
-            }
-            
-            methods.currentColor.call(this, colorModeInfo.colorFromComponents(components));
-        },
-
         _updateMap: function () {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
             var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
-            var componentEl = $this.find('input[name="component-check"]:checked').closest('.color-component');
-            var component = componentEl.attr('data-component');
-            var componentValue = componentEl.find('input[type="range"]').val();
-            var mapValue = colorModeInfo.componentToValue(component, componentValue);
+            var components = methods._getComponents.call(this);
             var context = $this.find('canvas.map')[0].getContext('2d');
 
             var pixels = context.getImageData(0, 0, mapSize, mapSize);
             for (var x = 0; x < mapSize; ++x) {
                 for (var y = 0; y < mapSize; ++y) {
-                    var rgb = mapColorRGB(component, mapValue, mapSize, x, y);
+                    var mapComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapSize, y / mapSize, components.components);
+                    var rgb = colorModeInfo.colorFromComponents(mapComponents).toScreen();
                     var idx = (y * mapSize + x) * 4;
                     pixels.data[idx] = rgb[0];
                     pixels.data[idx + 1] = rgb[1];
@@ -844,7 +925,22 @@
                     pixels.data[idx + 3] = 255;
                 }
             }
+
             context.putImageData(pixels, 0, 0);
+        },
+
+        _updateMapMarker: function () {
+            var $this = $(this);
+            var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+            var components = methods._getComponents.call(this);
+
+            var coordinates = colorModeInfo.mapFromComponents(components.active.component, components.components);
+            $this
+                .find('.map-container > .marker')
+                .css({
+                    'left': Math.round(coordinates[0] * 100) + '%',
+                    'top': Math.round(coordinates[1] * 100) + '%'
+                });
         },
 
         _updateWheel: function () {
@@ -922,7 +1018,7 @@
                 for (var k = 0; k < mixes; ++k) {
 
                     var oppHue = IFMath.normalizeAngleDegrees(hueStart + 60 + i * segmentAngleDeg);
-                    var sat = startColor[1] - (k/diffSegs);
+                    var sat = startColor[1] - (k / diffSegs);
                     var val = startColor[2];// - (k/diffSegs);
                     var hsv = [hue, sat, val];
                     var rgb = IFColor.hsvToRGB(hsv);
@@ -983,14 +1079,14 @@
             ctx.stroke();
 
             /*
-            ctx.beginPath();
-            ctx.arc(options.cx, options.cy, options.radius, options.radius, 0, Math.PI * 2);
-            ctx.closePath();
+             ctx.beginPath();
+             ctx.arc(options.cx, options.cy, options.radius, options.radius, 0, Math.PI * 2);
+             ctx.closePath();
 
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'black';
-            ctx.stroke();
-            */
+             ctx.lineWidth = 1;
+             ctx.strokeStyle = 'black';
+             ctx.stroke();
+             */
         }
     };
 

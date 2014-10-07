@@ -135,7 +135,7 @@
                             var pattern = IFPattern.deserialize(sourcePattern);
                             if (pattern) {
                                 // Ask for a name
-                                var sourceName = pattern instanceof IFColor ? pattern.asString() : 'pattern';
+                                var sourceName = pattern instanceof IFColor ? pattern.toHumanString() : 'pattern';
                                 vex.dialog.prompt({
                                     // TODO : I18N
                                     message: 'Enter a name for the new swatch:',

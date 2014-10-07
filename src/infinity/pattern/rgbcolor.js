@@ -1,4 +1,9 @@
 (function (_) {
+    function clamp_css_byte(i) {  // Clamp to integer 0 .. 255.
+        i = Math.round(i);  // Seems to be what Chrome does (vs truncation).
+        return i < 0 ? 0 : i > 255 ? 255 : i;
+    }
+
     /**
      * A class representing a RGB Color
      * @param {RGB} rgb
@@ -7,7 +12,8 @@
      * @constructor
      */
     function IFRGBColor(rgb) {
-        IFColor.call(this, rgb ? rgb : [0, 0, 0]);
+        rgb = rgb ? [clamp_css_byte(rgb[0]), clamp_css_byte(rgb[1]), clamp_css_byte(rgb[2])] : [0, 0, 0];
+        IFColor.call(this,  rgb);
     }
 
     IFPattern.inherit('C', IFRGBColor, IFColor);
@@ -97,11 +103,6 @@
             "violet": [238, 130, 238], "wheat": [245, 222, 179],
             "white": [255, 255, 255], "whitesmoke": [245, 245, 245],
             "yellow": [255, 255, 0], "yellowgreen": [154, 205, 50]}
-
-        function clamp_css_byte(i) {  // Clamp to integer 0 .. 255.
-            i = Math.round(i);  // Seems to be what Chrome does (vs truncation).
-            return i < 0 ? 0 : i > 255 ? 255 : i;
-        }
 
         function clamp_css_float(f) {  // Clamp to float 0.0 .. 1.0.
             return f < 0 ? 0 : f > 1 ? 1 : f;

@@ -24,6 +24,10 @@
 
     IFObject.inherit(IFColor, IFPattern);
 
+    function round_clamp_byte (byte) {
+        return Math.min(255, Math.max(0, Math.round(byte)));
+    };
+
     /**
      * Convert RGB to HSV
      * @param {RGB} rgb
@@ -44,7 +48,11 @@
         var d = (r === minRGB) ? g - b : ((b === minRGB) ? r - g : b - r);
         var h = (r === minRGB) ? 3 : ((b === minRGB) ? 1 : 5);
 
-        return [60 * (h - d / (maxRGB - minRGB)), (maxRGB - minRGB) / maxRGB, maxRGB];
+        return [
+            60 * (h - d / (maxRGB - minRGB)),
+            (maxRGB - minRGB) / maxRGB,
+            maxRGB
+        ];
     };
 
     /**
@@ -66,7 +74,11 @@
         else if (h1 < 5) rgb = [x, 0, c];
         else if (h1 <= 6) rgb = [c, 0, x];
 
-        return [255 * (rgb[0] + m), 255 * (rgb[1] + m), 255 * (rgb[2] + m)];
+        return [
+            round_clamp_byte(255 * (rgb[0] + m)),
+            round_clamp_byte(255 * (rgb[1] + m)),
+            round_clamp_byte(255 * (rgb[2] + m))
+        ];
     };
 
     /**
@@ -83,9 +95,10 @@
         var y = (cmyk[2] * (1 - k) + k);
 
         return [
-            Math.min(255, Math.max(0, Math.round((1 - c) * 255))),
-            Math.min(255, Math.max(0, Math.round((1 - m) * 255))),
-            Math.min(255, Math.max(0, Math.round((1 - y) * 255)))];
+            round_clamp_byte((1 - c) * 255),
+            round_clamp_byte((1 - m) * 255),
+            round_clamp_byte((1 - y) * 255)
+        ];
     };
 
     /**

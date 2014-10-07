@@ -200,7 +200,6 @@
         }
 
         return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
-        ;
     };
 
     /** @override */
