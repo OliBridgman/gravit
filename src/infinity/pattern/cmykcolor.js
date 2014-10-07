@@ -21,7 +21,11 @@
 
     /** @override */
     IFCMYKColor.prototype.toHumanString = function () {
-        return 'cmyk ' + this.serialize();
+        return 'cmyk ' +
+            (this._value[0] * 100).toFixed() + '%,' +
+            (this._value[1] * 100).toFixed() + '%,' +
+            (this._value[2] * 100).toFixed() + '%,' +
+            (this._value[3] * 100).toFixed() + '%';
     };
 
     /** @override */

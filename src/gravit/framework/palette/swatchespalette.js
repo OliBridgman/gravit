@@ -58,7 +58,7 @@
         GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._swatchPanel = $('<div></div>')
-            .addClass('g-list swatches')
+            .addClass('g-list swatches g-swatch-list')
             .gSwatchPanel({
                 allowNameEdit: true,
                 // TODO : I18N

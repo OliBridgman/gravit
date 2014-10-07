@@ -1,10 +1,14 @@
 (function ($) {
 
     var COLORS = [
-        ['#1abc9c', '#16a085', '#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#34495e', '#2c3e50', '#f1c40f', '#f39c12', '#e67e22', '#d35400', '#e74c3c', '#c0392b', '#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d'],
+        '#000000', '#1F1F1F', '#3D3D3D', '#5C5C5C', '#7A7A7A', '#999999', '#B8B8B8', '#D6D6D6', '#F5F5F5', '#FFFFFF',
+        '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6',
+        '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d'
     ];
 
     var wheelSize = 250;
+    var wheelSegments = 24;
+    var wheelMixSegments = 5;
     var mapSize = 250;
 
     var COLOR_MODES = {
@@ -50,6 +54,22 @@
                             IFColor.rgbToHtmlHex([components[0], components[1], 0]),
                             IFColor.rgbToHtmlHex([components[0], components[1], 255])
                         ];
+                    }
+                },
+                {
+                    label: '#',
+                    component: '#',
+                    text: true,
+                    unit: ' ',
+                    map: false,
+                    componentsToValue: function (components) {
+                        return IFColor.rgbToHtmlHex(components).substr(1);
+                    },
+                    valueToColor: function (value) {
+                        if (value.length > 3) {
+                            return IFRGBColor.parseCSSColor(value);
+                        }
+                        return null;
                     }
                 }
             ],
@@ -131,6 +151,22 @@
                             IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 0])),
                             IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 1]))
                         ];
+                    }
+                },
+                {
+                    label: '#',
+                    component: '#',
+                    text: true,
+                    unit: ' ',
+                    map: false,
+                    componentsToValue: function (components) {
+                        return IFColor.rgbToHtmlHex(IFColor.hsvToRGB(components)).substr(1);
+                    },
+                    valueToColor: function (value) {
+                        if (value.length > 3) {
+                            return IFRGBColor.parseCSSColor(value);
+                        }
+                        return null;
                     }
                 }
             ],
@@ -276,10 +312,10 @@
     function mapMouseEvent(evt) {
         var $this = $(this);
         var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
-        var mapContainer = $this.find('.map-container');
-        var offset = $(mapContainer).offset();
-        var x = Math.max(0, Math.min(mapContainer.outerWidth(), evt.pageX - offset.left - 4));
-        var y = Math.max(0, Math.min(mapContainer.outerHeight(), evt.pageY - offset.top - 4));
+        var map = $this.find('canvas.map');
+        var offset = $(map).offset();
+        var x = Math.max(0, Math.min(map[0].width, evt.pageX - offset.left - 4));
+        var y = Math.max(0, Math.min(map[0].height, evt.pageY - offset.top - 4));
 
 
         var $this = $(this);
@@ -291,7 +327,58 @@
         methods._setCurrentColor.call(this, mappedColor);
         methods._updateComponents.call(this, mappedComponents);
         methods._updateMapMarker.call(this);
-        methods._updateWheel.call(this);
+        methods._updateWheelColor.call(this);
+    };
+
+    /**
+     * @param {Function (segmentIndex, highlightSegment, hsvColor, angleStart, angleEnd, mixes} iterator
+     */
+    function iterateWheel(iterator) {
+        var $this = $(this);
+        var data = $this.data('gcolorpanel');
+
+        if (!data.currentColor) {
+            return;
+        }
+
+        var highlight = $this.find('[data-wheel="highlight"]').val();
+        var mixes = $this.find('[data-wheel="mix"]').val();
+        var segmentAngleDeg = 360 / wheelSegments;
+        var segmentAngleRad = segmentAngleDeg * Math.PI / 180;
+
+        var startColor = IFColor.rgbToHSV(data.currentColor.toScreen());
+        var hueStart = startColor[0];
+        var hueHighlights = null;
+
+        if (highlight) {
+            hueHighlights = [hueStart];
+
+            if ('triadic' === highlight) {
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 120));
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 120));
+            } else if ('tetradic' === highlight) {
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 90));
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 270));
+            } else if ('split_complements' === highlight) {
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 150));
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 150));
+            } else if ('analogous' === highlight) {
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 30));
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 30));
+            } else if ('complement' === highlight) {
+                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
+            }
+        }
+
+        for (var i = wheelSegments - 1; i >= 0; --i) {
+            var segmentHue = IFMath.normalizeAngleDegrees(startColor[0] + i * segmentAngleDeg);
+            var segmentHSV = [segmentHue, startColor[1], startColor[2]];
+            var highlightSegment = hueHighlights && hueHighlights.indexOf(segmentHue) >= 0;
+
+            var angleStart = i * segmentAngleRad - segmentAngleRad / 2 - Math.PI / 2;
+            iterator(i, highlightSegment, segmentHSV, angleStart, angleStart + segmentAngleRad, mixes);
+        }
     };
 
     var methods = {
@@ -352,18 +439,27 @@
                             .append($('<input>')
                                 .attr('type', 'text')
                                 .on('input', function (evt) {
-                                    var componentEl = $(evt.target).parents('.color-component');
+                                    var $target = $(evt.target);
+                                    var componentEl = $target.parents('.color-component');
                                     var colorModeInfo = COLOR_MODES[methods.colorMode.call(self)];
-                                    var components = methods._getComponents.call(self);
-                                    var color = colorModeInfo.colorFromComponents(components.components);
 
-                                    methods._setCurrentColor.call(self, color);
-                                    methods._updateComponents.call(self, components.components);
-                                    methods._updateMapMarker.call(self);
-                                    methods._updateWheel.call(self);
+                                    if (colorModeInfo.components[index].text) {
+                                        var color = colorModeInfo.components[index].valueToColor($target.val());
+                                        if (color) {
+                                            methods.currentColor.call(self, color);
+                                        }
+                                    } else {
+                                        var components = methods._getComponents.call(self);
+                                        var color = colorModeInfo.colorFromComponents(components.components);
 
-                                    if (!colorModeInfo.components[index].map || componentEl.find('input[type="radio"]').is(':checked')) {
-                                        methods._updateMap.call(self);
+                                        methods._setCurrentColor.call(self, color);
+                                        methods._updateComponents.call(self, components.components);
+                                        methods._updateMapMarker.call(self);
+                                        methods._updateWheelColor.call(self);
+
+                                        if (!colorModeInfo.components[index].map || componentEl.find('input[type="radio"]').is(':checked')) {
+                                            methods._updateMap.call(self);
+                                        }
                                     }
                                 })))
                         .append($('<div></div>')
@@ -480,8 +576,9 @@
                                         // TODO : I18N
                                         .text('3 Quarter')))
                                 .on('change', function () {
-                                    methods._updateWheel.call(self);
-                                }))
+                                    methods._updateWheelColor.call(self);
+                                })
+                                .val('tint'))
                             .append($('<select></select>')
                                 .attr('data-wheel', 'highlight')
                                 .append($('<option></option>')
@@ -509,7 +606,8 @@
                                     // TODO : I18N
                                     .text('Analogous'))
                                 .on('change', function () {
-                                    methods._updateWheel.call(self);
+                                    methods._updateWheelColor.call(self);
+                                    methods._updateWheelBorder.call(self);
                                 }))))
                     .append($('<div></div>')
                         .addClass('color-container')
@@ -550,118 +648,83 @@
                                 .attr({
                                     width: wheelSize.toString() + 'px',
                                     height: wheelSize.toString() + 'px',
-                                }))));
+                                }))
+                            .append($('<canvas></canvas>')
+                                .addClass('wheel-border')
+                                .attr({
+                                    width: wheelSize.toString() + 'px',
+                                    height: wheelSize.toString() + 'px',
+                                })
+                                .on('click', function (evt) {
+                                    var data = $this.data('gcolorpanel');
+                                    if (!data.wheelMap) {
+                                        return;
+                                    }
+
+                                    var wheel = $this.find('canvas.color-wheel');
+                                    var offset = $(wheel).offset();
+                                    var x = Math.max(0, Math.min(wheel[0].width, evt.pageX - offset.left));
+                                    var y = Math.max(0, Math.min(wheel[0].height, evt.pageY - offset.top));
+
+                                    var idx = (y * wheel[0].width + x) * 4;
+                                    var pixels = data.wheelMap.data;
+                                    if (pixels[idx + 3] === 0) {
+                                        return;
+                                    }
+
+                                    var color = new IFRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
+
+                                    methods.currentColor.call(self, methods._convertColor.call(self, color));
+                                }))
+                            .append($('<div></div>')
+                                .addClass('palette')
+                                .append($('<div></div>')
+                                    .addClass('swatches')
+                                    .gSwatchPanel({
+                                        types: [IFColor],
+                                        allowSelect: false,
+                                        allowNameEdit: false,
+                                        previewWidth: 20,
+                                        previewHeight: 20,
+                                        nullSwatch: $('<span></span>')
+                                            .addClass('fa fa-plus')
+                                            .css('padding-left', '4px'),
+                                        // TODO : I18N
+                                        nullName: 'Add Swatch',
+                                        nullAction: function () {
+                                            $(this).gSwatchPanel('createSwatch', methods.currentColor.call(self));
+                                        }
+                                    })
+                                    .on('swatchchange', function (evt, swatch) {
+                                        if (swatch) {
+                                            methods.currentColor.call(self, methods._convertColor.call(self, swatch.getProperty('pat')));
+                                        }
+                                    }))
+                                .append($('<div></div>')
+                                    .addClass('divider'))
+                                .append($('<div></div>')
+                                    .addClass('builtin-colors')))));
 
                 // Set some initial values
                 methods.colorMode.call(self, 'hsv');
+                methods._updateWheelBorder.call(self);
 
 
-                //methods._updateMap.call(self);
-
-                /*
-
-                 function _createModeInput(mode, prefix, postfix) {
-                 var result = $('<label></label>')
-                 .attr('data-mode', mode);
-
-                 if (mode) {
-                 result
-                 .append($('<input>')
-                 .attr('type', 'radio')
-                 .attr('name', 'mode')
-                 .on('change', function (evt) {
-                 if ($(evt.target).is(':checked')) {
-                 methods.mode.call(self, mode);
-                 }
-                 }));
-                 }
-
-                 if (prefix) {
-                 result
-                 .append($('<span></span>')
-                 .addClass('prefix')
-                 .text(prefix + ':'));
-                 }
-
-                 result
-                 .append($('<input>')
-                 .attr('type', 'text'));
-
-                 if (postfix) {
-                 result
-                 .append($('<span></span>')
-                 .addClass('postfix')
-                 .text(postfix))
-                 }
-
-                 return result;
-                 };
-
-                 var $this = $(this)
-                 .addClass('g-color-panel')
-                 .data('gcolorpanel', {
-                 scene: null,
-                 options: options
-                 })
-                 .append($('<canvas></canvas>')
-                 .addClass('g-list color-map')
-                 .attr({
-                 'width': options.mapSize.toString(),
-                 'height': options.mapSize.toString()
-                 }))
-                 .append($('<canvas></canvas>')
-                 .addClass('g-list color-wheel')
-                 .attr({
-                 'width': options.mapSize.toString(),
-                 'height': options.mapSize.toString()
-                 }))
-                 .append($('<input>')
-                 .addClass('color-slider')
-                 .attr('type', 'range')
-                 .on('input', function () {
-                 methods._updateMap.call(self);
-                 }))
-                 .append($('<div></div>')
-                 .addClass('input hsv')
-                 .append(_createModeInput('h', 'H', '°'))
-                 .append(_createModeInput('s', 'S', '%'))
-                 .append(_createModeInput('v', 'B', '%')))
-                 .append($('<div></div>')
-                 .addClass('input rgb')
-                 .append(_createModeInput('r', 'R'))
-                 .append(_createModeInput('g', 'G'))
-                 .append(_createModeInput('b', 'B')))
-                 .append($('<div></div>')
-                 .addClass('input cmyk')
-                 .append(_createModeInput('c', 'C', '%'))
-                 .append(_createModeInput('m', 'M', '%'))
-                 .append(_createModeInput('y', 'Y', '%'))
-                 .append(_createModeInput(null, 'K', '%')));
-
-
-                 methods.mode.call(self, options.mode);
-
-                 var palette = $('<table></table>')
-                 .addClass('palette')
-                 .appendTo($this);
-
-                 for (var y = 0; y < COLORS.length; ++y) {
-                 var colorRow = COLORS[y];
-                 var tableRow = $('<tr></tr>');
-                 for (var x = 0; x < 20; ++x) {
-                 var color = x < colorRow.length ? IFRGBColor.parseCSSColor(colorRow[x]) : IFRGBColor.WHITE;
-                 $('<td></td>')
-                 .css('background', color.asCSSString())
-                 .css('border', '1px solid ' + color.asCSSString())
-                 .data('color', color)
-                 .on('click', function (evt) {
-                 $this.trigger('colorchange', $(evt.target).data('color'));
-                 })
-                 .appendTo(tableRow);
-                 }
-                 tableRow.appendTo(palette);
-                 }
-                 */
+                var builtinColors = $this.find('.builtin-colors');
+                for (var i = 0; i < COLORS.length; ++i) {
+                    var color = IFRGBColor.parseCSSColor(COLORS[i]);
+                    $('<div></div>')
+                        .css('background', color.toScreenCSS())
+                        .gPatternTarget({
+                            allowDrop: false,
+                            types: [IFColor]
+                        })
+                        .gPatternTarget('value', color)
+                        .on('click', function (evt) {
+                            methods.currentColor.call(self, methods._convertColor.call(self, $(evt.target).gPatternTarget('value')));
+                        })
+                        .appendTo(builtinColors);
+                }
             });
         },
 
@@ -744,10 +807,10 @@
             } else {
                 methods._setCurrentColor.call(this, currentColor);
 
-                methods._updateMap.call(this);
                 methods._updateComponents.call(this);
+                methods._updateMap.call(this);
                 methods._updateMapMarker.call(this);
-                methods._updateWheel.call(this);
+                methods._updateWheelColor.call(this);
 
                 return this;
             }
@@ -781,23 +844,19 @@
             if (!arguments.length) {
                 return data.scene;
             } else {
-                var oldScene = data.scene;
-                data.scene = value;
+                if (value !== data.scene) {
+                    var swatchPanel = $this.find('.swatches');
 
-                /*
-                 // Update swatches
-                 var swatchView = $this.find('[data-view="' + ViewType.Swatches + '"]');
-                 if (oldScene) {
-                 swatchView.gSwatchPanel('detach');
-                 }
+                    if (data.scene) {
+                        swatchPanel.gSwatchPanel('detach');
+                    }
 
-                 if (data.scene) {
-                 swatchView.gSwatchPanel('attach', data.scene.getSwatchCollection());
-                 }
+                    data.scene = value;
 
-                 $this.find('[data-activate-view="' + ViewType.Swatches + '"]')
-                 .css('display', data.scene ? '' : 'none');
-                 */
+                    if (data.scene) {
+                        swatchPanel.gSwatchPanel('attach', data.scene.getSwatchCollection());
+                    }
+                }
 
                 return this;
             }
@@ -860,6 +919,12 @@
             return colorModeInfo.colorFromComponents(components.components);
         },
 
+        _convertColor: function (color) {
+            var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
+            var components = colorModeInfo.componentsFromColor(color);
+            return colorModeInfo.colorFromComponents(components);
+        },
+
         _updateComponents: function (components) {
             var $this = $(this);
             var data = $this.data('gcolorpanel');
@@ -878,7 +943,6 @@
                     var checkInput = componentEl.find('input[type="radio"]');
                     var textInput = componentEl.find('input[type="text"]');
                     var rangeInput = componentEl.find('input[type="range"]');
-                    var val = Math.min(component.max, Math.max(component.min, colorModeInfo.valueToComponent(component.component, components[i]))).toFixed(0);
 
                     var stopsFunc = colorModeInfo.components[i].stops;
                     var stops = stopsFunc ? stopsFunc(components) : null;
@@ -900,9 +964,27 @@
                         rangeInput.css('background', '');
                     }
 
-                    checkInput.css('visibility', component.map ? '' : 'hidden');
-                    textInput.val(val);
-                    rangeInput.val(val);
+                    checkInput
+                        .css('visibility', component.map ? '' : 'hidden');
+
+                    textInput
+                        .css('text-align', component.text ? 'left' : '')
+                        /* !! */
+                        .parent()
+                        .css('width', component.text ? '100%' : '');
+
+                    rangeInput
+                        /* !! */
+                        .parent()
+                        .css('display', component.text ? 'none' : '');
+
+                    if (component.text) {
+                        textInput.val(component.componentsToValue(components));
+                    } else {
+                        var val = Math.min(component.max, Math.max(component.min, colorModeInfo.valueToComponent(component.component, components[i]))).toFixed(0);
+                        textInput.val(val);
+                        rangeInput.val(val);
+                    }
                 }
             }
         },
@@ -943,150 +1025,98 @@
                 });
         },
 
-        _updateWheel: function () {
+        _updateWheelColor: function () {
             var $this = $(this);
             var data = $this.data('gcolorpanel');
-
-            if (!data.currentColor) {
-                return;
-            }
-
             var wheel = $this.find('canvas.color-wheel')[0];
             var ctx = wheel.getContext('2d');
-            var highlight = $this.find('[data-wheel="highlight"]').val();
+            var cp = wheelSize / 2;
+            var radius = (wheelSize - 14) / 2;
 
+            ctx.clearRect(0, 0, wheel.width, wheel.height);
 
-            ctx.clearRect(0, 0, wheelSize, wheelSize);
+            iterateWheel.call(this, function (segmentIndex, highlightSegment, hsvColor, angleStart, angleEnd, mixes) {
+                ctx.beginPath();
+                ctx.moveTo(cp, cp);
+                ctx.arc(cp, cp, radius + (highlightSegment ? 5 : 0), angleStart, angleEnd);
+                ctx.lineTo(cp, cp);
+                ctx.fillStyle = IFColor.rgbToHtmlHex(IFColor.hsvToRGB(hsvColor));
+                ctx.fill();
 
-            var options = {
-                cx: wheelSize / 2,
-                cy: wheelSize / 2,
-                radius: (wheelSize - 14) / 2,
-                startColor: IFColor.rgbToHSV(data.currentColor.toScreen()),
-                segments: 24,
-                mixSteps: 10,
-                mix: 30 // either degree or 'tint'|'shade'|'tone'
-            };
+                if (mixes) {
+                    ctx.globalAlpha = 10 / wheelMixSegments * 0.1;
+                    var radiusPart = radius / wheelMixSegments;
 
-            var segments = options.segments;
-            var startColor = options.startColor;
-            var cx = options.cx;
-            var cy = options.cy;
-            var radius = options.radius;
-            var segmentAngleDeg = 360 / segments;
-            var segmentAngleRad = segmentAngleDeg * Math.PI / 180;
-            var hueStart = startColor[0];
-            var hueHighlights = null;
-
-            if (highlight) {
-                hueHighlights = [hueStart];
-
-                if ('triadic' === highlight) {
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 120));
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 120));
-                } else if ('tetradic' === highlight) {
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 90));
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 270));
-                } else if ('split_complements' === highlight) {
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 150));
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 150));
-                } else if ('analogous' === highlight) {
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 30));
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 30));
-                } else if ('complement' === highlight) {
-                    hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
-                }
-            }
-
-            for (var i = segments - 1; i >= 0; --i) {
-
-                var hue = IFMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
-                var arcRadius = radius;
-                var finalRadius = arcRadius;
-
-                if (hueHighlights && hueHighlights.indexOf(hue) >= 0) {
-                    finalRadius += 5;
-                    arcRadius += 5;
-                }
-
-                var arcAngleStart = i * segmentAngleRad - segmentAngleRad / 2 - Math.PI / 2;
-
-                var diffSegs = 5;
-                var radDiff = arcRadius / diffSegs;
-                var mixes = options.mix ? diffSegs : 1;
-                for (var k = 0; k < mixes; ++k) {
-
-                    var oppHue = IFMath.normalizeAngleDegrees(hueStart + 60 + i * segmentAngleDeg);
-                    var sat = startColor[1] - (k / diffSegs);
-                    var val = startColor[2];// - (k/diffSegs);
-                    var hsv = [hue, sat, val];
-                    var rgb = IFColor.hsvToRGB(hsv);
-
-                    var oppRGB = IFColor.hsvToRGB([oppHue, startColor[1], startColor[2]]);
-                    if (k > 0) {
-                        //rgb = IFColor.blendRGBColors(rgb, oppRGB, (k / diffSegs));
+                    switch (mixes) {
+                        case 'tint':
+                            ctx.fillStyle = 'white';
+                            break;
+                        case 'shade':
+                            ctx.fillStyle = 'black';
+                            break;
+                        case 'tone':
+                            ctx.fillStyle = 'rgb(128,128,128)';
+                            break;
+                        default:
+                            var blendAngle = parseInt(mixes);
+                            if (!isNaN(blendAngle)) {
+                                var blendHue = IFMath.normalizeAngleDegrees(hsvColor[0] + blendAngle);
+                                ctx.fillStyle = IFColor.rgbToHtmlHex(IFColor.hsvToRGB([blendHue, hsvColor[1], hsvColor[2]]));
+                            }
+                            break;
                     }
 
-
-                    var css = IFColor.rgbToHtmlHex(rgb);
-
-                    arcRadius -= k > 0 ? radDiff : 0;
-
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy);
-                    ctx.arc(cx, cy, arcRadius, arcAngleStart, arcAngleStart + segmentAngleRad);
-                    ctx.lineTo(cx, cy);
-                    ctx.fillStyle = css;
-                    ctx.fill();
-
-                    if (k === 0) {
-                        arcRadius -= 5;
+                    for (var i = 1; i <= wheelMixSegments; ++i) {
+                        ctx.beginPath();
+                        ctx.moveTo(cp, cp);
+                        ctx.arc(cp, cp, radius - (i * radiusPart), angleStart, angleEnd);
+                        ctx.lineTo(cp, cp);
+                        ctx.fill();
                     }
+
+                    ctx.globalAlpha = 1.0;
                 }
-            }
+            });
 
-            for (var i = segments - 1; i >= 0; --i) {
-                var hue = IFMath.normalizeAngleDegrees(hueStart + i * segmentAngleDeg);
-                var arcAngleStart = i * segmentAngleRad - segmentAngleRad / 2 - Math.PI / 2;
+            data.wheelMap = ctx.getImageData(0, 0, wheel.width, wheel.height);
+        },
 
-                if (hueHighlights && hueHighlights.indexOf(hue) >= 0) {
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy);
-                    ctx.arc(cx, cy, radius + 5, arcAngleStart, arcAngleStart + segmentAngleRad);
-                    ctx.lineTo(cx, cy);
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = 'black';
-                    ctx.stroke();
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy);
-                    ctx.arc(cx, cy, radius, arcAngleStart, arcAngleStart + segmentAngleRad);
-                    //ctx.lineTo(cx, cy);
-                    ctx.lineWidth = 0.5;
-                    ctx.strokeStyle = 'black';
-                    ctx.stroke();
-                }
-            }
+        _updateWheelBorder: function () {
+            var $this = $(this);
+            var wheel = $this.find('canvas.wheel-border')[0];
+            var ctx = wheel.getContext('2d');
+            var cp = wheelSize / 2;
+            var radius = (wheelSize - 14) / 2;
 
-            ctx.beginPath();
-            ctx.arc(options.cx, options.cy, 8, 8, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fillStyle = 'white';
+            ctx.clearRect(0, 0, wheel.width, wheel.height);
+
             ctx.strokeStyle = 'black';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 0.5;
+
+            iterateWheel.call(this, function (segmentIndex, highlightSegment, hsvColor, angleStart, angleEnd, mixes) {
+                ctx.beginPath();
+                ctx.moveTo(cp, cp);
+                ctx.arc(cp, cp, radius + (highlightSegment ? 5 : 0), angleStart, angleEnd);
+
+                if (highlightSegment) {
+                    ctx.lineTo(cp, cp);
+                    ctx.shadowBlur = 3;
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+                    ctx.lineWidth = 1;
+                } else {
+                    ctx.shadowBlur = 0;
+                    ctx.lineWidth = 0.5;
+                }
+
+                ctx.stroke();
+            });
+
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(cp, cp, 8, 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
             ctx.fill();
             ctx.stroke();
-
-            /*
-             ctx.beginPath();
-             ctx.arc(options.cx, options.cy, options.radius, options.radius, 0, Math.PI * 2);
-             ctx.closePath();
-
-             ctx.lineWidth = 1;
-             ctx.strokeStyle = 'black';
-             ctx.stroke();
-             */
         }
     };
 

@@ -73,7 +73,7 @@
         this._controls = controls;
 
         this._stylePanel = $('<div></div>')
-            .addClass('g-list styles')
+            .addClass('g-list styles g-style-list')
             .gStylePanel({
                 allowNameEdit: true
             })

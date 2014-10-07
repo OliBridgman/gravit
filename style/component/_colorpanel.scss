@@ -1,7 +1,5 @@
 @import '../variables';
 
-
-
 .g-color-panel {
   width: 510px;
   height: 390px;
@@ -124,7 +122,33 @@
 
       &.wheel {
         padding-left: 10px;
+        position: relative;
+
+        > .wheel-border {
+          position: absolute;
+          top: 0px;
+          left: 10px;
+        }
       }
+    }
+  }
+
+  .palette {
+    margin-top: 13px;
+    width: 241px;
+    height: 92px;
+    padding: 3px;
+    overflow: auto;
+
+    > .divider {
+      clear: both;
+    }
+
+    > .builtin-colors > div {
+      float: left;
+      width: 20px;
+      height: 20px;
+      margin: 1px;
     }
   }
 }

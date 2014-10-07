@@ -194,7 +194,8 @@
             }
         }
 
-        return null;
+        // Hack - try again by prepending dash
+        return IFRGBColor.parseCSSColor('#' + cssString);
     };
 
     IFRGBColor.equals = function (left, right) {
@@ -206,7 +207,10 @@
 
     /** @override */
     IFRGBColor.prototype.toHumanString = function () {
-        return 'rgb ' + this.serialize();
+        return 'rgb ' +
+            this._value[0] + ',' +
+            this._value[1] + ',' +
+            this._value[2];
     };
 
     /** @override */

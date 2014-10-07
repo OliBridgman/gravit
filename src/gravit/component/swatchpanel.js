@@ -96,12 +96,14 @@
                 nullSwatch: null,
                 // The name of the null swatch if any
                 nullName: null,
+                // The action to be triggered for the null swatch
+                nullAction: null,
                 // The placeholder text if there's no content
                 placeholder: null,
                 // The width of the swatch preview
-                previewWidth: 20,
+                previewWidth: 22,
                 // The height of the swatch preview
-                previewHeight: 20
+                previewHeight: 22
             }, options);
 
             return this.each(function () {
@@ -134,29 +136,7 @@
                         if (sourcePattern) {
                             var pattern = IFPattern.deserialize(sourcePattern);
                             if (pattern) {
-                                // Ask for a name
-                                var sourceName = pattern instanceof IFColor ? pattern.toHumanString() : 'pattern';
-                                vex.dialog.prompt({
-                                    // TODO : I18N
-                                    message: 'Enter a name for the new swatch:',
-                                    value: sourceName,
-                                    callback: function (name) {
-                                        if (!name) {
-                                            return;
-                                        }
-                                        if (name.trim() === '') {
-                                            name = sourceName;
-                                        }
-
-                                        // Add pattern as swatch
-                                        // TODO : I18N
-                                        IFEditor.tryRunTransaction(scene, function () {
-                                            var swatch = new IFSwatch();
-                                            swatch.setProperties(['name', 'pat'], [name, pattern]);
-                                            scene.getSwatchCollection().appendChild(swatch);
-                                        }, 'Add Swatch');
-                                    }
-                                });
+                                methods.createSwatch.call(self, pattern);
                             }
                         }
                     });
@@ -181,9 +161,9 @@
                                 .addClass('swatch-name')
                                 .text(options.nullName ? options.nullName : '')))
                         .on('click', function () {
-                            $this.data('gswatchpanel').selected = null;
-                            updateSelectedSwatch($this, null);
-                            $this.trigger('swatchchange', null);
+                            if (options.nullAction) {
+                                options.nullAction.call(self);
+                            }
                         })
                         .appendTo($this);
                 }
@@ -192,17 +172,50 @@
             });
         },
 
+        createSwatch: function (pattern) {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+            var scene = data.container.getScene();
+            var sourceName = pattern instanceof IFColor ? pattern.toHumanString() : 'Swatch';
+            vex.dialog.prompt({
+                // TODO : I18N
+                message: 'Enter a name for the new swatch:',
+                value: sourceName,
+                callback: function (name) {
+                    if (!name) {
+                        return;
+                    }
+                    if (name.trim() === '') {
+                        name = sourceName;
+                    }
+
+                    // Add pattern as swatch
+                    // TODO : I18N
+                    IFEditor.tryRunTransaction(scene, function () {
+                        var swatch = new IFSwatch();
+                        swatch.setProperties(['name', 'pat'], [name, pattern]);
+                        scene.getSwatchCollection().appendChild(swatch);
+                    }, 'Add Swatch');
+                }
+            });
+        },
+
         insertSwatch: function (swatch, index) {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
             var self = this;
+
+            var pattern = swatch.getProperty('pat');
+            if (!pattern) {
+                return;
+            }
 
             // don't add if type is not right
             var types = data.options.types;
             if (types && types.length > 0) {
                 var isCompatible = false;
                 for (var i = 0; i < types.length; ++i) {
-                    if (swatch instanceof types[i]) {
+                    if (pattern instanceof types[i]) {
                         isCompatible = true;
                         break;
                     }

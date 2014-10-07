@@ -49,7 +49,7 @@
         var h = (r === minRGB) ? 3 : ((b === minRGB) ? 1 : 5);
 
         return [
-            60 * (h - d / (maxRGB - minRGB)),
+            Math.min(360, Math.max(0, Math.round(60 * (h - d / (maxRGB - minRGB))))),
             (maxRGB - minRGB) / maxRGB,
             maxRGB
         ];
@@ -178,9 +178,19 @@
         throw new Error('Not Supported.');
     };
 
+    /**
+     * Converts and returns the underlying color as CSS Screen value
+     * @param {Boolean} [noCMS] if set to true, no cms will be used
+     * to convert to screen color
+     * @returns {String}
+     */
+    IFColor.prototype.toScreenCSS = function (noCMS) {
+        return IFColor.rgbToHtmlHex(this.toScreen(noCMS));
+    };
+
     /** @override */
     IFColor.prototype.asCSSBackground = function () {
-        var cssColor = IFColor.rgbToHtmlHex(this.toScreen());
+        var cssColor = this.toScreenCSS();
         return 'linear-gradient(' + cssColor + ', ' + cssColor + ')';
     };
 
