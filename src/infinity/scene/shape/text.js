@@ -151,7 +151,7 @@
                 }
             }
         } else if (property === 'fc') {
-            css['color'] = value !== null ? value.asCSSString() : '';
+            css['color'] = value !== null ? value.toScreenCSS() : '';
         } else if (property === '_tcs') {
             css['letter-spacing'] = value !== null ? value + 'px' : '';
         } else if (property === '_tws') {

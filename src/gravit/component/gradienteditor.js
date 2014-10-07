@@ -2,7 +2,7 @@
 
     function updateStop($this, $stop) {
         $stop.css('left', $stop.data('stop-position') + '%');
-        $stop.find('.stop-color').css('background', $stop.data('stop-color').asCSSString());
+        $stop.find('.stop-color').css('background', $stop.data('stop-color').toScreenCSS());
         $stop.gColorButton('value', $stop.data('stop-color'));
 
         updateGradient($this);
@@ -14,7 +14,7 @@
 
         for (var i = 0; i < stops.length; ++i) {
             var stop = stops[i];
-            cssStops.push('' + stop.color.asCSSString() + ' ' + stop.position + '%');
+            cssStops.push('' + stop.color.toScreenCSS() + ' ' + stop.position + '%');
         }
 
         $this.find('.gradient').css('background', 'linear-gradient(90deg, ' + cssStops.join(", ") + ')');

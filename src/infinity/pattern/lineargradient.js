@@ -28,7 +28,7 @@
 
     /** @override */
     IFLinearGradient.prototype.asCSSBackground = function () {
-        return 'linear-gradient(90deg, ' + this.asCSSString() + ')';
+        return 'linear-gradient(90deg, ' + this.toScreenCSS() + ')';
     };
 
     /** @override */

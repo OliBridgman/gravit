@@ -28,7 +28,7 @@
 
     /** @override */
     IFRadialGradient.prototype.asCSSBackground = function () {
-        return 'radial-gradient(ellipse at center, ' + this.asCSSString() + ')';
+        return 'radial-gradient(ellipse at center, ' + this.toScreenCSS() + ')';
     };
 
     /** @override */

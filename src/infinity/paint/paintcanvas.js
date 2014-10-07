@@ -667,7 +667,7 @@
         var stops = gradient.getStops();
 
         for (var i = 0; i < stops.length; ++i) {
-            result.addColorStop(stops[i].position / 100.0, stops[i].color.asCSSString());
+            result.addColorStop(stops[i].position / 100.0, stops[i].color.toScreenCSS());
         }
 
         return result;
