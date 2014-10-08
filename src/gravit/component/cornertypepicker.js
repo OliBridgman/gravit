@@ -87,7 +87,7 @@
     /**
      * Converts a button into a corner-type chooser
      */
-    $.fn.gCornerType = function (method) {
+    $.fn.gCornerTypePicker = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {

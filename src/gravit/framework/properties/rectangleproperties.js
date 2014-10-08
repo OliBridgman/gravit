@@ -62,7 +62,7 @@
                 return $('<button></butto>')
                     .attr('data-property', property)
                     .css('width', '32px')
-                    .gCornerType()
+                    .gCornerTypePicker()
                     .on('cornertypechange', function (evt, cornerType) {
                         self._assignProperty(property, cornerType);
                     });
@@ -235,7 +235,7 @@
                     }
 
                     uf.prop('disabled', allUniform);
-                    ct.gCornerType('value', rectangle.getProperty(corner + '_ct'));
+                    ct.gCornerTypePicker('value', rectangle.getProperty(corner + '_ct'));
                 }
             }
         }.bind(this);

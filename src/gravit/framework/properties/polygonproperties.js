@@ -86,7 +86,7 @@
             } else if (property === 'ict' || property === 'oct') {
                 return $('<button></button>')
                     .attr('data-property', property)
-                    .gCornerType()
+                    .gCornerTypePicker()
                     .on('cornertypechange', function (evt, cornerType) {
                         self._assignProperty(property, cornerType);
                     });
@@ -266,8 +266,8 @@
             IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
             IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('ia')), 2));
-        this._panel.find('button[data-property="oct"]').gCornerType('value', polygon.getProperty('oct'));
-        this._panel.find('button[data-property="ict"]').gCornerType('value', polygon.getProperty('ict'));
+        this._panel.find('button[data-property="oct"]').gCornerTypePicker('value', polygon.getProperty('oct'));
+        this._panel.find('button[data-property="ict"]').gCornerTypePicker('value', polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ocr')));
         this._panel.find('input[data-property="icr"]').val(

@@ -47,7 +47,7 @@
             } else if (property === 'fill-type') {
                 return $('<select></select>')
                     .attr('data-property', property)
-                    .gPatternTypes()
+                    .gPatternTypePicker()
                     .on('patternchange', function (evt, patternClass) {
                         self._assignProperty('_fpt', patternClass ? new patternClass() : null);
                     });
@@ -341,7 +341,7 @@
             .gColorButton('value', fillPattern)
             .gColorButton('scene', scene);
 
-        this._panel.find('[data-property="fill-type"]').gPatternTypes('value', !fillPattern ? null : fillPattern.constructor);
+        this._panel.find('[data-property="fill-type"]').gPatternTypePicker('value', !fillPattern ? null : fillPattern.constructor);
 
         this._panel.find('[data-property="_fop"]').val(IFUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 

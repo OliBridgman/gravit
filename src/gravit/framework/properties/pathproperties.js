@@ -101,7 +101,7 @@
             } else if (property === 'ctp') {
                 return $('<button></button>')
                     .attr('data-point-property', property)
-                    .gCornerType()
+                    .gCornerTypePicker()
                     .on('cornertypechange', function (evt, cornerType) {
                         self._assignPointProperty('tp', cornerType);
                     });
@@ -361,7 +361,7 @@
             this._panel.find('select[data-point-property="tp"]').val(isCorner ? '-' : apType);
             this._panel.find('button[data-point-property="ctp"]')
                 .prop('disabled', !isCorner)
-                .gCornerType('value', isCorner ? apType : IFPathBase.CornerType.Rounded);
+                .gCornerTypePicker('value', isCorner ? apType : IFPathBase.CornerType.Rounded);
 
             this._panel.find('input[data-point-property="cl"]')
                 .prop('disabled', !isCorner)
