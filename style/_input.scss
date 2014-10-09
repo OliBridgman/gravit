@@ -226,7 +226,7 @@ textArea {
       vertical-align: middle;
       padding: 4px 0px;
 
-      &:not(:last-child) {
+      &.grid-border {
         border-right: 1px solid $borderColor;
       }
 

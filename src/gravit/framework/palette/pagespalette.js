@@ -160,7 +160,7 @@
             .data('page', page)
             .attr('draggable', 'true')
             .append($('<div></div>')
-                .addClass('page-visibility grid-icon')
+                .addClass('page-visibility grid-icon grid-border')
                 // TODO : I18N
                 .attr('title', 'Toggle Page Visibility')
                 .on('click', function (evt) {
@@ -173,7 +173,7 @@
                 .append($('<span></span>')
                     .addClass('fa fa-fw')))
             .append($('<div></div>')
-                .addClass('page-lock grid-icon')
+                .addClass('page-lock grid-icon grid-border')
                 // TODO : I18N
                 .attr('title', 'Toggle Page Lock')
                 .on('click', function (evt) {
