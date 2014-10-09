@@ -310,7 +310,7 @@
     /** @override */
     IFStylable.Effects.prototype._handleChange = function (change, args) {
         var ownerStyle = this.getParent();
-        if (ownerStyle.hasMixin(IFStylable)) {
+        if (ownerStyle && ownerStyle.hasMixin(IFStylable)) {
             if ((change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) && args instanceof IFEffect) {
                 ownerStyle._stylePrepareGeometryChange();
             }

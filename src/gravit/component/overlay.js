@@ -5,7 +5,7 @@
         .addEventListener('keydown', function (evt) {
             if (openOverlayStack.length > 0) {
                 if (evt.keyCode === 27) {
-                    openOverlayStack[openOverlayStack.length - 1].gOverlay('close');
+                    $(openOverlayStack[openOverlayStack.length - 1]).gOverlay('close');
                 }
             }
         });
@@ -13,7 +13,7 @@
     document
         .addEventListener('mousedown', function (evt) {
             if (openOverlayStack.length > 0) {
-                var overlay = openOverlayStack[openOverlayStack.length - 1];
+                var overlay = $(openOverlayStack[openOverlayStack.length - 1]);
                 var container = overlay.parents('.g-overlay');
                 var containerWidth = container.outerWidth();
                 var containerHeight = container.outerHeight();
@@ -99,24 +99,27 @@
                 .css('left', x + 'px')
                 .css('top', y + 'px');
 
-            openOverlayStack.push($this);
+            openOverlayStack.push(this[0]);
 
             return this;
         },
 
         close: function () {
             var $this = $(this);
-            var data = $this.data('goverlay');
 
-            $this.trigger('close');
+            if (openOverlayStack.length && openOverlayStack[openOverlayStack.length - 1] === this[0]) {
+                var data = $this.data('goverlay');
 
-            if (data.releaseOnClose) {
-                $this.parents('.g-overlay').remove();
-            } else {
-                $this.parents('.g-overlay').detach();
+                $this.trigger('close');
+
+                if (data.releaseOnClose) {
+                    $this.parents('.g-overlay').remove();
+                } else {
+                    $this.parents('.g-overlay').detach();
+                }
+
+                openOverlayStack.pop();
             }
-
-            openOverlayStack.pop();
 
             return this;
         }

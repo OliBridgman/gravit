@@ -19,8 +19,6 @@
     /** @override */
     IFGridGuide.prototype.paint = function (transform, context) {
         if (this._scene.getProperty('gridActive') && context.configuration.gridVisible) {
-            var cl = IFRGBColor.parseCSSColor('rgba(0, 0, 0, 0.125)');
-
             // Calculate optical cell-size
             var scale  = transform.getScaleFactor();
             var szWScene = this._scene.getProperty('gridSizeX');
@@ -49,10 +47,10 @@
                 var tlGridScene = new IFPoint(startXScene, startYScene);
                 var tlGrid = transform.mapPoint(tlGridScene);
                 for (var x = tlGrid.getX(); x - rect.getX() < rect.getWidth(); x += szW) {
-                    context.canvas.fillRect(Math.round(x), rect.getY(), 1, rect.getHeight(), cl);
+                    context.canvas.fillRect(Math.round(x), rect.getY(), 1, rect.getHeight(), IFRGBColor.BLACK, 0.125);
                 }
                 for (var y = tlGrid.getY(); y - rect.getY() < rect.getHeight(); y += szH) {
-                    context.canvas.fillRect(rect.getX(), Math.round(y), rect.getWidth(), 1, cl);
+                    context.canvas.fillRect(rect.getX(), Math.round(y), rect.getWidth(), 1, IFRGBColor.BLACK, 0.125);
                 }
             }
         }

@@ -7,7 +7,7 @@
      */
     IFInnerShadowEffect = function () {
         IFEffect.call(this);
-        this._setDefaultProperties(IFInnerShadowEffect.GeometryProperties);
+        this._setDefaultProperties(IFInnerShadowEffect.GeometryProperties, IFInnerShadowEffect.VisualProperties);
     };
     IFNode.inherit('innerShadowEffect', IFInnerShadowEffect, IFEffect);
 
@@ -28,7 +28,9 @@
      */
     IFInnerShadowEffect.VisualProperties = {
         /** The color of the shadow */
-        cls: IFRGBColor.parseCSSColor('rgba(0,0,0,0.5)')
+        cls: IFRGBColor.BLACK,
+        /** The opacity of the shadow */
+        opc: 0.5
     };
 
     /** @override */
@@ -43,16 +45,18 @@
 
     /** @override */
     IFInnerShadowEffect.prototype.render = function (contents, output, background, scale) {
-        // Fill our whole output with the shadow color
-        output.fillCanvas(this.$cls);
+        if (this.$opc > 0) {
+            // Fill our whole output with the shadow color
+            output.fillCanvas(this.$cls);
 
-        var x = this.$x * scale;
-        var y = this.$y * scale;
-        var r = this.$r * scale;
+            var x = this.$x * scale;
+            var y = this.$y * scale;
+            var r = this.$r * scale;
 
-        output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
-        output.getBitmap().applyFilter(IFStackBlurFilter, r);
-        output.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+            output.getBitmap().applyFilter(IFStackBlurFilter, r);
+            output.drawCanvas(contents, 0, 0, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+        }
     };
 
     /** @override */

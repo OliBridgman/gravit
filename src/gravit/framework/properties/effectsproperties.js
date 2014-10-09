@@ -1,17 +1,218 @@
 (function (_) {
 
+    function createShadowSettings(effect, assign) {
+        var scene = effect.getScene();
+
+        var x = scene.pointToString(effect.getProperty('x'));
+        var y = scene.pointToString(effect.getProperty('y'));
+        var radius = scene.pointToString(effect.getProperty('r'));
+        var color = effect.getProperty('cls');
+
+        return $('<div></div>')
+            .addClass('g-form')
+            .append($('<div></div>')
+                .append($('<div></div>')
+                    .append($('<input>')
+                        .css('width', '3em')
+                        .val(x)
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number') {
+                                assign(['x'], [value]);
+                            }
+                        }))
+                    .append($('<label></label>')
+                        .text('X')))
+                .append($('<div></div>')
+                    .append($('<input>')
+                        .css('width', '3em')
+                        .val(y)
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number') {
+                                assign(['y'], [value]);
+                            }
+                        }))
+                    .append($('<label></label>')
+                        .text('Y')))
+                .append($('<div></div>')
+                    .append($('<input>')
+                        .css('width', '3em')
+                        .val(radius)
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number' && value >= 0) {
+                                assign(['r'], [value]);
+                            }
+                        }))
+                    .append($('<label></label>')
+                        .text('Blur')))
+                .append($('<div></div>')
+                    .append($('<button></button>')
+                        .gPatternPicker()
+                        .gPatternPicker('types', [IFColor])
+                        .gPatternPicker('scene', scene)
+                        .gPatternPicker('value', color)
+                        .on('patternchange', function (evt, color) {
+                            assign(['cls'], [color]);
+                        }))
+                    .append($('<label></label>')
+                        .text('Color'))));
+    };
+
     var EFFECTS = [
         {
             clazz: IFBlurEffect,
-            group: 'raster'
+            group: 'raster',
+            createSettings: function (effect, assign) {
+                var scene = effect.getScene();
+                var radius = scene.pointToString(effect.getProperty('r'));
+
+                return $('<div></div>')
+                    .append($('<input>')
+                        .attr('type', 'range')
+                        .attr('min', '0')
+                        .attr('max', '50')
+                        .attr('data-property', 'r')
+                        .val(radius)
+                        .on('input', function (evt) {
+                            var $this = $(this);
+                            $this.parents('.settings').find('[data-property="r"]:not([type="range"])')
+                                .val($this.val())
+                                .trigger('change');
+                        }))
+                    .append($('<input>')
+                        .css('width', '3em')
+                        .attr('data-property', 'r')
+                        .val(radius)
+                        .on('change', function (evt) {
+                            var value = scene.stringToPoint($(this).val());
+                            if (value !== null && typeof value === 'number' && value >= 0) {
+                                assign(['r'], [value]);
+                            }
+                        }));
+            }
         },
         {
             clazz: IFDropShadowEffect,
-            group: 'raster'
+            group: 'raster',
+            createSettings: createShadowSettings
         },
         {
             clazz: IFInnerShadowEffect,
-            group: 'raster'
+            group: 'raster',
+            createSettings: createShadowSettings
+        },
+        {
+            clazz: IFOverlayEffect,
+            group: 'filter',
+            openSettings: function (effect, assign, element) {
+                $.gPatternPicker.open({
+                    target: element,
+                    scene: effect.getScene(),
+                    types: [IFColor, IFGradient],
+                    value: effect.getProperty('pat'),
+                    changeCallback: function (evt, pattern) {
+                        assign(['pat'], [pattern]);
+                    }
+                });
+            }
+        },
+        {
+            clazz: IFColorGradingEffect,
+            group: 'filter',
+            createSettings: function (effect, assign) {
+                // TODO : Share ACV files, import, export, create custom w/ curve editor
+                return $('<div></div>')
+                    .append($('<input>')
+                        .attr('type', 'file')
+                        .css({
+                         'position': 'absolute',
+                         'left': '-10000px'
+                         })
+                        .on('change', function (evt) {
+                            var files = $(evt.target)[0].files;
+                            if (files && files.length) {
+                                var reader = new FileReader();
+                                reader.onload = function (event) {
+                                    try {
+                                        assign(['cp'], [IFColorGradingFilter.parseACV(event.target.result)]);
+                                    } catch (e) {
+                                    }
+                                }
+                                reader.readAsArrayBuffer(files[0]);
+                            }
+                        }))
+                    .append($('<select></select>')
+                        .append($('<option></option>')
+                            .attr('value', '')
+                            // TODO : I18N
+                            .text('None'))
+                        .append($('<optgroup label="Instagram"></optgroup>')
+                            .append($('<option></option>')
+                                .attr('value', '1977')
+                                .text('1977'))
+                            .append($('<option></option>')
+                                .attr('value', 'Brannan')
+                                .text('Brannan'))
+                            .append($('<option></option>')
+                                .attr('value', 'Gotham')
+                                .text('Gotham'))
+                            .append($('<option></option>')
+                                .attr('value', 'Hefe')
+                                .text('Hefe'))
+                            .append($('<option></option>')
+                                .attr('value', 'Lord Kelvin')
+                                .text('Lord Kelvin'))
+                            .append($('<option></option>')
+                                .attr('value', 'Nashville')
+                                .text('Nashville'))
+                            .append($('<option></option>')
+                                .attr('value', 'X-PRO II')
+                                .text('X-PRO II')))
+                        .on('change', function (evt) {
+                            var $target = $(evt.target);
+                            var val = $target.val();
+                            if (!val) {
+                                assign(['cp'], [null]);
+                            } else {
+                                $.ajax({
+                                    url: 'acv/' + val + '.acv',
+                                    async: false,
+                                    dataType: 'arraybuffer',
+                                    success: function (data) {
+                                        assign(['cp'], [IFColorGradingFilter.parseACV(data)]);
+                                    }
+                                });
+                            }
+                        }))
+                    .append($('<button></button>')
+                        // TODO : I18N
+                        .text('Load ACV...')
+                        .on('click', function (evt) {
+                            $(evt.target).parents('.settings').find('input[type="file"]').focus().trigger('click');
+                        }));
+            }
+        }
+    ];
+
+    // TODO : I18N
+    var STYLE_LAYERS = [
+        {
+            layer: null,
+            title: 'All'
+        },
+        {
+            layer: IFStylable.Layer.Background,
+            title: 'Background'
+        },
+        {
+            layer: IFStylable.Layer.Content,
+            title: 'Content'
+        },
+        {
+            layer: IFStylable.Layer.Foreground,
+            title: 'Foreground'
         }
     ];
 
@@ -126,7 +327,7 @@
             });
 
         panel
-            .css('width', '150px')
+            .css('width', '175px')
             .append(this._effectsPanel)
             .append($('<div></div>')
                 .css({
@@ -194,6 +395,7 @@
     /** @private */
     GEffectProperties.prototype._insertEffect = function (effect) {
         var insertBefore = null;
+
         if (effect.getNext()) {
             this._effectsPanel.find('.effect-block').each(function (index, element) {
                 var $element = $(element);
@@ -204,6 +406,8 @@
             });
         }
 
+        var effectInfo = getEffectInfo(effect);
+
         var block = $('<div></div>')
             .addClass('effect-block')
             .data('effect', effect)
@@ -212,9 +416,33 @@
                 .addClass('effect-settings grid-icon')
                 // TODO : I18N
                 .attr('title', 'Effect Settings')
+                .css('visibility', effectInfo.createSettings || effectInfo.openSettings ? '' : 'hidden')
                 .on('click', function (evt) {
                     evt.stopPropagation();
-                    alert('TOGGLE SETTINGS');
+
+                    var assign = function (properties, values) {
+                        IFEditor.tryRunTransaction(effect, function () {
+                            effect.setProperties(properties, values);
+                        }, 'Change Effect Properties');
+                    };
+
+                    if (effectInfo.openSettings) {
+                        effectInfo.openSettings(effect, assign, evt.target);
+                    } else {
+                        var settings = effectInfo.createSettings(effect, assign);
+                        if (settings) {
+                            settings
+                                .addClass('settings')
+                                .css({
+                                    'display': 'inline-block',
+                                    'padding': '5px'
+                                })
+                                .gOverlay({
+                                    releaseOnClose: true
+                                })
+                                .gOverlay('open', evt.target)
+                        }
+                    }
                 })
                 .append($('<span></span>')
                     .addClass('fa fa-cog fa-fw')))
@@ -223,9 +451,35 @@
                 .text(effect.getNodeNameTranslated()))
             .append($('<div></div>')
                 .addClass('effect-layer grid-icon')
+                // TODO : I18N
+                .attr('title', 'The layer this effects applies to')
                 .on('click', function (evt) {
                     evt.stopPropagation();
-                    alert('TOGGLE EFFECT LAYER');
+
+                    var panel = $('<div></div>')
+                        .gOverlay({
+                            releaseOnClose: true
+                        });
+
+                    var effectLayer = effect.getProperty('ly');
+
+                    for (var i = 0; i < STYLE_LAYERS.length; ++i) {
+                        $('<button></button>')
+                            .addClass('g-flat')
+                            .toggleClass('g-active', effectLayer === STYLE_LAYERS[i].layer)
+                            .css('display', 'block')
+                            .data('layer', STYLE_LAYERS[i].layer)
+                            .text(STYLE_LAYERS[i].title)
+                            .on('click', function (evt) {
+                                IFEditor.tryRunTransaction(effect, function () {
+                                    effect.setProperty('ly', $(evt.target).data('layer'));
+                                }, 'Change Effect Layer');
+                                panel.gOverlay('close');
+                            })
+                            .appendTo(panel);
+                    }
+
+                    panel.gOverlay('open', this);
                 }))
             .append($('<div></div>')
                 .addClass('effect-visibility grid-icon')
@@ -300,9 +554,7 @@
                                     IFEditor.tryRunTransaction(parent, function () {
                                         if (ifPlatform.modifiers.shiftKey) {
                                             // Clone effect
-                                            var insertPos = dragEffect.getScene().getEffectInsertPosition();
                                             var effectClone = dragEffect.clone();
-                                            effectClone.setProperties(['x', 'y', 'name'], [insertPos.getX(), insertPos.getY(), effectClone.getProperty('name') + '-copy']);
                                             parent.insertChild(effectClone, sourceIndex < targetIndex ? targetEffect.getNext() : targetEffect);
                                         } else {
                                             // Move effect
@@ -337,12 +589,13 @@
 
     /** @private */
     GEffectProperties.prototype._updateEffect = function (effect) {
-        var effectVisible = effect.getProperty('vs');
-        var effectLayer = effect.getProperty('ly');
 
         this._effectsPanel.find('.effect-block').each(function (index, element) {
             var $element = $(element);
             if ($element.data('effect') === effect) {
+                var effectVisible = effect.getProperty('vs');
+                var effectLayer = effect.getProperty('ly');
+
                 $element.toggleClass('g-selected', effect.hasFlag(IFNode.Flag.Selected));
 
                 $element.find('.effect-visibility')
@@ -354,7 +607,7 @@
 
                 // TODO
                 $element.find('.effect-layer')
-                    .text(effectLayer ? effectLayer : '-');
+                    .text(effectLayer ? effectLayer : 'A');
 
                 return false;
             }

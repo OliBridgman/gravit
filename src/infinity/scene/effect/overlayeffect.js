@@ -18,7 +18,7 @@
         /** The overlay pattern (IFPattern) */
         pat: IFRGBColor.BLACK,
         /** Overlay opacity */
-        opc: 1
+        opc: 0.5
     };
 
     /** @override */
@@ -30,7 +30,7 @@
     IFOverlayEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$pat && this.$opc > 0.0) {
             // Fill our whole canvas with the pattern clipped by the source
-            contents.fillCanvas(this.$pat, this.$opc, IFPaintCanvas.CompositeOperator.SourceIn);
+            contents.fillCanvas(this.$pat, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
         }
     };
 

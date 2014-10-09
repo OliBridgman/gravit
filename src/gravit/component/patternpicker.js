@@ -2,7 +2,9 @@
 
     var PATTERN_EDITOR = null;
 
-    function getPatternEditor() {
+    $.gPatternPicker = {};
+
+    $.gPatternPicker.getEditor = function () {
         if (!PATTERN_EDITOR) {
             PATTERN_EDITOR = $('<div></div>')
                 .css('margin', '5px')
@@ -10,7 +12,58 @@
                 .gOverlay();
         }
         return PATTERN_EDITOR;
-    }
+    };
+
+    $.gPatternPicker.open = function (options) {
+        options = $.extend({
+            target: null,
+            scene: null,
+            types: null,
+            value: null,
+            closeCallback: null,
+            changeCallback: null
+        }, options);
+
+        var patternEditor = $.gPatternPicker.getEditor();
+        patternEditor.gOverlay('close');
+        patternEditor.gPatternEditor('scene', options.scene);
+        patternEditor.gPatternEditor('types', options.types);
+        patternEditor.gPatternEditor('value', options.value);
+
+        var closeCallback = function () {
+            patternEditor.gPatternEditor('scene', null);
+
+
+            if (options.changeCallback) {
+                patternEditor.off('patternchange', options.changeCallback);
+            }
+
+            patternEditor.off('close', closeCallback);
+
+            if (options.closeCallback) {
+                options.closeCallback();
+            }
+        };
+        patternEditor.on('close', closeCallback);
+
+        if (options.changeCallback) {
+            patternEditor.on('patternchange', options.changeCallback);
+        }
+
+        patternEditor.gOverlay('open', options.target);
+    };
+
+    $.gPatternPicker.close = function () {
+        $.gPatternPicker.getEditor().gOverlay('close');
+    };
+
+    $.gPatternPicker.value = function (value) {
+        if (!arguments.length) {
+            return $.gPatternPicker.getEditor().gPatternEditor('value');
+        } else {
+            $.gPatternPicker.getEditor().gPatternEditor('value', value);
+        }
+    };
 
     var methods = {
         init: function (options) {
@@ -44,21 +97,16 @@
                         types: null,
                         manualChangeEvent: false,
                         closeListener: function (evt) {
-                            var data = $this.data('gpatternpicker');
-                            var patternEditor = getPatternEditor();
-                            patternEditor.gPatternEditor('scene', null);
-                            patternEditor.off('patternchange', data.changeListener);
-                            patternEditor.off('close', data.closeListener);
-                            data.opened = false;
+                            $this.data('gpatternpicker').opened = false;
                         },
                         changeListener: function (evt, pattern) {
                             var data = $this.data('gpatternpicker');
                             data.manualChangeEvent = true;
                             methods.value.call(self, pattern);
                             try {
-                            $this.trigger('patternchange', pattern);
+                                $this.trigger('patternchange', pattern);
                             } finally {
-                            data.manualChangeEvent = false;
+                                data.manualChangeEvent = false;
                             }
                         }
                     })
@@ -66,7 +114,7 @@
                     .on('patternchange', function (evt, pattern) {
                         var data = $this.data('gpatternpicker');
                         if (!data.manualChangeEvent) {
-                        methods.value.call(self, pattern);
+                            methods.value.call(self, pattern);
                         }
                     });
 
@@ -82,21 +130,23 @@
         open: function () {
             var $this = $(this);
             var data = $this.data('gpatternpicker');
-            var patternEditor = getPatternEditor();
-            patternEditor.gOverlay('close', this);
-            patternEditor.gPatternEditor('scene', data.scene);
-            patternEditor.gPatternEditor('types', data.types);
-            patternEditor.gPatternEditor('value', $this.gPatternTarget('value'));
-            patternEditor.on('patternchange', data.changeListener);
-            patternEditor.on('close', data.closeListener);
-            patternEditor.gOverlay('open', this);
+
+            $.gPatternPicker.open({
+                target: this,
+                scene: data.scene,
+                types: data.types,
+                value: $this.gPatternTarget('value'),
+                closeCallback: data.closeListener,
+                changeCallback: data.changeListener
+            });
+
             data.opened = true;
+
             return this;
         },
 
         close: function () {
-            var patternEditor = getPatternEditor();
-            patternEditor.gOverlay('close', this);
+            $.gPatternPicker.close();
             return this;
         },
 
@@ -138,8 +188,7 @@
                 }
 
                 if (data.opened && !data.manualChangeEvent) {
-                    var patternEditor = getPatternEditor();
-                    patternEditor.gPatternEditor('value', $this.gPatternTarget('value'));
+                    $.gPatternPicker.value($this.gPatternTarget('value'));
                 }
 
                 return this;
@@ -158,6 +207,6 @@
         } else {
             $.error('Method ' + method + ' does not exist on jQuery.myPlugin');
         }
-    }
+    };
 
 }(jQuery));

@@ -104,7 +104,7 @@
         var effects = this.getParent();
         if (effects && effects instanceof IFStylable.Effects) {
             var stylable = effects.getParent();
-            if (stylable.hasMixin(IFStylable)) {
+            if (stylable && stylable.hasMixin(IFStylable)) {
                 return stylable;
             }
         }

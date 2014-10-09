@@ -7,7 +7,7 @@
      */
     IFDropShadowEffect = function () {
         IFEffect.call(this);
-        this._setDefaultProperties(IFDropShadowEffect.GeometryProperties);
+        this._setDefaultProperties(IFDropShadowEffect.GeometryProperties, IFDropShadowEffect.VisualProperties);
     };
     IFNode.inherit('dropShadowEffect', IFDropShadowEffect, IFEffect);
 
@@ -28,7 +28,9 @@
      */
     IFDropShadowEffect.VisualProperties = {
         /** The color of the shadow */
-        cls: IFRGBColor.parseCSSColor('rgba(0,0,0,0.5)')
+        cls: IFRGBColor.BLACK,
+        /** The opacity of the shadow */
+        opc: 0.5
     };
 
     /** @override */
@@ -43,15 +45,17 @@
 
     /** @override */
     IFDropShadowEffect.prototype.render = function (contents, output, background, scale) {
-        // Fill our whole output with the shadow color
-        output.fillCanvas(this.$cls);
+        if (this.$opc > 0) {
+            // Fill our whole output with the shadow color
+            output.fillCanvas(this.$cls, this.$opc);
 
-        var x = this.$x * scale;
-        var y = this.$y * scale;
-        var r = this.$r * scale;
+            var x = this.$x * scale;
+            var y = this.$y * scale;
+            var r = this.$r * scale;
 
-        output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-        output.getBitmap().applyFilter(IFStackBlurFilter, r);
+            output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            output.getBitmap().applyFilter(IFStackBlurFilter, r);
+        }
     };
 
     /** @override */
