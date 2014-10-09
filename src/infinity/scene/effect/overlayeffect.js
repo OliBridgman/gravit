@@ -7,14 +7,14 @@
      */
     IFOverlayEffect = function () {
         IFEffect.call(this);
-        this._setDefaultProperties(IFOverlayEffect.GeometryProperties);
+        this._setDefaultProperties(IFOverlayEffect.VisualProperties);
     };
     IFNode.inherit('overlayEffect', IFOverlayEffect, IFEffect);
 
     /**
-     * Geometry properties of an overlay effect
+     * Visual properties of an overlay effect
      */
-    IFOverlayEffect.GeometryProperties = {
+    IFOverlayEffect.VisualProperties = {
         /** The overlay pattern (IFPattern) */
         pat: IFRGBColor.BLACK,
         /** Overlay opacity */
@@ -37,10 +37,25 @@
     /** @override */
     IFOverlayEffect.prototype._handleChange = function (change, args) {
         if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFOverlayEffect.GeometryProperties);
+            this.storeProperties(args, IFOverlayEffect.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'pat') {
+                        return IFPattern.serialize(value);
+                    }
+                }
+                return value;
+            });
         } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFOverlayEffect.GeometryProperties);
+            this.restoreProperties(args, IFOverlayEffect.VisualProperties, function (property, value) {
+                if (value) {
+                    if (property === 'pat') {
+                        return IFPattern.deserialize(value);
+                    }
+                }
+            });
         }
+
+        this._handleVisualChangeForProperties(change, args, IFOverlayEffect.VisualProperties);
 
         IFEffect.prototype._handleChange.call(this, change, args);
     };

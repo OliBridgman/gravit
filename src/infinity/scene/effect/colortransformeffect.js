@@ -41,6 +41,8 @@
             this.restoreProperties(args, IFColorTransformEffect.VisualProperties);
         }
 
+        this._handleVisualChangeForProperties(change, args, IFColorTransformEffect.VisualProperties);
+
         IFEffect.prototype._handleChange.call(this, change, args);
     };
 

@@ -77,6 +77,9 @@
             });
         }
 
+        this._handleGeometryChangeForProperties(change, args, IFDropShadowEffect.GeometryProperties);
+        this._handleVisualChangeForProperties(change, args, IFDropShadowEffect.VisualProperties);
+
         IFEffect.prototype._handleChange.call(this, change, args);
     };
 

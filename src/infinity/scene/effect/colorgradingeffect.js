@@ -39,6 +39,8 @@
             this.restoreProperties(args, IFColorGradingEffect.VisualProperties);
         }
 
+        this._handleVisualChangeForProperties(change, args, IFColorGradingEffect.VisualProperties);
+
         IFEffect.prototype._handleChange.call(this, change, args);
     };
 

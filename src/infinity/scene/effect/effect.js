@@ -21,18 +21,18 @@
          * Effect painted before the content and not
          * modifying the content itself
          */
-        PreEffect : 0,
+        PreEffect: 0,
 
         /**
          * Effect painted after the content and not
          * modifying the content itself
          */
-        PostEffect : 1,
+        PostEffect: 1,
 
         /**
          * Filter applied to contents
          */
-        Filter : 2
+        Filter: 2
     };
 
     /**
@@ -91,7 +91,82 @@
             this.restoreProperties(args, IFEffect.GeometryProperties);
         }
 
+        this._handleGeometryChangeForProperties(change, args, IFEffect.GeometryProperties);
+
         IFNode.prototype._handleChange.call(this, change, args);
+    };
+
+    /**
+     * Return the owner stylable if any
+     * @returns {IFStylable}
+     */
+    IFEffect.prototype.getOwnerStylable = function () {
+        var effects = this.getParent();
+        if (effects && effects instanceof IFStylable.Effects) {
+            var stylable = effects.getParent();
+            if (stylable.hasMixin(IFStylable)) {
+                return stylable;
+            }
+        }
+        return null;
+    };
+
+
+    /**
+     * This will fire a change event for geometry updates whenever a given
+     * geometry property has been changed. This is usually called from the
+     * _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * geometrical changes
+     * @return {Boolean} true if there was a property change that affected a
+     * change of the geometry
+     * @private
+     */
+    IFEffect.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
+            if (IFUtil.containsObjectKey(args.properties, properties)) {
+                var stylable = this.getOwnerStylable();
+                if (stylable) {
+                    switch (change) {
+                        case IFNode._Change.BeforePropertiesChange:
+                            stylable._stylePrepareGeometryChange();
+                            break;
+                        case IFNode._Change.AfterPropertiesChange:
+                            stylable._styleFinishGeometryChange();
+                            break;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    };
+
+    /**
+     * This will fire an invalidation event for visual updates whenever a given
+     * visual property has been changed. This is usually called from the
+     * _handleChange function.
+     * @param {Number} change
+     * @param {Object} args
+     * @param {Object} properties a hashmap of properties that satisfy for
+     * visual changes
+     * @return {Boolean} true if there was a property change that affected a
+     * visual change
+     * @private
+     */
+    IFEffect.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        if (change == IFNode._Change.AfterPropertiesChange) {
+            if (IFUtil.containsObjectKey(args.properties, properties)) {
+                var stylable = this.getOwnerStylable();
+                if (stylable) {
+                    stylable._styleRepaint();
+                }
+                return true;
+            }
+        }
+        return false;
     };
 
     /** @override */

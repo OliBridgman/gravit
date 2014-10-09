@@ -44,6 +44,8 @@
             this.restoreProperties(args, IFBlurEffect.GeometryProperties);
         }
 
+        this._handleGeometryChangeForProperties(change, args, IFBlurEffect.GeometryProperties);
+
         IFEffect.prototype._handleChange.call(this, change, args);
     };
 

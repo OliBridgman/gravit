@@ -39,6 +39,8 @@
             this.restoreProperties(args, IFColorMatrixEffect.VisualProperties);
         }
 
+        this._handleVisualChangeForProperties(change, args, IFColorMatrixEffect.VisualProperties);
+
         IFEffect.prototype._handleChange.call(this, change, args);
     };
 

@@ -136,11 +136,11 @@
                 })
                 .append($('<button></button>')
                     .append($('<span></span>')
-                        .addClass('fa fa-plus')
-                        .gMenuButton({
-                            menu: effectMenu,
-                            arrow: false
-                        })))
+                        .addClass('fa fa-plus'))
+                    .gMenuButton({
+                        menu: effectMenu,
+                        arrow: false
+                    }))
                 .append($('<button></button>')
                     .append($('<span></span>')
                         .addClass('fa fa-trash-o'))));
@@ -377,7 +377,7 @@
      * @private
      */
     GEffectProperties.prototype._afterNodeInsert = function (event) {
-        if (event.node instanceof IFEffect) {
+        if (event.node instanceof IFEffect && event.node.getOwnerStylable() === this._elements[0]) {
             this._insertEffect(event.node);
         }
     };
@@ -387,7 +387,7 @@
      * @private
      */
     GEffectProperties.prototype._beforeNodeRemove = function (event) {
-        if (event.node instanceof IFEffect) {
+        if (event.node instanceof IFEffect && event.node.getOwnerStylable() === this._elements[0]) {
             this._removeEffect(event.node);
         }
     };
@@ -397,7 +397,7 @@
      * @private
      */
     GEffectProperties.prototype._afterPropertiesChange = function (event) {
-        if (event.node instanceof IFEffect && event.node.getParent() === this._elements[0]) {
+        if (event.node instanceof IFEffect && event.node.getOwnerStylable() === this._elements[0]) {
             this._updateEffect(event.node);
         }
     };
