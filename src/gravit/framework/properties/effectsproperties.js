@@ -1,5 +1,26 @@
 (function (_) {
 
+    var EFFECTS = [
+        {
+            clazz: IFBlurEffect,
+            group: 'raster',
+            // TODO : I18N
+            title: 'Blur'
+        },
+        {
+            clazz: IFDropShadowEffect,
+            group: 'raster',
+            // TODO : I18N
+            title: 'Drop Shadow'
+        },
+        {
+            clazz: IFInnerShadowEffect,
+            group: 'raster',
+            // TODO : I18N
+            title: 'Inner Shadow'
+        }
+    ];
+
     /**
      * Effects properties panel
      * @class GEffectProperties
@@ -33,6 +54,36 @@
     GEffectProperties.prototype.init = function (panel) {
         this._panel = panel;
 
+        var _createEffectItem = function (effect) {
+            var item = new GMenuItem();
+            item.setCaption(effect.title);
+            item.addEventListener(GMenuItem.ActivateEvent, function () {
+                var editor = this._document.getEditor();
+                editor.beginTransaction();
+                try {
+                    for (var i = 0; i < this._elements.length; ++i) {
+                        this._elements[i].getEffects().appendChild(new effect.clazz());
+                    }
+                } finally {
+                    // TODO : I18N
+                    editor.commitTransaction('Add Effect');
+                }
+            }, this);
+            return item;
+        }.bind(this);
+
+        var effectMenu = new GMenu();
+        var lastGroup = null;
+        for (var i = 0; i < EFFECTS.length; ++i) {
+            var effect = EFFECTS[i];
+            if (lastGroup && effect.group !== lastGroup) {
+                effectMenu.addItem(new GMenuItem(GMenuItem.Type.Divider));
+                lastGroup = effect.group;
+            }
+
+            effectMenu.addItem(_createEffectItem(effect));
+        }
+
         panel
             .css('width', '150px')
             .append($('<div></div>')
@@ -52,7 +103,11 @@
                 })
                 .append($('<button></button>')
                     .append($('<span></span>')
-                        .addClass('fa fa-plus')))
+                        .addClass('fa fa-plus')
+                        .gMenuButton({
+                            menu: effectMenu,
+                            arrow: false
+                        })))
                 .append($('<button></button>')
                     .append($('<span></span>')
                         .addClass('fa fa-trash-o'))));
