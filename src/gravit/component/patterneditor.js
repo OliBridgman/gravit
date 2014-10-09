@@ -25,7 +25,7 @@
                     .append($('<div></div>')
                         .gColorEditor()
                         .on('colorchange', function (evt, color) {
-                            methods._updateFromColor.call(self);
+                            methods._colorChanged.call(self);
                         }))
                     .append($('<div></div>')
                         .addClass('pattern-editor')
@@ -60,7 +60,7 @@
                                 var pat = swatch.getProperty('pat');
                                 if (pat instanceof IFColor) {
                                     $this.find('.g-color-editor').gColorEditor('currentColor', pat);
-                                    methods._updateFromColor.call(self);
+                                    methods._colorChanged.call(self);
                                 } else if (pat) {
                                     methods.value.call(self, pat);
                                     methods._firePatternChange.call(self);
@@ -92,7 +92,7 @@
                         .gPatternTarget('value', color)
                         .on('click', function (evt) {
                             $this.find('.g-color-editor').gColorEditor('currentColor', $(evt.target).gPatternTarget('value'));
-                            methods._updateFromColor.call(self);
+                            methods._colorChanged.call(self);
                         })
                         .appendTo(builtinColors);
                 }
@@ -171,20 +171,24 @@
             }
         },
 
-        _updateFromColor: function () {
+        _colorChanged: function () {
             var $this = $(this);
             var data = $this.data('gpatterneditor');
             var activeColor = $this.find('.g-color-editor').gColorEditor('value');
 
-            var patternChanged = false;
-            if (data.value instanceof IFColor) {
-                patternChanged = true;
+            if (!data.value || data.value instanceof IFBackground) {
+                var typePicker = $this.find('.pattern-type');
+                var types = typePicker.gPatternTypePicker('types');
+                var types = methods.types.call(this);
+                if (!types || !types.length || (types && types.indexOf(IFColor) >= 0)) {
+                    data.value = activeColor;
+                    typePicker.gPatternTypePicker('value', IFColor);
+                    methods._firePatternChange.call(this, false);
+                }
+            } else if (data.value instanceof IFColor) {
+                methods._firePatternChange.call(this, true);
             } else if (data.value instanceof IFGradient) {
                 // TODO : Assign selected stop color
-            }
-
-            if (patternChanged) {
-                methods._firePatternChange.call(this, true);
             }
         },
 
