@@ -307,6 +307,20 @@
         IFNode.Container.prototype.insertChild.call(this, child, reference);
     };
 
+    /** @override */
+    IFStylable.Effects.prototype._handleChange = function (change, args) {
+        var ownerStyle = this.getParent();
+        if (ownerStyle.hasMixin(IFStylable)) {
+            if ((change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) && args instanceof IFEffect) {
+                ownerStyle._stylePrepareGeometryChange();
+            }
+            if ((change == IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) && args instanceof IFEffect) {
+                ownerStyle._styleFinishGeometryChange();
+            }
+        }
+        IFNode.prototype._handleChange.call(this, change, args);
+    };
+
     // --------------------------------------------------------------------------------------------
     // IFStylable Mixin
     // --------------------------------------------------------------------------------------------
