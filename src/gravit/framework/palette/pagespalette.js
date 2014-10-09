@@ -78,7 +78,7 @@
         GPalette.prototype.init.call(this, htmlElement, controls);
 
         this._pagesPanel = $('<div></div>')
-            .addClass('g-list pages')
+            .addClass('g-grid pages')
             .appendTo(htmlElement);
 
         this._pageAddControl =
@@ -160,7 +160,7 @@
             .data('page', page)
             .attr('draggable', 'true')
             .append($('<div></div>')
-                .addClass('page-visibility')
+                .addClass('page-visibility grid-icon')
                 // TODO : I18N
                 .attr('title', 'Toggle Page Visibility')
                 .on('click', function (evt) {
@@ -173,7 +173,7 @@
                 .append($('<span></span>')
                     .addClass('fa fa-fw')))
             .append($('<div></div>')
-                .addClass('page-lock')
+                .addClass('page-lock grid-icon')
                 // TODO : I18N
                 .attr('title', 'Toggle Page Lock')
                 .on('click', function (evt) {
@@ -186,7 +186,7 @@
                 .append($('<span></span>')
                     .addClass('fa fa-fw')))
             .append($('<div></div>')
-                .addClass('page-name')
+                .addClass('page-name grid-main')
                 .gAutoEdit({
                 })
                 .on('submitvalue', function (evt, value) {
@@ -223,15 +223,15 @@
                 $this.closest('.pages').find('.page-block').each(function (index, element) {
                     $(element)
                         .append($('<div></div>')
-                            .addClass('drag-overlay')
+                            .addClass('grid-drag-overlay')
                             .on('dragenter', function (evt) {
                                 if (canDropPage(this.parentNode)) {
-                                    $(this).parent().addClass('drop');
+                                    $(this).parent().addClass('g-drop');
                                 }
                             })
                             .on('dragleave', function (evt) {
                                 if (canDropPage(this.parentNode)) {
-                                    $(this).parent().removeClass('drop');
+                                    $(this).parent().removeClass('g-drop');
                                 }
                             })
                             .on('dragover', function (evt) {
@@ -246,10 +246,10 @@
                                 var $this = $(this);
                                 var $parent = $(this.parentNode);
 
-                                $parent.removeClass('drop');
+                                $parent.removeClass('g-drop');
 
                                 // Remove drag overlays
-                                $parent.closest('.pages').find('.drag-overlay').remove();
+                                $parent.closest('.pages').find('.grid-drag-overlay').remove();
 
                                 var targetPage = $parent.data('page');
                                 if (dragPage && dragPage.getParent() === targetPage.getParent()) {
@@ -282,7 +282,7 @@
                 event.stopPropagation();
 
                 // Remove drag overlays
-                $this.closest('.pages').find('.drag-overlay').remove();
+                $this.closest('.pages').find('.grid-drag-overlay').remove();
 
                 dragPage = null;
             });
@@ -308,14 +308,14 @@
                 $element.toggleClass('g-selected', page.hasFlag(IFNode.Flag.Selected));
 
                 $element.find('.page-visibility')
-                    .toggleClass('page-default', pageVisible)
+                    .toggleClass('grid-icon-default', pageVisible)
                     /*!!*/
                     .find('> span')
                     .toggleClass('fa-eye', pageVisible)
                     .toggleClass('fa-eye-slash', !pageVisible);
 
                 $element.find('.page-lock')
-                    .toggleClass('page-default', !pageLocked)
+                    .toggleClass('grid-icon-default', !pageLocked)
                     /*!!*/
                     .find('> span')
                     .toggleClass('fa-lock', pageLocked)

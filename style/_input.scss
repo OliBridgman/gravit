@@ -1,6 +1,6 @@
 @import 'variables';
 
-button, .g-button, input, textArea, select, .g-input, .g-list {
+button, .g-button, input, textArea, select, .g-input, .g-list, .g-grid {
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -68,7 +68,7 @@ button, input[type=button], input[type=submit], .g-button {
   }
 }
 
-select, input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textArea, .g-input, .g-list {
+select, input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textArea, .g-input, .g-list, .g-grid {
   border-radius: 0px;
   box-shadow: inset 1px 1px 1px $darkShadowColor;
   background: $inputColor;
@@ -177,12 +177,85 @@ textArea {
   height: auto;
 }
 
-.g-list {
+.g-list, .g-grid {
   height: auto;
   padding: 0px;
   overflow-y: auto;
 
   &:not(:last-child) {
     margin-right: 0px;
+  }
+}
+
+.g-grid {
+  > div {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid $borderColor;
+
+    &, * {
+      line-height: 1 !important;
+    }
+
+    &.g-active {
+      background: $activeColor;
+
+      &, * {
+        color: $activeTextColor;
+      }
+    }
+
+    &.g-selected {
+      background: $selectedColor;
+
+      &, * {
+        color: $selectedTextColor;
+      }
+    }
+
+    &.g-drop {
+      background: $dragColor;
+
+      &, * {
+        color: $dragTextColor;
+      }
+    }
+
+    > div:not(.grid-drag-overlay) {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 4px 0px;
+
+      &:not(:last-child) {
+        border-right: 1px solid $borderColor;
+      }
+
+      &.grid-icon {
+        min-width: 21px;
+        max-width: 21px;
+        text-align: center;
+
+        &.grid-icon-default * {
+          opacity: 0.5;
+        }
+
+        &, * {
+          cursor: pointer;
+        }
+      }
+
+      &.grid-main {
+        width: 100%;
+        padding-left: 3px;
+      }
+    }
+
+    > .grid-drag-overlay {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+    }
   }
 }
