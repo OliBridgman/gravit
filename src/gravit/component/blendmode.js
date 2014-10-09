@@ -98,7 +98,6 @@
                         target = lastElement;
                     }
 
-                    // Append corner types
                     for (var i = 0; i < blendModes.length; ++i) {
                         target.append($('<option></option>')
                             .attr('value', blendModes[i].type)

@@ -38,18 +38,16 @@
             if (property === '_fpt' || property === '_bpt') {
                 return $('<div></div>')
                     .attr('data-property', property)
-                    .gColorButton({
-                        allowClear: true
-                    })
-                    .on('colorchange', function (evt, color) {
-                        self._assignProperty(property, color);
+                    .gPatternPicker()
+                    .on('patternchange', function (evt, pattern) {
+                        self._assignProperty(property, pattern);
                     });
             } else if (property === 'fill-type') {
                 return $('<select></select>')
                     .attr('data-property', property)
                     .gPatternTypePicker()
-                    .on('patternchange', function (evt, patternClass) {
-                        self._assignProperty('_fpt', patternClass ? new patternClass() : null);
+                    .on('patterntypechange', function (evt, patternClass) {
+                        self._assignProperty('_fpt', IFPattern.smartCreate(patternClass, self._panel.find('[data-property="_fpt"]').gPatternPicker('value')));
                     });
             } else if (property === '_fop') {
                 return $('<input>')
@@ -338,16 +336,16 @@
         var fillPattern = stylable.getProperty('_fpt');
 
         this._panel.find('[data-property="_fpt"]')
-            .gColorButton('value', fillPattern)
-            .gColorButton('scene', scene);
+            .gPatternPicker('value', fillPattern)
+            .gPatternPicker('scene', scene);
 
         this._panel.find('[data-property="fill-type"]').gPatternTypePicker('value', !fillPattern ? null : fillPattern.constructor);
 
         this._panel.find('[data-property="_fop"]').val(IFUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 
         this._panel.find('[data-property="_bpt"]')
-            .gColorButton('value', stylable.getProperty('_bpt'))
-            .gColorButton('scene', scene);
+            .gPatternPicker('value', stylable.getProperty('_bpt'))
+            .gPatternPicker('scene', scene);
 
         this._panel.find('[data-property="_bw"]').val(IFUtil.formatNumber(stylable.getProperty('_bw')));
 

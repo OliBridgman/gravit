@@ -24,6 +24,30 @@
 
     IFPattern._idClassMap = {};
 
+    IFPattern.smartCreate = function (patternClass, templatePattern) {
+        if (!patternClass) {
+            return null;
+        } else if (patternClass === IFBackground) {
+            return new IFBackground();
+        } else if (patternClass === IFGradient) {
+            var stops = [{color: IFRGBColor.WHITE, position: 0}, {color: IFRGBColor.BLACK, position: 100}];
+
+            if (templatePattern instanceof IFColor) {
+                stops[0].color = templatePattern;
+            }
+
+            return new IFLinearGradient(stops);
+        } else if (patternClass === IFColor) {
+            if (templatePattern instanceof IFGradient) {
+                return templatePattern.getStops()[0].color;
+            } else {
+                return new IFRGBColor();
+            }
+        } else {
+            throw new Error('Unknown pattern class.');
+        }
+    };
+
     /**
      * Convert a pattern into a CSS-Compatible background string
      * @param {IFPattern} pattern

@@ -127,17 +127,7 @@
                 /** Fill pattern (IFPattern|'bck'|null) */
                 _fpt: null,
                 /** Fill opacity */
-                _fop: 1,
-                /** Horizontal Fill translation (0..1) % */
-                _ftx: 0,
-                /** Vertical Fill translation (0..1) % */
-                _fty: 0,
-                /** Horizontal Fill Scalation (0..1) % */
-                _fsx: 1,
-                /** Vertical Fill Scalation (0..1) % */
-                _fsy: 1,
-                /** Fill Rotation in radians */
-                _frt: 0
+                _fop: 1
             },
             storeFilter: function (property, value) {
                 if (value) {
@@ -159,17 +149,7 @@
         'B': {
             visualProperties: {
                 /** Border opacity */
-                _bop: 1,
-                /** Horizontal Border translation (0..1) % */
-                _btx: 0,
-                /** Vertical Border translation (0..1) % */
-                _bty: 0,
-                /** Horizontal Border Scalation (0..1) % */
-                _bsx: 1,
-                /** Vertical Border Scalation (0..1) % */
-                _bsy: 1,
-                /** Border Rotation in radians */
-                _brt: 0
+                _bop: 1
             },
             geometryProperties: {
                 /** Border pattern (IFPattern|'bck'|null) */

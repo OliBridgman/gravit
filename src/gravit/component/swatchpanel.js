@@ -78,9 +78,6 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // Types of swatches to be shown, if null or empty,
-                // all types will be shown
-                types: null,
                 // Whether to allow dragging of swatches
                 allowDrag: true,
                 // Whether to allow dropping of swatches
@@ -111,6 +108,7 @@
                 var $this = $(this)
                     .addClass('g-swatch-panel')
                     .data('gswatchpanel', {
+                        types: null,
                         selected: null,
                         options: options
                     })
@@ -211,7 +209,7 @@
             }
 
             // don't add if type is not right
-            var types = data.options.types;
+            var types = data.types;
             if (types && types.length > 0) {
                 var isCompatible = false;
                 for (var i = 0; i < types.length; ++i) {
@@ -452,11 +450,7 @@
             data.container = container;
 
             if (container) {
-                for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFSwatch) {
-                        methods.insertSwatch.call(this, child);
-                    }
-                }
+                methods._updateFromContainer.call(this);
 
                 // Subscribe to container
                 var scene = container.getScene();
@@ -497,7 +491,21 @@
             return this;
         },
 
-        // Assigns or returns the selected swatch
+        types: function (types) {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+
+            if (!arguments.length) {
+                return data.types;
+            } else {
+                data.types = types;
+                methods.clear.call(this);
+                methods._updateFromContainer.call(this);
+
+                return this;
+            }
+        },
+
         value: function (value) {
             var $this = $(this);
             if (!arguments.length) {
@@ -506,6 +514,19 @@
                 $this.data('gswatchpanel').selected = value;
                 updateSelectedSwatch($this, value);
                 return this;
+            }
+        },
+
+        _updateFromContainer: function () {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+
+            if (data.container) {
+                for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFSwatch) {
+                        methods.insertSwatch.call(this, child);
+                    }
+                }
             }
         }
     };

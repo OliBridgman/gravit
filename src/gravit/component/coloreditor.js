@@ -1,15 +1,9 @@
 (function ($) {
-
-    var COLORS = [
-        '#000000', '#1F1F1F', '#3D3D3D', '#5C5C5C', '#7A7A7A', '#999999', '#B8B8B8', '#D6D6D6', '#F5F5F5', '#FFFFFF',
-        '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6',
-        '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50', '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d'
-    ];
-
     var wheelSize = 250;
     var wheelSegments = 24;
     var wheelMixSegments = 5;
-    var mapSize = 250;
+    var mapWidth = 220;
+    var mapHeight = 150;
 
     var COLOR_MODES = {
         'rgb': {
@@ -321,13 +315,15 @@
         var $this = $(this);
         var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
         var components = methods._getComponents.call(this);
-        var mappedComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapSize, y / mapSize, components.components);
+        var mappedComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapWidth, y / mapHeight, components.components);
         var mappedColor = colorModeInfo.colorFromComponents(mappedComponents);
 
         methods._setCurrentColor.call(this, mappedColor);
         methods._updateComponents.call(this, mappedComponents);
         methods._updateMapMarker.call(this);
         methods._updateWheelColor.call(this);
+
+        $this.trigger('colorchange', mappedColor);
     };
 
     /**
@@ -335,7 +331,7 @@
      */
     function iterateWheel(iterator) {
         var $this = $(this);
-        var data = $this.data('gcolorpanel');
+        var data = $this.data('gcoloreditor');
 
         if (!data.currentColor) {
             return;
@@ -447,6 +443,7 @@
                                         var color = colorModeInfo.components[index].valueToColor($target.val());
                                         if (color) {
                                             methods.currentColor.call(self, color);
+                                            $this.trigger('colorchange', color);
                                         }
                                     } else {
                                         var components = methods._getComponents.call(self);
@@ -456,6 +453,8 @@
                                         methods._updateComponents.call(self, components.components);
                                         methods._updateMapMarker.call(self);
                                         methods._updateWheelColor.call(self);
+
+                                        $this.trigger('colorchange', color);
 
                                         if (!colorModeInfo.components[index].map || componentEl.find('input[type="radio"]').is(':checked')) {
                                             methods._updateMap.call(self);
@@ -467,11 +466,11 @@
                 };
 
                 var $this = $(this)
-                    .addClass('g-color-panel')
-                    .data('gcolorpanel', {
+                    .addClass('g-color-editor')
+                    .data('gcoloreditor', {
                         scene: null,
                         previousColor: null,
-                        color: null,
+                        currentColor: null,
                         options: options
                     });
 
@@ -485,130 +484,8 @@
                         .on('change', function (evt) {
                             var color = IFRGBColor.parseCSSColor($(evt.target).val());
                             methods.currentColor.call(self, color);
+                            $this.trigger('colorchange', color);
                         }.bind(this)))
-                    .append($('<div></div>')
-                        .addClass('toolbar')
-                        .append($('<div></div>')
-                            .addClass('section-start')
-                            .append(_createColorModeButton('rgb', 'RGB'))
-                            .append(_createColorModeButton('hsv', 'HSB'))
-                            .append(_createColorModeButton('cmyk', 'CMYK'))
-                            .append($('<button></button>')
-                                // TODO : I18N
-                                .attr('title', 'System')
-                                .append($('<span></span>')
-                                    .addClass('fa fa-cog'))
-                                .on('click', function () {
-                                    $this.find('input[type="color"]').trigger('click');
-                                })))
-                        .append($('<div></div>')
-                            .addClass('section-center')
-                            .append($('<div></div>')
-                                .addClass('color-preview')
-                                .append($('<div></div>')
-                                    .addClass('previous-color')
-                                    .gPatternTarget({
-                                        types: [IFColor]
-                                    })
-                                    .on('patternchange', function (evt, color) {
-                                        if (color) {
-                                            methods.previousColor.call(self, color);
-                                        }
-                                    }))
-                                .append($('<div></div>')
-                                    .addClass('current-color')
-                                    .gPatternTarget({
-                                        types: [IFColor]
-                                    })
-                                    .on('patternchange', function (evt, color) {
-                                        if (color) {
-                                            methods.color.call(self, color);
-                                        }
-                                    })
-                                    .on('click', function () {
-                                        $this.find('input[type="color"]').trigger('click');
-                                    }))))
-                        .append($('<div></div>')
-                            .addClass('section-end')
-                            .append($('<select></select>')
-                                .attr('data-wheel', 'mix')
-                                .append($('<option></option>')
-                                    .attr('value', '')
-                                    // TODO : I18N
-                                    .text('No Mixes'))
-                                .append($('<optgroup label="Mix"></optgroup>')
-                                    .append($('<option></option>')
-                                        .attr('value', 'tint')
-                                        // TODO : I18N
-                                        .text('Tints'))
-                                    .append($('<option></option>')
-                                        .attr('value', 'shade')
-                                        // TODO : I18N
-                                        .text('Shades'))
-                                    .append($('<option></option>')
-                                        .attr('value', 'tone')
-                                        // TODO : I18N
-                                        .text('Tones')))
-                                .append($('<optgroup label="Blend Right"></optgroup>')
-                                    .append($('<option></option>')
-                                        .attr('value', '60')
-                                        // TODO : I18N
-                                        .text('1 Quarter'))
-                                    .append($('<option></option>')
-                                        .attr('value', '120')
-                                        // TODO : I18N
-                                        .text('2 Quarter'))
-                                    .append($('<option></option>')
-                                        .attr('value', '240')
-                                        // TODO : I18N
-                                        .text('3 Quarter')))
-                                .append($('<optgroup label="Blend Left"></optgroup>')
-                                    .append($('<option></option>')
-                                        .attr('value', '-60')
-                                        // TODO : I18N
-                                        .text('1 Quarter'))
-                                    .append($('<option></option>')
-                                        .attr('value', '-120')
-                                        // TODO : I18N
-                                        .text('2 Quarter'))
-                                    .append($('<option></option>')
-                                        .attr('value', '-240')
-                                        // TODO : I18N
-                                        .text('3 Quarter')))
-                                .on('change', function () {
-                                    methods._updateWheelColor.call(self);
-                                })
-                                .val('tint'))
-                            .append($('<select></select>')
-                                .attr('data-wheel', 'highlight')
-                                .append($('<option></option>')
-                                    .attr('value', 'start')
-                                    // TODO : I18N
-                                    .text('Color Wheel'))
-                                .append($('<option></option>')
-                                    .attr('value', 'triadic')
-                                    // TODO : I18N
-                                    .text('Triads'))
-                                .append($('<option></option>')
-                                    .attr('value', 'tetradic')
-                                    // TODO : I18N
-                                    .text('Tetrads'))
-                                .append($('<option></option>')
-                                    .attr('value', 'split_complements')
-                                    // TODO : I18N
-                                    .text('Split'))
-                                .append($('<option></option>')
-                                    .attr('value', 'complement')
-                                    // TODO : I18N
-                                    .text('Complement'))
-                                .append($('<option></option>')
-                                    .attr('value', 'analogous')
-                                    // TODO : I18N
-                                    .text('Analogous'))
-                                .on('change', function () {
-                                    methods._updateWheelColor.call(self);
-                                    methods._updateWheelBorder.call(self);
-                                }))))
                     .append($('<div></div>')
                         .addClass('color-container')
                         .append($('<div></div>')
@@ -618,8 +495,8 @@
                                 .append($('<canvas></canvas>')
                                     .addClass('map')
                                     .attr({
-                                        width: mapSize.toString() + 'px',
-                                        height: mapSize.toString() + 'px',
+                                        width: mapWidth.toString() + 'px',
+                                        height: mapHeight.toString() + 'px',
                                     })
                                     .on('mousedown', function (evt) {
                                         mapMouseHandler(evt);
@@ -636,6 +513,42 @@
                                 .append($('<div></div>')
                                     .addClass('marker')))
                             .append($('<div></div>')
+                                .addClass('toolbar')
+                                .append(_createColorModeButton('rgb', 'RGB'))
+                                .append(_createColorModeButton('hsv', 'HSB'))
+                                .append(_createColorModeButton('cmyk', 'CMYK'))
+                                .append($('<button></button>')
+                                    // TODO : I18N
+                                    .attr('title', 'System')
+                                    .append($('<span></span>')
+                                        .addClass('fa fa-cog'))
+                                    .on('click', function () {
+                                        $this.find('input[type="color"]').trigger('click');
+                                    }))
+                                .append($('<div></div>')
+                                    .addClass('color-preview')
+                                    .append($('<div></div>')
+                                        .addClass('previous-color')
+                                        .gPatternTarget()
+                                        .gPatternTarget('types', [IFColor])
+                                        .on('patternchange', function (evt, color) {
+                                            if (color) {
+                                                methods.previousColor.call(self, color);
+                                            }
+                                        }))
+                                    .append($('<div></div>')
+                                        .addClass('current-color')
+                                        .gPatternTarget()
+                                        .gPatternTarget('types', [IFColor])
+                                        .on('patternchange', function (evt, color) {
+                                            if (color) {
+                                                methods.value.call(self, color);
+                                            }
+                                        })
+                                        .on('click', function () {
+                                            $this.find('input[type="color"]').trigger('click');
+                                        }))))
+                            .append($('<div></div>')
                                 .addClass('color-components')
                                 .append(_createColorComponent(0))
                                 .append(_createColorComponent(1))
@@ -643,88 +556,128 @@
                                 .append(_createColorComponent(3))))
                         .append($('<div></div>')
                             .addClass('wheel')
-                            .append($('<canvas></canvas>')
-                                .addClass('color-wheel')
-                                .attr({
-                                    width: wheelSize.toString() + 'px',
-                                    height: wheelSize.toString() + 'px',
-                                }))
-                            .append($('<canvas></canvas>')
-                                .addClass('wheel-border')
-                                .attr({
-                                    width: wheelSize.toString() + 'px',
-                                    height: wheelSize.toString() + 'px',
-                                })
-                                .on('click', function (evt) {
-                                    var data = $this.data('gcolorpanel');
-                                    if (!data.wheelMap) {
-                                        return;
-                                    }
-
-                                    var wheel = $this.find('canvas.color-wheel');
-                                    var offset = $(wheel).offset();
-                                    var x = Math.max(0, Math.min(wheel[0].width, evt.pageX - offset.left));
-                                    var y = Math.max(0, Math.min(wheel[0].height, evt.pageY - offset.top));
-
-                                    var idx = (y * wheel[0].width + x) * 4;
-                                    var pixels = data.wheelMap.data;
-                                    if (pixels[idx + 3] === 0) {
-                                        return;
-                                    }
-
-                                    var color = new IFRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
-
-                                    methods.currentColor.call(self, methods._convertColor.call(self, color));
-                                }))
                             .append($('<div></div>')
-                                .addClass('palette')
-                                .append($('<div></div>')
-                                    .addClass('swatches')
-                                    .gSwatchPanel({
-                                        types: [IFColor],
-                                        allowSelect: false,
-                                        allowNameEdit: false,
-                                        previewWidth: 20,
-                                        previewHeight: 20,
-                                        nullSwatch: $('<span></span>')
-                                            .addClass('fa fa-plus')
-                                            .css('padding-left', '4px'),
+                                .addClass('toolbar')
+                                .append($('<select></select>')
+                                    .attr('data-wheel', 'mix')
+                                    .append($('<option></option>')
+                                        .attr('value', '')
                                         // TODO : I18N
-                                        nullName: 'Add Swatch',
-                                        nullAction: function () {
-                                            $(this).gSwatchPanel('createSwatch', methods.currentColor.call(self));
-                                        }
+                                        .text('No Mixes'))
+                                    .append($('<optgroup label="Mix"></optgroup>')
+                                        .append($('<option></option>')
+                                            .attr('value', 'tint')
+                                            // TODO : I18N
+                                            .text('Tints'))
+                                        .append($('<option></option>')
+                                            .attr('value', 'shade')
+                                            // TODO : I18N
+                                            .text('Shades'))
+                                        .append($('<option></option>')
+                                            .attr('value', 'tone')
+                                            // TODO : I18N
+                                            .text('Tones')))
+                                    .append($('<optgroup label="Blend Right"></optgroup>')
+                                        .append($('<option></option>')
+                                            .attr('value', '60')
+                                            // TODO : I18N
+                                            .text('1 Quarter'))
+                                        .append($('<option></option>')
+                                            .attr('value', '120')
+                                            // TODO : I18N
+                                            .text('2 Quarter'))
+                                        .append($('<option></option>')
+                                            .attr('value', '240')
+                                            // TODO : I18N
+                                            .text('3 Quarter')))
+                                    .append($('<optgroup label="Blend Left"></optgroup>')
+                                        .append($('<option></option>')
+                                            .attr('value', '-60')
+                                            // TODO : I18N
+                                            .text('1 Quarter'))
+                                        .append($('<option></option>')
+                                            .attr('value', '-120')
+                                            // TODO : I18N
+                                            .text('2 Quarter'))
+                                        .append($('<option></option>')
+                                            .attr('value', '-240')
+                                            // TODO : I18N
+                                            .text('3 Quarter')))
+                                    .on('change', function () {
+                                        methods._updateWheelColor.call(self);
                                     })
-                                    .on('swatchchange', function (evt, swatch) {
-                                        if (swatch) {
-                                            methods.currentColor.call(self, methods._convertColor.call(self, swatch.getProperty('pat')));
-                                        }
+                                    .val('tint'))
+                                .append($('<select></select>')
+                                    .attr('data-wheel', 'highlight')
+                                    .append($('<option></option>')
+                                        .attr('value', 'start')
+                                        // TODO : I18N
+                                        .text('Color Wheel'))
+                                    .append($('<option></option>')
+                                        .attr('value', 'triadic')
+                                        // TODO : I18N
+                                        .text('Triads'))
+                                    .append($('<option></option>')
+                                        .attr('value', 'tetradic')
+                                        // TODO : I18N
+                                        .text('Tetrads'))
+                                    .append($('<option></option>')
+                                        .attr('value', 'split_complements')
+                                        // TODO : I18N
+                                        .text('Split'))
+                                    .append($('<option></option>')
+                                        .attr('value', 'complement')
+                                        // TODO : I18N
+                                        .text('Complement'))
+                                    .append($('<option></option>')
+                                        .attr('value', 'analogous')
+                                        // TODO : I18N
+                                        .text('Analogous'))
+                                    .on('change', function () {
+                                        methods._updateWheelColor.call(self);
+                                        methods._updateWheelBorder.call(self);
+                                    })))
+                            .append($('<div></div>')
+                                .addClass('wheel-container')
+                                .append($('<canvas></canvas>')
+                                    .addClass('color-wheel')
+                                    .attr({
+                                        width: wheelSize.toString() + 'px',
+                                        height: wheelSize.toString() + 'px',
                                     }))
-                                .append($('<div></div>')
-                                    .addClass('divider'))
-                                .append($('<div></div>')
-                                    .addClass('builtin-colors')))));
+                                .append($('<canvas></canvas>')
+                                    .addClass('wheel-border')
+                                    .attr({
+                                        width: wheelSize.toString() + 'px',
+                                        height: wheelSize.toString() + 'px',
+                                    })
+                                    .on('click', function (evt) {
+                                        var data = $this.data('gcoloreditor');
+                                        if (!data.wheelMap) {
+                                            return;
+                                        }
+
+                                        var wheel = $this.find('canvas.color-wheel');
+                                        var offset = $(wheel).offset();
+                                        var x = Math.max(0, Math.min(wheel[0].width, evt.pageX - offset.left));
+                                        var y = Math.max(0, Math.min(wheel[0].height, evt.pageY - offset.top));
+
+                                        var idx = (y * wheel[0].width + x) * 4;
+                                        var pixels = data.wheelMap.data;
+                                        if (pixels[idx + 3] === 0) {
+                                            return;
+                                        }
+
+                                        var color = new IFRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
+                                        var newColor = methods._convertColor.call(self, color);
+
+                                        methods.currentColor.call(self, newColor);
+                                        $this.trigger('colorchange', newColor);
+                                    })))));
 
                 // Set some initial values
                 methods.colorMode.call(self, 'hsv');
                 methods._updateWheelBorder.call(self);
-
-
-                var builtinColors = $this.find('.builtin-colors');
-                for (var i = 0; i < COLORS.length; ++i) {
-                    var color = IFRGBColor.parseCSSColor(COLORS[i]);
-                    $('<div></div>')
-                        .css('background', color.toScreenCSS())
-                        .gPatternTarget({
-                            allowDrop: false,
-                            types: [IFColor]
-                        })
-                        .gPatternTarget('value', color)
-                        .on('click', function (evt) {
-                            methods.currentColor.call(self, methods._convertColor.call(self, $(evt.target).gPatternTarget('value')));
-                        })
-                        .appendTo(builtinColors);
-                }
             });
         },
 
@@ -773,7 +726,9 @@
                     }
 
                     methods._updateComponents.call(this);
-                    methods.currentColor.call(this, methods._getColorFromComponents.call(this));
+                    var newColor = methods._getColorFromComponents.call(this);
+                    methods.currentColor.call(this, newColor);
+                    $this.trigger('colorchange', newColor);
                 }
 
                 return this;
@@ -782,7 +737,7 @@
 
         previousColor: function (previousColor) {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
 
             if (!arguments.length) {
                 return data.previousColor;
@@ -800,7 +755,7 @@
 
         currentColor: function (currentColor) {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
 
             if (!arguments.length) {
                 return data.currentColor;
@@ -816,46 +771,21 @@
             }
         },
 
-        color: function (color) {
+        value: function (value) {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
 
             if (!arguments.length) {
                 return data.currentColor;
             } else {
-                methods.previousColor.call(this, color);
-                methods.currentColor.call(this, color);
+                methods.previousColor.call(this, value);
+                methods.currentColor.call(this, value);
 
                 var colorMode = methods.colorMode.call(this);
-                if (color instanceof IFCMYKColor) {
+                if (value instanceof IFCMYKColor) {
                     methods.colorMode.call(this, 'cmyk');
-                } else if (color instanceof IFRGBColor && colorMode === 'cmyk') {
+                } else if (value instanceof IFRGBColor && colorMode === 'cmyk') {
                     methods.colorMode.call(this, 'hsv');
-                }
-
-                return this;
-            }
-        },
-
-        scene: function (value) {
-            var $this = $(this);
-            var data = $this.data('gcolorpanel');
-
-            if (!arguments.length) {
-                return data.scene;
-            } else {
-                if (value !== data.scene) {
-                    var swatchPanel = $this.find('.swatches');
-
-                    if (data.scene) {
-                        swatchPanel.gSwatchPanel('detach');
-                    }
-
-                    data.scene = value;
-
-                    if (data.scene) {
-                        swatchPanel.gSwatchPanel('attach', data.scene.getSwatchCollection());
-                    }
                 }
 
                 return this;
@@ -864,7 +794,7 @@
 
         _setCurrentColor: function (currentColor) {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
             data.currentColor = currentColor;
             $this.find('input[type="color"]').val(IFColor.rgbToHtmlHex(data.currentColor.toScreen()));
             $this.find('.color-preview > .current-color')
@@ -927,7 +857,7 @@
 
         _updateComponents: function (components) {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
             if (!data.currentColor) {
                 return;
             }
@@ -995,12 +925,12 @@
             var components = methods._getComponents.call(this);
             var context = $this.find('canvas.map')[0].getContext('2d');
 
-            var pixels = context.getImageData(0, 0, mapSize, mapSize);
-            for (var x = 0; x < mapSize; ++x) {
-                for (var y = 0; y < mapSize; ++y) {
-                    var mapComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapSize, y / mapSize, components.components);
+            var pixels = context.getImageData(0, 0, mapWidth, mapHeight);
+            for (var x = 0; x < mapWidth; ++x) {
+                for (var y = 0; y < mapHeight; ++y) {
+                    var mapComponents = colorModeInfo.componentsFromMap(components.active.component, components.active.value, x / mapWidth, y / mapHeight, components.components);
                     var rgb = colorModeInfo.colorFromComponents(mapComponents).toScreen();
-                    var idx = (y * mapSize + x) * 4;
+                    var idx = (y * mapWidth + x) * 4;
                     pixels.data[idx] = rgb[0];
                     pixels.data[idx + 1] = rgb[1];
                     pixels.data[idx + 2] = rgb[2];
@@ -1027,7 +957,7 @@
 
         _updateWheelColor: function () {
             var $this = $(this);
-            var data = $this.data('gcolorpanel');
+            var data = $this.data('gcoloreditor');
             var wheel = $this.find('canvas.color-wheel')[0];
             var ctx = wheel.getContext('2d');
             var cp = wheelSize / 2;
@@ -1121,9 +1051,9 @@
     };
 
     /**
-     * Block to transform divs to color panels
+     * Block to transform divs into a color editor
      */
-    $.fn.gColorPanel = function (method) {
+    $.fn.gColorEditor = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {

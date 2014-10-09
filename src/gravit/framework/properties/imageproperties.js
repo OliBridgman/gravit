@@ -142,9 +142,9 @@
         var _addPaletteColor = function (color) {
             $('<div></div>')
                 .gPatternTarget({
-                    allowDrop: false,
-                    types: [IFColor]
+                    allowDrop: false
                 })
+                .gPatternTarget('types', [IFColor])
                 .gPatternTarget('value', color)
                 .css({
                     'display': 'inline-block',

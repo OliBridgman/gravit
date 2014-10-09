@@ -19,10 +19,7 @@
                 // Pattern can be dragged away
                 allowDrag: true,
                 // Pattern can be dropped in
-                allowDrop: true,
-                // Specifies the allowed types of patterns,
-                // null or zero length means accepting all
-                types: null
+                allowDrop: true
             }, options);
 
             return this.each(function () {
@@ -32,7 +29,8 @@
                 $this
                     .data('gpatterntarget', {
                         options: options,
-                        pattern: null
+                        pattern: null,
+                        types: null
                     });
 
                 if (options.allowDrag) {
@@ -69,23 +67,25 @@
                 if (options.allowDrop) {
                     $this
                         .on('dragover', function (evt) {
+                            evt.stopPropagation();
                             var event = evt.originalEvent;
                             event.preventDefault();
                             event.stopPropagation();
                             evt.originalEvent.dataTransfer.dropEffect = 'move';
                         })
                         .on('drop', function (evt) {
+                            evt.stopPropagation();
+                            var data = $this.data('gpatterntarget');
                             var event = evt.originalEvent;
-
                             var source = event.dataTransfer.getData(IFPattern.MIME_TYPE);
                             if (source) {
                                 source = IFPattern.deserialize(source);
                                 if (source) {
                                     var isCompatible = true;
-                                    if (options.types && options.types.length > 0) {
+                                    if (data.types && data.types.length > 0) {
                                         isCompatible = false;
-                                        for (var i = 0; i < options.types.length; ++i) {
-                                            if (source instanceof options.types[i]) {
+                                        for (var i = 0; i < data.types.length; ++i) {
+                                            if (data.types[i] && source instanceof data.types[i]) {
                                                 isCompatible = true;
                                                 break;
                                             }
@@ -120,6 +120,18 @@
             } else {
                 value = typeof value === 'string' ? IFPattern.deserialize(value) : value;
                 data.pattern = value;
+                return this;
+            }
+        },
+
+        types: function (types) {
+            var $this = $(this);
+            var data = $this.data('gpatterntarget');
+
+            if (!arguments.length) {
+                return data.types;
+            } else {
+                data.types = types;
                 return this;
             }
         }

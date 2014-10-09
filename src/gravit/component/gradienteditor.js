@@ -3,7 +3,7 @@
     function updateStop($this, $stop) {
         $stop.css('left', $stop.data('stop-position') + '%');
         $stop.find('.stop-color').css('background', $stop.data('stop-color').toScreenCSS());
-        $stop.gColorButton('value', $stop.data('stop-color'));
+        $stop.gPatternTarget('value', $stop.data('stop-color'));
 
         updateGradient($this);
     }
@@ -25,9 +25,6 @@
     var methods = {
         init: function (options) {
             options = $.extend({
-                // An attached scene used for swatch handling
-                // when coosing a color
-                scene: null
             }, options);
 
             return this.each(function () {
@@ -41,9 +38,14 @@
                     .addClass('g-gradient-editor')
                     .data('ggradienteditor', data)
                     .gPatternTarget({
-                        types: [IFColor, IFGradient]
+                        allowDrag: false
+                    })
+                    .gPatternTarget('types', [IFColor, IFGradient])
+                    .on('patternchange', function (evt) {
+                        evt.stopPropagation();
                     })
                     .on('patterndrop', function (evt, pattern, mouseEvent) {
+                        evt.stopPropagation();
                         if (pattern && pattern instanceof IFColor) {
                             var $stops = $(this).find('.stops');
                             var stopsWidth = $stops.width();
@@ -51,10 +53,10 @@
                             var percentPos = relativePos <= 0 ? 0 :
                                 relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
                             methods.insertStop.call(self, percentPos, pattern);
-                            $this.trigger('change');
+                            $this.trigger('gradientchange');
                         } else if (pattern instanceof IFGradient) {
                             methods.value.call(self, pattern.getStops());
-                            $this.trigger('change');
+                            $this.trigger('gradientchange');
                         }
                     });
 
@@ -65,6 +67,13 @@
                 container
                     .append($('<div></div>')
                         .addClass('editor')
+                        .append($('<div></div>')
+                            .addClass('stops')
+                            .on('mousedown', function (evt) {
+                                // Prevents any accident drag'n'drop actions
+                                evt.preventDefault();
+                                evt.stopPropagation();
+                            }))
                         .append($('<div></div>')
                             .addClass('gradient g-input')
                             .css('background', 'transparent'))
@@ -85,16 +94,36 @@
                                     var percentPos = relativePos <= 0 ? 0 :
                                         relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
 
-                                    var finalPosition = methods.insertStop.call(self, percentPos, IFRGBColor.parseCSSColor('black'));
-                                    $this.trigger('change');
-
+                                    var previousStopColor = null;
+                                    var nextStopColor = null;
+                                    /*
                                     $stops.find('> .stop').each(function (index, element) {
                                         var $stop = $(element);
-                                        if ($stop.data('stop-position') === finalPosition) {
-                                            $stop.gColorButton('open');
-                                            return false;
+                                        if ($stop.data('stop-position') < percentPos) {
+                                            previousStopColor = $stop.data('stop-color');
+                                        } else if ($stop.data('stop-position') > percentPos) {
+                                            nextStopColor = $stop.data('stop-color');
                                         }
                                     });
+                                    */
+
+                                    var stopColor = IFRGBColor.parseCSSColor('black');
+                                    if (previousStopColor && nextStopColor) {
+                                        var prev = previousStopColor.toScreen();
+                                        var next = nextStopColor.toScreen();
+                                        var p = percentPos / 100.0;
+
+                                        var stopColor = new IFRGBColor([
+                                            next[0] * p + prev[0] * (1 - p),
+                                            next[1] * p + prev[1] * (1 - p),
+                                            next[2] * p + prev[2] * (1 - p)
+                                        ]);
+                                    } else if (previousStopColor || nextStopColor) {
+                                        stopColor = previousStopColor || nextStopColor;
+                                    }
+
+                                    methods.insertStop.call(self, percentPos, stopColor);
+                                    $this.trigger('gradientchange');
                                 }
                             })));
             });
@@ -139,7 +168,6 @@
                 } else {
                     // Clear stops and add all again
                     $this.find('.stops').empty();
-
                     // Insert all stops now if any
                     if (value) {
                         for (var i = 0; i < value.length; ++i) {
@@ -170,24 +198,27 @@
                 .data('stop-position', position)
                 .data('stop-color', color)
                 .data('stop-delete', false)
-                .gColorButton({
-                    drag: false,
-                    transient: true,
-                    autoOpen: false,
-                    scene: data.options.scene
+                .gPatternTarget({
+                    allowDrag: false
                 })
+                .gPatternTarget('types', [IFColor])
                 .append($('<div></div>')
                     .addClass('stop-color'))
-                .on('colorchange', function (evt, color) {
+                .on('patternchange', function (evt, color) {
+                    evt.stopPropagation();
                     if (color) {
                         $stop.data('stop-color', color);
                         updateStop($this, $stop);
-                        $this.trigger('change');
+                        $this.trigger('gradientchange');
                     }
+                })
+                .on('patterndrop', function (evt, pattern, mouseEvent) {
+                    evt.stopPropagation();
                 })
                 .on('click', function (evt) {
                     if (!hasChanged) {
-                        $(this).gColorButton('open');
+                        // TODO : OPACITY POPUP
+                        //$(this).gColorButton('open');
                     }
                 })
                 .on('mousedown', function (evt) {
@@ -258,7 +289,7 @@
                         }
 
                         if (hasChanged && triggerChange) {
-                            $this.trigger('change');
+                            $this.trigger('gradientchange');
                         }
                     };
 

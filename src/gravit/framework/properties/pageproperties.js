@@ -155,10 +155,9 @@
             } else if (property === 'cls') {
                 return $('<div></div>')
                     .attr('data-property', property)
-                    .gColorButton({
-                        allowClear: true
-                    })
-                    .on('colorchange', function (evt, color) {
+                    .gPatternPicker()
+                    .gPatternPicker('types', [null, IFColor])
+                    .on('patternchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
             } else if (property === 'w' || property === 'h') {
@@ -411,8 +410,8 @@
         this._panel.find('select[data-property="msref"]').val(page.getProperty('msref'));
         this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
         this._panel.find('[data-property="cls"]')
-            .gColorButton('value', page.getProperty('cls'))
-            .gColorButton('scene', scene);
+            .gPatternPicker('value', page.getProperty('cls'))
+            .gPatternPicker('scene', scene);
         this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
         this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));
         this._panel.find('input[data-property="mt"]').val(scene.pointToString(page.getProperty('mt')));

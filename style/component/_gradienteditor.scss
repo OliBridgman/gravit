@@ -15,7 +15,8 @@
       width: 100%;
 
       > .gradient {
-        height: 12px;
+        height: $baseline;
+        display: block;
       }
 
       > .stops {

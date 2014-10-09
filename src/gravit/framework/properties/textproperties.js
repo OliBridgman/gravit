@@ -184,16 +184,6 @@
                         var val = $(this).val();
                         self._assignProperty(property, val === '' ? null : val);
                     });
-            } else if (property === 'fc') {
-                return $('<div></div>')
-                    .attr('data-property', property)
-                    .gColorButton({
-                        allowClear: true,
-                        scene: this._document.getScene()
-                    })
-                    .on('colorchange', function (evt, color) {
-                        self._assignProperty(property, color);
-                    });
             } else if (property === '_pwm') {
                 return $('<select></select>')
                     .attr('data-property', property)

@@ -1,40 +1,8 @@
 @import '../variables';
 
-.g-color-panel {
-  width: 510px;
-  height: 390px;
-
-  .toolbar {
-    width: 100%;
-    margin-bottom: 10px;
-
-    > div {
-      display: table-cell;
-      vertical-align: middle;
-      white-space: nowrap;
-
-      &.section-center {
-        text-align: center;
-        width: 100%;
-      }
-
-      &.section-end {
-        text-align: right;
-      }
-
-      > .color-preview {
-        width: 100px;
-        display: inline-block;
-        height: $baseline;
-
-        > div {
-          display: inline-block;
-          width: 50%;
-          height: 100%;
-        }
-      }
-    }
-  }
+.g-color-editor {
+  //width: 490px;
+  display: inline-block;
 
   .color-container {
     display: inline-block;
@@ -48,6 +16,7 @@
       &.color {
         > .map-container {
           position: relative;
+          width: 220px;
 
           > .map {
             border: 1px solid black;
@@ -64,6 +33,25 @@
             box-shadow: 0px 0px 3px rgb(0, 0, 0);
             margin-left: -4px;
             margin-top: -4px;
+            pointer-events: none;
+          }
+        }
+
+        > .toolbar {
+          margin-top: 5px;
+
+          > .color-preview {
+            float: right;
+            display: inline-block;
+            height: $baseline;
+            width: 80px;
+            margin-right: 5px;
+
+            > div {
+              display: inline-block;
+              width: 50%;
+              height: 100%;
+            }
           }
         }
 
@@ -122,33 +110,22 @@
 
       &.wheel {
         padding-left: 10px;
-        position: relative;
 
-        > .wheel-border {
-          position: absolute;
-          top: 0px;
-          left: 10px;
+        > .toolbar {
+          margin-bottom: 5px;
+          text-align: right;
+        }
+
+        > .wheel-container {
+          position: relative;
+
+          > .wheel-border {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+          }
         }
       }
-    }
-  }
-
-  .palette {
-    margin-top: 13px;
-    width: 241px;
-    height: 92px;
-    padding: 3px;
-    overflow: auto;
-
-    > .divider {
-      clear: both;
-    }
-
-    > .builtin-colors > div {
-      float: left;
-      width: 20px;
-      height: 20px;
-      margin: 1px;
     }
   }
 }

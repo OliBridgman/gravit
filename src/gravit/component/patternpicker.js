@@ -1,15 +1,15 @@
 (function ($) {
 
-    var COLORPANEL = null;
+    var PATTERN_EDITOR = null;
 
-    function getColorPanel() {
-        if (!COLORPANEL) {
-            COLORPANEL = $('<div></div>')
+    function getPatternEditor() {
+        if (!PATTERN_EDITOR) {
+            PATTERN_EDITOR = $('<div></div>')
                 .css('margin', '5px')
-                .gColorPanel()
+                .gPatternEditor()
                 .gOverlay();
         }
-        return COLORPANEL;
+        return PATTERN_EDITOR;
     }
 
     var methods = {
@@ -21,57 +21,54 @@
                 transient: false,
                 // Whether to automatically open the color chooser on click
                 // or wait for a manual call to the open function
-                autoOpen: true,
-                // Whether to allow clearing the color or not
-                allowClear: false,
-                // Whether to immediately close after color has changed or not
-                immediateClose: true,
-                // Scene to be used for swatches
-                scene: null
+                autoOpen: true
                 // see options of gPatternTarget
             }, options);
-
-            // always overwrite types to allow colors, only
-            options.types = [IFColor];
 
             return this.each(function () {
                 var self = this;
                 var $this = $(this);
 
-                $this
-                    .addClass('g-input')
-                    .css('min-width', '20px')
-                    .data('g-colorbutton', {
-                        options: options,
-                        scene: options.scene,
-                        panelCloseListener: function (evt) {
-                            var data = $this.data('g-colorbutton');
-                            var colorPanel = getColorPanel();
-                            colorPanel.gColorPanel('scene', null);
-                            colorPanel.off('colorchange', data.panelChangeListener);
-                            colorPanel.off('close', data.panelCloseListener);
-                        },
-                        panelChangeListener: function (evt, color) {
-                            if (options.immediateClose) {
-                                methods.close.call(self);
-                            }
+                if (!options.transient) {
+                    $this
+                        .addClass('g-input')
+                        .addClass('g-cursor-pipette')
+                        .css('min-width', '20px');
+                }
 
-                            methods.value.call(self, color);
-                            $this.trigger('colorchange', color);
+                $this
+                    .data('gpatternpicker', {
+                        options: options,
+                        opened: false,
+                        scene: null,
+                        types: null,
+                        manualChangeEvent: false,
+                        closeListener: function (evt) {
+                            var data = $this.data('gpatternpicker');
+                            var patternEditor = getPatternEditor();
+                            patternEditor.gPatternEditor('scene', null);
+                            patternEditor.off('patternchange', data.changeListener);
+                            patternEditor.off('close', data.closeListener);
+                            data.opened = false;
+                        },
+                        changeListener: function (evt, pattern) {
+                            var data = $this.data('gpatternpicker');
+                            data.manualChangeEvent = true;
+                            methods.value.call(self, pattern);
+                            try {
+                            $this.trigger('patternchange', pattern);
+                            } finally {
+                            data.manualChangeEvent = false;
+                            }
                         }
                     })
                     .gPatternTarget(options)
                     .on('patternchange', function (evt, pattern) {
-                        if (!pattern || pattern instanceof IFColor) {
-                            methods.value.call(self, pattern);
-                            $this.trigger('colorchange', pattern);
+                        var data = $this.data('gpatternpicker');
+                        if (!data.manualChangeEvent) {
+                        methods.value.call(self, pattern);
                         }
                     });
-
-                if (!options.transient) {
-                    $this
-                        .addClass('g-cursor-pipette');
-                }
 
                 if (options.autoOpen) {
                     $this
@@ -84,26 +81,28 @@
 
         open: function () {
             var $this = $(this);
-            var data = $this.data('g-colorbutton');
-            var colorPanel = getColorPanel();
-            colorPanel.gOverlay('close', this);
-            colorPanel.gColorPanel('scene', data.scene);
-            colorPanel.gColorPanel('color', methods.value.call(this));
-            colorPanel.on('colorchange', data.panelChangeListener);
-            colorPanel.on('close', data.panelCloseListener);
-            colorPanel.gOverlay('open', this);
+            var data = $this.data('gpatternpicker');
+            var patternEditor = getPatternEditor();
+            patternEditor.gOverlay('close', this);
+            patternEditor.gPatternEditor('scene', data.scene);
+            patternEditor.gPatternEditor('types', data.types);
+            patternEditor.gPatternEditor('value', $this.gPatternTarget('value'));
+            patternEditor.on('patternchange', data.changeListener);
+            patternEditor.on('close', data.closeListener);
+            patternEditor.gOverlay('open', this);
+            data.opened = true;
             return this;
         },
 
         close: function () {
-            var colorPanel = getColorPanel();
-            colorPanel.gOverlay('close', this);
+            var patternEditor = getPatternEditor();
+            patternEditor.gOverlay('close', this);
             return this;
         },
 
         scene: function (value) {
             var $this = $(this);
-            var data = $this.data('g-colorbutton');
+            var data = $this.data('gpatternpicker');
 
             if (!arguments.length) {
                 return data.scene;
@@ -113,9 +112,21 @@
             }
         },
 
-        value: function (value) {
+        types: function (types) {
             var $this = $(this);
-            var data = $this.data('g-colorbutton');
+            var data = $this.data('gpatternpicker');
+
+            if (!arguments.length) {
+                return data.types;
+            } else {
+                data.types = types;
+                return this;
+            }
+        },
+
+        value: function (value, noEditorUpdate) {
+            var $this = $(this);
+            var data = $this.data('gpatternpicker');
 
             if (!arguments.length) {
                 return $this.gPatternTarget('value');
@@ -124,6 +135,11 @@
 
                 if (!data.options.transient) {
                     $this.css('background', IFPattern.asCSSBackground(value));
+                }
+
+                if (data.opened && !data.manualChangeEvent) {
+                    var patternEditor = getPatternEditor();
+                    patternEditor.gPatternEditor('value', $this.gPatternTarget('value'));
                 }
 
                 return this;

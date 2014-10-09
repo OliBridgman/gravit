@@ -499,7 +499,7 @@
      */
     IFElement.Stylable.prototype._createFillPaint = function (context, bbox) {
         if (this.$_fpt) {
-            return this._createPatternPaint(context, this.$_fpt, bbox, this.$_ftx, this.$_fty, this.$_fsx, this.$_fsy, this.$_frt);
+            return this._createPatternPaint(context, this.$_fpt, bbox);
         }
         return null;
     };
@@ -512,7 +512,7 @@
      */
     IFElement.Stylable.prototype._createBorderPaint = function (context, bbox) {
         if (this.$_bpt) {
-            return this._createPatternPaint(context, this.$_bpt, bbox, this.$_btx, this.$_bty, this.$_bsx, this.$_bsy, this.$_brt);
+            return this._createPatternPaint(context, this.$_bpt, bbox);
         }
         return null;
     };
@@ -522,7 +522,7 @@
      * @param {IFPaintContext} context
      * @private
      */
-    IFElement.Stylable.prototype._createPatternPaint = function (context, pattern, bbox, tx, ty, sx, sy, rt) {
+    IFElement.Stylable.prototype._createPatternPaint = function (context, pattern, bbox) {
         var result = {
             paint: null,
             transform: null

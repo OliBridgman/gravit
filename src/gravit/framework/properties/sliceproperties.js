@@ -38,10 +38,9 @@
             if (property === 'cls') {
                 return $('<div></div>')
                     .attr('data-property', property)
-                    .gColorButton({
-                        allowClear: true
-                    })
-                    .on('colorchange', function (evt, color) {
+                    .gPatternPicker()
+                    .gPatternPicker('types', [IFColor])
+                    .on('patternchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
             } else if (property === 'trm') {
@@ -126,8 +125,8 @@
         var slice = this._slices[0];
 
         this._panel.find('[data-property="cls"]')
-            .gColorButton('value', slice.getProperty('cls'))
-            .gColorButton('scene', scene);
+            .gPatternPicker('value', slice.getProperty('cls'))
+            .gPatternPicker('scene', scene);
 
         this._panel.find('input[data-property="trm"]').prop('checked', slice.getProperty('trm'));
     };

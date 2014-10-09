@@ -499,16 +499,15 @@
 
                 $('<span></span>')
                     .addClass('layer-color')
-                    .gColorButton({
-                        scene: this._document.getScene(),
-                        immediateClose: true
-                    })
-                    .gColorButton('value', layerOrItem.getProperty('cls'))
+                    .gPatternPicker()
+                    .gPatternPicker('scene', this._document.getScene())
+                    .gPatternPicker('types', [IFColor])
+                    .gPatternPicker('value', layerOrItem.getProperty('cls'))
                     .removeClass('g-input')
                     .on('click', function (evt) {
                         evt.stopPropagation();
                     })
-                    .on('colorchange', function (evt, color) {
+                    .on('patternchange', function (evt, color) {
                         // TODO : I18N
                         IFEditor.tryRunTransaction(layerOrItem, function () {
                             var myColor = layerOrItem.getProperty('cls');
