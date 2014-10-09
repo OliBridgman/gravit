@@ -567,12 +567,18 @@
             switch (horzPosition) {
                 case GMenu.Position.Left_Top:
                     x = rect.x - menuWidth;
+                    if (x < 0) {
+                        x = rect.x + rect.width;
+                    }
                     break;
                 case GMenu.Position.Center:
                     x = rect.x;
                     break;
                 case GMenu.Position.Right_Bottom:
                     x = rect.x + rect.width;
+                    if (x + menuWidth > windowWidth) {
+                        x = rect.x - menuWidth;
+                    }
                     break;
             }
 
@@ -580,12 +586,18 @@
             switch (vertPosition) {
                 case GMenu.Position.Left_Top:
                     y = rect.y - menuHeight;
+                    if (y < 0) {
+                        y = rect.y + rect.height;
+                    }
                     break;
                 case GMenu.Position.Center:
                     y = rect.y;
                     break;
                 case GMenu.Position.Right_Bottom:
                     y = rect.y + rect.height;
+                    if (y + menuHeight > windowHeight) {
+                        y = rect.y - menuHeight;
+                    }
                     break;
             }
 
