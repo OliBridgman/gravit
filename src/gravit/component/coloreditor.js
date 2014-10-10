@@ -305,11 +305,10 @@
 
     function mapMouseEvent(evt) {
         var $this = $(this);
-        var colorModeInfo = COLOR_MODES[methods.colorMode.call(this)];
         var map = $this.find('canvas.map');
         var offset = $(map).offset();
-        var x = Math.max(0, Math.min(map[0].width, evt.pageX - offset.left - 4));
-        var y = Math.max(0, Math.min(map[0].height, evt.pageY - offset.top - 4));
+        var x = Math.max(0, Math.min(map[0].width, Math.round(evt.pageX - offset.left - 4)));
+        var y = Math.max(0, Math.min(map[0].height, Math.round(evt.pageY - offset.top - 4)));
 
 
         var $this = $(this);
@@ -659,8 +658,8 @@
 
                                         var wheel = $this.find('canvas.color-wheel');
                                         var offset = $(wheel).offset();
-                                        var x = Math.max(0, Math.min(wheel[0].width, evt.pageX - offset.left));
-                                        var y = Math.max(0, Math.min(wheel[0].height, evt.pageY - offset.top));
+                                        var x = Math.max(0, Math.min(wheel[0].width, Math.round(evt.pageX - offset.left)));
+                                        var y = Math.max(0, Math.min(wheel[0].height, Math.round(evt.pageY - offset.top)));
 
                                         var idx = (y * wheel[0].width + x) * 4;
                                         var pixels = data.wheelMap.data;
