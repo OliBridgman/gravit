@@ -471,11 +471,7 @@
         }
     };
 
-    /** @override */
-    GMenuItem.prototype.toString = function () {
-        return "[Object GMenuItem]";
-    };
-
+    /** @private */
     GMenuItem.prototype._mouseOver = function (evt) {
         // Close all sub-menus of our parent
         if (this._parent && this._parent instanceof GMenu && !this.isRootItem()) {
@@ -508,6 +504,7 @@
         }
     };
 
+    /** @private */
     GMenuItem.prototype._mouseOut = function (evt) {
         if (!this.isEnabled()) {
             return;
@@ -522,6 +519,7 @@
         }
     };
 
+    /** @private */
     GMenuItem.prototype._mouseDown = function (evt) {
         if (!this.isEnabled()) {
             return;
@@ -544,6 +542,7 @@
         }
     };
 
+    /** @private */
     GMenuItem.prototype._mouseUp = function (evt) {
         // Stop propagation and default handling to not run into our global menu handlers
         evt.stopPropagation();
@@ -563,18 +562,26 @@
                 this._action.execute();
             }
 
-            if (this.isEnabled() && this.hasEventListeners(GMenuItem.ActivateEvent)) {
-                this.trigger(GMenuItem.ACTIVATE_EVENT);
+            if (this.isEnabled()) {
+                if (this.hasEventListeners(GMenuItem.ActivateEvent)) {
+                    this.trigger(GMenuItem.ACTIVATE_EVENT);
+                }
+
+                if (this._parent && this._parent.hasEventListeners(GMenu.ActivateEvent)) {
+                    this._parent.trigger(new GMenu.ActivateEvent(this));
+                }
             }
         }
     };
 
+    /** @private */
     GMenuItem.prototype._openMenu = function () {
         this.getMenu().open(this._htmlElement,
             this.isRootItem() ? GMenu.Position.Center : GMenu.Position.Right_Bottom,
             this.isRootItem() ? GMenu.Position.Right_Bottom : GMenu.Position.Center);
     };
 
+    /** @private */
     GMenuItem.prototype._menuOpen = function () {
         this._htmlElement.addClass('g-active');
 
@@ -583,12 +590,18 @@
         }
     };
 
+    /** @private */
     GMenuItem.prototype._menuClose = function () {
         this._htmlElement.removeClass('g-active');
 
         if (this.isRootItem()) {
             this._parent._parent._htmlElement.removeClass('g-active');
         }
+    };
+
+    /** @override */
+    GMenuItem.prototype.toString = function () {
+        return "[Object GMenuItem]";
     };
 
     _.GMenuItem = GMenuItem;

@@ -247,6 +247,33 @@
     GMenu.CLOSE_EVENT = new GMenu.CloseEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GMenu.ActivateEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * An event whenever an item within this menu was activated
+     * @class GMenu.ActivateEvent
+     * @param {GMenuItem} item item that was activated
+     * @extends IFEvent
+     * @constructor
+     */
+    GMenu.ActivateEvent = function (item) {
+        this.item = item;
+    };
+    IFObject.inherit(GMenu.ActivateEvent, IFEvent);
+
+    /**
+     * The item that was activated
+     * @type {GMenuItem}
+     */
+    GMenu.ActivateEvent.item = null;
+
+    /** @override */
+    GMenu.ActivateEvent.prototype.toString = function () {
+        return "[Object GMenu.ActivateEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GMenu Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -674,10 +701,12 @@
         }
     };
 
+    /** @private */
     GMenu.prototype._mouseOver = function (evt) {
         this._hovered = true;
     };
 
+    /** @private */
     GMenu.prototype._mouseOut = function (evt) {
         this._hovered = false;
 
