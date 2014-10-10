@@ -35,7 +35,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
-            methods.insertSwatch.call(this, evt.node);
+            methods._insertSwatch.call(this, evt.node);
         }
     };
 
@@ -43,7 +43,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
-            methods.removeSwatch.call(this, evt.node);
+            methods._removeSwatch.call(this, evt.node);
         }
     };
 
@@ -51,7 +51,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node.getParent() === container) {
-            methods.updateSwatch.call(this, evt.node);
+            methods._updateSwatch.call(this, evt.node);
         }
     };
 
@@ -198,7 +198,83 @@
             });
         },
 
-        insertSwatch: function (swatch, index) {
+        attach: function (container) {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+
+            methods.detach.call(this);
+
+            data.container = container;
+
+            if (container) {
+                methods._updateFromContainer.call(this);
+
+                // Subscribe to container
+                var scene = container.getScene();
+                if (scene) {
+                    data.afterInsertHandler = afterInsertEvent.bind(this);
+                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
+                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                }
+            }
+            return this;
+        },
+
+        detach: function () {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+            var container = data.container;
+
+            if (container) {
+                // Unsubscribe from container
+                var scene = container.getScene();
+                if (scene) {
+                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                }
+            }
+
+            data.container = null;
+            data.afterInsertHandler = null;
+            data.beforeRemoveHandler = null;
+            data.afterPropertiesChangeHandler = null;
+
+            methods._clear.call(this);
+
+            return this;
+        },
+
+        types: function (types) {
+            var $this = $(this);
+            var data = $this.data('gswatchpanel');
+
+            if (!arguments.length) {
+                return data.types;
+            } else {
+                data.types = types;
+                methods._clear.call(this);
+                methods._updateFromContainer.call(this);
+
+                return this;
+            }
+        },
+
+        value: function (value) {
+            var $this = $(this);
+            if (!arguments.length) {
+                return $this.data('gswatchpanel').selected;
+            } else {
+                $this.data('gswatchpanel').selected = value;
+                updateSelectedSwatch($this, value);
+                return this;
+            }
+        },
+
+        _insertSwatch: function (swatch, index) {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
             var self = this;
@@ -378,10 +454,10 @@
 
             updatePlaceholder($this);
 
-            methods.updateSwatch.call(this, swatch);
+            methods._updateSwatch.call(this, swatch);
         },
 
-        updateSwatch: function (swatch) {
+        _updateSwatch: function (swatch) {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
 
@@ -401,7 +477,7 @@
             });
         },
 
-        removeSwatch: function (swatch) {
+        _removeSwatch: function (swatch) {
             var self = this;
             var $this = $(this);
             var data = $this.data('gswatchpanel');
@@ -422,7 +498,7 @@
             });
         },
 
-        clear: function () {
+        _clear: function () {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
             var remove = [];
@@ -441,82 +517,6 @@
             updatePlaceholder($this);
         },
 
-        attach: function (container) {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-
-            methods.detach.call(this);
-
-            data.container = container;
-
-            if (container) {
-                methods._updateFromContainer.call(this);
-
-                // Subscribe to container
-                var scene = container.getScene();
-                if (scene) {
-                    data.afterInsertHandler = afterInsertEvent.bind(this);
-                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
-                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-            return this;
-        },
-
-        detach: function () {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-            var container = data.container;
-
-            if (container) {
-                // Unsubscribe from container
-                var scene = container.getScene();
-                if (scene) {
-                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-
-            data.container = null;
-            data.afterInsertHandler = null;
-            data.beforeRemoveHandler = null;
-            data.afterPropertiesChangeHandler = null;
-
-            methods.clear.call(this);
-
-            return this;
-        },
-
-        types: function (types) {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-
-            if (!arguments.length) {
-                return data.types;
-            } else {
-                data.types = types;
-                methods.clear.call(this);
-                methods._updateFromContainer.call(this);
-
-                return this;
-            }
-        },
-
-        value: function (value) {
-            var $this = $(this);
-            if (!arguments.length) {
-                return $this.data('gswatchpanel').selected;
-            } else {
-                $this.data('gswatchpanel').selected = value;
-                updateSelectedSwatch($this, value);
-                return this;
-            }
-        },
-
         _updateFromContainer: function () {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
@@ -524,7 +524,7 @@
             if (data.container) {
                 for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
                     if (child instanceof IFSwatch) {
-                        methods.insertSwatch.call(this, child);
+                        methods._insertSwatch.call(this, child);
                     }
                 }
             }

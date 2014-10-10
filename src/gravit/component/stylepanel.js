@@ -53,7 +53,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
-            methods.insertStyle.call(this, evt.node);
+            methods._insertStyle.call(this, evt.node);
         }
     };
 
@@ -61,7 +61,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
-            methods.removeStyle.call(this, evt.node);
+            methods._removeStyle.call(this, evt.node);
         }
     };
 
@@ -69,7 +69,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node.getParent() === container) {
-            methods.updateStyle.call(this, evt.node);
+            methods._updateStyle.call(this, evt.node);
         }
     };
 
@@ -126,7 +126,73 @@
             });
         },
 
-        insertStyle: function (style, index) {
+        attach: function (container) {
+            var $this = $(this);
+            var data = $this.data('gstylepanel');
+
+            methods.detach.call(this);
+
+            data.container = container;
+
+            if (container) {
+                for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
+                    if (child instanceof IFStyle) {
+                        methods._insertStyle.call(this, child);
+                    }
+                }
+
+                // Subscribe to container
+                var scene = container.getScene();
+                if (scene) {
+                    data.afterInsertHandler = afterInsertEvent.bind(this);
+                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
+                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                }
+            }
+            return this;
+        },
+
+        detach: function () {
+            var $this = $(this);
+            var data = $this.data('gstylepanel');
+            var container = data.container;
+
+            if (container) {
+                // Unsubscribe from container
+                var scene = container.getScene();
+                if (scene) {
+                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                }
+            }
+
+            data.container = null;
+            data.afterInsertHandler = null;
+            data.beforeRemoveHandler = null;
+            data.afterPropertiesChangeHandler = null;
+
+            methods._clear.call(this);
+
+            return this;
+        },
+
+        // Assigns or returns the selected style
+        value: function (value) {
+            var $this = $(this);
+            if (!arguments.length) {
+                return $this.data('gstylepanel').selected;
+            } else {
+                $this.data('gstylepanel').selected = value;
+                updateSelectedStyle($this, value);
+                return this;
+            }
+        },
+
+        _insertStyle: function (style, index) {
             var $this = $(this);
             var data = $this.data('gstylepanel');
             var self = this;
@@ -280,10 +346,10 @@
 
             updatePlaceholder($this);
 
-            methods.updateStyle.call(this, style);
+            methods._updateStyle.call(this, style);
         },
 
-        updateStyle: function (style) {
+        _updateStyle: function (style) {
             var $this = $(this);
             var data = $this.data('gstylepanel');
 
@@ -303,7 +369,7 @@
             });
         },
 
-        removeStyle: function (style) {
+        _removeStyle: function (style) {
             var self = this;
             var $this = $(this);
             var data = $this.data('gstylepanel');
@@ -324,7 +390,7 @@
             });
         },
 
-        clear: function () {
+        _clear: function () {
             var $this = $(this);
             var data = $this.data('gstylepanel');
             var remove = [];
@@ -341,72 +407,6 @@
             }
 
             updatePlaceholder($this);
-        },
-
-        attach: function (container) {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-
-            methods.detach.call(this);
-
-            data.container = container;
-
-            if (container) {
-                for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFStyle) {
-                        methods.insertStyle.call(this, child);
-                    }
-                }
-
-                // Subscribe to container
-                var scene = container.getScene();
-                if (scene) {
-                    data.afterInsertHandler = afterInsertEvent.bind(this);
-                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
-                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-            return this;
-        },
-
-        detach: function () {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-            var container = data.container;
-
-            if (container) {
-                // Unsubscribe from container
-                var scene = container.getScene();
-                if (scene) {
-                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-
-            data.container = null;
-            data.afterInsertHandler = null;
-            data.beforeRemoveHandler = null;
-            data.afterPropertiesChangeHandler = null;
-
-            methods.clear.call(this);
-
-            return this;
-        },
-
-        // Assigns or returns the selected style
-        value: function (value) {
-            var $this = $(this);
-            if (!arguments.length) {
-                return $this.data('gstylepanel').selected;
-            } else {
-                $this.data('gstylepanel').selected = value;
-                updateSelectedStyle($this, value);
-                return this;
-            }
         }
     };
 

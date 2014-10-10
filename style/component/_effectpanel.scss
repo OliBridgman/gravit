@@ -1,0 +1,13 @@
+@import '../variables';
+
+.g-effect-panel {
+  position: relative;
+
+  > .effects {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 30px;
+  }
+}
