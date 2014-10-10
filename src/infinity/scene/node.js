@@ -793,7 +793,10 @@
         }
 
         // Notify before change
-        this._notifyChange(IFNode._Change.BeforePropertiesChange, { properties: propertiesToModify, values: valuesToModify });
+        this._notifyChange(IFNode._Change.BeforePropertiesChange, {
+            properties: propertiesToModify,
+            values: valuesToModify
+        });
 
         // Assign new property values now
         var previousValues = [];
@@ -804,7 +807,10 @@
         }
 
         // Notify after change
-        this._notifyChange(IFNode._Change.AfterPropertiesChange, { properties: propertiesToModify, values: previousValues });
+        this._notifyChange(IFNode._Change.AfterPropertiesChange, {
+            properties: propertiesToModify,
+            values: previousValues
+        });
 
         return true;
     };
@@ -1709,6 +1715,22 @@
     };
 
     /**
+     * @private
+     */
+    IFNode.prototype._setSceneToChildren = function () {
+        if (this.hasMixin(IFNode.Container)) {
+            var scene = this._scene;
+            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child.accept) {
+                    child.accept(function (node) {
+                        node._setScene(scene);
+                    }, true);
+                }
+            }
+        }
+    };
+
+    /**
      * @param {IFScene} scene
      * @private
      */
@@ -1716,19 +1738,25 @@
         if (scene !== this._scene) {
             if (this._scene) {
                 this._notifyChange(IFNode._Change.Detach);
-            }
 
-            if (this.hasMixin(IFNode.Reference)) {
-                if (scene) {
-                    scene.addReference(this);
-                } else {
+                if (this.hasMixin(IFNode.Reference)) {
                     this._scene.removeReference(this);
                 }
+
+                this._scene = null;
+
+                this._setSceneToChildren();
             }
 
             this._scene = scene;
 
             if (this._scene) {
+                if (this.hasMixin(IFNode.Reference)) {
+                    this._scene.addReference(this);
+                }
+
+                this._setSceneToChildren();
+
                 this._notifyChange(IFNode._Change.Attached);
             }
         }
