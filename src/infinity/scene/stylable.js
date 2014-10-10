@@ -25,11 +25,6 @@
         Background: 'B',
 
         /**
-         * Content Layer
-         */
-        Content: 'C',
-
-        /**
          * Foreground Layer
          */
         Foreground: 'F'
@@ -37,7 +32,6 @@
 
     IFStylable.LAYER_ORDER = [
         IFStylable.Layer.Background,
-        IFStylable.Layer.Content,
         IFStylable.Layer.Foreground
     ];
 

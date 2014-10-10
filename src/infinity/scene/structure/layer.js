@@ -119,7 +119,7 @@
 
     /** @override */
     IFLayer.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStylable.Layer.Content) {
+        if (layer === IFStylable.Layer.Background) {
             // Paint children content
             this._paintChildren(context);
         }

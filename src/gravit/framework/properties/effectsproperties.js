@@ -221,10 +221,6 @@
             title: 'Background'
         },
         {
-            layer: IFStylable.Layer.Content,
-            title: 'Content'
-        },
-        {
             layer: IFStylable.Layer.Foreground,
             title: 'Foreground'
         }

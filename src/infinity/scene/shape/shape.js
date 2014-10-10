@@ -118,7 +118,8 @@
                     }
                 }
             }
-        } else if (layer === IFStylable.Layer.Content) {
+
+            // Paint contents if there're any
             // TODO : Check intersection of children paintbbox and if it is
             // fully contained by this shape then don't clip
             // Paint our contents if any and clip 'em to ourself
