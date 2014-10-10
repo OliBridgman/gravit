@@ -129,7 +129,7 @@
                 if (child instanceof IFElement) {
                     // Create temporary canvas if none yet
                     if (!oldContentsCanvas) {
-                        oldContentsCanvas = context.pushCanvas(oldContentsCanvas.createCanvas(this.getGeometryBBox()));
+                        oldContentsCanvas = context.pushCanvas(context.canvas.createCanvas(this.getGeometryBBox()));
                     }
 
                     child.paint(context);
