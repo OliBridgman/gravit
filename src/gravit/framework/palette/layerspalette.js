@@ -497,34 +497,45 @@
                         .appendTo(container);
                 }
 
+                var patternChange = function (evt, color) {
+                    // TODO : I18N
+                    IFEditor.tryRunTransaction(layerOrItem, function () {
+                        var myColor = layerOrItem.getProperty('cls');
+                        layerOrItem.setProperty('cls', color);
+
+                        // Apply color to all child layers recursively that
+                        // do have the same color as our layer
+                        layerOrItem.acceptChildren(function (node) {
+                            if (node instanceof IFLayer) {
+                                var childColor = node.getProperty('cls');
+                                if (IFUtil.equals(childColor, myColor)) {
+                                    node.setProperty('cls', color);
+                                }
+                            }
+                        });
+                    }, 'Change Layer Color');
+                }
+
                 $('<span></span>')
                     .addClass('layer-color')
-                    .gPatternPicker()
-                    .gPatternPicker('scene', this._document.getScene())
-                    .gPatternPicker('types', [IFColor])
-                    .gPatternPicker('value', layerOrItem.getProperty('cls'))
-                    .removeClass('g-input')
+                    .gPatternTarget()
+                    .gPatternTarget('types', [IFColor])
+                    .gPatternTarget('value', layerOrItem.getProperty('cls'))
+                    .css('background',  IFPattern.asCSSBackground(layerOrItem.getProperty('cls')))
                     .on('click', function (evt) {
                         evt.stopPropagation();
-                    })
-                    .on('patternchange', function (evt, color) {
-                        // TODO : I18N
-                        IFEditor.tryRunTransaction(layerOrItem, function () {
-                            var myColor = layerOrItem.getProperty('cls');
-                            layerOrItem.setProperty('cls', color);
 
-                            // Apply color to all child layers recursively that
-                            // do have the same color as our layer
-                            layerOrItem.acceptChildren(function (node) {
-                                if (node instanceof IFLayer) {
-                                    var childColor = node.getProperty('cls');
-                                    if (IFUtil.equals(childColor, myColor)) {
-                                        node.setProperty('cls', color);
-                                    }
-                                }
-                            });
-                        }, 'Change Layer Color');
-                    })
+                        var $target = $(evt.target);
+
+                        $.gPatternPicker.open({
+                            target: $target,
+                            scene: this._document.getScene(),
+                            types: [IFColor],
+                            value: $target.gPatternTarget('value'),
+                            changeCallback: patternChange
+                        });
+                    }.bind(this))
+                    .on('patternchange', patternChange)
                     .appendTo(container);
             }
         }
