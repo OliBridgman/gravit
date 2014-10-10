@@ -70,7 +70,9 @@
             var $this = $(this);
             var menu = $this.data('gmenubutton').options.menu;
             if (!menu.isOpen()) {
-                menu.open($this, GMenu.Position.Center, GMenu.Position.Right_Bottom);
+                menu.open($this, GMenu.Position.Center, GMenu.Position.Right_Bottom, function (item) {
+                    $this.trigger('menuitemactivate', item);
+                });
             }
         },
 

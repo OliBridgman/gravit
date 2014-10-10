@@ -552,9 +552,6 @@
             // Simulate a virtual 'mouse-out', first as that'll never occurr
             // otherwise as we're removing the menu from the DOM
             this._mouseOut(evt);
-
-            // Reset the active menu closing everything
-            GMenu.setActiveMenu(null);
         }
 
         if (this._type == GMenuItem.Type.Item) {
@@ -570,7 +567,14 @@
                 if (this._parent && this._parent.hasEventListeners(GMenu.ActivateEvent)) {
                     this._parent.trigger(new GMenu.ActivateEvent(this));
                 }
+
+                GMenu.triggerGlobalActivation(this);
             }
+        }
+
+        if (!this.isRootMenuBarItem()) {
+            // Reset the active menu closing everything
+            GMenu.setActiveMenu(null);
         }
     };
 

@@ -34,6 +34,13 @@
     GMenu._activeMenu = null;
 
     /**
+     * Global, activation callback
+     * @type {Function(item)}
+     * @private
+     */
+    GMenu._activeActivationCallback = null;
+
+    /**
      * Array of tracked mouse locations
      * @type {Array<{{x:Number, y: Number}}>}
      * @private
@@ -49,17 +56,30 @@
     };
 
     /**
+     * Trigger a global activation
+     * @param {GMenuItem} item the item that was activated
+     */
+    GMenu.triggerGlobalActivation = function (item) {
+        if (GMenu._activeMenu && GMenu._activeActivationCallback) {
+            GMenu._activeActivationCallback(item);
+        }
+    };
+
+    /**
      * Assign the globally, active menu, closing any active one, first
      * @param {GMenu} menu if null, only closes
+     * @param {Boolean} [noCloseCall] if set, no close call will be done, def to false
+     * @param {Function(item)} [activate] global activation callback, def to null
      */
-    GMenu.setActiveMenu = function (menu, noCloseCall) {
+    GMenu.setActiveMenu = function (menu, noCloseCall, activate) {
         // Close any active menu, first
-        if (this._activeMenu) {
+        if (GMenu._activeMenu) {
             if (!noCloseCall) {
-                this._activeMenu.close();
+                GMenu._activeMenu.close();
             }
 
-            this._activeMenu = null;
+            GMenu._activeMenu = null;
+            GMenu._activeActivationCallback = null;
 
             // Remove global menu listeners
             document.removeEventListener("mousemove", GMenu._activeMenuMouseMoveListener);
@@ -68,10 +88,11 @@
             document.removeEventListener("keyup", GMenu._activeMenuKeyDownListener);
         }
 
-        this._activeMenu = menu;
+        GMenu._activeMenu = menu;
+        GMenu._activeActivationCallback = activate;
 
         // Assign a new, active menu if any
-        if (this._activeMenu) {
+        if (GMenu._activeMenu) {
             // Register menu listeners
             document.addEventListener("mousemove", GMenu._activeMenuMouseMoveListener);
             document.addEventListener("mousedown", GMenu._activeMenuMouseUpDownListener);
@@ -543,10 +564,11 @@
      * Open the menu at a given reference which can be
      * either an absolute point or a jquery html element
      * @param {JQuery|{{x: Number, y: Number}}} reference the reference element or point to open at
-     * @param {GMenu.Position|Number} horzPosition the horizontal position to open at
-     * @param {GMenu.Position|Number} vertPosition the vertical position to open at
+     * @param {GMenu.Position|Number} [horzPosition] the horizontal position to open at (Def.: GMenu.Position.Center)
+     * @param {GMenu.Position|Number} [vertPosition] the vertical position to open at (Def.: GMenu.Position.Center)
+     * @param {Function(item)} [activate] callback when an item was activated on this menu or any of it's submenus
      */
-    GMenu.prototype.open = function (reference, horzPosition, vertPosition) {
+    GMenu.prototype.open = function (reference, horzPosition, vertPosition, activate) {
         horzPosition = typeof horzPosition === 'number' ? horzPosition : GMenu.Position.Center;
         vertPosition = typeof vertPosition === 'number' ? vertPosition : GMenu.Position.Center;
 
@@ -560,7 +582,7 @@
             // If this is not a sub-menu, then mark this
             // as being the global active menu
             if (!this.isSubMenu()) {
-                GMenu.setActiveMenu(this);
+                GMenu.setActiveMenu(this, false, activate);
             }
 
             // Send open event
