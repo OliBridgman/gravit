@@ -204,6 +204,12 @@
     GMenuItem.prototype._action = null;
 
     /**
+     * @type {*}
+     * @private
+     */
+    GMenuItem.prototype._data = null;
+
+    /**
      * @return {GMenu}
      * @version 1.0
      */
@@ -382,6 +388,21 @@
                 this._htmlElement.addClass("g-disabled");
             }
         }
+    };
+
+    /**
+     * @returns {*} the item's custom data
+     */
+    GMenuItem.prototype.getData = function () {
+        return this._data;
+    };
+
+    /**
+     * Assigns custom data to the item
+     * @param {*} data
+     */
+    GMenuItem.prototype.setData = function (data) {
+        this._data = data;
     };
 
     /**
