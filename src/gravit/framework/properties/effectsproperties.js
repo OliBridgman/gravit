@@ -7,6 +7,7 @@
         var y = scene.pointToString(effect.getProperty('y'));
         var radius = scene.pointToString(effect.getProperty('r'));
         var color = effect.getProperty('cls');
+        var opacity = Math.round(effect.getProperty('opc') * 100);
 
         return $('<div></div>')
             .addClass('g-form')
@@ -15,7 +16,7 @@
                     .append($('<input>')
                         .css('width', '3em')
                         .val(x)
-                        .on('change', function (evt) {
+                        .on('change', function () {
                             var value = scene.stringToPoint($(this).val());
                             if (value !== null && typeof value === 'number') {
                                 assign(['x'], [value]);
@@ -27,7 +28,7 @@
                     .append($('<input>')
                         .css('width', '3em')
                         .val(y)
-                        .on('change', function (evt) {
+                        .on('change', function () {
                             var value = scene.stringToPoint($(this).val());
                             if (value !== null && typeof value === 'number') {
                                 assign(['y'], [value]);
@@ -39,7 +40,7 @@
                     .append($('<input>')
                         .css('width', '3em')
                         .val(radius)
-                        .on('change', function (evt) {
+                        .on('change', function () {
                             var value = scene.stringToPoint($(this).val());
                             if (value !== null && typeof value === 'number' && value >= 0) {
                                 assign(['r'], [value]);
@@ -48,6 +49,7 @@
                     .append($('<label></label>')
                         .text('Blur')))
                 .append($('<div></div>')
+                    .css('text-align', 'center')
                     .append($('<button></button>')
                         .gPatternPicker()
                         .gPatternPicker('types', [IFColor])
@@ -57,7 +59,19 @@
                             assign(['cls'], [color]);
                         }))
                     .append($('<label></label>')
-                        .text('Color'))));
+                        .text('Color')))
+                .append($('<div></div>')
+                    .append($('<input>')
+                        .css('width', '3em')
+                        .val(opacity)
+                        .on('change', function () {
+                            var value = parseInt($(this).val());
+                            if (!isNaN(value) && value >= 0 && value <= 100) {
+                                assign(['opc'], [value / 100.0]);
+                            }
+                        }))
+                    .append($('<label></label>')
+                        .text('Opacity'))));
     };
 
     var EFFECTS = [
