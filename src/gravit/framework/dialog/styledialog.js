@@ -17,8 +17,10 @@
 
     /**
      * Open this dialog
-     * @param {Function} callback called when the dialog got closed with
-     * a boolean parameter defining whether it was canceled (false) or not (true)
+     * @param {Function(result, assign)} callback called when the dialog got closed with
+     * a boolean parameter defining whether it was canceled (false) or not (true).
+     * Note that you must call the assign function to ensure the changes get
+     * actually assigned to the style.
      */
     GStyleDialog.prototype.open = function (callback) {
         var propertySets = this._style.getProperty('ps');
@@ -95,7 +97,7 @@
             input: form,
             message: '',
             callback: function (data) {
-                if (data) {
+                var assign = function () {
                     var ps = [];
                     for (var propertySet in IFStylable.PropertySet) {
                         var propertySetVal = IFStylable.PropertySet[propertySet];
@@ -105,10 +107,10 @@
                     }
 
                     this._style.setProperties(['name', 'ps'], [form.find('[data-property="name"]').val(), ps]);
-                }
+                }.bind(this)
 
                 if (callback) {
-                    callback(!!data);
+                    callback(!!data, assign);
                 }
             }.bind(this)
         })

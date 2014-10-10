@@ -172,10 +172,11 @@
                         newStyle.setProperty('name', 'Style-' + (scene.getStyleCollection().queryCount('> style')).toString());
                         newStyle.setProperty('ps', this._elements[0].getStylePropertySets().slice());
                         newStyle.assignStyleFrom(this._elements[0]);
-                        new GStyleDialog(newStyle).open(function (result) {
+                        new GStyleDialog(newStyle).open(function (result, assign) {
                             if (result) {
                                 // TODO : I18N
                                 IFEditor.tryRunTransaction(scene, function () {
+                                    assign();
                                     scene.getStyleCollection().appendChild(newStyle);
                                     for (var i = 0; i < this._elements.length; ++i) {
                                         this._elements[i].setProperty('sref', newStyle.getReferenceId());

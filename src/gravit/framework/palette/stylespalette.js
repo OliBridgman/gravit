@@ -43,6 +43,12 @@
      * @type {JQuery}
      * @private
      */
+    GStylesPalette.prototype._styleSettingsControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
     GStylesPalette.prototype._styleDeleteControl = null;
 
     /** @override */
@@ -90,11 +96,29 @@
             }.bind(this))
             .appendTo(htmlElement);
 
+        this._styleSettingsControl = $('<button></button>')
+            // TODO : I18N
+            .attr('title', 'Edit Style Settings')
+            .on('click', function () {
+                var style = this._stylePanel.gStylePanel('value');
+                new GStyleDialog(style).open(function (result, assign) {
+                    if (result) {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(style, function () {
+                            assign();
+                        }.bind(this), 'Change Style Settings');
+                    }
+                }.bind(this));
+            }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-cog'))
+            .appendTo(controls);
+
+
 
         this._styleDeleteControl = $('<button></button>')
             // TODO : I18N
             .attr('title', 'Delete Selected Style')
-            .attr('data-action', 'delete')
             .on('click', function () {
                 var style = this._stylePanel.gStylePanel('value');
                 vex.dialog.confirm({
@@ -139,6 +163,7 @@
     /** @private */
     GStylesPalette.prototype._updateControls = function () {
         var style = this._stylePanel.gStylePanel('value');
+        this._styleSettingsControl.prop('disabled', !style || style.getProperty('_sdf') !== null);
         this._styleDeleteControl.prop('disabled', !style || style.getProperty('_sdf') !== null);
     };
 
