@@ -275,7 +275,253 @@
         }
 
         return CREATE_EFFECT_MENU;
-    }
+    };
+
+
+
+    function insertEffect (effect) {
+        var $this = $(this);
+        var insertBefore = null;
+
+        if (effect.getNext()) {
+            $this.find('.effect-block').each(function (index, element) {
+                var $element = $(element);
+                if ($element.data('effect') === effect.getNext()) {
+                    insertBefore = $element;
+                    return false;
+                }
+            });
+        }
+
+        var effectInfo = getEffectInfo(effect);
+
+        var block = $('<div></div>')
+            .addClass('effect-block')
+            .data('effect', effect)
+            .attr('draggable', 'true')
+            .append($('<div></div>')
+                .addClass('effect-settings grid-icon')
+                // TODO : I18N
+                .attr('title', 'Effect Settings')
+                .css('visibility', effectInfo.createSettings || effectInfo.openSettings ? '' : 'hidden')
+                .on('click', function (evt) {
+                    evt.stopPropagation();
+
+                    var assign = function (properties, values) {
+                        IFEditor.tryRunTransaction(effect, function () {
+                            effect.setProperties(properties, values);
+                        }, 'Change Effect Properties');
+                    };
+
+                    if (effectInfo.openSettings) {
+                        effectInfo.openSettings(effect, assign, evt.target);
+                    } else {
+                        var settings = effectInfo.createSettings(effect, assign);
+                        if (settings) {
+                            settings
+                                .addClass('settings')
+                                .css({
+                                    'display': 'inline-block',
+                                    'padding': '5px'
+                                })
+                                .gOverlay({
+                                    releaseOnClose: true
+                                })
+                                .gOverlay('open', evt.target)
+                        }
+                    }
+                })
+                .append($('<span></span>')
+                    .addClass('fa fa-cog fa-fw')))
+            .append($('<div></div>')
+                .addClass('effect-title grid-main')
+                .text(effect.getNodeNameTranslated()))
+            .append($('<div></div>')
+                .addClass('effect-layer grid-icon')
+                // TODO : I18N
+                .attr('title', 'The layer this effects applies to')
+                .on('click', function (evt) {
+                    evt.stopPropagation();
+
+                    var panel = $('<div></div>')
+                        .gOverlay({
+                            releaseOnClose: true
+                        });
+
+                    var effectLayer = effect.getProperty('ly');
+
+                    for (var i = 0; i < STYLE_LAYERS.length; ++i) {
+                        $('<button></button>')
+                            .addClass('g-flat')
+                            .toggleClass('g-active', effectLayer === STYLE_LAYERS[i].layer)
+                            .css('display', 'block')
+                            .data('layer', STYLE_LAYERS[i].layer)
+                            .text(STYLE_LAYERS[i].title)
+                            .on('click', function (evt) {
+                                IFEditor.tryRunTransaction(effect, function () {
+                                    effect.setProperty('ly', $(evt.target).data('layer'));
+                                }, 'Change Effect Layer');
+                                panel.gOverlay('close');
+                            })
+                            .appendTo(panel);
+                    }
+
+                    panel.gOverlay('open', this);
+                }))
+            .append($('<div></div>')
+                .addClass('effect-visibility grid-icon')
+                // TODO : I18N
+                .attr('title', 'Toggle Effect Visibility')
+                .on('click', function (evt) {
+                    evt.stopPropagation();
+                    // TODO : I18N
+                    IFEditor.tryRunTransaction(effect, function () {
+                        effect.setProperty('vs', !effect.getProperty('vs'));
+                    }, 'Toggle Effect Visibility');
+                })
+                .append($('<span></span>')
+                    .addClass('fa fa-fw')))
+            .on('mousedown', function () {
+                // TODO
+            })
+            .on('click', function () {
+                effect.getScene().setActiveEffect(effect);
+            })
+            .on('dragstart', function (evt) {
+                var $target = $(this);
+
+                var event = evt.originalEvent;
+                event.stopPropagation();
+
+                dragEffect = $target.data('effect');
+
+                // Setup our drag-event now
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', 'dummy_data');
+
+                // Add drag overlays
+                $this.find('.effect-block').each(function (index, element) {
+                    $(element)
+                        .append($('<div></div>')
+                            .addClass('grid-drag-overlay')
+                            .on('dragenter', function () {
+                                if (canDropEffect(this.parentNode)) {
+                                    $(this).parent().addClass('g-drop');
+                                }
+                            })
+                            .on('dragleave', function () {
+                                if (canDropEffect(this.parentNode)) {
+                                    $(this).parent().removeClass('g-drop');
+                                }
+                            })
+                            .on('dragover', function (evt) {
+                                var event = evt.originalEvent;
+                                if (canDropEffect(this.parentNode)) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    event.dataTransfer.dropEffect = 'move';
+                                }
+                            })
+                            .on('drop', function () {
+                                var $parent = $(this.parentNode);
+
+                                $parent.removeClass('g-drop');
+
+                                $this.find('.grid-drag-overlay').remove();
+
+                                var targetEffect = $parent.data('effect');
+                                if (dragEffect && dragEffect.getParent() === targetEffect.getParent()) {
+                                    var parent = dragEffect.getParent();
+                                    var sourceIndex = parent.getIndexOfChild(dragEffect);
+                                    var targetIndex = parent.getIndexOfChild(targetEffect);
+
+                                    // TODO : I18N
+                                    IFEditor.tryRunTransaction(parent, function () {
+                                        if (ifPlatform.modifiers.shiftKey) {
+                                            // Clone effect
+                                            var effectClone = dragEffect.clone();
+                                            parent.insertChild(effectClone, sourceIndex < targetIndex ? targetEffect.getNext() : targetEffect);
+                                        } else {
+                                            // Move effect
+                                            parent.removeChild(dragEffect);
+                                            parent.insertChild(dragEffect, sourceIndex < targetIndex ? targetEffect.getNext() : targetEffect);
+                                        }
+                                    }, ifPlatform.modifiers.shiftKey ? 'Duplicate Effect' : 'Move Effect');
+                                }
+                            }));
+                });
+            })
+            .on('dragend', function (evt) {
+                var event = evt.originalEvent;
+                event.stopPropagation();
+
+                // Remove drag overlays
+                $this.find('.grid-drag-overlay').remove();
+
+                dragEffect = null;
+            });
+
+        if (insertBefore && insertBefore.length > 0) {
+            block.insertBefore(insertBefore);
+        } else {
+            block.appendTo($this.find('.effects'));
+        }
+
+        updateEffect.call(this, effect);
+    };
+
+    function updateEffect (effect) {
+        var $this = $(this);
+        $this.find('.effect-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('effect') === effect) {
+                var effectVisible = effect.getProperty('vs');
+                var effectLayer = effect.getProperty('ly');
+
+                $element.toggleClass('g-selected', effect.hasFlag(IFNode.Flag.Selected));
+
+                $element.find('.effect-visibility')
+                    .toggleClass('grid-icon-default', effectVisible)
+                    /*!!*/
+                    .find('> span')
+                    .toggleClass('fa-eye', effectVisible)
+                    .toggleClass('fa-eye-slash', !effectVisible);
+
+                // TODO
+                $element.find('.effect-layer')
+                    .text(effectLayer ? effectLayer : 'A');
+
+                return false;
+            }
+        });
+    };
+
+    function removeEffect (effect) {
+        var $this = $(this);
+        $this._effectsPanel.find('.effect-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('effect') === effect) {
+                $element.remove();
+                return false;
+            }
+        });
+    };
+
+
+    function clear () {
+        var $this = $(this);
+        var data = $this.data('geffectpanel');
+        $this.find('.effects').empty();
+
+        if (data.elements) {
+            var effects = data.elements[0].getEffects();
+            for (var child = effects.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFEffect) {
+                    insertEffect.call(this, child);
+                }
+            }
+        }
+    };
 
     var methods = {
         init: function (options) {
@@ -331,251 +577,7 @@
                 return data.elements;
             } else {
                 data.elements = elements;
-                methods._clear.call(this);
-            }
-        },
-
-        _insertEffect: function (effect) {
-            var $this = $(this);
-            var insertBefore = null;
-
-            if (effect.getNext()) {
-                $this.find('.effect-block').each(function (index, element) {
-                    var $element = $(element);
-                    if ($element.data('effect') === effect.getNext()) {
-                        insertBefore = $element;
-                        return false;
-                    }
-                });
-            }
-
-            var effectInfo = getEffectInfo(effect);
-
-            var block = $('<div></div>')
-                .addClass('effect-block')
-                .data('effect', effect)
-                .attr('draggable', 'true')
-                .append($('<div></div>')
-                    .addClass('effect-settings grid-icon')
-                    // TODO : I18N
-                    .attr('title', 'Effect Settings')
-                    .css('visibility', effectInfo.createSettings || effectInfo.openSettings ? '' : 'hidden')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-
-                        var assign = function (properties, values) {
-                            IFEditor.tryRunTransaction(effect, function () {
-                                effect.setProperties(properties, values);
-                            }, 'Change Effect Properties');
-                        };
-
-                        if (effectInfo.openSettings) {
-                            effectInfo.openSettings(effect, assign, evt.target);
-                        } else {
-                            var settings = effectInfo.createSettings(effect, assign);
-                            if (settings) {
-                                settings
-                                    .addClass('settings')
-                                    .css({
-                                        'display': 'inline-block',
-                                        'padding': '5px'
-                                    })
-                                    .gOverlay({
-                                        releaseOnClose: true
-                                    })
-                                    .gOverlay('open', evt.target)
-                            }
-                        }
-                    })
-                    .append($('<span></span>')
-                        .addClass('fa fa-cog fa-fw')))
-                .append($('<div></div>')
-                    .addClass('effect-title grid-main')
-                    .text(effect.getNodeNameTranslated()))
-                .append($('<div></div>')
-                    .addClass('effect-layer grid-icon')
-                    // TODO : I18N
-                    .attr('title', 'The layer this effects applies to')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-
-                        var panel = $('<div></div>')
-                            .gOverlay({
-                                releaseOnClose: true
-                            });
-
-                        var effectLayer = effect.getProperty('ly');
-
-                        for (var i = 0; i < STYLE_LAYERS.length; ++i) {
-                            $('<button></button>')
-                                .addClass('g-flat')
-                                .toggleClass('g-active', effectLayer === STYLE_LAYERS[i].layer)
-                                .css('display', 'block')
-                                .data('layer', STYLE_LAYERS[i].layer)
-                                .text(STYLE_LAYERS[i].title)
-                                .on('click', function (evt) {
-                                    IFEditor.tryRunTransaction(effect, function () {
-                                        effect.setProperty('ly', $(evt.target).data('layer'));
-                                    }, 'Change Effect Layer');
-                                    panel.gOverlay('close');
-                                })
-                                .appendTo(panel);
-                        }
-
-                        panel.gOverlay('open', this);
-                    }))
-                .append($('<div></div>')
-                    .addClass('effect-visibility grid-icon')
-                    // TODO : I18N
-                    .attr('title', 'Toggle Effect Visibility')
-                    .on('click', function (evt) {
-                        evt.stopPropagation();
-                        // TODO : I18N
-                        IFEditor.tryRunTransaction(effect, function () {
-                            effect.setProperty('vs', !effect.getProperty('vs'));
-                        }, 'Toggle Effect Visibility');
-                    })
-                    .append($('<span></span>')
-                        .addClass('fa fa-fw')))
-                .on('mousedown', function () {
-                    // TODO
-                })
-                .on('click', function () {
-                    effect.getScene().setActiveEffect(effect);
-                })
-                .on('dragstart', function (evt) {
-                    var $target = $(this);
-
-                    var event = evt.originalEvent;
-                    event.stopPropagation();
-
-                    dragEffect = $target.data('effect');
-
-                    // Setup our drag-event now
-                    event.dataTransfer.effectAllowed = 'move';
-                    event.dataTransfer.setData('text/plain', 'dummy_data');
-
-                    // Add drag overlays
-                    $this.find('.effect-block').each(function (index, element) {
-                        $(element)
-                            .append($('<div></div>')
-                                .addClass('grid-drag-overlay')
-                                .on('dragenter', function () {
-                                    if (canDropEffect(this.parentNode)) {
-                                        $(this).parent().addClass('g-drop');
-                                    }
-                                })
-                                .on('dragleave', function () {
-                                    if (canDropEffect(this.parentNode)) {
-                                        $(this).parent().removeClass('g-drop');
-                                    }
-                                })
-                                .on('dragover', function (evt) {
-                                    var event = evt.originalEvent;
-                                    if (canDropEffect(this.parentNode)) {
-                                        event.preventDefault();
-                                        event.stopPropagation();
-                                        event.dataTransfer.dropEffect = 'move';
-                                    }
-                                })
-                                .on('drop', function () {
-                                    var $parent = $(this.parentNode);
-
-                                    $parent.removeClass('g-drop');
-
-                                    $this.find('.grid-drag-overlay').remove();
-
-                                    var targetEffect = $parent.data('effect');
-                                    if (dragEffect && dragEffect.getParent() === targetEffect.getParent()) {
-                                        var parent = dragEffect.getParent();
-                                        var sourceIndex = parent.getIndexOfChild(dragEffect);
-                                        var targetIndex = parent.getIndexOfChild(targetEffect);
-
-                                        // TODO : I18N
-                                        IFEditor.tryRunTransaction(parent, function () {
-                                            if (ifPlatform.modifiers.shiftKey) {
-                                                // Clone effect
-                                                var effectClone = dragEffect.clone();
-                                                parent.insertChild(effectClone, sourceIndex < targetIndex ? targetEffect.getNext() : targetEffect);
-                                            } else {
-                                                // Move effect
-                                                parent.removeChild(dragEffect);
-                                                parent.insertChild(dragEffect, sourceIndex < targetIndex ? targetEffect.getNext() : targetEffect);
-                                            }
-                                        }, ifPlatform.modifiers.shiftKey ? 'Duplicate Effect' : 'Move Effect');
-                                    }
-                                }));
-                    });
-                })
-                .on('dragend', function (evt) {
-                    var event = evt.originalEvent;
-                    event.stopPropagation();
-
-                    // Remove drag overlays
-                    $this.find('.grid-drag-overlay').remove();
-
-                    dragEffect = null;
-                });
-
-            if (insertBefore && insertBefore.length > 0) {
-                block.insertBefore(insertBefore);
-            } else {
-                block.appendTo($this.find('.effects'));
-            }
-
-            methods._updateEffect.call(this, effect);
-        },
-
-        _updateEffect: function (effect) {
-            var $this = $(this);
-            $this.find('.effect-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('effect') === effect) {
-                    var effectVisible = effect.getProperty('vs');
-                    var effectLayer = effect.getProperty('ly');
-
-                    $element.toggleClass('g-selected', effect.hasFlag(IFNode.Flag.Selected));
-
-                    $element.find('.effect-visibility')
-                        .toggleClass('grid-icon-default', effectVisible)
-                        /*!!*/
-                        .find('> span')
-                        .toggleClass('fa-eye', effectVisible)
-                        .toggleClass('fa-eye-slash', !effectVisible);
-
-                    // TODO
-                    $element.find('.effect-layer')
-                        .text(effectLayer ? effectLayer : 'A');
-
-                    return false;
-                }
-            });
-        },
-
-        _removeEffect: function (effect) {
-            var $this = $(this);
-            $this._effectsPanel.find('.effect-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('effect') === effect) {
-                    $element.remove();
-                    return false;
-                }
-            });
-        },
-
-
-        _clear: function () {
-            var $this = $(this);
-            var data = $this.data('geffectpanel');
-            $this.find('.effects').empty();
-
-            if (data.elements) {
-                var effects = data.elements[0].getEffects();
-                for (var child = effects.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFEffect) {
-                        methods._insertEffect.call(this, child);
-                    }
-                }
+                clear.call(this);
             }
         }
     };

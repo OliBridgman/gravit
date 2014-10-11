@@ -35,7 +35,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
-            methods._insertSwatch.call(this, evt.node);
+            insertSwatch.call(this, evt.node);
         }
     };
 
@@ -43,7 +43,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
-            methods._removeSwatch.call(this, evt.node);
+            removeSwatch.call(this, evt.node);
         }
     };
 
@@ -51,7 +51,7 @@
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
         if (evt.node.getParent() === container) {
-            methods._updateSwatch.call(this, evt.node);
+            updateSwatch.call(this, evt.node);
         }
     };
 
@@ -73,6 +73,258 @@
         }
 
         return false;
+    };
+
+    function insertSwatch (swatch, index) {
+        var $this = $(this);
+        var data = $this.data('gswatchpanel');
+
+        var pattern = swatch.getProperty('pat');
+        if (!pattern) {
+            return;
+        }
+
+        // don't add if type is not right
+        var types = data.types;
+        if (types && types.length > 0) {
+            var isCompatible = false;
+            for (var i = 0; i < types.length; ++i) {
+                if (pattern instanceof types[i]) {
+                    isCompatible = true;
+                    break;
+                }
+            }
+            if (!isCompatible) {
+                return;
+            }
+        }
+
+        var insertBefore = null;
+
+        if (typeof index === 'number') {
+            if (data.options.nullSwatch) {
+                index += 1;
+            }
+            insertBefore = $this.children('.swatch-block').eq(index);
+        } else {
+            if (swatch.getNext()) {
+                $this.find('.swatch-block').each(function (index, element) {
+                    var $element = $(element);
+                    if ($element.data('swatch') === swatch.getNext()) {
+                        insertBefore = $element;
+                        return false;
+                    }
+                });
+            }
+        }
+
+        var block = $('<div></div>')
+            .addClass('swatch-block')
+            .data('swatch', swatch)
+            .append($('<div></div>')
+                .addClass('swatch-content')
+                .append($('<div></div>')
+                    .addClass('swatch-preview')
+                    .append($('<div></div>')
+                        .css({
+                            'width': data.options.previewWidth + 'px',
+                            'height': data.options.previewHeight + 'px'
+                        })))
+                .append($('<div></div>')
+                    .addClass('swatch-name')))
+            .on('mousedown', function () {
+                $this.data('gswatchpanel').selected = swatch;
+                updateSelectedSwatch($this, swatch);
+            })
+            .on('click', function () {
+                $this.trigger('swatchchange', swatch);
+            });
+
+        if (data.options.allowNameEdit) {
+            block
+                .gAutoEdit({
+                    selector: '.swatch-name'
+                })
+                .on('submitvalue', function (evt, value) {
+                    if (value && value.trim() !== '') {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(swatch, function () {
+                            swatch.setProperty('name', value);
+                        }, 'Rename Swatch');
+                    }
+                });
+        }
+
+        if (data.options.allowDrag || data.options.allowReorder) {
+            block
+                .attr('draggable', 'true')
+                .on('dragstart', function (evt) {
+                    var event = evt.originalEvent;
+                    event.stopPropagation();
+
+                    dragSwatch = $(this).data('swatch');
+                    var pattern = dragSwatch.getProperty('pat');
+                    if (!pattern) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (data.options.allowDrag) {
+                        $this.trigger('swatchdragstart', dragSwatch);
+
+                        // Setup our drag-event now
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
+                        event.dataTransfer.setDragImage(block.find('.swatch-preview > div')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
+                    }
+                })
+                .on('dragend', function (evt) {
+                    var event = evt.originalEvent;
+                    event.stopPropagation();
+
+                    dragSwatch = null;
+
+                    if (data.options.allowDrag) {
+                        var offset = $this.offset();
+                        var width = $this.outerWidth();
+                        var height = $this.outerHeight();
+                        var x = event.pageX;
+                        var y = event.pageY;
+
+                        if (x <= offset.left || x >= offset.left + width ||
+                            y <= offset.top || y >= offset.top + height) {
+                            $this.trigger('swatchdragaway', swatch);
+                        } else {
+                            $this.trigger('swatchdragend', swatch);
+                        }
+                    }
+                });
+        }
+
+        if (data.options.allowDrop || data.options.allowReorder) {
+            block
+                .on('dragenter', function (evt) {
+                    if (canDrop($this, this)) {
+                        $(this).addClass('drop');
+                    }
+                })
+                .on('dragleave', function (evt) {
+                    if (canDrop($this, this)) {
+                        $(this).removeClass('drop');
+                    }
+                })
+                .on('dragover', function (evt) {
+                    var event = evt.originalEvent;
+                    if (canDrop($this, this)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        event.dataTransfer.dropEffect = 'move';
+                    }
+                })
+                .on('drop', function (evt) {
+                    $(this).removeClass('drop');
+                    var targetSwatch = $(this).data('swatch');
+
+                    if (dragSwatch) {
+                        if (data.options.allowReorder) {
+                            if (data.container && dragSwatch.getParent() === data.container) {
+                                var parent = dragSwatch.getParent();
+                                var sourceIndex = parent.getIndexOfChild(dragSwatch);
+                                var targetIndex = parent.getIndexOfChild(targetSwatch);
+
+                                IFEditor.tryRunTransaction(parent, function () {
+                                    parent.removeChild(dragSwatch);
+                                    parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
+                                }, 'Move Swatch');
+                            }
+
+                            $this.trigger('swatchmove', [dragSwatch, targetSwatch]);
+                        } else if (data.options.allowDrop) {
+                            $this.trigger('swatchdrop', [dragSwatch, targetSwatch]);
+                        }
+                    }
+                });
+        }
+
+        if (insertBefore && insertBefore.length > 0) {
+            block.insertBefore(insertBefore);
+        } else {
+            block.appendTo($this);
+        }
+
+        updatePlaceholder($this);
+
+        updateSwatch.call(this, swatch);
+    };
+
+    function updateSwatch (swatch) {
+        var $this = $(this);
+
+        $this.find('.swatch-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('swatch') === swatch) {
+                $element
+                    .find('.swatch-preview > div')
+                    .css('background', IFPattern.asCSSBackground(swatch.getProperty('pat')));
+
+                var name = swatch.getProperty('name');
+
+                $element.attr('title', name);
+                $element.find('.swatch-name').text(name);
+                return false;
+            }
+        });
+    };
+
+    function removeSwatch (swatch) {
+        var $this = $(this);
+        var data = $this.data('gswatchpanel');
+
+        $this.find('.swatch-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('swatch') === swatch) {
+                $element.remove();
+
+                if (swatch === data.selected) {
+                    data.selected = null;
+                    $this.trigger('swatchchange', null);
+                }
+
+                updatePlaceholder($this);
+                return false;
+            }
+        });
+    };
+
+    function clear () {
+        var $this = $(this);
+        var remove = [];
+
+        $this.find('.swatch-block').each(function (index, block) {
+            var $block = $(block);
+            if (!$block.hasClass('swatch-null')) {
+                remove.push($block);
+            }
+        });
+
+        for (var i = 0; i < remove.length; ++i) {
+            remove[i].remove();
+        }
+
+        updatePlaceholder($this);
+    };
+
+    function updateFromContainer () {
+        var $this = $(this);
+        var data = $this.data('gswatchpanel');
+
+        if (data.container) {
+            for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof IFSwatch) {
+                    insertSwatch.call(this, child);
+                }
+            }
+        }
     };
 
     var methods = {
@@ -207,7 +459,7 @@
             data.container = container;
 
             if (container) {
-                methods._updateFromContainer.call(this);
+                updateFromContainer.call(this);
 
                 // Subscribe to container
                 var scene = container.getScene();
@@ -243,7 +495,7 @@
             data.beforeRemoveHandler = null;
             data.afterPropertiesChangeHandler = null;
 
-            methods._clear.call(this);
+            clear.call(this);
 
             return this;
         },
@@ -256,8 +508,8 @@
                 return data.types;
             } else {
                 data.types = types;
-                methods._clear.call(this);
-                methods._updateFromContainer.call(this);
+                clear.call(this);
+                updateFromContainer.call(this);
 
                 return this;
             }
@@ -271,262 +523,6 @@
                 $this.data('gswatchpanel').selected = value;
                 updateSelectedSwatch($this, value);
                 return this;
-            }
-        },
-
-        _insertSwatch: function (swatch, index) {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-            var self = this;
-
-            var pattern = swatch.getProperty('pat');
-            if (!pattern) {
-                return;
-            }
-
-            // don't add if type is not right
-            var types = data.types;
-            if (types && types.length > 0) {
-                var isCompatible = false;
-                for (var i = 0; i < types.length; ++i) {
-                    if (pattern instanceof types[i]) {
-                        isCompatible = true;
-                        break;
-                    }
-                }
-                if (!isCompatible) {
-                    return;
-                }
-            }
-
-            var insertBefore = null;
-
-            if (typeof index === 'number') {
-                if (data.options.nullSwatch) {
-                    index += 1;
-                }
-                insertBefore = $this.children('.swatch-block').eq(index);
-            } else {
-                if (swatch.getNext()) {
-                    $this.find('.swatch-block').each(function (index, element) {
-                        var $element = $(element);
-                        if ($element.data('swatch') === swatch.getNext()) {
-                            insertBefore = $element;
-                            return false;
-                        }
-                    });
-                }
-            }
-
-            var block = $('<div></div>')
-                .addClass('swatch-block')
-                .data('swatch', swatch)
-                .append($('<div></div>')
-                    .addClass('swatch-content')
-                    .append($('<div></div>')
-                        .addClass('swatch-preview')
-                        .append($('<div></div>')
-                            .css({
-                                'width': data.options.previewWidth + 'px',
-                                'height': data.options.previewHeight + 'px'
-                            })))
-                    .append($('<div></div>')
-                        .addClass('swatch-name')))
-                .on('mousedown', function () {
-                    $this.data('gswatchpanel').selected = swatch;
-                    updateSelectedSwatch($this, swatch);
-                })
-                .on('click', function () {
-                    $this.trigger('swatchchange', swatch);
-                });
-
-            if (data.options.allowNameEdit) {
-                block
-                    .gAutoEdit({
-                        selector: '.swatch-name'
-                    })
-                    .on('submitvalue', function (evt, value) {
-                        if (value && value.trim() !== '') {
-                            // TODO : I18N
-                            IFEditor.tryRunTransaction(swatch, function () {
-                                swatch.setProperty('name', value);
-                            }, 'Rename Swatch');
-                        }
-                    });
-            }
-
-            if (data.options.allowDrag || data.options.allowReorder) {
-                block
-                    .attr('draggable', 'true')
-                    .on('dragstart', function (evt) {
-                        var event = evt.originalEvent;
-                        event.stopPropagation();
-
-                        dragSwatch = $(this).data('swatch');
-                        var pattern = dragSwatch.getProperty('pat');
-                        if (!pattern) {
-                            event.preventDefault();
-                            return;
-                        }
-
-                        if (data.options.allowDrag) {
-                            $this.trigger('swatchdragstart', dragSwatch);
-
-                            // Setup our drag-event now
-                            event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
-                            event.dataTransfer.setDragImage(block.find('.swatch-preview > div')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
-                        }
-                    })
-                    .on('dragend', function (evt) {
-                        var event = evt.originalEvent;
-                        event.stopPropagation();
-
-                        dragSwatch = null;
-
-                        if (data.options.allowDrag) {
-                            var offset = $this.offset();
-                            var width = $this.outerWidth();
-                            var height = $this.outerHeight();
-                            var x = event.pageX;
-                            var y = event.pageY;
-
-                            if (x <= offset.left || x >= offset.left + width ||
-                                y <= offset.top || y >= offset.top + height) {
-                                $this.trigger('swatchdragaway', swatch);
-                            } else {
-                                $this.trigger('swatchdragend', swatch);
-                            }
-                        }
-                    });
-            }
-
-            if (data.options.allowDrop || data.options.allowReorder) {
-                block
-                    .on('dragenter', function (evt) {
-                        if (canDrop($this, this)) {
-                            $(this).addClass('drop');
-                        }
-                    })
-                    .on('dragleave', function (evt) {
-                        if (canDrop($this, this)) {
-                            $(this).removeClass('drop');
-                        }
-                    })
-                    .on('dragover', function (evt) {
-                        var event = evt.originalEvent;
-                        if (canDrop($this, this)) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            event.dataTransfer.dropEffect = 'move';
-                        }
-                    })
-                    .on('drop', function (evt) {
-                        $(this).removeClass('drop');
-                        var targetSwatch = $(this).data('swatch');
-
-                        if (dragSwatch) {
-                            if (data.options.allowReorder) {
-                                if (data.container && dragSwatch.getParent() === data.container) {
-                                    var parent = dragSwatch.getParent();
-                                    var sourceIndex = parent.getIndexOfChild(dragSwatch);
-                                    var targetIndex = parent.getIndexOfChild(targetSwatch);
-
-                                    IFEditor.tryRunTransaction(parent, function () {
-                                        parent.removeChild(dragSwatch);
-                                        parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
-                                    }, 'Move Swatch');
-                                }
-
-                                $this.trigger('swatchmove', [dragSwatch, targetSwatch]);
-                            } else if (data.options.allowDrop) {
-                                $this.trigger('swatchdrop', [dragSwatch, targetSwatch]);
-                            }
-                        }
-                    });
-            }
-
-            if (insertBefore && insertBefore.length > 0) {
-                block.insertBefore(insertBefore);
-            } else {
-                block.appendTo($this);
-            }
-
-            updatePlaceholder($this);
-
-            methods._updateSwatch.call(this, swatch);
-        },
-
-        _updateSwatch: function (swatch) {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-
-            $this.find('.swatch-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('swatch') === swatch) {
-                    $element
-                        .find('.swatch-preview > div')
-                        .css('background', IFPattern.asCSSBackground(swatch.getProperty('pat')));
-
-                    var name = swatch.getProperty('name');
-
-                    $element.attr('title', name);
-                    $element.find('.swatch-name').text(name);
-                    return false;
-                }
-            });
-        },
-
-        _removeSwatch: function (swatch) {
-            var self = this;
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-
-            $this.find('.swatch-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('swatch') === swatch) {
-                    $element.remove();
-
-                    if (swatch === data.selected) {
-                        data.selected = null;
-                        $this.trigger('swatchchange', null);
-                    }
-
-                    updatePlaceholder($this);
-                    return false;
-                }
-            });
-        },
-
-        _clear: function () {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-            var remove = [];
-
-            $this.find('.swatch-block').each(function (index, block) {
-                var $block = $(block);
-                if (!$block.hasClass('swatch-null')) {
-                    remove.push($block);
-                }
-            });
-
-            for (var i = 0; i < remove.length; ++i) {
-                remove[i].remove();
-            }
-
-            updatePlaceholder($this);
-        },
-
-        _updateFromContainer: function () {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-
-            if (data.container) {
-                for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFSwatch) {
-                        methods._insertSwatch.call(this, child);
-                    }
-                }
             }
         }
     };

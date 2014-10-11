@@ -53,7 +53,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
-            methods._insertStyle.call(this, evt.node);
+            insertStyle.call(this, evt.node);
         }
     };
 
@@ -61,7 +61,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
-            methods._removeStyle.call(this, evt.node);
+            removeStyle.call(this, evt.node);
         }
     };
 
@@ -69,7 +69,7 @@
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
         if (evt.node.getParent() === container) {
-            methods._updateStyle.call(this, evt.node);
+            updateStyle.call(this, evt.node);
         }
     };
 
@@ -91,6 +91,221 @@
         }
 
         return false;
+    };
+
+
+
+    function insertStyle (style, index) {
+        var $this = $(this);
+        var data = $this.data('gstylepanel');
+        var insertBefore = null;
+
+        if (typeof index === 'number') {
+            insertBefore = $this.children('.style-block').eq(index);
+        } else {
+            if (style.getNext()) {
+                $this.find('.style-block').each(function (index, element) {
+                    var $element = $(element);
+                    if ($element.data('style') === style.getNext()) {
+                        insertBefore = $element;
+                        return false;
+                    }
+                });
+            }
+        }
+
+        var block = $('<div></div>')
+            .addClass('style-block')
+            .data('style', style)
+            .append($('<div></div>')
+                .addClass('style-content')
+                .append($('<div></div>')
+                    .addClass('style-preview')
+                    .append($('<img>')))
+                .append($('<div></div>')
+                    .addClass('style-name')))
+            .on('mousedown', function () {
+                $this.data('gstylepanel').selected = style;
+                updateSelectedStyle($this, style);
+            })
+            .on('click', function () {
+                $this.trigger('stylechange', style);
+            });
+
+        if (data.options.allowNameEdit) {
+            block
+                .gAutoEdit({
+                    selector: '.style-name'
+                })
+                .on('submitvalue', function (evt, value) {
+                    if (value && value.trim() !== '') {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(style, function () {
+                            style.setProperty('name', value);
+                        }, 'Rename Style');
+                    }
+                });
+        }
+
+        if (data.options.allowDrag || data.options.allowReorder) {
+            block
+                .attr('draggable', 'true')
+                .on('dragstart', function (evt) {
+                    var event = evt.originalEvent;
+                    event.stopPropagation();
+
+                    dragStyle = $(this).data('style');
+
+                    if (data.options.allowDrag) {
+                        $this.trigger('styledragstart', style);
+
+                        // Setup our drag-event now
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
+                        event.dataTransfer.setDragImage(block.find('.style-preview > img')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
+                    }
+                })
+                .on('dragend', function (evt) {
+                    var event = evt.originalEvent;
+                    event.stopPropagation();
+
+                    dragStyle = null;
+
+                    if (data.options.allowDrag) {
+                        var offset = $this.offset();
+                        var width = $this.outerWidth();
+                        var height = $this.outerHeight();
+                        var x = event.pageX;
+                        var y = event.pageY;
+
+                        if (x <= offset.left || x >= offset.left + width ||
+                            y <= offset.top || y >= offset.top + height) {
+                            $this.trigger('styledragaway', style);
+                        } else {
+                            $this.trigger('styledragend', style);
+                        }
+                    }
+                });
+        }
+
+        if (data.options.allowDrop || data.options.allowReorder) {
+            block
+                .on('dragenter', function (evt) {
+                    if (canDrop($this, this)) {
+                        $(this).addClass('drop');
+                    }
+                })
+                .on('dragleave', function (evt) {
+                    if (canDrop($this, this)) {
+                        $(this).removeClass('drop');
+                    }
+                })
+                .on('dragover', function (evt) {
+                    var event = evt.originalEvent;
+                    if (canDrop($this, this)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        event.dataTransfer.dropEffect = 'move';
+                    }
+                })
+                .on('drop', function (evt) {
+                    $(this).removeClass('drop');
+                    var targetStyle = $(this).data('style');
+
+                    if (data.options.allowReorder && dragStyle) {
+                        if (data.container && dragStyle.getParent() === data.container) {
+                            var parent = dragStyle.getParent();
+                            var sourceIndex = parent.getIndexOfChild(dragStyle);
+                            var targetIndex = parent.getIndexOfChild(targetStyle);
+
+                            // TODO : I18N
+                            IFEditor.tryRunTransaction(parent, function () {
+                                if (ifPlatform.modifiers.shiftKey) {
+                                    // Clone style
+                                    var styleClone = dragStyle.clone();
+                                    styleClone.setProperty('name', styleClone.getProperty('name') + '-copy');
+                                    parent.insertChild(styleClone, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
+                                } else {
+                                    parent.removeChild(dragStyle);
+                                    parent.insertChild(dragStyle, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
+                                }
+                            }, ifPlatform.modifiers.shiftKey ? 'Duplicate Style' : 'Move Style');
+                        }
+
+                        $this.trigger('stylemove', [dragStyle, targetStyle]);
+                    } else if (data.options.allowDrop) {
+                        $this.trigger('styledrop', [dragStyle, targetStyle, ]);
+                    }
+                });
+        }
+
+        if (insertBefore && insertBefore.length > 0) {
+            block.insertBefore(insertBefore);
+        } else {
+            block.appendTo($this);
+        }
+
+        updatePlaceholder($this);
+
+        updateStyle.call(this, style);
+    };
+
+    function updateStyle (style) {
+        var $this = $(this);
+        var data = $this.data('gstylepanel');
+
+        $this.find('.style-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('style') === style) {
+                $element
+                    .find('.style-preview > img')
+                    .attr('src', createStylePreviewImage(style, data.options.previewWidth, data.options.previewHeight));
+
+
+                var name = style.getProperty('name');
+                $element.attr('title', name);
+                $element.find('.style-name').text(name);
+                return false;
+            }
+        });
+    };
+
+    function removeStyle (style) {
+        var $this = $(this);
+        var data = $this.data('gstylepanel');
+
+        $this.find('.style-block').each(function (index, element) {
+            var $element = $(element);
+            if ($element.data('style') === style) {
+                $element.remove();
+
+                if (style === data.selected) {
+                    data.selected = null;
+                    $this.trigger('stylechange', null);
+                }
+
+                updatePlaceholder($this);
+                return false;
+            }
+        });
+    };
+
+    function clear () {
+        var $this = $(this);
+        var remove = [];
+
+        $this.find('.style-block').each(function (index, block) {
+            var $block = $(block);
+            if (!$block.hasClass('style-null')) {
+                remove.push($block);
+            }
+        });
+
+        for (var i = 0; i < remove.length; ++i) {
+            remove[i].remove();
+        }
+
+        updatePlaceholder($this);
     };
 
     var methods = {
@@ -137,7 +352,7 @@
             if (container) {
                 for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
                     if (child instanceof IFStyle) {
-                        methods._insertStyle.call(this, child);
+                        insertStyle.call(this, child);
                     }
                 }
 
@@ -175,7 +390,7 @@
             data.beforeRemoveHandler = null;
             data.afterPropertiesChangeHandler = null;
 
-            methods._clear.call(this);
+            clear.call(this);
 
             return this;
         },
@@ -190,223 +405,6 @@
                 updateSelectedStyle($this, value);
                 return this;
             }
-        },
-
-        _insertStyle: function (style, index) {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-            var self = this;
-
-            var insertBefore = null;
-
-            if (typeof index === 'number') {
-                insertBefore = $this.children('.style-block').eq(index);
-            } else {
-                if (style.getNext()) {
-                    $this.find('.style-block').each(function (index, element) {
-                        var $element = $(element);
-                        if ($element.data('style') === style.getNext()) {
-                            insertBefore = $element;
-                            return false;
-                        }
-                    });
-                }
-            }
-
-            var block = $('<div></div>')
-                .addClass('style-block')
-                .data('style', style)
-                .append($('<div></div>')
-                    .addClass('style-content')
-                    .append($('<div></div>')
-                        .addClass('style-preview')
-                        .append($('<img>')))
-                    .append($('<div></div>')
-                        .addClass('style-name')))
-                .on('mousedown', function () {
-                    $this.data('gstylepanel').selected = style;
-                    updateSelectedStyle($this, style);
-                })
-                .on('click', function () {
-                    $this.trigger('stylechange', style);
-                });
-
-            if (data.options.allowNameEdit) {
-                block
-                    .gAutoEdit({
-                        selector: '.style-name'
-                    })
-                    .on('submitvalue', function (evt, value) {
-                        if (value && value.trim() !== '') {
-                            // TODO : I18N
-                            IFEditor.tryRunTransaction(style, function () {
-                                style.setProperty('name', value);
-                            }, 'Rename Style');
-                        }
-                    });
-            }
-
-            if (data.options.allowDrag || data.options.allowReorder) {
-                block
-                    .attr('draggable', 'true')
-                    .on('dragstart', function (evt) {
-                        var event = evt.originalEvent;
-                        event.stopPropagation();
-
-                        dragStyle = $(this).data('style');
-
-                        if (data.options.allowDrag) {
-                            $this.trigger('styledragstart', style);
-
-                            // Setup our drag-event now
-                            event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
-                            event.dataTransfer.setDragImage(block.find('.style-preview > img')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
-                        }
-                    })
-                    .on('dragend', function (evt) {
-                        var event = evt.originalEvent;
-                        event.stopPropagation();
-
-                        dragStyle = null;
-
-                        if (data.options.allowDrag) {
-                            var offset = $this.offset();
-                            var width = $this.outerWidth();
-                            var height = $this.outerHeight();
-                            var x = event.pageX;
-                            var y = event.pageY;
-
-                            if (x <= offset.left || x >= offset.left + width ||
-                                y <= offset.top || y >= offset.top + height) {
-                                $this.trigger('styledragaway', style);
-                            } else {
-                                $this.trigger('styledragend', style);
-                            }
-                        }
-                    });
-            }
-
-            if (data.options.allowDrop || data.options.allowReorder) {
-                block
-                    .on('dragenter', function (evt) {
-                        if (canDrop($this, this)) {
-                            $(this).addClass('drop');
-                        }
-                    })
-                    .on('dragleave', function (evt) {
-                        if (canDrop($this, this)) {
-                            $(this).removeClass('drop');
-                        }
-                    })
-                    .on('dragover', function (evt) {
-                        var event = evt.originalEvent;
-                        if (canDrop($this, this)) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            event.dataTransfer.dropEffect = 'move';
-                        }
-                    })
-                    .on('drop', function (evt) {
-                        $(this).removeClass('drop');
-                        var targetStyle = $(this).data('style');
-
-                        if (data.options.allowReorder && dragStyle) {
-                            if (data.container && dragStyle.getParent() === data.container) {
-                                var parent = dragStyle.getParent();
-                                var sourceIndex = parent.getIndexOfChild(dragStyle);
-                                var targetIndex = parent.getIndexOfChild(targetStyle);
-
-                                // TODO : I18N
-                                IFEditor.tryRunTransaction(parent, function () {
-                                    if (ifPlatform.modifiers.shiftKey) {
-                                        // Clone style
-                                        var styleClone = dragStyle.clone();
-                                        styleClone.setProperty('name', styleClone.getProperty('name') + '-copy');
-                                        parent.insertChild(styleClone, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
-                                    } else {
-                                        parent.removeChild(dragStyle);
-                                        parent.insertChild(dragStyle, sourceIndex < targetIndex ? targetStyle.getNext() : targetStyle);
-                                    }
-                                }, ifPlatform.modifiers.shiftKey ? 'Duplicate Style' : 'Move Style');
-                            }
-
-                            $this.trigger('stylemove', [dragStyle, targetStyle]);
-                        } else if (data.options.allowDrop) {
-                            $this.trigger('styledrop', [dragStyle, targetStyle, ]);
-                        }
-                    });
-            }
-
-            if (insertBefore && insertBefore.length > 0) {
-                block.insertBefore(insertBefore);
-            } else {
-                block.appendTo($this);
-            }
-
-            updatePlaceholder($this);
-
-            methods._updateStyle.call(this, style);
-        },
-
-        _updateStyle: function (style) {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-
-            $this.find('.style-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('style') === style) {
-                    $element
-                        .find('.style-preview > img')
-                        .attr('src', createStylePreviewImage(style, data.options.previewWidth, data.options.previewHeight));
-
-
-                    var name = style.getProperty('name');
-                    $element.attr('title', name);
-                    $element.find('.style-name').text(name);
-                    return false;
-                }
-            });
-        },
-
-        _removeStyle: function (style) {
-            var self = this;
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-
-            $this.find('.style-block').each(function (index, element) {
-                var $element = $(element);
-                if ($element.data('style') === style) {
-                    $element.remove();
-
-                    if (style === data.selected) {
-                        data.selected = null;
-                        $this.trigger('stylechange', null);
-                    }
-
-                    updatePlaceholder($this);
-                    return false;
-                }
-            });
-        },
-
-        _clear: function () {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-            var remove = [];
-
-            $this.find('.style-block').each(function (index, block) {
-                var $block = $(block);
-                if (!$block.hasClass('style-null')) {
-                    remove.push($block);
-                }
-            });
-
-            for (var i = 0; i < remove.length; ++i) {
-                remove[i].remove();
-            }
-
-            updatePlaceholder($this);
         }
     };
 
