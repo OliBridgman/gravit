@@ -29,7 +29,7 @@
                 }
             }
         }
-    }
+    };
 
     function afterInsertEvent(evt) {
         var $this = $(this);

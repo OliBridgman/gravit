@@ -240,7 +240,7 @@
         }
 
         throw new Error('Invalid effect/class');
-    }
+    };
 
     var dragEffect = null;
 
@@ -277,9 +277,31 @@
         return CREATE_EFFECT_MENU;
     };
 
+    function afterInsertEvent(evt) {
+        var $this = $(this);
+        var elements = $this.data('geffectpanel').elements;
+        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+            insertEffect.call(this, evt.node);
+        }
+    };
 
+    function beforeRemoveEvent(evt) {
+        var $this = $(this);
+        var elements = $this.data('geffectpanel').elements;
+        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+            removeEffect.call(this, evt.node);
+        }
+    };
 
-    function insertEffect (effect) {
+    function afterPropertiesChangeEvent(evt) {
+        var $this = $(this);
+        var elements = $this.data('geffectpanel').elements;
+        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+            updateEffect.call(this, evt.node);
+        }
+    };
+
+    function insertEffect(effect) {
         var $this = $(this);
         var insertBefore = null;
 
@@ -470,7 +492,7 @@
         updateEffect.call(this, effect);
     };
 
-    function updateEffect (effect) {
+    function updateEffect(effect) {
         var $this = $(this);
         $this.find('.effect-block').each(function (index, element) {
             var $element = $(element);
@@ -496,7 +518,7 @@
         });
     };
 
-    function removeEffect (effect) {
+    function removeEffect(effect) {
         var $this = $(this);
         $this._effectsPanel.find('.effect-block').each(function (index, element) {
             var $element = $(element);
@@ -508,7 +530,7 @@
     };
 
 
-    function clear () {
+    function clear() {
         var $this = $(this);
         var data = $this.data('geffectpanel');
         $this.find('.effects').empty();
@@ -576,7 +598,34 @@
             if (!arguments.length) {
                 return data.elements;
             } else {
+                if (data.elements && data.elements.length) {
+                    var scene = data.elements[0].getScene();
+                    if (scene) {
+                        scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    }
+
+                    data.afterInsertHandler = null;
+                    data.beforeRemoveHandler = null;
+                    data.afterPropertiesChangeHandler = null;
+                }
+
                 data.elements = elements;
+
+
+                if (data.elements && data.elements.length) {
+                    var scene = data.elements[0].getScene();
+                    if (scene) {
+                        data.afterInsertHandler = afterInsertEvent.bind(this);
+                        data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                        data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
+                        scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    }
+                }
+
                 clear.call(this);
             }
         }
