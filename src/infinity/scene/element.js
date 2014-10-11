@@ -281,7 +281,34 @@
      * @returns {Array<String>}
      */
     IFElement.Stylable.prototype.getStyleLayers = function () {
-        return null;
+        var propertySets = this.getStylePropertySets();
+        var styleLayers = [];
+
+        for (var i = 0; i < propertySets.length; ++i) {
+            var propertySet = propertySets[i];
+            var styleLayer = null;
+
+            switch (propertySet) {
+                case IFStylable.PropertySet.Fill:
+                    styleLayer = IFStylable.StyleLayer.Fill;
+                    break;
+                case IFStylable.PropertySet.Border:
+                    styleLayer = IFStylable.StyleLayer.Border;
+                    break;
+                default:
+                    break;
+            }
+
+            if (styleLayer) {
+                if (!styleLayers) {
+                    styleLayers = [styleLayer];
+                } else {
+                    styleLayers.push(styleLayer);
+                }
+            }
+        }
+
+        return styleLayers;
     };
 
     /**

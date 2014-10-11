@@ -25,22 +25,6 @@
         trf: null
     };
 
-    /**
-     * The layer of a shape
-     * @enum
-     */
-    IFShape.StyleLayer = {
-        /**
-         * Fill Layer
-         */
-        Fill: 'F',
-
-        /**
-         * Border Layer
-         */
-        Border: 'B'
-    };
-
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -106,11 +90,6 @@
     };
 
     /** @override */
-    IFShape.prototype.getStyleLayers = function () {
-        return [IFShape.StyleLayer.Fill, IFShape.StyleLayer.Border];
-    };
-
-    /** @override */
     IFShape.prototype.getTransform = function () {
         return this.$trf;
     };
@@ -135,10 +114,10 @@
 
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFShape.StyleLayer.Fill) {
+        if (layer === IFStylable.StyleLayer.Fill) {
             this._paintFill(context);
             this._paintContents(context);
-        } else if (layer === IFShape.StyleLayer.Border) {
+        } else if (layer === IFStylable.StyleLayer.Border) {
             this._paintBorder(context);
         }
     };
@@ -150,7 +129,7 @@
             return true;
         }
 
-        if (layer === IFShape.StyleLayer.Border && this.hasStyleBorder()) {
+        if (layer === IFStylable.StyleLayer.Border && this.hasStyleBorder()) {
             // If we're not having a center-aligned border then
             // we need a separate canvas here
             if (this.$_ba !== IFStylable.BorderAlignment.Center) {
@@ -183,7 +162,7 @@
 
         if (this.hasStyleFill()) {
             // Unite with fill bbox and fill effects
-            this._fillPaintBBox = effects.getEffectsBBox(source, IFShape.StyleLayer.Fill);
+            this._fillPaintBBox = effects.getEffectsBBox(source, IFStylable.StyleLayer.Fill);
             paintBBox = paintBBox.united(this._fillPaintBBox);
         }
 
@@ -201,7 +180,7 @@
             }
 
             // Unite with border bbox and border effects
-            this._borderPaintBBox = effects.getEffectsBBox(borderBBox, IFShape.StyleLayer.Border);
+            this._borderPaintBBox = effects.getEffectsBBox(borderBBox, IFStylable.StyleLayer.Border);
             paintBBox = paintBBox.united(this._borderPaintBBox);
         }
 

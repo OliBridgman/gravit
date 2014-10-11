@@ -15,6 +15,22 @@
     IFStylable._effects = null;
 
     /**
+     * Style layer
+     * @enum
+     */
+    IFStylable.StyleLayer = {
+        /**
+         * Fill Layer
+         */
+        Fill: 'F',
+
+        /**
+         * Border Layer
+         */
+        Border: 'B'
+    };
+
+    /**
      * Alignment of a border
      * @enum
      */
