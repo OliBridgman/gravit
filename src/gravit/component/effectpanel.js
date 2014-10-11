@@ -627,6 +627,8 @@
                 }
 
                 clear.call(this);
+
+                return this;
             }
         }
     };
