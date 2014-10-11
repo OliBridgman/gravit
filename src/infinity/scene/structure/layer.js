@@ -118,11 +118,8 @@
     };
 
     /** @override */
-    IFLayer.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStylable.Layer.Background) {
-            // Paint children content
-            this._paintChildren(context);
-        }
+    IFLayer.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
+        this._paintChildren(context);
     };
 
     /** @override */

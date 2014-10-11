@@ -41,7 +41,7 @@
     IFEffect.GeometryProperties = {
         /** Visibility of the effect */
         'vs': true,
-        /** The layer (IFStylable.Layer) this applies to */
+        /** The layer (String) this applies to */
         'ly': null
     };
 

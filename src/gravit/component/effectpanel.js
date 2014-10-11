@@ -209,22 +209,6 @@
         }
     ];
 
-    // TODO : I18N
-    var STYLE_LAYERS = [
-        {
-            layer: null,
-            title: 'All'
-        },
-        {
-            layer: IFStylable.Layer.Background,
-            title: 'Background'
-        },
-        {
-            layer: IFStylable.Layer.Foreground,
-            title: 'Foreground'
-        }
-    ];
-
     function getEffectInfo(effectInstOrClass) {
         var clazz = null;
         if (effectInstOrClass instanceof IFEffect) {
@@ -358,38 +342,6 @@
             .append($('<div></div>')
                 .addClass('effect-title grid-main')
                 .text(effect.getNodeNameTranslated()))
-            .append($('<div></div>')
-                .addClass('effect-layer grid-icon')
-                // TODO : I18N
-                .attr('title', 'The layer this effects applies to')
-                .on('click', function (evt) {
-                    evt.stopPropagation();
-
-                    var panel = $('<div></div>')
-                        .gOverlay({
-                            releaseOnClose: true
-                        });
-
-                    var effectLayer = effect.getProperty('ly');
-
-                    for (var i = 0; i < STYLE_LAYERS.length; ++i) {
-                        $('<button></button>')
-                            .addClass('g-flat')
-                            .toggleClass('g-active', effectLayer === STYLE_LAYERS[i].layer)
-                            .css('display', 'block')
-                            .data('layer', STYLE_LAYERS[i].layer)
-                            .text(STYLE_LAYERS[i].title)
-                            .on('click', function (evt) {
-                                IFEditor.tryRunTransaction(effect, function () {
-                                    effect.setProperty('ly', $(evt.target).data('layer'));
-                                }, 'Change Effect Layer');
-                                panel.gOverlay('close');
-                            })
-                            .appendTo(panel);
-                    }
-
-                    panel.gOverlay('open', this);
-                }))
             .append($('<div></div>')
                 .addClass('effect-visibility grid-icon')
                 // TODO : I18N

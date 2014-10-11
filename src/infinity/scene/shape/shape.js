@@ -25,6 +25,22 @@
         trf: null
     };
 
+    /**
+     * The layer of a shape
+     * @enum
+     */
+    IFShape.StyleLayer = {
+        /**
+         * Fill Layer
+         */
+        Fill: 'F',
+
+        /**
+         * Border Layer
+         */
+        Border: 'B'
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape.HitResult Class
     // -----------------------------------------------------------------------------------------------------------------
@@ -62,6 +78,18 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @type {IFRect}
+     * @private
+     */
+    IFShape.prototype._fillPaintBBox = null;
+
+    /**
+     * @type {IFRect}
+     * @private
+     */
+    IFShape.prototype._borderPaintBBox = null;
+
     /** @override */
     IFShape.prototype.assignFrom = function (other) {
         IFBlock.prototype.assignFrom.call(this, other);
@@ -75,6 +103,11 @@
     IFShape.prototype.getStylePropertySets = function () {
         return IFElement.Stylable.prototype.getStylePropertySets.call(this)
             .concat(IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border);
+    };
+
+    /** @override */
+    IFShape.prototype.getStyleLayers = function () {
+        return [IFShape.StyleLayer.Fill, IFShape.StyleLayer.Border];
     };
 
     /** @override */
@@ -102,109 +135,11 @@
 
     /** @override */
     IFShape.prototype._paintStyleLayer = function (context, layer) {
-        if (layer === IFStylable.Layer.Background) {
-            if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-                var fill = this._createFillPaint(context, this.getGeometryBBox());
-                if (fill && fill.paint) {
-                    var canvas = context.canvas;
-                    canvas.putVertices(this);
-
-                    if (fill.transform) {
-                        var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(fill.transform));
-                        canvas.fillVertices(fill.paint, this.$_fop);
-                        canvas.setTransform(oldTransform);
-                    } else {
-                        canvas.fillVertices(fill.paint, this.$_fop);
-                    }
-                }
-            }
-
-            // Paint contents if there're any
-            // TODO : Check intersection of children paintbbox and if it is
-            // fully contained by this shape then don't clip
-            // Paint our contents if any and clip 'em to ourself
-            // TODO : Use clipPath() when supporting AA in chrome instead
-            // of composite painting and separate canvas!!
-            var oldContentsCanvas = null;
-            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFElement) {
-                    // Create temporary canvas if none yet
-                    if (!oldContentsCanvas) {
-                        oldContentsCanvas = context.pushCanvas(context.canvas.createCanvas(this.getGeometryBBox()));
-                    }
-
-                    child.paint(context);
-                }
-            }
-
-            // If we have a old contents canvas, clip our contents and swap canvas back
-            if (oldContentsCanvas) {
-                context.canvas.putVertices(this);
-                context.canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                oldContentsCanvas.drawCanvas(context.canvas);
-                context.canvas.finish();
-                context.popCanvas();
-            }
-        } else if (layer === IFStylable.Layer.Foreground) {
-            var outline = context.configuration.isOutline(context);
-            if (!outline && this.hasStyleBorder()) {
-                var borderBBox = this.getGeometryBBox();
-                var borderPadding = this.getStyleBorderPadding();
-                if (borderPadding) {
-                    borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
-                }
-                var border = this._createBorderPaint(context, borderBBox);
-
-                if (border && border.paint) {
-                    var canvas = context.canvas;
-                    var borderWidth = this.$_bw;
-
-                    // Except center alignment we need to double the border width
-                    // as we're gonna clip half away
-                    if (this.$_ba !== IFStylable.BorderAlignment.Center) {
-                        borderWidth *= 2;
-                    }
-
-                    context.canvas.putVertices(this);
-
-                    if (border.transform) {
-                        // If any scale factor is != 1.0 we need to fill the whole area
-                        // and clip our border away to ensure border width consistency
-                        if (this.$_bsx !== 1.0 || this.$_bsy !== 1.0) {
-                            // Fill everything with the border.paint, then clip with the border
-                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
-                            var patternFillArea = border.transform.inverted().mapRect(borderBBox);
-                            canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
-                            canvas.setTransform(oldTransform);
-                            canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                        } else {
-                            var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
-                            canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, this.$_bml, this.$_bop);
-                            canvas.setTransform(oldTransform);
-                        }
-                    } else {
-                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, this.$_bop);
-                    }
-
-                    // TODO : Use clipPath() when supporting AA in chrome instead
-                    // of composite painting and separate canvas!!
-                    // Depending on the border alignment we might need to clip now
-                    if (this.$_ba === IFStylable.BorderAlignment.Inside) {
-                        canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
-                        canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
-                    }
-                }
-            } else if (outline) {
-                // Outline is painted with non-transformed border
-                // so we reset transform, transform the vertices
-                // ourself and then re-apply the transformation
-                var transform = context.canvas.resetTransform();
-                var transformedVertices = new IFVertexTransformer(this, transform);
-                context.canvas.putVertices(transformedVertices);
-                context.canvas.strokeVertices(context.getOutlineColor());
-                context.canvas.setTransform(transform);
-            }
+        if (layer === IFShape.StyleLayer.Fill) {
+            this._paintFill(context);
+            this._paintContents(context);
+        } else if (layer === IFShape.StyleLayer.Border) {
+            this._paintBorder(context);
         }
     };
 
@@ -215,7 +150,7 @@
             return true;
         }
 
-        if (layer === IFStylable.Layer.Foreground && this.hasStyleBorder()) {
+        if (layer === IFShape.StyleLayer.Border && this.hasStyleBorder()) {
             // If we're not having a center-aligned border then
             // we need a separate canvas here
             if (this.$_ba !== IFStylable.BorderAlignment.Center) {
@@ -239,7 +174,51 @@
             return null;
         }
 
-        return this.getStyleBBox(source, this._requireMiterLimitApproximation());
+        var effects = this.getEffects();
+
+        this._fillPaintBBox = null;
+        this._borderPaintBBox = null;
+
+        var paintBBox = source;
+
+        if (this.hasStyleFill()) {
+            // Unite with fill bbox and fill effects
+            this._fillPaintBBox = effects.getEffectsBBox(source, IFShape.StyleLayer.Fill);
+            paintBBox = paintBBox.united(this._fillPaintBBox);
+        }
+
+        if (this.hasStyleBorder()) {
+            var borderBBox = source;
+
+            // Apply border padding
+            var borderPadding = this.getStyleBorderPadding();
+            if (borderPadding) {
+                if (this._requireMiterLimitApproximation() && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
+                    borderPadding *= this.$_bml;
+                }
+
+                borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
+            }
+
+            // Unite with border bbox and border effects
+            this._borderPaintBBox = effects.getEffectsBBox(borderBBox, IFShape.StyleLayer.Border);
+            paintBBox = paintBBox.united(this._borderPaintBBox);
+        }
+
+        // Apply shape effect bbopx
+        paintBBox = effects.getEffectsBBox(paintBBox);
+
+        // We need to iterate up and expand our effects-bbox
+        // by the effects of our parents
+        for (var stylable = this; stylable !== null; stylable = stylable.getParent()) {
+            if (!stylable.hasMixin(IFStylable) || stylable.getStylePropertySets().indexOf(IFStylable.PropertySet.Effects) < 0) {
+                break;
+            }
+
+            paintBBox = stylable.getEffects().getEffectsBBox(paintBBox);
+        }
+
+        return paintBBox.toAlignedRect();
     };
 
     /**
@@ -250,6 +229,131 @@
      */
     IFShape.prototype._requireMiterLimitApproximation = function () {
         return false;
+    };
+
+    /**
+     * Paint the shape fill
+     * @param {IFPaintContext} context
+     * @private
+     */
+    IFShape.prototype._paintFill = function (context) {
+        if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
+            var fill = this._createFillPaint(context, this.getGeometryBBox());
+            if (fill && fill.paint) {
+                var canvas = context.canvas;
+                canvas.putVertices(this);
+
+                if (fill.transform) {
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(fill.transform));
+                    canvas.fillVertices(fill.paint, this.$_fop);
+                    canvas.setTransform(oldTransform);
+                } else {
+                    canvas.fillVertices(fill.paint, this.$_fop);
+                }
+            }
+        }
+    };
+
+    /**
+     * Paint the shape contents
+     * @param {IFPaintContext} context
+     * @private
+     */
+    IFShape.prototype._paintContents = function (context) {
+        // Paint contents if there're any
+        // TODO : Check intersection of children paintbbox and if it is
+        // fully contained by this shape then don't clip
+        // Paint our contents if any and clip 'em to ourself
+        // TODO : Use clipPath() when supporting AA in chrome instead
+        // of composite painting and separate canvas!!
+        var oldContentsCanvas = null;
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
+            if (child instanceof IFElement) {
+                // Create temporary canvas if none yet
+                if (!oldContentsCanvas) {
+                    oldContentsCanvas = context.pushCanvas(context.canvas.createCanvas(this.getGeometryBBox()));
+                }
+
+                child.paint(context);
+            }
+        }
+
+        // If we have a old contents canvas, clip our contents and swap canvas back
+        if (oldContentsCanvas) {
+            context.canvas.putVertices(this);
+            context.canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            oldContentsCanvas.drawCanvas(context.canvas);
+            context.canvas.finish();
+            context.popCanvas();
+        }
+    };
+
+
+    /**
+     * Paint the shape border
+     * @param {IFPaintContext} context
+     * @private
+     */
+    IFShape.prototype._paintBorder = function (context) {
+        var outline = context.configuration.isOutline(context);
+        if (!outline && this.hasStyleBorder()) {
+            var borderBBox = this.getGeometryBBox();
+            var borderPadding = this.getStyleBorderPadding();
+            if (borderPadding) {
+                borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
+            }
+            var border = this._createBorderPaint(context, borderBBox);
+
+            if (border && border.paint) {
+                var canvas = context.canvas;
+                var borderWidth = this.$_bw;
+
+                // Except center alignment we need to double the border width
+                // as we're gonna clip half away
+                if (this.$_ba !== IFStylable.BorderAlignment.Center) {
+                    borderWidth *= 2;
+                }
+
+                context.canvas.putVertices(this);
+
+                if (border.transform) {
+                    // If any scale factor is != 1.0 we need to fill the whole area
+                    // and clip our border away to ensure border width consistency
+                    if (this.$_bsx !== 1.0 || this.$_bsy !== 1.0) {
+                        // Fill everything with the border.paint, then clip with the border
+                        var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
+                        var patternFillArea = border.transform.inverted().mapRect(borderBBox);
+                        canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
+                        canvas.setTransform(oldTransform);
+                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                    } else {
+                        var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
+                        canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, this.$_bml, this.$_bop);
+                        canvas.setTransform(oldTransform);
+                    }
+                } else {
+                    canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, this.$_bop);
+                }
+
+                // TODO : Use clipPath() when supporting AA in chrome instead
+                // of composite painting and separate canvas!!
+                // Depending on the border alignment we might need to clip now
+                if (this.$_ba === IFStylable.BorderAlignment.Inside) {
+                    canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+                } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
+                    canvas.fillVertices(IFRGBColor.BLACK, 1, IFPaintCanvas.CompositeOperator.DestinationOut);
+                }
+            }
+        } else if (outline) {
+            // Outline is painted with non-transformed border
+            // so we reset transform, transform the vertices
+            // ourself and then re-apply the transformation
+            var transform = context.canvas.resetTransform();
+            var transformedVertices = new IFVertexTransformer(this, transform);
+            context.canvas.putVertices(transformedVertices);
+            context.canvas.strokeVertices(context.getOutlineColor());
+            context.canvas.setTransform(transform);
+        }
     };
 
     /** @override */
