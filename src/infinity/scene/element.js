@@ -635,13 +635,31 @@
     };
 
     /** @override */
-    IFElement.Stylable.prototype._stylePrepareGeometryChange = function () {
+    IFElement.Stylable.prototype._stylePrepareGeometryChange = function (effect) {
         this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+
+        if (effect && this.hasMixin(IFNode.Container)) {
+            // Invalidate children that may be affected by our effects
+            for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
+                if (node instanceof IFElement && node.hasMixin(IFElement.Stylable)) {
+                    node._stylePrepareGeometryChange(true);
+                }
+            }
+        }
     };
 
     /** @override */
-    IFElement.Stylable.prototype._styleFinishGeometryChange = function () {
+    IFElement.Stylable.prototype._styleFinishGeometryChange = function (effect) {
         this._notifyChange(IFElement._Change.FinishGeometryUpdate, 1 /* invalidate only paint bbox */);
+
+        if (effect && this.hasMixin(IFNode.Container)) {
+            // Invalidate children that may be affected by our effects
+            for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
+                if (node instanceof IFElement && node.hasMixin(IFElement.Stylable)) {
+                    node._styleFinishGeometryChange(true);
+                }
+            }
+        }
     };
 
     /** @override */

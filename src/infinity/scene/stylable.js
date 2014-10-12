@@ -333,10 +333,10 @@
         var ownerStyle = this.getParent();
         if (ownerStyle && ownerStyle.hasMixin(IFStylable)) {
             if ((change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) && args instanceof IFEffect) {
-                ownerStyle._stylePrepareGeometryChange();
+                ownerStyle._stylePrepareGeometryChange(true);
             }
             if ((change == IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) && args instanceof IFEffect) {
-                ownerStyle._styleFinishGeometryChange();
+                ownerStyle._styleFinishGeometryChange(true);
             }
         }
         IFNode.prototype._handleChange.call(this, change, args);
@@ -653,13 +653,19 @@
         }
     };
 
-    /** @private */
-    IFStylable.prototype._stylePrepareGeometryChange = function () {
+    /**
+     * @param {Boolean} [effect] whether the call comes from effects or not
+     * @private
+     */
+    IFStylable.prototype._stylePrepareGeometryChange = function (effect) {
         // NO-OP
     };
 
-    /** @private */
-    IFStylable.prototype._styleFinishGeometryChange = function () {
+    /**
+     * @param {Boolean} [effect] whether the call comes from effects or not
+     * @private
+     */
+    IFStylable.prototype._styleFinishGeometryChange = function (effect) {
         // NO-OP
     };
 

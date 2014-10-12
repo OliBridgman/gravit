@@ -131,10 +131,10 @@
                 if (stylable) {
                     switch (change) {
                         case IFNode._Change.BeforePropertiesChange:
-                            stylable._stylePrepareGeometryChange();
+                            stylable._stylePrepareGeometryChange(true);
                             break;
                         case IFNode._Change.AfterPropertiesChange:
-                            stylable._styleFinishGeometryChange();
+                            stylable._styleFinishGeometryChange(true);
                             break;
                     }
                 }
