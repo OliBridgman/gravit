@@ -527,7 +527,7 @@
 
     function removeEffect(effect) {
         var $this = $(this);
-        $this._effectsPanel.find('.effect-block').each(function (index, element) {
+        $this.find('.effect-block').each(function (index, element) {
             var $element = $(element);
             if ($element.data('effect') === effect) {
                 $element.remove();
