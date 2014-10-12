@@ -287,6 +287,13 @@
 
     function insertEffect(effect) {
         var $this = $(this);
+        var data = $this.data('geffectpanel');
+
+        var layer = $this.find('[data-action="style-layer"]').val() || null;
+        if (layer !== '*' && effect.getProperty('ly') !== layer) {
+            return;
+        }
+
         var insertBefore = null;
 
         if (effect.getNext()) {
@@ -342,6 +349,48 @@
             .append($('<div></div>')
                 .addClass('effect-title grid-main')
                 .text(effect.getNodeNameTranslated()))
+            .append($('<div></div>')
+                .addClass('effect-layer grid-icon')
+                // TODO : I18N
+                .on('click', function (evt) {
+                    evt.stopPropagation();
+
+                    var effectLayer = effect.getProperty('ly');
+
+                    var element = data.elements && data.elements.length ? data.elements[0] : null;
+                    var styleLayers = element ? element.getStyleLayers() : null;
+
+                    if (styleLayers && styleLayers.length) {
+                        var panel = $('<div></div>')
+                            .gOverlay({
+                                releaseOnClose: true
+                            });
+
+                        styleLayers.unshift('');
+
+                        for (var i = 0; i < styleLayers.length; ++i) {
+                            var layer = styleLayers[i];
+                            $('<button></button>')
+                                .addClass('g-flat')
+                                .toggleClass('g-active', effectLayer === layer)
+                                .css('display', 'block')
+                                .data('layer', layer)
+                                .text(ifLocale.get(IFStylable.StyleLayerName[layer ? layer : '']))
+                                .on('click', function (evt) {
+                                    IFEditor.tryRunTransaction(effect, function () {
+                                        var layer = $(evt.target).data('layer') || null;
+                                        effect.setProperty('ly', layer);
+                                    }, 'Change Effect Layer');
+                                    panel.gOverlay('close');
+                                })
+                                .appendTo(panel);
+                        }
+
+                        panel.gOverlay('open', this);
+                    }
+                })
+                .append($('<span></span>')
+                    .addClass('fa fa-fw')))
             .append($('<div></div>')
                 .addClass('effect-visibility grid-icon')
                 // TODO : I18N
@@ -461,9 +510,15 @@
                     .toggleClass('fa-eye', effectVisible)
                     .toggleClass('fa-eye-slash', !effectVisible);
 
-                // TODO
                 $element.find('.effect-layer')
-                    .text(effectLayer ? effectLayer : 'A');
+                    .toggleClass('grid-icon-default', !effectLayer)
+                    // TODO : I18N
+                    .attr('title', 'Applies to ' + ifLocale.get(IFStylable.StyleLayerName[effectLayer ? effectLayer : '']))
+                    /*!!*/
+                    .find('> span')
+                    .toggleClass('fa-circle', !effectLayer)
+                    .toggleClass('gicon-fill', effectLayer === IFStylable.StyleLayer.Fill)
+                    .toggleClass('gicon-stroke', effectLayer === IFStylable.StyleLayer.Border)
 
                 return false;
             }
@@ -497,12 +552,44 @@
         }
     };
 
+    function updateStyleLayers() {
+        var $this = $(this);
+        var data = $this.data('geffectpanel');
+
+        var styleLayer = $this.find('[data-action="style-layer"]');
+
+        styleLayer
+            .empty()
+            .css('display', 'none')
+            .append($('<option></option>')
+                .attr('value', '*')
+                // TODO : I18N
+                .text('All Effects'))
+            .append($('<option></option>')
+                .attr('value', '')
+                .text(ifLocale.get(IFStylable.StyleLayerName[''])));
+
+        styleLayer.val('*');
+
+        var element = data.elements && data.elements.length ? data.elements[0] : null;
+        var styleLayers = element ? element.getStyleLayers() : null;
+
+        if (styleLayers) {
+            styleLayer.css('display', '');
+            for (var i = 0; i < styleLayers.length; ++i) {
+                var layer = styleLayers[i];
+                styleLayer.append($('<option></option>')
+                    .attr('value', layer)
+                    .text(ifLocale.get(IFStylable.StyleLayerName[layer])))
+            }
+        }
+    };
+
     var methods = {
         init: function (options) {
             options = $.extend({}, options);
 
             return this.each(function () {
-
                 var self = this;
                 var $this = $(this)
                     .addClass('g-effect-panel')
@@ -512,13 +599,25 @@
                     })
                     .append($('<div></div>')
                         .addClass('g-grid effects'))
+                    .append($('<select></select>')
+                        .attr('data-action', 'style-layer')
+                        .css({
+                            'position': 'absolute',
+                            'left': '0px',
+                            'bottom': '5px'
+                        })
+                        .on('change', function (evt) {
+                            var val = $(evt.target).val();
+                            methods.layer.call(self, val ? val : null);
+                        }))
                     .append($('<div></div>')
                         .css({
                             'position': 'absolute',
-                            'right': '5px',
+                            'right': '0px',
                             'bottom': '5px'
                         })
                         .append($('<button></button>')
+                            .attr('data-action', 'create')
                             .append($('<span></span>')
                                 .addClass('fa fa-plus'))
                             .gMenuButton({
@@ -526,18 +625,22 @@
                                 arrow: false
                             })
                             .on('menuitemactivate', function (evt, menuItem) {
+                                var layer = methods.layer.call(self);
                                 var effectClass = menuItem.getData();
                                 var elements = $this.data('geffectpanel').elements;
                                 if (elements && elements.length) {
                                     // TODO : I18N
                                     IFEditor.tryRunTransaction(elements[0], function () {
                                         for (var i = 0; i < elements.length; ++i) {
-                                            elements[i].getEffects().appendChild(new effectClass());
+                                            var effect = new effectClass();
+                                            effect.setProperty('ly', layer);
+                                            elements[i].getEffects().appendChild(effect);
                                         }
                                     }, 'Add Effect');
                                 }
                             }))
                         .append($('<button></button>')
+                            .attr('data-action', 'delete')
                             .append($('<span></span>')
                                 .addClass('fa fa-trash-o'))));
             });
@@ -578,6 +681,22 @@
                     }
                 }
 
+                updateStyleLayers.call(this);
+                clear.call(this);
+
+                return this;
+            }
+        },
+
+        layer: function (layer) {
+            var $this = $(this);
+            var data = $this.data('geffectpanel');
+
+            if (!arguments.length) {
+                var val = $this.find('[data-action="style-layer"]').val();
+                return val && val !== '*' ? val : null;
+            } else {
+                $this.find('[data-action="style-layer"]').val(layer ? layer : '');
                 clear.call(this);
 
                 return this;

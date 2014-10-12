@@ -46,3 +46,4 @@ ifLocale.setValues(IFColorTransformEffect, IFLocale.Language.English, ["name"], 
 ifLocale.setValues(IFDropShadowEffect, IFLocale.Language.English, ["name"], ["Drop Shadow"]);
 ifLocale.setValues(IFInnerShadowEffect, IFLocale.Language.English, ["name"], ["Inner Shadow"]);
 ifLocale.setValues(IFOverlayEffect, IFLocale.Language.English, ["name"], ["Overlay"]);
+ifLocale.setValues(IFStylable, IFLocale.Language.English, ["layer.element", "layer.fill", "layer.border"], ["Element", "Fill", "Border"]);

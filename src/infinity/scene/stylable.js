@@ -4,15 +4,42 @@
      * @class IFStylable
      * @constructor
      * @mixin
+     * @extends IFObject
      */
     IFStylable = function () {
     };
+    IFObject.inherit(IFStylable, IFObject);
 
     /**
      * @type {IFStylable.Effects}
      * @private
      */
     IFStylable._effects = null;
+
+    /**
+     * Style layer
+     * @enum
+     */
+    IFStylable.StyleLayer = {
+        /**
+         * Fill Layer
+         */
+        Fill: 'F',
+
+        /**
+         * Border Layer
+         */
+        Border: 'B'
+    };
+
+    /**
+     * Localized names for IFStylable.StyleLayer
+     */
+    IFStylable.StyleLayerName = {
+        '' : new IFLocale.Key(IFStylable, 'layer.element'),
+        'F': new IFLocale.Key(IFStylable, 'layer.fill'),
+        'B': new IFLocale.Key(IFStylable, 'layer.border')
+    };
 
     /**
      * Style layer

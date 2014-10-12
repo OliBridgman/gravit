@@ -282,7 +282,7 @@
      */
     IFElement.Stylable.prototype.getStyleLayers = function () {
         var propertySets = this.getStylePropertySets();
-        var styleLayers = [];
+        var styleLayers = null;
 
         for (var i = 0; i < propertySets.length; ++i) {
             var propertySet = propertySets[i];
