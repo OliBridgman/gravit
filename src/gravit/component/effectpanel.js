@@ -336,12 +336,13 @@
             return;
         }
 
+        // We'll always insert in reverse-order (last=top)
         var insertBefore = null;
-
-        if (effect.getNext()) {
+        var previous = effect.getPrevious();
+        if (previous) {
             $this.find('.effect-block').each(function (index, element) {
                 var $element = $(element);
-                if ($element.data('effect') === effect.getNext()) {
+                if ($element.data('effect') === previous) {
                     insertBefore = $element;
                     return false;
                 }
