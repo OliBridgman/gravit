@@ -11,6 +11,13 @@
     };
     IFNode.inherit('innerShadowEffect', IFInnerShadowEffect, IFEffect);
 
+    IFInnerShadowEffect.equals = function (left, right) {
+        if (left instanceof IFInnerShadowEffect && right instanceof  IFInnerShadowEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFInnerShadowEffect.GeometryProperties).concat(Object.keys(IFInnerShadowEffect.VisualProperties)));
+        }
+        return false;
+    };
+
     /**
      * Geometry properties of a shadow effect
      */

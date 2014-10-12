@@ -11,6 +11,13 @@
     };
     IFNode.inherit('clTransformEffect', IFColorTransformEffect, IFEffect);
 
+    IFColorTransformEffect.equals = function (left, right) {
+        if (left instanceof IFColorTransformEffect && right instanceof  IFColorTransformEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFColorTransformEffect.VisualProperties));
+        }
+        return false;
+    };
+
     /**
      * Visual properties of a color grading effect
      */

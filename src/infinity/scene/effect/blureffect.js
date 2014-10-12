@@ -11,6 +11,13 @@
     };
     IFNode.inherit('blurEffect', IFBlurEffect, IFEffect);
 
+    IFBlurEffect.equals = function (left, right) {
+        if (left instanceof IFBlurEffect && right instanceof  IFBlurEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFBlurEffect.GeometryProperties));
+        }
+        return false;
+    };
+
     /**
      * Geometry properties of a blur effect
      */

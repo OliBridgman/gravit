@@ -11,6 +11,13 @@
     };
     IFNode.inherit('overlayEffect', IFOverlayEffect, IFEffect);
 
+    IFOverlayEffect.equals = function (left, right) {
+        if (left instanceof IFOverlayEffect && right instanceof  IFOverlayEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFOverlayEffect.VisualProperties));
+        }
+        return false;
+    };
+
     /**
      * Visual properties of an overlay effect
      */

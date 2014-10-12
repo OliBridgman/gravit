@@ -11,6 +11,13 @@
     };
     IFNode.inherit('dropShadowEffect', IFDropShadowEffect, IFEffect);
 
+    IFDropShadowEffect.equals = function (left, right) {
+        if (left instanceof IFDropShadowEffect && right instanceof  IFDropShadowEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFDropShadowEffect.GeometryProperties).concat(Object.keys(IFDropShadowEffect.VisualProperties)));
+        }
+        return false;
+    };
+
     /**
      * Geometry properties of a shadow effect
      */

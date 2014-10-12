@@ -11,6 +11,13 @@
     };
     IFNode.inherit('clMatrixEffect', IFColorMatrixEffect, IFEffect);
 
+    IFColorMatrixEffect.equals = function (left, right) {
+        if (left instanceof IFColorMatrixEffect && right instanceof  IFColorMatrixEffect) {
+            return left.arePropertiesEqual(right, Object.keys(IFColorMatrixEffect.VisualProperties));
+        }
+        return false;
+    };
+
     /**
      * Visual properties of a color grading effect
      */
