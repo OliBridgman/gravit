@@ -62,17 +62,6 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @type {IFRect}
-     * @private
-     */
-    IFShape.prototype._fillPaintBBox = null;
-
-    /**
-     * @type {IFRect}
-     * @private
-     */
-    IFShape.prototype._borderPaintBBox = null;
 
     /** @override */
     IFShape.prototype.assignFrom = function (other) {
@@ -142,17 +131,6 @@
     };
 
     /** @override */
-    IFShape.prototype._getStyleLayerBBox = function (layer) {
-        if (layer === IFStylable.StyleLayer.Fill) {
-            return this._fillPaintBBox;
-        } else if (layer === IFStylable.StyleLayer.Border) {
-            return this._borderPaintBBox;
-        } else {
-            return null;
-        }
-    };
-
-    /** @override */
     IFShape.prototype._calculateGeometryBBox = function () {
         return ifVertexInfo.calculateBounds(this, true);
     };
@@ -166,15 +144,12 @@
 
         var effects = this.getEffects();
 
-        this._fillPaintBBox = null;
-        this._borderPaintBBox = null;
-
         var paintBBox = source;
 
         if (this.hasStyleFill()) {
             // Unite with fill bbox and fill effects
-            this._fillPaintBBox = effects.getEffectsBBox(source, IFStylable.StyleLayer.Fill);
-            paintBBox = paintBBox.united(this._fillPaintBBox);
+            var fillPaintBBox = effects.getEffectsBBox(source, IFStylable.StyleLayer.Fill);
+            paintBBox = paintBBox.united(fillPaintBBox);
         }
 
         if (this.hasStyleBorder()) {
@@ -191,8 +166,8 @@
             }
 
             // Unite with border bbox and border effects
-            this._borderPaintBBox = effects.getEffectsBBox(borderBBox, IFStylable.StyleLayer.Border);
-            paintBBox = paintBBox.united(this._borderPaintBBox);
+            var borderPaintBBox = effects.getEffectsBBox(borderBBox, IFStylable.StyleLayer.Border);
+            paintBBox = paintBBox.united(borderPaintBBox);
         }
 
         // Apply shape effect bbopx
@@ -208,7 +183,7 @@
             paintBBox = stylable.getEffects().getEffectsBBox(paintBBox);
         }
 
-        return paintBBox.toAlignedRect();
+        return paintBBox;
     };
 
     /**

@@ -370,6 +370,10 @@
                 this._paintStyleFillLayer(context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas);
             }
         }
+
+        if (effectCanvas) {
+            effectCanvas.finish();
+        }
     };
 
     /**
@@ -420,6 +424,8 @@
         // By default we'll paint the style layers if there're any
         if (styleLayers && styleLayers.length) {
             var outlined = context.configuration.isOutline(context);
+            var layerCanvas = null;
+
             for (var i = 0; i < styleLayers.length; ++i) {
                 var layer = styleLayers[i];
 
@@ -429,8 +435,12 @@
                     var effects = orderedEffects ? orderedEffects[i] : null;
 
                     if (effects || this._isSeparateStylePaintLayer(context, layer)) {
-                        var layerBBox = this._getStyleLayerBBox(layer) || contentPaintBBox;
-                        var layerCanvas = this._createStyleCanvas(context, layerBBox);
+                        if (layerCanvas) {
+                            layerCanvas.clear();
+                        } else {
+                            layerCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                        }
+
                         var sourceCanvas = context.pushCanvas(layerCanvas);
                         try {
                             this._paintStyleLayer(context, layer);
@@ -440,8 +450,6 @@
                             } else {
                                 sourceCanvas.drawCanvas(layerCanvas);
                             }
-
-                            layerCanvas.finish();
                         } finally {
                             context.popCanvas();
                         }
@@ -449,6 +457,10 @@
                         this._paintStyleLayer(context, layer);
                     }
                 }
+            }
+
+            if (layerCanvas) {
+                layerCanvas.finish();
             }
         }
     };
@@ -521,15 +533,6 @@
      */
     IFElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
         return false;
-    };
-
-    /**
-     * Called to return the bbox for a given style layer
-     * @param {String} layer the actual layer to gain the bbox for
-     * @return {IFRect}
-     */
-    IFElement.Stylable.prototype._getStyleLayerBBox = function (layer) {
-        return null;
     };
 
     /**
