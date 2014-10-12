@@ -169,14 +169,31 @@
         // Create an unique treeId for the new tree node
         var treeId = IFUtil.uuid();
 
-        // Either insert before or append
-        var nextNode = layerOrItem.getNext() ? this._getLayerTreeNode(layerOrItem.getNext()) : null;
-        if (nextNode) {
-            this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, nextNode);
+        // Either insert before or insert first but ensure to reverse order (last=top)
+        var previousNode = layerOrItem.getPrevious() ? this._getLayerTreeNode(layerOrItem.getPrevious()) : null;
+        if (previousNode) {
+            this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, previousNode);
         } else {
             var parent = layerOrItem.getParent();
             var parentTreeNode = !parent || parent instanceof IFPage ? null : this._getLayerTreeNode(parent);
-            this._layersTree.tree('appendNode', { id: treeId, layerOrItem: layerOrItem }, parentTreeNode);
+            var addBeforeNode =  null;
+
+            if (parentTreeNode) {
+                if (parentTreeNode.children && parentTreeNode.children.length) {
+                    addBeforeNode = parentTreeNode.children[0];
+                }
+            } else {
+                var root = this._layersTree.tree('getTree');
+                if (root && root.children && root.children.length) {
+                    addBeforeNode = root.children[0];
+                }
+            }
+
+            if (addBeforeNode) {
+                this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, addBeforeNode);
+            } else {
+                this._layersTree.tree('appendNode', {id: treeId, layerOrItem: layerOrItem}, parentTreeNode);
+            }
         }
 
         // Insert the mapping
@@ -590,23 +607,10 @@
 
             if (position === 'inside') {
                 parent = target;
-                before = target.getFirstChild();
-            } else if (position === 'before') {
-                if (target instanceof IFPage) {
-                    parent = target;
-                    before = target.getFirstChild();
-                } else {
-                    parent = target.getParent();
-                    before = target;
-                }
+                before = null;
             } else if (position == 'after') {
-                if (target instanceof IFPage) {
-                    parent = target;
-                    before = null;
-                } else {
-                    parent = target.getParent();
-                    before = target.getNext();
-                }
+                parent = target.getParent();
+                before = target;
             }
 
             if (before === source) {
