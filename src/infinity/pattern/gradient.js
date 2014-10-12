@@ -158,14 +158,15 @@
     /**
      * Return CSS-Compatible string representation of the underlying gradient
      * stops separated by comma
+     * @param {Number} opacity
      * @return {String}
      */
-    IFGradient.prototype.toScreenCSS = function () {
+    IFGradient.prototype.toScreenCSS = function (opacity) {
         var cssStops = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
             var stop = this._stops[i];
-            cssStops.push('' + stop.color.toScreenCSS() + ' ' + stop.position + '%');
+            cssStops.push('' + stop.color.toScreenCSS(false, opacity) + ' ' + stop.position + '%');
         }
 
         return cssStops.join(', ');

@@ -51,12 +51,14 @@
     /**
      * Convert a pattern into a CSS-Compatible background string
      * @param {IFPattern} pattern
+     * @param {Number} [opacity] optional opacity (0..1), defaults to 1
      * @returns {*}
      */
-    IFPattern.asCSSBackground = function (pattern) {
+    IFPattern.asCSSBackground = function (pattern, opacity) {
+        opacity = typeof opacity === 'number' ? opacity : 1;
         var result = SVG_CHESSBOARD_CSS_URL;
         if (pattern) {
-            result = pattern.asCSSBackground() + ',' + result;
+            result = pattern.asCSSBackground(opacity) + ',' + result;
         }
         return result;
     };
@@ -106,9 +108,10 @@
 
     /**
      * Called to convert this pattern into a css compatible background
+     * @param {Number} opacity
      * @returns {string}
      */
-    IFPattern.prototype.asCSSBackground = function () {
+    IFPattern.prototype.asCSSBackground = function (opacity) {
         throw new Error('Not Supported');
     };
 

@@ -182,15 +182,21 @@
      * Converts and returns the underlying color as CSS Screen value
      * @param {Boolean} [noCMS] if set to true, no cms will be used
      * to convert to screen color
+     * @param {Number} [opacity]
      * @returns {String}
      */
-    IFColor.prototype.toScreenCSS = function (noCMS) {
-        return IFColor.rgbToHtmlHex(this.toScreen(noCMS));
+    IFColor.prototype.toScreenCSS = function (noCMS, opacity) {
+        if (typeof opacity === 'number' && opacity !== 1.0) {
+            var rgb = this.toScreen(noCMS);
+            return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + opacity + ')';
+        } else {
+            return IFColor.rgbToHtmlHex(this.toScreen(noCMS));
+        }
     };
 
     /** @override */
-    IFColor.prototype.asCSSBackground = function () {
-        var cssColor = this.toScreenCSS();
+    IFColor.prototype.asCSSBackground = function (opacity) {
+        var cssColor = this.toScreenCSS(false, opacity);
         return 'linear-gradient(' + cssColor + ', ' + cssColor + ')';
     };
 

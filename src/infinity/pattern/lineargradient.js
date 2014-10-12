@@ -27,8 +27,8 @@
     };
 
     /** @override */
-    IFLinearGradient.prototype.asCSSBackground = function () {
-        return 'linear-gradient(90deg, ' + this.toScreenCSS() + ')';
+    IFLinearGradient.prototype.asCSSBackground = function (opacity) {
+        return 'linear-gradient(90deg, ' + this.toScreenCSS(opacity) + ')';
     };
 
     /** @override */

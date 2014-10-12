@@ -27,8 +27,8 @@
     };
 
     /** @override */
-    IFRadialGradient.prototype.asCSSBackground = function () {
-        return 'radial-gradient(ellipse at center, ' + this.toScreenCSS() + ')';
+    IFRadialGradient.prototype.asCSSBackground = function (opacity) {
+        return 'radial-gradient(ellipse at center, ' + this.toScreenCSS(opacity) + ')';
     };
 
     /** @override */

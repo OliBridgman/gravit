@@ -109,12 +109,40 @@
         {
             clazz: IFDropShadowEffect,
             group: 'raster',
-            createSettings: createShadowSettings
+            createSettings: createShadowSettings,
+            createPreview: function (preview) {
+                preview
+                    .gPatternTarget({
+                        types: [IFColor],
+                        allowDrop: false
+                    });
+            },
+            updatePreview: function (preview, effect) {
+                var pattern = effect.getProperty('cls');
+                var opacity = effect.getProperty('opc');
+                preview
+                    .gPatternTarget('value', pattern)
+                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
+            }
         },
         {
             clazz: IFInnerShadowEffect,
             group: 'raster',
-            createSettings: createShadowSettings
+            createSettings: createShadowSettings,
+            createPreview: function (preview) {
+                preview
+                    .gPatternTarget({
+                        types: [IFColor],
+                        allowDrop: false
+                    });
+            },
+            updatePreview: function (preview, effect) {
+                var pattern = effect.getProperty('cls');
+                var opacity = effect.getProperty('opc');
+                preview
+                    .gPatternTarget('value', pattern)
+                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
+            }
         },
         {
             clazz: IFOverlayEffect,
@@ -129,6 +157,20 @@
                         assign(['pat'], [pattern]);
                     }
                 });
+            },
+            createPreview: function (preview) {
+                preview
+                    .gPatternTarget({
+                        types: [IFColor, IFGradient],
+                        allowDrop: false
+                    });
+            },
+            updatePreview: function (preview, effect) {
+                var pattern = effect.getProperty('pat');
+                var opacity = effect.getProperty('opc');
+                preview
+                    .gPatternTarget('value', pattern)
+                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
             }
         },
         {
@@ -307,6 +349,16 @@
         }
 
         var effectInfo = getEffectInfo(effect);
+        var settingsPreview = null;
+
+        if (effectInfo.createPreview) {
+            settingsPreview = $('<div></div>')
+                .addClass('preview');
+            effectInfo.createPreview(settingsPreview);
+        } else {
+            settingsPreview = $('<span></span>')
+                .addClass('fa fa-cog fa-fw');
+        }
 
         var block = $('<div></div>')
             .addClass('effect-block')
@@ -344,8 +396,7 @@
                         }
                     }
                 })
-                .append($('<span></span>')
-                    .addClass('fa fa-cog fa-fw')))
+                .append(settingsPreview))
             .append($('<div></div>')
                 .addClass('effect-title grid-main')
                 .text(effect.getNodeNameTranslated()))
@@ -404,12 +455,6 @@
                 })
                 .append($('<span></span>')
                     .addClass('fa fa-fw')))
-            .on('mousedown', function () {
-                // TODO
-            })
-            .on('click', function () {
-                effect.getScene().setActiveEffect(effect);
-            })
             .on('dragstart', function (evt) {
                 var $target = $(this);
 
@@ -495,13 +540,19 @@
 
     function updateEffect(effect) {
         var $this = $(this);
+
         $this.find('.effect-block').each(function (index, element) {
             var $element = $(element);
             if ($element.data('effect') === effect) {
+                var effectInfo = getEffectInfo(effect);
                 var effectVisible = effect.getProperty('vs');
                 var effectLayer = effect.getProperty('ly');
 
                 $element.toggleClass('g-selected', effect.hasFlag(IFNode.Flag.Selected));
+
+                if (effectInfo.updatePreview) {
+                    effectInfo.updatePreview($element.find(".effect-settings>:first-child"), effect);
+                }
 
                 $element.find('.effect-visibility')
                     .toggleClass('grid-icon-default', effectVisible)

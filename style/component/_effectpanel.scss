@@ -9,5 +9,16 @@
     left: 0px;
     right: 0px;
     bottom: 30px;
+
+    > .effect-block {
+      > .effect-settings {
+        > .preview {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 1px solid $borderColor;
+        }
+      }
+    }
   }
 }
