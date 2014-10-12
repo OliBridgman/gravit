@@ -269,6 +269,9 @@
     };
 
     var dragEffect = null;
+    var dragDeltaX = 0;
+    var dragDeltaY = 0;
+    var hasDropped = false;
 
     function canDropEffect(target) {
         if (dragEffect) {
@@ -458,11 +461,15 @@
                     .addClass('fa fa-fw')))
             .on('dragstart', function (evt) {
                 var $target = $(this);
+                var offset = $target.offset();
 
                 var event = evt.originalEvent;
                 event.stopPropagation();
 
                 dragEffect = $target.data('effect');
+                hasDropped = false;
+                dragDeltaX = event.pageX - offset.left;
+                dragDeltaY = event.pageY - offset.top;
 
                 // Setup our drag-event now
                 event.dataTransfer.effectAllowed = 'move';
@@ -498,6 +505,8 @@
 
                                 $this.find('.grid-drag-overlay').remove();
 
+                                hasDropped = true;
+
                                 var targetEffect = $parent.data('effect');
                                 if (dragEffect && dragEffect.getParent() === targetEffect.getParent()) {
                                     var parent = dragEffect.getParent();
@@ -527,7 +536,26 @@
                 // Remove drag overlays
                 $this.find('.grid-drag-overlay').remove();
 
+                // Delete our effect when not dropped and cursor is outside
+                if (!hasDropped) {
+                    var offset = $this.offset();
+                    var x1 = offset.left;
+                    var y1 = offset.top;
+                    var x2 = x1 + $this.outerWidth();
+                    var y2 = y1 + $this.outerHeight();
+                    var px = event.pageX + dragDeltaX;
+                    var py = event.pageY + dragDeltaY;
+
+                    if (px < x1 || px > x2 || py < y1 || py > y2) {
+                        // TODO : I18N
+                        IFEditor.tryRunTransaction(dragEffect, function () {
+                            dragEffect.getParent().removeChild(dragEffect);
+                        }, 'Remove Effect');
+                    }
+                }
+
                 dragEffect = null;
+                hasDropped = false;
             });
 
         if (insertBefore && insertBefore.length > 0) {
@@ -693,6 +721,10 @@
                             }))
                         .append($('<button></button>')
                             .attr('data-action', 'delete')
+                            .attr('title', 'Remove hidden effects')
+                            .on('click', function () {
+                                // TODO
+                            })
                             .append($('<span></span>')
                                 .addClass('fa fa-trash-o'))));
             });
