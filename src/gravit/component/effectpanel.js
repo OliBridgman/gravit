@@ -306,6 +306,25 @@
         return CREATE_EFFECT_MENU;
     };
 
+    function iterateEqualEffects (effect, iterator) {
+        var $this = $(this);
+        var elements = $this.data('geffectpanel').elements;
+        var effectIndex = effect.getParent().getIndexOfChild(effect);
+
+        for (var i = 0; i < elements.length; ++i) {
+            var elEffects = elements[i].getEffects();
+            for (var elEff = elEffects.getFirstChild(); elEff !== null; elEff = elEff.getNext()) {
+                if (elEff === effect) {
+                    continue;
+                }
+
+                if (IFUtil.equals(elEff, effect) || (elEff.constructor === effect.constructor && elEffects.getIndexOfChild(elEff) === effectIndex)) {
+                    iterator(elEff);
+                }
+            }
+        }
+    };
+
     function afterInsertEvent(evt) {
         var $this = $(this);
         var elements = $this.data('geffectpanel').elements;
@@ -331,6 +350,7 @@
     };
 
     function insertEffect(effect) {
+        var self = this;
         var $this = $(this);
         var data = $this.data('geffectpanel');
 
@@ -378,6 +398,10 @@
 
                     var assign = function (properties, values) {
                         IFEditor.tryRunTransaction(effect, function () {
+                            iterateEqualEffects.call(self, effect, function (e) {
+                                e.setProperties(properties, values);
+                            });
+                            
                             effect.setProperties(properties, values);
                         }, 'Change Effect Properties');
                     };
@@ -432,8 +456,12 @@
                                 .data('layer', layer)
                                 .text(ifLocale.get(IFStylable.StyleLayerName[layer ? layer : '']))
                                 .on('click', function (evt) {
+                                    var layer = $(evt.target).data('layer') || null;
                                     IFEditor.tryRunTransaction(effect, function () {
-                                        var layer = $(evt.target).data('layer') || null;
+                                        iterateEqualEffects.call(self, effect, function (e) {
+                                            e.setProperty('ly', layer);
+                                        });
+
                                         effect.setProperty('ly', layer);
                                     }, 'Change Effect Layer');
                                     panel.gOverlay('close');
@@ -454,6 +482,9 @@
                     evt.stopPropagation();
                     // TODO : I18N
                     IFEditor.tryRunTransaction(effect, function () {
+                        iterateEqualEffects.call(self, effect, function (e) {
+                            e.setProperty('vs', !effect.getProperty('vs'));
+                        });
                         effect.setProperty('vs', !effect.getProperty('vs'));
                     }, 'Toggle Effect Visibility');
                 })
@@ -549,6 +580,10 @@
                     if (px < x1 || px > x2 || py < y1 || py > y2) {
                         // TODO : I18N
                         IFEditor.tryRunTransaction(dragEffect, function () {
+                            iterateEqualEffects.call(self, dragEffect, function (e) {
+                                e.getParent().removeChild(e);
+                            });
+
                             dragEffect.getParent().removeChild(dragEffect);
                         }, 'Remove Effect');
                     }
@@ -723,7 +758,22 @@
                             .attr('data-action', 'delete')
                             .attr('title', 'Remove hidden effects')
                             .on('click', function () {
-                                // TODO
+                                var elements = $this.data('geffectpanel').elements;
+                                if (elements && elements.length) {
+                                    var effects = elements[0].getEffects();
+
+                                    // TODO : I18N
+                                    IFEditor.tryRunTransaction(effects, function () {
+                                        for (var effect = effects.getFirstChild(); effect !== null; effect = effect.getNext()) {
+                                            if (effect.getProperty('vs') === false) {
+                                                iterateEqualEffects.call(self, effect, function (e) {
+                                                    e.getParent().removeChild(e);
+                                                });
+                                                effect.getParent().removeChild(effect);
+                                            }
+                                        }
+                                    }, 'Remove Hidden Effects');
+                                }
                             })
                             .append($('<span></span>')
                                 .addClass('fa fa-trash-o'))));
