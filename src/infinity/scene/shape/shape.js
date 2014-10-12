@@ -142,6 +142,17 @@
     };
 
     /** @override */
+    IFShape.prototype._getStyleLayerBBox = function (layer) {
+        if (layer === IFStylable.StyleLayer.Fill) {
+            return this._fillPaintBBox;
+        } else if (layer === IFStylable.StyleLayer.Border) {
+            return this._borderPaintBBox;
+        } else {
+            return null;
+        }
+    };
+
+    /** @override */
     IFShape.prototype._calculateGeometryBBox = function () {
         return ifVertexInfo.calculateBounds(this, true);
     };

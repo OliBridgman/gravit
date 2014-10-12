@@ -429,7 +429,8 @@
                     var effects = orderedEffects ? orderedEffects[i] : null;
 
                     if (effects || this._isSeparateStylePaintLayer(context, layer)) {
-                        var layerCanvas = this._createStyleCanvas(context, contentPaintBBox);
+                        var layerBBox = this._getStyleLayerBBox(layer) || contentPaintBBox;
+                        var layerCanvas = this._createStyleCanvas(context, layerBBox);
                         var sourceCanvas = context.pushCanvas(layerCanvas);
                         try {
                             this._paintStyleLayer(context, layer);
@@ -520,6 +521,15 @@
      */
     IFElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
         return false;
+    };
+
+    /**
+     * Called to return the bbox for a given style layer
+     * @param {String} layer the actual layer to gain the bbox for
+     * @return {IFRect}
+     */
+    IFElement.Stylable.prototype._getStyleLayerBBox = function (layer) {
+        return null;
     };
 
     /**
