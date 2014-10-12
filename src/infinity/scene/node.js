@@ -702,6 +702,34 @@
     };
 
     /**
+     * Returns whether a given set of properties equals the same property values in another node
+     * @param {IFNode} other the other node to compare to
+     * @param {Array<String>} properties the property names
+     * @param {Boolean} [custom] whether properties are custom one or not, defaults to false
+     * @return {*} the property or null if it is not set
+     */
+    IFNode.Properties.prototype.arePropertiesEqual = function (other, properties, custom) {
+        for (var i = 0; i < properties.length; ++i) {
+            var property = properties[i];
+            var myHasProp = this.hasProperty(property, custom);
+            var otHasProp = other.hasProperty(property, custom);
+
+            if (myHasProp) {
+                if (!otHasProp) {
+                    return false;
+                } else if (!IFUtil.equals(this.getProperty(property, custom), other.getProperty(property, custom))) {
+                    return false;
+                }
+            } else {
+                if (otHasProp) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    /**
      * Checks whether a given property is set on this node or not
      * @param {String} property the name of the property
      * @param {Boolean} [custom] whether property is a custom one or not, defaults to false
@@ -1000,14 +1028,12 @@
 
     /**
      * Returns an array of all children within this node
-     * @param {Boolean} [shadow] if true, returns shadow nodes as well.
-     * This defaults to false.
      * @return {Array<IFNode>} array of all children of this node or
      * an empty array if there're no children
      */
-    IFNode.Container.prototype.getChildren = function (shadow) {
+    IFNode.Container.prototype.getChildren = function () {
         var result = [];
-        for (var child = this.getFirstChild(shadow); child !== null; child = child.getNext(shadow)) {
+        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
             result.push(child);
         }
         return result;
@@ -1146,27 +1172,23 @@
 
     /**
      * Remove all children of this node
-     * @param {Boolean} [shadow] if true, remove also shadow nodes,
-     * defaults to false
      */
-    IFNode.Container.prototype.clearChildren = function (shadow) {
-        while (this.getFirstChild(shadow)) {
-            this.removeChild(this.getFirstChild(shadow));
+    IFNode.Container.prototype.clearChildren = function () {
+        while (this.getFirstChild()) {
+            this.removeChild(this.getFirstChild());
         }
     };
 
     /**
      * Gets the index of a child node
      * @param {IFNode} child the child to get an index for
-     * @param {Boolean} [shadow] if true, counts also shadow nodes,
-     * defaults to false
      * @return {Number} the child index or a value less than zero
      * if child is not a child of this node
      */
-    IFNode.Container.prototype.getIndexOfChild = function (child, shadow) {
+    IFNode.Container.prototype.getIndexOfChild = function (child) {
         if (child._parent === this) {
             var index = 0;
-            for (var node = this.getFirstChild(shadow); node !== null; node = node.getNext(shadow)) {
+            for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
                 if (node === child) {
                     return index;
                 }
@@ -1180,14 +1202,12 @@
     /**
      * Gets a child of this node by a given index
      * @param {Number} childIndex the index to get a child for
-     * @param {Boolean} [shadow] if true, counts also shadow nodes,
-     * defaults to false
      * @return {IFNode} the child of this node at given index or
      * null if no child was found at the given index
      */
-    IFNode.Container.prototype.getChildByIndex = function (childIndex, shadow) {
+    IFNode.Container.prototype.getChildByIndex = function (childIndex) {
         var index = 0;
-        for (var node = this.getFirstChild(shadow); node !== null; node = node.getNext(shadow)) {
+        for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
             if (index === childIndex) {
                 return node;
             }
@@ -1200,14 +1220,12 @@
     /**
      * Accept a visitor on this container's children
      * @param {Function} visitor
-     * @param {Boolean} [shadow] if true, visits shadow nodes as well.
-     * This defaults to false.
      * @return {Boolean}
      * @version 1.0
      */
-    IFNode.Container.prototype.acceptChildren = function (visitor, shadow) {
-        for (var child = this.getFirstChild(shadow); child != null; child = child.getNext(shadow)) {
-            if (child.accept(visitor, shadow) === false) {
+    IFNode.Container.prototype.acceptChildren = function (visitor) {
+        for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
+            if (child.accept(visitor) === false) {
                 return false;
             }
         }
