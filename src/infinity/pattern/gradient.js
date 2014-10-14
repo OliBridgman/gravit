@@ -155,6 +155,11 @@
         }
     };
 
+    /** @override */
+    IFGradient.prototype.isScaled = function () {
+        return this._sx !== 1.0 || this._sy !== 1.0;
+    };
+
     /**
      * Return CSS-Compatible string representation of the underlying gradient
      * stops separated by comma
