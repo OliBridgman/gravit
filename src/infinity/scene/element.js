@@ -476,7 +476,6 @@
      * @private
      */
     IFElement.Stylable.prototype._paintWithEffects = function (contents, background, target, targetOpacity, effects, effectCanvas) {
-        var filterContents = contents;
         var paintedContents = false;
 
         for (var i = 0; i < effects.length; ++i) {
@@ -484,7 +483,7 @@
             var effectType = effect.getEffectType();
 
             if (effectType === IFEffect.Type.Filter) {
-                effect.render(filterContents, null, background, filterContents.getScale());
+                effect.render(contents, null, background, contents.getScale());
             } else if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
                 if (effectType === IFEffect.Type.PostEffect && !paintedContents && targetOpacity > 0.0) {
                     target.drawCanvas(contents, 0, 0, targetOpacity);
@@ -505,9 +504,6 @@
 
                 // Render effects canvas on target
                 target.drawCanvas(effectCanvas, 0, 0, 1, effectBlendType);
-
-                // Make target new filter contents
-                filterContents = target;
             }
         }
 
