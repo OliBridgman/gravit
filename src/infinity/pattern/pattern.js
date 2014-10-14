@@ -131,5 +131,13 @@
         // NO-OP
     };
 
+    /**
+     * Returns whether the pattern is scaled or not
+     * @param {Boolean}
+     */
+    IFPattern.prototype.isScaled = function () {
+        return false;
+    };
+
     _.IFPattern = IFPattern;
 })(this);

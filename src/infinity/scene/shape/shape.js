@@ -125,8 +125,8 @@
                 return true;
             }
 
-            // Having a scale of !== 0 always requires a separate canvas
-            return this.$_bsx !== 1.0 || this.$_bsy !== 1.0;
+            // Having a scale always requires a separate canvas
+            return this.$_bpt.isScaled();
         }
     };
 
