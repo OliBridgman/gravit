@@ -1,4 +1,11 @@
 @import '../variables';
+.g-overlay-modal {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+}
 
 .g-overlay {
   background: $baseColor;

@@ -31,6 +31,8 @@
     var methods = {
         init: function (options) {
             options = $.extend({
+                // Whether to show modal or not
+                modal: false,
                 // Whether to release on close or just detach
                 releaseOnClose: false
             }, options);
@@ -40,7 +42,7 @@
 
                 var $this = $(this)
                     .data('goverlay', {
-                        releaseOnClose: options.releaseOnClose
+                        options: options
                     });
 
                 var container = $('<div></div>')
@@ -50,11 +52,21 @@
             });
         },
 
-        open: function (target) {
+        open: function (target, modal) {
             var $this = $(this);
-            var container = $this
-                .parents('.g-overlay')
-                .appendTo($('body'));
+            var options = $this.data('goverlay').options;
+
+            var container = $this.parents('.g-overlay');
+
+            var modal = modal || options.modal;
+            if (modal) {
+                $('<div></div>')
+                    .addClass('g-overlay-modal')
+                    .append(container)
+                    .appendTo($('body'));
+            } else {
+                container.appendTo($('body'));
+            }
 
             var $window = $(window);
             var windowWidth = $window.width();
@@ -108,14 +120,20 @@
             var $this = $(this);
 
             if (openOverlayStack.length && openOverlayStack[openOverlayStack.length - 1] === this[0]) {
-                var data = $this.data('goverlay');
+                var options = $this.data('goverlay').options;
 
                 $this.trigger('close');
 
-                if (data.releaseOnClose) {
+                var modal = $this.parents('.g-overlay-modal');
+
+                if (options.releaseOnClose) {
                     $this.parents('.g-overlay').remove();
                 } else {
                     $this.parents('.g-overlay').detach();
+                }
+
+                if (modal.length) {
+                    modal.remove();
                 }
 
                 openOverlayStack.pop();

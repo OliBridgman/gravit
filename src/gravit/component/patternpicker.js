@@ -20,6 +20,7 @@
             scene: null,
             types: null,
             value: null,
+            modal: false,
             closeCallback: null,
             changeCallback: null
         }, options);
@@ -50,7 +51,7 @@
             patternEditor.on('patternchange', options.changeCallback);
         }
 
-        patternEditor.gOverlay('open', options.target);
+        patternEditor.gOverlay('open', options.target, options.modal);
     };
 
     $.gPatternPicker.close = function () {
@@ -74,7 +75,9 @@
                 transient: false,
                 // Whether to automatically open the color chooser on click
                 // or wait for a manual call to the open function
-                autoOpen: true
+                autoOpen: true,
+                // Whether to show the picker modal or not
+                modal: false,
                 // see options of gPatternTarget
             }, options);
 
@@ -135,6 +138,7 @@
                 target: this,
                 scene: data.scene,
                 types: data.types,
+                modal: data.options.modal,
                 value: $this.gPatternTarget('value'),
                 closeCallback: data.closeListener,
                 changeCallback: data.changeListener

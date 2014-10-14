@@ -50,7 +50,9 @@
                 .append($('<div></div>')
                     .css('text-align', 'center')
                     .append($('<button></button>')
-                        .gPatternPicker()
+                        .gPatternPicker({
+                            modal: true
+                        })
                         .gPatternPicker('types', [IFColor])
                         .gPatternPicker('scene', scene)
                         .gPatternPicker('value', color)
