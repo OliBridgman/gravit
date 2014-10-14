@@ -203,7 +203,7 @@
      */
     IFShape.prototype._paintFill = function (context) {
         if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-            var fill = this._createFillPaint(context, this.getGeometryBBox());
+            var fill = this.$_fpt.createPaint(context, this.getGeometryBBox());
             if (fill && fill.paint) {
                 var canvas = context.canvas;
                 canvas.putVertices(this);
@@ -267,7 +267,8 @@
             if (borderPadding) {
                 borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
             }
-            var border = this._createBorderPaint(context, borderBBox);
+
+            var border = this.$_bpt.createPaint(context, borderBBox);
 
             if (border && border.paint) {
                 var canvas = context.canvas;

@@ -190,6 +190,17 @@
     };
 
     /** @override */
+    IFGradient.prototype.createPaint = function (context, bbox) {
+        return {
+            paint: context.canvas.createGradient(this),
+            transform: this
+                .getGradientTransform()
+                .scaled(bbox.getWidth(), bbox.getHeight())
+                .translated(bbox.getX(), bbox.getY())
+        };
+    };
+
+    /** @override */
     IFGradient.prototype.toString = function () {
         return "[Object IFGradient]";
     };
