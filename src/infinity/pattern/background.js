@@ -38,20 +38,6 @@
     };
 
     /** @override */
-    IFBackground.prototype.createPaint = function (context, bbox) {
-        var root = context.getRootCanvas();
-        var origin = root.getOrigin();
-        var scale = root.getScale();
-
-        return {
-            paint: context.canvas.createTexture(root, IFPaintCanvas.RepeatMode.None),
-            transform: new IFTransform()
-                .translated(origin.getX(), origin.getY())
-                .scaled(1 / scale, 1 / scale)
-        };
-    };
-
-    /** @override */
     IFBackground.prototype.toString = function () {
         return "[Object IFBackground]";
     };

@@ -141,12 +141,12 @@
 
     /**
      * Create and returns a paint for this pattern
-     * @param {IFPaintContext} context paint context used for creating the paint
+     * @param {IFPaintCanvas} canvas canvas used for creating the paint
      * @param {IFRect} bbox bounding box for the paint
      * @return {{paint: *, transform: IFTransform}}
      * @private
      */
-    IFPattern.prototype.createPaint = function (context, bbox) {
+    IFPattern.prototype.createPaint = function (canvas, bbox) {
         throw new Error('Not Supported');
     };
 

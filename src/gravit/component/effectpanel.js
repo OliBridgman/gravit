@@ -53,7 +53,7 @@
                         .gPatternPicker({
                             modal: true
                         })
-                        .gPatternPicker('types', [IFColor])
+                        .gPatternPicker('types', [IFColor, IFGradient])
                         .gPatternPicker('scene', scene)
                         .gPatternPicker('value', color)
                         .on('patternchange', function (evt, color) {

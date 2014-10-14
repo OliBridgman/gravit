@@ -38,7 +38,10 @@
      * The visual properties of a page with their default values
      */
     IFPage.VisualProperties = {
-        cls: null
+        /** Page background (IFPattern) */
+        bck: null,
+        /** Page background opacity */
+        bop: 1.0
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -95,13 +98,9 @@
     };
 
     /** @override */
-    IFPage.prototype._paint = function (context) {
-        // Paint master page if we have any
-        var masterPage = this.getMasterPage();
-
-        // Indicates whether page clipped it's contents
-        var isClipped = false;
-
+    IFPage.prototype._paint = function (context, noBackground) {
+        var canvas = context.canvas;
+        
         // Figure if we have any contents
         var hasContents = false;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
@@ -111,28 +110,48 @@
             }
         }
 
+        // Paint master page if we have any
+        var masterPage = this.getMasterPage();
+
+        // Indicates whether page clipped it's contents
+        var isClipped = false;
+
         // Reset canvas transform and save it
-        var canvasTransform = context.canvas.resetTransform();
+        var canvasTransform = canvas.resetTransform();
 
         // Get page rectangle and transform it into world space
         var pageRect = new IFRect(this.$x, this.$y, this.$w, this.$h);
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
+        // Paint background if any and not outlined
+        if (!context.configuration.isOutline(context) && this.$bck) {
+            var background = this.$bck.createPaint(context.canvas, transformedPageRect);
+            if (background && background.paint) {
+                if (background.transform) {
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(background.transform));
+                    canvas.fillRect(0, 0, 1, 1, background.paint, 1);
+                    canvas.setTransform(oldTransform);
+                } else {
+                    canvas.fillRect(x, y, w, h, background.paint, 1);
+                }
+            }
+        }
+
         // If we have contents test if we shall clip to our extents
         if (hasContents && masterPage || context.configuration.isPagesClip()) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
-            context.canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);
+            canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);
             isClipped = true;
         }
 
         // Assign original transform again
-        context.canvas.setTransform(canvasTransform);
+        canvas.setTransform(canvasTransform);
 
         // Paint master page if any
         if (masterPage) {
-            var canvasTransform = context.canvas.getTransform(true);
+            var canvasTransform = canvas.getTransform(true);
             var mx = masterPage.getProperty('x');
             var my = masterPage.getProperty('y');
             var dx = this.$x - mx;
@@ -142,15 +161,15 @@
             // Prepare master paint:
             // 1.) Translate canvas to our own x,y coordinates
             // 2.) Reverse translate dirty areas with our own x,y coordinates
-            context.canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
+            canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
             context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
 
             // Let our master paint now
-            masterPage.paint(context);
+            masterPage.paint(context, true/*no background*/);
 
             // Restore in reverse order of preparation
             context.dirtyMatcher.transform(masterTransform);
-            context.canvas.setTransform(canvasTransform);
+            canvas.setTransform(canvasTransform);
         }
 
         // Paint contents if any
@@ -160,7 +179,7 @@
 
         // Reset clipping if we've clipped
         if (isClipped) {
-            context.canvas.resetClip();
+            canvas.resetClip();
         }
     };
 
@@ -207,7 +226,7 @@
         if (change === IFNode._Change.Store) {
             this.storeProperties(args, IFPage.GeometryProperties);
             this.storeProperties(args, IFPage.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
+                if (property === 'bck' && value) {
                     return IFPattern.serialize(value);
                 }
                 return value;
@@ -223,7 +242,7 @@
         } else if (change === IFNode._Change.Restore) {
             this.restoreProperties(args, IFPage.GeometryProperties);
             this.restoreProperties(args, IFPage.VisualProperties, function (property, value) {
-                if (property === 'cls' && value) {
+                if (property === 'bck' && value) {
                     return IFPattern.deserialize(value);
                 }
                 return value;

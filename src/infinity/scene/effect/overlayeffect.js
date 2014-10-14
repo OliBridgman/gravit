@@ -36,8 +36,18 @@
     /** @override */
     IFOverlayEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$pat && this.$opc > 0.0) {
-            // Fill our whole canvas with the pattern clipped by the source
-            contents.fillCanvas(this.$pat, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
+            // Fill our whole canvas with the overlay pattern clipped by the source
+            var overlayRect = contents.getTransform(false).inverted().mapRect(new IFRect(0, 0, contents.getWidth(), contents.getHeight()));
+            var overlay = this.$pat.createPaint(contents, overlayRect);
+            if (overlay && overlay.paint) {
+                if (overlay.transform) {
+                    var oldTransform = contents.setTransform(contents.getTransform(true).preMultiplied(overlay.transform));
+                    contents.fillRect(0, 0, 1, 1, overlay.paint, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
+                    contents.setTransform(oldTransform);
+                } else {
+                    contents.fillRect(overlayRect.getX(), overlayRect.getY(), overlayRect.getWidth(), overlayRect.getHeight(), overlay.paint, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
+                }
+            }
         }
     };
 

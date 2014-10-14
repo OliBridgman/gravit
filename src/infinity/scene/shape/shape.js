@@ -196,6 +196,25 @@
         return false;
     };
 
+    IFShape.prototype._createShapePaint = function (context, pattern, bbox) {
+        if (pattern instanceof IFBackground) {
+            var root = context.getRootCanvas();
+            var origin = root.getOrigin();
+            var scale = root.getScale();
+
+            return {
+                paint: context.canvas.createTexture(root, IFPaintCanvas.RepeatMode.None),
+                transform: new IFTransform()
+                    .translated(origin.getX(), origin.getY())
+                    .scaled(1 / scale, 1 / scale)
+            };
+        } else if (pattern) {
+            return pattern.createPaint(context.canvas, bbox);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Paint the shape fill
      * @param {IFPaintContext} context
@@ -203,7 +222,7 @@
      */
     IFShape.prototype._paintFill = function (context) {
         if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-            var fill = this.$_fpt.createPaint(context, this.getGeometryBBox());
+            var fill = this._createShapePaint(context, this.$_fpt, this.getGeometryBBox());
             if (fill && fill.paint) {
                 var canvas = context.canvas;
                 canvas.putVertices(this);
@@ -268,7 +287,7 @@
                 borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
             }
 
-            var border = this.$_bpt.createPaint(context, borderBBox);
+            var border = this._createShapePaint(context, this.$_bpt, borderBBox);
 
             if (border && border.paint) {
                 var canvas = context.canvas;

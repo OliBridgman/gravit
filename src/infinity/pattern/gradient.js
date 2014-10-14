@@ -190,9 +190,9 @@
     };
 
     /** @override */
-    IFGradient.prototype.createPaint = function (context, bbox) {
+    IFGradient.prototype.createPaint = function (canvas, bbox) {
         return {
-            paint: context.canvas.createGradient(this),
+            paint: canvas.createGradient(this),
             transform: this
                 .getGradientTransform()
                 .scaled(bbox.getWidth(), bbox.getHeight())

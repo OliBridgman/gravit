@@ -93,10 +93,6 @@
 
         context.canvas.setTransform(new IFTransform(1, 0, 0, 1, x, y));
         context.canvas.fillRect(0, 0, w, h, chessFill);
-        var pageColor = page.getProperty('cls');
-        if (pageColor) {
-            context.canvas.fillRect(0, 0, w, h, pageColor);
-        }
         context.canvas.resetTransform();
 
         // Paint margin rect

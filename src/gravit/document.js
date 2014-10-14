@@ -174,7 +174,7 @@
             'y',
             'w',
             'h',
-            'cls'
+            'bck'
         ], [
             'Page ' + (scene.queryCount('> page') + 1).toString(),
             insertPos.getX(),

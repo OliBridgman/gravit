@@ -152,13 +152,13 @@
                 }
 
                 return result;
-            } else if (property === 'cls') {
+            } else if (property === 'bck') {
                 return $('<div></div>')
                     .attr('data-property', property)
                     .gPatternPicker()
-                    .gPatternPicker('types', [null, IFColor])
-                    .on('patternchange', function (evt, color) {
-                        self._assignProperty(property, color);
+                    .gPatternPicker('types', [null, IFColor, IFGradient])
+                    .on('patternchange', function (evt, pattern) {
+                        self._assignProperty(property, pattern);
                     });
             } else if (property === 'w' || property === 'h') {
                 return $('<input>')
@@ -273,7 +273,7 @@
                     'top': '30px',
                     'right': '5px'
                 })
-                .append(_createInput('cls')))
+                .append(_createInput('bck')))
             .append($('<hr>')
                 .css({
                     'position': 'absolute',
@@ -409,8 +409,8 @@
 
         this._panel.find('select[data-property="msref"]').val(page.getProperty('msref'));
         this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
-        this._panel.find('[data-property="cls"]')
-            .gPatternPicker('value', page.getProperty('cls'))
+        this._panel.find('[data-property="bck"]')
+            .gPatternPicker('value', page.getProperty('bck'))
             .gPatternPicker('scene', scene);
         this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
         this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));
