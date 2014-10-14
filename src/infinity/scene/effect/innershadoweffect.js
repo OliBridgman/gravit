@@ -86,6 +86,7 @@
                         return IFPattern.deserialize(value);
                     }
                 }
+                return value;
             });
         }
 
