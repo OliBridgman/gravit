@@ -36,7 +36,7 @@
      * Localized names for IFStylable.StyleLayer
      */
     IFStylable.StyleLayerName = {
-        '' : new IFLocale.Key(IFStylable, 'layer.element'),
+        '': new IFLocale.Key(IFStylable, 'layer.element'),
         'F': new IFLocale.Key(IFStylable, 'layer.fill'),
         'B': new IFLocale.Key(IFStylable, 'layer.border')
     };
@@ -139,7 +139,7 @@
         'E': {},
         'F': {
             visualProperties: {
-                /** Fill pattern (IFPattern|'bck'|null) */
+                /** Fill pattern (IFPattern) */
                 _fpt: null,
                 /** Fill opacity */
                 _fop: 1
@@ -167,7 +167,7 @@
                 _bop: 1
             },
             geometryProperties: {
-                /** Border pattern (IFPattern|'bck'|null) */
+                /** Border pattern (IFPattern) */
                 _bpt: null,
                 /** Border Width */
                 _bw: 1,
@@ -467,16 +467,13 @@
     /**
      * Assign style from a source style
      * @param {IFStylable} source
-     * @param {*} [diffProperties] If provided, should contain property->value
-     * entries that are used for comparing whether to assign a property value or not.
-     * If the property value to be assigned doesn't equal the one in this parameter,
-     * it will not be overwritten. If this is provided, also only the given properties
-     * will be assigned, all others will be ignored.
+     * @param {IFStylable} [compare] a compare style, defaults to null
      */
-    IFStylable.prototype.assignStyleFrom = function (source, diffProperties) {
+    IFStylable.prototype.assignStyleFrom = function (source, compare) {
         // Collect union property sets
         var sourcePS = source.getStylePropertySets();
         var myPS = this.getStylePropertySets();
+        var comparePS = compare ? compare.getStylePropertySets() : null;
         var unionPS = [];
 
         for (var i = 0; i < sourcePS.length; ++i) {
@@ -490,6 +487,64 @@
         }
 
         if (unionPS.length > 0) {
+            // Handle effects
+            if (unionPS.indexOf(IFStylable.PropertySet.Effects) >= 0) {
+                var myEffects = this.getEffects();
+                var srcEffects = source.getEffects();
+                var sentEffectPrepare = false;
+                myEffects._beginBlockChanges([IFNode._Change.BeforeChildRemove, IFNode._Change.AfterChildRemove, IFNode._Change.BeforeChildInsert, IFNode._Change.AfterChildInsert]);
+
+                try {
+                    if (compare && comparePS.indexOf(IFStylable.PropertySet.Effects)) {
+                        // TODO : Improve diffing and delete/insert styles as well
+                        var cmpEffects = compare.getEffects();
+
+                        var index = 0;
+                        for (var srcEff = srcEffects.getFirstChild(); srcEff !== null; srcEff = srcEff.getNext()) {
+                            var myEff = myEffects.getChildByIndex(index);
+                            var cmpEff = cmpEffects.getChildByIndex(index);
+                            if (myEff && cmpEff && IFUtil.equals(myEff, cmpEff)) {
+                                if (!sentEffectPrepare) {
+                                    this._stylePrepareGeometryChange(true);
+                                    sentEffectPrepare = true;
+                                }
+
+                                myEffects.insertChild(srcEff.clone(), myEff);
+                                myEffects.removeChild(myEff);
+                            }
+                            index++;
+                        }
+                    } else {
+                        if (myEffects.getFirstChild()) {
+                            if (!sentEffectPrepare) {
+                                this._stylePrepareGeometryChange(true);
+                                sentEffectPrepare = true;
+                            }
+
+                            while (myEffects.getFirstChild()) {
+                                myEffects.removeChild(myEffects.getFirstChild());
+                            }
+                        }
+
+                        for (var srcEff = srcEffects.getFirstChild(); srcEff !== null; srcEff = srcEff.getNext()) {
+                            if (!sentEffectPrepare) {
+                                this._stylePrepareGeometryChange(true);
+                                sentEffectPrepare = true;
+                            }
+
+                            myEffects.appendChild(srcEff.clone());
+                        }
+                    }
+                } finally {
+                    myEffects._endBlockChanges([IFNode._Change.BeforeChildRemove, IFNode._Change.AfterChildRemove, IFNode._Change.BeforeChildInsert, IFNode._Change.AfterChildInsert]);
+
+                    if (sentEffectPrepare) {
+                        this._styleFinishGeometryChange(true);
+                    }
+                }
+            }
+
+            // Handle style properties
             var sourceProperties = [];
             for (var p = 0; p < unionPS.length; ++p) {
                 var propertySetInfo = IFStylable.PropertySetInfo[unionPS[p]];
@@ -505,13 +560,13 @@
                     var property = properties[i];
                     var addProperty = true;
 
-                    if (diffProperties) {
-                        // Only assign property if it is contained in diff properties and
-                        // when it has the same value as in diff properties
+                    if (compare && comparePS.indexOf(propertySetInfo) >= 0) {
+                        // Only assign property if it is contained in compare properties and
+                        // when it has the same value as in compare properties
                         var myPropVal = this.getProperty(property);
-                        var diffPropVal = diffProperties[property];
+                        var diffPropVal = compare.getProperty(property);
                         var srcPropVal = source.getProperty(property);
-                        addProperty = diffProperties.hasOwnProperty(property) && (IFUtil.equals(myPropVal, diffPropVal) || IFUtil.equals(myPropVal, srcPropVal));
+                        addProperty = compare.hasProperty(property) && (IFUtil.equals(myPropVal, diffPropVal) || IFUtil.equals(myPropVal, srcPropVal));
                     }
 
                     if (addProperty && property !== '_sdf') {

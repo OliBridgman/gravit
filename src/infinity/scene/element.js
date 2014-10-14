@@ -268,6 +268,16 @@
         sref: null
     };
 
+    /** @override */
+    IFElement.Stylable.prototype.assignStyleFrom = function (source, compare) {
+        this.beginUpdate();
+        try {
+            IFStylable.prototype.assignStyleFrom.call(this, source, compare);
+        } finally {
+            this.endUpdate();
+        }
+    };
+
     /**
      * Return the referenced style if any
      * @returns {IFStyle}

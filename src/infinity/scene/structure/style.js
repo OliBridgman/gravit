@@ -33,13 +33,31 @@
         ]
     };
 
+    /** @override */
+    IFStyle.prototype.assignStyleFrom = function (source, compare) {
+        var scene = this.getScene();
+        if (scene) {
+            scene.visitLinks(this, function (link) {
+                if (link !== source && link.hasMixin(IFStylable)) {
+                    link.assignStyleFrom(source, this);
+                }
+            }.bind(this));
+        }
+
+        this._beginBlockChanges([IFNode._Change.BeforePropertiesChange, IFNode._Change.AfterPropertiesChange]);
+        try {
+            IFStylable.prototype.assignStyleFrom.call(this, source);
+        } finally {
+            this._endBlockChanges([IFNode._Change.BeforePropertiesChange, IFNode._Change.AfterPropertiesChange]);
+        }
+    };
+
     /**
      * Disconnect this style from all the ones it is linked to
      */
     IFStyle.prototype.disconnectStyle = function () {
         var scene = this.getScene();
         if (scene) {
-            var self = this;
             scene.visitLinks(this, function (link) {
                 if (link.hasMixin(IFElement.Stylable)) {
                     link.setProperty('sref', null);
@@ -62,17 +80,11 @@
     IFStyle.prototype._stylePropertiesUpdated = function (properties, previousValues) {
         var scene = this.getScene();
         if (scene) {
-            var diffProperties = {};
-            for (var i = 0; i < properties.length; ++i) {
-                diffProperties[properties[i]] = previousValues[i];
-            }
-
-            var self = this;
             scene.visitLinks(this, function (link) {
                 if (link.hasMixin(IFStylable)) {
-                    link.assignStyleFrom(self, diffProperties);
+                    link.assignStyleFrom(this);
                 }
-            });
+            }.bind(this));
         }
     };
 
