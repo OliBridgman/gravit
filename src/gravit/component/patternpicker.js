@@ -21,6 +21,7 @@
             types: null,
             value: null,
             modal: false,
+            opacity: null,
             closeCallback: null,
             changeCallback: null
         }, options);
@@ -30,6 +31,7 @@
         patternEditor.gPatternEditor('scene', options.scene);
         patternEditor.gPatternEditor('types', options.types);
         patternEditor.gPatternEditor('value', options.value);
+        patternEditor.gPatternEditor('opacity', options.opacity);
 
         var closeCallback = function () {
             patternEditor.gPatternEditor('scene', null);
@@ -98,23 +100,25 @@
                         opened: false,
                         scene: null,
                         types: null,
+                        opacity: null,
                         manualChangeEvent: false,
                         closeListener: function (evt) {
                             $this.data('gpatternpicker').opened = false;
                         },
-                        changeListener: function (evt, pattern) {
+                        changeListener: function (evt, pattern, opacity) {
                             var data = $this.data('gpatternpicker');
                             data.manualChangeEvent = true;
                             methods.value.call(self, pattern);
+                            methods.opacity.call(self, opacity);
                             try {
-                                $this.trigger('patternchange', pattern);
+                                $this.trigger('patternchange', [pattern, opacity]);
                             } finally {
                                 data.manualChangeEvent = false;
                             }
                         }
                     })
                     .gPatternTarget(options)
-                    .on('patternchange', function (evt, pattern) {
+                    .on('patternchange', function (evt, pattern, opacity) {
                         var data = $this.data('gpatternpicker');
                         if (!data.manualChangeEvent) {
                             methods.value.call(self, pattern);
@@ -140,6 +144,7 @@
                 types: data.types,
                 modal: data.options.modal,
                 value: $this.gPatternTarget('value'),
+                opacity: data.opacity,
                 closeCallback: data.closeListener,
                 changeCallback: data.changeListener
             });
@@ -178,6 +183,18 @@
             }
         },
 
+        opacity: function (opacity) {
+            var $this = $(this);
+            var data = $this.data('gpatternpicker');
+
+            if (!arguments.length) {
+                return data.opacity;
+            } else {
+                data.opacity = opacity;
+                return this;
+            }
+        },
+
         value: function (value, noEditorUpdate) {
             var $this = $(this);
             var data = $this.data('gpatternpicker');
@@ -188,7 +205,7 @@
                 $this.gPatternTarget('value', value);
 
                 if (!data.options.transient) {
-                    $this.css('background', IFPattern.asCSSBackground(value));
+                    $this.css('background', IFPattern.asCSSBackground(value, typeof data.opacity === 'number' ? data.opacity : 1));
                 }
 
                 if (data.opened && !data.manualChangeEvent) {

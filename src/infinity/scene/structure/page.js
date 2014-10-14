@@ -125,15 +125,15 @@
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
         // Paint background if any and not outlined
-        if (!context.configuration.isOutline(context) && this.$bck) {
+        if (!context.configuration.isOutline(context) && this.$bck && this.$bop > 0) {
             var background = this.$bck.createPaint(context.canvas, transformedPageRect);
             if (background && background.paint) {
                 if (background.transform) {
                     var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(background.transform));
-                    canvas.fillRect(0, 0, 1, 1, background.paint, 1);
+                    canvas.fillRect(0, 0, 1, 1, background.paint, this.$bop);
                     canvas.setTransform(oldTransform);
                 } else {
-                    canvas.fillRect(x, y, w, h, background.paint, 1);
+                    canvas.fillRect(x, y, w, h, background.paint, this.$bop);
                 }
             }
         }

@@ -39,8 +39,12 @@
                 return $('<div></div>')
                     .attr('data-property', property)
                     .gPatternPicker()
-                    .on('patternchange', function (evt, pattern) {
-                        self._assignProperty(property, pattern);
+                    .on('patternchange', function (evt, pattern, opacity) {
+                        if (typeof opacity === 'number') {
+                            self._assignProperties([property, property === '_fpt' ? '_fop' : '_bop'], [pattern, opacity]);
+                        } else {
+                            self._assignProperty(property, pattern);
+                        }
                     });
             } else if (property === 'fill-type') {
                 return $('<select></select>')
@@ -337,6 +341,7 @@
 
         this._panel.find('[data-property="_fpt"]')
             .gPatternPicker('value', fillPattern)
+            .gPatternPicker('opacity', stylable.getProperty('_fop'))
             .gPatternPicker('scene', scene);
 
         this._panel.find('[data-property="fill-type"]').gPatternTypePicker('value', !fillPattern ? null : fillPattern.constructor);
@@ -345,6 +350,7 @@
 
         this._panel.find('[data-property="_bpt"]')
             .gPatternPicker('value', stylable.getProperty('_bpt'))
+            .gPatternPicker('opacity', stylable.getProperty('_bop'))
             .gPatternPicker('scene', scene);
 
         this._panel.find('[data-property="_bw"]').val(IFUtil.formatNumber(stylable.getProperty('_bw')));

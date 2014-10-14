@@ -78,7 +78,21 @@
                             .on('patterntypechange', function (evt, patternClass) {
                                 methods.value.call(self, IFPattern.smartCreate(patternClass, methods.value.call(self)));
                                 methods._firePatternChange.call(self);
-                            })));
+                            }))
+                        .append($('<label></label>')
+                            .addClass('pattern-opacity')
+                            .css('display', 'none')
+                            .append($('<span></span>')
+                                // TODO : I18N
+                                .text('Opacity:'))
+                            .append($('<input>')
+                                .css('width', '3em')
+                                .on('change', function (evt) {
+                                    if ($(evt.target).closest('label').css('display') !== 'none') {
+                                        methods._firePatternChange.call(self);
+                                    }
+                                }))
+                            .append($('<span>%</span>'))));
 
                 var builtinColors = $this.find('.builtin-colors');
                 for (var i = 0; i < COLORS.length; ++i) {
@@ -126,7 +140,6 @@
 
         types: function (types) {
             var $this = $(this);
-            var data = $this.data('gpatterneditor');
 
             if (!arguments.length) {
                 return $this.find('.pattern-type')
@@ -171,6 +184,26 @@
             }
         },
 
+        opacity: function (opacity) {
+            var $this = $(this);
+
+            if (!arguments.length) {
+                var opc = $this.find('.pattern-opacity');
+                if (opc.css('display') === 'none') {
+                    return null;
+                }
+
+                return parseInt(opc.children('input').val()) / 100;
+            } else {
+                $this.find('.pattern-opacity')
+                    .css('display', typeof opacity === 'number' ? '' : 'none')
+                    /* !! */
+                    .children('input')
+                    .val(typeof opacity === 'number' ? Math.round(opacity * 100) : '');
+                return this;
+            }
+        },
+
         _colorChanged: function () {
             var $this = $(this);
             var data = $this.data('gpatterneditor');
@@ -210,7 +243,6 @@
 
         _generatePattern: function () {
             var $this = $(this);
-            var data = $this.data('gpatterneditor');
             var patternType = $this.find('.pattern-type').gPatternTypePicker('value');
 
             if (!patternType) {
@@ -234,7 +266,7 @@
                 data.value = methods._generatePattern.call(this);
             }
 
-            $this.trigger('patternchange', data.value);
+            $this.trigger('patternchange', [data.value, methods.opacity.call(this)]);
         }
     };
 

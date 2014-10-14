@@ -6,7 +6,7 @@
         var y = scene.pointToString(effect.getProperty('y'));
         var radius = scene.pointToString(effect.getProperty('r'));
         var pattern = effect.getProperty('pat');
-        var opacity = Math.round(effect.getProperty('opc') * 100);
+        var opacity = effect.getProperty('opc');
 
         return $('<div></div>')
             .addClass('g-form')
@@ -56,23 +56,16 @@
                         .gPatternPicker('types', [IFColor, IFGradient])
                         .gPatternPicker('scene', scene)
                         .gPatternPicker('value', pattern)
-                        .on('patternchange', function (evt, pattern) {
-                            assign(['pat'], [pattern]);
-                        }))
-                    .append($('<label></label>')
-                        .text('Fill')))
-                .append($('<div></div>')
-                    .append($('<input>')
-                        .css('width', '3em')
-                        .val(opacity)
-                        .on('change', function () {
-                            var value = parseInt($(this).val());
-                            if (!isNaN(value) && value >= 0 && value <= 100) {
-                                assign(['opc'], [value / 100.0]);
+                        .gPatternPicker('opacity', opacity)
+                        .on('patternchange', function (evt, pattern, opacity) {
+                            if (typeof opacity === 'number') {
+                                assign(['pat', 'opc'], [pattern, opacity]);
+                            } else {
+                                assign(['pat'], [pattern]);
                             }
                         }))
                     .append($('<label></label>')
-                        .text('Opacity'))));
+                        .text('Fill'))));
     };
 
     var EFFECTS = [
@@ -155,8 +148,13 @@
                     scene: effect.getScene(),
                     types: [IFColor, IFGradient],
                     value: effect.getProperty('pat'),
-                    changeCallback: function (evt, pattern) {
-                        assign(['pat'], [pattern]);
+                    opacity: effect.getProperty('opc'),
+                    changeCallback: function (evt, pattern, opacity) {
+                        if (typeof opacity === 'number') {
+                            assign(['pat', 'opc'], [pattern, opacity]);
+                        } else {
+                            assign(['pat'], [pattern]);
+                        }
                     }
                 });
             },

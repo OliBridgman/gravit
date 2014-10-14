@@ -157,8 +157,12 @@
                     .attr('data-property', property)
                     .gPatternPicker()
                     .gPatternPicker('types', [null, IFColor, IFGradient])
-                    .on('patternchange', function (evt, pattern) {
-                        self._assignProperty(property, pattern);
+                    .on('patternchange', function (evt, pattern, opacity) {
+                        if (typeof opacity === 'number') {
+                            self._assignProperties([property, 'bop'], [pattern, opacity]);
+                        } else {
+                            self._assignProperty(property, pattern);
+                        }
                     });
             } else if (property === 'w' || property === 'h') {
                 return $('<input>')
@@ -411,6 +415,7 @@
         this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
         this._panel.find('[data-property="bck"]')
             .gPatternPicker('value', page.getProperty('bck'))
+            .gPatternPicker('opacity', page.getProperty('bop'))
             .gPatternPicker('scene', scene);
         this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
         this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));

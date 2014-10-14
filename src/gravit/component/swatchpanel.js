@@ -89,6 +89,10 @@
         if (types && types.length > 0) {
             var isCompatible = false;
             for (var i = 0; i < types.length; ++i) {
+                if (types[i] === null) {
+                    continue;
+                }
+
                 if (pattern instanceof types[i]) {
                     isCompatible = true;
                     break;

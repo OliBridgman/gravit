@@ -304,7 +304,7 @@
                 if (border.transform) {
                     // If any scale factor is != 1.0 we need to fill the whole area
                     // and clip our border away to ensure border width consistency
-                    if (this.$_bsx !== 1.0 || this.$_bsy !== 1.0) {
+                    if (this.$_bpt.isScaled()) {
                         // Fill everything with the border.paint, then clip with the border
                         var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
                         var patternFillArea = border.transform.inverted().mapRect(borderBBox);
