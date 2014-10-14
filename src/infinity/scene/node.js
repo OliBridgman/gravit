@@ -1703,12 +1703,15 @@
      * @param {Object} [args] the arguments for the change, it's value
      * depends on the current change and should be documented
      * within the change constant type
+     * @return {Boolean} true if handled, false if blocked
      * @private
      */
     IFNode.prototype._notifyChange = function (change, args) {
         if (!this._blockedChanges || !this._blockedChanges[change]) {
             this._handleChange(change, args);
+            return true;
         }
+        return false;
     };
 
     /**

@@ -310,7 +310,7 @@
     IFImage.prototype._setStatus = function (status) {
         if (status !== this._status) {
             this._status = status;
-            if (this.isAttached() && this._scene.hasEventListeners(IFImage.StatusEvent)) {
+            if (this._canEventBeSend(IFImage.StatusEvent)) {
                 this._scene.trigger(new IFImage.StatusEvent(this, this._status));
             }
         }
