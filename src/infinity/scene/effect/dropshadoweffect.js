@@ -34,8 +34,8 @@
      * Geometry properties of a shadow effect
      */
     IFDropShadowEffect.VisualProperties = {
-        /** The color of the shadow */
-        cls: IFRGBColor.BLACK,
+        /** The pattern of the shadow (IFPattern) */
+        pat: IFRGBColor.BLACK,
         /** The opacity of the shadow */
         opc: 0.5
     };
@@ -52,16 +52,30 @@
 
     /** @override */
     IFDropShadowEffect.prototype.render = function (contents, output, background, scale) {
-        if (this.$opc > 0) {
-            // Fill our whole output with the shadow color
-            output.fillCanvas(this.$cls, this.$opc);
+        if (this.$pat && this.$opc > 0) {
+            // Fill our whole output with the shadow pattern
+            var fillRect = output.getTransform(false).inverted().mapRect(new IFRect(0, 0, output.getWidth(), output.getHeight()));
+            var fill = this.$pat.createPaint(output, fillRect);
+            if (fill && fill.paint) {
+                if (fill.transform) {
+                    var oldTransform = output.setTransform(output.getTransform(true).preMultiplied(fill.transform));
+                    output.fillRect(0, 0, 1, 1, fill.paint, this.$opc);
+                    output.setTransform(oldTransform);
+                } else {
+                    output.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill.paint, this.$opc);
+                }
+            }
 
+            // Now clip with contents and blur our stuff
             var x = this.$x * scale;
             var y = this.$y * scale;
             var r = this.$r * scale;
 
             output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-            output.getBitmap().applyFilter(IFStackBlurFilter, r);
+
+            if (r > 0) {
+                output.getBitmap().applyFilter(IFStackBlurFilter, r);
+            }
         }
     };
 
@@ -71,7 +85,7 @@
             this.storeProperties(args, IFDropShadowEffect.GeometryProperties);
             this.storeProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'cls') {
+                    if (property === 'pat') {
                         return IFPattern.serialize(value);
                     }
                 }
@@ -81,7 +95,7 @@
             this.restoreProperties(args, IFDropShadowEffect.GeometryProperties);
             this.restoreProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
-                    if (property === 'cls' && value) {
+                    if (property === 'pat' && value) {
                         return IFPattern.deserialize(value);
                     }
                 }

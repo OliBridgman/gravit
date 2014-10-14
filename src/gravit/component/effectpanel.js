@@ -5,7 +5,7 @@
         var x = scene.pointToString(effect.getProperty('x'));
         var y = scene.pointToString(effect.getProperty('y'));
         var radius = scene.pointToString(effect.getProperty('r'));
-        var color = effect.getProperty('cls');
+        var pattern = effect.getProperty('pat');
         var opacity = Math.round(effect.getProperty('opc') * 100);
 
         return $('<div></div>')
@@ -55,12 +55,12 @@
                         })
                         .gPatternPicker('types', [IFColor, IFGradient])
                         .gPatternPicker('scene', scene)
-                        .gPatternPicker('value', color)
-                        .on('patternchange', function (evt, color) {
-                            assign(['cls'], [color]);
+                        .gPatternPicker('value', pattern)
+                        .on('patternchange', function (evt, pattern) {
+                            assign(['pat'], [pattern]);
                         }))
                     .append($('<label></label>')
-                        .text('Color')))
+                        .text('Fill')))
                 .append($('<div></div>')
                     .append($('<input>')
                         .css('width', '3em')
@@ -120,7 +120,7 @@
                     });
             },
             updatePreview: function (preview, effect) {
-                var pattern = effect.getProperty('cls');
+                var pattern = effect.getProperty('pat');
                 var opacity = effect.getProperty('opc');
                 preview
                     .gPatternTarget('value', pattern)
@@ -139,7 +139,7 @@
                     });
             },
             updatePreview: function (preview, effect) {
-                var pattern = effect.getProperty('cls');
+                var pattern = effect.getProperty('pat');
                 var opacity = effect.getProperty('opc');
                 preview
                     .gPatternTarget('value', pattern)
