@@ -1,31 +1,34 @@
 (function ($) {
 
     function updateStop($this, $stop) {
-        $stop.css('left', $stop.data('stop-position') + '%');
-        $stop.find('.stop-color').css('background', $stop.data('stop-color').toScreenCSS());
-        $stop.gPatternTarget('value', $stop.data('stop-color'));
+        $stop.css('left', Math.round($stop.data('stop-position') * 100) + '%');
+        $stop.find('.stop-value').css('background', $stop.data('stop-value').toScreenCSS());
+        $stop.gPatternTarget('value', $stop.data('stop-value'));
+    }
 
-        updateGradient($this);
+    function updateOpacity($this, $stop) {
+        $stop.css('left', Math.round($stop.data('stop-position') * 100) + '%');
+        var tone = Math.round(255 * (1 - $stop.data('stop-value')));
+        $stop.find('.stop-value').css('background', IFColor.rgbToHtmlHex([tone, tone, tone]));
     }
 
     function updateGradient($this) {
-        var stops = $this.gGradientEditor('value');
-        var cssStops = [];
+        var gradient = new IFLinearGradient($this.gGradientEditor('value'));
+        $this
+            .find('.gradient')
+            .css('background', IFPattern.asCSSBackground(gradient));
+        $this.gPatternTarget('value', gradient);
+    }
 
-        for (var i = 0; i < stops.length; ++i) {
-            var stop = stops[i];
-            cssStops.push('' + stop.color.toScreenCSS() + ' ' + stop.position + '%');
-        }
-
-        $this.find('.gradient').css('background', 'linear-gradient(90deg, ' + cssStops.join(", ") + ')');
-
-        $this.gPatternTarget('value', new IFGradient(stops));
+    function calculatePositionByMouse(target, x) {
+        var width = target.width();
+        var relativePos = x - target.offset().left;
+        return relativePos < 0 ? 0 : relativePos > width ? 1 : (relativePos / width);
     }
 
     var methods = {
         init: function (options) {
-            options = $.extend({
-            }, options);
+            options = $.extend({}, options);
 
             return this.each(function () {
                 var self = this;
@@ -48,11 +51,9 @@
                         evt.stopPropagation();
                         if (pattern && pattern instanceof IFColor) {
                             var $stops = $(this).find('.stops');
-                            var stopsWidth = $stops.width();
-                            var relativePos = mouseEvent.pageX - $stops.offset().left;
-                            var percentPos = relativePos <= 0 ? 0 :
-                                relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
-                            methods.insertStop.call(self, percentPos, pattern);
+                            var position = calculatePositionByMouse($stops, mouseEvent.pageX);
+                            methods.insertStop.call(self, position, pattern);
+                            updateGradient($this);
                             $this.trigger('gradientchange');
                         } else if (pattern instanceof IFGradient) {
                             methods.value.call(self, pattern.getStops());
@@ -67,62 +68,38 @@
                 container
                     .append($('<div></div>')
                         .addClass('editor')
-                        .append($('<div></div>')
-                            .addClass('stops')
+                        .append(($('<div></div>')
+                            .addClass('opacities')
                             .on('mousedown', function (evt) {
-                                // Prevents any accident drag'n'drop actions
                                 evt.preventDefault();
                                 evt.stopPropagation();
-                            }))
+                            })
+                            .on('dblclick', function (evt) {
+                                var $opacities = $(evt.target);
+                                if ($opacities.hasClass('opacities')) {
+                                    var position = calculatePositionByMouse($opacities, evt.pageX);
+                                    var opacity = IFGradient.interpolateOpacity(methods.value.call(self), position);
+                                    methods.insertOpacity.call(self, position, opacity);
+                                    updateGradient($this);
+                                    $this.trigger('gradientchange');
+                                }
+                            })))
                         .append($('<div></div>')
                             .addClass('gradient g-input')
                             .css('background', 'transparent'))
                         .append($('<div></div>')
                             .addClass('stops')
                             .on('mousedown', function (evt) {
-                                // Prevents any accident drag'n'drop actions
                                 evt.preventDefault();
                                 evt.stopPropagation();
                             })
                             .on('dblclick', function (evt) {
                                 var $stops = $(evt.target);
                                 if ($stops.hasClass('stops')) {
-                                    // Calculate insert position
-                                    // TODO : Calculate gradient color at given position and set it
-                                    var stopsWidth = $stops.width();
-                                    var relativePos = evt.pageX - $stops.offset().left;
-                                    var percentPos = relativePos <= 0 ? 0 :
-                                        relativePos >= stopsWidth ? 100 : (relativePos / stopsWidth * 100);
-
-                                    var previousStopColor = null;
-                                    var nextStopColor = null;
-                                    /*
-                                    $stops.find('> .stop').each(function (index, element) {
-                                        var $stop = $(element);
-                                        if ($stop.data('stop-position') < percentPos) {
-                                            previousStopColor = $stop.data('stop-color');
-                                        } else if ($stop.data('stop-position') > percentPos) {
-                                            nextStopColor = $stop.data('stop-color');
-                                        }
-                                    });
-                                    */
-
-                                    var stopColor = IFRGBColor.parseCSSColor('black');
-                                    if (previousStopColor && nextStopColor) {
-                                        var prev = previousStopColor.toScreen();
-                                        var next = nextStopColor.toScreen();
-                                        var p = percentPos / 100.0;
-
-                                        var stopColor = new IFRGBColor([
-                                            next[0] * p + prev[0] * (1 - p),
-                                            next[1] * p + prev[1] * (1 - p),
-                                            next[2] * p + prev[2] * (1 - p)
-                                        ]);
-                                    } else if (previousStopColor || nextStopColor) {
-                                        stopColor = previousStopColor || nextStopColor;
-                                    }
-
-                                    methods.insertStop.call(self, percentPos, stopColor);
+                                    var position = calculatePositionByMouse($stops, evt.pageX);
+                                    var color = IFGradient.interpolateColor(methods.value.call(self), position);
+                                    methods.insertStop.call(self, position, color);
+                                    updateGradient($this);
                                     $this.trigger('gradientchange');
                                 }
                             })));
@@ -132,17 +109,29 @@
         value: function (value) {
             var self = this;
             var $this = $(this);
-            var data = $this.data('ggradienteditor');
-            var $stops = $this.find('.stops > .stop');
 
             if (!arguments.length) {
+                var $stops = $this.find('.stops > .stop');
+                var $opacities = $this.find('.opacities > .stop');
+
                 var stops = [];
+
                 $stops.each(function (index, element) {
                     var $stop = $(element);
                     if ($stop.data('stop-delete') === false) {
                         stops.push({
-                            position: $stop.data('stop-position'),
-                            color: $stop.data('stop-color')
+                            position: IFMath.round($stop.data('stop-position'), false, 2),
+                            color: $stop.data('stop-value')
+                        });
+                    }
+                });
+
+                $opacities.each(function (index, element) {
+                    var $stop = $(element);
+                    if ($stop.data('stop-delete') === false) {
+                        stops.push({
+                            position: IFMath.round($stop.data('stop-position'), false, 2),
+                            opacity: $stop.data('stop-value')
                         });
                     }
                 });
@@ -153,42 +142,31 @@
 
                 return stops;
             } else {
-                // Shortcut: If stops lengths are equal,
-                // do a simple stop-update instead of clearing
-                if (value && value.length === $stops.length) {
-                    $stops.each(function (index, element) {
-                        var $stop = $(element);
-                        $stop
-                            .data('stop-position', value[index].position)
-                            .data('stop-color', value[index].color)
-                            .data('stop-delete', false);
+                $this.find('.stops').empty();
+                $this.find('.opacities').empty();
 
-                        updateStop($this, $stop);
-                    });
-                } else {
-                    // Clear stops and add all again
-                    $this.find('.stops').empty();
-                    // Insert all stops now if any
-                    if (value) {
-                        for (var i = 0; i < value.length; ++i) {
+                if (value) {
+                    for (var i = 0; i < value.length; ++i) {
+                        if (value[i].hasOwnProperty('color')) {
                             methods.insertStop.call(self, value[i].position, value[i].color);
+                        } else if (value[i].hasOwnProperty('opacity')) {
+                            methods.insertOpacity.call(self, value[i].position, value[i].opacity);
                         }
                     }
                 }
+
+                updateGradient($this);
 
                 return this;
             }
         },
 
-        insertStop: function (position, color) {
-            var self = this;
+        insertOpacity: function (position, opacity) {
             var $this = $(this);
-            var data = $this.data('ggradienteditor');
-            var $stops = $this.find('.stops');
+            var $stops = $this.find('.opacities');
 
             // Normalize position
-            position = Math.round(position);
-            position = position < 0 ? 0 : position > 100 ? 100 : position;
+            position = position < 0 ? 0 : position > 1 ? 1 : position;
 
             var hasChanged = false;
 
@@ -196,19 +174,169 @@
             var $stop = $('<div></div>')
                 .addClass('stop')
                 .data('stop-position', position)
-                .data('stop-color', color)
+                .data('stop-value', opacity)
+                .data('stop-delete', false)
+                .append($('<div></div>')
+                    .addClass('stop-value'))
+                .on('click', function (evt) {
+                    if (!hasChanged) {
+                        $('<div></div>')
+                            .addClass('opacity-editor')
+                            .css({
+                                'display': 'inline-block',
+                                'padding': '5px'
+                            })
+                            .append($('<label></label>')
+                                // TODO : I18N
+                                .text('Opacity: ')
+                                .append($('<input>')
+                                    .attr('type', 'text')
+                                    .css('width', '40px')
+                                    .val(Math.round($stop.data('stop-value') * 100))
+                                    .on('change', function () {
+                                        var $target = $(this);
+                                        var val = parseInt($target.val());
+                                        if (!isNaN(val) && val >= 0 && val <= 100) {
+                                            $target.parents('.opacity-editor')
+                                                .find('input[type="range"]')
+                                                .val($target.val());
+
+                                            $stop.data('stop-value', val / 100.0);
+                                            updateOpacity($this, $stop);
+                                            updateGradient($this);
+                                            $this.trigger('gradientchange');
+                                        }
+                                    }))
+                                .append($('<span>%</span>')))
+                            .append($('<input>')
+                                .css({
+                                    'display': 'block',
+                                    'margin-top': '5px'
+                                })
+                                .attr({
+                                    'type': 'range',
+                                    'min': '0',
+                                    'max': '100'
+                                })
+                                .val(Math.round($stop.data('stop-value') * 100))
+                                .on('input', function () {
+                                    var $target = $(this);
+                                    $target.parents('.opacity-editor')
+                                        .find('input:not([type="range"])')
+                                        .val($target.val())
+                                        .trigger('change');
+                                }))
+                            .gOverlay({
+                                modal: true,
+                                releaseOnClose: true
+                            })
+                            .gOverlay('open', $stop);
+                    }
+                })
+                .on('mousedown', function (evt) {
+                    hasChanged = false;
+
+                    // Implement dragging stuff
+                    var stopsOffset = $stops.offset();
+                    var moveMinX = stopsOffset.left;
+                    var moveMaxX = moveMinX + $stops.width();
+                    var moveMinY = stopsOffset.top;
+                    var stopWidth = $stop.outerWidth();
+                    var startPosX = $stop.offset().left + stopWidth - evt.pageX;
+                    var startPosY = $stop.offset().top - evt.pageY;
+                    var stopsTotal = $stops.children('.stop').length;
+
+                    var $document = $(document);
+
+                    var docMouseMove = function (evt) {
+                        var left = evt.pageX + startPosX - (stopWidth / 2);
+                        var top = evt.pageY + startPosY;
+
+                        // Ensure to not move outside our range horizontally
+                        if (left <= moveMinX) {
+                            left = moveMinX;
+                        } else if (left >= moveMaxX) {
+                            left = moveMaxX;
+                        }
+
+                        if (top < moveMinY && stopsTotal > 2) {
+                            // Moved outside area so get rid of our stop
+                            $stop
+                                .css('display', 'none')
+                                .data('stop-delete', true);
+                        } else {
+                            $stop
+                                .css('display', '')
+                                .data('stop-delete', false);
+                        }
+
+                        // Calculate percentage for stop
+                        var relativePos = left - moveMinX;
+                        var relativeMoveArea = (moveMaxX - moveMinX);
+                        var percentPos = relativePos <= 0 ? 0 :
+                            relativePos >= relativeMoveArea ? 1 : (relativePos / relativeMoveArea);
+
+                        $stop.data('stop-position', percentPos);
+                        updateOpacity($this, $stop);
+                        updateGradient($this);
+                        hasChanged = true;
+                    };
+
+                    var docMouseUp = function (evt) {
+                        // Clear the document listeners
+                        $document
+                            .off("mousemove", docMouseMove)
+                            .off("mouseup", docMouseUp);
+
+                        // Delete the stop if marked
+                        if ($stop.data('stop-delete') === true) {
+                            $stop.remove();
+                            hasChanged = true;
+                        }
+
+                        if (hasChanged) {
+                            $this.trigger('gradientchange');
+                        }
+                    };
+
+                    $document
+                        .on("mousemove", docMouseMove)
+                        .on("mouseup", docMouseUp);
+                })
+                .appendTo($stops);
+
+            updateOpacity($this, $stop);
+
+            return position;
+        },
+
+        insertStop: function (position, color) {
+            var $this = $(this);
+            var $stops = $this.find('.stops');
+
+            // Normalize position
+            position = position < 0 ? 0 : position > 1 ? 1 : position;
+
+            var hasChanged = false;
+
+            // Insert stop widget
+            var $stop = $('<div></div>')
+                .addClass('stop')
+                .data('stop-position', position)
+                .data('stop-value', color)
                 .data('stop-delete', false)
                 .gPatternTarget({
                     allowDrag: false
                 })
                 .gPatternTarget('types', [IFColor])
                 .append($('<div></div>')
-                    .addClass('stop-color'))
+                    .addClass('stop-value'))
                 .on('patternchange', function (evt, color) {
                     evt.stopPropagation();
                     if (color) {
-                        $stop.data('stop-color', color);
+                        $stop.data('stop-value', color);
                         updateStop($this, $stop);
+                        updateGradient($this);
                         $this.trigger('gradientchange');
                     }
                 })
@@ -232,6 +360,7 @@
                     var stopWidth = $stop.outerWidth();
                     var startPosX = $stop.offset().left + stopWidth - evt.pageX;
                     var startPosY = $stop.offset().top - evt.pageY;
+                    var stopsTotal = $stops.children('.stop').length;
 
                     var $document = $(document);
 
@@ -246,7 +375,7 @@
                             left = moveMaxX;
                         }
 
-                        if (top > moveMaxY) {
+                        if (top > moveMaxY && stopsTotal > 2) {
                             // Moved outside area so get rid of our stop
                             $stop
                                 .css('display', 'none')
@@ -261,10 +390,11 @@
                         var relativePos = left - moveMinX;
                         var relativeMoveArea = (moveMaxX - moveMinX);
                         var percentPos = relativePos <= 0 ? 0 :
-                            relativePos >= relativeMoveArea ? 100 : (relativePos / relativeMoveArea * 100);
+                            relativePos >= relativeMoveArea ? 1 : (relativePos / relativeMoveArea);
 
                         $stop.data('stop-position', percentPos);
                         updateStop($this, $stop);
+                        updateGradient($this);
                         hasChanged = true;
                     };
 
@@ -274,21 +404,13 @@
                             .off("mousemove", docMouseMove)
                             .off("mouseup", docMouseUp);
 
-                        // Delete the stop if marked and we
-                        // still have at least two steps left
-                        var triggerChange = true;
+                        // Delete the stop if marked
                         if ($stop.data('stop-delete') === true) {
-                            if ($stops.find('> .stop').length > 2) {
-                                $stop.remove();
-                                hasChanged = true;
-                            } else {
-                                $stop.data('stop-delete', false);
-                                hasChanged = true;
-                                triggerChange = false;
-                            }
+                            $stop.remove();
+                            hasChanged = true;
                         }
 
-                        if (hasChanged && triggerChange) {
+                        if (hasChanged) {
                             $this.trigger('gradientchange');
                         }
                     };

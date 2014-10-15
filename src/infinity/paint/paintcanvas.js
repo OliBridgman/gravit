@@ -664,10 +664,10 @@
             throw new Error('Unknown gradient');
         }
 
-        var stops = gradient.getStops();
+        var stops = gradient.getInterpolatedStops();
 
         for (var i = 0; i < stops.length; ++i) {
-            result.addColorStop(stops[i].position / 100.0, stops[i].color.toScreenCSS());
+            result.addColorStop(stops[i].position, stops[i].color.toScreenCSS(stops[i].opacity));
         }
 
         return result;

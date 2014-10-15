@@ -7,15 +7,14 @@
      */
     function IFGradient(stops, r, tx, ty, sx, sy) {
         if (stops) {
-            this._stops = [];
-            for (var i = 0; i < stops.length; ++i) {
-                this._stops.push({
-                    position: stops[i].position < 0 ? 0 : stops[i].position > 100 ? 100 : stops[i].position,
-                    color: stops[i].color
-                });
-            }
+            this._stops = stops.slice();
         } else {
-            this._stops = [{color: IFRGBColor.WHITE, position: 0}, {color: IFRGBColor.BLACK, position: 100}];
+            this._stops = [
+                {opacity: 1, position: 0},
+                {opacity: 1, position: 1.0},
+                {color: IFRGBColor.WHITE, position: 0},
+                {color: IFRGBColor.BLACK, position: 1.0}
+            ];
         }
 
         this._r = typeof r === 'number' ? r : 0;
@@ -26,6 +25,97 @@
     }
 
     IFObject.inherit(IFGradient, IFPattern);
+
+    function interpolateStops(stops, position, filter, callback) {
+        var prevStop = null;
+        var nextStop = null;
+
+        for (var i = 0; i < stops.length; ++i) {
+            var stop = stops[i];
+            if (filter(stop)) {
+                if (stop.position === position) {
+                    return callback(stop, stop);
+                }
+
+                if (stop.position < position && (!prevStop || stop.position > prevStop.position)) {
+                    prevStop = stop;
+                }
+
+                if (stop.position > position && (!nextStop || stop.position < nextStop.position)) {
+                    nextStop = stop;
+                }
+            }
+        }
+
+        return callback(prevStop, nextStop);
+    };
+
+    IFGradient.interpolateOpacity = function (stops, position) {
+        return interpolateStops(stops, position, function (s) {
+            return s.hasOwnProperty('opacity')
+        }, function (prev, next) {
+            if (prev === next || (prev && !next)) {
+                return prev.opacity;
+            } else if (next && !prev) {
+                return next.opacity;
+            } else {
+                return next.opacity * position + prev.opacity * (1 - position);
+            }
+        });
+    }
+
+    IFGradient.interpolateColor = function (stops, position, nullForMatch, noCMS) {
+        return interpolateStops(stops, position, function (s) {
+            return s.hasOwnProperty('color')
+        }, function (prev, next) {
+
+            if (prev === next || (prev && !next)) {
+                return nullForMatch ? null : prev.color;
+            } else if (next && !prev) {
+                return next.color;
+            } else {
+                var c1 = next.color.toScreen(noCMS);
+                var c2 = prev.color.toScreen(noCMS);
+
+                return new IFRGBColor([
+                    Math.round(c1[0] * position + c2[0] * (1 - position)),
+                    Math.round(c1[1] * position + c2[1] * (1 - position)),
+                    Math.round(c1[2] * position + c2[2] * (1 - position))
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Returns the interpolated (aka real) screen colors
+     */
+    IFGradient.interpolateStops = function (stops, noCMS) {
+        var result = [];
+
+        for (var i = 0; i < stops.length; ++i) {
+            var stop = stops[i];
+            if (stop.hasOwnProperty('color')) {
+                result.push({
+                    position: stop.position,
+                    color: stop.color,
+                    opacity: IFGradient.interpolateOpacity(stops, stop.position, true)
+                });
+            } else if (stop.hasOwnProperty('opacity')) {
+                var color = IFGradient.interpolateColor(stops, stop.position, true, noCMS);
+                if (color !== null) {
+                    result.push({
+                        position: stop.position,
+                        color: color,
+                        opacity: stop.opacity
+                    });
+                }
+            }
+        }
+
+        return result.sort(function (a, b) {
+            return a.position > b.position;
+        });
+    };
 
     /**
      * Compare two gradients for equality Also takes care of null parameters.
@@ -61,8 +151,18 @@
                     return false;
                 }
 
-                if (!IFUtil.equals(s1[i].color, s2[i].color)) {
-                    return false;
+                if (s1[i].hasOwnProperty('opacity')) {
+                    if (!s2[i].hasOwnProperty('opacity')) {
+                        return false;
+                    } else {
+                        if (s1[i].opacity !== s2[i].opacity) {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (!IFUtil.equals(s1[i].color, s2[i].color)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -106,10 +206,18 @@
     IFGradient.prototype._sy = null;
 
     /**
+     * Returns the interpolated colors
+     * @return {Array<{{color: IFColor, opacity: Number, position: Number}}>}
+     */
+    IFGradient.prototype.getInterpolatedStops = function (noCMS) {
+        return IFGradient.interpolateStops(this._stops, noCMS);
+    };
+
+    /**
      * You may modify the return value though this class
      * is supposed to be immutable so ensure you know what
      * you are actually doing!!
-     * @returns {Array<{{position: Number, color: IFColor}}>}
+     * @returns {Array<{{position: Number, color: IFColor, opacity: Number}}>}
      */
     IFGradient.prototype.getStops = function () {
         return this._stops;
@@ -123,10 +231,19 @@
         blob.s = [];
 
         for (var i = 0; i < this._stops.length; ++i) {
-            blob.s.push({
-                p: this._stops[i].position,
-                c: IFPattern.serialize(this._stops[i].color)
-            })
+            var stop = this._stops[i];
+
+            var obj = {
+                p: stop.position
+            };
+
+            if (stop.hasOwnProperty('color')) {
+                obj.c = IFPattern.serialize(stop.color);
+            } else if (stop.hasOwnProperty('opacity')) {
+                obj.o = stop.opacity;
+            }
+
+            blob.s.push(obj);
         }
 
         return JSON.stringify(blob);
@@ -146,11 +263,18 @@
             this._stops = [];
 
             for (var i = 0; i < blob.s.length; ++i) {
-                var stop = blob.s[i];
-                this._stops.push({
-                    position: stop.p,
-                    color: IFPattern.deserialize(stop.c)
-                })
+                var obj = blob.s[i];
+                var stop = {
+                    position: obj.p
+                };
+
+                if (obj.hasOwnProperty('c')) {
+                    stop.color = IFPattern.deserialize(obj.c);
+                } else if (obj.hasOwnProperty('o')) {
+                    stop.opacity = obj.o
+                }
+
+                this._stops.push(stop);
             }
         }
     };
@@ -166,12 +290,12 @@
      * @param {Number} opacity
      * @return {String}
      */
-    IFGradient.prototype.toScreenCSS = function (opacity) {
+    IFGradient.prototype.toScreenCSS = function (opacity, noCMS) {
+        var stops = this.getInterpolatedStops();
         var cssStops = [];
-
-        for (var i = 0; i < this._stops.length; ++i) {
-            var stop = this._stops[i];
-            cssStops.push('' + stop.color.toScreenCSS(false, opacity) + ' ' + stop.position + '%');
+        for (var i = 0; i < stops.length; ++i) {
+            var stop = stops[i];
+            cssStops.push('' + stop.color.toScreenCSS(stop.opacity * opacity, noCMS) + ' ' + Math.round(stop.position * 100) + '%');
         }
 
         return cssStops.join(', ');

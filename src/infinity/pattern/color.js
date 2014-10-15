@@ -135,6 +135,20 @@
     };
 
     /**
+     * Convert a rgb color into a css color
+     * @param {RGB} rgb
+     * @param {Number} [opacity]
+     * @returns {string}
+     */
+    IFColor.rgbToCSS = function (rgb, opacity) {
+        if (typeof opacity === 'number' && opacity !== 1.0) {
+            return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + opacity + ')';
+        } else {
+            return IFColor.rgbToHtmlHex(rgb);
+        }
+    };
+
+    /**
      * @type {Array<{Number}>}
      * @private
      */
@@ -180,23 +194,18 @@
 
     /**
      * Converts and returns the underlying color as CSS Screen value
+     * @param {Number} [opacity]
      * @param {Boolean} [noCMS] if set to true, no cms will be used
      * to convert to screen color
-     * @param {Number} [opacity]
      * @returns {String}
      */
-    IFColor.prototype.toScreenCSS = function (noCMS, opacity) {
-        if (typeof opacity === 'number' && opacity !== 1.0) {
-            var rgb = this.toScreen(noCMS);
-            return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + opacity + ')';
-        } else {
-            return IFColor.rgbToHtmlHex(this.toScreen(noCMS));
-        }
+    IFColor.prototype.toScreenCSS = function (opacity, noCMS) {
+        return IFColor.rgbToCSS(this.toScreen(noCMS), opacity);
     };
 
     /** @override */
     IFColor.prototype.asCSSBackground = function (opacity) {
-        var cssColor = this.toScreenCSS(false, opacity);
+        var cssColor = this.toScreenCSS(opacity);
         return 'linear-gradient(' + cssColor + ', ' + cssColor + ')';
     };
 

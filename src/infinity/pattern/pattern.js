@@ -30,19 +30,27 @@
         } else if (patternClass === IFBackground) {
             return new IFBackground();
         } else if (patternClass === IFGradient) {
-            var stops = [{color: IFRGBColor.WHITE, position: 0}, {color: IFRGBColor.BLACK, position: 100}];
+            var stops = [{opacity: 1, position: 0}, {opacity: 1, position: 1.0}, {
+                color: IFRGBColor.WHITE,
+                position: 0
+            }, {color: IFRGBColor.BLACK, position: 1.0}];
 
             if (templatePattern instanceof IFColor) {
-                stops[0].color = templatePattern;
+                stops[2].color = templatePattern;
             }
 
             return new IFLinearGradient(stops);
         } else if (patternClass === IFColor) {
             if (templatePattern instanceof IFGradient) {
-                return templatePattern.getStops()[0].color;
-            } else {
-                return new IFRGBColor();
+                var stops = templatePattern.getStops();
+                for (var i = 0; i < stops.length; ++i) {
+                    if (stops[i].hasOwnProperty('color')) {
+                        return stops[i].color;
+                    }
+                }
             }
+
+            return new IFRGBColor();
         } else {
             throw new Error('Unknown pattern class.');
         }

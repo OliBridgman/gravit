@@ -52,6 +52,9 @@
                     .gPatternTypePicker()
                     .on('patterntypechange', function (evt, patternClass) {
                         self._assignProperty('_fpt', IFPattern.smartCreate(patternClass, self._panel.find('[data-property="_fpt"]').gPatternPicker('value')));
+                        if (patternClass && patternClass !== IFBackground) {
+                            self._panel.find('[data-property="_fpt"]').gPatternPicker('open');
+                        }
                     });
             } else if (property === '_fop') {
                 return $('<input>')

@@ -19,51 +19,51 @@
         display: block;
       }
 
-      > .stops {
+      > .stops, > .opacities {
         position: relative;
         height: 12px;
         margin: 0px 5px 0px 0px;
 
+        &.stops > .stop {
+          margin-top: 6px;
+
+          > .stop-value::before {
+            border-color: transparent transparent white transparent;
+            top: -10px;
+          }
+        }
+
+        &.opacities > .stop > .stop-value::before {
+          border-color: white transparent transparent transparent;
+          top: 10px;
+        }
+
         > .stop {
           position: absolute;
           z-index: 1;
-          margin-left: -5px;
+          margin-left: -4px;
 
           &, * {
             @include g-cursor(select-dot);
           }
 
-          > .stop-color {
+          > .stop-value {
             background: $textColor;
             border: 1px solid $borderColor;
-            width: 8px;
-            height: 8px;
-            border-radius: 100px;
+            width: 6px;
+            height: 6px;
             padding: 0px;
             margin: 0px;
-            margin-top: 1px;
+            box-shadow: 0px 0px 0px 1px rgb(255, 255, 255);
 
             &::before {
-              border-color: transparent transparent $borderColor transparent;
               border-style: solid;
-              border-width: 5px;
+              border-width: 4px;
               width: 0;
               height: 0;
               position: absolute;
-              top: -10px;
               left: 0px;
               content: '';
-            }
-          }
-
-          &.g-active {
-            > .stop-color {
-              border: 2px solid black;
-              margin-left: -1px;
-
-              &::before {
-                border-color: transparent transparent black transparent;
-              }
             }
           }
         }

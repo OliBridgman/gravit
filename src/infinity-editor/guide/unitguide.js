@@ -17,7 +17,7 @@
     IFUnitGuide.prototype.map = function (x, y) {
         // Snap to units if desired
         if (this._scene.getProperty('unitSnap') === true) {
-            return result = {
+            return {
                 x: {value: IFMath.round(x, true), guide: null},
                 y: {value: IFMath.round(y, true), guide: null}};
         }
