@@ -7,8 +7,7 @@
 
     var methods = {
         init: function (options) {
-            options = $.extend({
-            }, options);
+            options = $.extend({}, options);
 
             return this.each(function () {
                 var self = this;
@@ -28,18 +27,7 @@
                             methods._colorChanged.call(self);
                         }))
                     .append($('<div></div>')
-                        .addClass('pattern-editor')
-                        .append($('<div></div>')
-                            .data('pattern-class', IFGradient)
-                            .append($('<div></div>')
-                                .gGradientEditor()
-                                .gGradientEditor('value', new IFLinearGradient().getStops())
-                                .on('gradientchange', function () {
-                                    methods._firePatternChange.call(self, true);
-                                }))
-                        ))
-                    .append($('<div></div>')
-                        .addClass('g-list palette')
+                        .addClass('palette')
                         .append($('<div></div>')
                             .addClass('swatches')
                             .gSwatchPanel({
@@ -70,6 +58,16 @@
                             .addClass('divider'))
                         .append($('<div></div>')
                             .addClass('builtin-colors')))
+                    .append($('<div></div>')
+                        .addClass('g-list pattern-editor')
+                        .append($('<div></div>')
+                            .data('pattern-class', IFGradient)
+                            .gGradientEditor()
+                            .gGradientEditor('value', new IFLinearGradient().getStops())
+                            .on('gradientchange', function () {
+                                methods._firePatternChange.call(self, true);
+                            })
+                    ))
                     .append($('<div></div>')
                         .addClass('toolbar')
                         .append($('<div></div>')
@@ -284,6 +282,6 @@
     }
 
 }
-    (jQuery)
-    )
+(jQuery)
+)
 ;

@@ -1,6 +1,7 @@
 @import '../variables';
 
 .g-gradient-editor {
+  padding: 0px 5px;
 
   > .container {
     display: table;
@@ -15,14 +16,14 @@
       width: 100%;
 
       > .gradient {
-        height: $baseline;
         display: block;
+        margin: 0px;
       }
 
       > .stops, > .opacities {
         position: relative;
         height: 12px;
-        margin: 0px 5px 0px 0px;
+        margin: 0px;
 
         &.stops > .stop {
           margin-top: 6px;
