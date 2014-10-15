@@ -650,7 +650,7 @@
                                         width: wheelSize.toString() + 'px',
                                         height: wheelSize.toString() + 'px',
                                     })
-                                    .on('click', function (evt) {
+                                    .on('mousedown', function (evt) {
                                         var data = $this.data('gcoloreditor');
                                         if (!data.wheelMap) {
                                             return;
@@ -670,9 +670,14 @@
                                         var color = new IFRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
                                         var newColor = methods._convertColor.call(self, color);
 
-                                        methods.currentColor.call(self, newColor);
-                                        $this.trigger('colorchange', newColor);
-                                    })))));
+                                        //methods.currentColor.call(self, newColor);
+                                        //$this.trigger('colorchange', newColor);
+                                        $this.find('.wheel-border').gPatternTarget('value', newColor);
+                                    })
+                                    .gPatternTarget({
+                                        allowDrop: false
+                                    })
+                                    .gPatternTarget('types', [IFColor])))));
 
                 // Set some initial values
                 methods.colorMode.call(self, 'hsv');
