@@ -38,42 +38,34 @@
             }, options);
 
             return this.each(function () {
-                var self = this;
-
                 var $this = $(this)
                     .data('goverlay', {
-                        options: options
+                        options: options,
+                        target: null,
+                        modal: false
                     });
 
-                var container = $('<div></div>')
+                $('<div></div>')
                     .addClass('g-overlay')
                     .css('position', 'absolute')
                     .append($this);
             });
         },
 
-        open: function (target, modal) {
+        relayout: function () {
             var $this = $(this);
-            var options = $this.data('goverlay').options;
-
-            var container = $this.parents('.g-overlay');
-
-            var modal = modal || options.modal;
-            if (modal) {
-                $('<div></div>')
-                    .addClass('g-overlay-modal')
-                    .append(container)
-                    .appendTo($('body'));
-            } else {
-                container.appendTo($('body'));
+            var data = $this.data('goverlay');
+            if (!data.target) {
+                return;
             }
 
+            var container = $this.parents('.g-overlay');
             var $window = $(window);
             var windowWidth = $window.width();
             var windowHeight = $window.height();
             var containerWidth = container.outerWidth();
             var containerHeight = container.outerHeight();
-            var $target = $(target);
+            var $target = $(data.target);
             var offset = $target.offset();
             var top = offset.top;
             var left = offset.left;
@@ -110,6 +102,28 @@
             container
                 .css('left', x + 'px')
                 .css('top', y + 'px');
+        },
+
+        open: function (target, modal) {
+            var $this = $(this);
+            var data = $this.data('goverlay');
+            var options = data.options;
+            data.target = target;
+            data.modal = modal;
+
+            var container = $this.parents('.g-overlay');
+
+            var modal = modal || options.modal;
+            if (modal) {
+                $('<div></div>')
+                    .addClass('g-overlay-modal')
+                    .append(container)
+                    .appendTo($('body'));
+            } else {
+                container.appendTo($('body'));
+            }
+
+            methods.relayout.call(this);
 
             openOverlayStack.push(this[0]);
 
@@ -118,9 +132,12 @@
 
         close: function () {
             var $this = $(this);
+            var data = $this.data('goverlay');
 
             if (openOverlayStack.length && openOverlayStack[openOverlayStack.length - 1] === this[0]) {
-                var options = $this.data('goverlay').options;
+                data.modal = false;
+                data.target = null;
+                var options = data.options;
 
                 $this.trigger('close');
 

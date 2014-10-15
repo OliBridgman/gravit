@@ -60,6 +60,10 @@
         $.gPatternPicker.getEditor().gOverlay('close');
     };
 
+    $.gPatternPicker.relayout = function () {
+        $.gPatternPicker.getEditor().gOverlay('relayout');
+    };
+
     $.gPatternPicker.value = function (value) {
         if (!arguments.length) {
             return $.gPatternPicker.getEditor().gPatternEditor('value');
@@ -211,6 +215,8 @@
                 if (data.opened && !data.manualChangeEvent) {
                     $.gPatternPicker.value($this.gPatternTarget('value'));
                 }
+
+                $.gPatternPicker.relayout();
 
                 return this;
             }
