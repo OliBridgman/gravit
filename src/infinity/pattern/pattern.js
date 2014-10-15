@@ -30,12 +30,13 @@
         } else if (patternClass === IFBackground) {
             return new IFBackground();
         } else if (patternClass === IFGradient) {
-            var stops = [{opacity: 1, position: 0}, {opacity: 1, position: 1.0}, {
-                color: IFRGBColor.WHITE,
-                position: 0
-            }, {color: IFRGBColor.BLACK, position: 1.0}];
+            var stops = [
+                {opacity: 1, position: 0},
+                {opacity: 1, position: 1.0},
+                {color: IFRGBColor.WHITE, position: 0},
+                {color: IFRGBColor.BLACK, position: 1.0}];
 
-            if (templatePattern instanceof IFColor) {
+            if (templatePattern instanceof IFColor && !IFUtil.equals(templatePattern.toScreen(), stops[3].color.toScreen())) {
                 stops[2].color = templatePattern;
             }
 

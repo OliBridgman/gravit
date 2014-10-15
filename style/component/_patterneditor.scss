@@ -24,4 +24,10 @@
       margin: 1px;
     }
   }
+
+  .toolbar {
+    > .pattern-type {
+      display: inline-block;
+    }
+  }
 }

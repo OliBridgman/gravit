@@ -295,7 +295,11 @@
         var cssStops = [];
         for (var i = 0; i < stops.length; ++i) {
             var stop = stops[i];
-            cssStops.push('' + stop.color.toScreenCSS(stop.opacity * opacity, noCMS) + ' ' + Math.round(stop.position * 100) + '%');
+            var stopOpacity = stop.opacity;
+            if (typeof opacity === 'number') {
+                stopOpacity *= opacity;
+            }
+            cssStops.push('' + stop.color.toScreenCSS(stopOpacity, noCMS) + ' ' + Math.round(stop.position * 100) + '%');
         }
 
         return cssStops.join(', ');

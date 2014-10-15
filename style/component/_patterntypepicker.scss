@@ -1,0 +1,13 @@
+@import '../variables';
+
+.pattern-type-picker {
+  .g-button.pattern-type {
+    > span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid $borderColor;
+      margin-bottom: 2px;
+    }
+  }
+}

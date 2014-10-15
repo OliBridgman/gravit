@@ -72,7 +72,7 @@
                             .addClass('builtin-colors')))
                     .append($('<div></div>')
                         .addClass('toolbar')
-                        .append($('<select></select>')
+                        .append($('<div></div>')
                             .addClass('pattern-type')
                             .gPatternTypePicker()
                             .on('patterntypechange', function (evt, patternClass) {
