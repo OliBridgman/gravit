@@ -41,7 +41,7 @@
                     .addClass('g-gradient-editor')
                     .data('ggradienteditor', data)
                     .gPatternTarget({
-                        allowDrag: false
+                        //allowDrag: false
                     })
                     .gPatternTarget('types', [IFColor, IFGradient])
                     .on('patternchange', function (evt) {
