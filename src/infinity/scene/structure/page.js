@@ -98,7 +98,7 @@
     };
 
     /** @override */
-    IFPage.prototype._paint = function (context, noBackground) {
+    IFPage.prototype._paint = function (context) {
         var canvas = context.canvas;
         
         // Figure if we have any contents
@@ -165,7 +165,7 @@
             context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
 
             // Let our master paint now
-            masterPage.paint(context, true/*no background*/);
+            masterPage.paint(context);
 
             // Restore in reverse order of preparation
             context.dirtyMatcher.transform(masterTransform);
