@@ -240,7 +240,8 @@
                     var stopsOffset = $stops.offset();
                     var moveMinX = stopsOffset.left;
                     var moveMaxX = moveMinX + $stops.width();
-                    var moveMinY = stopsOffset.top;
+                    var moveMinY = stopsOffset.top - 5;
+                    var moveMaxY = stopsOffset.top + $stops.outerHeight() + 5;
                     var stopWidth = $stop.outerWidth();
                     var startPosX = $stop.offset().left + stopWidth - evt.pageX;
                     var startPosY = $stop.offset().top - evt.pageY;
@@ -259,7 +260,7 @@
                             left = moveMaxX;
                         }
 
-                        if (top < moveMinY && stopsTotal > 2) {
+                        if ((top < moveMinY || top > moveMaxY) && stopsTotal > 2) {
                             // Moved outside area so get rid of our stop
                             $stop
                                 .css('display', 'none')
@@ -356,7 +357,8 @@
                     var stopsOffset = $stops.offset();
                     var moveMinX = stopsOffset.left;
                     var moveMaxX = moveMinX + $stops.width();
-                    var moveMaxY = stopsOffset.top + $stops.outerHeight();
+                    var moveMinY = stopsOffset.top - 5;
+                    var moveMaxY = stopsOffset.top + $stops.outerHeight() + 5;
                     var stopWidth = $stop.outerWidth();
                     var startPosX = $stop.offset().left + stopWidth - evt.pageX;
                     var startPosY = $stop.offset().top - evt.pageY;
@@ -375,7 +377,7 @@
                             left = moveMaxX;
                         }
 
-                        if (top > moveMaxY && stopsTotal > 2) {
+                        if ((top < moveMinY || top > moveMaxY) && stopsTotal > 2) {
                             // Moved outside area so get rid of our stop
                             $stop
                                 .css('display', 'none')

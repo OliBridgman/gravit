@@ -82,7 +82,7 @@
                             .css('display', 'none')
                             .append($('<span></span>')
                                 // TODO : I18N
-                                .text('Opacity:'))
+                                .text(' Opacity: '))
                             .append($('<input>')
                                 .css('width', '3em')
                                 .on('change', function (evt) {
@@ -166,11 +166,17 @@
                     .gPatternTypePicker('value', value ? value.constructor : null)
                     .gPatternTypePicker('value');
 
+                var hasPatternEditor = false;
                 $this.find('.pattern-editor > div').each(function (index, element) {
                     var $element = $(element);
-                    $element.css('display', $element.data('pattern-class') === patternType ? '' : 'none');
+                    var isPatternType = $element.data('pattern-class') === patternType;
+                    $element.css('display', isPatternType ? '' : 'none');
+                    hasPatternEditor = hasPatternEditor || isPatternType;
                 });
 
+                $this.find('.pattern-editor').css('display', hasPatternEditor ? '' : 'none');
+
+                // Update editor depending on value
                 if (value instanceof IFGradient) {
                     $this.find('.g-gradient-editor')
                         .gGradientEditor('value', value.getStops());

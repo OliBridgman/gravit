@@ -22,7 +22,7 @@
 
       > .stops, > .opacities {
         position: relative;
-        height: 12px;
+        height: 16px;
         margin: 0px;
 
         &.stops > .stop {
@@ -34,9 +34,13 @@
           }
         }
 
-        &.opacities > .stop > .stop-value::before {
-          border-color: white transparent transparent transparent;
-          top: 10px;
+        &.opacities > .stop {
+          margin-top: 2px;
+
+          > .stop-value::before {
+            border-color: white transparent transparent transparent;
+            top: 10px;
+          }
         }
 
         > .stop {
