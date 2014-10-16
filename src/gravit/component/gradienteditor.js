@@ -84,9 +84,10 @@
 
     function updateGradient() {
         var $this = $(this);
+        var data = $this.data('ggradienteditor');
 
         var gradientClass = $this.find('[data-section="type"] > .g-button.g-active').data('gradientClass');
-        var stops = $this.gGradientEditor('value').getStops();
+        var stops = data.gradient.getStops();
         var scale = IFUtil.parseNumber($this.find('[data-property="scale"]').val());
         var settings = $this.find('[data-section="settings"]');
 
@@ -107,15 +108,59 @@
         $(this).trigger('gradientchange');
     };
 
-    function updateGradientPreview() {
+    function updateGradientPreview(temporary) {
         var $this = $(this);
+        var data = $this.data('ggradienteditor');
 
-        var gradient = methods.value.call(this);
+        var gradient = data.gradient;
+
+        if (temporary) {
+            var $stops = $this.find('.stops > .stop');
+            var $opacities = $this.find('.opacities > .stop');
+
+            var stops = [];
+
+            $stops.each(function (index, element) {
+                var $stop = $(element);
+                if ($stop.data('stop-delete') === false) {
+                    stops.push($stop.data('stop'));
+                }
+            });
+
+            $opacities.each(function (index, element) {
+                var $stop = $(element);
+                if ($stop.data('stop-delete') === false) {
+                    stops.push($stop.data('stop'));
+                }
+            });
+
+            stops.sort(function (a, b) {
+                return a.position > b.position;
+            });
+
+            gradient = new IFGradient(stops);
+        }
 
         $this
             .find('.gradient')
             .css('background', 'linear-gradient(90deg, ' + gradient.toScreenCSS() + '), ' + IFPattern.asCSSBackground(null));
     }
+
+    function updateGradientPreviewAndTrigger () {
+        updateGradientPreview.call(this);
+        $(this).trigger('gradientchange');
+    };
+
+    function updatedStops() {
+        var $this = $(this);
+        var data = $this.data('ggradienteditor');
+
+        data.gradient.getStops().sort(function (a, b) { return a.position > b.position; });
+
+        methods.value.call(this, data.gradient);
+
+        $(this).trigger('gradientchange');
+    };
 
     function calculatePositionByMouse(target, x) {
         var width = target.width();
@@ -133,14 +178,14 @@
         if (color) {
             $stop.data('stop').color = color;
             updateStop($stop);
-            updateGradientPreview.call(this);
-            $(this).trigger('gradientchange');
+            updateGradientPreviewAndTrigger.call(this);
         }
     }
 
     function stopMouseDown(evt) {
         var self = this;
         var $this = $(this);
+        var data = $this.data('ggradienteditor');
         var $stops = $this.find('.stops');
 
         var $stop = $(evt.target).closest('.stop');
@@ -189,7 +234,7 @@
 
             $stop.data('stop').position = position;
             updateStop($stop);
-            updateGradientPreview.call(self);
+            updateGradientPreview.call(self, true);
             $stop.data('stop-moved', true);
         };
 
@@ -201,10 +246,10 @@
 
             // Delete the stop if marked
             if ($stop.data('stop-delete') === true) {
-                $stop.remove();
-            }
-
-            if ($stop.data('stop-moved')) {
+                var stops = data.gradient.getStops();
+                stops.splice(stops.indexOf($stop.data('stop')), 1);
+                updatedStops.call(self);
+            } else if ($stop.data('stop-moved')) {
                 $this.trigger('gradientchange');
             }
         };
@@ -244,8 +289,7 @@
 
                                 $stop.data('stop').opacity = val / 100.0;
                                 updateOpacity($stop);
-                                updateGradientPreview.call(self);
-                                $this.trigger('gradientchange');
+                                updateGradientPreviewAndTrigger.call(self);
                             }
                         }))
                     .append($('<span>%</span>')))
@@ -278,7 +322,8 @@
     function opacityMouseDown(evt) {
         var self = this;
         var $this = $(this);
-        var $stops = $this.find('.stops');
+        var data = $this.data('ggradienteditor');
+        var $stops = $this.find('.opacities');
 
         var $stop = $(evt.target).closest('.stop');
 
@@ -327,7 +372,7 @@
             $stop.data('stop').position = position;
             $stop.data('stop-moved', true);
             updateOpacity($stop);
-            updateGradientPreview.call(self);
+            updateGradientPreview.call(self, true);
         };
 
         var docMouseUp = function (evt) {
@@ -338,10 +383,10 @@
 
             // Delete the stop if marked
             if ($stop.data('stop-delete') === true) {
-                $stop.remove();
-            }
-
-            if ($stop.data('stop-moved')) {
+                var stops = data.gradient.getStops();
+                stops.splice(stops.indexOf($stop.data('stop')), 1);
+                updatedStops.call(self);
+            } else if ($stop.data('stop-moved')) {
                 $this.trigger('gradientchange');
             }
         };
@@ -407,11 +452,13 @@
                         .on('patterndrop', function (evt, pattern, mouseEvent) {
                             evt.stopPropagation();
                             if (pattern && pattern instanceof IFColor) {
-                                var $stops = $(this).find('.stops');
-                                var position = calculatePositionByMouse($stops, mouseEvent.pageX);
-                                methods.insertStop.call(self, position, pattern);
-                                updateGradientPreview.call(self);
-                                $this.trigger('gradientchange');
+                                var $stops = $this.find('.stops');
+                                var stops = $this.gGradientEditor('value').getStops();
+                                stops.push({
+                                    position: calculatePositionByMouse($stops, mouseEvent.pageX),
+                                    color: pattern
+                                });
+                                updatedStops.call(self);
                             } else if (pattern instanceof IFGradient) {
                                 methods.value.call(self, pattern.clone());
                                 $this.trigger('gradientchange');
@@ -427,10 +474,12 @@
                                 var $opacities = $(evt.target);
                                 if ($opacities.hasClass('opacities')) {
                                     var position = calculatePositionByMouse($opacities, evt.pageX);
-                                    var opacity = IFGradient.interpolateOpacity(methods.value.call(self), position);
-                                    methods.insertOpacity.call(self, position, opacity);
-                                    updateGradientPreview.call(self);
-                                    $this.trigger('gradientchange');
+                                    var stops = $this.gGradientEditor('value').getStops();
+                                    stops.push({
+                                        position: position,
+                                        opacity: IFGradient.interpolateOpacity(stops, position)
+                                    });
+                                    updatedStops.call(self);
                                 }
                             })))
                         .append($('<div></div>')
@@ -446,10 +495,12 @@
                                 var $stops = $(evt.target);
                                 if ($stops.hasClass('stops')) {
                                     var position = calculatePositionByMouse($stops, evt.pageX);
-                                    var color = IFGradient.interpolateColor(methods.value.call(self), position);
-                                    methods.insertStop.call(self, position, color);
-                                    updateGradientPreview.call(self);
-                                    $this.trigger('gradientchange');
+                                    var stops = $this.gGradientEditor('value').getStops();
+                                    stops.push({
+                                        position: position,
+                                        color: IFGradient.interpolateColor(stops, position)
+                                    });
+                                    updatedStops.call(self);
                                 }
                             })))
                     .append($('<div></div>')
@@ -470,7 +521,20 @@
                                 }))
                             .append($('<span>%</span>')))
                         .append($('<div></div>')
-                            .attr('data-section', 'settings')));
+                            .attr('data-section', 'settings'))
+                        .append($('<div></div>')
+                            .append($('<button></button>')
+                                .append($('<span></span>')
+                                    .addClass('fa fa-exchange'))
+                                .on('click', function () {
+                                    var stops = $this.gGradientEditor('value').getStops();
+
+                                    for (var i = 0; i < stops.length; ++i) {
+                                        stops[i].position = 1 - stops[i].position;
+                                    }
+
+                                    updatedStops.call(self);
+                                }))));
             });
         },
 
