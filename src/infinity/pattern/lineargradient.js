@@ -5,14 +5,14 @@
      * @extends IFGradient
      * @constructor
      */
-    function IFLinearGradient(stops, scale, rotation) {
+    function IFLinearGradient(stops, scale, angle) {
         IFGradient.call(
             this,
             stops,
             scale
         );
 
-        this._rotation = typeof rotation === 'number' ? rotation : 0;
+        this._angle = typeof angle === 'number' ? angle : 0;
     }
 
     IFPattern.inherit('L', IFLinearGradient, IFGradient);
@@ -21,7 +21,7 @@
         if (left instanceof IFLinearGradient && right instanceof  IFLinearGradient) {
             if (IFGradient.equals(left, right, stopsOnly)) {
                 if (!stopsOnly) {
-                    return IFMath.isEqualEps(left._rotation, right._rotation);
+                    return IFMath.isEqualEps(left._angle, right._angle);
                 }
             }
             return false;
@@ -30,24 +30,24 @@
     };
 
     /**
-     * Gradient rotation in radians
+     * Gradient angle in radians
      * @type {number}
      * @private
      */
-    IFLinearGradient._rotation = 0;
+    IFLinearGradient._angle = 0;
 
     /**
-     * Return the gradient's rotation in degrees
+     * Return the gradient's angle in radians
      * @returns {IFLinearGradient}
      */
-    IFLinearGradient.prototype.getRotation = function () {
-        return this._rotation;
+    IFLinearGradient.prototype.getAngle = function () {
+        return this._angle;
     };
 
     /** @override */
     IFLinearGradient.prototype.asCSSBackground = function (opacity) {
-        var rotDeg = Math.round(IFMath.toDegrees(this._rotation)) + 90;
-        return 'linear-gradient(' + rotDeg + 'deg, ' + this.toScreenCSS(opacity) + ')';
+        var angleDeg = Math.round(IFMath.toDegrees(this._angle)) + 90;
+        return 'linear-gradient(' + angleDeg + 'deg, ' + this.toScreenCSS(opacity) + ')';
     };
 
     /** @override */
@@ -59,8 +59,8 @@
     IFLinearGradient.prototype._serializeToBlob = function () {
         var blob = IFGradient.prototype._serializeToBlob.call(this);
 
-        if (blob && !IFMath.isEqualEps(this._rotation, 0)) {
-            blob.r = this._rotation;
+        if (blob && !IFMath.isEqualEps(this._angle, 0)) {
+            blob.r = this._angle;
         }
 
         return blob;
@@ -72,7 +72,7 @@
      */
     IFLinearGradient.prototype._deserializeFromBlob = function (blob) {
         IFGradient.prototype._deserializeFromBlob.call(this, blob);
-        this._rotation = blob.hasOwnProperty('r') ? blob.r : 0;
+        this._angle = blob.hasOwnProperty('r') ? blob.r : 0;
     };
 
     /** @override */

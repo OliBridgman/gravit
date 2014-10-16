@@ -663,8 +663,8 @@
             var scale = pattern.getScale();
 
             if (pattern instanceof IFLinearGradient) {
-                var rotation = pattern.getRotation();
-                paint = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(rotation) * scale, Math.sin(rotation) * scale);
+                var angle = pattern.getAngle();
+                paint = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(angle) * scale, Math.sin(angle) * scale);
             } else if (pattern instanceof IFRadialGradient) {
                 paint = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
             } else {
@@ -690,36 +690,6 @@
                 transform: transform
             };
         }
-    };
-
-    /**
-     * Creates and returns a gradient pattern. The gradient
-     * will be a unit gradient and thus requires a separate
-     * transformation when being painted.
-     * @param {IFGradient} gradient the gradient to be used
-     * @return {*} a pattern specific to this canvas-type
-     */
-    IFPaintCanvas.prototype.createGradient = function (gradient) {
-        var result = null;
-
-        var scale = gradient.getScale();
-
-        if (gradient instanceof IFLinearGradient) {
-            var rotation = gradient.getRotation();
-            result = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(rotation) * scale, Math.sin(rotation) * scale);
-        } else if (gradient instanceof IFRadialGradient) {
-            result = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
-        } else {
-            throw new Error('Unknown gradient');
-        }
-
-        var stops = gradient.getInterpolatedStops();
-
-        for (var i = 0; i < stops.length; ++i) {
-            result.addColorStop(stops[i].position, stops[i].color.toScreenCSS(stops[i].opacity));
-        }
-
-        return result;
     };
 
     /**

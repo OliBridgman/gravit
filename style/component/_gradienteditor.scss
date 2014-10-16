@@ -4,14 +4,6 @@
   padding: 0px 5px;
 
   > .container {
-    display: table;
-    width: 100%;
-
-    > div {
-      display: table-cell;
-      vertical-align: top;
-    }
-
     > .editor {
       width: 100%;
 
@@ -71,6 +63,23 @@
               content: '';
             }
           }
+        }
+      }
+    }
+
+    > .toolbar {
+      margin-top: 7px;
+
+      > div {
+        display: inline-block;
+        margin-right: 10px;
+
+        &[data-section="type"] > span.g-button > span {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border: 1px solid $borderColor;
+          margin-bottom: 2px;
         }
       }
     }

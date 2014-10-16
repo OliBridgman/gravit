@@ -1,5 +1,5 @@
 (function ($) {
-    var patternTypes = [
+    var PATTERN_TYPES = [
         {
             clazz: null,
             // TODO : I18N
@@ -45,8 +45,8 @@
                         $this.trigger('patterntypechange', methods.value.call(self));
                     });
                 } else {
-                    for (var i = 0; i < patternTypes.length; ++i) {
-                        var patInfo = patternTypes[i];
+                    for (var i = 0; i < PATTERN_TYPES.length; ++i) {
+                        var patInfo = PATTERN_TYPES[i];
 
                         $('<span></span>')
                             .data('patternClass', patInfo.clazz)
@@ -161,8 +161,8 @@
                     target = lastElement;
                 }
 
-                for (var i = 0; i < patternTypes.length; ++i) {
-                    var patInfo = patternTypes[i];
+                for (var i = 0; i < PATTERN_TYPES.length; ++i) {
+                    var patInfo = PATTERN_TYPES[i];
 
                     if (!data.types || !data.types.length || data.types.indexOf(patInfo.clazz) >= 0) {
                         $('<option></option>')
