@@ -151,6 +151,13 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         dot: true,
+                        cwd: 'assets/acv',
+                        dest: '<%= cfg.build %>/source/acv/',
+                        src: '{,*/}*.*'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
                         cwd: 'assets/font',
                         dest: '<%= cfg.build %>/source/font/',
                         src: '{,*/}*.*'
