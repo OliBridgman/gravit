@@ -133,6 +133,15 @@
         return false;
     };
 
+    IFUtil.dictionaryContainsValue = function (dictionary, value) {
+        for (var key in dictionary) {
+            if (dictionary[key] === value) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
     /**

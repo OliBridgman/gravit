@@ -14,7 +14,7 @@
 
     /** @override */
     IFMegaPathEditor.prototype.transform = function (transform, partId, partData) {
-        if (partId && ifUtil.dictionaryContainsValue(IFPathEditor.PartType, partId.type)) {
+        if (partId && IFUtil.dictionaryContainsValue(IFPathEditor.PartType, partId.type)) {
             for (var i = 0; i < this._editors.length; ++i) {
                 var ed = this._editors[i];
                 if (ed.getPartSelection()) {
