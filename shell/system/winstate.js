@@ -49,6 +49,17 @@ function initWindowState() {
         if (deltaHeight !== 'disabled') deltaHeight = 0;
         dumpWindowState();
     }
+
+    if (currWinMode !== 'maximized') {
+        var x = win.x;
+        var y = win.y;
+
+        if (y <= 40) {
+            y= 40;
+        }
+
+        win.moveTo(x, y);
+    }
 }
 
 function dumpWindowState() {
@@ -79,7 +90,6 @@ function dumpWindowState() {
 }
 
 function restoreWindowState() {
-    console.log('restore_window_state');
     // deltaHeight already saved, so just restore it and adjust window height
     if (deltaHeight !== 'disabled' && typeof winState.deltaHeight !== 'undefined') {
         deltaHeight = winState.deltaHeight
