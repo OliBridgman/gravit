@@ -430,7 +430,15 @@
             var $this = $(this);
             var data = $this.data('gswatchpanel');
             var scene = data.container.getScene();
-            var sourceName = pattern instanceof IFColor ? pattern.toHumanString() : 'Swatch';
+            var name = pattern instanceof IFColor ? pattern.toHumanString() : '';
+
+            IFEditor.tryRunTransaction(scene, function () {
+                var swatch = new IFSwatch();
+                swatch.setProperties(['name', 'pat'], [name, pattern]);
+                scene.getSwatchCollection().appendChild(swatch);
+            }, 'Add Swatch');
+
+            /*
             vex.dialog.prompt({
                 // TODO : I18N
                 message: 'Enter a name for the new swatch:',
@@ -452,6 +460,7 @@
                     }, 'Add Swatch');
                 }
             });
+            */
         },
 
         attach: function (container) {
