@@ -13,26 +13,34 @@
                     .append($('<input>')
                         .attr({
                             'type': 'text',
-                            'data-property': 'rotate'
+                            'data-property': 'angle'
                         })
-                        .css('width', '30px'))
+                        .css('width', '30px')
+                        .on('change', function (evt) {
+                            updateCall();
+                        }))
                     .append($('<span>°</span>'));
 
                 return true;
             },
             updateSettings: function (settings, gradient) {
                 var angle = IFMath.toDegrees(gradient.getAngle());
-                settings.find('[data-property="rotate"]').val(IFUtil.formatNumber(angle, 2));
+                settings.find('[data-property="angle"]').val(IFUtil.formatNumber(angle, 2));
             },
             createGradient: function (stops, scale, settings) {
-                var angle = IFUtil.parseNumber(settings.find('[data-property="angle"]').val());
-                if (isNaN(angle)) {
-                    angle = 0;
-                } else {
-                    angle = IFMath.toRadians(IFMath.normalizeAngleDegrees(angle));
+                var angle = 0;
+
+                if (settings) {
+                    angle = IFUtil.parseNumber(settings.find('[data-property="angle"]').val());
+
+                    if (isNaN(angle)) {
+                        angle = 0;
+                    } else {
+                        angle = IFMath.toRadians(IFMath.normalizeAngleDegrees(angle));
+                    }
                 }
 
-                return new IFLinearGradient(stops, scale, rotate);
+                return new IFLinearGradient(stops, scale, angle);
             }
         },
         {
@@ -79,18 +87,25 @@
 
         var gradientClass = $this.find('[data-section="type"] > .g-button.g-active').data('gradientClass');
         var stops = $this.gGradientEditor('value').getStops();
-        var scale = IFUtil.parseNumber($this.find('[data-section="scale"] > input[type="text"]').val());
+        var scale = IFUtil.parseNumber($this.find('[data-property="scale"]').val());
         var settings = $this.find('[data-section="settings"]');
 
         if (isNaN(scale) || scale <= 0) {
             scale = 1;
+        } else {
+            scale /= 100;
         }
 
         var gradientTypeInfo = getGradientTypeInfo(gradientClass);
-        var gradient = gradientTypeInfo.createGradient(stops, scale, settings);
+        var gradient = gradientTypeInfo.createGradient(stops, scale, settings.css('display') !== 'none' ? settings : null);
 
         methods.value.call(this, gradient);
     }
+
+    function updateGradientAndTrigger () {
+        updateGradient.call(this);
+        $(this).trigger('gradientchange');
+    };
 
     function updateGradientPreview() {
         var $this = $(this);
@@ -376,8 +391,7 @@
                                 $button.toggleClass('g-active', $button.data('gradientClass') === gradientClass);
                             });
 
-                            updateGradient.call(self);
-                            $this.trigger('gradientchange');
+                            updateGradientAndTrigger.call(self);
                         })
                         .appendTo(typeSection);
                 }
@@ -442,22 +456,18 @@
                         .addClass('toolbar')
                         .append(typeSection)
                         .append($('<div></div>')
-                            .attr('data-section', 'scale')
                             .append($('<span></span>')
                                 .addClass('fa fa-arrows-h')
                                 .css('padding-right', '3px'))
                             .append($('<input>')
                                 .attr({
-                                    'type': 'range',
-                                    'min': '1',
-                                    'max': '200'
+                                    'type': 'text',
+                                    'data-property': 'scale'
                                 })
-                                .css('width', '80px'))
-                            .append($('<input>')
-                                .attr({
-                                    'type': 'text'
-                                })
-                                .css('width', '30px'))
+                                .css('width', '30px')
+                                .on('change', function () {
+                                    updateGradientAndTrigger.call(self);
+                                }))
                             .append($('<span>%</span>')))
                         .append($('<div></div>')
                             .attr('data-section', 'settings')));
@@ -494,10 +504,13 @@
                         .css('display', 'none')
                         .empty();
 
-                    if (gradientTypeInfo.initSettings(settings, null)) {
+                    if (gradientTypeInfo.initSettings(settings, updateGradientAndTrigger.bind(this))) {
                         settings.css('display', '');
                     }
                 }
+
+                var scale = Math.round(data.gradient.getScale() * 100.0);
+                $this.find('[data-property="scale"]').val(scale);
 
                 gradientTypeInfo.updateSettings(settings, data.gradient);
 

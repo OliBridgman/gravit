@@ -254,7 +254,7 @@
             var char = string.charAt(i);
             if (char === ',' && !foundDecSep) {
                 parseString = '.' + parseString;
-            } else if (IFUtil.isNumeric(char)) {
+            } else if (IFUtil.isNumeric(char) || char === '-' || char === '+') {
                 parseString = char + parseString;
             }
         }
