@@ -663,8 +663,10 @@
             var scale = pattern.getScale();
 
             if (pattern instanceof IFLinearGradient) {
-                var angle = pattern.getAngle();
-                paint = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(angle) * scale, Math.sin(angle) * scale);
+                var angle = -pattern.getAngle();
+                paint = this._canvasContext.createLinearGradient(
+                    0.5 - Math.cos(angle) / 2 * scale, 0.5 - Math.sin(angle) / 2 * scale,
+                    0.5 + Math.cos(angle) / 2 * scale, 0.5 + Math.sin(angle) / 2 * scale);
             } else if (pattern instanceof IFRadialGradient) {
                 paint = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
             } else {
