@@ -34,6 +34,11 @@
     };
 
     /** @override */
+    IFCMYKColor.prototype.clone = function () {
+        return new IFCMYKColor(this._value);
+    };
+
+    /** @override */
     IFCMYKColor.prototype.toString = function () {
         return "[Object IFCMYKColor]";
     };

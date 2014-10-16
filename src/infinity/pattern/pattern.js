@@ -141,21 +141,10 @@
     };
 
     /**
-     * Returns whether the pattern is scaled or not
-     * @param {Boolean}
+     * Should return a clone of this pattern
+     * @return {IFPattern}
      */
-    IFPattern.prototype.isScaled = function () {
-        return false;
-    };
-
-    /**
-     * Create and returns a paint for this pattern
-     * @param {IFPaintCanvas} canvas canvas used for creating the paint
-     * @param {IFRect} bbox bounding box for the paint
-     * @return {{paint: *, transform: IFTransform}}
-     * @private
-     */
-    IFPattern.prototype.createPaint = function (canvas, bbox) {
+    IFPattern.prototype.clone = function () {
         throw new Error('Not Supported');
     };
 

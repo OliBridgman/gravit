@@ -125,8 +125,8 @@
                 return true;
             }
 
-            // Having a scale always requires a separate canvas
-            return this.$_bpt.isScaled();
+            // Having a border transform with scale/skew requires sep. canvas
+            return this.$_bpx && this.$_bpx.getDeterminant() !== 1.0;
         }
     };
 
@@ -209,7 +209,7 @@
                     .scaled(1 / scale, 1 / scale)
             };
         } else if (pattern) {
-            return pattern.createPaint(context.canvas, bbox);
+            return context.canvas.createPatternPaint(pattern, bbox);
         } else {
             return null;
         }
@@ -223,11 +223,16 @@
     IFShape.prototype._paintFill = function (context) {
         if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
             var fill = this._createShapePaint(context, this.$_fpt, this.getGeometryBBox());
-            if (fill && fill.paint) {
+            if (fill) {
                 var canvas = context.canvas;
                 canvas.putVertices(this);
 
                 if (fill.transform) {
+                    // Apply our fill pattern transformation if any
+                    if (this.$_fpx && !this.$_fpx.isIdentity()) {
+                        fill.transform = fill.transform.preMultiplied(this.$_fpx);
+                    }
+
                     var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(fill.transform));
                     canvas.fillVertices(fill.paint, this.$_fop);
                     canvas.setTransform(oldTransform);
@@ -302,9 +307,14 @@
                 context.canvas.putVertices(this);
 
                 if (border.transform) {
-                    // If any scale factor is != 1.0 we need to fill the whole area
-                    // and clip our border away to ensure border width consistency
-                    if (this.$_bpt.isScaled()) {
+                    // Apply our border pattern transformation if any
+                    if (this.$_bpx && !this.$_bpx.isIdentity()) {
+                        border.transform = border.transform.preMultiplied(this.$_bpx);
+                    }
+
+                    // Having a border transform with scale/skew requires filling the
+                    // whole area and clip our border away to ensure border width consistency
+                    if (this.$_bpx && this.$_bpx.getDeterminant() !== 1.0) {
                         // Fill everything with the border.paint, then clip with the border
                         var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
                         var patternFillArea = border.transform.inverted().mapRect(borderBBox);

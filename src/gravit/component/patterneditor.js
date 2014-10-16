@@ -63,7 +63,7 @@
                         .append($('<div></div>')
                             .data('pattern-class', IFGradient)
                             .gGradientEditor()
-                            .gGradientEditor('value', new IFLinearGradient().getStops())
+                            .gGradientEditor('value', new IFLinearGradient())
                             .on('gradientchange', function () {
                                 methods._firePatternChange.call(self, true);
                             })
@@ -179,7 +179,7 @@
                 // Update editor depending on value
                 if (value instanceof IFGradient) {
                     $this.find('.g-gradient-editor')
-                        .gGradientEditor('value', value.getStops());
+                        .gGradientEditor('value', value);
                 }
 
                 methods._updateToColor.call(this);
@@ -256,7 +256,7 @@
             } else if (patternType === IFColor) {
                 return $this.find('.g-color-editor').gColorEditor('value');
             } else if (patternType === IFGradient) {
-                return new IFLinearGradient($this.find('.g-gradient-editor').gGradientEditor('value'));
+                return $this.find('.g-gradient-editor').gGradientEditor('value');
             } else {
                 throw new Error('Unknown pattern type.');
             }

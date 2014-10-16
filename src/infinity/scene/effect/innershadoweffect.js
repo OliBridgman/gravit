@@ -55,8 +55,8 @@
         if (this.$pat && this.$opc > 0 && this.$r > 0) {
             // Fill our whole output with the shadow pattern
             var fillRect = output.getTransform(false).inverted().mapRect(new IFRect(0, 0, output.getWidth(), output.getHeight()));
-            var fill = this.$pat.createPaint(output, fillRect);
-            if (fill && fill.paint) {
+            var fill = output.createPatternPaint(this.$pat, fillRect);
+            if (fill) {
                 if (fill.transform) {
                     var oldTransform = output.setTransform(output.getTransform(true).preMultiplied(fill.transform));
                     output.fillRect(0, 0, 1, 1, fill.paint, this.$opc);

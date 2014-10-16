@@ -5,9 +5,23 @@
      * @extends IFPattern
      * @constructor
      */
-    function IFGradient(stops, r, tx, ty, sx, sy) {
+    function IFGradient(stops, scale) {
         if (stops) {
-            this._stops = stops.slice();
+            this._stops = [];
+            for (var i = 0; i < stops.length; ++i) {
+                var stop = stops[i];
+                var newStop = {
+                    position: stop.position
+                };
+
+                if (stop.hasOwnProperty('color')) {
+                    newStop.color = stop.color;
+                } else if (stop.hasOwnProperty('opacity')) {
+                    newStop.opacity = stop.opacity;
+                }
+
+                this._stops.push(newStop);
+            }
         } else {
             this._stops = [
                 {opacity: 1, position: 0},
@@ -17,11 +31,7 @@
             ];
         }
 
-        this._r = typeof r === 'number' ? r : 0;
-        this._tx = typeof tx === 'number' ? tx : 0;
-        this._ty = typeof ty === 'number' ? ty : 0;
-        this._sx = typeof sx === 'number' ? sx : 1;
-        this._sy = typeof sy === 'number' ? sy : 1;
+        this._scale = typeof scale === 'number' ? scale : 1.0;
     }
 
     IFObject.inherit(IFGradient, IFPattern);
@@ -131,11 +141,7 @@
             return true;
         } else if (left && right) {
             if (!stopsOnly) {
-                if (left._tx !== right._tx ||
-                    left._ty !== right._ty ||
-                    left._sx !== right._sx ||
-                    left._sy !== right._sy ||
-                    left._r !== right._r) {
+                if (left._scale !== right._scale) {
                     return false;
                 }
             }
@@ -179,31 +185,7 @@
      * @type {number}
      * @private
      */
-    IFGradient.prototype._r = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    IFGradient.prototype._tx = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    IFGradient.prototype._ty = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    IFGradient.prototype._sx = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    IFGradient.prototype._sy = null;
+    IFGradient.prototype._scale = null;
 
     /**
      * Returns the interpolated colors
@@ -225,28 +207,7 @@
 
     /** @override */
     IFGradient.prototype.serialize = function () {
-        var blob = {};
-
-        blob.t = [this._tx, this._ty, this._sx, this._sy, this._r];
-        blob.s = [];
-
-        for (var i = 0; i < this._stops.length; ++i) {
-            var stop = this._stops[i];
-
-            var obj = {
-                p: stop.position
-            };
-
-            if (stop.hasOwnProperty('color')) {
-                obj.c = IFPattern.serialize(stop.color);
-            } else if (stop.hasOwnProperty('opacity')) {
-                obj.o = stop.opacity;
-            }
-
-            blob.s.push(obj);
-        }
-
-        return JSON.stringify(blob);
+        return JSON.stringify(this._serializeToBlob());
     };
 
     /** @override */
@@ -254,34 +215,16 @@
         var blob = JSON.parse(string);
 
         if (blob) {
-            this._tx = blob.t[0];
-            this._ty = blob.t[1];
-            this._sx = blob.t[2];
-            this._sy = blob.t[3];
-            this._r = blob.t[4];
-
-            this._stops = [];
-
-            for (var i = 0; i < blob.s.length; ++i) {
-                var obj = blob.s[i];
-                var stop = {
-                    position: obj.p
-                };
-
-                if (obj.hasOwnProperty('c')) {
-                    stop.color = IFPattern.deserialize(obj.c);
-                } else if (obj.hasOwnProperty('o')) {
-                    stop.opacity = obj.o
-                }
-
-                this._stops.push(stop);
-            }
+            this._deserializeFromBlob(blob);
         }
     };
 
-    /** @override */
-    IFGradient.prototype.isScaled = function () {
-        return this._sx !== 1.0 || this._sy !== 1.0;
+    /**
+     * Returns the scale of the pattern
+     * @returns {number}
+     */
+    IFGradient.prototype.getScale = function () {
+        return this._scale;
     };
 
     /**
@@ -306,26 +249,60 @@
     };
 
     /**
-     * Returns a transformation for the gradient
-     * @param width
-     * @param height
+     * @returns {{*}}
+     * @private
      */
-    IFGradient.prototype.getGradientTransform = function (width, height) {
-        return new IFTransform()
-            .scaled(this._sx, this._sy)
-            .rotated(this._r)
-            .translated(this._tx, this._ty);
+    IFGradient.prototype._serializeToBlob = function () {
+        var blob = {};
+
+        if (this._scale && this._scale !== 1.0) {
+            blob.s = this._scale;
+        }
+
+        blob.x = [];
+
+        for (var i = 0; i < this._stops.length; ++i) {
+            var stop = this._stops[i];
+
+            var obj = {
+                p: stop.position
+            };
+
+            if (stop.hasOwnProperty('color')) {
+                obj.c = IFPattern.serialize(stop.color);
+            } else if (stop.hasOwnProperty('opacity')) {
+                obj.o = stop.opacity;
+            }
+
+            blob.x.push(obj);
+        }
+
+        return blob;
     };
 
-    /** @override */
-    IFGradient.prototype.createPaint = function (canvas, bbox) {
-        return {
-            paint: canvas.createGradient(this),
-            transform: this
-                .getGradientTransform()
-                .scaled(bbox.getWidth(), bbox.getHeight())
-                .translated(bbox.getX(), bbox.getY())
-        };
+    /**
+     * @param {{*}} blob
+     * @private
+     */
+    IFGradient.prototype._deserializeFromBlob = function (blob) {
+        this._scale = blob.hasOwnProperty('s') ? blob.s : 1;
+
+        this._stops = [];
+
+        for (var i = 0; i < blob.x.length; ++i) {
+            var obj = blob.x[i];
+            var stop = {
+                position: obj.p
+            };
+
+            if (obj.hasOwnProperty('c')) {
+                stop.color = IFPattern.deserialize(obj.c);
+            } else if (obj.hasOwnProperty('o')) {
+                stop.opacity = obj.o
+            }
+
+            this._stops.push(stop);
+        }
     };
 
     /** @override */

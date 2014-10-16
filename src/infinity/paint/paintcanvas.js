@@ -602,7 +602,7 @@
             this.setScale(1);
         }
         var oldTransform = this.resetTransform();
-        var oldTranslation = oldTransform ? oldTransform.getTranslation() : new IFPoint(0,0);
+        var oldTranslation = oldTransform ? oldTransform.getTranslation() : new IFPoint(0, 0);
 
         dx = dx | 0;
         dy = dy | 0;
@@ -648,6 +648,51 @@
     };
 
     /**
+     * Creates and returns a paint for this canvas based on a pattern
+     * @param {IFPattern} pattern
+     * @param {IFRect} bbox
+     * @return {{paint: *, transform: IFTransform}}
+     */
+    IFPaintCanvas.prototype.createPatternPaint = function (pattern, bbox, callback) {
+        var paint = null;
+        var transform = null;
+
+        if (pattern instanceof IFColor) {
+            paint = pattern;
+        } else if (pattern instanceof IFGradient) {
+            var scale = pattern.getScale();
+
+            if (pattern instanceof IFLinearGradient) {
+                var rotation = pattern.getRotation();
+                paint = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(rotation) * scale, Math.sin(rotation) * scale);
+            } else if (pattern instanceof IFRadialGradient) {
+                paint = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
+            } else {
+                throw new Error('Unknown pattern');
+            }
+
+            var stops = pattern.getInterpolatedStops();
+
+            for (var i = 0; i < stops.length; ++i) {
+                paint.addColorStop(stops[i].position, stops[i].color.toScreenCSS(stops[i].opacity));
+            }
+
+            transform = new IFTransform()
+                .scaled(bbox.getWidth(), bbox.getHeight())
+                .translated(bbox.getX(), bbox.getY());
+        } else {
+            throw new Error('Unknown pattern.');
+        }
+
+        if (paint) {
+            return {
+                paint: paint,
+                transform: transform
+            };
+        }
+    };
+
+    /**
      * Creates and returns a gradient pattern. The gradient
      * will be a unit gradient and thus requires a separate
      * transformation when being painted.
@@ -656,10 +701,14 @@
      */
     IFPaintCanvas.prototype.createGradient = function (gradient) {
         var result = null;
+
+        var scale = gradient.getScale();
+
         if (gradient instanceof IFLinearGradient) {
-            result = this._canvasContext.createLinearGradient(0, 0, 1, 0);
+            var rotation = gradient.getRotation();
+            result = this._canvasContext.createLinearGradient(1 - scale, 1 - scale, Math.cos(rotation) * scale, Math.sin(rotation) * scale);
         } else if (gradient instanceof IFRadialGradient) {
-            result = this._canvasContext.createRadialGradient(0, 0, 0, 0, 0, 0.5);
+            result = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
         } else {
             throw new Error('Unknown gradient');
         }

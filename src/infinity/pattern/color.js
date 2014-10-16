@@ -210,11 +210,6 @@
     };
 
     /** @override */
-    IFColor.prototype.createPaint = function (context, bbox) {
-        return {paint: this};
-    };
-
-    /** @override */
     IFColor.prototype.toString = function () {
         return "[Object IFColor]";
     };

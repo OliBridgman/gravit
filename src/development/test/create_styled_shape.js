@@ -10,13 +10,16 @@
 
             var x = 20;
             var y = 20;
-            var w = page.getProperty('w') - x * 2;
-            var h = page.getProperty('h') - y * 2;
+            var w = 500;// page.getProperty('w') - x * 2;
+            var h = 500;//page.getProperty('h') - y * 2;
 
             var rectangle = new IFRectangle();
             rectangle.setProperty('trf', new IFTransform(w / 2, 0, 0, h / 2, x + w / 2, y + h / 2));
 
-            rectangle.setProperties(['_bpt', '_fpt', '_bop', '_bw', '_sfop'], [new IFBackground(), new IFLinearGradient([{position:0,color:IFRGBColor.BLACK}, {position: 100, color: IFRGBColor.WHITE}], IFMath.toRadians(90)), 1, 10, 1]);
+            var fillPatternTr = new IFTransform()
+                .translated(0.25, 0);
+
+            rectangle.setProperties(['_bpt', '_fpt', '_fpx', '_bop', '_bw', '_sfop'], [new IFBackground(), new IFRadialGradient(null, 1, IFMath.toRadians(45)), fillPatternTr, 1, 10, 1]);
 
             layer.appendChild(rectangle);
         }

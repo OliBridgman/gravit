@@ -144,10 +144,16 @@
                 /** Fill opacity */
                 _fop: 1
             },
+            geometryProperties: {
+                /** Fill pattern transformation (IFTransform) */
+                _fpx: null
+            },
             storeFilter: function (property, value) {
                 if (value) {
                     if (property === '_fpt') {
                         return IFPattern.serialize(value);
+                    } else if (property === '_fpx') {
+                        return IFTransform.serialize(value);
                     }
                 }
                 return value;
@@ -156,6 +162,8 @@
                 if (value) {
                     if (property === '_fpt') {
                         return IFPattern.deserialize(value);
+                    } else if (property === '_fpx') {
+                        return IFTransform.deserialize(value);
                     }
                 }
                 return value;
@@ -169,6 +177,8 @@
             geometryProperties: {
                 /** Border pattern (IFPattern) */
                 _bpt: null,
+                /** Border pattern transformation (IFTransform) */
+                _bpx: null,
                 /** Border Width */
                 _bw: 1,
                 /** Border Alignment */
@@ -184,6 +194,8 @@
                 if (value) {
                     if (property === '_bpt') {
                         return IFPattern.serialize(value);
+                    } else if (property === '_bpx') {
+                        return IFTransform.serialize(value);
                     }
                 }
                 return value;
@@ -192,6 +204,8 @@
                 if (value) {
                     if (property === '_bpt') {
                         return IFPattern.deserialize(value);
+                    } else if (property === '_bpx') {
+                        return IFTransform.deserialize(value);
                     }
                 }
                 return value;

@@ -126,8 +126,8 @@
 
         // Paint background if any and not outlined
         if (!context.configuration.isOutline(context) && this.$bck && this.$bop > 0) {
-            var background = this.$bck.createPaint(context.canvas, transformedPageRect);
-            if (background && background.paint) {
+            var background = context.canvas.createPatternPaint(this.$bck, transformedPageRect);
+            if (background) {
                 if (background.transform) {
                     var oldTransform = canvas.setTransform(canvas.getTransform(true).preMultiplied(background.transform));
                     canvas.fillRect(0, 0, 1, 1, background.paint, this.$bop);

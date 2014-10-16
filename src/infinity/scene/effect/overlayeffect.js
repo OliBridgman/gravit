@@ -38,8 +38,8 @@
         if (this.$pat && this.$opc > 0.0) {
             // Fill our whole canvas with the overlay pattern clipped by the source
             var overlayRect = contents.getTransform(false).inverted().mapRect(new IFRect(0, 0, contents.getWidth(), contents.getHeight()));
-            var overlay = this.$pat.createPaint(contents, overlayRect);
-            if (overlay && overlay.paint) {
+            var overlay = contents.createPatternPaint(this.$pat, overlayRect);
+            if (overlay) {
                 if (overlay.transform) {
                     var oldTransform = contents.setTransform(contents.getTransform(true).preMultiplied(overlay.transform));
                     contents.fillRect(0, 0, 1, 1, overlay.paint, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);

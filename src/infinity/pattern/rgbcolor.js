@@ -219,6 +219,11 @@
     };
 
     /** @override */
+    IFRGBColor.prototype.clone = function () {
+        return new IFRGBColor(this._value);
+    };
+
+    /** @override */
     IFRGBColor.prototype.toString = function () {
         return "[Object IFRGBColor]";
     };

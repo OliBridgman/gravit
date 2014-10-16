@@ -5,15 +5,11 @@
      * @extends IFGradient
      * @constructor
      */
-    function IFRadialGradient(stops, r, tx, ty, sx, sy) {
+    function IFRadialGradient(stops, scale) {
         IFGradient.call(
             this,
             stops,
-            typeof r === 'number' ? r : 0,
-            typeof tx === 'number' ? tx : 0.5,
-            typeof ty === 'number' ? ty : 0.5,
-            typeof sx === 'number' ? sx : 0.5,
-            typeof sy === 'number' ? sy : 0.5
+            scale
         );
     }
 
