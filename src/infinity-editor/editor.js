@@ -1600,17 +1600,17 @@
                     if (this._selectionDetail) {
                         editor.setFlag(IFElementEditor.Flag.Detail);
                     }
-                }
 
-                // Always add the node to our internal selection array
-                if (node.validateSelectionChange()) {
-                    if (!this._selection) {
-                        this._selection = [];
+                    // Add the node to our internal selection array
+                    if (editor.validateSelectionChange()) {
+                        if (!this._selection) {
+                            this._selection = [];
+                        }
+                        this._selection.push(node);
+
+                        this._updatedSelection();
+
                     }
-                    this._selection.push(node);
-
-                    this._updatedSelection();
-
                 }
             }
         }
@@ -1628,29 +1628,30 @@
             if (editor && editor.hasFlag(IFElementEditor.Flag.Selected)) {
                 editor.removeFlag(IFElementEditor.Flag.Selected);
                 this._tryCloseEditor(node);
-            }
 
-            // Always remove the node from our selection array if we find it
-            if (this._selection && node.validateSelectionChange()) {
-                var sameParentInSelection = false;
-                var removeIndex = -1;
 
-                // Iterate through selection
-                for (var i = 0; i < this._selection.length; ++i) {
-                    var selNode = this._selection[i];
-                    if (selNode === node) {
-                        removeIndex = i;
-                    } else if (selNode.getParent() === node.getParent()) {
-                        sameParentInSelection = true;
+                // Remove the node from our selection array if we find it
+                if (this._selection && editor.validateSelectionChange()) {
+                    var sameParentInSelection = false;
+                    var removeIndex = -1;
+
+                    // Iterate through selection
+                    for (var i = 0; i < this._selection.length; ++i) {
+                        var selNode = this._selection[i];
+                        if (selNode === node) {
+                            removeIndex = i;
+                        } else if (selNode.getParent() === node.getParent()) {
+                            sameParentInSelection = true;
+                        }
                     }
-                }
 
-                // Remove from selection
-                this._selection.splice(removeIndex, 1);
-                if (this._selection.length == 0) {
-                    this._selection = null;
+                    // Remove from selection
+                    this._selection.splice(removeIndex, 1);
+                    if (this._selection.length == 0) {
+                        this._selection = null;
+                    }
+                    this._updatedSelection();
                 }
-                this._updatedSelection();
             }
         }
     };

@@ -1104,6 +1104,15 @@
         }
     };
 
+    /** @override */
+    IFPathEditor.prototype.validateSelectionChange = function () {
+        var elemParent = this._element.getParent();
+        if (elemParent && elemParent instanceof IFMegaPath.AnchorPaths) {
+            return false;
+        }
+        return true;
+    };
+
     /**
      * Changes indices of preview points to some value. Useful when new points are added into preview,
      * when these points are not in main path yet

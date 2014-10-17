@@ -54,14 +54,6 @@
         return parent instanceof IFLayer || parent instanceof IFShapeSet || parent instanceof IFShape || parent instanceof IFMegaPath.AnchorPaths;
     };
 
-    /** @override */
-    IFPath.prototype.validateSelectionChange = function () {
-        if (this.getParent() && this.getParent() instanceof IFMegaPath.AnchorPaths) {
-            return false;
-        }
-        return true;
-    };
-
     /**
      * Hit-tests the path for the location. Corner styles are not applied.
      * @param {IFPoint} location
