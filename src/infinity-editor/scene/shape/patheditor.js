@@ -1107,7 +1107,7 @@
     /** @override */
     IFPathEditor.prototype.validateSelectionChange = function () {
         var elemParent = this._element.getParent();
-        if (elemParent && elemParent instanceof IFMegaPath.AnchorPaths) {
+        if (elemParent && elemParent instanceof IFCompoundPath.AnchorPaths) {
             return false;
         }
         return true;

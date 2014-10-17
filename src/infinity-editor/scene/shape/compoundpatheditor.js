@@ -1,19 +1,19 @@
 (function (_) {
     /**
-     * An editor for a mega-path
-     * @param {IFMegaPath} megaPath the mega-path this editor works on
-     * @class IFMegaPathEditor
+     * An editor for a compound path
+     * @param {IFCompoundPath} compoundPath the compound path this editor works on
+     * @class IFCompoundPathEditor
      * @extends IFElementEditor
      * @constructor
      */
-    function IFMegaPathEditor(megaPath) {
-        IFShapeEditor.call(this, megaPath);
+    function IFCompoundPathEditor(compoundPath) {
+        IFShapeEditor.call(this, compoundPath);
     };
-    IFObject.inherit(IFMegaPathEditor, IFShapeEditor);
-    IFElementEditor.exports(IFMegaPathEditor, IFMegaPath);
+    IFObject.inherit(IFCompoundPathEditor, IFShapeEditor);
+    IFElementEditor.exports(IFCompoundPathEditor, IFCompoundPath);
 
     /** @override */
-    IFMegaPathEditor.prototype.transform = function (transform, partId, partData) {
+    IFCompoundPathEditor.prototype.transform = function (transform, partId, partData) {
         if (partId && IFUtil.dictionaryContainsValue(IFPathEditor.PartType, partId.type)) {
             for (var i = 0; i < this._editors.length; ++i) {
                 var ed = this._editors[i];
@@ -26,7 +26,7 @@
         }
     };
 
-    IFMegaPathEditor.prototype._setTransform = function (transform) {
+    IFCompoundPathEditor.prototype._setTransform = function (transform) {
         for (var i = 0; i < this._editors.length; ++i) {
             var ed = this._editors[i];
             ed._setTransform(transform);
@@ -34,7 +34,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.resetTransform = function () {
+    IFCompoundPathEditor.prototype.resetTransform = function () {
         for (var i = 0; i < this._editors.length; ++i) {
             var ed = this._editors[i];
             ed.resetTransform();
@@ -42,7 +42,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.canApplyTransform = function () {
+    IFCompoundPathEditor.prototype.canApplyTransform = function () {
         var canApply = false;
         for (var i = 0; i < this._editors.length; ++i) {
             var ed = this._editors[i];
@@ -52,7 +52,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.applyTransform = function (element) {
+    IFCompoundPathEditor.prototype.applyTransform = function (element) {
         for (var i = 0; i < this._editors.length; ++i) {
             var ed = this._editors[i];
             if (ed.canApplyTransform()) {
@@ -62,7 +62,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._attach = function () {
+    IFCompoundPathEditor.prototype._attach = function () {
         var scene = this._element.getScene();
         if (scene != null) {
             scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
@@ -70,7 +70,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._detach = function () {
+    IFCompoundPathEditor.prototype._detach = function () {
         // Ensure to de-select all selected anchor points when detaching
         for (var anchorPath = this._element.getAnchorPaths().getFirstChild(); anchorPath != null; anchorPath = anchorPath.getNext()) {
             anchorPath.removeFlag(IFNode.Flag.Selected);
@@ -93,7 +93,7 @@
      * @param {Number} [tolerance] optional tolerance for hit testing, defaults to zero
      * @returns {boolean} the result of hit-test
      */
-    IFMegaPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
+    IFCompoundPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
         return false;
     };
 
@@ -102,13 +102,13 @@
      * @param {IFPathBase.AnchorPoint} anchorPt - the given anchor point
      * @returns {IFPoint}
      */
-    IFMegaPathEditor.prototype.getPointCoord = function (anchorPt) {
+    IFCompoundPathEditor.prototype.getPointCoord = function (anchorPt) {
         var pt = null;
         return pt;
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    IFCompoundPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         var res = null;
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = IFElementEditor.openEditor(pt);
@@ -121,7 +121,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._prePaint = function (transform, context) {
+    IFCompoundPathEditor.prototype._prePaint = function (transform, context) {
         if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             var element = this.getPaintElement();
 
@@ -140,7 +140,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._postPaint = function (transform, context) {
+    IFCompoundPathEditor.prototype._postPaint = function (transform, context) {
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = IFElementEditor.openEditor(pt);
             pathEditor._postPaint(transform, context);
@@ -148,7 +148,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype._partIdAreEqual = function (a, b) {
+    IFCompoundPathEditor.prototype._partIdAreEqual = function (a, b) {
         var eqs = (a.type === b.type);
         if (eqs && a.type == IFPathEditor.PartType.Point) {
             eqs = (a.point === b.point);
@@ -159,7 +159,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.updatePartSelection = function (toggle, selection) {
+    IFCompoundPathEditor.prototype.updatePartSelection = function (toggle, selection) {
         // This editor should not have any parts selected
         if (this._partSelection) {
             this._partSelection = null;
@@ -172,12 +172,12 @@
     };
 
     /** override */
-    IFMegaPathEditor.prototype.isPartSelectionUnderCollisionAllowed = function () {
+    IFCompoundPathEditor.prototype.isPartSelectionUnderCollisionAllowed = function () {
         return true;
     };
 
     /** override */
-    IFMegaPathEditor.prototype.updatePartSelectionUnderCollision = function (toggle, collisionArea) {
+    IFCompoundPathEditor.prototype.updatePartSelectionUnderCollision = function (toggle, collisionArea) {
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = IFElementEditor.openEditor(pt);
             pathEditor.updatePartSelectionUnderCollision(toggle, collisionArea);
@@ -185,7 +185,7 @@
     };
 
     /** override */
-    IFMegaPathEditor.prototype.isDeletePartsAllowed = function () {
+    IFCompoundPathEditor.prototype.isDeletePartsAllowed = function () {
         var res = false;
         if (this.hasFlag(IFElementEditor.Flag.Selected)) {
             for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
@@ -197,7 +197,7 @@
     };
 
     /** override */
-    IFMegaPathEditor.prototype.deletePartsSelected = function () {
+    IFCompoundPathEditor.prototype.deletePartsSelected = function () {
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = IFElementEditor.openEditor(pt);
             if (pathEditor.isDeletePartsAllowed()) {
@@ -207,7 +207,7 @@
     };
 
     /** override */
-    IFMegaPathEditor.prototype.isAlignPartsAllowed = function () {
+    IFCompoundPathEditor.prototype.isAlignPartsAllowed = function () {
         var res = false;
         if (this.hasFlag(IFElementEditor.Flag.Selected)) {
             for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
@@ -219,7 +219,7 @@
     };
 
     /** override */
-    IFMegaPathEditor.prototype.alignParts = function (alignType, posX, posY) {
+    IFCompoundPathEditor.prototype.alignParts = function (alignType, posX, posY) {
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = IFElementEditor.openEditor(pt);
             if (pathEditor.isAlignPartsAllowed()) {
@@ -233,7 +233,7 @@
      * @param {IFElement.GeometryChangeEvent} evt
      * @private
      */
-    IFMegaPathEditor.prototype._geometryChange = function (evt) {
+    IFCompoundPathEditor.prototype._geometryChange = function (evt) {
         if (evt.type == IFElement.GeometryChangeEvent.Type.After && evt.element == this._element) {
             //if (this._elementPreview) {
                 this.requestInvalidation();
@@ -242,7 +242,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.setFlag = function (flag) {
+    IFCompoundPathEditor.prototype.setFlag = function (flag) {
         if ((this._flags & flag) == 0) {
             this.requestInvalidation();
             this._flags = this._flags | flag;
@@ -255,7 +255,7 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.removeFlag = function (flag) {
+    IFCompoundPathEditor.prototype.removeFlag = function (flag) {
         if ((this._flags & flag) != 0) {
             this.requestInvalidation();
             this._flags = this._flags & ~flag;
@@ -268,9 +268,9 @@
     };
 
     /** @override */
-    IFMegaPathEditor.prototype.toString = function () {
-        return "[Object IFMegaPathEditor]";
+    IFCompoundPathEditor.prototype.toString = function () {
+        return "[Object IFCompoundPathEditor]";
     };
 
-    _.IFMegaPathEditor = IFMegaPathEditor;
+    _.IFCompoundPathEditor = IFCompoundPathEditor;
 })(this);

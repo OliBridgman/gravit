@@ -993,14 +993,14 @@
     IFEditor.prototype._insertPathsFromVertices = function (source, parent, next, newSelection) {
         source.rewindVertices(0);
         var vertex = new IFVertex();
-        var megaPath = new IFMegaPath();
+        var compoundPath = new IFCompoundPath();
         var path;
         var done = false;
         while (!done && source.readVertex(vertex)) {
             switch (vertex.command) {
                 case IFVertex.Command.Move:
                     if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-                        megaPath.getAnchorPaths().appendChild(path);
+                        compoundPath.getAnchorPaths().appendChild(path);
                     }
                     path = new IFPath();
                     var anchorPoints = path.getAnchorPoints();
@@ -1058,12 +1058,12 @@
             }
         }
         if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-            megaPath.getAnchorPaths().appendChild(path);
+            compoundPath.getAnchorPaths().appendChild(path);
         }
-        if (megaPath.getAnchorPaths().getFirstChild()) {
-            megaPath.assignFrom(source);
-            parent.insertChild(megaPath, next);
-            newSelection.push(megaPath);
+        if (compoundPath.getAnchorPaths().getFirstChild()) {
+            compoundPath.assignFrom(source);
+            parent.insertChild(compoundPath, next);
+            newSelection.push(compoundPath);
         }
     };
 

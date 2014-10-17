@@ -51,7 +51,7 @@
 
     /** @override */
     IFPath.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer || parent instanceof IFShapeSet || parent instanceof IFShape || parent instanceof IFMegaPath.AnchorPaths;
+        return parent instanceof IFLayer || parent instanceof IFShapeSet || parent instanceof IFShape || parent instanceof IFCompoundPath.AnchorPaths;
     };
 
     /**
