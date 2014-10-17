@@ -947,6 +947,11 @@
         return newPartInfo;
     };
 
+
+    IFElementEditor.prototype.validateSelectionChange = function () {
+        return true;
+    };
+
     /**
      * Called when this editor is attached to the node
      */
