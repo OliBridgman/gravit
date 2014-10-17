@@ -50,7 +50,7 @@
      * @private
      */
     GHeader.prototype._documentEvent = function (evt) {
-        if (evt.type === GApplication.DocumentEvent.UrlUpdated) {
+        if (evt.type === GApplication.DocumentEvent.Type.UrlUpdated) {
             var windows = evt.document.getWindows();
             for (var i = 0; i < windows.length; ++i) {
                 this._htmlElement.find('.windows > .tab').each(function (index, element) {

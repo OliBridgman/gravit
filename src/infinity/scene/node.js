@@ -112,6 +112,17 @@
         // Create our node instance now and let it restore
         var node = new nodeClass();
 
+        IFNode.restoreInstance(blob, node);
+
+        return node;
+    };
+
+    /**
+     * Restore an existing node instance from a given blob
+     * @param {*} blob the blob to restore from
+     * @param {IFNode} node the instance to be restored
+     */
+    IFNode.restoreInstance = function (blob, node) {
         node._notifyChange(IFNode._Change.PrepareRestore, blob);
 
         // Restore children if any
@@ -142,8 +153,6 @@
         }
 
         node._notifyChange(IFNode._Change.Restore, blob);
-
-        return node;
     };
 
     /**

@@ -479,11 +479,14 @@
                         var document = new GDocument(scene, url, name);
                         try {
                             var blob = JSON.parse(source);
-                            if (!scene.restore(blob)) {
-                                throw new Error('Failure.');
+
+                            if (!blob) {
+                                throw new Error('Unable to parse JSON.');
                             }
+
+                            IFNode.restoreInstance(blob, scene);
                         } catch (e) {
-                            document.close();
+                            document.release();
                             scene = null;
                             document = null;
                             console.log(e);
@@ -543,7 +546,7 @@
 
                 // Trigger event
                 if (this.hasEventListeners(GApplication.DocumentEvent)) {
-                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.UrlUpdated, this));
+                    this.trigger(new GApplication.DocumentEvent(GApplication.DocumentEvent.Type.UrlUpdated, document));
                 }
             }.bind(this));
         }
@@ -595,11 +598,12 @@
      * @param {GDocument} document
      */
     GApplication.prototype.closeDocument = function (document) {
-        if (document._windows.length) {
+        var windows = document.getWindows().length;
+        if (windows.length) {
             // Document has windows so remove them first which
             // will then trigger this function again
-            while (document._windows.length > 0) {
-                this._windows.closeWindow(document._windows[0]);
+            while (windows.length > 0) {
+                windows.closeWindow(windows[0]);
             }
         } else {
             // Remove active document if this is the active one
