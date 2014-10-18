@@ -392,7 +392,7 @@
 
         if (this.hasSelection()) {
             for (i = 0; i < this._selection.length; ++i) {
-                if (this._selection[i] instanceof IFPath) {
+                if (this._selection[i] instanceof IFPath || this._selection[i] instanceof IFCompoundPath) {
                     if (pathRef) {
                         pathRef = null;
                         break;

@@ -55,6 +55,13 @@
     IFPathTool.prototype._pathEditor = null;
 
     /**
+     * Contains reference to a compound path editor if the currently edited path is a part of compound path
+     * @type {IFCompoundPathEditor}
+     * @private
+     */
+    IFPathTool.prototype._compoundPathEditor = null;
+
+    /**
      * Indicates if the mouse released (all buttons)
      * @type {boolean}
      * @private
@@ -231,6 +238,11 @@
         if (path) {
             this._pathEditor = IFElementEditor.openEditor(path);
             this._pathEditor.setFlag(IFElementEditor.Flag.Detail);
+            if (this._pathEditor instanceof IFCompoundPathEditor) {
+                this._compoundPathEditor = this._pathEditor;
+            } else {
+                this._compoundPathEditor = null;
+            }
         }
     };
 
@@ -243,6 +255,10 @@
         if (!this._pathEditor) {
             this._mode = IFPathTool.Mode.Append;
             this._pathRef = null;
+        } else if (this._compoundPathEditor) {
+            // Currently the path tools are able to work with compound path only in editing mode
+            // Extention of open paths, which are parts of compound path, is not supported
+            this._mode = IFPathTool.Mode.Edit;
         } else {
             this._pathRef = this._pathEditor.getPath();
             if (this._pathRef.getProperty('closed')) {
@@ -270,7 +286,7 @@
      */
     IFPathTool.prototype._initialSelectCorrection = function () {
         this._checkPathEditor();
-        if (this._pathEditor) {
+        if (this._pathEditor && this._pathEditor instanceof IFPathEditor) {
             this._pathRef = this._pathEditor.getPath();
             if (this._pathRef.getProperty('closed')) {
                 this._pathEditor.setActiveExtendingMode(false);
@@ -452,7 +468,9 @@
         this._checkMode();
         if (this._pathEditor) {
             this._pathEditor.updatePartSelection(false);
-            this._pathEditor.setActiveExtendingMode(false);
+            if (this._pathEditor instanceof IFPathEditor) {
+                this._pathEditor.setActiveExtendingMode(false);
+            }
             this._commitChanges();
         }
         this._mode = IFPathTool.Mode.Edit;
@@ -475,7 +493,9 @@
      * @private
      */
     IFPathTool.prototype._reset = function () {
-        if (this._pathEditor) {
+        if (this._compoundPathEditor) {
+            this._compoundPathEditor.removeFlag(IFElementEditor.Flag.Detail);
+        } else if (this._pathEditor) {
             this._pathEditor.removeFlag(IFElementEditor.Flag.Detail);
         }
         this._dpathRef = null;
@@ -485,6 +505,7 @@
         this._editPt = null;
         this._dragStartPt = null;
         this._refPt = null;
+        this._compoundPathEditor = null;
     };
 
     /**
@@ -531,8 +552,10 @@
             this._checkMode();
             if (this._pathEditor) {
                 this._pathEditor.updatePartSelection(false);
-                this._pathEditor.setActiveExtendingMode(false);
-                this._pathRef.removeFlag(IFNode.Flag.Selected);
+                if (this._pathEditor instanceof IFPathEditor) {
+                    this._pathEditor.setActiveExtendingMode(false);
+                    this._pathRef.removeFlag(IFNode.Flag.Selected);
+                }
                 this._commitChanges();
             }
             this._setCursorForPosition(IFCursor.PenStart);
@@ -578,6 +601,11 @@
      * @private
      */
     IFPathTool.prototype._makePointMajor = function (anchorPt) {
+        if (this._compoundPathEditor) {
+            this._compoundPathEditor.updatePartSelection(false);
+            this._compoundPathEditor.releasePathPreview();
+            this._compoundPathEditor.requestInvalidation();
+        }
         this._pathEditor.selectOnePoint(anchorPt);
         this._dpathRef = null;
         this._pathEditor.releasePathPreview();
@@ -653,6 +681,10 @@
         this._pathEditor.requestInvalidation();
 
         var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
+        if (partInfo) {
+            this._pathEditor = partInfo.editor;
+            this._pathRef = this._pathEditor.getPath();
+        }
         if (partInfo && partInfo.id.type == IFPathEditor.PartType.Point) {
             var anchorPt = partInfo.id.point;
             if (!this._pathRef.getProperty('closed') && anchorPt === this._pathRef.getAnchorPoints().getLastChild()) {
@@ -752,7 +784,7 @@
                 var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
                 if (partInfo && partInfo.id.type == IFPathEditor.PartType.Point) {
                     var anchorPt = partInfo.id.point;
-                    var pathRef = this._pathEditor.getPath();
+                    var pathRef = partInfo.editor.getPath();
                     if (!pathRef.getProperty('closed') &&
                         (anchorPt === pathRef.getAnchorPoints().getFirstChild() ||
                             anchorPt === pathRef.getAnchorPoints().getLastChild())) {

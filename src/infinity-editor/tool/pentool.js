@@ -53,13 +53,13 @@
         }
         this._blockDeactivation();
         this._checkMode();
-        this._renewPreviewLink();
 
         if (this._mode == IFPathTool.Mode.Edit) {
             this._mouseDownOnEdit(event);
         }
 
         if (this._mode != IFPathTool.Mode.Edit) {
+            this._renewPreviewLink();
             if (this._newPoint && this._pathEditor) {
                 this._updatePoint(event.client);
                 if (this._mode == IFPathTool.Mode.Append) {
@@ -213,10 +213,10 @@
 
         this._lastMouseEvent = event;
         this._checkMode();
-        this._renewPreviewLink();
         if (this._mode == IFPathTool.Mode.Edit) {
             this._setCursorForPosition(null, event.client);
         } else { // _mode == Append || Prepend
+            this._renewPreviewLink();
             var newPos = event.client;
             if (!this._newPoint && this._pathEditor) {
                 newPos = this._constrainIfNeeded(event.client, this._view.getWorldTransform(), this._pathRef);

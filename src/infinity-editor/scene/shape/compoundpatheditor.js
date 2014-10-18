@@ -84,29 +84,6 @@
         IFShapeEditor.prototype._detach.call(this);
     };
 
-    /**
-     * Hit-test anchor point's annotation
-     * @param {IFPathBase.AnchorPoint} anchorPt - anchor point to hit-test
-     * @param {IFPoint} location
-     * @param {IFTransform} [transform] a transformation to apply to anchor point's coordinates before hit-testing,
-     * defaults to null
-     * @param {Number} [tolerance] optional tolerance for hit testing, defaults to zero
-     * @returns {boolean} the result of hit-test
-     */
-    IFCompoundPathEditor.prototype.hitAnchorPoint = function (anchorPt, location, transform, tolerance) {
-        return false;
-    };
-
-    /**
-     * Calculates and returns IFPoint in scene coordinates, corresponding to the given anchor point
-     * @param {IFPathBase.AnchorPoint} anchorPt - the given anchor point
-     * @returns {IFPoint}
-     */
-    IFCompoundPathEditor.prototype.getPointCoord = function (anchorPt) {
-        var pt = null;
-        return pt;
-    };
-
     /** @override */
     IFCompoundPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         var res = null;
@@ -264,6 +241,15 @@
                 pathEditor.removeFlag(flag);
             }
             this.requestInvalidation();
+        }
+    };
+
+    IFCompoundPathEditor.prototype.releasePathPreview = function () {
+        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+            var pathEditor = IFElementEditor.getEditor(pt);
+            if (pathEditor) {
+                pathEditor.releasePathPreview();
+            }
         }
     };
 

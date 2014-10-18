@@ -55,7 +55,6 @@
 
             this._blockDeactivation();
             this._checkMode();
-            this._renewPreviewLink();
 
             if (this._mode == IFPathTool.Mode.Edit) {
                 var customizer = function(anchorPt) {
@@ -69,6 +68,7 @@
             }
 
             if (this._mode != IFPathTool.Mode.Edit) {
+                this._renewPreviewLink();
                 clickPt = this._constrainIfNeeded(event.client, this._view.getWorldTransform(), this._pathRef);
                 var otherPt;
                 if (this._pathEditor) {
