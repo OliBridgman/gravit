@@ -784,17 +784,34 @@
             var $this = $(this);
             var data = $this.data('geffectpanel');
 
-            if (!arguments.length) {
-                return data.elements;
-            } else {
+            if (!arguments.length || arguments.length == 1 && arguments[0] === null) {
                 if (data.elements && data.elements.length) {
-                    var scene = data.elements[0].getScene();
+                    var scene = data.scene;
                     if (scene) {
                         scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
                         scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                         scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     }
 
+                    data.scene = null;
+                    data.afterInsertHandler = null;
+                    data.beforeRemoveHandler = null;
+                    data.afterPropertiesChangeHandler = null;
+                }
+                data.elements = null;
+                updateStyleLayers.call(this);
+                clear.call(this);
+                return data.elements;
+            } else {
+                if (data.elements && data.elements.length) {
+                    var scene = data.scene;
+                    if (scene) {
+                        scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    }
+
+                    data.scene = null;
                     data.afterInsertHandler = null;
                     data.beforeRemoveHandler = null;
                     data.afterPropertiesChangeHandler = null;
@@ -806,6 +823,7 @@
                 if (data.elements && data.elements.length) {
                     var scene = data.elements[0].getScene();
                     if (scene) {
+                        data.scene = scene;
                         data.afterInsertHandler = afterInsertEvent.bind(this);
                         data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
                         data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
@@ -826,7 +844,7 @@
             var $this = $(this);
             var data = $this.data('geffectpanel');
 
-            if (!arguments.length) {
+            if (!arguments.length || arguments.length == 1 && arguments[0] === null) {
                 var val = $this.find('[data-action="style-layer"]').val();
                 return val && val !== '*' ? val : null;
             } else {

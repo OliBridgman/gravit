@@ -66,6 +66,7 @@
             for (var i = 0; i < array.length; ++i) {
                 if (array[i].sourceListener == listener && (!target || array[i].target === target)) {
                     array.splice(i, 1);
+                    --i;
                 }
             }
             if (array.length == 0) {
