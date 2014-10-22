@@ -24,7 +24,7 @@
         throw new Error('Not Supported.');
     };
 
-    IFReader.prototype.readInput = function (input, callback) {
+    IFReader.prototype.readInput = function (input, callback, settings) {
         throw new Error('Not Supported.');
     };
 

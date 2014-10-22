@@ -20,8 +20,9 @@
      * @param {File|Blob|String|ArrayBuffer} source
      * @param {Function(result)} callback called with the result.
      * If the given result argument is null an error may have ocurred.
+     * @param {*} [settings] custom settings for the reader
      */
-    IFIO.read = function (mimeTypeOrFileExt, source, callback) {
+    IFIO.read = function (mimeTypeOrFileExt, source, callback, settings) {
         var fileExtClean = mimeTypeOrFileExt.toLowerCase();
 
         if (fileExtClean.indexOf('.') > 0) {
@@ -52,7 +53,7 @@
 
             function doRead(input) {
                 if (input) {
-                    targetReader.readInput(input, callback);
+                    targetReader.readInput(input, callback, settings);
                 } else {
                     callback(null);
                 }
