@@ -415,6 +415,7 @@
 
     /**
      * Create a new document and add it
+     * @return {GDocument}
      */
     GApplication.prototype.createNewDocument = function () {
         // Create scene, add it and call add page to insert a default page
@@ -435,6 +436,8 @@
         // Create and add our document now
         var document = this.addDocument(scene);
         document.createNewPage(true/*no-undo*/);
+
+        return document;
     };
 
     /**
