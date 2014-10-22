@@ -63,6 +63,8 @@
     GSwatchesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        var self = this;
+
         var importInput = $('<input>')
             .attr('type', 'file')
             .attr('accept', '.ase')
@@ -74,9 +76,28 @@
                 var files = $(evt.target)[0].files;
                 if (files && files.length) {
                     IFIO.read('application/x-adobe-ase', files[0], function (result) {
-                        alert('got_ase');
+                        if (result && result.colors) {
+                            var swatches = self._document.getScene().getSwatchCollection();
+                            for (var i = 0; i < result.colors.length; ++i) {
+                                var swatch = result.colors[i];
+                                var pattern = null;
+
+                                if (swatch.model === 'RGB') {
+                                    pattern = new IFRGBColor([swatch.color[0] * 255, swatch.color[1] * 255, swatch.color[2] * 255]);
+                                } else if (swatch.model === 'CMYK') {
+                                    pattern = new IFCMYKColor(swatch.color);
+                                }
+
+                                if (pattern) {
+                                    var node = new IFSwatch();
+                                    node.setProperties(['name', 'pat'], [swatch.name, pattern]);
+                                    swatches.appendChild(node);
+                                }
+                            }
+                        }
                     });
                 }
+                $(evt.target).val('');
             })
             .appendTo(htmlElement);
 
