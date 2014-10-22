@@ -259,8 +259,10 @@
             new GGroupAction(),
             new GUngroupAction(),
 
-            new GConvertToPathAction(),
             new GSliceFromSelectionAction(),
+
+            new GConvertToPathAction(),
+            new GJoinPathsAction(),
 
             new GAddPageAction(),
             new GDeletePageAction(),
