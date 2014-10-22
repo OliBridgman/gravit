@@ -181,6 +181,7 @@
                 return $('<div></div>')
                     .append($('<input>')
                         .attr('type', 'file')
+                        .attr('accept', '.acv')
                         .css({
                             'position': 'absolute',
                             'left': '-10000px'
