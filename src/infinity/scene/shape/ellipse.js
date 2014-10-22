@@ -70,6 +70,15 @@
         IFPathBase.prototype._handleChange.call(this, change, args);
     };
 
+    /** @override */
+    IFEllipse.prototype._calculateOrigGeometryBBox = function () {
+        if (IFMath.isEqualEps(this.$sa, this.$ea)) {
+            return new IFRect(-1, -1, 2, 2);
+        } else {
+            return IFPathBase.prototype._calculateOrigGeometryBBox.call(this);
+        }
+    };
+
     /**
      * @private
      */

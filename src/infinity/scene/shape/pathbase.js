@@ -1535,6 +1535,13 @@
     };
 
     /** @override */
+    IFPathBase.prototype._calculateOrigGeometryBBox = function () {
+        var vertices = new IFVertexContainer();
+        this._getAnchorPoints()._generateVertices(vertices, null, false);
+        return ifVertexInfo.calculateBounds(vertices, true);
+    };
+
+    /** @override */
     IFPathBase.prototype._handleChange = function (change, args) {
         this._handleVisualChangeForProperties(change, args, IFPathBase.VisualProperties);
 

@@ -242,6 +242,11 @@
         IFPathBase.prototype._handleChange.call(this, change, args);
     };
 
+    /** @override */
+    IFRectangle.prototype._calculateOrigGeometryBBox = function () {
+        return new IFRect(-1, -1, 2, 2);
+    };
+
     /**
      * @private
      */

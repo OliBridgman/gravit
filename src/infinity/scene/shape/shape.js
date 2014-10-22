@@ -62,6 +62,11 @@
     // -----------------------------------------------------------------------------------------------------------------
     // IFShape Class
     // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * @type IFRect
+     * @private
+     */
+    IFShape.prototype._origGeometryBBox = null;
 
     /** @override */
     IFShape.prototype.assignFrom = function (other) {
@@ -119,14 +124,7 @@
         }
 
         if (layer === IFStylable.StyleLayer.Border && this.hasStyleBorder()) {
-            // If we're not having a center-aligned border then
-            // we need a separate canvas here
-            if (this.$_ba !== IFStylable.BorderAlignment.Center) {
-                return true;
-            }
-
-            // Having a border transform with scale/skew requires sep. canvas
-            return this.$_bpx && this.$_bpx.getDeterminant() !== 1.0;
+            return true;
         }
     };
 
@@ -213,7 +211,27 @@
         } else {
             return null;
         }
-    }
+    };
+
+    IFShape.prototype._calculateOrigGeometryBBox = function () {
+        var bbox = this.getGeometryBBox();
+        if (this.$trf) {
+            bbox = this.$trf.inverted().mapRect(bbox);
+        }
+        return bbox;
+    };
+
+    IFShape.prototype._getOrigBBox = function () {
+        // Immediately return if not visible at all
+        if (!this.isVisible()) {
+            return null;
+        }
+
+        if (this._geometryBBbox == null || this._origGeometryBBox == null) {
+            this._origGeometryBBox = this._calculateOrigGeometryBBox();
+        }
+        return this._origGeometryBBox;
+    };
 
     /**
      * Paint the shape fill
@@ -222,12 +240,15 @@
      */
     IFShape.prototype._paintFill = function (context) {
         if (!context.configuration.isOutline(context) && this.hasStyleFill()) {
-            var fill = this._createShapePaint(context, this.$_fpt, this.getGeometryBBox());
+            var fill = this._createShapePaint(context, this.$_fpt, this._getOrigBBox());
             if (fill) {
                 var canvas = context.canvas;
                 canvas.putVertices(this);
 
                 if (fill.transform) {
+                    if (this.$trf) {
+                        fill.transform = fill.transform.multiplied(this.$trf);
+                    }
                     // Apply our fill pattern transformation if any
                     if (this.$_fpx && !this.$_fpx.isIdentity()) {
                         fill.transform = fill.transform.preMultiplied(this.$_fpx);
@@ -286,13 +307,7 @@
     IFShape.prototype._paintBorder = function (context) {
         var outline = context.configuration.isOutline(context);
         if (!outline && this.hasStyleBorder()) {
-            var borderBBox = this.getGeometryBBox();
-            var borderPadding = this.getStyleBorderPadding();
-            if (borderPadding) {
-                borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
-            }
-
-            var border = this._createShapePaint(context, this.$_bpt, borderBBox);
+            var border = this._createShapePaint(context, this.$_bpt, this._getOrigBBox());
 
             if (border && border.paint) {
                 var canvas = context.canvas;
@@ -307,6 +322,10 @@
                 context.canvas.putVertices(this);
 
                 if (border.transform) {
+                    if (this.$trf) {
+                        border.transform = border.transform.multiplied(this.$trf);
+                    }
+
                     // Apply our border pattern transformation if any
                     if (this.$_bpx && !this.$_bpx.isIdentity()) {
                         border.transform = border.transform.preMultiplied(this.$_bpx);
@@ -314,18 +333,20 @@
 
                     // Having a border transform with scale/skew requires filling the
                     // whole area and clip our border away to ensure border width consistency
-                    if (this.$_bpx && this.$_bpx.getDeterminant() !== 1.0) {
-                        // Fill everything with the border.paint, then clip with the border
-                        var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
-                        var patternFillArea = border.transform.inverted().mapRect(borderBBox);
-                        canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
-                        canvas.setTransform(oldTransform);
-                        canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
-                    } else {
-                        var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
-                        canvas.strokeVertices(border.paint, borderWidth / border.transform.getScaleFactor(), this.$_blc, this.$_blj, this.$_bml, this.$_bop);
-                        canvas.setTransform(oldTransform);
+                    // Fill everything with the border.paint, then clip with the border
+                    var oldTransform = canvas.setTransform(canvas.getTransform(true).multiplied(border.transform));
+                    var borderBBox = this.getGeometryBBox();
+                    var borderPadding = this.getStyleBorderPadding();
+                    if (borderPadding) {
+                        if (this._requireMiterLimitApproximation() && this.$_blj === IFPaintCanvas.LineJoin.Miter && this.$_bml > 0) {
+                            borderPadding *= this.$_bml;
+                        }
+                        borderBBox = borderBBox.expanded(borderPadding, borderPadding, borderPadding, borderPadding);
                     }
+                    var patternFillArea = border.transform.inverted().mapRect(borderBBox);
+                    canvas.fillRect(patternFillArea.getX(), patternFillArea.getY(), patternFillArea.getWidth(), patternFillArea.getHeight(), border.paint, this.$_bop);
+                    canvas.setTransform(oldTransform);
+                    canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
                 } else {
                     canvas.strokeVertices(border.paint, borderWidth, this.$_blc, this.$_blj, this.$_bml, this.$_bop);
                 }
@@ -354,6 +375,9 @@
     /** @override */
     IFShape.prototype._handleChange = function (change, args) {
         this._handleGeometryChangeForProperties(change, args, IFShape.GeometryProperties);
+        if (change == IFElement._Change.FinishGeometryUpdate) {
+            this._origGeometryBBox = null;
+        }
 
         if (change === IFNode._Change.Store) {
             this.storeProperties(args, IFShape.GeometryProperties, function (property, value) {

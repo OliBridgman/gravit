@@ -679,9 +679,11 @@
                 paint.addColorStop(stops[i].position, stops[i].color.toScreenCSS(stops[i].opacity));
             }
 
-            transform = new IFTransform()
-                .scaled(bbox.getWidth(), bbox.getHeight())
-                .translated(bbox.getX(), bbox.getY());
+            if (bbox) {
+                transform = new IFTransform()
+                    .scaled(bbox.getWidth(), bbox.getHeight())
+                    .translated(bbox.getX(), bbox.getY());
+            }
         } else {
             throw new Error('Unknown pattern.');
         }
