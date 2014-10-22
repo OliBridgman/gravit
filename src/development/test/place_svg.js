@@ -7,11 +7,11 @@
                 callback: function (value) {
                     if (value) {
                         IFIO.read('test.svg', value, function (node) {
-                            alert('RESULT: ' + node ? 'YES' : 'NO');
-                        })
-                        //var blob = JSON.parse(value);
-                        //var scene = IFNode.restore(blob);
-                        //gApp.addDocument(scene, 'From-String');
+                            if (node) {
+                                var doc = gApp.getActiveDocument();
+                                doc.getScene().getActiveLayer().appendChild(node);
+                            }
+                        });
                     }
                 }
             });
