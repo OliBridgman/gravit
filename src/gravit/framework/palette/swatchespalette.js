@@ -31,6 +31,12 @@
      * @type {JQuery}
      * @private
      */
+    GSwatchesPalette.prototype._swatchImportControl = null;
+
+    /**
+     * @type {JQuery}
+     * @private
+     */
     GSwatchesPalette.prototype._swatchDeleteControl = null;
 
     /** @override */
@@ -57,6 +63,23 @@
     GSwatchesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        var importInput = $('<input>')
+            .attr('type', 'file')
+            .attr('accept', '.ase')
+            .css({
+                'position': 'absolute',
+                'left': '-10000px'
+            })
+            .on('change', function (evt) {
+                var files = $(evt.target)[0].files;
+                if (files && files.length) {
+                    IFIO.read('application/x-adobe-ase', files[0], function (result) {
+                        alert('got_ase');
+                    });
+                }
+            })
+            .appendTo(htmlElement);
+
         this._swatchPanel = $('<div></div>')
             .addClass('g-list swatches')
             .gSwatchPanel({
@@ -76,6 +99,17 @@
                 this._updateControls();
             }.bind(this))
             .appendTo(htmlElement);
+
+        this._swatchImportControl = $('<button></button>')
+            // TODO : I18N
+            .attr('title', 'Import swatches')
+            .attr('data-action', 'import')
+            .on('click', function () {
+                importInput.focus().trigger('click');
+            }.bind(this))
+            .append($('<span></span>')
+                .addClass('fa fa-folder-open-o'))
+            .appendTo(controls);
 
         this._swatchDeleteControl = $('<button></button>')
             // TODO : I18N

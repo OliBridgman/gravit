@@ -189,14 +189,9 @@
                         .on('change', function (evt) {
                             var files = $(evt.target)[0].files;
                             if (files && files.length) {
-                                var reader = new FileReader();
-                                reader.onload = function (event) {
-                                    try {
-                                        assign(['cp'], [IFColorGradingFilter.parseACV(event.target.result)]);
-                                    } catch (e) {
-                                    }
-                                }
-                                reader.readAsArrayBuffer(files[0]);
+                                IFIO.read('application/x-adobe-acv', files[0], function (result) {
+                                    assign(['cp'], [result]);
+                                });
                             }
                         }))
                     .append($('<select></select>')
@@ -237,7 +232,9 @@
                                     async: false,
                                     dataType: 'arraybuffer',
                                     success: function (data) {
-                                        assign(['cp'], [IFColorGradingFilter.parseACV(data)]);
+                                        IFIO.read('application/x-adobe-acv', data, function (result) {
+                                            assign(['cp'], [result]);
+                                        });
                                     }
                                 });
                             }

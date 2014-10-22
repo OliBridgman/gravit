@@ -47,12 +47,12 @@
             }
         }
 
-        if (reader) {
-            var inputType = reader.getInputType();
+        if (targetReader) {
+            var inputType = targetReader.getInputType();
 
             function doRead(input) {
                 if (input) {
-                    reader.readInput(input, callback);
+                    targetReader.readInput(input, callback);
                 } else {
                     callback(null);
                 }
