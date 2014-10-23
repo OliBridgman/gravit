@@ -41,55 +41,55 @@
     IFSVGReader.prototype._read = function (source, callback, settings) {
         // Parse source as xml
         //try {
-            var svgDoc = null;
-            if (typeof(Windows) != 'undefined' && typeof(Windows.Data) != 'undefined' && typeof(Windows.Data.Xml) != 'undefined') {
-                var svgDoc = new Windows.Data.Xml.Dom.XmlDocument();
-                var settings = new Windows.Data.Xml.Dom.XmlLoadSettings();
-                settings.prohibitDtd = false;
-                svgDoc.loadXml(xml, settings);
-            }
-            else if (window.DOMParser) {
-                var parser = new DOMParser();
-                svgDoc = parser.parseFromString(source, 'text/xml');
-            }
-            else {
-                var xml = source.replace(/<!DOCTYPE svg[^>]*>/, '');
-                svgDoc = new ActiveXObject('Microsoft.XMLDOM');
-                svgDoc.async = 'false';
-                svgDoc.loadXML(xml);
-            }
+        var svgDoc = null;
+        if (typeof(Windows) != 'undefined' && typeof(Windows.Data) != 'undefined' && typeof(Windows.Data.Xml) != 'undefined') {
+            var svgDoc = new Windows.Data.Xml.Dom.XmlDocument();
+            var settings = new Windows.Data.Xml.Dom.XmlLoadSettings();
+            settings.prohibitDtd = false;
+            svgDoc.loadXml(xml, settings);
+        }
+        else if (window.DOMParser) {
+            var parser = new DOMParser();
+            svgDoc = parser.parseFromString(source, 'text/xml');
+        }
+        else {
+            var xml = source.replace(/<!DOCTYPE svg[^>]*>/, '');
+            svgDoc = new ActiveXObject('Microsoft.XMLDOM');
+            svgDoc.async = 'false';
+            svgDoc.loadXML(xml);
+        }
 
-            if (!svgDoc || svgDoc.documentElement.nodeName !== 'svg') {
-                throw new Error('Invalid svg doc');
-            }
+        if (!svgDoc || svgDoc.documentElement.nodeName !== 'svg') {
+            throw new Error('Invalid svg doc');
+        }
 
-            settings = $.extend({
-                baseWidth: 400,
-                baseHeight: 400
-            }, settings);
+        settings = $.extend({
+            baseWidth: 400,
+            baseHeight: 400
+        }, settings);
 
-            // Create svg context
-            var context = build({});
+        // Create svg context
+        var context = build({});
 
-            // Create root element
-            var svgElement = context.CreateElement(svgDoc.documentElement);
-            svgElement.root = true;
+        // Create root element
+        var svgElement = context.CreateElement(svgDoc.documentElement);
+        svgElement.root = true;
 
-            // Setup initial viewport
+        // Setup initial viewport
+        context.ViewPort.Clear();
+        context.ViewPort.SetCurrent(settings.baseWidth, settings.baseHeight);
+        if (svgElement.style('width').hasValue() && svgElement.style('height').hasValue()) {
+            var width = svgElement.style('width').toPixels('x');
+            var height = svgElement.style('height').toPixels('y');
             context.ViewPort.Clear();
-            context.ViewPort.SetCurrent(settings.baseWidth, settings.baseHeight);
-            if (svgElement.style('width').hasValue() && svgElement.style('height').hasValue()) {
-                var width = svgElement.style('width').toPixels('x');
-                var height = svgElement.style('height').toPixels('y');
-                context.ViewPort.Clear();
-                context.ViewPort.SetCurrent(width, height);
-            }
+            context.ViewPort.SetCurrent(width, height);
+        }
 
-            // Convert root element to scene now
-            var result = svgElement.toScene([]);
+        // Convert root element to scene now
+        var result = svgElement.toScene([]);
 
-            // Done here:
-            callback(!!result ? result : null);
+        // Done here:
+        callback(!!result ? result : null);
         //} catch (e) {
         //    callback(null);
         //    console.log(e);
@@ -732,7 +732,7 @@
                     var context = {
                         transform: stack.length ? stack[stack.length - 1].transform : new IFTransform()
                     };
-					stack.push(context);
+                    stack.push(context);
 
                     // TODO : Support mask and filter
                     /*
@@ -872,10 +872,10 @@
             this.base(node);
 
             this.setSceneContext = function (ctx, node) {
-				if (this.attribute('transform').hasValue()) {
-					var transform = new svg.Transform(this.attribute('transform').value);
-					transform.apply(ctx);
-				}
+                if (this.attribute('transform').hasValue()) {
+                    var transform = new svg.Transform(this.attribute('transform').value);
+                    transform.apply(ctx);
+                }
 
                 if (node instanceof IFBlock && this.attribute('id').hasValue()) {
                     node.setProperty('name', this.attribute('id').value);
@@ -967,6 +967,15 @@
                             propertiesToSet['_bw'] = 1;
                         }
 
+                        // Ugly hack: SVG transformations are affected the stroke width, however
+                        // infinity doesn't know about such a concept and doesn't transform strokes.
+                        // So what we do as a hack here is to use the current transform's scalation
+                        // and calculate a new stroke-width with it.
+                        var scaleFactor = ctx.transform.getScaleFactor();
+                        if (scaleFactor > 0 && scaleFactor !== 1.0) {
+                            propertiesToSet['_bw'] *= scaleFactor;
+                        }
+
                         if (this.style('stroke-linecap').hasValue()) {
                             switch (this.style('stroke-linecap').value) {
                                 case 'round':
@@ -1021,15 +1030,15 @@
                     if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0) {
                         // TODO : Font
                         /*
-                        if (typeof(ctx.font) != 'undefined') {
-                            ctx.font = svg.Font.CreateFont(
-                                this.style('font-style').value,
-                                this.style('font-variant').value,
-                                this.style('font-weight').value,
-                                this.style('font-size').hasValue() ? this.style('font-size').toPixels() + 'px' : '',
-                                this.style('font-family').value).toString();
-                        }
-                        */
+                         if (typeof(ctx.font) != 'undefined') {
+                         ctx.font = svg.Font.CreateFont(
+                         this.style('font-style').value,
+                         this.style('font-variant').value,
+                         this.style('font-weight').value,
+                         this.style('font-size').hasValue() ? this.style('font-size').toPixels() + 'px' : '',
+                         this.style('font-family').value).toString();
+                         }
+                         */
                     }
 
                     var properties = [];
@@ -1046,11 +1055,11 @@
 
                 // TODO : Clip
                 /*
-                if (this.style('clip-path', false, true).hasValue()) {
-                    var clip = this.style('clip-path', false, true).getDefinition();
-                    if (clip != null) clip.apply(ctx);
-                }
-                */
+                 if (this.style('clip-path', false, true).hasValue()) {
+                 var clip = this.style('clip-path', false, true).getDefinition();
+                 if (clip != null) clip.apply(ctx);
+                 }
+                 */
             }
         }
         svg.Element.RenderedElementBase.prototype = new svg.Element.ElementBase;
@@ -1058,6 +1067,31 @@
         svg.Element.PathElementBase = function (node) {
             this.base = svg.Element.RenderedElementBase;
             this.base(node);
+
+            this.baseSetSceneContext = this.setSceneContext;
+            this.setSceneContext = function (ctx, node) {
+                this.baseSetSceneContext(ctx, node);
+
+                if (node instanceof IFCompoundPath) {
+                    for (var path = node.getAnchorPaths().getFirstChild(); path !== null; path = path.getNext()) {
+                        this._setPathSceneContext(ctx, path);
+                    }
+                } else {
+                    this._setPathSceneContext(ctx, node);
+                }
+            };
+
+            this._setPathSceneContext = function (ctx, node) {
+                if (node instanceof IFPathBase) {
+                    if (this.style('fill-rule').valueOrDefault('inherit') != 'inherit') {
+                        node.setProperty('evenodd', this.style('fill-rule').value === 'evenodd');
+                    }
+                    else {
+                        // default
+                        node.setProperty('evenodd', false);
+                    }
+                }
+            }
 
             this.renderChildren = function (ctx) {
                 this.path(ctx);
@@ -1558,25 +1592,8 @@
                 var pp = this.PathParser;
                 pp.reset();
 
-                var pathes = [];
-                var currentPath = null;
-
-                function addAnchorPoint(properties) {
-                    if (currentPath) {
-                        var apt = new IFPathBase.AnchorPoint();
-                        if (properties) {
-                            var props = [];
-                            var vals = [];
-                            for (var property in properties) {
-                                props.push(property);
-                                vals.push(properties[property]);
-                            }
-                            apt.setProperties(props, vals);
-                        }
-                        currentPath.getAnchorPoints().appendChild(apt);
-                    }
-                }
-
+                // Step 1: Convert our path into vertices
+                var vertices = new IFVertexContainer();
                 while (!pp.isEnd()) {
                     pp.nextCommand();
                     switch (pp.command) {
@@ -1584,16 +1601,12 @@
                         case 'm':
                             var p = pp.getAsCurrentPoint();
                             pp.addMarker(p);
-
-                            currentPath = new IFPath();
-                            pathes.push(currentPath);
-                            addAnchorPoint({ x: p.x, y: p.y });
-
+                            vertices.addVertex(IFVertex.Command.Move, p.x, p.y);
                             pp.start = pp.current;
                             while (!pp.isCommandOrEnd()) {
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, pp.start);
-                                addAnchorPoint({ x: p.x, y: p.y });
+                                vertices.addVertex(IFVertex.Command.Move, p.x, p.y);
                             }
                             break;
                         case 'L':
@@ -1602,7 +1615,7 @@
                                 var c = pp.current;
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, c);
-                                addAnchorPoint({ x: p.x, y: p.y });
+                                vertices.addVertex(IFVertex.Command.Line, p.x, p.y);
                             }
                             break;
                         case 'H':
@@ -1611,7 +1624,7 @@
                                 var newP = new svg.Point((pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar(), pp.current.y);
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                addAnchorPoint({ x: pp.current.x, y: pp.current.y });
+                                vertices.addVertex(IFVertex.Command.Line, pp.current.x, pp.current.y);
                             }
                             break;
                         case 'V':
@@ -1620,7 +1633,7 @@
                                 var newP = new svg.Point(pp.current.x, (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar());
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                addAnchorPoint({ x: pp.current.x, y: pp.current.y });
+                                vertices.addVertex(IFVertex.Command.Line, pp.current.x, pp.current.y);
                             }
                             break;
                         case 'C':
@@ -1630,19 +1643,10 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-
-                                // TODO:ANNA
-                                addAnchorPoint({
-                                    x: cp.x,
-                                    y: cp.y,
-                                    hrx: p1.x,
-                                    hry: p1.y,
-                                    hlx: cntrl.x,
-                                    hly: cntrl.y
-                                });
-
-                                //html-canvas call:
-                                //ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
+                                // TODO:ANNA Curve2 is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'S':
@@ -1652,19 +1656,10 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-
-                                // TODO:ANNA
-                                addAnchorPoint({
-                                    x: cp.x,
-                                    y: cp.y,
-                                    hrx: p1.x,
-                                    hry: p1.y,
-                                    hlx: cntrl.x,
-                                    hly: cntrl.y
-                                });
-
-                                //html-canvas call:
-                                //ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
+                                vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
+                                // TODO:ANNA Curve2 is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'Q':
@@ -1673,21 +1668,9 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-
-                                // TODO:ANNA
-                                /*
-                                addAnchorPoint({
-                                    x: cp.x,
-                                    y: cp.y,
-                                    hrx: p1.x,
-                                    hry: p1.y,
-                                    hlx: cntrl.x,
-                                    hly: cntrl.y
-                                });
-                                */
-
-                                //html-canvas call:
-                                //ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
+                                // TODO:ANNA Curve is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'T':
@@ -1697,21 +1680,9 @@
                                 pp.control = cntrl;
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-
-                                // TODO:ANNA
-                                /*
-                                 addAnchorPoint({
-                                 x: cp.x,
-                                 y: cp.y,
-                                 hrx: p1.x,
-                                 hry: p1.y,
-                                 hlx: cntrl.x,
-                                 hly: cntrl.y
-                                 });
-                                 */
-
-                                //html-canvas call:
-                                //ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
+                                vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
+                                // TODO:ANNA Curve is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'A':
@@ -1725,31 +1696,20 @@
                                 var sweepFlag = pp.getScalar();
                                 var cp = pp.getAsCurrentPoint();
 
-                                // TODO:ANNA Implement SVG-ARC command by adding curves to our path
+                                // TODO:ANNA Implement SVG-ARC command by adding curves to our vertices
                                 // Probably use code from here for conversion: https://github.com/rougier/antigrain-2.4/blob/master/src/agg_bezier_arc.cpp#L137
                             }
                             break;
                         case 'Z':
                         case 'z':
-                            if (currentPath) {
-                                currentPath.setProperty('closed', 'true');
-                            }
+                            vertices.addVertex(IFVertex.Command.Close);
                             pp.current = pp.start;
                             break;
                     }
                 }
 
-                if (pathes.length === 1) {
-                    return pathes[0];
-                } else if (pathes.length > 1) {
-                    var compound = new IFCompoundPath();
-                    for (var i = 0; i < pathes.length; ++i) {
-                        compound.getAnchorPaths().appendChild(pathes[i]);
-                    }
-                    return compound;
-                } else {
-                    return null;
-                }
+                // Return the converted vertices into a path
+                return IFPathBase.createPathFromVertexSource(vertices);
             }
 
             this.getMarkers = function () {

@@ -125,6 +125,7 @@
                         if (source.readVertex(vertex2)) {
                             anchorPoint = new IFPathBase.AnchorPoint();
                             anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
+                            anchorPoints.appendChild(anchorPoint);
                         } else {
                             anchorPoint = new IFPathBase.AnchorPoint();
                             anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
