@@ -137,6 +137,4 @@ $(document).ready(function () {
 $(window).load(function () {
     // Init rangy
     rangy.init();
-
-    // Setup 'jDataView'
 });
