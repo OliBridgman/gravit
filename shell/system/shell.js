@@ -7,6 +7,11 @@
         }
     });
 
+    process.on("uncaughtException", function (e) {
+        console.log(e);
+        vex.dialog.alert({ message: 'Sorry but an error has occurred. Please save your existing work and restart the application.' });
+    });
+
     /**
      * The system shell
      * @class GSystemShell
@@ -14,7 +19,7 @@
      * @constructor
      */
     function GSystemShell() {
-        this._menuBar = new gui.Menu({ type: "menubar" });
+        this._menuBar = new gui.Menu({type: "menubar"});
 
         if (process.platform === 'darwin') {
             this._menuBar.createMacBuiltin("Gravit", {
@@ -86,7 +91,7 @@
 
     /** @override */
     GSystemShell.prototype.addMenuSeparator = function (parentMenu) {
-        var item = new gui.MenuItem({ type: 'separator' });
+        var item = new gui.MenuItem({type: 'separator'});
         parentMenu.append(item);
         return item;
     };
