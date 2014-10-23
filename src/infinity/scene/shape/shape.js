@@ -194,6 +194,16 @@
         return false;
     };
 
+    /**
+     * Whether this kind of shape has evenodd fill rule (true) or nonzero (false)
+     * This by default returns false.
+     * @returns {boolean}
+     * @private
+     */
+    IFShape.prototype._isEvenOddFill = function () {
+        return false;
+    };
+
     IFShape.prototype._createShapePaint = function (context, pattern, bbox) {
         if (pattern instanceof IFBackground) {
             var root = context.getRootCanvas();
@@ -258,7 +268,7 @@
                     canvas.fillVertices(fill.paint, this.$_fop);
                     canvas.setTransform(oldTransform);
                 } else {
-                    canvas.fillVertices(fill.paint, this.$_fop);
+                    canvas.fillVertices(fill.paint, this.$_fop, null, this._isEvenOddFill());
                 }
             }
         }

@@ -1534,6 +1534,12 @@
         return anchorPoints;
     };
 
+
+    /** @override */
+    IFPathBase.prototype._isEvenOddFill = function () {
+        return !!this.$evenodd;
+    };
+
     /** @override */
     IFPathBase.prototype._calculateOrigGeometryBBox = function () {
         var vertices = new IFVertexContainer();

@@ -818,8 +818,9 @@
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
      * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {Boolean} [evenodd] whether to use evenodd winding-rule (true) or nonzero (false, default)
      */
-    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, cmpOrBlend) {
+    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, cmpOrBlend, evenodd) {
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
@@ -827,7 +828,7 @@
 
         this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
 
-        this._canvasContext.fill();
+        this._canvasContext.fill(!!evenodd ? 'evenodd' : 'nonzero');
     };
 
     /**
