@@ -61,7 +61,7 @@
                     },
                     valueToColor: function (value) {
                         if (value.length > 3) {
-                            return IFRGBColor.parseCSSColor(value);
+                            return IFRGBColor.fromCSSColor(value);
                         }
                         return null;
                     }
@@ -158,7 +158,7 @@
                     },
                     valueToColor: function (value) {
                         if (value.length > 3) {
-                            return IFRGBColor.parseCSSColor(value);
+                            return IFRGBColor.fromCSSColor(value);
                         }
                         return null;
                     }
@@ -481,7 +481,7 @@
                             'visibility': 'hidden'
                         })
                         .on('change', function (evt) {
-                            var color = IFRGBColor.parseCSSColor($(evt.target).val());
+                            var color = IFRGBColor.fromCSSColor($(evt.target).val());
                             methods.currentColor.call(self, color);
                             $this.trigger('colorchange', color);
                         }.bind(this)))

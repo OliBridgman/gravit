@@ -204,7 +204,7 @@
                 return IFFont.Style.Italic;
             }
         } else if (property === 'fc') {
-            var value = IFRGBColor.parseCSSColor(css['color']);
+            var value = IFRGBColor.fromCSSColor(css['color']);
             if (value) {
                 return value;
             }

@@ -94,7 +94,7 @@
 
                 var builtinColors = $this.find('.builtin-colors');
                 for (var i = 0; i < COLORS.length; ++i) {
-                    var color = IFRGBColor.parseCSSColor(COLORS[i]);
+                    var color = IFRGBColor.fromCSSColor(COLORS[i]);
                     $('<div></div>')
                         .css('background', color.toScreenCSS())
                         .gPatternTarget({
