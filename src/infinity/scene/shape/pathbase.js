@@ -73,6 +73,98 @@
         evenodd: false
     };
 
+    /**
+     * Creates a new path from a given vertex source.
+     * @param {IFVertexSource} source
+     * @return {IFPath|IFCompoundPath}
+     */
+    IFPathBase.createPathFromVertexSource = function (source) {
+        var vertex = new IFVertex();
+        var pathes = [];
+        var path = null;
+        var anchorPoints = null;
+        var anchorPoint = null;
+        var done = false;
+        source.rewindVertices(0);
+        while (!done && source.readVertex(vertex)) {
+            switch (vertex.command) {
+                case IFVertex.Command.Move:
+                    if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
+                        pathes.push(path);
+                    }
+                    path = new IFPath();
+                    anchorPoints = path.getAnchorPoints();
+                    anchorPoint = new IFPathBase.AnchorPoint();
+                    anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
+                    anchorPoints.appendChild(anchorPoint);
+                    break;
+                case IFVertex.Command.Line:
+                    anchorPoint = new IFPathBase.AnchorPoint();
+                    anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
+                    anchorPoints.appendChild(anchorPoint);
+                    break;
+                case IFVertex.Command.Curve:
+                    anchorPoint = new IFPathBase.AnchorPoint();
+                    var vertex2 = new IFVertex();
+                    if (source.readVertex(vertex2)) {
+                        anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
+                        anchorPoints.appendChild(anchorPoint);
+                    } else {
+                        anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
+                        anchorPoints.appendChild(anchorPoint);
+                        done = true;
+                        path.setProperty('closed', true);
+                    }
+                    break;
+                case IFVertex.Command.Curve2:
+                    var vertex2 = new IFVertex();
+                    if (source.readVertex(vertex2)) {
+                        if (anchorPoint) {
+                            anchorPoint.setProperty(['hrx', 'hry'], [vertex2.x, vertex2.y]);
+                        }
+                        if (source.readVertex(vertex2)) {
+                            anchorPoint = new IFPathBase.AnchorPoint();
+                            anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
+                        } else {
+                            anchorPoint = new IFPathBase.AnchorPoint();
+                            anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
+                            anchorPoints.appendChild(anchorPoint);
+                            done = true;
+                            path.setProperty('closed', true);
+                        }
+                    } else {
+                        anchorPoint = new IFPathBase.AnchorPoint();
+                        anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
+                        anchorPoints.appendChild(anchorPoint);
+                        done = true;
+                        path.setProperty('closed', true);
+                    }
+                    break;
+                case IFVertex.Command.Close:
+                    path.setProperty('closed', true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
+            pathes.push(path);
+        }
+
+        if (pathes.length === 1) {
+            return pathes[0];
+        } else if (pathes.length > 1) {
+            var compound = new IFCompoundPath();
+            for (var i = 0; i < pathes.length; ++i) {
+                compound.getAnchorPaths().appendChild(pathes[i]);
+            }
+            return compound;
+        } else {
+            return null;
+        }
+    };
+
     // -----------------------------------------------------------------------------------------------------------------
     // IFPathBase.AnchorPoint Class
     // -----------------------------------------------------------------------------------------------------------------

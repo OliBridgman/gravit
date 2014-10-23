@@ -36,6 +36,7 @@ ifLocale.setValues(IFScene, IFLocale.Language.English, ["name"], ["Scene"]);
 ifLocale.setValues(IFPolygon, IFLocale.Language.English, ["name"], ["Polygon"]);
 ifLocale.setValues(IFPage, IFLocale.Language.English, ["name"], ["Page"]);
 ifLocale.setValues(IFPath, IFLocale.Language.English, ["name"], ["Path"]);
+ifLocale.setValues(IFCompoundPath, IFLocale.Language.English, ["name"], ["Compound Path"]);
 ifLocale.setValues(IFText, IFLocale.Language.English, ["name"], ["Text"]);
 ifLocale.setValues(IFScenePaintConfiguration, IFLocale.Language.English, ["paint.full", "paint.fast", "paint.outline", "paint.output"], ["Full", "Fast", "Outline", "Output"]);
 ifLocale.setValues(IFSlice, IFLocale.Language.English, ["name"], ["Slice"]);

@@ -425,7 +425,7 @@
                     icon = 'circle';
                 } else if (layerOrItem instanceof IFRectangle) {
                     icon = 'stop';
-                } else if (layerOrItem instanceof IFPath) {
+                } else if (layerOrItem instanceof IFPath || layerOrItem instanceof IFCompoundPath) {
                     icon = 'pencil';
                 } else if (layerOrItem instanceof IFPolygon) {
                     icon = 'star';

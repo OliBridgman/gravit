@@ -995,19 +995,19 @@
                     var next = shape.getNext(true);
                     parent.removeChild(shape);
 
+                    var path = null;
                     if (shape instanceof IFPathBase) {
                         var anchorPoints = shape.clearAnchorPoints();
-                        var path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'),
-                            anchorPoints);
+                        path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'), anchorPoints);
+                    } else if (shape.hasMixin(IFVertexSource)) {
+                        path = IFPathBase.createPathFromVertexSource(shape);
+                    }
 
+                    if (path) {
                         path.assignFrom(shape);
                         shape = null;
-
                         parent.insertChild(path, next);
                         newSelection.push(path);
-                    } else if (shape.hasMixin(IFVertexSource)) {
-                        this._insertPathsFromVertices(shape, parent, next, newSelection);
-                        shape = null;
                     }
                 }
                 shapesToTransform = null;
@@ -1019,83 +1019,6 @@
                     this.commitTransaction('Convert to Path(s)');
                 }
             }
-        }
-    };
-
-    IFEditor.prototype._insertPathsFromVertices = function (source, parent, next, newSelection) {
-        source.rewindVertices(0);
-        var vertex = new IFVertex();
-        var compoundPath = new IFCompoundPath();
-        var path;
-        var done = false;
-        while (!done && source.readVertex(vertex)) {
-            switch (vertex.command) {
-                case IFVertex.Command.Move:
-                    if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-                        compoundPath.getAnchorPaths().appendChild(path);
-                    }
-                    path = new IFPath();
-                    var anchorPoints = path.getAnchorPoints();
-                    var anchorPoint = new IFPathBase.AnchorPoint();
-                    anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
-                    anchorPoints.appendChild(anchorPoint);
-                    break;
-                case IFVertex.Command.Line:
-                    anchorPoint = new IFPathBase.AnchorPoint();
-                    anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
-                    anchorPoints.appendChild(anchorPoint);
-                    break;
-                case IFVertex.Command.Curve:
-                    anchorPoint = new IFPathBase.AnchorPoint();
-                    var vertex2 = new IFVertex();
-                    if (source.readVertex(vertex2)) {
-                        anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
-                        anchorPoints.appendChild(anchorPoint);
-                    } else {
-                        anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
-                        anchorPoints.appendChild(anchorPoint);
-                        done = true;
-                        path.setProperty('closed', true);
-                    }
-                    break;
-                case IFVertex.Command.Curve2:
-                    var vertex2 = new IFVertex();
-                    if (source.readVertex(vertex2)) {
-                        if (anchorPoint) {
-                            anchorPoint.setProperty(['hrx', 'hry'], [vertex2.x, vertex2.y]);
-                        }
-                        if (source.readVertex(vertex2)) {
-                            anchorPoint = new IFPathBase.AnchorPoint();
-                            anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
-                        } else {
-                            anchorPoint = new IFPathBase.AnchorPoint();
-                            anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
-                            anchorPoints.appendChild(anchorPoint);
-                            done = true;
-                            path.setProperty('closed', true);
-                        }
-                    } else {
-                        anchorPoint = new IFPathBase.AnchorPoint();
-                        anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
-                        anchorPoints.appendChild(anchorPoint);
-                        done = true;
-                        path.setProperty('closed', true);
-                    }
-                    break;
-                case IFVertex.Command.Close:
-                    path.setProperty('closed', true);
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
-            compoundPath.getAnchorPaths().appendChild(path);
-        }
-        if (compoundPath.getAnchorPaths().getFirstChild()) {
-            compoundPath.assignFrom(source);
-            parent.insertChild(compoundPath, next);
-            newSelection.push(compoundPath);
         }
     };
 
