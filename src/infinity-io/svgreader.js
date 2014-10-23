@@ -21,18 +21,18 @@
         return ['svg', 'svgz'];
     };
 
-    IFSVGReader.prototype.readInput = function (input, callback) {
+    IFSVGReader.prototype.readInput = function (input, callback, settings) {
         var uint8Array = new Uint8Array(input);
 
         // Test for gzip
         if (uint8Array[0] === 0x1F && uint8Array[1] === 0x8B && uint8Array[2] === 0x08) {
             var source = pako.ungzip(uint8Array, {to: 'string'});
-            this._read(source, callback);
+            this._read(source, callback, settings);
         } else {
             // Assume plain string
             var f = new FileReader();
             f.onload = function (e) {
-                this._read(e.target.result, callback);
+                this._read(e.target.result, callback, settings);
             }.bind(this);
             f.readAsText(new Blob([input]));
         }
@@ -77,13 +77,13 @@
 
             // Setup initial viewport
             context.ViewPort.Clear();
-            var vWidth = settings.baseWidth;
-            var vHeight = settings.baseHeight;
+            context.ViewPort.SetCurrent(settings.baseWidth, settings.baseHeight);
             if (svgElement.style('width').hasValue() && svgElement.style('height').hasValue()) {
-                vWidth = svgElement.style('width').toPixels('x');
-                vHeight = svgElement.style('height').toPixels('y');
+                var width = svgElement.style('width').toPixels('x');
+                var height = svgElement.style('height').toPixels('y');
+                context.ViewPort.Clear();
+                context.ViewPort.SetCurrent(width, height);
             }
-            context.ViewPort.SetCurrent(vWidth, vHeight);
 
             // Convert root element to scene now
             var result = svgElement.toScene([]);
@@ -469,116 +469,6 @@
                 path.push(new svg.Point(a[i], a[i + 1]));
             }
             return path;
-        }
-
-        // bounding box
-        svg.BoundingBox = function (x1, y1, x2, y2) { // pass in initial points if you want
-            this.x1 = Number.NaN;
-            this.y1 = Number.NaN;
-            this.x2 = Number.NaN;
-            this.y2 = Number.NaN;
-
-            this.x = function () {
-                return this.x1;
-            }
-            this.y = function () {
-                return this.y1;
-            }
-            this.width = function () {
-                return this.x2 - this.x1;
-            }
-            this.height = function () {
-                return this.y2 - this.y1;
-            }
-
-            this.addPoint = function (x, y) {
-                if (x != null) {
-                    if (isNaN(this.x1) || isNaN(this.x2)) {
-                        this.x1 = x;
-                        this.x2 = x;
-                    }
-                    if (x < this.x1) this.x1 = x;
-                    if (x > this.x2) this.x2 = x;
-                }
-
-                if (y != null) {
-                    if (isNaN(this.y1) || isNaN(this.y2)) {
-                        this.y1 = y;
-                        this.y2 = y;
-                    }
-                    if (y < this.y1) this.y1 = y;
-                    if (y > this.y2) this.y2 = y;
-                }
-            }
-            this.addX = function (x) {
-                this.addPoint(x, null);
-            }
-            this.addY = function (y) {
-                this.addPoint(null, y);
-            }
-
-            this.addBoundingBox = function (bb) {
-                this.addPoint(bb.x1, bb.y1);
-                this.addPoint(bb.x2, bb.y2);
-            }
-
-            this.addQuadraticCurve = function (p0x, p0y, p1x, p1y, p2x, p2y) {
-                var cp1x = p0x + 2 / 3 * (p1x - p0x); // CP1 = QP0 + 2/3 *(QP1-QP0)
-                var cp1y = p0y + 2 / 3 * (p1y - p0y); // CP1 = QP0 + 2/3 *(QP1-QP0)
-                var cp2x = cp1x + 1 / 3 * (p2x - p0x); // CP2 = CP1 + 1/3 *(QP2-QP0)
-                var cp2y = cp1y + 1 / 3 * (p2y - p0y); // CP2 = CP1 + 1/3 *(QP2-QP0)
-                this.addBezierCurve(p0x, p0y, cp1x, cp2x, cp1y, cp2y, p2x, p2y);
-            }
-
-            this.addBezierCurve = function (p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y) {
-                // from http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
-                var p0 = [p0x, p0y], p1 = [p1x, p1y], p2 = [p2x, p2y], p3 = [p3x, p3y];
-                this.addPoint(p0[0], p0[1]);
-                this.addPoint(p3[0], p3[1]);
-
-                for (i = 0; i <= 1; i++) {
-                    var f = function (t) {
-                        return Math.pow(1 - t, 3) * p0[i]
-                            + 3 * Math.pow(1 - t, 2) * t * p1[i]
-                            + 3 * (1 - t) * Math.pow(t, 2) * p2[i]
-                            + Math.pow(t, 3) * p3[i];
-                    }
-
-                    var b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
-                    var a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
-                    var c = 3 * p1[i] - 3 * p0[i];
-
-                    if (a == 0) {
-                        if (b == 0) continue;
-                        var t = -c / b;
-                        if (0 < t && t < 1) {
-                            if (i == 0) this.addX(f(t));
-                            if (i == 1) this.addY(f(t));
-                        }
-                        continue;
-                    }
-
-                    var b2ac = Math.pow(b, 2) - 4 * c * a;
-                    if (b2ac < 0) continue;
-                    var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
-                    if (0 < t1 && t1 < 1) {
-                        if (i == 0) this.addX(f(t1));
-                        if (i == 1) this.addY(f(t1));
-                    }
-                    var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
-                    if (0 < t2 && t2 < 1) {
-                        if (i == 0) this.addX(f(t2));
-                        if (i == 1) this.addY(f(t2));
-                    }
-                }
-            }
-
-            this.isPointInBox = function (x, y) {
-                return (this.x1 <= x && x <= this.x2 && this.y1 <= y && y <= this.y2);
-            }
-
-            this.addPoint(x1, y1);
-            this.addPoint(x2, y2);
         }
 
         // transforms
@@ -1049,7 +939,7 @@
                         else if (this.style('stroke').hasValue()) {
                             var strokeStyle = this.style('stroke');
                             if (strokeStyle.value == 'none') {
-                                propertiesToSet['_bpt'] = none;
+                                propertiesToSet['_bpt'] = null;
                             } else {
                                 if (strokeStyle.value == 'currentColor')
                                     strokeStyle.value = this.style('color').value;
@@ -1062,7 +952,7 @@
                             }
                         } else {
                             // default
-                            propertiesToSet['_bpt'] = none;
+                            propertiesToSet['_bpt'] = null;
                         }
 
                         if (this.style('stroke-opacity').hasValue()) {
@@ -1169,11 +1059,6 @@
             this.base = svg.Element.RenderedElementBase;
             this.base(node);
 
-            this.path = function (ctx) {
-                if (ctx != null) ctx.beginPath();
-                return new svg.BoundingBox();
-            }
-
             this.renderChildren = function (ctx) {
                 this.path(ctx);
                 svg.Mouse.checkPath(this, ctx);
@@ -1204,10 +1089,6 @@
                         marker.render(ctx, markers[markers.length - 1][0], markers[markers.length - 1][1]);
                     }
                 }
-            }
-
-            this.getBoundingBox = function () {
-                return this.path();
             }
 
             this.getMarkers = function () {
@@ -1449,16 +1330,19 @@
                     new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))];
             }
 
-            this.path = function (ctx) {
-                var points = this.getPoints();
+            this.createSceneNode = function () {
+                var result = new IFPath();
+                var anchorPoints = result.getAnchorPoints();
 
-                if (ctx != null) {
-                    ctx.beginPath();
-                    ctx.moveTo(points[0].x, points[0].y);
-                    ctx.lineTo(points[1].x, points[1].y);
+                var points = this.getPoints();
+                for (var i = 0; i < points.length; ++i) {
+                    var pt = points[i];
+                    var apt = new IFPathBase.AnchorPoint();
+                    anchorPoints.appendChild(apt);
+                    apt.setProperties(['x', 'y'], [pt.x, pt.y]);
                 }
 
-                return new svg.BoundingBox(points[0].x, points[0].y, points[1].x, points[1].y);
+                return result;
             }
 
             this.getMarkers = function () {
@@ -1475,17 +1359,19 @@
             this.base(node);
 
             this.points = svg.CreatePath(this.attribute('points').value);
-            this.path = function (ctx) {
-                var bb = new svg.BoundingBox(this.points[0].x, this.points[0].y);
-                if (ctx != null) {
-                    ctx.beginPath();
-                    ctx.moveTo(this.points[0].x, this.points[0].y);
+
+            this.createSceneNode = function () {
+                var result = new IFPath();
+                var anchorPoints = result.getAnchorPoints();
+
+                for (var i = 0; i < this.points.length; ++i) {
+                    var pt = this.points[i];
+                    var apt = new IFPathBase.AnchorPoint();
+                    anchorPoints.appendChild(apt);
+                    apt.setProperties(['x', 'y'], [pt.x, pt.y]);
                 }
-                for (var i = 1; i < this.points.length; i++) {
-                    bb.addPoint(this.points[i].x, this.points[i].y);
-                    if (ctx != null) ctx.lineTo(this.points[i].x, this.points[i].y);
-                }
-                return bb;
+
+                return result;
             }
 
             this.getMarkers = function () {
@@ -1504,14 +1390,11 @@
             this.base = svg.Element.polyline;
             this.base(node);
 
-            this.basePath = this.path;
-            this.path = function (ctx) {
-                var bb = this.basePath(ctx);
-                if (ctx != null) {
-                    ctx.lineTo(this.points[0].x, this.points[0].y);
-                    ctx.closePath();
-                }
-                return bb;
+            this.baseCreateSceneNode = this.createSceneNode;
+            this.createSceneNode = function () {
+                var result = this.baseCreateSceneNode();
+                result.setProperty('closed', true);
+                return result;
             }
         }
         svg.Element.polygon.prototype = new svg.Element.polyline;
@@ -1657,12 +1540,43 @@
                 }
             })(d);
 
-            this.path = function (ctx) {
+            this.createSceneNode = function () {
+                var result = new IFPath();
+                var anchorPoints = result.getAnchorPoints();
+
+                for (var i = 0; i < this.points.length; ++i) {
+                    var pt = this.points[i];
+                    var apt = new IFPathBase.AnchorPoint();
+                    anchorPoints.appendChild(apt);
+                    apt.setProperties(['x', 'y'], [pt.x, pt.y]);
+                }
+
+                return result;
+            }
+
+            this.createSceneNode = function () {
                 var pp = this.PathParser;
                 pp.reset();
 
-                var bb = new svg.BoundingBox();
-                if (ctx != null) ctx.beginPath();
+                var pathes = [];
+                var currentPath = null;
+
+                function addAnchorPoint(properties) {
+                    if (currentPath) {
+                        var apt = new IFPathBase.AnchorPoint();
+                        if (properties) {
+                            var props = [];
+                            var vals = [];
+                            for (var property in properties) {
+                                props.push(property);
+                                vals.push(properties[property]);
+                            }
+                            apt.setProperties(props, vals);
+                        }
+                        currentPath.getAnchorPoints().appendChild(apt);
+                    }
+                }
+
                 while (!pp.isEnd()) {
                     pp.nextCommand();
                     switch (pp.command) {
@@ -1670,14 +1584,16 @@
                         case 'm':
                             var p = pp.getAsCurrentPoint();
                             pp.addMarker(p);
-                            bb.addPoint(p.x, p.y);
-                            if (ctx != null) ctx.moveTo(p.x, p.y);
+
+                            currentPath = new IFPath();
+                            pathes.push(currentPath);
+                            addAnchorPoint({ x: p.x, y: p.y });
+
                             pp.start = pp.current;
                             while (!pp.isCommandOrEnd()) {
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, pp.start);
-                                bb.addPoint(p.x, p.y);
-                                if (ctx != null) ctx.lineTo(p.x, p.y);
+                                addAnchorPoint({ x: p.x, y: p.y });
                             }
                             break;
                         case 'L':
@@ -1686,8 +1602,7 @@
                                 var c = pp.current;
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, c);
-                                bb.addPoint(p.x, p.y);
-                                if (ctx != null) ctx.lineTo(p.x, p.y);
+                                addAnchorPoint({ x: p.x, y: p.y });
                             }
                             break;
                         case 'H':
@@ -1696,8 +1611,7 @@
                                 var newP = new svg.Point((pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar(), pp.current.y);
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                bb.addPoint(pp.current.x, pp.current.y);
-                                if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                                addAnchorPoint({ x: pp.current.x, y: pp.current.y });
                             }
                             break;
                         case 'V':
@@ -1706,55 +1620,98 @@
                                 var newP = new svg.Point(pp.current.x, (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar());
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                bb.addPoint(pp.current.x, pp.current.y);
-                                if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                                addAnchorPoint({ x: pp.current.x, y: pp.current.y });
                             }
                             break;
                         case 'C':
                         case 'c':
                             while (!pp.isCommandOrEnd()) {
-                                var curr = pp.current;
                                 var p1 = pp.getPoint();
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-                                bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                                if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+
+                                // TODO:ANNA
+                                addAnchorPoint({
+                                    x: cp.x,
+                                    y: cp.y,
+                                    hrx: p1.x,
+                                    hry: p1.y,
+                                    hlx: cntrl.x,
+                                    hly: cntrl.y
+                                });
+
+                                //html-canvas call:
+                                //ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
                             }
                             break;
                         case 'S':
                         case 's':
                             while (!pp.isCommandOrEnd()) {
-                                var curr = pp.current;
                                 var p1 = pp.getReflectedControlPoint();
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-                                bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                                if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+
+                                // TODO:ANNA
+                                addAnchorPoint({
+                                    x: cp.x,
+                                    y: cp.y,
+                                    hrx: p1.x,
+                                    hry: p1.y,
+                                    hlx: cntrl.x,
+                                    hly: cntrl.y
+                                });
+
+                                //html-canvas call:
+                                //ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
                             }
                             break;
                         case 'Q':
                         case 'q':
                             while (!pp.isCommandOrEnd()) {
-                                var curr = pp.current;
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-                                bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                                if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+
+                                // TODO:ANNA
+                                /*
+                                addAnchorPoint({
+                                    x: cp.x,
+                                    y: cp.y,
+                                    hrx: p1.x,
+                                    hry: p1.y,
+                                    hlx: cntrl.x,
+                                    hly: cntrl.y
+                                });
+                                */
+
+                                //html-canvas call:
+                                //ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
                             }
                             break;
                         case 'T':
                         case 't':
                             while (!pp.isCommandOrEnd()) {
-                                var curr = pp.current;
                                 var cntrl = pp.getReflectedControlPoint();
                                 pp.control = cntrl;
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-                                bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                                if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+
+                                // TODO:ANNA
+                                /*
+                                 addAnchorPoint({
+                                 x: cp.x,
+                                 y: cp.y,
+                                 hrx: p1.x,
+                                 hry: p1.y,
+                                 hlx: cntrl.x,
+                                 hly: cntrl.y
+                                 });
+                                 */
+
+                                //html-canvas call:
+                                //ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
                             }
                             break;
                         case 'A':
@@ -1768,86 +1725,31 @@
                                 var sweepFlag = pp.getScalar();
                                 var cp = pp.getAsCurrentPoint();
 
-                                // Conversion from endpoint to center parameterization
-                                // http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-                                // x1', y1'
-                                var currp = new svg.Point(
-                                    Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0,
-                                    -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
-                                );
-                                // adjust radii
-                                var l = Math.pow(currp.x, 2) / Math.pow(rx, 2) + Math.pow(currp.y, 2) / Math.pow(ry, 2);
-                                if (l > 1) {
-                                    rx *= Math.sqrt(l);
-                                    ry *= Math.sqrt(l);
-                                }
-                                // cx', cy'
-                                var s = (largeArcFlag == sweepFlag ? -1 : 1) * Math.sqrt(
-                                        ((Math.pow(rx, 2) * Math.pow(ry, 2)) - (Math.pow(rx, 2) * Math.pow(currp.y, 2)) - (Math.pow(ry, 2) * Math.pow(currp.x, 2))) /
-                                        (Math.pow(rx, 2) * Math.pow(currp.y, 2) + Math.pow(ry, 2) * Math.pow(currp.x, 2))
-                                    );
-                                if (isNaN(s)) s = 0;
-                                var cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
-                                // cx, cy
-                                var centp = new svg.Point(
-                                    (curr.x + cp.x) / 2.0 + Math.cos(xAxisRotation) * cpp.x - Math.sin(xAxisRotation) * cpp.y,
-                                    (curr.y + cp.y) / 2.0 + Math.sin(xAxisRotation) * cpp.x + Math.cos(xAxisRotation) * cpp.y
-                                );
-                                // vector magnitude
-                                var m = function (v) {
-                                    return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
-                                }
-                                // ratio between two vectors
-                                var r = function (u, v) {
-                                    return (u[0] * v[0] + u[1] * v[1]) / (m(u) * m(v))
-                                }
-                                // angle between two vectors
-                                var a = function (u, v) {
-                                    return (u[0] * v[1] < u[1] * v[0] ? -1 : 1) * Math.acos(r(u, v));
-                                }
-                                // initial angle
-                                var a1 = a([1, 0], [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry]);
-                                // angle delta
-                                var u = [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry];
-                                var v = [(-currp.x - cpp.x) / rx, (-currp.y - cpp.y) / ry];
-                                var ad = a(u, v);
-                                if (r(u, v) <= -1) ad = Math.PI;
-                                if (r(u, v) >= 1) ad = 0;
-
-                                // for markers
-                                var dir = 1 - sweepFlag ? 1.0 : -1.0;
-                                var ah = a1 + dir * (ad / 2.0);
-                                var halfWay = new svg.Point(
-                                    centp.x + rx * Math.cos(ah),
-                                    centp.y + ry * Math.sin(ah)
-                                );
-                                pp.addMarkerAngle(halfWay, ah - dir * Math.PI / 2);
-                                pp.addMarkerAngle(cp, ah - dir * Math.PI);
-
-                                bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
-                                if (ctx != null) {
-                                    var r = rx > ry ? rx : ry;
-                                    var sx = rx > ry ? 1 : rx / ry;
-                                    var sy = rx > ry ? ry / rx : 1;
-
-                                    ctx.transform = ctx.transform.translated(centp.x, centp.y);
-                                    ctx.rotate(xAxisRotation);
-                                    ctx.transform = ctx.transform.scaled(sx, sy);
-                                    ctx.arc(0, 0, r, a1, a1 + ad, 1 - sweepFlag);
-                                    ctx.transform = ctx.transform.scaled(1 / sx, 1 / sy);
-                                    ctx.rotate(-xAxisRotation);
-                                    ctx.transform = ctx.transform.translated(-centp.x, -centp.y);
-                                }
+                                // TODO:ANNA Implement SVG-ARC command by adding curves to our path
+                                // Probably use code from here for conversion: https://github.com/rougier/antigrain-2.4/blob/master/src/agg_bezier_arc.cpp#L137
                             }
                             break;
                         case 'Z':
                         case 'z':
-                            if (ctx != null) ctx.closePath();
+                            if (currentPath) {
+                                currentPath.setProperty('closed', 'true');
+                            }
                             pp.current = pp.start;
+                            break;
                     }
                 }
 
-                return bb;
+                if (pathes.length === 1) {
+                    return pathes[0];
+                } else if (pathes.length > 1) {
+                    var compound = new IFCompoundPath();
+                    for (var i = 0; i < pathes.length; ++i) {
+                        compound.getAnchorPaths().appendChild(pathes[i]);
+                    }
+                    return compound;
+                } else {
+                    return null;
+                }
             }
 
             this.getMarkers = function () {
@@ -1938,10 +1840,6 @@
         svg.Element.defs = function (node) {
             this.base = svg.Element.ElementBase;
             this.base(node);
-
-            this.render = function (ctx) {
-                // NOOP
-            }
         }
         svg.Element.defs.prototype = new svg.Element.ElementBase;
 
@@ -2190,13 +2088,6 @@
                 var textBaseline = this.style('dominant-baseline').toTextBaseline();
                 if (textBaseline == null) textBaseline = this.style('alignment-baseline').toTextBaseline();
                 if (textBaseline != null) ctx.textBaseline = textBaseline;
-            }
-
-            this.getBoundingBox = function () {
-                var x = this.attribute('x').toPixels('x');
-                var y = this.attribute('y').toPixels('y');
-                var fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
-                return new svg.BoundingBox(x, y - fontSize, x + Math.floor(fontSize * 2.0 / 3.0) * this.children[0].getText().length, y);
             }
 
             this.renderChildren = function (ctx) {
@@ -2472,14 +2363,6 @@
 
                 ctx.restore();
             }
-
-            this.getBoundingBox = function () {
-                var x = this.attribute('x').toPixels('x');
-                var y = this.attribute('y').toPixels('y');
-                var width = this.attribute('width').toPixels('x');
-                var height = this.attribute('height').toPixels('y');
-                return new svg.BoundingBox(x, y, x + width, y + height);
-            }
         }
         svg.Element.image.prototype = new svg.Element.RenderedElementBase;
 
@@ -2491,14 +2374,6 @@
             this.createSceneNode = function () {
                 return new IFShapeSet();
             }
-
-            this.getBoundingBox = function () {
-                var bb = new svg.BoundingBox();
-                for (var i = 0; i < this.children.length; i++) {
-                    bb.addBoundingBox(this.children[i].getBoundingBox());
-                }
-                return bb;
-            };
         }
         svg.Element.g.prototype = new svg.Element.RenderedElementBase;
 
@@ -2582,12 +2457,11 @@
 
             var element = this.getHrefAttribute().getDefinition();
 
-            this.path = function (ctx) {
-                if (element != null) element.path(ctx);
-            }
-
-            this.getBoundingBox = function () {
-                if (element != null) return element.getBoundingBox();
+            this.createSceneNode = function () {
+                if (element !== null) {
+                    return element.createSceneNode();
+                }
+                return null;
             }
 
             this.renderChildren = function (ctx) {
@@ -2627,17 +2501,6 @@
                 var y = this.attribute('y').toPixels('y');
                 var width = this.attribute('width').toPixels('x');
                 var height = this.attribute('height').toPixels('y');
-
-                if (width == 0 && height == 0) {
-                    var bb = new svg.BoundingBox();
-                    for (var i = 0; i < this.children.length; i++) {
-                        bb.addBoundingBox(this.children[i].getBoundingBox());
-                    }
-                    var x = Math.floor(bb.x1);
-                    var y = Math.floor(bb.y1);
-                    var width = Math.floor(bb.width());
-                    var height = Math.floor(bb.height());
-                }
 
                 // temporarily remove mask to avoid recursion
                 var mask = element.attribute('mask').value;
@@ -2720,41 +2583,7 @@
             this.base(node);
 
             this.apply = function (ctx, element) {
-                // render as temp svg
-                var bb = element.getBoundingBox();
-                var x = Math.floor(bb.x1);
-                var y = Math.floor(bb.y1);
-                var width = Math.floor(bb.width());
-                var height = Math.floor(bb.height());
-
-                // temporarily remove filter to avoid recursion
-                var filter = element.style('filter').value;
-                element.style('filter').value = '';
-
-                var px = 0, py = 0;
-                for (var i = 0; i < this.children.length; i++) {
-                    var efd = this.children[i].extraFilterDistance || 0;
-                    px = Math.max(px, efd);
-                    py = Math.max(py, efd);
-                }
-
-                var c = document.createElement('canvas');
-                c.width = width + 2 * px;
-                c.height = height + 2 * py;
-                var tempCtx = c.getContext('2d');
-                tempCtx.translate(-x + px, -y + py);
-                element.render(tempCtx);
-
-                // apply filters
-                for (var i = 0; i < this.children.length; i++) {
-                    this.children[i].apply(tempCtx, 0, 0, width + 2 * px, height + 2 * py);
-                }
-
-                // render on me
-                ctx.drawImage(c, 0, 0, width + 2 * px, height + 2 * py, x - px, y - py, width + 2 * px, height + 2 * py);
-
-                // reassign filter
-                element.style('filter', true).value = filter;
+                // ...
             }
 
             this.render = function (ctx) {
