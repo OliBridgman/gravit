@@ -123,7 +123,7 @@
             return true;
         }
 
-        if (layer === IFStylable.StyleLayer.Border && this.hasStyleBorder() && !(this._$bpt instanceof IFColor)) {
+        if (layer === IFStylable.StyleLayer.Border && this.hasStyleBorder() && !(this.$_bpt instanceof IFColor)) {
             return true;
         }
     };
