@@ -47,6 +47,7 @@
     GApplication.CATEGORY_MODIFY_ARRANGE = new IFLocale.Key(GApplication, "category.modify.arrange");
     GApplication.CATEGORY_MODIFY_ALIGN = new IFLocale.Key(GApplication, "category.modify.align");
     GApplication.CATEGORY_MODIFY_TRANSFORM = new IFLocale.Key(GApplication, "category.modify.transform");
+    GApplication.CATEGORY_MODIFY_PATHS = new IFLocale.Key(GApplication, "category.modify.paths");
     GApplication.CATEGORY_MODIFY_PAGE = new IFLocale.Key(GApplication, "category.modify.page");
     GApplication.CATEGORY_MODIFY_LAYER = new IFLocale.Key(GApplication, "category.modify.layer");
     GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");

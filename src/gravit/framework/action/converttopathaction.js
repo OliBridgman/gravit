@@ -31,14 +31,14 @@
      * @override
      */
     GConvertToPathAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY;
+        return GApplication.CATEGORY_MODIFY_PATHS;
     };
 
     /**
      * @override
      */
     GConvertToPathAction.prototype.getGroup = function () {
-        return "structure-convert";
+        return "structure/modify";
     };
 
     /**

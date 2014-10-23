@@ -2,7 +2,7 @@
 ifLocale.setValues(GAddLayerAction, IFLocale.Language.English, ["title"], ["Add Layer"]);
 ifLocale.setValues(GAddPageAction, IFLocale.Language.English, ["title"], ["Add Page"]);
 ifLocale.setValues(GAlignAction, IFLocale.Language.English, ["title.align-left", "title.align-center", "title.align-right", "title.align-top", "title.align-middle", "title.align-bottom", "title.align-justify-horizontal", "title.align-justify-vertical"], ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom", "Justify Horizontal", "Justify Vertical"]);
-ifLocale.setValues(GConvertToPathAction, IFLocale.Language.English, ["title"], ["Convert Selection to Path(s)"]);
+ifLocale.setValues(GConvertToPathAction, IFLocale.Language.English, ["title"], ["Convert to Path"]);
 ifLocale.setValues(GCloneAction, IFLocale.Language.English, ["title"], ["Clone"]);
 ifLocale.setValues(GCloseAction, IFLocale.Language.English, ["title"], ["Close"]);
 ifLocale.setValues(GCloseAllAction, IFLocale.Language.English, ["title"], ["Close All"]);
@@ -18,6 +18,7 @@ ifLocale.setValues(GFitCurrentLayerAction, IFLocale.Language.English, ["title"],
 ifLocale.setValues(GFitCurrentPageAction, IFLocale.Language.English, ["title"], ["Fit Page"]);
 ifLocale.setValues(GFitSelectionAction, IFLocale.Language.English, ["title"], ["Fit Selection"]);
 ifLocale.setValues(GGroupAction, IFLocale.Language.English, ["title"], ["Group Selection"]);
+ifLocale.setValues(GJoinPathsAction, IFLocale.Language.English, ["title"], ["Join Paths"]);
 ifLocale.setValues(GPlaceImageAction, IFLocale.Language.English, ["title"], ["Place Image..."]);
 ifLocale.setValues(GInvertSelectionAction, IFLocale.Language.English, ["title"], ["Invert Selection"]);
 ifLocale.setValues(GLayerTypeAction, IFLocale.Language.English, ["title"], ["%name% Layer"]);
