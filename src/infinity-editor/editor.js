@@ -83,6 +83,38 @@
             }
         }
     };
+    
+    // -----------------------------------------------------------------------------------------------------------------
+    // IFEditor.FileDropEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever a blob was dropped
+     * @class IFEditor.FileDropEvent
+     * @extends IFEvent
+     * @constructor
+     */
+    IFEditor.FileDropEvent = function (file, position) {
+        this.file = file;
+        this.position = position;
+    };
+    IFObject.inherit(IFEditor.FileDropEvent, IFEvent);
+
+    /**
+     * Dropped file
+     * @type {File}
+     */
+    IFEditor.FileDropEvent.file = null;
+
+    /**
+     * Drop target position in scene coordinates
+     * @type {IFPoint}
+     */
+    IFEditor.FileDropEvent.position = null;
+
+    /** @override */
+    IFEditor.FileDropEvent.prototype.toString = function () {
+        return "[Event IFEditor.FileDropEvent]";
+    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // IFEditor.SelectionChangedEvent Event
@@ -973,7 +1005,7 @@
 
                         parent.insertChild(path, next);
                         newSelection.push(path);
-                    } else { // shape.hasMixin(IFVertexSource)
+                    } else if (shape.hasMixin(IFVertexSource)) {
                         this._insertPathsFromVertices(shape, parent, next, newSelection);
                         shape = null;
                     }

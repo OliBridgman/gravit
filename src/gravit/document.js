@@ -16,6 +16,9 @@
 
         // Provide an url resolver to our scene
         this._scene.addEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
+
+        // Provide a listener for dropping resources on editor
+        this._editor.addEventListener(IFEditor.FileDropEvent, this._dropFile, this);
     };
     IFObject.inherit(GDocument, IFEventTarget);
 
@@ -150,10 +153,45 @@
         // TODO : Reset undo list/set save point
         if (this._url) {
             var input = IFNode.serialize(this._scene);
-            var output = pako.gzip(input, {level:9});
+            var output = pako.gzip(input, {level: 9});
             this._storage.save(this._url, output.buffer, true, function (name) {
                 this._title = name;
             }.bind(this));
+        }
+    };
+
+    /**
+     * Import a file into the current document
+     * @param {File} file
+     * @private
+     */
+    GDocument.prototype.importFile = function (file, callback) {
+        var name = file.name;
+        if (name && name.lastIndexOf('.') > 0) {
+            name = name.substr(0, name.lastIndexOf('.'));
+        }
+
+        if (file.type === 'image/svg+xml') {
+            var page = this._scene.getActivePage();
+            var layer = this._scene.getActiveLayer();
+            IFIO.read('image/svg+xml', file, function (node) {
+                if (node) {
+                    layer.appendChild(node);
+                    callback(node);
+                }
+            }, {
+                baseWidth: page.getProperty('w'),
+                baseHeight: page.getProperty('h')
+            });
+        } else if (file.type.match(/image.*/)) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var image = new IFImage();
+                image.setProperties(['name', 'url'], [name, event.target.result]);
+                this._editor.insertElements([image]);
+                callback(image);
+            }.bind(this)
+            reader.readAsDataURL(file);
         }
     };
 
@@ -226,6 +264,7 @@
         this._editor.release();
 
         this._scene.removeEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
+        this._editor.removeEventListener(IFEditor.FileDropEvent, this._dropFile, this);
 
         if (this._storage) {
             this._storage.releaseUrl(this._url);
@@ -245,7 +284,7 @@
 
         if (uri.protocol().length > 0) {
             if (uri.protocol() === "http" || uri.protocol() === "https") {
-              evt.resolved(evt.url);
+                evt.resolved(evt.url);
             }
 
             var storage = gApp.getStorage(uri.protocol() + ':');
@@ -253,6 +292,19 @@
                 storage.resolveUrl(uri.toString(), evt.resolved);
             }
         }
+    };
+
+    /**
+     * @param {IFEditor.FileDropEvent} evt
+     * @private
+     */
+    GDocument.prototype._dropFile = function (evt) {
+        this.importFile(evt.file, function (result) {
+            // Translate result if any and if element
+            if (result instanceof IFElement && result.hasMixin(IFElement.Transform)) {
+                result.transform(new IFTransform(1, 0, 0, 1, evt.position.getX(), evt.position.getY()));
+            }
+        });
     };
 
     _.GDocument = GDocument;

@@ -95,28 +95,10 @@
 
         // First we'll check for a file-drop
         if (dataTransfer.files && dataTransfer.files.length > 0) {
-            var imageType = /image.*/;
-
-            for (var i = 0; i < dataTransfer.files.length; ++i) {
-                var file = dataTransfer.files[i];
-                var name = file.name;
-                if (name.lastIndexOf('.') > 0) {
-                    name = name.substr(0, name.lastIndexOf('.'));
+            if (this._editor.hasEventListeners(IFEditor.FileDropEvent)) {
+                for (var i = 0; i < dataTransfer.files.length; ++i) {
+                    this._editor.trigger(new IFEditor.FileDropEvent(dataTransfer.files[i], scenePosition));
                 }
-
-                // Check for image files
-                if (file.type.match(imageType)) {
-                    var reader = new FileReader();
-                    reader.onload = function (event) {
-                        var image = new IFImage();
-                        image.setProperties(['name', 'url', 'trf'],
-                            [name, event.target.result, new IFTransform(1, 0, 0, 1, scenePosition.getX(), scenePosition.getY())]);
-                        this._editor.insertElements([image]);
-                    }.bind(this)
-                    reader.readAsDataURL(file);
-                }
-
-                // TODO : Check for infinity files and other types?
             }
         } else if (dataTransfer.items && dataTransfer.items.length > 0) {
             // Iterate items and find an appropriate drag type
