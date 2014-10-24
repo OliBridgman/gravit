@@ -36,6 +36,16 @@
     };
 
     /** @override */
+    IFPageTool.prototype._selectFilter = function (element) {
+        // Stop on layer level as we select pages only
+        if (element instanceof IFLayer) {
+            return false;
+        }
+
+        return true;
+    };
+
+    /** @override */
     IFPageTool.prototype._getSelectableElement = function (element) {
         for (var p = element; p !== null; p = p.getParent()) {
             if (p instanceof IFPage) {

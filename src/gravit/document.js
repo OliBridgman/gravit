@@ -171,27 +171,45 @@
             name = name.substr(0, name.lastIndexOf('.'));
         }
 
-        if (file.type === 'image/svg+xml') {
-            var page = this._scene.getActivePage();
-            var layer = this._scene.getActiveLayer();
-            IFIO.read('image/svg+xml', file, function (node) {
-                if (node) {
-                    layer.appendChild(node);
-                    callback(node);
-                }
-            }, {
-                baseWidth: page.getProperty('w'),
-                baseHeight: page.getProperty('h')
-            });
-        } else if (file.type.match(/image.*/)) {
-            var reader = new FileReader();
-            reader.onload = function (event) {
-                var image = new IFImage();
-                image.setProperties(['name', 'url'], [name, event.target.result]);
-                this._editor.insertElements([image]);
-                callback(image);
-            }.bind(this)
-            reader.readAsDataURL(file);
+        if (file.type.match(/image.*/)) {
+            var addAsImage = function () {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var image = new IFImage();
+                    image.setProperties(['name', 'url'], [name, event.target.result]);
+                    this._editor.insertElements([image]);
+                    callback(image);
+                }.bind(this)
+                reader.readAsDataURL(file);
+            }.bind(this);
+
+            // If svg image then prompt whether to convert to vector
+            // or keep as an image
+            if (file.type === 'image/svg+xml') {
+                vex.dialog.confirm({
+                    // TODO : I18N
+                    message: 'Convert the image to vectors?',
+                    callback: function (value) {
+                        if (value) {
+                            var page = this._scene.getActivePage();
+                            var layer = this._scene.getActiveLayer();
+                            IFIO.read('image/svg+xml', file, function (node) {
+                                if (node) {
+                                    layer.appendChild(node);
+                                    callback(node);
+                                }
+                            }, {
+                                baseWidth: page.getProperty('w'),
+                                baseHeight: page.getProperty('h')
+                            });
+                        } else {
+                            addAsImage();
+                        }
+                    }.bind(this)
+                });
+            } else {
+                addAsImage();
+            }
         }
     };
 

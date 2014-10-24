@@ -285,7 +285,7 @@
                 selectableElements.push(element);
             } else {
                 var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
-                    stacked, -1, this._scene.getProperty('pickDist'));
+                    stacked, -1, this._scene.getProperty('pickDist'), false, this._selectFilter);
 
                 // Convert element hits if any into an array of pure elements
                 // and gather the selectable elements from it
@@ -469,7 +469,8 @@
                 collisionArea.addVertex(IFVertex.Command.Line, x0, y2);
                 collisionArea.addVertex(IFVertex.Command.Close, 0, 0);
                 var collisions = this._scene.getCollisions(collisionArea,
-                    IFElement.CollisionFlag.GeometryBBox | IFElement.CollisionFlag.Partial);
+                    IFElement.CollisionFlag.GeometryBBox | IFElement.CollisionFlag.Partial,
+                    null, this._selectFilter);
                 var selectableElements = this._getSelectableElements(collisions);
 
                 this._editor.updateSelectionUnderCollision(ifPlatform.modifiers.shiftKey,
@@ -798,6 +799,26 @@
             }
             this._visualsArea = visualsArea;
         }
+    };
+
+    /**
+     * Filtering while doing hit- or collision-testing
+     * @param {Array<IFElement>} element element to be filtered
+     * @return {Boolean} false to filter element out stopping detection
+     * on any element underneath or true to go on
+     * @private
+     */
+    IFSelectTool.prototype._selectFilter = function (element) {
+        // If element is a layer and it is not an output layer and
+        // it is locked and not active then we filter it out calling
+        // ourself to be "super smart"
+        if (element instanceof IFLayer) {
+            if (element.getProperty('tp') !== IFLayer.Type.Output && element.hasFlag(IFElement.Flag.Locked) && !element.hasFlag(IFNode.Flag.Active)) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     /**

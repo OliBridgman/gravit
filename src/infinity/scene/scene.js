@@ -580,16 +580,16 @@
     };
 
     /** @override */
-    IFScene.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
+    IFScene.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force, filter) {
         // In single page mode go straight to active page
         if (this.$singlePage) {
             var activePage = this.getActivePage();
             if (activePage) {
-                return activePage.hitTest(location, transform, acceptor, stacked, level, tolerance, force);
+                return activePage.hitTest(location, transform, acceptor, stacked, level, tolerance, force, filter);
             }
         }
 
-        return IFElement.prototype.hitTest.call(this, location, transform, acceptor, stacked, level, tolerance, force);
+        return IFElement.prototype.hitTest.call(this, location, transform, acceptor, stacked, level, tolerance, force, filter);
     };
 
     /**

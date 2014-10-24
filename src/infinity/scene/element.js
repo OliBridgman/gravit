@@ -856,12 +856,20 @@
      * defaults to zero if not provided.
      * @param {Boolean} [force] if true, enforce hitting even if something is not visible
      * or has no area etc. Defaults to false.
+     * @param {Function} [filter] optional callback function getting called for *every* element
+     * that is tested for hitting even if not hit. Should return false to immediately stop testing
+     * on this and any element underneath and go on with the testing chain.
      * @returns {Array<IFElement.HitResultInfo>} either null for no hit or
      * a certain hit result depending on the element type
      */
-    IFElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
+    IFElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force, filter) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
         tolerance = tolerance || 0;
+
+        // First test against our filter if any for fastest sort-out of non-hitting elements
+        if (filter && filter.call(null, this) === false) {
+            return null;
+        }
 
         // Quick-Test -> if location doesn't fall into our bounding-area
         // or we don't have a bounding area, then we can certainly not
@@ -885,7 +893,7 @@
         if (level !== 0 && this.hasMixin(IFNode.Container)) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
                 if (child instanceof IFElement) {
-                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force);
+                    var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force, filter);
                     if (subResult) {
                         if (stacked) {
                             if (result) {
@@ -923,11 +931,14 @@
      * @param {Number} flags one or more flags to use for collision testing
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
+     * @param {Function} [filter] optional callback function getting called for *every* element
+     * that is tested for hitting even if not hit. Should return false to immediately stop testing
+     * on this and any element underneath and go on with the testing chain.
      * @return {Array<IFElement>} an array including all coliding elements or
      * an empty array for no collisions
      * @see IFElement.CollisionFlag
      */
-    IFElement.prototype.getCollisions = function (area, flags, acceptor) {
+    IFElement.prototype.getCollisions = function (area, flags, acceptor, filter) {
         var result = [];
 
         var _addToResult = function (element) {
@@ -938,6 +949,11 @@
 
         // Handle the basic collision modes here
         if ((flags & IFElement.CollisionFlag.GeometryBBox) != 0 || (flags & IFElement.CollisionFlag.PaintBBox) != 0) {
+            // First test against our filter if any for fastest sort-out of non-hitting elements
+            if (filter && filter.call(null, this) === false) {
+                // done here
+                return result;
+            }
 
             // Test ourself, first
             var bbox = this.getPaintBBox();
@@ -963,7 +979,7 @@
         if (this.hasMixin(IFNode.Container)) {
             for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
                 if (child instanceof IFElement) {
-                    var subResult = child.getCollisions(area, flags);
+                    var subResult = child.getCollisions(area, flags, acceptor, filter);
                     if (subResult && subResult.length) {
                         for (var i = 0; i < subResult.length; ++i) {
                             _addToResult(subResult[i]);
