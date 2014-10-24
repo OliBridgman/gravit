@@ -120,7 +120,7 @@
                     var vertex2 = new IFVertex();
                     if (source.readVertex(vertex2)) {
                         if (anchorPoint) {
-                            anchorPoint.setProperty(['hrx', 'hry'], [vertex2.x, vertex2.y]);
+                            anchorPoint.setProperties(['hrx', 'hry'], [vertex2.x, vertex2.y]);
                         }
                         if (source.readVertex(vertex2)) {
                             anchorPoint = new IFPathBase.AnchorPoint();

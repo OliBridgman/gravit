@@ -1646,7 +1646,6 @@
                                 vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
                                 vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
                                 vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
-                                // TODO:ANNA Curve2 is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'S':
@@ -1659,7 +1658,6 @@
                                 vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
                                 vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
                                 vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
-                                // TODO:ANNA Curve2 is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'Q':
@@ -1670,7 +1668,6 @@
                                 pp.addMarker(cp, cntrl, cntrl);
                                 vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
                                 vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
-                                // TODO:ANNA Curve is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'T':
@@ -1682,7 +1679,6 @@
                                 pp.addMarker(cp, cntrl, cntrl);
                                 vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
                                 vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
-                                // TODO:ANNA Curve is _not_ correctly converted in IFPathBase.createPathFromVertexSource
                             }
                             break;
                         case 'A':
@@ -1698,6 +1694,78 @@
 
                                 // TODO:ANNA Implement SVG-ARC command by adding curves to our vertices
                                 // Probably use code from here for conversion: https://github.com/rougier/antigrain-2.4/blob/master/src/agg_bezier_arc.cpp#L137
+
+                                // Conversion from endpoint to center parameterization
+                                // http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+                                // x1', y1'
+                                var currp = new svg.Point(
+                                    Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0,
+                                    -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
+                                );
+                                // adjust radii
+                                var l = Math.pow(currp.x,2)/Math.pow(rx,2)+Math.pow(currp.y,2)/Math.pow(ry,2);
+                                if (l > 1) {
+                                    rx *= Math.sqrt(l);
+                                    ry *= Math.sqrt(l);
+                                }
+                                // cx', cy'
+                                var s = (largeArcFlag == sweepFlag ? -1 : 1) * Math.sqrt(
+                                    ((Math.pow(rx,2)*Math.pow(ry,2))-(Math.pow(rx,2)*Math.pow(currp.y,2))-(Math.pow(ry,2)*Math.pow(currp.x,2))) /
+                                        (Math.pow(rx,2)*Math.pow(currp.y,2)+Math.pow(ry,2)*Math.pow(currp.x,2))
+                                );
+                                if (isNaN(s)) s = 0;
+                                var cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
+                                // cx, cy
+                                var centp = new svg.Point(
+                                    (curr.x + cp.x) / 2.0 + Math.cos(xAxisRotation) * cpp.x - Math.sin(xAxisRotation) * cpp.y,
+                                    (curr.y + cp.y) / 2.0 + Math.sin(xAxisRotation) * cpp.x + Math.cos(xAxisRotation) * cpp.y
+                                );
+                                // vector magnitude
+                                var m = function(v) { return Math.sqrt(Math.pow(v[0],2) + Math.pow(v[1],2)); }
+                                // ratio between two vectors
+                                var r = function(u, v) { return (u[0]*v[0]+u[1]*v[1]) / (m(u)*m(v)) }
+                                // angle between two vectors
+                                var a = function(u, v) { return (u[0]*v[1] < u[1]*v[0] ? -1 : 1) * Math.acos(r(u,v)); }
+                                // initial angle
+                                var a1 = a([1,0], [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry]);
+                                // angle delta
+                                var u = [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry];
+                                var v = [(-currp.x-cpp.x)/rx,(-currp.y-cpp.y)/ry];
+                                var ad = a(u, v);
+                                if (r(u,v) <= -1) ad = Math.PI;
+                                if (r(u,v) >= 1) ad = 0;
+
+                                // for markers
+                                var dir = 1 - sweepFlag ? 1.0 : -1.0;
+                                var ah = a1 + dir * (ad / 2.0);
+                                var halfWay = new svg.Point(
+                                    centp.x + rx * Math.cos(ah),
+                                    centp.y + ry * Math.sin(ah)
+                                );
+                                pp.addMarkerAngle(halfWay, ah - dir * Math.PI / 2);
+                                pp.addMarkerAngle(cp, ah - dir * Math.PI);
+
+                                var rd = rx > ry ? rx : ry;
+                                var sx = rx > ry ? 1 : rx / ry;
+                                var sy = rx > ry ? ry / rx : 1;
+                                var trf = new IFTransform()
+                                    //.scaled(rd * sx, rd * sy)
+                                    .scaled(rx, ry)
+                                    .rotated(xAxisRotation)
+                                    .translated(centp.x, centp.y);
+                                var arc = new IFEllipse();
+                                // TODO: honor sweepFlag and largeArcFlag correctly
+                                var sa = a1;
+                                var ea = (1 - sweepFlag) ? a1 + ad - Math.PI * 2 : a1 + ad;
+                                arc.setProperties(['sa', 'ea', 'etp', 'trf'],
+                                    [sa, ea, IFEllipse.Type.Arc, trf]);
+                                var vertex = new IFVertex();
+                                arc.rewindVertices(0);
+                                if (arc.readVertex(vertex)) {
+                                    while (arc.readVertex(vertex)) {
+                                        vertices.addVertex(vertex.command, vertex.x, vertex.y);
+                                    }
+                                }
                             }
                             break;
                         case 'Z':
