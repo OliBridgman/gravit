@@ -68,6 +68,14 @@
           padding-left: 5px;
         }
       }
+
+      &[data-layer-type='D'] .jqtree-title {
+        font-style: italic;
+      }
+
+      &[data-layer-type='G'] .jqtree-title {
+        text-decoration: underline;
+      }
     }
 
     ul.jqtree_common {

@@ -57,6 +57,9 @@
      */
     GPlaceImageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
+        //$('<input>')
+
+
         document.getStorage().openResourcePrompt(document.getUrl(), ['jpg', 'jpeg', 'png', 'gif', 'svg'], function (url) {
             var uri = new URI(url);
 

@@ -237,11 +237,6 @@
             // Call an update for the node
             var label = layerOrItem.getLabel();
 
-            // Mark draft layers
-            if (layerOrItem instanceof IFLayer && layerOrItem.getProperty('tp') === IFLayer.Type.Draft) {
-                label = '*' + label;
-            }
-
             this._layersTree.tree('updateNode', treeNode, label);
         }
     };
@@ -455,7 +450,7 @@
                 })
                 .prependTo(container);
 
-            var visibleContainer = $('<span></span>')
+            $('<span></span>')
                 .addClass('layer-visibility fa fa-' + (isHidden ? 'eye-slash' : 'eye'))
                 .toggleClass('layer-default', !isHidden)
                 // TODO : I18N
@@ -493,8 +488,11 @@
                 })
                 .prependTo(container);
 
-            // Append outline & color for layers
+            // Do some special handling for layers
             if (layerOrItem instanceof IFLayer) {
+                // Add layer-type as data-attribute for custom styling
+                container.attr('data-layer-type', layerOrItem.getProperty('tp'));
+
                 // Don't add outline for guide layers
                 if (layerOrItem.getProperty('tp') !== IFLayer.Type.Guide) {
                     $('<span></span>')
