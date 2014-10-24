@@ -123,9 +123,17 @@
             return true;
         }
 
-        if (layer === IFStylable.StyleLayer.Border && this.hasStyleBorder() && !(this.$_bpt instanceof IFColor)) {
-            return true;
+        if (layer === IFStylable.StyleLayer.Border) {
+            if (this.$_ba !== IFStylable.BorderAlignment.Center) {
+                return true;
+            }
+
+            if (this.hasStyleBorder() && !(this.$_bpt instanceof IFColor)) {
+                return true;
+            }
         }
+
+        return false;
     };
 
     /** @override */
