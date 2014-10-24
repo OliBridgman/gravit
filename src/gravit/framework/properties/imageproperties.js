@@ -67,9 +67,9 @@
                         }.bind(this));
                     }.bind(this)))
                 .append($('<button></button>')
-                    .attr('data-action', 'replace')
+                    .attr('data-action', 'link')
                     // TODO : I18N
-                    .text('Replace')
+                    .text('Link')
                     .on('click', function () {
                         var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
                         this._document.getStorage().openResourcePrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
@@ -247,7 +247,7 @@
         // TODO : I18N
         this._panel.find('[data-property="url"]').text(isData ? '<Embedded Image>' : decodeURIComponent(url));
         this._panel.find('button[data-action="embed"]').prop('disabled', !hasImage || isData);
-        this._panel.find('button[data-action="replace"]').prop('disabled', !this._document.isSaveable());
+        this._panel.find('button[data-action="link"]').prop('disabled', !this._document.isSaveable());
         this._panel.find('button[data-action="export"]').prop('disabled', !hasImage || !this._document.isSaveable());
         this._panel.find('button[data-action="reset-size"]').prop('disabled', !hasImage || (image.naturalWidth === imgBBox.getWidth() && image.naturalHeight === imgBBox.getHeight()));
 
