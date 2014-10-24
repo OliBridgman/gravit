@@ -75,6 +75,11 @@
         }
     };
 
+    /** @override */
+    IFSubSelectTool.prototype._getSelectableElement = function (element) {
+        return element instanceof IFItem ? element : null;
+    };
+
     /** override */
     IFSubSelectTool.prototype.toString = function () {
         return "[Object IFSubSelectTool]";
