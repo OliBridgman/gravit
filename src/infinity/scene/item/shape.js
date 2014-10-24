@@ -103,7 +103,7 @@
 
     /** @override */
     IFShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer || parent instanceof IFShapeSet || parent instanceof IFShape;
+        return parent instanceof IFLayer || parent instanceof IFGroup || parent instanceof IFShape;
     };
 
     /** @override */

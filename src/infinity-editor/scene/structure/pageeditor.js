@@ -1,7 +1,7 @@
 (function (_) {
     /**
      * An editor for a page
-     * @param {IFShapeSet} group the group this editor works on
+     * @param {IFGroup} group the group this editor works on
      * @class IFPageEditor
      * @extends IFBlockEditor
      * @constructor

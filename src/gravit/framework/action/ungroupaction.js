@@ -57,7 +57,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof IFShapeSet) {
+                    if (selection[i] instanceof IFGroup) {
                         return true;
                     }
                 }
@@ -77,7 +77,7 @@
 
             for (var i = 0; i < selection.length; ++i) {
                 var item = selection[i];
-                if (item instanceof IFShapeSet) {
+                if (item instanceof IFGroup) {
                     var groupParent = item.getParent();
                     var groupNext = item.getNext();
                     var groupChildren = item.getChildren();

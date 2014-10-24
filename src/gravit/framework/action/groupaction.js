@@ -68,7 +68,7 @@
         editor.beginTransaction();
         try {
             // Create our group (= shapeSet)
-            var group = new IFShapeSet();
+            var group = new IFGroup();
 
             // Collect all items to be added to the group
             var itemsToGroup = [];

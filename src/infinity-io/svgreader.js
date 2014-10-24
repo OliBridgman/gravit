@@ -1137,7 +1137,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                return new IFShapeSet();
+                return new IFGroup();
             }
 
             this.baseClearSceneContext = this.clearSceneContext;
@@ -2400,7 +2400,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                return new IFShapeSet();
+                return new IFGroup();
             }
         }
         svg.Element.g.prototype = new svg.Element.RenderedElementBase;

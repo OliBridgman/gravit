@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * An editor for a shapeSet
-     * @param {IFShapeSet} set the set this editor works on
-     * @class IFShapeSetEditor
+     * @param {IFGroup} set the set this editor works on
+     * @class IFGroupEditor
      * @extends IFBlockEditor
      * @constructor
      */
-    function IFShapeSetEditor(set) {
+    function IFGroupEditor(set) {
         IFBlockEditor.call(this, set);
         this._flags |= IFBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFShapeSetEditor, IFBlockEditor);
-    IFElementEditor.exports(IFShapeSetEditor, IFShapeSet);
+    IFObject.inherit(IFGroupEditor, IFBlockEditor);
+    IFElementEditor.exports(IFGroupEditor, IFGroup);
 
     /** @override */
-    IFShapeSetEditor.prototype._prePaint = function (transform, context) {
+    IFGroupEditor.prototype._prePaint = function (transform, context) {
         if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
             this._paintBBoxOutline(transform, context);
         }
@@ -22,9 +22,9 @@
     };
 
     /** @override */
-    IFShapeSetEditor.prototype.toString = function () {
-        return "[Object IFShapeSetEditor]";
+    IFGroupEditor.prototype.toString = function () {
+        return "[Object IFGroupEditor]";
     };
 
-    _.IFShapeSetEditor = IFShapeSetEditor;
+    _.IFGroupEditor = IFGroupEditor;
 })(this);
