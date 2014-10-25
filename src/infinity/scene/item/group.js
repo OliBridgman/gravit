@@ -2,7 +2,7 @@
     /**
      * The base for a groups
      * @class IFGroup
-     * @extends IFBlock
+     * @extends IFItem
      * @mixes IFNode.Container
      * @mixes IFElement.Transform
      * @mixes IFElement.Stylable
@@ -11,7 +11,7 @@
     function IFGroup() {
         IFItem.call(this);
     }
-    IFNode.inheritAndMix('group', IFGroup, IFBlock, [IFNode.Container, IFElement.Transform, IFElement.Stylable]);
+    IFNode.inheritAndMix('group', IFGroup, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Stylable]);
 
     /** @override */
     IFGroup.prototype.validateInsertion = function (parent, reference) {
