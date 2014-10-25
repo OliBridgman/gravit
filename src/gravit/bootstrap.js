@@ -35,7 +35,7 @@ var gravit = {
     panels: [],
 
     /**
-     * Array<{{instance: IFTool, title: String|IFLocale.Key, group: String, keys: Array<String>}, icon: String}>
+     * Array<{{instance: GTool, title: String|GLocale.Key, group: String, keys: Array<String>}, icon: String}>
      */
     tools: [],
 
@@ -95,43 +95,43 @@ $(document).ready(function () {
     //
 
     // Open Sans
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Light, 'font/OpenSans-Light.ttf', IFFont.Category.Serif);
-    ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Light, 'font/OpenSans-LightItalic.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/OpenSans-Regular.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Regular, 'font/OpenSans-Italic.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/OpenSans-Semibold.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.SemiBold, 'font/OpenSans-SemiboldItalic.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/OpenSans-Bold.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.Bold, 'font/OpenSans-BoldItalic.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Normal, IFFont.Weight.ExtraBold, 'font/OpenSans-ExtraBold.ttf');
-    ifFont.addType('Open Sans', IFFont.Style.Italic, IFFont.Weight.ExtraBold, 'font/OpenSans-ExtraBoldItalic.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Normal, GFont.Weight.Light, 'font/OpenSans-Light.ttf', GFont.Category.Serif);
+    ifFont.addType('Open Sans', GFont.Style.Italic, GFont.Weight.Light, 'font/OpenSans-LightItalic.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Normal, GFont.Weight.Regular, 'font/OpenSans-Regular.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Italic, GFont.Weight.Regular, 'font/OpenSans-Italic.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Normal, GFont.Weight.SemiBold, 'font/OpenSans-Semibold.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Italic, GFont.Weight.SemiBold, 'font/OpenSans-SemiboldItalic.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Normal, GFont.Weight.Bold, 'font/OpenSans-Bold.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Italic, GFont.Weight.Bold, 'font/OpenSans-BoldItalic.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Normal, GFont.Weight.ExtraBold, 'font/OpenSans-ExtraBold.ttf');
+    ifFont.addType('Open Sans', GFont.Style.Italic, GFont.Weight.ExtraBold, 'font/OpenSans-ExtraBoldItalic.ttf');
 
     // Source Sans Pro
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLight.ttf', IFFont.Category.Serif);
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLightIt.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.Light, 'font/SourceSansPro-Light.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.Light, 'font/SourceSansPro-LightIt.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/SourceSansPro-Regular.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.Regular, 'font/SourceSansPro-It.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/SourceSansPro-Semibold.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.SemiBold, 'font/SourceSansPro-SemiboldIt.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/SourceSansPro-Bold.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.Bold, 'font/SourceSansPro-BoldIt.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Normal, IFFont.Weight.Heavy, 'font/SourceSansPro-Black.ttf');
-    ifFont.addType('Source Sans Pro', IFFont.Style.Italic, IFFont.Weight.Heavy, 'font/SourceSansPro-BlackIt.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLight.ttf', GFont.Category.Serif);
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.ExtraLight, 'font/SourceSansPro-ExtraLightIt.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.Light, 'font/SourceSansPro-Light.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.Light, 'font/SourceSansPro-LightIt.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.Regular, 'font/SourceSansPro-Regular.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.Regular, 'font/SourceSansPro-It.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.SemiBold, 'font/SourceSansPro-Semibold.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.SemiBold, 'font/SourceSansPro-SemiboldIt.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.Bold, 'font/SourceSansPro-Bold.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.Bold, 'font/SourceSansPro-BoldIt.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Normal, GFont.Weight.Heavy, 'font/SourceSansPro-Black.ttf');
+    ifFont.addType('Source Sans Pro', GFont.Style.Italic, GFont.Weight.Heavy, 'font/SourceSansPro-BlackIt.ttf');
 
 
     // Source Code Pro
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.ExtraLight, 'font/SourceCodePro-ExtraLight.ttf', IFFont.Category.Monospace);
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Light, 'font/SourceCodePro-Light.ttf');
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Regular, 'font/SourceCodePro-Regular.ttf');
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Medium, 'font/SourceCodePro-Medium.ttf');
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.SemiBold, 'font/SourceCodePro-Semibold.ttf');
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Bold, 'font/SourceCodePro-Bold.ttf');
-    ifFont.addType('Source Code Pro', IFFont.Style.Normal, IFFont.Weight.Heavy, 'font/SourceCodePro-Black.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.ExtraLight, 'font/SourceCodePro-ExtraLight.ttf', GFont.Category.Monospace);
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.Light, 'font/SourceCodePro-Light.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.Regular, 'font/SourceCodePro-Regular.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.Medium, 'font/SourceCodePro-Medium.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.SemiBold, 'font/SourceCodePro-Semibold.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.Bold, 'font/SourceCodePro-Bold.ttf');
+    ifFont.addType('Source Code Pro', GFont.Style.Normal, GFont.Weight.Heavy, 'font/SourceCodePro-Black.ttf');
 
     // FontAwesome
-    ifFont.addType('FontAwesome', IFFont.Style.Normal, IFFont.Weight.Regular, gShell.isDevelopment() ? '../bower_components/font-awesome/fonts/fontawesome-webfont.ttf' : 'font/fontawesome-webfont.ttf', IFFont.Category.Iconic);
+    ifFont.addType('FontAwesome', GFont.Style.Normal, GFont.Weight.Regular, gShell.isDevelopment() ? '../bower_components/font-awesome/fonts/fontawesome-webfont.ttf' : 'font/fontawesome-webfont.ttf', GFont.Category.Iconic);
 });
 
 $(window).load(function () {

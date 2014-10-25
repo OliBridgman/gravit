@@ -8,10 +8,10 @@
      */
     function GDeleteAction() {
     };
-    IFObject.inherit(GDeleteAction, GAction);
+    GObject.inherit(GDeleteAction, GAction);
 
     GDeleteAction.ID = 'edit.delete';
-    GDeleteAction.TITLE = new IFLocale.Key(GDeleteAction, "title");
+    GDeleteAction.TITLE = new GLocale.Key(GDeleteAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GDeleteAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.REMOVE];
+        return [GKey.Constant.REMOVE];
     };
 
     /**
@@ -58,7 +58,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof IFItem) {
+                    if (selection[i] instanceof GItem) {
                         return true;
                     }
                 }

@@ -2,32 +2,32 @@
 
     var units = [
         {
-            unit: IFLength.Unit.PX,
+            unit: GLength.Unit.PX,
             // TODO : I18N
             name: 'Pixels'
         },
         {
-            unit: IFLength.Unit.MM,
+            unit: GLength.Unit.MM,
             // TODO : I18N
             name: 'Millimeters'
         },
         {
-            unit: IFLength.Unit.CM,
+            unit: GLength.Unit.CM,
             // TODO : I18N
             name: 'Centimeters'
         },
         {
-            unit: IFLength.Unit.IN,
+            unit: GLength.Unit.IN,
             // TODO : I18N
             name: 'Inches'
         },
         {
-            unit: IFLength.Unit.PC,
+            unit: GLength.Unit.PC,
             // TODO : I18N
             name: 'Picas'
         },
         {
-            unit: IFLength.Unit.PT,
+            unit: GLength.Unit.PT,
             // TODO : I18N
             name: 'Points'
         }
@@ -53,7 +53,7 @@
 
     /**
      * Adds a translated list of units to a selection that
-     * represents the IFLength.Unit choices
+     * represents the GLength.Unit choices
      */
     $.fn.gUnit = function (method) {
         if (methods[method]) {

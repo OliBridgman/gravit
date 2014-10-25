@@ -8,10 +8,10 @@
      */
     function GDeletePageAction() {
     };
-    IFObject.inherit(GDeletePageAction, GAction);
+    GObject.inherit(GDeletePageAction, GAction);
 
     GDeletePageAction.ID = 'modify.delete-page';
-    GDeletePageAction.TITLE = new IFLocale.Key(GDeletePageAction, "title");
+    GDeletePageAction.TITLE = new GLocale.Key(GDeletePageAction, "title");
 
     /**
      * @override
@@ -42,7 +42,7 @@
     };
 
     /**
-     * @param {IFPage} [page] the page to be removed, if null takes the active one
+     * @param {GPage} [page] the page to be removed, if null takes the active one
      * @override
      */
     GDeletePageAction.prototype.isEnabled = function (page) {
@@ -54,7 +54,7 @@
     };
 
     /**
-     * @param {IFPage} [page] the page to be removed, if null takes the active one
+     * @param {GPage} [page] the page to be removed, if null takes the active one
      * @override
      */
     GDeletePageAction.prototype.execute = function (page) {
@@ -69,7 +69,7 @@
         var otherPage = null;
 
         for (var node = page.getPrevious(); node !== null; node = node.getPrevious()) {
-            if (node instanceof IFPage) {
+            if (node instanceof GPage) {
                 otherPage = node;
                 break;
             }
@@ -77,7 +77,7 @@
 
         if (!otherPage) {
             for (var node = page.getNext(); node !== null; node = node.getNext()) {
-                if (node instanceof IFPage) {
+                if (node instanceof GPage) {
                     otherPage = node;
                     break;
                 }
@@ -92,13 +92,13 @@
         }
 
         // If page is active, de-activate it first and activate the other one
-        if (page.hasFlag(IFNode.Flag.Active)) {
+        if (page.hasFlag(GNode.Flag.Active)) {
             scene.setActivePage(otherPage);
         }
 
         // Finally we can remove the page
         // TODO : I18N
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             page.getParent().removeChild(page);
         }, ifLocale.get(this.getTitle()));
     };

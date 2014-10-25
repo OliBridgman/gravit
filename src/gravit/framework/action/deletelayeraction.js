@@ -8,10 +8,10 @@
      */
     function GDeleteLayerAction() {
     };
-    IFObject.inherit(GDeleteLayerAction, GAction);
+    GObject.inherit(GDeleteLayerAction, GAction);
 
     GDeleteLayerAction.ID = 'modify.delete-layer';
-    GDeleteLayerAction.TITLE = new IFLocale.Key(GDeleteLayerAction, "title");
+    GDeleteLayerAction.TITLE = new GLocale.Key(GDeleteLayerAction, "title");
 
     /**
      * @override
@@ -42,7 +42,7 @@
     };
 
     /**
-     * @param {IFLayer} [layer] the layer to be removed, if null takes the active one
+     * @param {GLayer} [layer] the layer to be removed, if null takes the active one
      * @override
      */
     GDeleteLayerAction.prototype.isEnabled = function (layer) {
@@ -54,7 +54,7 @@
     };
 
     /**
-     * @param {IFLayer} [layer] the layer to be removed, if null takes the active one
+     * @param {GLayer} [layer] the layer to be removed, if null takes the active one
      * @override
      */
     GDeleteLayerAction.prototype.execute = function (layer) {
@@ -69,7 +69,7 @@
         var otherLayer = null;
 
         for (var node = layer.getPrevious(); node !== null; node = node.getPrevious()) {
-            if (node instanceof IFLayer) {
+            if (node instanceof GLayer) {
                 otherLayer = node;
                 break;
             }
@@ -77,14 +77,14 @@
 
         if (!otherLayer) {
             for (var node = layer.getNext(); node !== null; node = node.getNext()) {
-                if (node instanceof IFLayer) {
+                if (node instanceof GLayer) {
                     otherLayer = node;
                     break;
                 }
             }
         }
 
-        if (!otherLayer && layer.getParent() instanceof IFLayer) {
+        if (!otherLayer && layer.getParent() instanceof GLayer) {
             otherLayer = layer.getParent();
         }
 
@@ -96,13 +96,13 @@
         }
 
         // If layer is active, de-activate it first and activate the other one
-        if (layer.hasFlag(IFNode.Flag.Active)) {
+        if (layer.hasFlag(GNode.Flag.Active)) {
             scene.setActiveLayer(otherLayer);
         }
 
         // Finally we can remove the layer
         // TODO : I18N
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             layer.getParent().removeChild(layer);
         }, ifLocale.get(this.getTitle()));
     };

@@ -2,26 +2,26 @@
     /**
      * A graphic editor keeps track of all editing related stuff for a scene
      * like handling selection, keeping undo/redo information and more.
-     * @param {IFScene} scene the scene this editor works on
-     * @class IFEditor
-     * @extend IFEventTarget
+     * @param {GScene} scene the scene this editor works on
+     * @class GEditor
+     * @extend GEventTarget
      * @constructor
      */
-    function IFEditor(scene) {
+    function GEditor(scene) {
         this._scene = scene;
         this._scene.__graphic_editor__ = this;
         this._transactionStack = [];
         this._undoStates = [];
         this._redoStates = [];
-        this._guides = new IFGuides(this._scene);
+        this._guides = new GGuides(this._scene);
 
         // Subscribe to various scene changes
-        this._scene.addEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-        this._scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-        this._scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        this._scene.addEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
-        this._scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        this._scene.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+        this._scene.addEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+        this._scene.addEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+        this._scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        this._scene.addEventListener(GNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
+        this._scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.addEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
 
         // Try to create internal selection for all selected nodes
         var selectedNodes = this._scene.queryAll(":selected");
@@ -31,9 +31,9 @@
             }
         }
     };
-    IFObject.inherit(IFEditor, IFEventTarget);
+    GObject.inherit(GEditor, GEventTarget);
 
-    IFEditor.options = {
+    GEditor.options = {
         /** Maximum number of undo-steps */
         maxUndoSteps: 20,
         /**
@@ -53,11 +53,11 @@
 
     /**
      * Get the underlying graphic editor for a given scene
-     * @param {IFScene} scene
-     * @returns {IFEditor} a graphic editor for the scene
+     * @param {GScene} scene
+     * @returns {GEditor} a graphic editor for the scene
      * or null if it has no such one
      */
-    IFEditor.getEditor = function (scene) {
+    GEditor.getEditor = function (scene) {
         return scene.__graphic_editor__ ? scene.__graphic_editor__ : null;
     };
 
@@ -65,12 +65,12 @@
      * Runs + commits a transaction on an editor. If there's no editor for a
      * given source, the action will still be ran but without any
      * transactions at all
-     * @param {IFNode} source the source to get an editor from
+     * @param {GNode} source the source to get an editor from
      * @param {Function} action the actual action to be ran
      * @param {String} name the name of the transaction when committed
      */
-    IFEditor.tryRunTransaction = function (source, action, name) {
-        var editor = IFEditor.getEditor(source.getScene());
+    GEditor.tryRunTransaction = function (source, action, name) {
+        var editor = GEditor.getEditor(source.getScene());
         if (editor) {
             editor.beginTransaction();
         }
@@ -85,77 +85,77 @@
     };
     
     // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.FileDropEvent Event
+    // GEditor.FileDropEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever a blob was dropped
-     * @class IFEditor.FileDropEvent
-     * @extends IFEvent
+     * @class GEditor.FileDropEvent
+     * @extends GEvent
      * @constructor
      */
-    IFEditor.FileDropEvent = function (file, position) {
+    GEditor.FileDropEvent = function (file, position) {
         this.file = file;
         this.position = position;
     };
-    IFObject.inherit(IFEditor.FileDropEvent, IFEvent);
+    GObject.inherit(GEditor.FileDropEvent, GEvent);
 
     /**
      * Dropped file
      * @type {File}
      */
-    IFEditor.FileDropEvent.file = null;
+    GEditor.FileDropEvent.file = null;
 
     /**
      * Drop target position in scene coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      */
-    IFEditor.FileDropEvent.position = null;
+    GEditor.FileDropEvent.position = null;
 
     /** @override */
-    IFEditor.FileDropEvent.prototype.toString = function () {
-        return "[Event IFEditor.FileDropEvent]";
+    GEditor.FileDropEvent.prototype.toString = function () {
+        return "[Event GEditor.FileDropEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.SelectionChangedEvent Event
+    // GEditor.SelectionChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event whenever the selection has been changed
-     * @class IFEditor.SelectionChangedEvent
-     * @extends IFEvent
+     * @class GEditor.SelectionChangedEvent
+     * @extends GEvent
      * @constructor
      */
-    IFEditor.SelectionChangedEvent = function () {
+    GEditor.SelectionChangedEvent = function () {
     };
-    IFObject.inherit(IFEditor.SelectionChangedEvent, IFEvent);
+    GObject.inherit(GEditor.SelectionChangedEvent, GEvent);
 
     /** @override */
-    IFEditor.SelectionChangedEvent.prototype.toString = function () {
-        return "[Event IFEditor.SelectionChangedEvent]";
+    GEditor.SelectionChangedEvent.prototype.toString = function () {
+        return "[Event GEditor.SelectionChangedEvent]";
     };
 
-    IFEditor.SELECTION_CHANGED_EVENT = new IFEditor.SelectionChangedEvent();
+    GEditor.SELECTION_CHANGED_EVENT = new GEditor.SelectionChangedEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.InlineEditorEvent Event
+    // GEditor.InlineEditorEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event providing inline editor events
-     * @class IFEditor.InlineEditorEvent
-     * @extends IFEvent
+     * @class GEditor.InlineEditorEvent
+     * @extends GEvent
      * @constructor
      */
-    IFEditor.InlineEditorEvent = function (editor, type) {
+    GEditor.InlineEditorEvent = function (editor, type) {
         this.editor = editor;
         this.type = type;
     };
-    IFObject.inherit(IFEditor.InlineEditorEvent, IFEvent);
+    GObject.inherit(GEditor.InlineEditorEvent, GEvent);
 
     /**
      * Enum of inline editor event types
      * @enum
      */
-    IFEditor.InlineEditorEvent.Type = {
+    GEditor.InlineEditorEvent.Type = {
         /**
          * Inline editor is about to be opened
          */
@@ -183,126 +183,126 @@
     };
 
     /**
-     * @type {IFElementEditor}
+     * @type {GElementEditor}
      */
-    IFEditor.InlineEditorEvent.prototype.editor = null;
+    GEditor.InlineEditorEvent.prototype.editor = null;
 
     /**
-     * @type {IFEditor.InlineEditorEvent.Type}
+     * @type {GEditor.InlineEditorEvent.Type}
      */
-    IFEditor.InlineEditorEvent.prototype.type = null;
+    GEditor.InlineEditorEvent.prototype.type = null;
 
     /** @override */
-    IFEditor.InlineEditorEvent.prototype.toString = function () {
-        return "[Event IFEditor.InlineEditorEvent]";
+    GEditor.InlineEditorEvent.prototype.toString = function () {
+        return "[Event GEditor.InlineEditorEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor.InvalidationRequestEvent Event
+    // GEditor.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for an invalidation request event
-     * @param {IFElementEditor} editor the requesting editor
+     * @param {GElementEditor} editor the requesting editor
      * @param {*} [args] optional arguments to be passed back to editor
-     * @class IFEditor.InvalidationRequestEvent
-     * @extends IFEvent
+     * @class GEditor.InvalidationRequestEvent
+     * @extends GEvent
      * @constructor
      */
-    IFEditor.InvalidationRequestEvent = function (editor, args) {
+    GEditor.InvalidationRequestEvent = function (editor, args) {
         this.editor = editor;
         this.args = args;
     };
-    IFObject.inherit(IFEditor.InvalidationRequestEvent, IFEvent);
+    GObject.inherit(GEditor.InvalidationRequestEvent, GEvent);
 
-    /** @type {IFElementEditor} */
-    IFEditor.InvalidationRequestEvent.prototype.editor = null;
+    /** @type {GElementEditor} */
+    GEditor.InvalidationRequestEvent.prototype.editor = null;
     /** @type {*} */
-    IFEditor.InvalidationRequestEvent.prototype.args = null;
+    GEditor.InvalidationRequestEvent.prototype.args = null;
 
     /** @override */
-    IFEditor.InvalidationRequestEvent.prototype.toString = function () {
-        return "[Event IFEditor.InvalidationRequestEvent]";
+    GEditor.InvalidationRequestEvent.prototype.toString = function () {
+        return "[Event GEditor.InvalidationRequestEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFEditor Class
+    // GEditor Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
-    IFEditor.prototype._scene = null;
+    GEditor.prototype._scene = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
-    IFEditor.prototype._selection = null;
+    GEditor.prototype._selection = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
-    IFEditor.prototype._lastCloneSelection = null;
+    GEditor.prototype._lastCloneSelection = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    IFEditor.prototype._storedSelection = null;
+    GEditor.prototype._storedSelection = null;
 
     /**
-     * @type {Array<{{page: IFPage, selection: Array<*>}}>}
+     * @type {Array<{{page: GPage, selection: Array<*>}}>}
      * @private
      */
-    IFEditor.prototype._pageSelections = null;
+    GEditor.prototype._pageSelections = null;
 
     /**
      * @type {number}
      * @private
      */
-    IFEditor.prototype._selectionUpdateCounter = 0;
+    GEditor.prototype._selectionUpdateCounter = 0;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFEditor.prototype._selectionDetail = false;
+    GEditor.prototype._selectionDetail = false;
 
     /**
-     * @type {Array<{{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: IFElement, parts: Array<*>}>}}>}
+     * @type {Array<{{actions: Array<{action: Function, revert: Function}>, selection: Array<{element: GElement, parts: Array<*>}>}}>}
      * @private
      */
-    IFEditor.prototype._transactionStack = null;
-
-    /**
-     * @type {Array<*>}
-     * @private
-     */
-    IFEditor.prototype._undoStates = null;
+    GEditor.prototype._transactionStack = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    IFEditor.prototype._redoStates = null;
+    GEditor.prototype._undoStates = null;
 
     /**
-     * @type {IFGuides}
+     * @type {Array<*>}
      * @private
      */
-    IFEditor.prototype._guides = null;
+    GEditor.prototype._redoStates = null;
 
     /**
-     * @type {IFNode}
+     * @type {GGuides}
      * @private
      */
-    IFEditor.prototype._currentInlineEditorNode = null;
+    GEditor.prototype._guides = null;
+
     /**
-     * @returns {IFScene}
+     * @type {GNode}
+     * @private
      */
-    IFEditor.prototype.getScene = function () {
+    GEditor.prototype._currentInlineEditorNode = null;
+    /**
+     * @returns {GScene}
+     */
+    GEditor.prototype.getScene = function () {
         return this._scene;
     };
 
@@ -311,7 +311,7 @@
      * @return {Boolean} true if a selection is available, false if not
      * @version 1.0
      */
-    IFEditor.prototype.hasSelection = function () {
+    GEditor.prototype.hasSelection = function () {
         return this._selection && this._selection.length > 0;
     };
 
@@ -319,15 +319,15 @@
      * Return the united selection bounding box
      * @param {Boolean} [geometryBBox] if true, uses geometry bboxes,
      * otherwises uses paint bboxes. Defaults to false.
-     * @return {IFRect} the selection bbox or null for no selection
+     * @return {GRect} the selection bbox or null for no selection
      */
-    IFEditor.prototype.getSelectionBBox = function (geometryBBox) {
+    GEditor.prototype.getSelectionBBox = function (geometryBBox) {
         if (this.hasSelection()) {
             var result = null;
             for (var i = 0; i < this._selection.length; ++i) {
                 var bbox = geometryBBox ? this._selection[i].getGeometryBBox() : this._selection[i].getPaintBBox();
                 if (bbox && !bbox.isEmpty()) {
-                    result = result ? result.united(bbox) : new IFRect(bbox.getX(), bbox.getY(), bbox.getWidth(), bbox.getHeight());
+                    result = result ? result.united(bbox) : new GRect(bbox.getX(), bbox.getY(), bbox.getWidth(), bbox.getHeight());
                 }
             }
             return result;
@@ -337,30 +337,30 @@
 
     /**
      * Return the selection array
-     * @return {Array<IFElement>} the selection array or null for no selection
+     * @return {Array<GElement>} the selection array or null for no selection
      * @version 1.0
      */
-    IFEditor.prototype.getSelection = function () {
+    GEditor.prototype.getSelection = function () {
         return this._selection;
     };
 
     /**
      * Return the copy of the selection array. Elements in this copy has canvas-relative positions.
-     * @return {Array<IFElement>} the selection array copy or null for no selection
+     * @return {Array<GElement>} the selection array copy or null for no selection
      */
-    IFEditor.prototype.getSelectionCopy = function () {
+    GEditor.prototype.getSelectionCopy = function () {
         var selectionCopy = null;
         if (this._selection && this._selection.length > 0) {
             selectionCopy = [];
 
             for (var i = 0; i < this._selection.length; ++i) {
                 var element = this._selection[i];
-                if (element instanceof IFBlock) {
+                if (element instanceof GBlock) {
                     var page = element.getPage();
                     var copyElem = element.clone();
                     if (copyElem) {
                         copyElem.transform(
-                            new IFTransform(1, 0, 0, 1, -page.getProperty('x'), -page.getProperty('y')));
+                            new GTransform(1, 0, 0, 1, -page.getProperty('x'), -page.getProperty('y')));
                         selectionCopy.push(copyElem);
                     }
                 }
@@ -377,7 +377,7 @@
      * Returns whether selection details are available or not
      * @returns {boolean}
      */
-    IFEditor.prototype.hasSelectionDetail = function () {
+    GEditor.prototype.hasSelectionDetail = function () {
         return this._selectionDetail;
     };
 
@@ -385,19 +385,19 @@
      * Assigns whether selection details are available or not
      * @param {Boolean} detail
      */
-    IFEditor.prototype.setSelectionDetail = function (detail) {
+    GEditor.prototype.setSelectionDetail = function (detail) {
         if (detail !== this._selectionDetail) {
             this._selectionDetail = detail;
 
             // Re-flag selection if any
             if (this._selection) {
                 for (var i = 0; i < this._selection.length; ++i) {
-                    var editor = IFElementEditor.getEditor(this._selection[i]);
+                    var editor = GElementEditor.getEditor(this._selection[i]);
                     if (editor) {
                         if (this._selectionDetail) {
-                            editor.setFlag(IFElementEditor.Flag.Detail);
+                            editor.setFlag(GElementEditor.Flag.Detail);
                         } else {
-                            editor.removeFlag(IFElementEditor.Flag.Detail);
+                            editor.removeFlag(GElementEditor.Flag.Detail);
                         }
                     }
                 }
@@ -407,24 +407,24 @@
 
     /**
      * Return the editor's guides
-     * @returns {IFGuides}
+     * @returns {GGuides}
      */
-    IFEditor.prototype.getGuides = function () {
+    GEditor.prototype.getGuides = function () {
         return this._guides;
     };
 
     /**
      * Returns a reference to the selected path, if it is the only one selected,
      * or null otherwise
-     * @return {IFPath} the selected path
+     * @return {GPath} the selected path
      */
-    IFEditor.prototype.getPathSelection = function () {
+    GEditor.prototype.getPathSelection = function () {
         var pathRef = null;
         var i;
 
         if (this.hasSelection()) {
             for (i = 0; i < this._selection.length; ++i) {
-                if (this._selection[i] instanceof IFPath || this._selection[i] instanceof IFCompoundPath) {
+                if (this._selection[i] instanceof GPath || this._selection[i] instanceof GCompoundPath) {
                     if (pathRef) {
                         pathRef = null;
                         break;
@@ -446,25 +446,25 @@
     /**
      * Called to release and detach this editor
      */
-    IFEditor.prototype.release = function () {
+    GEditor.prototype.release = function () {
         delete this._scene.__graphic_editor__;
 
-        this._scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-        this._scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-        this._scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        this._scene.removeEventListener(IFNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
-        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        this._scene.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+        this._scene.removeEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+        this._scene.removeEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+        this._scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        this._scene.removeEventListener(GNode.BeforeFlagChangeEvent, this._beforeFlagChange, this);
+        this._scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.removeEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
     };
 
     /**
      * Request the invalidation of an editor
-     * @param {IFElementEditor} editor the requesting editor
+     * @param {GElementEditor} editor the requesting editor
      * @param {*} [args] optional arguments to be passed back to the editor
      */
-    IFEditor.prototype.requestInvalidation = function (editor, args) {
-        if (this.hasEventListeners(IFEditor.InvalidationRequestEvent)) {
-            this.trigger(new IFEditor.InvalidationRequestEvent(editor, args));
+    GEditor.prototype.requestInvalidation = function (editor, args) {
+        if (this.hasEventListeners(GEditor.InvalidationRequestEvent)) {
+            this.trigger(new GEditor.InvalidationRequestEvent(editor, args));
         }
     };
 
@@ -476,19 +476,19 @@
      * @param {Boolean} [history] if set to true (defaults to false), will re-apply
      * the transformation done on a previous cloned selection if the current selection
      * is still the same as the previous one and has not been cleared in the meantime
-     * @return {Array<IFElement>} the array of clones or null for no clones
+     * @return {Array<GElement>} the array of clones or null for no clones
      */
-    IFEditor.prototype.cloneSelection = function (shift, history) {
+    GEditor.prototype.cloneSelection = function (shift, history) {
         if (this._selection && this._selection.length > 0) {
-            /** Array<{{element: IFElement, transform: IFTransform}}> */
+            /** Array<{{element: GElement, transform: GTransform}}> */
             var elementsToClone = [];
 
             for (var i = 0; i < this._selection.length; ++i) {
                 var element = this._selection[i];
-                if (element.hasMixin(IFNode.Store)) {
+                if (element.hasMixin(GNode.Store)) {
                     elementsToClone.push({
                         element: element,
-                        transform: shift ? new IFTransform(1, 0, 0, 1, IFEditor.options.cloneShift, IFEditor.options.cloneShift) : null
+                        transform: shift ? new GTransform(1, 0, 0, 1, GEditor.options.cloneShift, GEditor.options.cloneShift) : null
                     });
                 }
             }
@@ -500,7 +500,7 @@
                     for (var i = 0; i < this._lastCloneSelection.length; ++i) {
                         var source = this._lastCloneSelection[i];
                         var target = elementsToClone[i].element;
-                        if (source.hasMixin(IFElement.Transform) && target.hasMixin(IFElement.Transform)) {
+                        if (source.hasMixin(GElement.Transform) && target.hasMixin(GElement.Transform)) {
                             var sourceTransform = source.getTransform();
                             var targetTransform = target.getTransform();
                             if (targetTransform) {
@@ -525,7 +525,7 @@
                     element.getParent().appendChild(clone);
 
                     // Transform clone if desired
-                    if (transform && clone.hasMixin(IFElement.Transform)) {
+                    if (transform && clone.hasMixin(GElement.Transform)) {
                         clone.transform(transform);
                     }
 
@@ -553,13 +553,13 @@
 
     /**
      * Delete current selection (if any). Note that this will only
-     * delete IFItem based classes so that layers and/or pages
+     * delete GItem based classes so that layers and/or pages
      * are not accidently deleted. Note also that this will not
      * delete items that are locked
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    IFEditor.prototype.deleteSelection = function (noTransaction) {
+    GEditor.prototype.deleteSelection = function (noTransaction) {
         if (this._selection && this._selection.length > 0) {
             if (!noTransaction) {
                 this.beginTransaction();
@@ -568,17 +568,17 @@
             this._beginSelectionUpdate();
             try {
                 // copy and order selection
-                var orderedSelection = IFNode.order(this._selection.slice(), true);
+                var orderedSelection = GNode.order(this._selection.slice(), true);
 
                 // now delete
                 for (var i = 0; i < orderedSelection.length; ++i) {
                     var selElement = orderedSelection[i];
-                    if (selElement instanceof IFItem && !selElement.hasFlag(IFElement.Flag.Locked)) {
-                        var elemEditor = IFElementEditor.getEditor(selElement);
+                    if (selElement instanceof GItem && !selElement.hasFlag(GElement.Flag.Locked)) {
+                        var elemEditor = GElementEditor.getEditor(selElement);
                         if (elemEditor && elemEditor.isDeletePartsAllowed()) {
                             elemEditor.deletePartsSelected();
                         } else {
-                            selElement.removeFlag(IFNode.Flag.Selected);
+                            selElement.removeFlag(GNode.Flag.Selected);
                             selElement.getParent().removeChild(selElement);
                         }
                     }
@@ -599,16 +599,16 @@
      * @param {boolean} toggle if true then this will merge/united the
      * current selection with the new one, otherwise the current selection
      * will be replaced with the new one
-     * @param {Array<IFElement>} selection the new array of nodes to be selected
+     * @param {Array<GElement>} selection the new array of nodes to be selected
      */
-    IFEditor.prototype.updateSelection = function (toggle, selection) {
+    GEditor.prototype.updateSelection = function (toggle, selection) {
         this._beginSelectionUpdate();
         try {
             if (!toggle) {
                 // Select new selection if any
                 if (selection && selection.length > 0) {
                     for (var i = 0; i < selection.length; ++i) {
-                        selection[i].setFlag(IFNode.Flag.Selected);
+                        selection[i].setFlag(GNode.Flag.Selected);
                     }
                 }
 
@@ -621,10 +621,10 @@
                 if (selection && selection.length) {
                     for (var i = 0; i < selection.length; ++i) {
                         // Simply invert our selection flag at this point
-                        if (selection[i].hasFlag(IFNode.Flag.Selected)) {
-                            selection[i].removeFlag(IFNode.Flag.Selected);
+                        if (selection[i].hasFlag(GNode.Flag.Selected)) {
+                            selection[i].removeFlag(GNode.Flag.Selected);
                         } else {
-                            selection[i].setFlag(IFNode.Flag.Selected);
+                            selection[i].setFlag(GNode.Flag.Selected);
                         }
                     }
                 }
@@ -639,10 +639,10 @@
      * @param {boolean} toggle if true then this will merge/united the
      * current selection with the new one, otherwise the current selection
      * will be replaced with the new one
-     * @param {Array<IFElement>} selection the new array of nodes to be selected
-     * @param {IFVertexSource} collisionArea
+     * @param {Array<GElement>} selection the new array of nodes to be selected
+     * @param {GVertexSource} collisionArea
      */
-    IFEditor.prototype.updateSelectionUnderCollision = function (toggle, selection, collisionArea) {
+    GEditor.prototype.updateSelectionUnderCollision = function (toggle, selection, collisionArea) {
         this._beginSelectionUpdate();
         try {
             var selectionForUpdate = [];
@@ -650,7 +650,7 @@
             for (var i = 0; i < selection.length; ++i) {
                 var element = selection[i];
                 var addForFurtherUpdate = true;
-                var elemEditor = IFElementEditor.openEditor(element);
+                var elemEditor = GElementEditor.openEditor(element);
                 if (!elemEditor || !elemEditor.isPartSelectionUnderCollisionAllowed()) {
                     if (element.isFullUnderCollision(collisionArea)) {
                         selectionForUpdate.push(element);
@@ -687,11 +687,11 @@
 
     /**
      * Clears the whole selection if any
-     * @param {Array<IFElement>} [exclusion] an array to exclude from removing
+     * @param {Array<GElement>} [exclusion] an array to exclude from removing
      * from the selection or null for none
      */
-    IFEditor.prototype.clearSelection = function (exclusion) {
-        if (IFUtil.equals(exclusion, this._selection)) {
+    GEditor.prototype.clearSelection = function (exclusion) {
+        if (GUtil.equals(exclusion, this._selection)) {
             return;
         }
 
@@ -703,7 +703,7 @@
                     index++;
                     continue;
                 }
-                this._selection[index].removeFlag(IFNode.Flag.Selected);
+                this._selection[index].removeFlag(GNode.Flag.Selected);
             }
         } finally {
             this._finishSelectionUpdate();
@@ -713,7 +713,7 @@
     /**
      * Temporarily store the current selection
      */
-    IFEditor.prototype.storeSelection = function () {
+    GEditor.prototype.storeSelection = function () {
         if (this._scene.getProperty('singlePage')) {
             this._savePageSelection(this._scene.getActivePage(), true/*no-overwrite*/);
         } else {
@@ -724,7 +724,7 @@
     /**
      * Restore a temporarily stored selection
      */
-    IFEditor.prototype.restoreSelection = function () {
+    GEditor.prototype.restoreSelection = function () {
         if (this._scene.getProperty('singlePage')) {
             this._restorePageSelection(this._scene.getActivePage());
         } else {
@@ -734,16 +734,16 @@
 
     /**
      * Move the selection
-     * @param {IFPoint} delta the move delta
+     * @param {GPoint} delta the move delta
      * @param {Boolean} align whether to automatically align or not
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [data] optional data of part that has started the transformation
-     * @param {IFPoint} startPos - movement start position, needed when align is true only
+     * @param {GPoint} startPos - movement start position, needed when align is true only
      */
-    IFEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
+    GEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
         var translation = delta;
         if (align && startPos && this._selection.length == 1) {
-            var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
+            var selBBox = GElement.prototype.getGroupGeometryBBox(this._selection);
             var side = selBBox.getClosestSideName(startPos);
             var sidePos = selBBox.getSide(side);
             var newSidePos = sidePos.add(delta);
@@ -754,7 +754,7 @@
             translation = newSidePos.subtract(sidePos);
         }
 
-        this.transformSelection(new IFTransform(1, 0, 0, 1, translation.getX(), translation.getY()), partId, partData);
+        this.transformSelection(new GTransform(1, 0, 0, 1, translation.getX(), translation.getY()), partId, partData);
     };
 
     /**
@@ -767,13 +767,13 @@
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [partData] optional data of part that has started the transformation
      */
-    IFEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
-        var selBBox = IFElement.prototype.getGroupGeometryBBox(this._selection);
+    GEditor.prototype.scaleSelection = function (sx, sy, dx, dy, align, partId, partData) {
+        var selBBox = GElement.prototype.getGroupGeometryBBox(this._selection);
         if (selBBox) {
             // TODO : Align support
-            var tl = selBBox.getSide(IFRect.Side.TOP_LEFT);
-            var br = selBBox.getSide(IFRect.Side.BOTTOM_RIGHT);
-            var cnt = selBBox.getSide(IFRect.Side.CENTER);
+            var tl = selBBox.getSide(GRect.Side.TOP_LEFT);
+            var br = selBBox.getSide(GRect.Side.BOTTOM_RIGHT);
+            var cnt = selBBox.getSide(GRect.Side.CENTER);
             var tx, ty;
             if (dx < 0) {
                 tx = br.getX();
@@ -790,9 +790,9 @@
                 ty = cnt.getY();
             }
 
-            var transform = new IFTransform(1, 0, 0, 1, -tx, -ty)
-                .multiplied(new IFTransform(sx, 0, 0, sy, 0, 0))
-                .multiplied(new IFTransform(1, 0, 0, 1, tx, ty));
+            var transform = new GTransform(1, 0, 0, 1, -tx, -ty)
+                .multiplied(new GTransform(sx, 0, 0, sy, 0, 0))
+                .multiplied(new GTransform(1, 0, 0, 1, tx, ty));
 
             this.transformSelection(transform, partId, partData);
         }
@@ -800,15 +800,15 @@
 
     /**
      * Transform the selection
-     * @param {IFTransform} transform the transform to be used
+     * @param {GTransform} transform the transform to be used
      * @param {*} [part] optional id of part that has started the transformation
      * @param {*} [partId] optional data of part that has started the transformation
      */
-    IFEditor.prototype.transformSelection = function (transform, partId, partData) {
+    GEditor.prototype.transformSelection = function (transform, partId, partData) {
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = IFElementEditor.getEditor(item);
+                var editor = GElementEditor.getEditor(item);
                 if (editor) {
                     editor.transform(transform, partId, partData);
                 }
@@ -819,11 +819,11 @@
     /**
      * Reset the transformation of the selection
      */
-    IFEditor.prototype.resetSelectionTransform = function () {
+    GEditor.prototype.resetSelectionTransform = function () {
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = IFElementEditor.getEditor(item);
+                var editor = GElementEditor.getEditor(item);
                 if (editor) {
                     editor.resetTransform();
                 }
@@ -841,14 +841,14 @@
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    IFEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
+    GEditor.prototype.applySelectionTransform = function (cloneSelection, noTransaction) {
         if (this._selection && this._selection.length) {
             // Filter selection by editors that can not be transformed
             // and reset those instead here
             var newSelection = [];
             for (var i = 0; i < this._selection.length; ++i) {
                 var item = this._selection[i];
-                var editor = IFElementEditor.getEditor(item);
+                var editor = GElementEditor.getEditor(item);
                 if (editor) {
                     if (!editor.canApplyTransform()) {
                         // Reset editor transformation
@@ -869,13 +869,13 @@
                     var clonedSelection = [];
                     for (var i = 0; i < newSelection.length; ++i) {
                         var item = newSelection[i];
-                        var editor = IFElementEditor.getEditor(item);
+                        var editor = GElementEditor.getEditor(item);
                         if (editor) {
                             var selectionElement = newSelection[i];
                             var elementToApplyTransform = selectionElement;
 
                             if (cloneSelection) {
-                                if (selectionElement.hasMixin(IFNode.Store)) {
+                                if (selectionElement.hasMixin(GNode.Store)) {
                                     elementToApplyTransform = selectionElement.clone();
 
                                     // Append clone to parent of selected item
@@ -888,7 +888,7 @@
                                 }
                             } else {
                                 // Avoid transform when locked
-                                if (selectionElement.hasFlag(IFElement.Flag.Locked)) {
+                                if (selectionElement.hasFlag(GElement.Flag.Locked)) {
                                     elementToApplyTransform = null;
                                 }
                             }
@@ -919,14 +919,14 @@
      * Inserts one or more elements into the right target parent
      * and selects the elements clearing any previous selection
      * This is a shortcut for insertElements([element])
-     * @param {Array<IFElement>} elements the elements to be inserted
+     * @param {Array<GElement>} elements the elements to be inserted
      * @param {Boolean} noInitial if true, the editor will not be
      * called to handle the newly inserted element to assign some defaults.
      * Defaults to false.
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    IFEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
+    GEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
         var target = this._scene.querySingle('page:active layer:active');
         if (!target) {
@@ -946,7 +946,7 @@
 
                 if (!noInitial) {
                     // Create a temporary editor for the element to handle it's insertion
-                    var editor = IFElementEditor.createEditor(element);
+                    var editor = GElementEditor.createEditor(element);
                     if (editor) {
                         editor.initialSetup();
                     }
@@ -968,13 +968,13 @@
      * @param {Boolean} [noTransaction] if true, will not create a
      * transaction (undo/redo), defaults to false
      */
-    IFEditor.prototype.convertSelectionToPaths = function (noTransaction) {
+    GEditor.prototype.convertSelectionToPaths = function (noTransaction) {
         var shapesToTransform = [];
         var newSelection = [];
         if (this._selection && this._selection.length) {
             for (var i = 0; i < this._selection.length; ++i) {
                 var elem = this._selection[i];
-                if (elem instanceof IFPathBase && !(elem instanceof IFPath) || elem.hasMixin(IFVertexSource)) {
+                if (elem instanceof GPathBase && !(elem instanceof GPath) || elem.hasMixin(GVertexSource)) {
                     shapesToTransform.push(elem);
                 } else {
                     newSelection.push(elem);
@@ -990,17 +990,17 @@
                 this.updateSelection(false, shapesToTransform);
                 for (var i = 0; i < shapesToTransform.length; ++i) {
                     var shape = shapesToTransform[i];
-                    shape.removeFlag(IFNode.Flag.Selected);
+                    shape.removeFlag(GNode.Flag.Selected);
                     var parent = shape.getParent();
                     var next = shape.getNext(true);
                     parent.removeChild(shape);
 
                     var path = null;
-                    if (shape instanceof IFPathBase) {
+                    if (shape instanceof GPathBase) {
                         var anchorPoints = shape.clearAnchorPoints();
-                        path = new IFPath(shape.getProperty('closed'), shape.getProperty('evenodd'), anchorPoints);
-                    } else if (shape.hasMixin(IFVertexSource)) {
-                        path = IFPathBase.createPathFromVertexSource(shape);
+                        path = new GPath(shape.getProperty('closed'), shape.getProperty('evenodd'), anchorPoints);
+                    } else if (shape.hasMixin(GVertexSource)) {
+                        path = GPathBase.createPathFromVertexSource(shape);
                     }
 
                     if (path) {
@@ -1025,24 +1025,24 @@
     /**
      * Does various work when the mouse was pressed somewhere to update for
      * example the currently active page. Does nothing on single page mode
-     * @param {IFPoint} position the mouse position
-     * @param {IFTransform} transform optional transformation for the position
+     * @param {GPoint} position the mouse position
+     * @param {GTransform} transform optional transformation for the position
      */
-    IFEditor.prototype.updateByMousePosition = function (position, transformation) {
+    GEditor.prototype.updateByMousePosition = function (position, transformation) {
         if (this._scene.getProperty('singlePage') === false) {
             // TODO : Make this more efficient than hit-testing everything (aka iterate pages instead)
             // Try to update the active page under mouse if any
             var pageHits = this._scene.hitTest(position, transformation, function (hit) {
-                return hit instanceof IFPage;
+                return hit instanceof GPage;
             }.bind(this), false, 1/*one level deep only*/);
 
             if (pageHits && pageHits.length === 1) {
                 for (var child = this._scene.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFPage) {
+                    if (child instanceof GPage) {
                         if (child === pageHits[0].element) {
-                            child.setFlag(IFNode.Flag.Active);
+                            child.setFlag(GNode.Flag.Active);
                         } else {
-                            child.removeFlag(IFNode.Flag.Active);
+                            child.removeFlag(GNode.Flag.Active);
                         }
                     }
                 }
@@ -1055,8 +1055,8 @@
      * modifications including property changes to be replayed
      * as undo / redo states.
      */
-    IFEditor.prototype.beginTransaction = function () {
-        var sceneEditor = IFElementEditor.getEditor(this._scene);
+    GEditor.prototype.beginTransaction = function () {
+        var sceneEditor = GElementEditor.getEditor(this._scene);
         this._transactionStack.push({
             actions: [],
             selection: this._saveSelection(),
@@ -1064,14 +1064,14 @@
         });
     };
 
-    IFEditor.prototype._transactionRedo = function (data) {
+    GEditor.prototype._transactionRedo = function (data) {
         for (var i = 0; i < data.actions.length; ++i) {
             data.actions[i].action();
         }
 
         this._loadSelection(data.newSelection);
 
-        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        var sceneEditor = GElementEditor.getEditor(this._scene);
         if (data.newTransformBoxCenter || sceneEditor && sceneEditor.isTransformBoxActive()) {
             if (data.newTransformBoxCenter) {
                 sceneEditor.setTransformBoxActive(true, data.newTransformBoxCenter);
@@ -1081,7 +1081,7 @@
         }
     };
 
-    IFEditor.prototype._transactionUndo = function (data) {
+    GEditor.prototype._transactionUndo = function (data) {
         // Revert needs to play the actions backwards
         for (var i = data.actions.length - 1; i >= 0; --i) {
             data.actions[i].revert();
@@ -1089,7 +1089,7 @@
 
         this._loadSelection(data.selection);
 
-        var sceneEditor = IFElementEditor.getEditor(this._scene);
+        var sceneEditor = GElementEditor.getEditor(this._scene);
         if (data.transformBoxCenter || sceneEditor && sceneEditor.isTransformBoxActive()) {
             if (data.transformBoxCenter) {
                 sceneEditor.setTransformBoxActive(true, data.transformBoxCenter);
@@ -1099,8 +1099,8 @@
         }
     };
 
-    IFEditor.prototype._transactionMerge = function (previousData, data) {
-        if (IFEditor.options.smartUndoPropertyMerge) {
+    GEditor.prototype._transactionMerge = function (previousData, data) {
+        if (GEditor.options.smartUndoPropertyMerge) {
             if (data.actions.length === 1 && previousData.actions.length === 1) {
                 var action = data.actions[0];
                 var previousAction = previousData.actions[0];
@@ -1141,14 +1141,14 @@
      * include any changes, no undo/redo state will be committed.
      * @param {String} name
      */
-    IFEditor.prototype.commitTransaction = function (name) {
+    GEditor.prototype.commitTransaction = function (name) {
         if (!this._transactionStack.length) {
             throw new Error('Nothing to commit, transaction stack is empty.');
         }
 
         var transaction = this._transactionStack.pop();
         if (transaction.actions.length > 0) {
-            var sceneEditor = IFElementEditor.getEditor(this._scene);
+            var sceneEditor = GElementEditor.getEditor(this._scene);
             var data = {
                 actions: transaction.actions.slice(),
                 selection: transaction.selection ? transaction.selection.slice() : null,
@@ -1171,7 +1171,7 @@
      * undo state data with the previous steps' one. If this returns true, the previous undo
      * state is assumed to be merged and the new one will be not added.
      */
-    IFEditor.prototype.pushState = function (name, action, revert, data, merge) {
+    GEditor.prototype.pushState = function (name, action, revert, data, merge) {
         // Try a merge, first
         if (merge && data && this._undoStates.length > 0) {
             var lastUndoState = this._undoStates[this._undoStates.length - 1];
@@ -1183,7 +1183,7 @@
             }
         }
 
-        if (this._undoStates.length >= IFEditor.options.maxUndoSteps) {
+        if (this._undoStates.length >= GEditor.options.maxUndoSteps) {
             // Cut undo list of when reaching our undo limit
             this._undoStates.shift();
         }
@@ -1203,7 +1203,7 @@
      * Returns whether at least one undo state is available or not
      * @returns {boolean}
      */
-    IFEditor.prototype.hasUndoState = function () {
+    GEditor.prototype.hasUndoState = function () {
         return this._undoStates.length > 0;
     };
 
@@ -1211,7 +1211,7 @@
      * Returns whether at least one redo state is available or not
      * @returns {boolean}
      */
-    IFEditor.prototype.hasRedoState = function () {
+    GEditor.prototype.hasRedoState = function () {
         return this._redoStates.length > 0;
     };
 
@@ -1219,7 +1219,7 @@
      * Returns the name of the last undo state if any or null for none
      * @returns {String}
      */
-    IFEditor.prototype.getUndoStateName = function () {
+    GEditor.prototype.getUndoStateName = function () {
         if (this._undoStates.length > 0) {
             return this._undoStates[this._undoStates.length - 1].name;
         }
@@ -1230,7 +1230,7 @@
      * Returns the name of the last redo state if any or null for none
      * @returns {String}
      */
-    IFEditor.prototype.getRedoStateName = function () {
+    GEditor.prototype.getRedoStateName = function () {
         if (this._redoStates.length > 0) {
             return this._redoStates[this._redoStates.length - 1].name;
         }
@@ -1240,7 +1240,7 @@
     /**
      * Undo the latest state if any
      */
-    IFEditor.prototype.undoState = function () {
+    GEditor.prototype.undoState = function () {
         if (this._undoStates.length > 0) {
             // Get state and shift it from undo list
             var state = this._undoStates.pop();
@@ -1256,7 +1256,7 @@
     /**
      * Redo the latest state if any
      */
-    IFEditor.prototype.redoState = function () {
+    GEditor.prototype.redoState = function () {
         if (this._redoStates.length > 0) {
             // Get state and shift it from redo list
             var state = this._redoStates.pop();
@@ -1273,25 +1273,25 @@
      * Checks and returns if there's an active inline editing editor or not
      * @returns {boolean}
      */
-    IFEditor.prototype.isInlineEditing = function () {
+    GEditor.prototype.isInlineEditing = function () {
         return !!this._currentInlineEditorNode;
     };
 
     /**
      * Called to open an inline editor for a given node and view
-     * @param {IFNode} node
-     * @param {IFEditorView} view
-     * @param {IFPoint} [position] optional position in screen cordinates,
+     * @param {GNode} node
+     * @param {GEditorView} view
+     * @param {GPoint} [position] optional position in screen cordinates,
      * defaults to null
      * @return {Boolean} true if an inline editor was opened, false if not
      */
-    IFEditor.prototype.openInlineEditor = function (node, view, position) {
+    GEditor.prototype.openInlineEditor = function (node, view, position) {
         this.closeInlineEditor();
 
-        var editor = IFElementEditor.getEditor(node);
+        var editor = GElementEditor.getEditor(node);
         if (editor && editor.canInlineEdit()) {
-            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
-                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeOpen));
+            if (this.hasEventListeners(GEditor.InlineEditorEvent)) {
+                this.trigger(new GEditor.InlineEditorEvent(editor, GEditor.InlineEditorEvent.Type.BeforeOpen));
             }
 
             editor.beginInlineEdit(view, view._htmlElement);
@@ -1299,8 +1299,8 @@
 
             this._currentInlineEditorNode = node;
 
-            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
-                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterOpen));
+            if (this.hasEventListeners(GEditor.InlineEditorEvent)) {
+                this.trigger(new GEditor.InlineEditorEvent(editor, GEditor.InlineEditorEvent.Type.AfterOpen));
             }
 
             return true;
@@ -1311,11 +1311,11 @@
 
     /**
      * Called to update any active inline editor for a given view
-     * @param {IFEditorView} view
+     * @param {GEditorView} view
      */
-    IFEditor.prototype.updateInlineEditorForView = function (view) {
+    GEditor.prototype.updateInlineEditorForView = function (view) {
         if (this._currentInlineEditorNode) {
-            var editor = IFElementEditor.getEditor(this._currentInlineEditorNode);
+            var editor = GElementEditor.getEditor(this._currentInlineEditorNode);
             if (editor && editor.isInlineEdit()) {
                 editor.adjustInlineEditForView(view);
             }
@@ -1326,7 +1326,7 @@
      * Called to close any active inline editor
      * @return {Boolean} true if an inline editor was closed, false if not
      */
-    IFEditor.prototype.closeInlineEditor = function () {
+    GEditor.prototype.closeInlineEditor = function () {
         if (this._currentInlineEditorNode) {
             return this._finishEditorInlineEdit(this._currentInlineEditorNode);
         }
@@ -1334,10 +1334,10 @@
     };
 
     /**
-     * @param {IFNode.AfterInsertEvent} evt
+     * @param {GNode.AfterInsertEvent} evt
      * @private
      */
-    IFEditor.prototype._afterNodeInsert = function (evt) {
+    GEditor.prototype._afterNodeInsert = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transactionStack.length) {
             var node = evt.node;
@@ -1363,10 +1363,10 @@
     };
 
     /**
-     * @param {IFNode.BeforeRemoveEvent} evt
+     * @param {GNode.BeforeRemoveEvent} evt
      * @private
      */
-    IFEditor.prototype._beforeNodeRemove = function (evt) {
+    GEditor.prototype._beforeNodeRemove = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transactionStack.length) {
             var node = evt.node;
@@ -1386,27 +1386,27 @@
             });
         }
 
-        if (evt.node instanceof IFElement) {
+        if (evt.node instanceof GElement) {
             // If element is in selection, unselect it, first
             if (this._selection && this._selection.indexOf(evt.node) >= 0) {
-                evt.node.removeFlag(IFNode.Flag.Selected);
+                evt.node.removeFlag(GNode.Flag.Selected);
             } else {
                 // Otherwise try to close any editors the node may have
                 this._closeEditor(evt.node);
             }
         }
 
-        if (evt.node instanceof IFPage && this._scene.getProperty('singlePage') === true) {
+        if (evt.node instanceof GPage && this._scene.getProperty('singlePage') === true) {
             // Remove saved page selection when removing the page and singlePage mode is turned on
             this._removePageSelection(evt.node);
         }
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} evt
+     * @param {GNode.AfterPropertiesChangeEvent} evt
      * @private
      */
-    IFEditor.prototype._afterPropertiesChange = function (evt) {
+    GEditor.prototype._afterPropertiesChange = function (evt) {
         // If we have an active transaction, we need to record the action
         if (this._transactionStack.length) {
             var node = evt.node;
@@ -1435,27 +1435,27 @@
     };
 
     /**
-     * @param {IFNode.BeforeFlagChangeEvent} evt
+     * @param {GNode.BeforeFlagChangeEvent} evt
      * @private
      */
-    IFEditor.prototype._beforeFlagChange = function (evt) {
-        if (evt.node instanceof IFElement) {
-            if (evt.flag === IFElement.Flag.Hidden) {
+    GEditor.prototype._beforeFlagChange = function (evt) {
+        if (evt.node instanceof GElement) {
+            if (evt.flag === GElement.Flag.Hidden) {
                 if (evt.set) {
                     // Deselect elements getting hidden
-                    evt.node.removeFlag(IFNode.Flag.Selected);
+                    evt.node.removeFlag(GNode.Flag.Selected);
                 }
             }
         }
     };
 
     /**
-     * @param {IFNode.AfterFlagChangeEvent} evt
+     * @param {GNode.AfterFlagChangeEvent} evt
      * @private
      */
-    IFEditor.prototype._afterFlagChange = function (evt) {
-        if (evt.node instanceof IFElement) {
-            if (evt.flag === IFNode.Flag.Selected) {
+    GEditor.prototype._afterFlagChange = function (evt) {
+        if (evt.node instanceof GElement) {
+            if (evt.flag === GNode.Flag.Selected) {
                 if (evt.set) {
                     // Try to add node to the internal selection
                     this._tryAddToSelection(evt.node);
@@ -1463,22 +1463,22 @@
                     // Try to remove node from the internal selection
                     this._tryRemoveFromSelection(evt.node);
                 }
-            } else if (evt.flag == IFNode.Flag.Highlighted) {
+            } else if (evt.flag == GNode.Flag.Highlighted) {
                 if (evt.set) {
-                    var editor = IFElementEditor.openEditor(evt.node);
+                    var editor = GElementEditor.openEditor(evt.node);
                     if (editor) {
-                        editor.setFlag(IFElementEditor.Flag.Highlighted);
+                        editor.setFlag(GElementEditor.Flag.Highlighted);
                     }
                 } else {
-                    var editor = IFElementEditor.openEditor(evt.node);
+                    var editor = GElementEditor.openEditor(evt.node);
                     if (editor) {
-                        editor.removeFlag(IFElementEditor.Flag.Highlighted);
+                        editor.removeFlag(GElementEditor.Flag.Highlighted);
                     }
                     this._tryCloseEditor(evt.node);
                 }
-            } else if (evt.flag == IFNode.Flag.Active) {
+            } else if (evt.flag == GNode.Flag.Active) {
                 // In single page mode we'll save & restore page selections
-                if (evt.node instanceof IFPage && this._scene.getProperty('singlePage') === true) {
+                if (evt.node instanceof GPage && this._scene.getProperty('singlePage') === true) {
                     if (evt.set) {
                         this._restorePageSelection(evt.node);
                     } else {
@@ -1490,16 +1490,16 @@
     };
 
     /**
-     * @param {IFElement.GeometryChangeEvent} evt
+     * @param {GElement.GeometryChangeEvent} evt
      * @private
      */
-    IFEditor.prototype._geometryChange = function (evt) {
+    GEditor.prototype._geometryChange = function (evt) {
         if (this._selection && this._selection.indexOf(evt.element) >= 0) {
             switch (evt.type) {
-                case IFElement.GeometryChangeEvent.Type.Before:
-                case IFElement.GeometryChangeEvent.Type.After:
-                case IFElement.GeometryChangeEvent.Type.Child:
-                    var editor = IFElementEditor.getEditor(evt.element);
+                case GElement.GeometryChangeEvent.Type.Before:
+                case GElement.GeometryChangeEvent.Type.After:
+                case GElement.GeometryChangeEvent.Type.Child:
+                    var editor = GElementEditor.getEditor(evt.element);
                     if (editor) {
                         editor.requestInvalidation();
                     }
@@ -1511,14 +1511,14 @@
     /**
      * @private
      */
-    IFEditor.prototype._beginSelectionUpdate = function () {
+    GEditor.prototype._beginSelectionUpdate = function () {
         this._selectionUpdateCounter += 1;
     };
 
     /**
      * @private
      */
-    IFEditor.prototype._finishSelectionUpdate = function () {
+    GEditor.prototype._finishSelectionUpdate = function () {
         if (--this._selectionUpdateCounter === 0) {
             this._updatedSelection();
         }
@@ -1527,33 +1527,33 @@
     /**
      * @private
      */
-    IFEditor.prototype._updatedSelection = function () {
+    GEditor.prototype._updatedSelection = function () {
         if (this._selectionUpdateCounter === 0) {
             // Clear last clone selection
             this._lastCloneSelection = null;
 
             // Trigger selection change event
-            if (this.hasEventListeners(IFEditor.SelectionChangedEvent)) {
-                this.trigger(IFEditor.SELECTION_CHANGED_EVENT);
+            if (this.hasEventListeners(GEditor.SelectionChangedEvent)) {
+                this.trigger(GEditor.SELECTION_CHANGED_EVENT);
             }
         }
     };
 
     /**
      * Try to add a node to internal selection if it is selected
-     * @param {IFNode} node
+     * @param {GNode} node
      * @private
      */
-    IFEditor.prototype._tryAddToSelection = function (node) {
-        if (node instanceof IFElement) {
-            if (node.hasFlag(IFNode.Flag.Selected)) {
+    GEditor.prototype._tryAddToSelection = function (node) {
+        if (node instanceof GElement) {
+            if (node.hasFlag(GNode.Flag.Selected)) {
                 // Try to open an editor for the selected node
-                var editor = IFElementEditor.openEditor(node);
+                var editor = GElementEditor.openEditor(node);
                 if (editor) {
-                    editor.setFlag(IFElementEditor.Flag.Selected);
+                    editor.setFlag(GElementEditor.Flag.Selected);
 
                     if (this._selectionDetail) {
-                        editor.setFlag(IFElementEditor.Flag.Detail);
+                        editor.setFlag(GElementEditor.Flag.Detail);
                     }
 
                     // Add the node to our internal selection array
@@ -1573,15 +1573,15 @@
 
     /**
      * Try to remove a node from the internal selection
-     * @param {IFNode} node
+     * @param {GNode} node
      * @private
      */
-    IFEditor.prototype._tryRemoveFromSelection = function (node) {
-        if (node instanceof IFElement) {
+    GEditor.prototype._tryRemoveFromSelection = function (node) {
+        if (node instanceof GElement) {
             // Close the editor for the previously selected node if it has any
-            var editor = IFElementEditor.getEditor(node);
-            if (editor && editor.hasFlag(IFElementEditor.Flag.Selected)) {
-                editor.removeFlag(IFElementEditor.Flag.Selected);
+            var editor = GElementEditor.getEditor(node);
+            if (editor && editor.hasFlag(GElementEditor.Flag.Selected)) {
+                editor.removeFlag(GElementEditor.Flag.Selected);
                 this._tryCloseEditor(node);
 
 
@@ -1611,9 +1611,9 @@
         }
     };
 
-    IFEditor.prototype._tryCloseEditor = function (node) {
-        var editor = IFElementEditor.getEditor(node);
-        if (!editor || editor.hasFlag(IFElementEditor.Flag.Selected) || editor.hasFlag(IFElementEditor.Flag.Highlighted)) {
+    GEditor.prototype._tryCloseEditor = function (node) {
+        var editor = GElementEditor.getEditor(node);
+        if (!editor || editor.hasFlag(GElementEditor.Flag.Selected) || editor.hasFlag(GElementEditor.Flag.Highlighted)) {
             // can not close editor in this case(s)
             return;
         }
@@ -1633,11 +1633,11 @@
         }
     };
 
-    IFEditor.prototype._finishEditorInlineEdit = function (node) {
-        var editor = IFElementEditor.getEditor(node);
+    GEditor.prototype._finishEditorInlineEdit = function (node) {
+        var editor = GElementEditor.getEditor(node);
         if (editor && editor.isInlineEdit()) {
-            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
-                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.BeforeClose));
+            if (this.hasEventListeners(GEditor.InlineEditorEvent)) {
+                this.trigger(new GEditor.InlineEditorEvent(editor, GEditor.InlineEditorEvent.Type.BeforeClose));
             }
 
             var editText = null;
@@ -1653,8 +1653,8 @@
                 this._currentInlineEditorNode = null;
             }
 
-            if (this.hasEventListeners(IFEditor.InlineEditorEvent)) {
-                this.trigger(new IFEditor.InlineEditorEvent(editor, IFEditor.InlineEditorEvent.Type.AfterClose));
+            if (this.hasEventListeners(GEditor.InlineEditorEvent)) {
+                this.trigger(new GEditor.InlineEditorEvent(editor, GEditor.InlineEditorEvent.Type.AfterClose));
             }
 
             return true;
@@ -1662,21 +1662,21 @@
         return false;
     };
 
-    IFEditor.prototype._closeEditor = function (node) {
+    GEditor.prototype._closeEditor = function (node) {
         this._finishEditorInlineEdit(node);
-        IFElementEditor.closeEditor(node);
+        GElementEditor.closeEditor(node);
     };
 
     /**
      * Save the selection for a given page
-     * @param {IFPage} page
+     * @param {GPage} page
      * @param {Boolean} [noOverwrite] if set, won't overwrite
      * the saved selection for the page on page change
      * @param {Boolean} [checkOverwrite] if set, will not store
      * the page selection if it has the noOverwrite flag set to true
      * @private
      */
-    IFEditor.prototype._savePageSelection = function (page, noOverwrite, checkOverwrite) {
+    GEditor.prototype._savePageSelection = function (page, noOverwrite, checkOverwrite) {
         if (!this._pageSelections) {
             this._pageSelections = [];
         }
@@ -1704,10 +1704,10 @@
 
     /**
      * Restore the selection for a given page
-     * @param {IFPage} page
+     * @param {GPage} page
      * @private
      */
-    IFEditor.prototype._restorePageSelection = function (page) {
+    GEditor.prototype._restorePageSelection = function (page) {
         if (this._pageSelections) {
             for (var i = 0; i < this._pageSelections.length; ++i) {
                 var sel = this._pageSelections[i];
@@ -1725,10 +1725,10 @@
 
     /**
      * Remove the stored selection for a given page
-     * @param {IFPage} page
+     * @param {GPage} page
      * @private
      */
-    IFEditor.prototype._removePageSelection = function (page) {
+    GEditor.prototype._removePageSelection = function (page) {
         if (this._pageSelections) {
             for (var i = 0; i < this._pageSelections.length; ++i) {
                 var sel = this._pageSelections[i];
@@ -1742,10 +1742,10 @@
 
     /**
      * Saves and returns the current selection
-     * @return {Array<{element: IFElement, parts: Array<*>}>}
+     * @return {Array<{element: GElement, parts: Array<*>}>}
      * @private
      */
-    IFEditor.prototype._saveSelection = function () {
+    GEditor.prototype._saveSelection = function () {
         if (!this._selection || this._selection.length === 0) {
             return null;
         }
@@ -1753,7 +1753,7 @@
         var result = [];
         for (var i = 0; i < this._selection.length; ++i) {
             var element = this._selection[i];
-            var editor = IFElementEditor.getEditor(element);
+            var editor = GElementEditor.getEditor(element);
             var parts = editor ? editor.getPartSelection() : null;
             result.push({
                 element: element,
@@ -1766,10 +1766,10 @@
 
     /**
      * Loads a saved selection
-     * @param {Array<{element: IFElement, parts: Array<*>}>} selection
+     * @param {Array<{element: GElement, parts: Array<*>}>} selection
      * @private
      */
-    IFEditor.prototype._loadSelection = function (selection) {
+    GEditor.prototype._loadSelection = function (selection) {
         if (!selection || selection.length === 0) {
             this.clearSelection();
         } else {
@@ -1784,7 +1784,7 @@
             // Iterate selection again and assign part selections if any
             for (var i = 0; i < selection.length; ++i) {
                 if (selection[i].parts) {
-                    var editor = IFElementEditor.getEditor(selection[i].element);
+                    var editor = GElementEditor.getEditor(selection[i].element);
                     if (editor) {
                         editor.updatePartSelection(false, selection[i].parts);
                     }
@@ -1794,9 +1794,9 @@
     };
 
     /** @override */
-    IFEditor.prototype.toString = function () {
-        return "[Object IFEditor]";
+    GEditor.prototype.toString = function () {
+        return "[Object GEditor]";
     };
 
-    _.IFEditor = IFEditor;
+    _.GEditor = GEditor;
 })(this);

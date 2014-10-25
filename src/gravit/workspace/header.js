@@ -77,13 +77,13 @@
                 this._removeWindowTab(evt.window);
                 break;
             case GWindows.WindowEvent.Type.Activated:
-                evt.window.getView().addEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
+                evt.window.getView().addEventListener(GUIView.TransformEvent, this._updateZoomFromWindow, this);
                 this._updateView();
                 this._updateZoomFromWindow();
                 this._updateActiveWindowTab();
                 break;
             case GWindows.WindowEvent.Type.Deactivated:
-                evt.window.getView().removeEventListener(IFView.TransformEvent, this._updateZoomFromWindow, this);
+                evt.window.getView().removeEventListener(GUIView.TransformEvent, this._updateZoomFromWindow, this);
                 this._updateView();
                 this._updateZoomFromWindow();
                 this._updateActiveWindowTab();
@@ -152,11 +152,11 @@
                 if (scene.getProperty('singlePage')) {
                     var pageBBox = scene.getActivePage().getGeometryBBox();
                     if (pageBBox && !pageBBox.isEmpty()) {
-                        zoomPoint = pageBBox.getSide(IFRect.Side.CENTER);
+                        zoomPoint = pageBBox.getSide(GRect.Side.CENTER);
                     }
                 }
                 if (!zoomPoint) {
-                    zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+                    zoomPoint = view.getViewTransform().mapPoint(new GPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
                 }
 
                 view.zoomAt(zoomPoint, parseInt($(this).val()) / 100.0);
@@ -181,7 +181,7 @@
             .find('*').prop('disabled', !window);
 
         if (window) {
-            var zoomLevel = IFMath.round(window.getView().getZoom() * 100, false, 0);
+            var zoomLevel = GMath.round(window.getView().getZoom() * 100, false, 0);
             zoom
                 .find('option:first-child')
                 .text(zoomLevel.toString() + '%')

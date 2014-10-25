@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * A linear gradient
-     * @class IFLinearGradient
-     * @extends IFGradient
+     * @class GLinearGradient
+     * @extends GGradient
      * @constructor
      */
-    function IFLinearGradient(stops, scale, angle) {
-        IFGradient.call(
+    function GLinearGradient(stops, scale, angle) {
+        GGradient.call(
             this,
             stops,
             scale
@@ -15,13 +15,13 @@
         this._angle = typeof angle === 'number' ? angle : 0;
     }
 
-    IFPattern.inherit('L', IFLinearGradient, IFGradient);
+    GPattern.inherit('L', GLinearGradient, GGradient);
 
-    IFLinearGradient.equals = function (left, right, stopsOnly) {
-        if (left instanceof IFLinearGradient && right instanceof  IFLinearGradient) {
-            if (IFGradient.equals(left, right, stopsOnly)) {
+    GLinearGradient.equals = function (left, right, stopsOnly) {
+        if (left instanceof GLinearGradient && right instanceof  GLinearGradient) {
+            if (GGradient.equals(left, right, stopsOnly)) {
                 if (!stopsOnly) {
-                    return IFMath.isEqualEps(left._angle, right._angle);
+                    return GMath.isEqualEps(left._angle, right._angle);
                 }
             }
             return false;
@@ -34,32 +34,32 @@
      * @type {number}
      * @private
      */
-    IFLinearGradient._angle = 0;
+    GLinearGradient._angle = 0;
 
     /**
      * Return the gradient's angle in radians
-     * @returns {IFLinearGradient}
+     * @returns {GLinearGradient}
      */
-    IFLinearGradient.prototype.getAngle = function () {
+    GLinearGradient.prototype.getAngle = function () {
         return this._angle;
     };
 
     /** @override */
-    IFLinearGradient.prototype.asCSSBackground = function (opacity) {
-        var angleDeg = Math.round(IFMath.toDegrees(this._angle)) + 90;
+    GLinearGradient.prototype.asCSSBackground = function (opacity) {
+        var angleDeg = Math.round(GMath.toDegrees(this._angle)) + 90;
         return 'linear-gradient(' + angleDeg + 'deg, ' + this.toScreenCSS(opacity) + ')';
     };
 
     /** @override */
-    IFLinearGradient.prototype.clone = function () {
-        return new IFLinearGradient(this._stops);
+    GLinearGradient.prototype.clone = function () {
+        return new GLinearGradient(this._stops);
     };
 
     /** @override */
-    IFLinearGradient.prototype._serializeToBlob = function () {
-        var blob = IFGradient.prototype._serializeToBlob.call(this);
+    GLinearGradient.prototype._serializeToBlob = function () {
+        var blob = GGradient.prototype._serializeToBlob.call(this);
 
-        if (blob && !IFMath.isEqualEps(this._angle, 0)) {
+        if (blob && !GMath.isEqualEps(this._angle, 0)) {
             blob.r = this._angle;
         }
 
@@ -70,15 +70,15 @@
      * @param {{*}} blob
      * @private
      */
-    IFLinearGradient.prototype._deserializeFromBlob = function (blob) {
-        IFGradient.prototype._deserializeFromBlob.call(this, blob);
+    GLinearGradient.prototype._deserializeFromBlob = function (blob) {
+        GGradient.prototype._deserializeFromBlob.call(this, blob);
         this._angle = blob.hasOwnProperty('r') ? blob.r : 0;
     };
 
     /** @override */
-    IFLinearGradient.prototype.toString = function () {
-        return "[Object IFLinearGradient]";
+    GLinearGradient.prototype.toString = function () {
+        return "[Object GLinearGradient]";
     };
 
-    _.IFLinearGradient = IFLinearGradient;
+    _.GLinearGradient = GLinearGradient;
 })(this);

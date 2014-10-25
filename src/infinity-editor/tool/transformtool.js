@@ -1,40 +1,40 @@
 (function (_) {
     /**
      * The transform tool
-     * @class IFTransformTool
-     * @extends IFSelectTool
+     * @class GTransformTool
+     * @extends GSelectTool
      * @constructor
      * @version 1.0
      */
-    function IFTransformTool() {
-        IFSelectTool.call(this);
+    function GTransformTool() {
+        GSelectTool.call(this);
     };
 
-    IFObject.inherit(IFTransformTool, IFSelectTool);
+    GObject.inherit(GTransformTool, GSelectTool);
 
     /** @override */
-    IFTransformTool.prototype.activate = function (view) {
-        IFSelectTool.prototype.activate.call(this, view);
+    GTransformTool.prototype.activate = function (view) {
+        GSelectTool.prototype.activate.call(this, view);
 
         // If there's no available selection, select the pointer tool instead
         var selection = view.getEditor().getSelection();
         if (!selection || selection.length === 0) {
-            this._manager.activateTool(IFPointerTool);
+            this._manager.activateTool(GPointerTool);
         } else {
             this._openTransformBox();
         }
     };
 
     /** @override */
-    IFTransformTool.prototype._mouseDblClick = function () {
+    GTransformTool.prototype._mouseDblClick = function () {
         // no-op, just disallow any actions on double click as this would
         // do things we don't want in transform mode
     };
 
     /** override */
-    IFTransformTool.prototype.toString = function () {
-        return "[Object IFTransformTool]";
+    GTransformTool.prototype.toString = function () {
+        return "[Object GTransformTool]";
     };
 
-    _.IFTransformTool = IFTransformTool;
+    _.GTransformTool = GTransformTool;
 })(this);

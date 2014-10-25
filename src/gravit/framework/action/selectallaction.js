@@ -8,10 +8,10 @@
      */
     function GSelectAllAction() {
     };
-    IFObject.inherit(GSelectAllAction, GAction);
+    GObject.inherit(GSelectAllAction, GAction);
 
     GSelectAllAction.ID = 'edit.select-all';
-    GSelectAllAction.TITLE = new IFLocale.Key(GSelectAllAction, "title");
+    GSelectAllAction.TITLE = new GLocale.Key(GSelectAllAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GSelectAllAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'A'];
+        return [GKey.Constant.META, 'A'];
     };
 
     /**
@@ -82,7 +82,7 @@
 
             var selection = [];
             source.accept(function (node) {
-                if (node instanceof IFItem && node.getParent() instanceof IFLayer) {
+                if (node instanceof GItem && node.getParent() instanceof GLayer) {
                     selection.push(node);
                 }
             });

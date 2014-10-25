@@ -8,10 +8,10 @@
      */
     function GSliceFromSelectionAction() {
     };
-    IFObject.inherit(GSliceFromSelectionAction, GAction);
+    GObject.inherit(GSliceFromSelectionAction, GAction);
 
     GSliceFromSelectionAction.ID = 'modify.slice-from-selection';
-    GSliceFromSelectionAction.TITLE = new IFLocale.Key(GSliceFromSelectionAction, "title");
+    GSliceFromSelectionAction.TITLE = new GLocale.Key(GSliceFromSelectionAction, "title");
 
     /**
      * @override
@@ -61,10 +61,10 @@
         var editor = document.getEditor();
         var selBBox = document.getEditor().getSelectionBBox(false);
         if (selBBox && !selBBox.isEmpty()) {
-            IFEditor.tryRunTransaction(scene, function () {
-                var slice = new IFSlice();
+            GEditor.tryRunTransaction(scene, function () {
+                var slice = new GSlice();
                 slice.setProperty('trf',
-                    new IFTransform(selBBox.getWidth() / 2, 0, 0, selBBox.getHeight() / 2,
+                    new GTransform(selBBox.getWidth() / 2, 0, 0, selBBox.getHeight() / 2,
                         selBBox.getX() + selBBox.getWidth() / 2, selBBox.getY() + selBBox.getHeight() / 2));
                 scene.getActiveLayer().appendChild(slice);
                 editor.updateSelection(false, [slice]);

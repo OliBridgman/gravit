@@ -9,7 +9,7 @@
     function GPolygonProperties() {
         this._polygons = [];
     };
-    IFObject.inherit(GPolygonProperties, GProperties);
+    GObject.inherit(GPolygonProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,7 +24,7 @@
     GPolygonProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFPolygon>}
+     * @type {Array<GPolygon>}
      * @private
      */
     GPolygonProperties.prototype._polygons = null;
@@ -42,11 +42,11 @@
                     .on('change', function () {
                         var points = parseInt($(this).val());
                         if (!isNaN(points)) {
-                            var innerAngle = IFMath.normalizeAngleRadians(
+                            var innerAngle = GMath.normalizeAngleRadians(
                                 self._polygons[0].getProperty('oa') + Math.PI / points);
 
                             self._assignProperties([property, 'ia'],
-                                [IFMath.normalizeValue(points, 2, 360), innerAngle]);
+                                [GMath.normalizeValue(points, 2, 360), innerAngle]);
                         } else {
                             self._updateProperties();
                         }
@@ -75,10 +75,10 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var angle = IFLength.parseEquationValue($(this).val());
+                        var angle = GLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = IFMath.normalizeAngleRadians(IFMath.toRadians(angle));
-                            self._assignProperty(property, IFMath.PI2 - angle);
+                            angle = GMath.normalizeAngleRadians(GMath.toRadians(angle));
+                            self._assignProperty(property, GMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -217,21 +217,21 @@
     /** @override */
     GPolygonProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
         // Collect all polygon elements
         this._polygons = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFPolygon) {
+            if (elements[i] instanceof GPolygon) {
                 this._polygons.push(elements[i]);
             }
         }
 
         if (this._polygons.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -240,7 +240,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPolygonProperties.prototype._afterPropertiesChange = function (event) {
@@ -263,9 +263,9 @@
         this._panel.find('input[data-property="ir"]').val(
             this._document.getScene().pointToString(polygon.getProperty('ir')));
         this._panel.find('input[data-property="oa"]').val(
-            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('oa')), 2));
+            GUtil.formatNumber(GMath.toDegrees(GMath.PI2 - polygon.getProperty('oa')), 2));
         this._panel.find('input[data-property="ia"]').val(
-            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - polygon.getProperty('ia')), 2));
+            GUtil.formatNumber(GMath.toDegrees(GMath.PI2 - polygon.getProperty('ia')), 2));
         this._panel.find('button[data-property="oct"]').gCornerTypePicker('value', polygon.getProperty('oct'));
         this._panel.find('button[data-property="ict"]').gCornerTypePicker('value', polygon.getProperty('ict'));
         this._panel.find('input[data-property="ocr"]').val(

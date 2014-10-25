@@ -2,25 +2,25 @@
     /**
      * A class representing a CMYK Color
      * @param {CMYK} cmyk
-     * @class IFCMYKColor
-     * @extends IFColor
+     * @class GCMYKColor
+     * @extends GColor
      * @constructor
      */
-    function IFCMYKColor(cmyk) {
-        IFColor.call(this, cmyk ? cmyk : [1, 1, 1, 1]);
+    function GCMYKColor(cmyk) {
+        GColor.call(this, cmyk ? cmyk : [1, 1, 1, 1]);
     }
 
-    IFPattern.inherit('Y', IFCMYKColor, IFColor);
+    GPattern.inherit('Y', GCMYKColor, GColor);
 
-    IFCMYKColor.equals = function (left, right) {
-        if (left instanceof IFCMYKColor && right instanceof  IFCMYKColor) {
-            return IFUtil.equals(left._value, right._value);
+    GCMYKColor.equals = function (left, right) {
+        if (left instanceof GCMYKColor && right instanceof  GCMYKColor) {
+            return GUtil.equals(left._value, right._value);
         }
         return false;
     };
 
     /** @override */
-    IFCMYKColor.prototype.toHumanString = function () {
+    GCMYKColor.prototype.toHumanString = function () {
         return 'cmyk ' +
             (this._value[0] * 100).toFixed() + '%,' +
             (this._value[1] * 100).toFixed() + '%,' +
@@ -29,19 +29,19 @@
     };
 
     /** @override */
-    IFCMYKColor.prototype.toScreen = function (noCMS) {
-        return IFColor.cmykToRGB(this._value, noCMS);
+    GCMYKColor.prototype.toScreen = function (noCMS) {
+        return GColor.cmykToRGB(this._value, noCMS);
     };
 
     /** @override */
-    IFCMYKColor.prototype.clone = function () {
-        return new IFCMYKColor(this._value);
+    GCMYKColor.prototype.clone = function () {
+        return new GCMYKColor(this._value);
     };
 
     /** @override */
-    IFCMYKColor.prototype.toString = function () {
-        return "[Object IFCMYKColor]";
+    GCMYKColor.prototype.toString = function () {
+        return "[Object GCMYKColor]";
     };
 
-    _.IFCMYKColor = IFCMYKColor;
+    _.GCMYKColor = GCMYKColor;
 })(this);

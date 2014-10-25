@@ -9,11 +9,11 @@
     function GPanel() {
         GView.call(this);
     };
-    IFObject.inherit(GPanel, GView);
+    GObject.inherit(GPanel, GView);
 
     /**
      * Get the title of the panel
-     * @return {String|IFLocale.Key}
+     * @return {String|GLocale.Key}
      */
     GPanel.prototype.getTitle = function () {
         return null;

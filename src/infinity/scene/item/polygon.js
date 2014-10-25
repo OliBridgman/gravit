@@ -2,22 +2,22 @@
 
     /**
      * A polygon shape
-     * @class IFPolygon
-     * @extends IFPathBase
+     * @class GPolygon
+     * @extends GPathBase
      * @constructor
      */
-    function IFPolygon() {
-        IFPathBase.call(this);
+    function GPolygon() {
+        GPathBase.call(this);
         this.$closed = true; // polygons are always closed
-        this._setDefaultProperties(IFPolygon.GeometryProperties);
+        this._setDefaultProperties(GPolygon.GeometryProperties);
     }
 
-    IFNode.inherit("polygon", IFPolygon, IFPathBase);
+    GNode.inherit("polygon", GPolygon, GPathBase);
 
     /**
      * The geometry properties of a polygon with their default values
      */
-    IFPolygon.GeometryProperties = {
+    GPolygon.GeometryProperties = {
         /** Number of points / segments */
         pts: 6,
         /** Horizontal Center */
@@ -31,11 +31,11 @@
         /** Outer Angle */
         oa: 0,
         /** Inner Angle */
-        ia: IFMath.PI2 - Math.PI / 3,
+        ia: GMath.PI2 - Math.PI / 3,
         /** Outer Corner Type */
-        oct: IFPathBase.CornerType.Rounded,
+        oct: GPathBase.CornerType.Rounded,
         /** Inner Corner Type */
-        ict: IFPathBase.CornerType.Rounded,
+        ict: GPathBase.CornerType.Rounded,
         /** Outer Corner Radius */
         ocr: 0,
         /** Inner Corner Radius */
@@ -44,16 +44,16 @@
 
     /**
      * Iterate all segments of the polygon
-     * @param {Function(point: IFPoint, inside: Boolean, angle: Number)} iterator the
+     * @param {Function(point: GPoint, inside: Boolean, angle: Number)} iterator the
      * iterator receiving the parameters. If this returns true then the iteration will be stopped.
      * @param {Boolean} [includeTransform] if true, includes the transformation of the polygon
      * if any in the returned coordinates. Defaults to false.
      */
-    IFPolygon.prototype.iterateSegments = function (iterator, includeTransform) {
+    GPolygon.prototype.iterateSegments = function (iterator, includeTransform) {
         // Accuracy or considering start and end angles the same (2*PI overall)
         var ACC = 1.0e-6;
-        var endArc = this.$oa + IFMath.PI2;
-        var stepArc = IFMath.PI2 / this.$pts;
+        var endArc = this.$oa + GMath.PI2;
+        var stepArc = GMath.PI2 / this.$pts;
         var deltaArc = this.$ia - this.$oa;
 
         var transform = includeTransform ? this.$trf : null;
@@ -61,7 +61,7 @@
         // iterate backwards, as we have reflected Y axis; also for compatibility with MX
         for (var arc = this.$oa; arc < endArc - ACC; arc += stepArc) {
             // Outside
-            var point = new IFPoint(this.$or * Math.cos(arc) + this.$cx, this.$or * Math.sin(arc) + this.$cy);
+            var point = new GPoint(this.$or * Math.cos(arc) + this.$cx, this.$or * Math.sin(arc) + this.$cy);
 
             if (transform) {
                 point = transform.mapPoint(point);
@@ -72,7 +72,7 @@
             }
 
             // Inside
-            point = new IFPoint(this.$ir * Math.cos(arc + deltaArc) + this.$cx, this.$ir * Math.sin(arc + deltaArc) + this.$cy);
+            point = new GPoint(this.$ir * Math.cos(arc + deltaArc) + this.$cx, this.$ir * Math.sin(arc + deltaArc) + this.$cy);
 
             if (transform) {
                 point = transform.mapPoint(point);
@@ -85,25 +85,25 @@
     };
 
     /** @override */
-    IFPolygon.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFPolygon.GeometryProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFPolygon.GeometryProperties);
+    GPolygon.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GPolygon.GeometryProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GPolygon.GeometryProperties);
             this._invalidatePath();
         }
 
-        if (this._handleGeometryChangeForProperties(change, args, IFPolygon.GeometryProperties) && change == IFNode._Change.AfterPropertiesChange) {
+        if (this._handleGeometryChangeForProperties(change, args, GPolygon.GeometryProperties) && change == GNode._Change.AfterPropertiesChange) {
             this._invalidatePath();
         }
 
-        IFPathBase.prototype._handleChange.call(this, change, args);
+        GPathBase.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * @private
      */
-    IFPolygon.prototype._invalidatePath = function () {
+    GPolygon.prototype._invalidatePath = function () {
         var anchorPoints = this._getAnchorPoints();
 
         this.beginUpdate();
@@ -113,7 +113,7 @@
             anchorPoints.clearChildren();
 
             this.iterateSegments(function (point, inside, angle) {
-                var anchorPoint = new IFPathBase.AnchorPoint();
+                var anchorPoint = new GPathBase.AnchorPoint();
                 anchorPoint.setProperties(['tp', 'x', 'y', 'cl', 'cr'],
                     [inside ? this.$ict : this.$oct, point.getX(), point.getY(), inside ? this.$icr : this.$ocr, inside ? this.$icr : this.$ocr]);
                 anchorPoints.appendChild(anchorPoint);
@@ -126,8 +126,8 @@
     };
 
     /** @override */
-    IFPolygon.prototype.getCenter = function (includeTransform) {
-        var center = new IFPoint(this.$cx, this.$cy);
+    GPolygon.prototype.getCenter = function (includeTransform) {
+        var center = new GPoint(this.$cx, this.$cy);
         if (includeTransform && this.$trf) {
             center = this.$trf.mapPoint(center);
         }
@@ -135,24 +135,24 @@
     };
 
     /** @override */
-    IFPolygon.prototype.getOrigHalfWidth = function () {
+    GPolygon.prototype.getOrigHalfWidth = function () {
         return this.$or >= this.$ir ? this.$or : this.$ir;
     };
 
     /** @override */
-    IFPolygon.prototype.getOrigHalfHeight = function () {
+    GPolygon.prototype.getOrigHalfHeight = function () {
         return this.$or >= this.$ir ? this.$or : this.$ir;
     };
 
     /** @override */
-    IFPolygon.prototype._requireMiterLimitApproximation = function () {
+    GPolygon.prototype._requireMiterLimitApproximation = function () {
         return true;
     };
 
     /** @override */
-    IFPolygon.prototype.toString = function () {
-        return "[IFPolygon]";
+    GPolygon.prototype.toString = function () {
+        return "[GPolygon]";
     };
 
-    _.IFPolygon = IFPolygon;
+    _.GPolygon = GPolygon;
 })(this);

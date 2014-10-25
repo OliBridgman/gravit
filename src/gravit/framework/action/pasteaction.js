@@ -8,10 +8,10 @@
      */
     function GPasteAction() {
     };
-    IFObject.inherit(GPasteAction, GAction);
+    GObject.inherit(GPasteAction, GAction);
 
     GPasteAction.ID = 'edit.paste';
-    GPasteAction.TITLE = new IFLocale.Key(GPasteAction, "title");
+    GPasteAction.TITLE = new GLocale.Key(GPasteAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'V'];
+        return [GKey.Constant.META, 'V'];
     };
 
     /**
@@ -57,7 +57,7 @@
         }
 
         var cpMimeTypes = gShell.getClipboardMimeTypes();
-        if (cpMimeTypes && cpMimeTypes.indexOf(IFNode.MIME_TYPE) >= 0) {
+        if (cpMimeTypes && cpMimeTypes.indexOf(GNode.MIME_TYPE) >= 0) {
             return !!gApp.getActiveDocument();
         }
 
@@ -72,19 +72,19 @@
             document.execCommand('paste');
         } else {
             // TODO : Support pasting other formats like raster images
-            var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
+            var nodes = GNode.deserialize(gShell.getClipboardContent(GNode.MIME_TYPE));
             if (nodes && nodes.length > 0) {
                 var elements = [];
                 var editor = gApp.getActiveDocument().getEditor();
                 var page = gApp.getActiveDocument().getScene().querySingle('page:active');
-                var pageCntr = page.getGeometryBBox().getSide(IFRect.Side.CENTER);
+                var pageCntr = page.getGeometryBBox().getSide(GRect.Side.CENTER);
                 for (var i = 0; i < nodes.length; ++i) {
-                    if (nodes[i] instanceof IFElement) {
+                    if (nodes[i] instanceof GElement) {
                         var element = nodes[i];
                         var bbox = element.getGeometryBBox();
-                        var elemCntr = bbox ? bbox.getSide(IFRect.Side.CENTER) : new IFPoint(0,0);
+                        var elemCntr = bbox ? bbox.getSide(GRect.Side.CENTER) : new GPoint(0,0);
 
-                        element.transform(new IFTransform(1, 0, 0, 1,
+                        element.transform(new GTransform(1, 0, 0, 1,
                             -elemCntr.getX() + pageCntr.getX(), -elemCntr.getY() + pageCntr.getY()));
 
                         elements.push(element);

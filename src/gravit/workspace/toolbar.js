@@ -118,7 +118,7 @@
         }
 
         // Subscribe to some events
-        gApp.getToolManager().addEventListener(IFToolManager.ToolChangedEvent, this._toolChanged, this);
+        gApp.getToolManager().addEventListener(GToolManager.ToolChangedEvent, this._toolChanged, this);
     };
 
     /**

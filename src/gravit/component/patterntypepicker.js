@@ -4,25 +4,25 @@
             clazz: null,
             // TODO : I18N
             name: 'None',
-            cssBackground: IFPattern.asCSSBackground(null)
+            cssBackground: GPattern.asCSSBackground(null)
         },
         {
-            clazz: IFColor,
+            clazz: GColor,
             // TODO : I18N
             name: 'Color',
             cssBackground: 'black'
         },
         {
-            clazz: IFGradient,
+            clazz: GGradient,
             // TODO : I18N
             name: 'Gradient',
-            cssBackground: new IFLinearGradient().asCSSBackground()
+            cssBackground: new GLinearGradient().asCSSBackground()
         },
         {
-            clazz: IFBackground,
+            clazz: GBackground,
             // TODO : I18N
             name: 'Background',
-            cssBackground: new IFBackground().asCSSBackground()
+            cssBackground: new GBackground().asCSSBackground()
         }
     ];
 

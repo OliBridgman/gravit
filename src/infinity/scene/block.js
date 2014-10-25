@@ -1,40 +1,40 @@
 (function (_) {
     /**
      * A block element that supports properties and storage
-     * @class IFBlock
-     * @extends IFElement
-     * @mixes IFNode.Properties
-     * @mixes IFNode.Store
+     * @class GBlock
+     * @extends GElement
+     * @mixes GNode.Properties
+     * @mixes GNode.Store
      * @constructor
      */
-    function IFBlock() {
-        IFElement.call(this);
-        this._setDefaultProperties(IFBlock.VisualProperties, IFBlock.MetaProperties);
+    function GBlock() {
+        GElement.call(this);
+        this._setDefaultProperties(GBlock.VisualProperties, GBlock.MetaProperties);
     }
 
-    IFObject.inheritAndMix(IFBlock, IFElement, [IFNode.Properties, IFNode.Store]);
+    GObject.inheritAndMix(GBlock, GElement, [GNode.Properties, GNode.Store]);
 
     /**
      * The visual properties of a block with their default values
      */
-    IFBlock.VisualProperties = {
+    GBlock.VisualProperties = {
         visible: true
     };
 
     /**
      * The meta properties of a block with their default values
      */
-    IFBlock.MetaProperties = {
+    GBlock.MetaProperties = {
         name: null,
         locked: false
     };
 
     /** @override */
-    IFBlock.prototype.assignFrom = function (other) {
-        IFElement.prototype.assignFrom.call(this, other);
+    GBlock.prototype.assignFrom = function (other) {
+        GElement.prototype.assignFrom.call(this, other);
 
-        if (other instanceof IFBlock) {
-            this.transferProperties(other, [IFBlock.VisualProperties, IFBlock.MetaProperties]);
+        if (other instanceof GBlock) {
+            this.transferProperties(other, [GBlock.VisualProperties, GBlock.MetaProperties]);
         }
     };
 
@@ -43,7 +43,7 @@
      * of the block if it has one or the name of the block's type
      * @return {String}
      */
-    IFBlock.prototype.getLabel = function () {
+    GBlock.prototype.getLabel = function () {
         if (this.$name && this.$name !== "") {
             return this.$name;
         }
@@ -52,11 +52,11 @@
 
     /**
      * Returns the owner layer of this block if any
-     * @return {IFLayer}
+     * @return {GLayer}
      */
-    IFBlock.prototype.getOwnerLayer = function () {
+    GBlock.prototype.getOwnerLayer = function () {
         for (var p = this.getParent(); p !== null; p = p.getParent()) {
-            if (p instanceof IFLayer) {
+            if (p instanceof GLayer) {
                 return p;
             }
         }
@@ -65,12 +65,12 @@
 
     /**
      * Returns the root layer of this block if any
-     * @return {IFLayer}
+     * @return {GLayer}
      */
-    IFBlock.prototype.getRootLayer = function () {
+    GBlock.prototype.getRootLayer = function () {
         var lastLayer = null;
         for (var p = this.getParent(); p !== null; p = p.getParent()) {
-            if (p instanceof IFLayer) {
+            if (p instanceof GLayer) {
                 lastLayer = p;
             }
         }
@@ -79,11 +79,11 @@
 
     /**
      * Returns the owner page of this block if any
-     * @return {IFPage}
+     * @return {GPage}
      */
-    IFBlock.prototype.getPage = function () {
+    GBlock.prototype.getPage = function () {
         for (var p = this.getParent(); p !== null; p = p.getParent()) {
-            if (p instanceof IFPage) {
+            if (p instanceof GPage) {
                 return p;
             }
         }
@@ -91,14 +91,14 @@
     };
 
     /** @override */
-    IFBlock.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFBlock.VisualProperties);
-            this.storeProperties(args, IFBlock.MetaProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFBlock.VisualProperties);
-            this.restoreProperties(args, IFBlock.MetaProperties);
-        } else if (change == IFNode._Change.AfterPropertiesChange) {
+    GBlock.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GBlock.VisualProperties);
+            this.storeProperties(args, GBlock.MetaProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GBlock.VisualProperties);
+            this.restoreProperties(args, GBlock.MetaProperties);
+        } else if (change == GNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
 
@@ -111,11 +111,11 @@
 
                 // Change hidden flag of this and all elemental children
                 this.accept(function (node) {
-                    if (node instanceof IFElement) {
+                    if (node instanceof GElement) {
                         if (isVisible) {
-                            node.removeFlag(IFElement.Flag.Hidden);
+                            node.removeFlag(GElement.Flag.Hidden);
                         } else {
-                            node.setFlag(IFElement.Flag.Hidden);
+                            node.setFlag(GElement.Flag.Hidden);
                         }
                         node._requestInvalidation();
                     }
@@ -123,13 +123,13 @@
 
                 // Deliver child geometry update to parent
                 if (this.getParent()) {
-                    this.getParent()._notifyChange(IFElement._Change.ChildGeometryUpdate, this);
+                    this.getParent()._notifyChange(GElement._Change.ChildGeometryUpdate, this);
                 }
 
                 // Request a repaint of either old paint bbox if getting hidden or from
                 // the current paint bbox if getting visible
                 if (isVisible) {
-                    this._handleChange(IFElement._Change.InvalidationRequest);
+                    this._handleChange(GElement._Change.InvalidationRequest);
                 } else {
                     this._requestInvalidationArea(oldPaintBBox);
                 }
@@ -138,18 +138,18 @@
 
                 // Change locked flag of this and all elemental children
                 this.accept(function (node) {
-                    if (node instanceof IFElement) {
+                    if (node instanceof GElement) {
                         if (isLocked) {
-                            node.setFlag(IFElement.Flag.Locked);
+                            node.setFlag(GElement.Flag.Locked);
                         } else {
-                            node.removeFlag(IFElement.Flag.Locked);
+                            node.removeFlag(GElement.Flag.Locked);
                         }
                     }
                 });
             }
         }
-        IFElement.prototype._handleChange.call(this, change, args);
+        GElement.prototype._handleChange.call(this, change, args);
     };
 
-    _.IFBlock = IFBlock;
+    _.GBlock = GBlock;
 })(this);

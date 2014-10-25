@@ -8,10 +8,10 @@
      */
     function GAddPageAction() {
     };
-    IFObject.inherit(GAddPageAction, GAction);
+    GObject.inherit(GAddPageAction, GAction);
 
     GAddPageAction.ID = 'modify.add-page';
-    GAddPageAction.TITLE = new IFLocale.Key(GAddPageAction, "title");
+    GAddPageAction.TITLE = new GLocale.Key(GAddPageAction, "title");
 
     /**
      * @override

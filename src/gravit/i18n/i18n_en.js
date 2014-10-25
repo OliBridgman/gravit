@@ -1,4 +1,4 @@
-ifLocale.setValues(GApplication, IFLocale.Language.English, [
+ifLocale.setValues(GApplication, GLocale.Language.English, [
     // Actions
     "category.file",
     "category.edit",

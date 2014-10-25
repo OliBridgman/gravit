@@ -9,7 +9,7 @@
     function GInfoProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GInfoProperties, GProperties);
+    GObject.inherit(GInfoProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,19 +24,19 @@
     GInfoProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
     GInfoProperties.prototype._elements = null;
 
     /**
-     * @type {IFRect}
+     * @type {GRect}
      * @private
      */
     GInfoProperties.prototype._elementsBBox = null;
 
     /**
-     * @type {IFRect}
+     * @type {GRect}
      * @private
      */
     GInfoProperties.prototype._firstElementsBBox = null;
@@ -53,7 +53,7 @@
                     .css('width', '100%')
                     .attr('data-name', '')
                     .on('change', function (evt) {
-                        IFEditor.tryRunTransaction(self._elements[0], function () {
+                        GEditor.tryRunTransaction(self._elements[0], function () {
                             self._elements[0].setProperty('name', $(evt.target).val());
                         }, 'Rename Element');
                     });
@@ -172,8 +172,8 @@
     /** @override */
     GInfoProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().removeEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document = null;
         }
 
@@ -182,8 +182,8 @@
 
         if (this._elements.length > 0) {
             this._document = document;
-            this._document.getScene().addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             this._updateDimensions();
             return true;
@@ -193,19 +193,19 @@
     };
 
     /**
-     * @param {IFElement.GeometryChangeEvent} event
+     * @param {GElement.GeometryChangeEvent} event
      * @private
      */
     GInfoProperties.prototype._geometryChange = function (event) {
-        if ((event.type === IFElement.GeometryChangeEvent.Type.After) ||
-            (event.type === IFElement.GeometryChangeEvent.Type.Child))
+        if ((event.type === GElement.GeometryChangeEvent.Type.After) ||
+            (event.type === GElement.GeometryChangeEvent.Type.Child))
             if (this._elements.indexOf(event.element) >= 0) {
                 this._updateDimensions();
             }
     };
 
     /**
-     * @param {IFElement.GeometryChangeEvent} event
+     * @param {GElement.GeometryChangeEvent} event
      * @private
      */
     GInfoProperties.prototype._afterPropertiesChange = function (event) {
@@ -222,8 +222,8 @@
             .text(this._elements.length === 1 ? this._elements[0].getNodeNameTranslated() : (this._elements.length.toString() + ' Elements'))
 
         this._panel.find('input[data-name]')
-            .css('visibility', this._elements.length === 1 && this._elements[0] instanceof IFBlock ? 'visible' : 'hidden')
-            .val(this._elements.length === 1 && this._elements[0] instanceof IFBlock ? this._elements[0].getLabel() : '');
+            .css('visibility', this._elements.length === 1 && this._elements[0] instanceof GBlock ? 'visible' : 'hidden')
+            .val(this._elements.length === 1 && this._elements[0] instanceof GBlock ? this._elements[0].getLabel() : '');
     };
 
     /**
@@ -244,7 +244,7 @@
             this._elementsBBox = null;
             this._firstElementsBBox = null;
             for (var i = 0; i < this._elements.length; ++i) {
-                if (this._elements[i].hasMixin(IFElement.Transform)) {
+                if (this._elements[i].hasMixin(GElement.Transform)) {
                     var bbox = this._elements[i].getGeometryBBox();
                     if (bbox && !bbox.isEmpty()) {
                         this._elementsBBox = this._elementsBBox ? this._elementsBBox.united(bbox) : bbox;
@@ -335,17 +335,17 @@
                     default:
                         break;
                 }
-                return new IFTransform()
+                return new GTransform()
                     .translated(-bbox.getX(), -bbox.getY())
                     .scaled(sx, sy)
                     .translated(bbox.getX(), bbox.getY());
             } else {
                 switch (dimension) {
                     case 'x':
-                        return new IFTransform()
+                        return new GTransform()
                             .translated(value - bbox.getX(), 0);
                     case 'y':
-                        return new IFTransform()
+                        return new GTransform()
                             .translated(0, value - bbox.getY());
                     default:
                         break;
@@ -377,7 +377,7 @@
     };
 
     /**
-     * @returns {IFPoint}
+     * @returns {GPoint}
      * @private
      */
     GInfoProperties.prototype._getDelta = function () {
@@ -385,11 +385,11 @@
         if (scene.getProperty('singlePage') === true) {
             var activePage = scene.getActivePage();
             if (activePage) {
-                return activePage.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                return activePage.getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
             }
         }
 
-        return new IFPoint(0, 0);
+        return new GPoint(0, 0);
     }
 
     /** @override */

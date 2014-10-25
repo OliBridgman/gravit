@@ -11,10 +11,10 @@
         this._extensions = [];
     }
 
-    IFObject.inherit(GExportPalette, GPalette);
+    GObject.inherit(GExportPalette, GPalette);
 
     GExportPalette.ID = "export";
-    GExportPalette.TITLE = new IFLocale.Key(GExportPalette, "title");
+    GExportPalette.TITLE = new GLocale.Key(GExportPalette, "title");
 
     /**
      * @type {JQuery}
@@ -35,7 +35,7 @@
     GExportPalette.prototype._document = null;
 
     /**
-     * @type {IFElement}
+     * @type {GElement}
      * @private
      */
     GExportPalette.prototype._element = null;
@@ -149,16 +149,16 @@
             var scene = this._document.getScene();
             var editor = this._document.getEditor();
 
-            scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            editor.addEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._updateFromSelection();
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
             var editor = this._document.getEditor();
 
-            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            editor.removeEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._document = null;
             this._element = null;
@@ -170,7 +170,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GExportPalette.prototype._afterPropertiesChange = function (evt) {

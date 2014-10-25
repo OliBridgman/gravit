@@ -7,9 +7,9 @@
             var scene = document.getScene();
             scene.removeChild(scene.getActivePage());
 
-            var masterPage = new IFPage();
+            var masterPage = new GPage();
             var insertPos = scene.getPageInsertPosition();
-            var insertSize = new IFPoint(800, 600);
+            var insertSize = new GPoint(800, 600);
 
             masterPage.setProperties([
                 'name',
@@ -25,23 +25,23 @@
                 insertSize.getY()
             ]);
 
-            var layer = new IFLayer();
-            layer.setFlag(IFNode.Flag.Active);
+            var layer = new GLayer();
+            layer.setFlag(GNode.Flag.Active);
             masterPage.appendChild(layer);
 
-            var rectangle = new IFRectangle();
-            rectangle.setProperty('trf', new IFTransform(insertSize.getX() / 2, 0, 0, 50, 100 + insertSize.getX() / 2, 100 + 50));
+            var rectangle = new GRectangle();
+            rectangle.setProperty('trf', new GTransform(insertSize.getX() / 2, 0, 0, 50, 100 + insertSize.getX() / 2, 100 + 50));
             layer.appendChild(rectangle);
 
 
-            var slice = new IFSlice();
-            slice.setProperty('trf', new IFTransform(50, 0, 0, 50, 100 + 50 / 2, 100 + 50));
+            var slice = new GSlice();
+            slice.setProperty('trf', new GTransform(50, 0, 0, 50, 100 + 50 / 2, 100 + 50));
             layer.appendChild(slice);
 
             scene.appendChild(masterPage);
 
             for (var i = 0; i < 10; ++i) {
-                var page = new IFPage();
+                var page = new GPage();
                 insertPos = scene.getPageInsertPosition();
 
                 page.setProperties([
@@ -60,16 +60,16 @@
                     masterPage.getReferenceId()
                 ]);
 
-                var text = new IFText();
+                var text = new GText();
                 text.fromHtml('<p style="font-size:72px">Page Number ' + i + '</p>');
 
                 var textPaintBBox = text.getPaintBBox();
-                text.setProperties(['trf'], [new IFTransform(1, 0, 0, 1,
+                text.setProperties(['trf'], [new GTransform(1, 0, 0, 1,
                     insertPos.getX() + (insertSize.getX() - textPaintBBox.getWidth()) / 2,
                     insertPos.getY() + (insertSize.getY() - textPaintBBox.getHeight()) / 2)]);
 
-                var layer = new IFLayer();
-                layer.setFlag(IFNode.Flag.Active);
+                var layer = new GLayer();
+                layer.setFlag(GNode.Flag.Active);
                 layer.appendChild(text);
 
                 page.appendChild(layer);
@@ -77,7 +77,7 @@
                 scene.appendChild(page);
 
                 if (i === 0) {
-                    page.setFlag(IFNode.Flag.Active);
+                    page.setFlag(GNode.Flag.Active);
                 }
             }
         }

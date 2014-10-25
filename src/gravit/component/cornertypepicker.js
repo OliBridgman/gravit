@@ -1,23 +1,23 @@
 (function ($) {
     var cornerTypes = [
         {
-            type: IFPathBase.CornerType.Rounded,
+            type: GPathBase.CornerType.Rounded,
             icon: 'gicon-corner-rounded'
         },
         {
-            type: IFPathBase.CornerType.InverseRounded,
+            type: GPathBase.CornerType.InverseRounded,
             icon: 'gicon-corner-inverse-rounded'
         },
         {
-            type: IFPathBase.CornerType.Bevel,
+            type: GPathBase.CornerType.Bevel,
             icon: 'gicon-corner-bevel'
         },
         {
-            type: IFPathBase.CornerType.Inset,
+            type: GPathBase.CornerType.Inset,
             icon: 'gicon-corner-inset'
         },
         {
-            type: IFPathBase.CornerType.Fancy,
+            type: GPathBase.CornerType.Fancy,
             icon: 'gicon-corner-fancy'
         }
     ];

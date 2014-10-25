@@ -1,103 +1,103 @@
 (function (_) {
     /**
      * A class representing a context for painting
-     * @class IFPaintContext
+     * @class GPaintContext
      * @constructor
      */
-    function IFPaintContext() {
+    function GPaintContext() {
         this.outlineColors = [];
         this.canvasStack = [];
     }
 
     /**
      * The configuration for this context
-     * @type {IFPaintConfiguration}
+     * @type {GPaintConfiguration}
      */
-    IFPaintContext.prototype.configuration = null;
+    GPaintContext.prototype.configuration = null;
 
     /**
      * The canvas this context is working on
-     * @type IFPaintCanvas
+     * @type GPaintCanvas
      * @version 1.0
      */
-    IFPaintContext.prototype.canvas = null;
+    GPaintContext.prototype.canvas = null;
 
     /**
      * A stack of canvases
-     * @type {Array<IFPaintCanvas>}
+     * @type {Array<GPaintCanvas>}
      */
-    IFPaintContext.prototype.canvasStack = null;
+    GPaintContext.prototype.canvasStack = null;
 
     /**
      * A dirty list matcher if painting dirty, may be null
-     * @type IFDirtyList.Matcher
+     * @type GDirtyList.Matcher
      * @version 1.0
      */
-    IFPaintContext.prototype.dirtyMatcher = null;
+    GPaintContext.prototype.dirtyMatcher = null;
 
     /**
      * An array of outline colors. If this has
      * entries, then painting should take place
      * as wireframe only and taking the last
      * outline color entry of this array
-     * @type {Array<IFColor>}
+     * @type {Array<GColor>}
      */
-    IFPaintContext.prototype.outlineColors = null;
+    GPaintContext.prototype.outlineColors = null;
 
     /**
      * The current outline color for the selection
-     * @type IFColor
+     * @type GColor
      */
-    IFPaintContext.prototype.selectionOutlineColor = new IFRGBColor([0, 168, 255]);
+    GPaintContext.prototype.selectionOutlineColor = new GRGBColor([0, 168, 255]);
 
     /**
      * The current outline color for the highlight
-     * @type IFColor
+     * @type GColor
      */
-    IFPaintContext.prototype.highlightOutlineColor = new IFRGBColor([255, 0, 0]);
+    GPaintContext.prototype.highlightOutlineColor = new GRGBColor([255, 0, 0]);
 
     /**
      * The current outline color for the guides
-     * @type IFColor
+     * @type GColor
      */
-    IFPaintContext.prototype.guideOutlineColor = new IFRGBColor([46, 204, 64]);
+    GPaintContext.prototype.guideOutlineColor = new GRGBColor([46, 204, 64]);
 
     /**
      * Returns whether the paint context is in outline/wireframe mode or not
      * @return {boolean}
      */
-    IFPaintContext.prototype.isOutline = function () {
+    GPaintContext.prototype.isOutline = function () {
         return this.outlineColors && this.outlineColors.length > 0;
     };
 
     /**
      * Returns the current outline/wireframe color defaulting to black
-     * @returns {IFColor}
+     * @returns {GColor}
      */
-    IFPaintContext.prototype.getOutlineColor = function () {
+    GPaintContext.prototype.getOutlineColor = function () {
         if (this.outlineColors && this.outlineColors.length > 0) {
             return this.outlineColors[this.outlineColors.length - 1];
         } else {
             // TODO : Take this from configuration, instead?
-            return IFRGBColor.BLACK;
+            return GRGBColor.BLACK;
         }
     };
 
     /**
      * Return the root canvas
-     * @returns {IFPaintCanvas}
+     * @returns {GPaintCanvas}
      */
-    IFPaintContext.prototype.getRootCanvas = function () {
+    GPaintContext.prototype.getRootCanvas = function () {
         return this.canvasStack.length > 0 ? this.canvasStack[0] : this.canvas;
     };
 
     /**
      * Puts a new canvas to be the active one and pushes the previously
      * active one into the canvas stack and returns the previously active one
-     * @param {IFPaintCanvas} canvas
-     * @return {IFPaintCanvas}
+     * @param {GPaintCanvas} canvas
+     * @return {GPaintCanvas}
      */
-    IFPaintContext.prototype.pushCanvas = function (canvas) {
+    GPaintContext.prototype.pushCanvas = function (canvas) {
         var oldCanvas = this.canvas;
         this.canvasStack.push(this.canvas);
         this.canvas = canvas;
@@ -107,7 +107,7 @@
     /**
      * Pop the active canvas making the previous one from the stack the active one
      */
-    IFPaintContext.prototype.popCanvas = function () {
+    GPaintContext.prototype.popCanvas = function () {
         if (this.canvasStack.length <= 0) {
             throw new Error('Invalid call, stack length is zero.');
         }
@@ -116,9 +116,9 @@
     };
 
     /** @override */
-    IFPaintContext.prototype.toString = function () {
-        return "[Object IFPaintContext]";
+    GPaintContext.prototype.toString = function () {
+        return "[Object GPaintContext]";
     };
 
-    _.IFPaintContext = IFPaintContext;
+    _.GPaintContext = GPaintContext;
 })(this);

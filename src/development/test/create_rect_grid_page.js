@@ -16,8 +16,8 @@
             var numberOfRects = 0;
             for (var x = 0; x + RECT_SIZE < page.getProperty('w'); x += RECT_SIZE + RECT_SPACE) {
                 for (var y = 0; y + RECT_SIZE < page.getProperty('h'); y += RECT_SIZE + RECT_SPACE) {
-                    var rectangle = new IFRectangle();
-                    rectangle.setProperty('trf', new IFTransform(RECT_SIZE / 2, 0, 0, RECT_SIZE / 2, x + RECT_SIZE / 2, y + RECT_SIZE / 2));
+                    var rectangle = new GRectangle();
+                    rectangle.setProperty('trf', new GTransform(RECT_SIZE / 2, 0, 0, RECT_SIZE / 2, x + RECT_SIZE / 2, y + RECT_SIZE / 2));
 
                     layer.appendChild(rectangle);
 

@@ -1,25 +1,25 @@
 (function (_) {
     /**
      * An object representing an input event.
-     * @class IFInputEvent
-     * @extends IFEvent
+     * @class GInputEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    function IFInputEvent() {
+    function GInputEvent() {
     }
 
-    IFObject.inherit(IFInputEvent, IFEvent);
+    GObject.inherit(GInputEvent, GEvent);
 
     /** @override */
-    IFInputEvent.prototype.toString = function () {
-        return "[Object IFInputEvent(" + this._paramsToString() + ")]";
+    GInputEvent.prototype.toString = function () {
+        return "[Object GInputEvent(" + this._paramsToString() + ")]";
     };
 
     /** @private */
-    IFInputEvent.prototype._paramsToString = function () {
+    GInputEvent.prototype._paramsToString = function () {
         return "";
     };
 
-    _.IFInputEvent = IFInputEvent;
+    _.GInputEvent = GInputEvent;
 })(this);

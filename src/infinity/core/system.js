@@ -1,18 +1,18 @@
 (function (_) {
 
     /**
-     * @class IFSystem
+     * @class GSystem
      * @constructor
      * @version 1.0
      */
-    function IFSystem() {
+    function GSystem() {
     };
 
     /**
      * @enum
      * @version 1.0
      */
-    IFSystem.OperatingSystem = {
+    GSystem.OperatingSystem = {
         /**
          * Linux/unix based operating system
          * @type {Number}
@@ -39,7 +39,7 @@
      * @enum
      * @version 1.0
      */
-    IFSystem.Hardware = {
+    GSystem.Hardware = {
         /**
          * PC/Laptop based hardware
          * @type {Number}
@@ -68,60 +68,60 @@
      * @type {Boolean}
      * @version 1.0
      */
-    IFSystem.littleEndian = true;
+    GSystem.littleEndian = true;
 
     /**
      * Property defining the operating system type
      * @type {Number}
-     * @see IFSystem.OperatingSystem
+     * @see GSystem.OperatingSystem
      * @version 1.0
      */
-    IFSystem.operatingSystem = null;
+    GSystem.operatingSystem = null;
 
     /**
      * Property defining the hardware type
      * @type {Number}
-     * @see IFSystem.Hardware
+     * @see GSystem.Hardware
      * @version 1.0
      */
-    IFSystem.hardware = null;
+    GSystem.hardware = null;
 
     /**
      * Property defining the system's language
      * @type {String}
      * @version 1.0
      */
-    IFSystem.language = null;
+    GSystem.language = null;
 
     // Test little/big-endian using typed arrays
-    IFSystem.littleEndian = (function () {
+    GSystem.littleEndian = (function () {
         var testBuffer = new ArrayBuffer(8);
         var testArray = new Uint32Array(testBuffer);
         testArray[1] = 0x0a0b0c0d;
         return !(testBuffer[4] === 0x0a && testBuffer[5] === 0x0b && testBuffer[6] === 0x0c && testBuffer[7] === 0x0d);
     })();
 
-    IFSystem.hardware = (function () {
+    GSystem.hardware = (function () {
         var tablet = !!navigator.userAgent.match(/(iPad|SCH-I800|xoom|kindle)/i);
         var phone = !!navigator.userAgent.match(/(iPhone|iPod|blackberry|android 0.5|htc|lg|midp|mmp|mobile|nokia|opera mini|palm|pocket|psp|sgh|smartphone|symbian|treo mini|Playstation Portable|SonyEricsson|Samsung|MobileExplorer|PalmSource|Benq|Windows Phone|Windows Mobile|IEMobile|Windows CE|Nintendo Wii)/i);
 
         if (tablet) {
-            return IFSystem.Hardware.Tablet;
+            return GSystem.Hardware.Tablet;
         } else if (phone) {
-            return IFSystem.Hardware.Phone;
+            return GSystem.Hardware.Phone;
         } else {
-            return IFSystem.Hardware.Desktop;
+            return GSystem.Hardware.Desktop;
         }
     })();
 
-    IFSystem.operatingSystem = (function () {
+    GSystem.operatingSystem = (function () {
         var os_data = [
-            { string: navigator.platform, subString: "Win", identity: IFSystem.OperatingSystem.Windows },
-            { string: navigator.platform, subString: "Mac", identity: IFSystem.OperatingSystem.OSX_IOS },
-            { string: navigator.userAgent, subString: "iPhone", identity: IFSystem.OperatingSystem.OSX_IOS },
-            { string: navigator.userAgent, subString: "iPad", identity: IFSystem.OperatingSystem.OSX_IOS },
-            { string: navigator.userAgent, subString: "Android", identity: IFSystem.OperatingSystem.Unix },
-            { string: navigator.platform, subString: "Linux", identity: IFSystem.OperatingSystem.Unix }
+            { string: navigator.platform, subString: "Win", identity: GSystem.OperatingSystem.Windows },
+            { string: navigator.platform, subString: "Mac", identity: GSystem.OperatingSystem.OSX_IOS },
+            { string: navigator.userAgent, subString: "iPhone", identity: GSystem.OperatingSystem.OSX_IOS },
+            { string: navigator.userAgent, subString: "iPad", identity: GSystem.OperatingSystem.OSX_IOS },
+            { string: navigator.userAgent, subString: "Android", identity: GSystem.OperatingSystem.Unix },
+            { string: navigator.platform, subString: "Linux", identity: GSystem.OperatingSystem.Unix }
         ];
 
         for (var i = 0; i < os_data.length; i++) {
@@ -131,10 +131,10 @@
             }
         }
 
-        return IFSystem.OperatingSystem.Windows;
+        return GSystem.OperatingSystem.Windows;
     })();
 
-    IFSystem.language = (function () {
+    GSystem.language = (function () {
         var lang = ((navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage) || '').split("-");
 
         if (lang.length == 2) {
@@ -146,7 +146,7 @@
         return null;
     })();
 
-    console.log('HW=' + IFSystem.hardware + '; OS=' + IFSystem.operatingSystem + '; LANG=' + IFSystem.language);
+    console.log('HW=' + GSystem.hardware + '; OS=' + GSystem.operatingSystem + '; LANG=' + GSystem.language);
 
-    _.IFSystem = IFSystem;
+    _.GSystem = GSystem;
 })(this);

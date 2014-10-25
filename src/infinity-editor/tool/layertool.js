@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * The layer tool
-     * @class IFLayerTool
-     * @extends IFSelectTool
+     * @class GLayerTool
+     * @extends GSelectTool
      * @constructor
      */
-    function IFLayerTool() {
-        IFSelectTool.call(this);
+    function GLayerTool() {
+        GSelectTool.call(this);
     };
 
-    IFObject.inherit(IFLayerTool, IFSelectTool);
+    GObject.inherit(GLayerTool, GSelectTool);
 
     /** @override */
-    IFLayerTool.prototype.activate = function (view) {
-        IFSelectTool.prototype.activate.call(this, view);
+    GLayerTool.prototype.activate = function (view) {
+        GSelectTool.prototype.activate.call(this, view);
 
         // Store current selection & select active layer
         this._editor.storeSelection();
@@ -27,17 +27,17 @@
     };
 
     /** @override */
-    IFLayerTool.prototype.deactivate = function (view) {
+    GLayerTool.prototype.deactivate = function (view) {
         // Restore previous selection
         this._editor.restoreSelection();
 
-        IFSelectTool.prototype.deactivate.call(this, view);
+        GSelectTool.prototype.deactivate.call(this, view);
     };
 
     /** @override */
-    IFLayerTool.prototype._getSelectableElement = function (element) {
+    GLayerTool.prototype._getSelectableElement = function (element) {
         for (var p = element; p !== null; p = p.getParent()) {
-            if (p instanceof IFLayer) {
+            if (p instanceof GLayer) {
                 return p;
             }
         }
@@ -46,9 +46,9 @@
     };
 
     /** override */
-    IFLayerTool.prototype.toString = function () {
-        return "[Object IFLayerTool]";
+    GLayerTool.prototype.toString = function () {
+        return "[Object GLayerTool]";
     };
 
-    _.IFLayerTool = IFLayerTool;
+    _.GLayerTool = GLayerTool;
 })(this);

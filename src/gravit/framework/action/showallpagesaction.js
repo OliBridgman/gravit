@@ -8,10 +8,10 @@
      */
     function GShowAllPagesAction() {
     };
-    IFObject.inherit(GShowAllPagesAction, GAction);
+    GObject.inherit(GShowAllPagesAction, GAction);
 
     GShowAllPagesAction.ID = 'view.show-all-pages';
-    GShowAllPagesAction.TITLE = new IFLocale.Key(GShowAllPagesAction, 'title');
+    GShowAllPagesAction.TITLE = new GLocale.Key(GShowAllPagesAction, 'title');
 
     /**
      * @override

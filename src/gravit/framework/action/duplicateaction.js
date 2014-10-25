@@ -8,10 +8,10 @@
      */
     function GDuplicateAction() {
     };
-    IFObject.inherit(GDuplicateAction, GAction);
+    GObject.inherit(GDuplicateAction, GAction);
 
     GDuplicateAction.ID = 'edit.duplicate';
-    GDuplicateAction.TITLE = new IFLocale.Key(GDuplicateAction, "title");
+    GDuplicateAction.TITLE = new GLocale.Key(GDuplicateAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GDuplicateAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'D'];
+        return [GKey.Constant.META, 'D'];
     };
 
     /**

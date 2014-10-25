@@ -1,21 +1,21 @@
 (function (_) {
     /**
      * A canvas wrapper to paint onto
-     * @class IFPaintCanvas
-     * @extends IFObject
+     * @class GPaintCanvas
+     * @extends GObject
      * @constructor
      */
-    function IFPaintCanvas() {
+    function GPaintCanvas() {
         var canvasElement = document.createElement("canvas");
         this._canvasContext = canvasElement.getContext("2d");
     }
 
-    IFObject.inherit(IFPaintCanvas, IFObject);
+    GObject.inherit(GPaintCanvas, GObject);
 
     /**
      * @enum
      */
-    IFPaintCanvas.LineCap = {
+    GPaintCanvas.LineCap = {
         Butt: 'butt',
         Round: 'round',
         Square: 'square'
@@ -24,7 +24,7 @@
     /**
      * @enum
      */
-    IFPaintCanvas.LineJoin = {
+    GPaintCanvas.LineJoin = {
         Miter: 'miter',
         Bevel: 'bevel',
         Round: 'round'
@@ -33,7 +33,7 @@
     /**
      * @enum
      */
-    IFPaintCanvas.BlendMode = {
+    GPaintCanvas.BlendMode = {
         Normal: 'normal',
         Multiply: 'multiply',
         Screen: 'screen',
@@ -55,7 +55,7 @@
     /**
      * @enum
      */
-    IFPaintCanvas.CompositeOperator = {
+    GPaintCanvas.CompositeOperator = {
         /**
          * Displays the source image over the destination image
          * @type {Number}
@@ -151,7 +151,7 @@
      * A repeat mode of patterns and gradients
      * @enum
      */
-    IFPaintCanvas.RepeatMode = {
+    GPaintCanvas.RepeatMode = {
         /** Horizontal and vertical repeat */
         Both: 'repeat',
         /** Horizontal repeat */
@@ -175,7 +175,7 @@
         return result;
     };
 
-    IFPaintCanvas.createChessboard = function (size, backColor, foreColor) {
+    GPaintCanvas.createChessboard = function (size, backColor, foreColor) {
         var result = document.createElement('canvas');
         result.width = size * 2;
         result.height = size * 2;
@@ -189,56 +189,56 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFPaintCanvas Class
+    // GPaintCanvas Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type CanvasRenderingContext2D
      * @private
      */
-    IFPaintCanvas.prototype._canvasContext = null;
+    GPaintCanvas.prototype._canvasContext = null;
 
     /**
-     * @type {IFBitmap}
+     * @type {GBitmap}
      * @private
      */
-    IFPaintCanvas.prototype._bitmap = null;
+    GPaintCanvas.prototype._bitmap = null;
 
     /**
-     * @type IFTransform
+     * @type GTransform
      * @private
      */
-    IFPaintCanvas.prototype._transform = null;
+    GPaintCanvas.prototype._transform = null;
 
     /**
-     * @type IFPoint
+     * @type GPoint
      * @private
      */
-    IFPaintCanvas.prototype._offset = null;
+    GPaintCanvas.prototype._offset = null;
 
     /**
-     * @type IFPoint
+     * @type GPoint
      * @private
      */
-    IFPaintCanvas.prototype._origin = null;
+    GPaintCanvas.prototype._origin = null;
 
     /**
      * @type Number
      * @private
      */
-    IFPaintCanvas.prototype._scale = null;
+    GPaintCanvas.prototype._scale = null;
 
     /**
-     * @type Array<IFRect>
+     * @type Array<GRect>
      * @private
      */
-    IFPaintCanvas.prototype._areas = null;
+    GPaintCanvas.prototype._areas = null;
 
     /**
      * @return {Number} the width of the canvas
      * @version 1.0
      */
-    IFPaintCanvas.prototype.getWidth = function () {
+    GPaintCanvas.prototype.getWidth = function () {
         return this._canvasContext.canvas.width;
     };
 
@@ -246,7 +246,7 @@
      * @return {Number} the height of the canvas
      * @version 1.0
      */
-    IFPaintCanvas.prototype.getHeight = function () {
+    GPaintCanvas.prototype.getHeight = function () {
         return this._canvasContext.canvas.height;
     };
 
@@ -254,11 +254,11 @@
      * Returns the underlying bitmap of the canvas
      * for direct pixel manipulation. This operation
      * is cheap and doesn't allocate any memory
-     * @returns {IFBitmap}
+     * @returns {GBitmap}
      */
-    IFPaintCanvas.prototype.getBitmap = function () {
+    GPaintCanvas.prototype.getBitmap = function () {
         if (!this._bitmap) {
-            this._bitmap = new IFBitmap(this);
+            this._bitmap = new GBitmap(this);
         }
         return this._bitmap;
     };
@@ -269,7 +269,7 @@
      * encoded data url
      * @return {String}
      */
-    IFPaintCanvas.prototype.asPNGImage = function () {
+    GPaintCanvas.prototype.asPNGImage = function () {
         return this._canvasContext.canvas.toDataURL('image/png');
     };
 
@@ -281,7 +281,7 @@
      * 0.0 to 1.0, defaults to 1.0
      * @return {String}
      */
-    IFPaintCanvas.prototype.asJPEGImage = function (quality) {
+    GPaintCanvas.prototype.asJPEGImage = function (quality) {
         quality = quality || 1.0;
         return this._canvasContext.canvas.toDataURL('image/jpeg', quality);
     };
@@ -291,7 +291,7 @@
      * with a resolution of 96dpi as an ArrayBuffer
      * @param {Function} done callback function called with the ArrayBuffer
      */
-    IFPaintCanvas.prototype.asPNGImageBuffer = function (done) {
+    GPaintCanvas.prototype.asPNGImageBuffer = function (done) {
         this._canvasContext.canvas.toBlob(function (blob) {
             var reader = new FileReader();
             reader.onload = function (event) {
@@ -308,7 +308,7 @@
      * @param {Number} [quality] the quality of the image from
      * 0.0 to 1.0, defaults to 1.0
      */
-    IFPaintCanvas.prototype.asJPEGImageBuffer = function (done, quality) {
+    GPaintCanvas.prototype.asJPEGImageBuffer = function (done, quality) {
         quality = quality || 1.0;
         this._canvasContext.canvas.toBlob(function (blob) {
             var reader = new FileReader();
@@ -325,7 +325,7 @@
      * @param {Number} height the new height for the canvas
      * @version 1.0
      */
-    IFPaintCanvas.prototype.resize = function (width, height) {
+    GPaintCanvas.prototype.resize = function (width, height) {
         if (width != this._canvasContext.canvas.width || height != this._canvasContext.canvas.height) {
             this._canvasContext.canvas.width = width;
             this._canvasContext.canvas.height = height;
@@ -334,35 +334,35 @@
 
     /**
      * Returns the offset of this canvas
-     * @returns {IFPoint}
+     * @returns {GPoint}
      */
-    IFPaintCanvas.prototype.getOffset = function () {
+    GPaintCanvas.prototype.getOffset = function () {
         return this._offset;
     };
 
     /**
      * Assigns the offset of this canvas
-     * @param {IFPoint} origin
+     * @param {GPoint} origin
      */
-    IFPaintCanvas.prototype.setOffset = function (offset) {
+    GPaintCanvas.prototype.setOffset = function (offset) {
         this._offset = offset;
     };
 
     /**
      * Returns the origin of this canvas
-     * @returns {IFPoint}
+     * @returns {GPoint}
      */
-    IFPaintCanvas.prototype.getOrigin = function () {
+    GPaintCanvas.prototype.getOrigin = function () {
         return this._origin;
     };
 
     /**
      * Assigns the origin of this canvas. The origin
      * will always be premultiplied with any transformation.
-     * @param {IFPoint} origin
+     * @param {GPoint} origin
      */
-    IFPaintCanvas.prototype.setOrigin = function (origin) {
-        if (!IFPoint.equals(origin, this._origin)) {
+    GPaintCanvas.prototype.setOrigin = function (origin) {
+        if (!GPoint.equals(origin, this._origin)) {
             this._origin = origin;
             this._updateTransform();
         }
@@ -372,16 +372,16 @@
      * Returns the scalation of this canvas
      * @returns {Number}
      */
-    IFPaintCanvas.prototype.getScale = function () {
+    GPaintCanvas.prototype.getScale = function () {
         return this._scale;
     };
 
     /**
      * Assigns the scalation of this canvas. The scalation
      * will always be premultiplied with any transformation.
-     * @param {IFPoint} origin
+     * @param {GPoint} origin
      */
-    IFPaintCanvas.prototype.setScale = function (scale) {
+    GPaintCanvas.prototype.setScale = function (scale) {
         if (scale !== this._scale) {
             this._scale = scale;
             this._updateTransform();
@@ -393,30 +393,30 @@
      * @param {Boolean} [local] if provided, returns only the local
      * transformation which excludes the canvas' origin and scalation.
      * This parameter defaults to false, thus returns the global transform.
-     * @return {IFTransform} current transform
+     * @return {GTransform} current transform
      */
-    IFPaintCanvas.prototype.getTransform = function (local) {
+    GPaintCanvas.prototype.getTransform = function (local) {
         var transform = this._transform;
         if (!local) {
             var tx = this._origin.getX();
             var ty = this._origin.getY();
             var s = this._scale;
-            transform = transform.multiplied(new IFTransform().scaled(s, s).translated(-tx, -ty));
+            transform = transform.multiplied(new GTransform().scaled(s, s).translated(-tx, -ty));
         }
         return transform;
     };
 
     /**
      * Assign a new transformation to the canvas
-     * @param {IFTransform} transform the new transform to assign. If this
+     * @param {GTransform} transform the new transform to assign. If this
      * is null, then the identiy transformation is used assigned instead
-     * @return {IFTransform} the old transform before assignment
+     * @return {GTransform} the old transform before assignment
      * @version 1.0
      */
-    IFPaintCanvas.prototype.setTransform = function (transform) {
+    GPaintCanvas.prototype.setTransform = function (transform) {
         if (transform == null) {
             // Use identity transform
-            transform = new IFTransform();
+            transform = new GTransform();
         }
         var oldTransform = this._transform;
         this._transform = transform;
@@ -427,30 +427,30 @@
 
     /**
      * Reset the transformation to the identity transformation
-     * @return {IFTransform} the old transform before reset
+     * @return {GTransform} the old transform before reset
      * @version 1.0
      */
-    IFPaintCanvas.prototype.resetTransform = function () {
+    GPaintCanvas.prototype.resetTransform = function () {
         return this.setTransform(null);
     };
 
     /**
      * This needs to be called when the canvas should prepare
      * itself for painting.
-     * @param {Array<IFRect>} areas an array of areas to be painted.
+     * @param {Array<GRect>} areas an array of areas to be painted.
      * those will be used for clipping any painting as well for
      * clearing those regions before anything else. Note that you need
      * to enforce to provide integer based rectangles only as internally,
      * the canvas may need to convert into integers first which may
      * result in rounding errors otherwise
      */
-    IFPaintCanvas.prototype.prepare = function (areas) {
+    GPaintCanvas.prototype.prepare = function (areas) {
         // save context before anything else
         this._canvasContext.save();
 
         // Reset some stuff
-        this._transform = new IFTransform();
-        this._origin = new IFPoint(0, 0);
+        this._transform = new GTransform();
+        this._origin = new GPoint(0, 0);
         this._scale = 1.0;
         this._areas = areas ? areas.slice() : null;
         this._updateTransform();
@@ -491,7 +491,7 @@
      * and should restore.
      * @version 1.0
      */
-    IFPaintCanvas.prototype.finish = function () {
+    GPaintCanvas.prototype.finish = function () {
         this._canvasContext.restore();
         this._transform = null;
         this._origin = null;
@@ -507,13 +507,13 @@
      * canvas will include a transformation so that the
      * extent's x/y coordinates are equal to 0,0. Temporary canvases
      * should never be used i.e. for effects as they might be cut off.
-     * @param {IFRect} extents the extents for the requested canvas
+     * @param {GRect} extents the extents for the requested canvas
      * Defaults to false.
      * @param {Boolean} [clipDirty] whether to clip dirty areas, defaults
      * to false
      */
-    IFPaintCanvas.prototype.createCanvas = function (extents, clipDirty) {
-        var result = new IFPaintCanvas();
+    GPaintCanvas.prototype.createCanvas = function (extents, clipDirty) {
+        var result = new GPaintCanvas();
 
         // Convert extents into this canvas' coordinates and clip accordingly
         var paintExtents = this.getTransform(false).mapRect(extents);
@@ -540,9 +540,9 @@
             height = this.getHeight() - top;
         }
 
-        var sceneExtents = this.getTransform(false).inverted().mapRect(new IFRect(left, top, width, height));
+        var sceneExtents = this.getTransform(false).inverted().mapRect(new GRect(left, top, width, height));
 
-        var finalExtents = new IFRect(
+        var finalExtents = new GRect(
             sceneExtents.getX() * this._scale,
             sceneExtents.getY() * this._scale,
             sceneExtents.getWidth() * this._scale,
@@ -564,7 +564,7 @@
         result.prepare(areas);
 
         // Set result's origin and scalation
-        var topLeft = finalExtents.getSide(IFRect.Side.TOP_LEFT);
+        var topLeft = finalExtents.getSide(GRect.Side.TOP_LEFT);
         result.setOrigin(topLeft);
         result.setOffset(topLeft);
         result.setScale(this._scale);
@@ -576,8 +576,8 @@
     /**
      * Clears the whole canvas to be fully transparent
      */
-    IFPaintCanvas.prototype.clear = function () {
-        var clearRect = this.getTransform(false).inverted().mapRect(new IFRect(0, 0, this.getWidth(), this.getHeight()));
+    GPaintCanvas.prototype.clear = function () {
+        var clearRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
         this._canvasContext.clearRect(clearRect.getX(), clearRect.getY(), clearRect.getWidth(), clearRect.getHeight());
     };
 
@@ -585,15 +585,15 @@
      * Draw a canvas on this one. The canvas will be painted at it's given
      * offset position including the delta parameters. If the given canvas' scale
      * is != 100%, the canvas will draw it at 100%
-     * @param {IFPaintCanvas} canvas
+     * @param {GPaintCanvas} canvas
      * @param {Number} [dx]
      * @param {Number} [dy]
      * @param {Number} [opacity]
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
      * @param {Boolean} [clear] if true, the underlying area the canvas will be put onto
      * will be cleared first with transparent alpha values. Defaults to false.
      */
-    IFPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, cmpOrBlend, clear) {
+    GPaintCanvas.prototype.drawCanvas = function (canvas, dx, dy, opacity, cmpOrBlend, clear) {
         // Make sure to reset scale when drawing canvases + make non smooth
         var hadSmooth = this._getImageSmoothingEnabled();
         var oldScale = this._scale;
@@ -602,7 +602,7 @@
             this.setScale(1);
         }
         var oldTransform = this.resetTransform();
-        var oldTranslation = oldTransform ? oldTransform.getTranslation() : new IFPoint(0, 0);
+        var oldTranslation = oldTransform ? oldTransform.getTranslation() : new GPoint(0, 0);
 
         dx = dx | 0;
         dy = dy | 0;
@@ -624,7 +624,7 @@
 
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
 
         this._canvasContext.drawImage(canvas._canvasContext.canvas, 0, 0, w, h,
             x, y, w, h);
@@ -637,37 +637,37 @@
     /**
      * Creates and returns a texture pattern
      *
-     * @param {Image|IFPaintCanvas} image the image or canvas for the texture
-     * @param {IFPaintCanvas.RepeatMode} [repeat] the repeat mode, defaults
-     * to IFPaintCanvas.RepeatMode.Both
+     * @param {Image|GPaintCanvas} image the image or canvas for the texture
+     * @param {GPaintCanvas.RepeatMode} [repeat] the repeat mode, defaults
+     * to GPaintCanvas.RepeatMode.Both
      */
-    IFPaintCanvas.prototype.createTexture = function (image, repeat) {
-        repeat = repeat || IFPaintCanvas.RepeatMode.Both;
+    GPaintCanvas.prototype.createTexture = function (image, repeat) {
+        repeat = repeat || GPaintCanvas.RepeatMode.Both;
         image = this._convertImage(image);
         return this._canvasContext.createPattern(image, repeat);
     };
 
     /**
      * Creates and returns a paint for this canvas based on a pattern
-     * @param {IFPattern} pattern
-     * @param {IFRect} bbox
-     * @return {{paint: *, transform: IFTransform}}
+     * @param {GPattern} pattern
+     * @param {GRect} bbox
+     * @return {{paint: *, transform: GTransform}}
      */
-    IFPaintCanvas.prototype.createPatternPaint = function (pattern, bbox, callback) {
+    GPaintCanvas.prototype.createPatternPaint = function (pattern, bbox, callback) {
         var paint = null;
         var transform = null;
 
-        if (pattern instanceof IFColor) {
+        if (pattern instanceof GColor) {
             paint = pattern;
-        } else if (pattern instanceof IFGradient) {
+        } else if (pattern instanceof GGradient) {
             var scale = pattern.getScale();
 
-            if (pattern instanceof IFLinearGradient) {
+            if (pattern instanceof GLinearGradient) {
                 var angle = -pattern.getAngle();
                 paint = this._canvasContext.createLinearGradient(
                     0.5 - Math.cos(angle) / 2 * scale, 0.5 - Math.sin(angle) / 2 * scale,
                     0.5 + Math.cos(angle) / 2 * scale, 0.5 + Math.sin(angle) / 2 * scale);
-            } else if (pattern instanceof IFRadialGradient) {
+            } else if (pattern instanceof GRadialGradient) {
                 paint = this._canvasContext.createRadialGradient(0.5, 0.5, 0, 0.5, 0.5, 0.5 * scale);
             } else {
                 throw new Error('Unknown pattern');
@@ -680,7 +680,7 @@
             }
 
             if (bbox) {
-                transform = new IFTransform()
+                transform = new GTransform()
                     .scaled(bbox.getWidth(), bbox.getHeight())
                     .translated(bbox.getX(), bbox.getY());
             }
@@ -704,7 +704,7 @@
      * @param {Number} height height of rectangle
      * @version 1.0
      */
-    IFPaintCanvas.prototype.clipRect = function (x, y, width, height) {
+    GPaintCanvas.prototype.clipRect = function (x, y, width, height) {
         // Too bad we need to use expensive save() / restore() on canvas for now for clipping :(
         this._canvasContext.save();
 
@@ -721,7 +721,7 @@
      * Reset the last assigned clipping region
      * @version 1.0
      */
-    IFPaintCanvas.prototype.resetClip = function () {
+    GPaintCanvas.prototype.resetClip = function () {
         this._canvasContext.restore();
     };
 
@@ -729,22 +729,22 @@
      * Pushes a vertex source into this canvas overwriting any
      * previously added vertices. This will act as source for different
      * functions like clipVertices, strokeVertices and fillVertices
-     * @param {IFVertexSource} vertexSource the vertex source to use for clipping
+     * @param {GVertexSource} vertexSource the vertex source to use for clipping
      */
-    IFPaintCanvas.prototype.putVertices = function (vertexSource) {
+    GPaintCanvas.prototype.putVertices = function (vertexSource) {
         if (vertexSource.rewindVertices(0)) {
             this._canvasContext.beginPath();
 
-            var vertex = new IFVertex();
+            var vertex = new GVertex();
             while (vertexSource.readVertex(vertex)) {
                 switch (vertex.command) {
-                    case IFVertex.Command.Move:
+                    case GVertex.Command.Move:
                         this._canvasContext.moveTo(vertex.x, vertex.y);
                         break;
-                    case IFVertex.Command.Line:
+                    case GVertex.Command.Line:
                         this._canvasContext.lineTo(vertex.x, vertex.y);
                         break;
-                    case IFVertex.Command.Curve:
+                    case GVertex.Command.Curve:
                     {
                         var xTo = vertex.x;
                         var yTo = vertex.y;
@@ -753,7 +753,7 @@
                         }
                     }
                         break;
-                    case IFVertex.Command.Curve2:
+                    case GVertex.Command.Curve2:
                     {
                         var xTo = vertex.x;
                         var yTo = vertex.y;
@@ -766,7 +766,7 @@
                         }
                     }
                         break;
-                    case IFVertex.Command.Close:
+                    case GVertex.Command.Close:
                         this._canvasContext.closePath();
                         break;
                     default:
@@ -781,17 +781,17 @@
      * @param {*} stroke the stroke to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [width] the width of the stroke in pixelMode. If not provided, defaults to 1.0 pixelMode
-     * @param {Number} [cap] the line cap used for stroking, defaults to IFPaintCanvas.LineCap.Butt
+     * @param {Number} [cap] the line cap used for stroking, defaults to GPaintCanvas.LineCap.Butt
      * @param {Number} [join] the line join used for stroking
      * @param {Number} [miterLimit] the miter limit used for stroking
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
-     * @see IFPaintCanvas.LineCap
-     * @see IFPaintCanvas.LineJoin
-     * @see IFPaintCanvas.StrokeAlignment
-     * @see IFPaintCanvas.CompositeOperator
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
+     * @see GPaintCanvas.LineCap
+     * @see GPaintCanvas.LineJoin
+     * @see GPaintCanvas.StrokeAlignment
+     * @see GPaintCanvas.CompositeOperator
      */
-    IFPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, cmpOrBlend) {
+    GPaintCanvas.prototype.strokeVertices = function (stroke, width, cap, join, miterLimit, opacity, cmpOrBlend) {
         this._canvasContext.strokeStyle = this._convertStyle(stroke);
 
         if (typeof width == "number") {
@@ -807,7 +807,7 @@
 
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
 
         this._canvasContext.stroke();
     };
@@ -817,16 +817,16 @@
      * @param {*} [fill] the fill to be used which may not be unspecified and/or null. Providing
      * a number will interpret the number as a 32-Bit RGBA Integer Value.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
      * @param {Boolean} [evenodd] whether to use evenodd winding-rule (true) or nonzero (false, default)
      */
-    IFPaintCanvas.prototype.fillVertices = function (fill, opacity, cmpOrBlend, evenodd) {
+    GPaintCanvas.prototype.fillVertices = function (fill, opacity, cmpOrBlend, evenodd) {
         // save fill to avoid expensive recalculation
         this._canvasContext.fillStyle = this._convertStyle(fill);
 
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
 
         this._canvasContext.fill(!!evenodd ? 'evenodd' : 'nonzero');
     };
@@ -835,10 +835,10 @@
      * Function to fill the whole canvas with a given fill.
      * @param {*} [fill] the fill, defaults to full opaque black
      * @param {Number} [opacity] optional opacity to use for filling
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.fillCanvas = function (fill, opacity, cmpOrBlend) {
-        var fillRect = this.getTransform(false).inverted().mapRect(new IFRect(0, 0, this.getWidth(), this.getHeight()));
+    GPaintCanvas.prototype.fillCanvas = function (fill, opacity, cmpOrBlend) {
+        var fillRect = this.getTransform(false).inverted().mapRect(new GRect(0, 0, this.getWidth(), this.getHeight()));
         this.fillRect(fillRect.getX(), fillRect.getY(), fillRect.getWidth(), fillRect.getHeight(), fill, opacity, cmpOrBlend);
     };
 
@@ -853,11 +853,11 @@
      * @param {Number} height height of rectangle
      * @param {*} [fill] the fill, defaults to full opaque black
      * @param {Number} [opacity] optional opacity to use for filling
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity, cmpOrBlend) {
-        fill = this._convertStyle(fill ? fill : IFRGBColor.BLACK);
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+    GPaintCanvas.prototype.fillRect = function (x, y, width, height, fill, opacity, cmpOrBlend) {
+        fill = this._convertStyle(fill ? fill : GRGBColor.BLACK);
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.fillStyle = fill;
         this._canvasContext.fillRect(x, y, width, height);
@@ -875,12 +875,12 @@
      * @param {Number} [strokeWidth] the width of the stroke, defaults to 1.0
      * @param {Number} [stroke] the stroke, defaults to full opaque black
      * @param {Number} [opacity] optional opacity to use for stroking
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
      */
-    IFPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity, cmpOrBlend) {
-        stroke = this._convertStyle(stroke ? stroke : IFRGBColor.BLACK);
+    GPaintCanvas.prototype.strokeRect = function (x, y, width, height, strokeWidth, stroke, opacity, cmpOrBlend) {
+        stroke = this._convertStyle(stroke ? stroke : GRGBColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
@@ -900,10 +900,10 @@
      * @param {Number} [stroke] the stroke, defaults to full opaque black
      * @version 1.0
      */
-    IFPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
-        stroke = this._convertStyle(stroke ? stroke : IFRGBColor.BLACK);
+    GPaintCanvas.prototype.strokeLine = function (x1, y1, x2, y2, strokeWidth, stroke) {
+        stroke = this._convertStyle(stroke ? stroke : GRGBColor.BLACK);
         strokeWidth = strokeWidth || 1.0;
-        this._canvasContext.globalCompositeOperation = IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = GPaintCanvas.CompositeOperator.SourceOver;
         this._canvasContext.globalAlpha = 1.0;
         this._canvasContext.strokeStyle = stroke;
         this._canvasContext.lineWidth = strokeWidth;
@@ -915,16 +915,16 @@
 
     /**
      * Draw an image or canvas
-     * @param {Image|IFPaintCanvas} image the image or canvas to be drawn
+     * @param {Image|GPaintCanvas} image the image or canvas to be drawn
      * @param {Number} [x] the x-position of the image, defaults to zero
      * @param {Number} [y] the y-position of the image, defaults to zero
      * @param {Boolean} [noSmooth] if set to true, will render pixelated without smoothing. Defaults to false.
      * @param {Number} [opacity] the total opacity to use for painting, defaults to 1.0 (full opaque)
-     * @param {IFPaintCanvas.CompositeOperator|IFPaintCanvas.BlendMode} [cmpOrBlend]
-     * @see IFPaintCanvas.CompositeOperator
+     * @param {GPaintCanvas.CompositeOperator|GPaintCanvas.BlendMode} [cmpOrBlend]
+     * @see GPaintCanvas.CompositeOperator
      * @version 1.0
      */
-    IFPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, cmpOrBlend) {
+    GPaintCanvas.prototype.drawImage = function (image, x, y, noSmooth, opacity, cmpOrBlend) {
         x = x || 0;
         y = y || 0;
 
@@ -932,7 +932,7 @@
 
         this._canvasContext.globalAlpha = typeof opacity == "number" ? opacity : 1.0;
 
-        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : IFPaintCanvas.CompositeOperator.SourceOver;
+        this._canvasContext.globalCompositeOperation = cmpOrBlend ? cmpOrBlend : GPaintCanvas.CompositeOperator.SourceOver;
 
         var hadSmooth = this._getImageSmoothingEnabled();
         this._setImageSmoothingEnabled(!noSmooth);
@@ -943,7 +943,7 @@
     };
 
     /** @private */
-    IFPaintCanvas.prototype._updateTransform = function () {
+    GPaintCanvas.prototype._updateTransform = function () {
         // make sure to assign global transform matrix to canvas
         var matrix = this.getTransform(false).getMatrix();
         this._canvasContext.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
@@ -955,23 +955,23 @@
      * @returns {*}
      * @private
      */
-    IFPaintCanvas.prototype._convertStyle = function (style) {
+    GPaintCanvas.prototype._convertStyle = function (style) {
         // TODO : Support color conversion using paint configuration color profiles
 
         if (style instanceof CanvasPattern || style instanceof CanvasGradient) {
             return style;
-        } else if (style instanceof IFColor) {
-            return IFColor.rgbToHtmlHex(style.toScreen());
+        } else if (style instanceof GColor) {
+            return GColor.rgbToHtmlHex(style.toScreen());
         } else {
             throw new Error('Not Supported.');
         }
     };
 
     /** @private */
-    IFPaintCanvas.prototype._convertImage = function (image) {
+    GPaintCanvas.prototype._convertImage = function (image) {
         if (image instanceof HTMLImageElement || image instanceof Image || image instanceof HTMLCanvasElement) {
             return image;
-        } else if (image instanceof IFPaintCanvas) {
+        } else if (image instanceof GPaintCanvas) {
             return image._canvasContext.canvas;
         } else {
             throw new Error('Not Supported.');
@@ -981,7 +981,7 @@
     var _imageSmoothingProperties = ['imageSmoothingEnabled', 'webkitImageSmoothingEnabled', 'mozImageSmoothingEnabled'];
 
     /** @private */
-    IFPaintCanvas.prototype._getImageSmoothingEnabled = function () {
+    GPaintCanvas.prototype._getImageSmoothingEnabled = function () {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 return this._canvasContext[_imageSmoothingProperties[i]];
@@ -991,7 +991,7 @@
     };
 
     /** @private */
-    IFPaintCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
+    GPaintCanvas.prototype._setImageSmoothingEnabled = function (smoothingEnabled) {
         for (var i = 0; i < _imageSmoothingProperties.length; ++i) {
             if (this._canvasContext.hasOwnProperty(_imageSmoothingProperties[i])) {
                 this._canvasContext[_imageSmoothingProperties[i]] = smoothingEnabled;
@@ -1001,5 +1001,5 @@
         //throw new Error('No Image-Smoothing-Enabled Setting available on Canvas.');
     };
 
-    _.IFPaintCanvas = IFPaintCanvas;
+    _.GPaintCanvas = GPaintCanvas;
 })(this);

@@ -8,10 +8,10 @@
      */
     function GOriginalViewAction() {
     };
-    IFObject.inherit(GOriginalViewAction, GAction);
+    GObject.inherit(GOriginalViewAction, GAction);
 
     GOriginalViewAction.ID = 'view.zoom.original';
-    GOriginalViewAction.TITLE = new IFLocale.Key(GOriginalViewAction, "title");
+    GOriginalViewAction.TITLE = new GLocale.Key(GOriginalViewAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GOriginalViewAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, '0'];
+        return [GKey.Constant.META, '0'];
     };
 
     /**
@@ -61,7 +61,7 @@
     GOriginalViewAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var paintBBox = document.getScene().getPaintBBox();
-        document.getActiveWindow().getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(IFRect.Side.CENTER) : new IFPoint(0, 0), 1.0);
+        document.getActiveWindow().getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(GRect.Side.CENTER) : new GPoint(0, 0), 1.0);
     };
 
     /** @override */

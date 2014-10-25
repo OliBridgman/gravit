@@ -1,24 +1,24 @@
 (function (_) {
     /**
      * An editor for a page
-     * @param {IFGroup} group the group this editor works on
-     * @class IFPageEditor
-     * @extends IFBlockEditor
+     * @param {GGroup} group the group this editor works on
+     * @class GPageEditor
+     * @extends GBlockEditor
      * @constructor
      */
-    function IFPageEditor(group) {
-        IFBlockEditor.call(this, group);
-        this._flags |= IFBlockEditor.Flag.ResizeAll;
+    function GPageEditor(group) {
+        GBlockEditor.call(this, group);
+        this._flags |= GBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFPageEditor, IFBlockEditor);
-    IFPageEditor.exports(IFPageEditor, IFPage);
+    GObject.inherit(GPageEditor, GBlockEditor);
+    GPageEditor.exports(GPageEditor, GPage);
 
     /** @override */
-    IFPageEditor.prototype.canApplyTransform = function () {
+    GPageEditor.prototype.canApplyTransform = function () {
         // Page transforms can be applied only if the page doesn't
         // intersect with any other page
-        if (this._transform && !this._transform.isIdentity() && !this.getElement().hasFlag(IFElement.Flag.Locked)) {
-            var pageRect = this._transform.mapRect(new IFRect(
+        if (this._transform && !this._transform.isIdentity() && !this.getElement().hasFlag(GElement.Flag.Locked)) {
+            var pageRect = this._transform.mapRect(new GRect(
                 this._element.getProperty('x'), this._element.getProperty('y'),
                 this._element.getProperty('w'), this._element.getProperty('h')));
 
@@ -32,9 +32,9 @@
     };
 
     /** @override */
-    IFPageEditor.prototype.applyTransform = function () {
+    GPageEditor.prototype.applyTransform = function () {
         if (this._transform && !this._transform.isIdentity()) {
-            var pageRect = this._transform.mapRect(new IFRect(
+            var pageRect = this._transform.mapRect(new GRect(
                 this._element.getProperty('x'), this._element.getProperty('y'),
                 this._element.getProperty('w'), this._element.getProperty('h')));
             this._element.setProperties(['x', 'y', 'w', 'h'], [pageRect.getX(), pageRect.getY(), pageRect.getWidth(), pageRect.getHeight()]);
@@ -44,17 +44,17 @@
     };
 
     /** @override */
-    IFPageEditor.prototype._prePaint = function (transform, context) {
-        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+    GPageEditor.prototype._prePaint = function (transform, context) {
+        if (this.hasFlag(GElementEditor.Flag.Selected) || this.hasFlag(GElementEditor.Flag.Highlighted)) {
             this._paintBBoxOutline(transform, context);
         }
-        IFBlockEditor.prototype._prePaint.call(this, transform, context);
+        GBlockEditor.prototype._prePaint.call(this, transform, context);
     };
 
     /** @override */
-    IFPageEditor.prototype.toString = function () {
-        return "[Object IFPageEditor]";
+    GPageEditor.prototype.toString = function () {
+        return "[Object GPageEditor]";
     };
 
-    _.IFPageEditor = IFPageEditor;
+    _.GPageEditor = GPageEditor;
 })(this);

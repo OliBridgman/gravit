@@ -1,27 +1,27 @@
 (function (_) {
     /**
      * An editor for a text
-     * @param {IFText} text the text this editor works on
-     * @class IFTextEditor
-     * @extends IFShapeEditor
+     * @param {GText} text the text this editor works on
+     * @class GTextEditor
+     * @extends GShapeEditor
      * @constructor
      */
-    function IFTextEditor(rectangle) {
-        IFShapeEditor.call(this, rectangle);
-        this._flags |= IFBlockEditor.Flag.ResizeAll;
+    function GTextEditor(rectangle) {
+        GShapeEditor.call(this, rectangle);
+        this._flags |= GBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFTextEditor, IFShapeEditor);
-    IFElementEditor.exports(IFTextEditor, IFText);
+    GObject.inherit(GTextEditor, GShapeEditor);
+    GElementEditor.exports(GTextEditor, GText);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFTextEditor Class
+    // GTextEditor Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {HTMLDivElement}
      * @private
      */
-    IFTextEditor.prototype._inlineEditor = null;
+    GTextEditor.prototype._inlineEditor = null;
 
     /**
      * Get a property value
@@ -29,7 +29,7 @@
      * @param {Boolean} [computed] whether to use computed value (defaults to false)
      * @returns {*}
      */
-    IFTextEditor.prototype.getProperty = function (property, computed) {
+    GTextEditor.prototype.getProperty = function (property, computed) {
         if (this.isInlineEdit()) {
             var activeParagraph = null;
             var activeSpan = null;
@@ -58,17 +58,17 @@
                 }
             }
 
-            if (IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties.hasOwnProperty(property)) {
+            if (GStylable.PropertySetInfo[GStylable.PropertySet.Text].geometryProperties.hasOwnProperty(property)) {
                 if (activeSpan) {
-                    return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeSpan) : activeSpan.style);
+                    return GText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeSpan) : activeSpan.style);
                 } else if (activeParagraph) {
-                    return IFText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
+                    return GText.Block.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
                     return this.getElement().getProperty(property);
                 }
-            } else if (IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties.hasOwnProperty(property)) {
+            } else if (GStylable.PropertySetInfo[GStylable.PropertySet.Paragraph].geometryProperties.hasOwnProperty(property)) {
                 if (activeParagraph) {
-                    return IFText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
+                    return GText.Paragraph.cssToProperty(property, computed ? window.getComputedStyle(activeParagraph) : activeParagraph.style);
                 } else {
                     return this.getElement().getProperty(property);
                 }
@@ -78,7 +78,7 @@
         }
     };
 
-    IFTextEditor.prototype.setProperties = function (properties, values) {
+    GTextEditor.prototype.setProperties = function (properties, values) {
         var textProperties = [];
         var textValues = [];
         var blockProperties = [];
@@ -88,10 +88,10 @@
 
         // Separate text, block and paragraph properties
         for (var i = 0; i < properties.length; ++i) {
-            if (IFText.GeometryProperties.hasOwnProperty(properties[i])) {
+            if (GText.GeometryProperties.hasOwnProperty(properties[i])) {
                 textProperties.push(properties[i]);
                 textValues.push(values[i]);
-            } else if (IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties.hasOwnProperty(properties[i])) {
+            } else if (GStylable.PropertySetInfo[GStylable.PropertySet.Text].geometryProperties.hasOwnProperty(properties[i])) {
                 blockProperties.push(properties[i]);
                 blockValues.push(values[i]);
             } else {
@@ -104,12 +104,12 @@
             setTimeout(function () {
                 var blockCSS = {};
                 for (var i = 0; i < blockProperties.length; ++i) {
-                    IFText.Block.propertyToCss(blockProperties[i], blockValues[i], blockCSS);
+                    GText.Block.propertyToCss(blockProperties[i], blockValues[i], blockCSS);
                 }
 
                 var paragraphCSS = {};
                 for (var i = 0; i < paragraphProperties.length; ++i) {
-                    IFText.Paragraph.propertyToCss(paragraphProperties[i], paragraphValues[i], paragraphCSS);
+                    GText.Paragraph.propertyToCss(paragraphProperties[i], paragraphValues[i], paragraphCSS);
                 }
 
                 this._inlineEditor.focus();
@@ -171,7 +171,7 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.initialSetup = function () {
+    GTextEditor.prototype.initialSetup = function () {
         var element = this.getElement();
         var defStyle = element.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
         if (defStyle) {
@@ -180,20 +180,20 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.canInlineEdit = function () {
+    GTextEditor.prototype.canInlineEdit = function () {
         return true;
     };
 
     /** @override */
-    IFTextEditor.prototype.isInlineEdit = function () {
+    GTextEditor.prototype.isInlineEdit = function () {
         return this._inlineEditor !== null;
     };
 
     /** @override */
-    IFTextEditor.prototype.beginInlineEdit = function (view, container) {
+    GTextEditor.prototype.beginInlineEdit = function (view, container) {
         // Remove size handles and hide our text element
-        this.removeFlag(IFBlockEditor.Flag.ResizeAll);
-        this.getElement().setFlag(IFElement.Flag.NoPaint);
+        this.removeFlag(GBlockEditor.Flag.ResizeAll);
+        this.getElement().setFlag(GElement.Flag.NoPaint);
 
         var html = this.getElement().asHtml();
 
@@ -278,10 +278,10 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.adjustInlineEditForView = function (view, position) {
+    GTextEditor.prototype.adjustInlineEditForView = function (view, position) {
         var sceneBBox = this.getElement().getGeometryBBox();
         if (!sceneBBox) {
-            sceneBBox = IFRect.fromPoints(new IFPoint(0, 0), new IFPoint(1, 1));
+            sceneBBox = GRect.fromPoints(new GPoint(0, 0), new GPoint(1, 1));
             var transform = this.getElement().getTransform();
             if (transform) {
                 sceneBBox = transform.mapRect(sceneBBox);
@@ -317,11 +317,11 @@
 
     /**
      * Creates a selection and/or sets the caret position by given screen coordinates
-     * @param {IFPoint} startPos the start position in screen coordinates
-     * @param {IFPoint} [endPos] the end position in screen coordinates. If not provided
+     * @param {GPoint} startPos the start position in screen coordinates
+     * @param {GPoint} [endPos] the end position in screen coordinates. If not provided
      * will not create a selection but set the caret position only. Defaults to null.
      */
-    IFTextEditor.prototype.createSelectionFromPosition = function (startPos, endPos) {
+    GTextEditor.prototype.createSelectionFromPosition = function (startPos, endPos) {
         var doc = document;
         var range = null;
         if (typeof doc.caretPositionFromPoint != "undefined") {
@@ -362,7 +362,7 @@
     };
 
     /** @override */
-    IFTextEditor.prototype.finishInlineEdit = function () {
+    GTextEditor.prototype.finishInlineEdit = function () {
         if (this._savedSelection) {
             rangy.removeMarkers(this._savedSelection);
             this._savedSelection = null;
@@ -375,28 +375,28 @@
         this._inlineEditor = null;
 
         // Show size handles and our text element
-        this.setFlag(IFBlockEditor.Flag.ResizeAll);
-        this.getElement().removeFlag(IFElement.Flag.NoPaint);
+        this.setFlag(GBlockEditor.Flag.ResizeAll);
+        this.getElement().removeFlag(GElement.Flag.NoPaint);
 
         // TODO : I18N
         return 'Modify Text Content';
     };
 
     /** @override */
-    IFTextEditor.prototype.applyPartMove = function (partId, partData) {
-        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
+    GTextEditor.prototype.applyPartMove = function (partId, partData) {
+        if (partId === GBlockEditor.RESIZE_HANDLE_PART_ID) {
             if (!this._transform.isIdentity()) {
                 // By default we'll simply transfer the transformation to the element
                 this._element.textBoxTransform(this._transform);
             }
             this.resetTransform();
         }
-        IFElementEditor.prototype.applyPartMove.call(this, partId, partData);
+        GElementEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */
-    IFTextEditor.prototype._prePaint = function (transform, context) {
-        if ((this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) && !this.isInlineEdit()) {
+    GTextEditor.prototype._prePaint = function (transform, context) {
+        if ((this.hasFlag(GElementEditor.Flag.Selected) || this.hasFlag(GElementEditor.Flag.Highlighted)) && !this.isInlineEdit()) {
             // Paint textbox outline instead of glyphs
             var textRect = this._element.getGeometryBBox();
             if (textRect) {
@@ -408,23 +408,23 @@
                 var w = Math.ceil(transformedRect.getX() + transformedRect.getWidth()) - x;
                 var h = Math.ceil(transformedRect.getY() + transformedRect.getHeight()) - y;
 
-                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, this.hasFlag(IFElementEditor.Flag.Highlighted) ? context.highlightOutlineColor : context.selectionOutlineColor);
+                context.canvas.strokeRect(x + 0.5, y + 0.5, w, h, 1, this.hasFlag(GElementEditor.Flag.Highlighted) ? context.highlightOutlineColor : context.selectionOutlineColor);
             }
         }
     };
 
     /** @private */
-    IFTextEditor.prototype._triggerSelectionChanged = function () {
-        var editor = IFEditor.getEditor(this.getElement().getScene());
-        if (editor.hasEventListeners(IFEditor.InlineEditorEvent)) {
-            editor.trigger(new IFEditor.InlineEditorEvent(this, IFEditor.InlineEditorEvent.Type.SelectionChanged));
+    GTextEditor.prototype._triggerSelectionChanged = function () {
+        var editor = GEditor.getEditor(this.getElement().getScene());
+        if (editor.hasEventListeners(GEditor.InlineEditorEvent)) {
+            editor.trigger(new GEditor.InlineEditorEvent(this, GEditor.InlineEditorEvent.Type.SelectionChanged));
         }
     };
 
     /** @override */
-    IFTextEditor.prototype.toString = function () {
-        return "[Object IFTextEditor]";
+    GTextEditor.prototype.toString = function () {
+        return "[Object GTextEditor]";
     };
 
-    _.IFTextEditor = IFTextEditor;
+    _.GTextEditor = GTextEditor;
 })(this);

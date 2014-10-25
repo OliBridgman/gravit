@@ -9,7 +9,7 @@
         this._menuBar = new GMenuBar();
         this._clipboardMimeTypes = {};
     };
-    IFObject.inherit(GBrowserShell, GShell);
+    GObject.inherit(GBrowserShell, GShell);
 
     /**
      * @type {GMenuBar}

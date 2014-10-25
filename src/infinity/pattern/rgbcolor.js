@@ -7,29 +7,29 @@
     /**
      * A class representing a RGB Color
      * @param {RGB} rgb
-     * @class IFRGBColor
-     * @extends IFColor
+     * @class GRGBColor
+     * @extends GColor
      * @constructor
      */
-    function IFRGBColor(rgb) {
+    function GRGBColor(rgb) {
         rgb = rgb ? [clamp_css_byte(rgb[0]), clamp_css_byte(rgb[1]), clamp_css_byte(rgb[2])] : [0, 0, 0];
-        IFColor.call(this,  rgb);
+        GColor.call(this,  rgb);
     }
 
-    IFPattern.inherit('C', IFRGBColor, IFColor);
+    GPattern.inherit('C', GRGBColor, GColor);
 
-    IFRGBColor.BLACK = new IFRGBColor([0, 0, 0]);
-    IFRGBColor.WHITE = new IFRGBColor([255, 255, 255]);
+    GRGBColor.BLACK = new GRGBColor([0, 0, 0]);
+    GRGBColor.WHITE = new GRGBColor([255, 255, 255]);
 
     /**
      * Construct a rgb color from a css color string
      * @param {String} cssString
-     * @returns {IFRGBColor} might be null
+     * @returns {GRGBColor} might be null
      */
-    IFRGBColor.fromCSSColor = function (cssString) {
-        var values = IFRGBColor.parseCSSColor(cssString);
+    GRGBColor.fromCSSColor = function (cssString) {
+        var values = GRGBColor.parseCSSColor(cssString);
         if (values) {
-            return new IFRGBColor(values.slice(0, 3));
+            return new GRGBColor(values.slice(0, 3));
         }
         return null;
     }
@@ -39,7 +39,7 @@
      * @param {String} cssString
      * @return {Array<Number>} RGBA whereas alpha value is from 0-1.0 or null on error
      */
-    IFRGBColor.parseCSSColor = function (cssString) {
+    GRGBColor.parseCSSColor = function (cssString) {
         // http://www.w3.org/TR/css3-color/
         var kCSSColorTable = {
             "transparent": [255, 255, 255, 0], "aliceblue": [240, 248, 255, 1.0],
@@ -209,18 +209,18 @@
         }
 
         // Hack - try again by prepending dash
-        return IFRGBColor.parseCSSColor('#' + cssString);
+        return GRGBColor.parseCSSColor('#' + cssString);
     };
 
-    IFRGBColor.equals = function (left, right) {
-        if (left instanceof IFRGBColor && right instanceof  IFRGBColor) {
-            return IFUtil.equals(left._value, right._value);
+    GRGBColor.equals = function (left, right) {
+        if (left instanceof GRGBColor && right instanceof  GRGBColor) {
+            return GUtil.equals(left._value, right._value);
         }
         return false;
     };
 
     /** @override */
-    IFRGBColor.prototype.toHumanString = function () {
+    GRGBColor.prototype.toHumanString = function () {
         return 'rgb ' +
             this._value[0] + ',' +
             this._value[1] + ',' +
@@ -228,19 +228,19 @@
     };
 
     /** @override */
-    IFRGBColor.prototype.toScreen = function (noCMS) {
+    GRGBColor.prototype.toScreen = function (noCMS) {
         return this._value;
     };
 
     /** @override */
-    IFRGBColor.prototype.clone = function () {
-        return new IFRGBColor(this._value);
+    GRGBColor.prototype.clone = function () {
+        return new GRGBColor(this._value);
     };
 
     /** @override */
-    IFRGBColor.prototype.toString = function () {
-        return "[Object IFRGBColor]";
+    GRGBColor.prototype.toString = function () {
+        return "[Object GRGBColor]";
     };
 
-    _.IFRGBColor = IFRGBColor;
+    _.GRGBColor = GRGBColor;
 })(this);

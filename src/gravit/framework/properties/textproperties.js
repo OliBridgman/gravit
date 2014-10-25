@@ -9,7 +9,7 @@
     function GTextProperties() {
         this._text = [];
     };
-    IFObject.inherit(GTextProperties, GProperties);
+    GObject.inherit(GTextProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,13 +24,13 @@
     GTextProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFText>}
+     * @type {Array<GText>}
      * @private
      */
     GTextProperties.prototype._text = null;
 
     /**
-     * @type {IFTextEditor}
+     * @type {GTextEditor}
      * @private
      */
     GTextProperties.prototype._textEditor = null;
@@ -45,13 +45,13 @@
                 var icon = '';
                 var align = property.substr('va-'.length);
                 switch (align) {
-                    case IFText.VerticalAlign.Top:
+                    case GText.VerticalAlign.Top:
                         icon = 'fa-align-right fa-rotate-270';
                         break;
-                    case IFText.VerticalAlign.Middle:
+                    case GText.VerticalAlign.Middle:
                         icon = 'fa-align-center fa-rotate-270';
                         break;
-                    case IFText.VerticalAlign.Bottom:
+                    case GText.VerticalAlign.Bottom:
                         icon = 'fa-align-left fa-rotate-270';
                         break;
                     default:
@@ -69,16 +69,16 @@
                 var iconName = '';
                 var alignment = property.substr('_pal-'.length);
                 switch (alignment) {
-                    case IFStylable.ParagraphAlignment.Left:
+                    case GStylable.ParagraphAlignment.Left:
                         iconName = 'left';
                         break;
-                    case IFStylable.ParagraphAlignment.Center:
+                    case GStylable.ParagraphAlignment.Center:
                         iconName = 'center';
                         break;
-                    case IFStylable.ParagraphAlignment.Right:
+                    case GStylable.ParagraphAlignment.Right:
                         iconName = 'right';
                         break;
-                    case IFStylable.ParagraphAlignment.Justify:
+                    case GStylable.ParagraphAlignment.Justify:
                         iconName = 'justify';
                         break;
                     default:
@@ -123,7 +123,7 @@
                         optGroup = optGroups[category];
                     } else {
                         optGroups[category] = optGroup = $('<optgroup></optgroup>')
-                            .attr('label', ifLocale.get(IFFont.CategoryName[category]))
+                            .attr('label', ifLocale.get(GFont.CategoryName[category]))
                             .appendTo(select);
                     }
 
@@ -161,7 +161,7 @@
                 for (var i = 100; i <= 900; i += 100) {
                     $('<option></option>')
                         .attr('value', i)
-                        .text(ifLocale.get(IFFont.WeightName[i]))
+                        .text(ifLocale.get(GFont.WeightName[i]))
                         .appendTo(select);
                 }
 
@@ -173,11 +173,11 @@
                         .attr('value', '')
                         .text(''))
                     .append($('<option></option>')
-                        .attr('value', IFFont.Style.Normal)
+                        .attr('value', GFont.Style.Normal)
                         // TODO : I18N
                         .text('Normal'))
                     .append($('<option></option>')
-                        .attr('value', IFFont.Style.Italic)
+                        .attr('value', GFont.Style.Italic)
                         // TODO : I18N
                         .text('Italic'))
                     .on('change', function () {
@@ -191,15 +191,15 @@
                         .attr('value', '')
                         .text(''))
                     .append($('<option></option>')
-                        .attr('value', IFStylable.ParagraphWrapMode.None)
+                        .attr('value', GStylable.ParagraphWrapMode.None)
                         // TODO : I18N
                         .text('None'))
                     .append($('<option></option>')
-                        .attr('value', IFStylable.ParagraphWrapMode.Words)
+                        .attr('value', GStylable.ParagraphWrapMode.Words)
                         // TODO : I18N
                         .text('Words'))
                     .append($('<option></option>')
-                        .attr('value', IFStylable.ParagraphWrapMode.All)
+                        .attr('value', GStylable.ParagraphWrapMode.All)
                         // TODO : I18N
                         .text('All'))
                     .on('change', function () {
@@ -212,7 +212,7 @@
                     .attr('data-property', property)
                     .on('change', function () {
                         var value = $(this).val();
-                        value = !value || value === "" ? null : IFLength.parseEquationValue(value);
+                        value = !value || value === "" ? null : GLength.parseEquationValue(value);
                         if (value === null || value > 0) {
                             self._assignProperty(property, value);
                         } else {
@@ -309,16 +309,16 @@
                     'top': '30px',
                     'left': '215px'
                 })
-                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Left)
+                .append(_createInput('_pal-' + GStylable.ParagraphAlignment.Left)
                     // TODO : I18N
                     .attr('title', 'Align Left'))
-                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Center)
+                .append(_createInput('_pal-' + GStylable.ParagraphAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Align Centered'))
-                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Right)
+                .append(_createInput('_pal-' + GStylable.ParagraphAlignment.Right)
                     // TODO : I18N
                     .attr('title', 'Align Right'))
-                .append(_createInput('_pal-' + IFStylable.ParagraphAlignment.Justify)
+                .append(_createInput('_pal-' + GStylable.ParagraphAlignment.Justify)
                     // TODO : I18N
                     .attr('title', 'Justify')))
             .append($('<hr>')
@@ -334,13 +334,13 @@
                     'top': '65px',
                     'left': '5px'
                 })
-                .append(_createInput('va-' + IFText.VerticalAlign.Top)
+                .append(_createInput('va-' + GText.VerticalAlign.Top)
                     // TODO : I18N
                     .attr('title', 'Align Top'))
-                .append(_createInput('va-' + IFText.VerticalAlign.Middle)
+                .append(_createInput('va-' + GText.VerticalAlign.Middle)
                     // TODO : I18N
                     .attr('title', 'Align Middle'))
-                .append(_createInput('va-' + IFText.VerticalAlign.Bottom)
+                .append(_createInput('va-' + GText.VerticalAlign.Bottom)
                     // TODO : I18N
                     .attr('title', 'Align Bottom')))
             .append($('<label></label>')
@@ -422,23 +422,23 @@
     /** @override */
     GTextProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
-            this._document.getEditor().removeEventListener(IFEditor.InlineEditorEvent, this._inlineEditorEvent);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getEditor().removeEventListener(GEditor.InlineEditorEvent, this._inlineEditorEvent);
             this._document = null;
         }
 
         // Collect all text elements
         this._text = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFText) {
+            if (elements[i] instanceof GText) {
                 this._text.push(elements[i]);
             }
         }
 
         if (this._text.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getEditor().addEventListener(IFEditor.InlineEditorEvent, this._inlineEditorEvent, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getEditor().addEventListener(GEditor.InlineEditorEvent, this._inlineEditorEvent, this);
             this._updateProperties();
             return true;
         } else {
@@ -447,7 +447,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GTextProperties.prototype._afterPropertiesChange = function (event) {
@@ -458,20 +458,20 @@
     };
 
     /**
-     * @param {IFEditor.InlineEditorEvent} event
+     * @param {GEditor.InlineEditorEvent} event
      * @private
      */
     GTextProperties.prototype._inlineEditorEvent = function (event) {
         switch (event.type) {
-            case IFEditor.InlineEditorEvent.Type.AfterOpen:
+            case GEditor.InlineEditorEvent.Type.AfterOpen:
                 this._textEditor = event.editor;
                 this._updateProperties();
                 break;
-            case IFEditor.InlineEditorEvent.Type.AfterClose:
+            case GEditor.InlineEditorEvent.Type.AfterClose:
                 this._textEditor = null;
                 this._updateProperties();
                 break;
-            case IFEditor.InlineEditorEvent.Type.SelectionChanged:
+            case GEditor.InlineEditorEvent.Type.SelectionChanged:
                 this._updateProperties();
                 break;
             default:
@@ -485,7 +485,7 @@
      */
     GTextProperties.prototype._updateProperties = function () {
         // Read properties from active editor or first text' editor
-        var propertySource = this._textEditor ? this._textEditor : IFElementEditor.getEditor(this._text[0]);
+        var propertySource = this._textEditor ? this._textEditor : GElementEditor.getEditor(this._text[0]);
 
         // Text
         this._panel.find('button[data-property^="va"]').each(function (index, element) {
@@ -552,7 +552,7 @@
             .val(this._document.getScene().pointToString(propertySource.getProperty('_pin')));
 
         var lh = propertySource.getProperty('_plh');
-        this._panel.find('input[data-property="_plh"]').val(lh !== null ? IFUtil.formatNumber(lh) : "");
+        this._panel.find('input[data-property="_plh"]').val(lh !== null ? GUtil.formatNumber(lh) : "");
     };
 
     /**
@@ -577,7 +577,7 @@
             editor.beginTransaction();
             try {
                 for (var i = 0; i < this._text.length; ++i) {
-                    var textEditor = IFElementEditor.getEditor(this._text[i]);
+                    var textEditor = GElementEditor.getEditor(this._text[i]);
                     textEditor.setProperties(properties, values);
                 }
             } finally {

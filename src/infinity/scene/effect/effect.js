@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * Base effect class
-     * @class IFEffect
-     * @extends IFNode
-     * @mixes IFNode.Store
-     * @mixes IFNode.Properties
+     * @class GEffect
+     * @extends GNode
+     * @mixes GNode.Store
+     * @mixes GNode.Properties
      * @constructor
      */
-    IFEffect = function () {
-        this._setDefaultProperties(IFEffect.GeometryProperties);
+    GEffect = function () {
+        this._setDefaultProperties(GEffect.GeometryProperties);
     };
-    IFObject.inheritAndMix(IFEffect, IFNode, [IFNode.Store, IFNode.Properties]);
+    GObject.inheritAndMix(GEffect, GNode, [GNode.Store, GNode.Properties]);
 
     /**
      * Type of an effect
      * @enum
      */
-    IFEffect.Type = {
+    GEffect.Type = {
         /**
          * Effect painted before the content and not
          * modifying the content itself
@@ -38,7 +38,7 @@
     /**
      * Geometry properties of an effect
      */
-    IFEffect.GeometryProperties = {
+    GEffect.GeometryProperties = {
         /** Visibility of the effect */
         'vs': true,
         /** The layer (String) this applies to */
@@ -46,9 +46,9 @@
     };
 
     /**
-     * @return {IFEffect.Type}
+     * @return {GEffect.Type}
      */
-    IFEffect.prototype.getEffectType = function () {
+    GEffect.prototype.getEffectType = function () {
         throw new Error('Not Supported.');
     };
 
@@ -57,54 +57,54 @@
      * @return {Array|Number} left,top,right,bottom or one for all
      * or null for none
      */
-    IFEffect.prototype.getEffectPadding = function () {
+    GEffect.prototype.getEffectPadding = function () {
         return null;
     };
 
     /**
      * Render this effect
-     * @param {IFPaintCanvas} contents canvas holding the painted contents.
+     * @param {GPaintCanvas} contents canvas holding the painted contents.
      * If this is a filter effect it should apply to contents, otherwise
      * it should not modify the contents and put results on the output
-     * @param {IFPaintCanvas} output the canvas to put the effect result onto.
+     * @param {GPaintCanvas} output the canvas to put the effect result onto.
      * This is null if this effect is a filter effect.
-     * @param {IFPaintCanvas} background the background canvas
+     * @param {GPaintCanvas} background the background canvas
      * @param {Number} scale the scaling factor used
-     * @return {IFPaintCanvas.BlendMode} a blend-mode for blending output
+     * @return {GPaintCanvas.BlendMode} a blend-mode for blending output
      * into the contents. This is only honored when this effect's type
-     * is actually set to IFEffect.Type.PostEffect
+     * is actually set to GEffect.Type.PostEffect
      */
-    IFEffect.prototype.render = function (contents, output, background, scale) {
+    GEffect.prototype.render = function (contents, output, background, scale) {
         // NO-OP
     };
 
     /** @override */
-    IFEffect.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFStylable.Effects;
+    GEffect.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GStylable.Effects;
     };
 
     /** @override */
-    IFEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFEffect.GeometryProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFEffect.GeometryProperties);
+    GEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GEffect.GeometryProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GEffect.GeometryProperties);
         }
 
-        this._handleGeometryChangeForProperties(change, args, IFEffect.GeometryProperties);
+        this._handleGeometryChangeForProperties(change, args, GEffect.GeometryProperties);
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * Return the owner stylable if any
-     * @returns {IFStylable}
+     * @returns {GStylable}
      */
-    IFEffect.prototype.getOwnerStylable = function () {
+    GEffect.prototype.getOwnerStylable = function () {
         var effects = this.getParent();
-        if (effects && effects instanceof IFStylable.Effects) {
+        if (effects && effects instanceof GStylable.Effects) {
             var stylable = effects.getParent();
-            if (stylable && stylable.hasMixin(IFStylable)) {
+            if (stylable && stylable.hasMixin(GStylable)) {
                 return stylable;
             }
         }
@@ -124,16 +124,16 @@
      * change of the geometry
      * @private
      */
-    IFEffect.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
-        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (IFUtil.containsObjectKey(args.properties, properties)) {
+    GEffect.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        if (change == GNode._Change.BeforePropertiesChange || change == GNode._Change.AfterPropertiesChange) {
+            if (GUtil.containsObjectKey(args.properties, properties)) {
                 var stylable = this.getOwnerStylable();
                 if (stylable) {
                     switch (change) {
-                        case IFNode._Change.BeforePropertiesChange:
+                        case GNode._Change.BeforePropertiesChange:
                             stylable._stylePrepareGeometryChange(true);
                             break;
-                        case IFNode._Change.AfterPropertiesChange:
+                        case GNode._Change.AfterPropertiesChange:
                             stylable._styleFinishGeometryChange(true);
                             break;
                     }
@@ -156,9 +156,9 @@
      * visual change
      * @private
      */
-    IFEffect.prototype._handleVisualChangeForProperties = function (change, args, properties) {
-        if (change == IFNode._Change.AfterPropertiesChange) {
-            if (IFUtil.containsObjectKey(args.properties, properties)) {
+    GEffect.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        if (change == GNode._Change.AfterPropertiesChange) {
+            if (GUtil.containsObjectKey(args.properties, properties)) {
                 var stylable = this.getOwnerStylable();
                 if (stylable) {
                     stylable._styleRepaint();
@@ -170,9 +170,9 @@
     };
 
     /** @override */
-    IFEffect.prototype.toString = function () {
-        return "[Object IFEffect]";
+    GEffect.prototype.toString = function () {
+        return "[Object GEffect]";
     };
 
-    _.IFEffect = IFEffect;
+    _.GEffect = GEffect;
 })(this);

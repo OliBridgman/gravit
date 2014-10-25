@@ -3,7 +3,7 @@
      * A menu implementation
      * @param {GMenuItem|GMenuBar} parent parent if not a standalone menu
      * @class GMenu
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
@@ -14,7 +14,7 @@
         this._htmlElement.on("mouseout", this._mouseOut.bind(this));
     };
 
-    IFObject.inherit(GMenu, IFEventTarget);
+    GObject.inherit(GMenu, GEventTarget);
 
     /**
      * A position a menu can be opened at
@@ -230,13 +230,13 @@
     /**
      * An event whenever a (standalone) menu is opened
      * @class GMenu.OpenEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenu.OpenEvent = function () {
     };
-    IFObject.inherit(GMenu.OpenEvent, IFEvent);
+    GObject.inherit(GMenu.OpenEvent, GEvent);
 
     /** @override */
     GMenu.OpenEvent.prototype.toString = function () {
@@ -252,13 +252,13 @@
     /**
      * An event whenever a (standalone) menu is closed
      * @class GMenu.CloseEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenu.CloseEvent = function () {
     };
-    IFObject.inherit(GMenu.CloseEvent, IFEvent);
+    GObject.inherit(GMenu.CloseEvent, GEvent);
 
     /** @override */
     GMenu.CloseEvent.prototype.toString = function () {
@@ -275,13 +275,13 @@
      * An event whenever an item within this menu was activated
      * @class GMenu.ActivateEvent
      * @param {GMenuItem} item item that was activated
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      */
     GMenu.ActivateEvent = function (item) {
         this.item = item;
     };
-    IFObject.inherit(GMenu.ActivateEvent, IFEvent);
+    GObject.inherit(GMenu.ActivateEvent, GEvent);
 
     /**
      * The item that was activated

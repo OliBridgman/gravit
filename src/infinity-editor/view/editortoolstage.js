@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A stage for rendering the tools
-     * @param {IFEditorView} view
-     * @class IFEditorToolStage
-     * @extends IFStage
+     * @param {GEditorView} view
+     * @class GEditorToolStage
+     * @extends GStage
      * @constructor
      */
-    function IFEditorToolStage(view) {
-        IFStage.call(this, view);
+    function GEditorToolStage(view) {
+        GStage.call(this, view);
     }
-    IFObject.inherit(IFEditorToolStage, IFStage);
+    GObject.inherit(GEditorToolStage, GStage);
 
     /** @override */
-    IFEditorToolStage.prototype.toString = function () {
-        return "[Object IFEditorToolStage]";
+    GEditorToolStage.prototype.toString = function () {
+        return "[Object GEditorToolStage]";
     };
 
-    _.IFEditorToolStage = IFEditorToolStage;
+    _.GEditorToolStage = GEditorToolStage;
 })(this);

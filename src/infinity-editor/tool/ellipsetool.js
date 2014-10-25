@@ -1,38 +1,38 @@
 (function (_) {
     /**
      * The ellipse tool
-     * @class IFEllipseTool
-     * @extends IFShapeTool
+     * @class GEllipseTool
+     * @extends GShapeTool
      * @constructor
      */
-    function IFEllipseTool() {
-        IFShapeTool.call(this, true, true);
+    function GEllipseTool() {
+        GShapeTool.call(this, true, true);
     }
 
-    IFObject.inherit(IFEllipseTool, IFShapeTool);
+    GObject.inherit(GEllipseTool, GShapeTool);
 
     /** @override */
-    IFEllipseTool.prototype._createShape = function () {
-        return new IFEllipse();
+    GEllipseTool.prototype._createShape = function () {
+        return new GEllipse();
     };
 
     /** @override */
-    IFEllipseTool.prototype._updateShape = function (shape, area, line) {
+    GEllipseTool.prototype._updateShape = function (shape, area, line) {
         // Original shape is a circle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
         shape.setProperty('trf',
-            new IFTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+            new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
                 area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
     };
 
     /** @override */
-    IFEllipseTool.prototype._hasCenterCross = function () {
+    GEllipseTool.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** override */
-    IFEllipseTool.prototype.toString = function () {
-        return "[Object IFEllipseTool]";
+    GEllipseTool.prototype.toString = function () {
+        return "[Object GEllipseTool]";
     };
 
-    _.IFEllipseTool = IFEllipseTool;
+    _.GEllipseTool = GEllipseTool;
 })(this);

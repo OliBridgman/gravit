@@ -1,10 +1,10 @@
 (function (_) {
     /**
      * Color transform filter
-     * @class IFColorTransformFilter
+     * @class GColorTransformFilter
      * @constructor
      */
-    function IFColorTransformFilter() {
+    function GColorTransformFilter() {
     };
 
     /**
@@ -13,7 +13,7 @@
      *
      * @param {{multiplier: Array<Number>, offsets: Array<Number>}}
      */
-    IFColorTransformFilter.apply = function (pixels, width, height, args) {
+    GColorTransformFilter.apply = function (pixels, width, height, args) {
         for (var y = 0; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
                 var index = (y * width + x) * 4;
@@ -25,5 +25,5 @@
         }
     };
 
-    _.IFColorTransformFilter = IFColorTransformFilter;
+    _.GColorTransformFilter = GColorTransformFilter;
 })(this);

@@ -2,34 +2,34 @@
 
     /**
      * The base for all path based shapes
-     * @class IFPathBase
-     * @extends IFShape
+     * @class GPathBase
+     * @extends GShape
      * @constructor
      */
-    function IFPathBase(evenOdd, anchorPoints) {
-        IFShape.call(this);
+    function GPathBase(evenOdd, anchorPoints) {
+        GShape.call(this);
 
-        this._setDefaultProperties(IFPathBase.VisualProperties);
+        this._setDefaultProperties(GPathBase.VisualProperties);
         if (evenOdd !== null) {
             this.$evenodd = evenOdd;
         }
 
         // Add anchor points
-        this._anchorPoints = anchorPoints ? anchorPoints : new IFPathBase.AnchorPoints();
+        this._anchorPoints = anchorPoints ? anchorPoints : new GPathBase.AnchorPoints();
         this._anchorPoints._parent = this;
         this._anchorPoints._setScene(this._scene);
         this._anchorPoints._removalAllowed = false;
 
-        this._vertices = new IFVertexContainer();
+        this._vertices = new GVertexContainer();
         this._verticesDirty = true;
     }
 
-    IFObject.inherit(IFPathBase, IFShape);
+    GObject.inherit(GPathBase, GShape);
 
     /**
      * @enum
      */
-    IFPathBase.CornerType = {
+    GPathBase.CornerType = {
         /**
          * A rounded corner
          */
@@ -56,9 +56,9 @@
         Fancy: 'F'
     };
 
-    IFPathBase.isCornerType = function (tp) {
-        for (var key in IFPathBase.CornerType) {
-            if (IFPathBase[key] === tp) {
+    GPathBase.isCornerType = function (tp) {
+        for (var key in GPathBase.CornerType) {
+            if (GPathBase[key] === tp) {
                 return true;
             }
         }
@@ -68,18 +68,18 @@
     /**
      * The visual properties of a path base with their default values
      */
-    IFPathBase.VisualProperties = {
+    GPathBase.VisualProperties = {
         /** Even-Odd fill */
         evenodd: false
     };
 
     /**
      * Creates a new path from a given vertex source.
-     * @param {IFVertexSource} source
-     * @return {IFPath|IFCompoundPath}
+     * @param {GVertexSource} source
+     * @return {GPath|GCompoundPath}
      */
-    IFPathBase.createPathFromVertexSource = function (source) {
-        var vertex = new IFVertex();
+    GPathBase.createPathFromVertexSource = function (source) {
+        var vertex = new GVertex();
         var pathes = [];
         var path = null;
         var anchorPoints = null;
@@ -88,24 +88,24 @@
         source.rewindVertices(0);
         while (!done && source.readVertex(vertex)) {
             switch (vertex.command) {
-                case IFVertex.Command.Move:
+                case GVertex.Command.Move:
                     if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
                         pathes.push(path);
                     }
-                    path = new IFPath();
+                    path = new GPath();
                     anchorPoints = path.getAnchorPoints();
-                    anchorPoint = new IFPathBase.AnchorPoint();
+                    anchorPoint = new GPathBase.AnchorPoint();
                     anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
                     anchorPoints.appendChild(anchorPoint);
                     break;
-                case IFVertex.Command.Line:
-                    anchorPoint = new IFPathBase.AnchorPoint();
+                case GVertex.Command.Line:
+                    anchorPoint = new GPathBase.AnchorPoint();
                     anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
                     anchorPoints.appendChild(anchorPoint);
                     break;
-                case IFVertex.Command.Curve:
-                    anchorPoint = new IFPathBase.AnchorPoint();
-                    var vertex2 = new IFVertex();
+                case GVertex.Command.Curve:
+                    anchorPoint = new GPathBase.AnchorPoint();
+                    var vertex2 = new GVertex();
                     if (source.readVertex(vertex2)) {
                         anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
                         anchorPoints.appendChild(anchorPoint);
@@ -116,32 +116,32 @@
                         path.setProperty('closed', true);
                     }
                     break;
-                case IFVertex.Command.Curve2:
-                    var vertex2 = new IFVertex();
+                case GVertex.Command.Curve2:
+                    var vertex2 = new GVertex();
                     if (source.readVertex(vertex2)) {
                         if (anchorPoint) {
                             anchorPoint.setProperties(['hrx', 'hry'], [vertex2.x, vertex2.y]);
                         }
                         if (source.readVertex(vertex2)) {
-                            anchorPoint = new IFPathBase.AnchorPoint();
+                            anchorPoint = new GPathBase.AnchorPoint();
                             anchorPoint.setProperties(['x', 'y', 'hlx', 'hly'], [vertex.x, vertex.y, vertex2.x, vertex2.y]);
                             anchorPoints.appendChild(anchorPoint);
                         } else {
-                            anchorPoint = new IFPathBase.AnchorPoint();
+                            anchorPoint = new GPathBase.AnchorPoint();
                             anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
                             anchorPoints.appendChild(anchorPoint);
                             done = true;
                             path.setProperty('closed', true);
                         }
                     } else {
-                        anchorPoint = new IFPathBase.AnchorPoint();
+                        anchorPoint = new GPathBase.AnchorPoint();
                         anchorPoint.setProperties(['x', 'y'], [vertex.x, vertex.y]);
                         anchorPoints.appendChild(anchorPoint);
                         done = true;
                         path.setProperty('closed', true);
                     }
                     break;
-                case IFVertex.Command.Close:
+                case GVertex.Command.Close:
                     path.setProperty('closed', true);
                     break;
                 default:
@@ -156,7 +156,7 @@
         if (pathes.length === 1) {
             return pathes[0];
         } else if (pathes.length > 1) {
-            var compound = new IFCompoundPath();
+            var compound = new GCompoundPath();
             for (var i = 0; i < pathes.length; ++i) {
                 compound.getAnchorPaths().appendChild(pathes[i]);
             }
@@ -167,25 +167,25 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFPathBase.AnchorPoint Class
+    // GPathBase.AnchorPoint Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFPathBase.AnchorPoint
-     * @extends IFNode
-     * @mixes IFNode.Properties
+     * @class GPathBase.AnchorPoint
+     * @extends GNode
+     * @mixes GNode.Properties
      * @constructor
      */
-    IFPathBase.AnchorPoint = function () {
-        this._setDefaultProperties(IFPathBase.AnchorPoint.GeometryProperties);
+    GPathBase.AnchorPoint = function () {
+        this._setDefaultProperties(GPathBase.AnchorPoint.GeometryProperties);
         this._leadHr = false;
     };
-    IFObject.inheritAndMix(IFPathBase.AnchorPoint, IFNode, [IFNode.Properties]);
+    GObject.inheritAndMix(GPathBase.AnchorPoint, GNode, [GNode.Properties]);
 
     /**
-     * Take care not to clanch values with IFPathBase.CornerType!
+     * Take care not to clanch values with GPathBase.CornerType!
      * @enum
      */
-    IFPathBase.AnchorPoint.Type = {
+    GPathBase.AnchorPoint.Type = {
         /**
          * Control points are completely independent of each other.
          */
@@ -210,9 +210,9 @@
     /**
      * Geometrical properties of an anchor point
      */
-    IFPathBase.AnchorPoint.GeometryProperties = {
+    GPathBase.AnchorPoint.GeometryProperties = {
         /** The type of the anchor point */
-        tp: IFPathBase.AnchorPoint.Type.Asymmetric,
+        tp: GPathBase.AnchorPoint.Type.Asymmetric,
         /** The x position */
         x: 0,
         /** The y position */
@@ -239,33 +239,33 @@
      * Constant used for approximating circle arcs with cubic bezier curve
      * @type {Number}
      */
-    IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF = 0.55191502; // http://spencermortensen.com/articles/bezier-circle/
+    GPathBase.AnchorPoint.BEST_CIRCLE_COEFF = 0.55191502; // http://spencermortensen.com/articles/bezier-circle/
 
     /**
      * Coefficient, meaning the relevant length of handle in relevance to the distance between points,
      * when handle length should be calculated automatically
      * @type {number}
      */
-    IFPathBase.AnchorPoint.HANDLE_COEFF = 0.39026286; // 0.551915024494 / sqrt(2)
+    GPathBase.AnchorPoint.HANDLE_COEFF = 0.39026286; // 0.551915024494 / sqrt(2)
 
     /** @override */
-    IFPathBase.AnchorPoint.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFPathBase.AnchorPoints;
+    GPathBase.AnchorPoint.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GPathBase.AnchorPoints;
     };
 
     /**
      * Serializes this point into a stream array
      * @return {Array<*>}
      */
-    IFPathBase.AnchorPoint.prototype.serialize = function () {
+    GPathBase.AnchorPoint.prototype.serialize = function () {
         var stream = [];
 
         // Encoding: TYPE | AH | X | Y | 'h' | HLX | HLY | 'H' | HRX | HRY | 'C' | CL | CR
-        if (this.$tp !== null && this.$tp !== IFPathBase.AnchorPoint.GeometryProperties.tp) {
+        if (this.$tp !== null && this.$tp !== GPathBase.AnchorPoint.GeometryProperties.tp) {
             stream.push(this.$tp);
         }
 
-        if (this.$ah && this.$ah !== IFPathBase.AnchorPoint.GeometryProperties.ah) {
+        if (this.$ah && this.$ah !== GPathBase.AnchorPoint.GeometryProperties.ah) {
             stream.push(this.$ah);
         }
 
@@ -293,8 +293,8 @@
         }
 
         // Corner shoulder
-        if ((this.$cl !== null && !IFMath.isEqualEps(this.$cl, IFPathBase.AnchorPoint.GeometryProperties.cl)) ||
-            (this.$cr !== null && !IFMath.isEqualEps(this.$cr, IFPathBase.AnchorPoint.GeometryProperties.cr))) {
+        if ((this.$cl !== null && !GMath.isEqualEps(this.$cl, GPathBase.AnchorPoint.GeometryProperties.cl)) ||
+            (this.$cr !== null && !GMath.isEqualEps(this.$cr, GPathBase.AnchorPoint.GeometryProperties.cr))) {
             stream.push('C');
             stream.push(this.$cl);
             stream.push(this.$cr);
@@ -307,7 +307,7 @@
      * Deserializes this point from a stream array
      * @param {Array<*>} stream
      */
-    IFPathBase.AnchorPoint.prototype.deserialize = function (stream) {
+    GPathBase.AnchorPoint.prototype.deserialize = function (stream) {
         var index = 0;
 
         // Read our Type if any
@@ -348,16 +348,16 @@
     /**
      * Returns a transformed copy of an anchor point. Only the point coordinates and handles are transformed,
      * but not the shoulders lengths
-     * @param {IFTransform} transform - a transform to apply
-     * @returns {IFPathBase.AnchorPoint} - a transformed copy of an anchor point
+     * @param {GTransform} transform - a transform to apply
+     * @returns {GPathBase.AnchorPoint} - a transformed copy of an anchor point
      * @private
      */
-    IFPathBase.AnchorPoint.prototype._getTransformedCopy = function (transform) {
-        var pt = new IFPathBase.AnchorPoint();
+    GPathBase.AnchorPoint.prototype._getTransformedCopy = function (transform) {
+        var pt = new GPathBase.AnchorPoint();
 
-        var leftH = this.$hlx !== null ? transform.mapPoint(new IFPoint(this.$hlx, this.$hly)) : null;
-        var rightH = this.$hrx !== null ? transform.mapPoint(new IFPoint(this.$hrx, this.$hry)) : null;
-        var coord = transform.mapPoint(new IFPoint(this.$x, this.$y));
+        var leftH = this.$hlx !== null ? transform.mapPoint(new GPoint(this.$hlx, this.$hly)) : null;
+        var rightH = this.$hrx !== null ? transform.mapPoint(new GPoint(this.$hrx, this.$hry)) : null;
+        var coord = transform.mapPoint(new GPoint(this.$x, this.$y));
         pt.$x = coord.getX();
         pt.$y = coord.getY();
         pt.$hlx = leftH ? leftH.getX() : null;
@@ -376,9 +376,9 @@
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of right shoulder
-     * @returns {IFPoint} a left shoulder point
+     * @returns {GPoint} a left shoulder point
      */
-    IFPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function (fictiveCorner) {
+    GPathBase.AnchorPoint.prototype.getLeftShoulderPoint = function (fictiveCorner) {
         if (this.getPath() && this.$cl && (fictiveCorner || this.$cr)) {
             var prevPt = this._parent.getPreviousPoint(this);
             return this._parent._getLeftShoulderPoint(this, prevPt);
@@ -390,12 +390,12 @@
     /**
      * Returns a left shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
-     * @param {IFTransform} transform - transform to apply
+     * @param {GTransform} transform - transform to apply
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of right shoulder
-     * @returns {IFPoint} a left shoulder point
+     * @returns {GPoint} a left shoulder point
      */
-    IFPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform, fictiveCorner) {
+    GPathBase.AnchorPoint.prototype.getLeftShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
         if (this.getPath() && this.$cl && (fictiveCorner || this.$cr)) {
@@ -412,9 +412,9 @@
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of left shoulder
-     * @returns {IFPoint} a right shoulder point
+     * @returns {GPoint} a right shoulder point
      */
-    IFPathBase.AnchorPoint.prototype.getRightShoulderPoint = function (fictiveCorner) {
+    GPathBase.AnchorPoint.prototype.getRightShoulderPoint = function (fictiveCorner) {
         if (this.getPath() && this.$cr && (fictiveCorner || this.$cl)) {
             var nextPt = this._parent.getNextPoint(this);
             return this._parent._getRightShoulderPoint(this, nextPt);
@@ -426,12 +426,12 @@
     /**
      * Returns a right shoulder point for points with set shoulder lengths, or null otherwise
      * Apply a passed transform to points before calculating shoulder point
-     * @param {IFTransform} transform - transform to apply
+     * @param {GTransform} transform - transform to apply
      * @param {Boolean} fictiveCorner - if true, shoulder point will be calculated even
      * if there is no real corner due to absence of left shoulder
-     * @returns {IFPoint} a right shoulder point
+     * @returns {GPoint} a right shoulder point
      */
-    IFPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform, fictiveCorner) {
+    GPathBase.AnchorPoint.prototype.getRightShoulderPointTransformed = function (transform, fictiveCorner) {
         var shoulderPt = null;
 
         if (this.getPath() && this.$cr && (fictiveCorner || this.$cl)) {
@@ -446,9 +446,9 @@
 
     /**
      * Returns a point until which left shoulder may be extended.
-     * @returns {IFPoint}
+     * @returns {GPoint}
      */
-    IFPathBase.AnchorPoint.prototype.getLeftShoulderLimitPoint = function () {
+    GPathBase.AnchorPoint.prototype.getLeftShoulderLimitPoint = function () {
         var limitPt = null;
         if (this.getPath()) {
             var prevPt = this._parent.getPreviousPoint(this);
@@ -461,9 +461,9 @@
 
     /**
      * Returns a point until which right shoulder may be extended.
-     * @returns {IFPoint}
+     * @returns {GPoint}
      */
-    IFPathBase.AnchorPoint.prototype.getRightShoulderLimitPoint = function () {
+    GPathBase.AnchorPoint.prototype.getRightShoulderLimitPoint = function () {
         var limitPt = null;
         if (this.getPath()) {
             var nextPt = this._parent.getNextPoint(this);
@@ -475,11 +475,11 @@
     };
 
     /** @override */
-    IFPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
+    GPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
         var path = this.getPath();
-        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (IFUtil.containsObjectKey(args.properties, IFPathBase.AnchorPoint.GeometryProperties)) {
-                if (change === IFNode._Change.BeforePropertiesChange) {
+        if (change == GNode._Change.BeforePropertiesChange || change == GNode._Change.AfterPropertiesChange) {
+            if (GUtil.containsObjectKey(args.properties, GPathBase.AnchorPoint.GeometryProperties)) {
+                if (change === GNode._Change.BeforePropertiesChange) {
                     // Handle uniformity of corner lengths
                     var cuIndex = args.properties.indexOf('cu');
                     var cu = cuIndex >= 0 ? args.values[cuIndex] : this.$cu;
@@ -507,11 +507,11 @@
 
                     // If we have a path, prepare it's geometrical change
                     if (path) {
-                        path._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+                        path._notifyChange(GElement._Change.PrepareGeometryUpdate);
                     }
-                } else if (change === IFNode._Change.AfterPropertiesChange) {
-                    if (this.$tp == IFPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
-                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+                } else if (change === GNode._Change.AfterPropertiesChange) {
+                    if (this.$tp == GPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == GPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
 
                         if ((args.properties.indexOf('hrx') >= 0 ||
                             args.properties.indexOf('hry') >= 0) &&
@@ -528,8 +528,8 @@
                     }
 
                     if (path || // For Smooth point recalculate handles properly, even if point is not inserted yet
-                        this.$tp == IFPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
-                        this.$tp == IFPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
+                        this.$tp == GPathBase.AnchorPoint.Type.Symmetric && !this.$ah && this.$hlx != null && this.$hrx != null ||
+                        this.$tp == GPathBase.AnchorPoint.Type.Mirror && !this.$ah && (this.$hlx != null || this.$hrx != null)) {
 
                         this._invalidateCalculations();
                     }
@@ -553,29 +553,29 @@
                                 this._parent._invalidateRight(this._parent.getNextPoint(this));
                             } else if (args.properties.indexOf('tp') >= 0) {
                                 var prevPt = this._parent.getPreviousPoint(this);
-                                if (prevPt && (prevPt.$ah || prevPt.$tp == IFPathBase.AnchorPoint.Type.Connector )) {
+                                if (prevPt && (prevPt.$ah || prevPt.$tp == GPathBase.AnchorPoint.Type.Connector )) {
                                     prevPt._invalidateCalculations();
                                 }
                                 var nextPt = this._parent.getNextPoint(this);
-                                if (nextPt && (nextPt.$ah || nextPt.$tp == IFPathBase.AnchorPoint.Type.Connector )) {
+                                if (nextPt && (nextPt.$ah || nextPt.$tp == GPathBase.AnchorPoint.Type.Connector )) {
                                     nextPt._invalidateCalculations();
                                 }
                             }
                         }
                         path._verticesDirty = true;
-                        path._notifyChange(IFElement._Change.FinishGeometryUpdate);
+                        path._notifyChange(GElement._Change.FinishGeometryUpdate);
                     }
                 }
             }
         }
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
-     * @returns {IFPathBase}
+     * @returns {GPathBase}
      * @private
      */
-    IFPathBase.AnchorPoint.prototype.getPath = function () {
+    GPathBase.AnchorPoint.prototype.getPath = function () {
         return this._parent ? this._parent._parent : null;
     };
 
@@ -585,15 +585,15 @@
      * Connector > Auto > Smooth, Corner
      * @private
      */
-    IFPathBase.AnchorPoint.prototype._invalidateCalculations = function () {
+    GPathBase.AnchorPoint.prototype._invalidateCalculations = function () {
         var points = this._parent;
 
-        if (points && this.$tp == IFPathBase.AnchorPoint.Type.Connector) {
+        if (points && this.$tp == GPathBase.AnchorPoint.Type.Connector) {
             this._calculateConnectorPoint();
-        } else if (this.$tp == IFPathBase.AnchorPoint.Type.Symmetric && !this.$ah) {
+        } else if (this.$tp == GPathBase.AnchorPoint.Type.Symmetric && !this.$ah) {
             // recalculate Smooth even if !points
             this._calculateSmoothPoint();
-        } else if (this.$tp == IFPathBase.AnchorPoint.Type.Mirror && !this.$ah) {
+        } else if (this.$tp == GPathBase.AnchorPoint.Type.Mirror && !this.$ah) {
             // recalculate Mirror even if !points
             this._calculateMirrorPoint();
         } else if (points && this.$ah) {
@@ -601,7 +601,7 @@
         }
     };
 
-    IFPathBase.AnchorPoint.prototype._calculateConnectorPoint = function () {
+    GPathBase.AnchorPoint.prototype._calculateConnectorPoint = function () {
         var points = this._parent;
         if (points) {
 
@@ -611,30 +611,30 @@
             var dirLenNext = 0;
 
             if (nextPt) {
-                dirLenNext = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y));
+                dirLenNext = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y));
             }
 
             if (prevPt) {
-                dirLenPrev = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y));
+                dirLenPrev = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y));
             }
 
             var hLen;
             var hx, hy;
             if (this.$ah) {
-                if (nextPt && prevPt && (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !IFMath.isEqualEps(dirLenNext, 0) && !IFMath.isEqualEps(dirLenPrev, 0)) {
+                if (nextPt && prevPt && (nextPt.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+                    nextPt.$tp == GPathBase.AnchorPoint.Type.Mirror) && !GMath.isEqualEps(dirLenNext, 0) && !GMath.isEqualEps(dirLenPrev, 0)) {
 
-                    hLen = dirLenNext * IFPathBase.AnchorPoint.HANDLE_COEFF;
+                    hLen = dirLenNext * GPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
                     hy = this.$y + (this.$y - prevPt.$y) / dirLenPrev * hLen;
                     this.setProperties(['hrx', 'hry'], [hx, hy]);
                 } else {
                     this.setProperties(['hrx', 'hry'], [null, null]);
                 }
-                if (prevPt && nextPt && (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                    prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) && !IFMath.isEqualEps(dirLenNext, 0) && !IFMath.isEqualEps(dirLenPrev, 0)) {
+                if (prevPt && nextPt && (prevPt.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+                    prevPt.$tp == GPathBase.AnchorPoint.Type.Mirror) && !GMath.isEqualEps(dirLenNext, 0) && !GMath.isEqualEps(dirLenPrev, 0)) {
 
-                    hLen = dirLenPrev * IFPathBase.AnchorPoint.HANDLE_COEFF;
+                    hLen = dirLenPrev * GPathBase.AnchorPoint.HANDLE_COEFF;
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
                     hy = this.$y + (this.$y - nextPt.$y) / dirLenNext * hLen;
                     this.setProperties(['hlx', 'hly'], [hx, hy]);
@@ -642,24 +642,24 @@
                     this.setProperties(['hlx', 'hly'], [null, null]);
                 }
             } else {
-                if (this.$hlx != null && nextPt && !IFMath.isEqualEps(dirLenNext, 0)) {
+                if (this.$hlx != null && nextPt && !GMath.isEqualEps(dirLenNext, 0)) {
                     // Use rotation if handle is already set
-                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                    hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - nextPt.$x) / dirLenNext * hLen;
                     hy = this.$y + (this.$y - nextPt.$y) / dirLenNext * hLen;
                     // TODO: use projection in editor when modifying handle
-                    //var hnd = IFMath.getPositiveProjection(this.$x, this.$y,
+                    //var hnd = GMath.getPositiveProjection(this.$x, this.$y,
                     //    this.$x + (this.$x - nextPt.$x), this.$y + (this.$y - nextPt.$y), this.$hlx, this.$hly);
                     this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
 
-                if (this.$hrx != null && prevPt && !IFMath.isEqualEps(dirLenPrev, 0)) {
+                if (this.$hrx != null && prevPt && !GMath.isEqualEps(dirLenPrev, 0)) {
                     // Use rotation if handle is already set
-                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                    hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - prevPt.$x) / dirLenPrev * hLen;
                     hy = this.$y + (this.$y - prevPt.$y) / dirLenPrev * hLen;
                     // TODO: use projection in editor when modifying handle
-                    //var hnd = IFMath.getPositiveProjection(this.$x, this.$y,
+                    //var hnd = GMath.getPositiveProjection(this.$x, this.$y,
                     //   this.$x + (this.$x - prevPt.$x), this.$y + (this.$y - prevPt.$y), this.$hrx, this.$hry);
                     this.setProperties(['hrx', 'hry'], [hx, hy]);
                 }
@@ -667,24 +667,24 @@
         }
     };
 
-    IFPathBase.AnchorPoint.prototype._calculateSmoothPoint = function () {
+    GPathBase.AnchorPoint.prototype._calculateSmoothPoint = function () {
         var hLen, dirLen;
         var hx, hy;
 
         // we have two handles, and we need to rotate one of them to be in line with the other
         if (this.$hlx != null && this.$hrx != null) {
             if (this._leadHr) { // the left handle shall be rotated to be in line with the right one
-                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
-                if (!IFMath.isEqualEps(dirLen, 0)) {
-                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                dirLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                if (!GMath.isEqualEps(dirLen, 0)) {
+                    hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
                     hx = this.$x + (this.$x - this.$hrx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hry) / dirLen * hLen;
                     this.setProperties(['hlx', 'hly'], [hx, hy]);
                 }
             } else { // the right handle shall be rotated to be in line with the left one
-                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
-                if (!IFMath.isEqualEps(dirLen, 0)) {
-                    hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
+                dirLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hlx, this.$hly));
+                if (!GMath.isEqualEps(dirLen, 0)) {
+                    hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, this.$hrx, this.$hry));
                     hx = this.$x + (this.$x - this.$hlx) / dirLen * hLen;
                     hy = this.$y + (this.$y - this.$hly) / dirLen * hLen;
                     this.setProperties(['hrx', 'hry'], [hx, hy]);
@@ -694,7 +694,7 @@
     };
 
     /** Calculate handles for point of type Mirror */
-    IFPathBase.AnchorPoint.prototype._calculateMirrorPoint = function () {
+    GPathBase.AnchorPoint.prototype._calculateMirrorPoint = function () {
         // we need to set one of handles to be in line with the other and have the same length
         if (this._leadHr && this.$hrx != null) { // the left handle shall be rotated to be in line with the right one
             var hx = this.$x + (this.$x - this.$hrx);
@@ -711,7 +711,7 @@
         }
     };
 
-    IFPathBase.AnchorPoint.prototype._calculateAutoHandles = function () {
+    GPathBase.AnchorPoint.prototype._calculateAutoHandles = function () {
         var points = this._parent;
         if (points) {
 
@@ -720,12 +720,12 @@
 
             var hx, hy;
             var dirLen, hLen;
-            var offs = IFPathBase.AnchorPoint.HANDLE_COEFF;
+            var offs = GPathBase.AnchorPoint.HANDLE_COEFF;
             var ccntr;
             var dx, dy;
             var px, py;
 
-            if (this.$tp == IFPathBase.AnchorPoint.Type.Symmetric || this.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+            if (this.$tp == GPathBase.AnchorPoint.Type.Symmetric || this.$tp == GPathBase.AnchorPoint.Type.Mirror) {
                 if (!nextPt && !prevPt) {
                     return;
                 } else if (nextPt && !prevPt ||
@@ -744,7 +744,7 @@
                         [hx, hy, this.$x + this.$x - hx, this.$y + this.$y - hy]);
                 } else if (prevPt && nextPt) {
                     // calculate handles to be tangent circle(triag(prevPt, this, nextPt))
-                    ccntr = IFMath.getCircumcircleCenter(
+                    ccntr = GMath.getCircumcircleCenter(
                         prevPt.$x, prevPt.$y, this.$x, this.$y, nextPt.$x, nextPt.$y);
 
                     if (ccntr == null) { // prev and next points are the same, make handles to be perpendicular
@@ -754,7 +754,7 @@
                             [this.$x - dx, this.$y - dy, this.$x + dx, this.$y + dy]);
                     }
                     else {
-                        dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                        dirLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                         // no need to check dirLen for 0, as ccntr != this
                         dx = (this.$y - ccntr.getY()) / dirLen;
                         dy = (ccntr.getX() - this.$x) / dirLen;
@@ -762,23 +762,23 @@
                         // check handles side
                         px = (prevPt.$x + nextPt.$x) / 2;
                         py = (prevPt.$y + nextPt.$y) / 2;
-                        if (IFMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
-                            IFMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
+                        if (GMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
+                            GMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
                             dx = -dx;
                             dy = -dy;
                         }
 
-                        hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
+                        hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
                         this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
 
-                        hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
+                        hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
                         this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                     }
                 }
             } else { // type != Smooth && type != Connector as this method should not be called for connector
                 if (prevPt && (prevPt.$x != this.$x || prevPt.$y != this.$y)) {
-                    if (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                        prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+                    if (prevPt.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+                        prevPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
 
                         var prevprevPt = points.getPreviousPoint(prevPt);
                         if (!prevprevPt || (prevPt.$x == prevprevPt.$x && prevPt.$y == prevprevPt.$y)) {
@@ -787,7 +787,7 @@
                             this.setProperties(['hlx', 'hly'], [hx, hy]);
                         } else {
                             // calculate left handle to be tangent circle(triag(this, prevPt, prevprevPt))
-                            ccntr = IFMath.getCircumcircleCenter(
+                            ccntr = GMath.getCircumcircleCenter(
                                 this.$x, this.$y, prevPt.$x, prevPt.$y, prevprevPt.$x, prevprevPt.$y);
 
                             if (ccntr == null) { // this and prevprev points are the same, make handle to be perpendicular
@@ -796,7 +796,7 @@
                                 this.setProperties(['hlx', 'hly'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
-                                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                                dirLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                                 // no need to check dirLen for 0, as ccntr != this
                                 dx = (this.$y - ccntr.getY()) / dirLen;
                                 dy = (ccntr.getX() - this.$x) / dirLen;
@@ -804,24 +804,24 @@
                                 // check handle side
                                 px = (prevPt.$x + prevprevPt.$x) / 2;
                                 py = (prevPt.$y + prevprevPt.$y) / 2;
-                                if (IFMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
-                                    IFMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
+                                if (GMath.segmentSide(this.$x, this.$y, px, py, prevPt.$x, prevPt.$y) !=
+                                    GMath.segmentSide(this.$x, this.$y, px, py, this.$x - dx, this.$y - dy)) {
                                     dx = -dx;
                                     dy = -dy;
                                 }
 
-                                hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
+                                hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, prevPt.$x, prevPt.$y)) * offs;
                                 this.setProperties(['hlx', 'hly'], [this.$x - dx * hLen, this.$y - dy * hLen]);
                             }
                         }
-                    } else { // prevPt.$tp != IFPathBase.AnchorPoint.Type.Symmetric || Mirror
+                    } else { // prevPt.$tp != GPathBase.AnchorPoint.Type.Symmetric || Mirror
                         this.setProperties(['hlx', 'hly'], [null, null]);
                     }
                 }
 
                 if (nextPt && (nextPt.$x != this.$x || nextPt.$y != this.$y)) {
-                    if (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-                        nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+                    if (nextPt.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+                        nextPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
 
                         var nextnextPt = points.getNextPoint(nextPt);
                         if (!nextnextPt || (nextPt.$x == nextnextPt.$x && nextPt.$y == nextnextPt.$y)) {
@@ -830,7 +830,7 @@
                             this.setProperties(['hrx', 'hry'], [hx, hy]);
                         } else {
                             // calculate right handle to be tangent circle(triag(this, nextPt, nextnextPt))
-                            ccntr = IFMath.getCircumcircleCenter(
+                            ccntr = GMath.getCircumcircleCenter(
                                 this.$x, this.$y, nextPt.$x, nextPt.$y, nextnextPt.$x, nextnextPt.$y);
 
                             if (ccntr == null) { // this and nextnext points are the same, make handle to be perpendicular
@@ -839,7 +839,7 @@
                                 this.setProperties(['hrx', 'hry'], [this.$x - dx, this.$y - dy]);
                             }
                             else {
-                                dirLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
+                                dirLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, ccntr.getX(), ccntr.getY()));
                                 // no need to check dirLen for 0, as ccntr != this
                                 dx = (this.$y - ccntr.getY()) / dirLen;
                                 dy = (ccntr.getX() - this.$x) / dirLen;
@@ -847,13 +847,13 @@
                                 // check handle side
                                 px = (nextPt.$x + nextnextPt.$x) / 2;
                                 py = (nextPt.$y + nextnextPt.$y) / 2;
-                                if (IFMath.segmentSide(this.$x, this.$y, px, py, nextPt.$x, nextPt.$y) !=
-                                    IFMath.segmentSide(this.$x, this.$y, px, py, this.$x + dx, this.$y + dy)) {
+                                if (GMath.segmentSide(this.$x, this.$y, px, py, nextPt.$x, nextPt.$y) !=
+                                    GMath.segmentSide(this.$x, this.$y, px, py, this.$x + dx, this.$y + dy)) {
                                     dx = -dx;
                                     dy = -dy;
                                 }
 
-                                hLen = Math.sqrt(IFMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
+                                hLen = Math.sqrt(GMath.ptSqrDist(this.$x, this.$y, nextPt.$x, nextPt.$y)) * offs;
                                 this.setProperties(['hrx', 'hry'], [this.$x + dx * hLen, this.$y + dy * hLen]);
                             }
                         }
@@ -866,55 +866,55 @@
     };
 
     /** @override */
-    IFPathBase.AnchorPoint.prototype.toString = function () {
-        return "[Object IFPathBase.AnchorPoint]";
+    GPathBase.AnchorPoint.prototype.toString = function () {
+        return "[Object GPathBase.AnchorPoint]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFPathBase.AnchorPoints Class
+    // GPathBase.AnchorPoints Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFPathBase.AnchorPoints
-     * @extends IFNode
-     * @mixes IFNode.Container
+     * @class GPathBase.AnchorPoints
+     * @extends GNode
+     * @mixes GNode.Container
      * @constructor
      */
-    IFPathBase.AnchorPoints = function () {
+    GPathBase.AnchorPoints = function () {
     };
-    IFObject.inheritAndMix(IFPathBase.AnchorPoints, IFNode, [IFNode.Container]);
+    GObject.inheritAndMix(GPathBase.AnchorPoints, GNode, [GNode.Container]);
 
     /**
      * Used for internal calculations.
      * When a point is being removed from container, save here the link to the previous point
      * to invalidate it after removal
-     * @type {IFPathBase.AnchorPoint}
+     * @type {GPathBase.AnchorPoint}
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._dirtyPrev = null;
+    GPathBase.AnchorPoints.prototype._dirtyPrev = null;
 
     /**
      * Used for internal calculations.
      * When a point is being removed from container, save here the link to the next point
      * to invalidate it after removal
-     * @type {IFPathBase.AnchorPoint}
+     * @type {GPathBase.AnchorPoint}
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._dirtyNext = null;
+    GPathBase.AnchorPoints.prototype._dirtyNext = null;
 
     /**
      * Used to disallow anchor points removal
      * @type {Boolean}
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._removalAllowed = false;
+    GPathBase.AnchorPoints.prototype._removalAllowed = false;
 
     /** @override */
-    IFPathBase.AnchorPoints.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFPathBase;
+    GPathBase.AnchorPoints.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GPathBase;
     };
 
     /** @override */
-    IFPathBase.AnchorPoints.prototype.validateRemoval = function () {
+    GPathBase.AnchorPoints.prototype.validateRemoval = function () {
         return this._removalAllowed ? this._removalAllowed : false;
     };
 
@@ -922,7 +922,7 @@
      * Serializes all points into a stream array
      * @return {Array<*>}
      */
-    IFPathBase.AnchorPoints.prototype.serialize = function () {
+    GPathBase.AnchorPoints.prototype.serialize = function () {
         var stream = [];
         for (var pt = this.getFirstChild(); pt !== null; pt = pt.getNext()) {
             stream.push(pt.serialize());
@@ -934,9 +934,9 @@
      * Deserializes all points from a stream array
      * @param {Array<*>} stream
      */
-    IFPathBase.AnchorPoints.prototype.deserialize = function (stream) {
+    GPathBase.AnchorPoints.prototype.deserialize = function (stream) {
         for (var i = 0; i < stream.length; ++i) {
-            var pt = new IFPathBase.AnchorPoint();
+            var pt = new GPathBase.AnchorPoint();
             pt.deserialize(stream[i]);
             this.appendChild(pt);
         }
@@ -945,20 +945,20 @@
     /**
      * Called when the coordinates of the point at right from the passed point have been changed.
      * Then recalculate carefully the passed point, and the point at left from it if needed.
-     * @param {IFPathBase.AnchorPoint} [anchorPt] - the passed point to start recalculations from
+     * @param {GPathBase.AnchorPoint} [anchorPt] - the passed point to start recalculations from
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._invalidateLeft = function (anchorPt) {
+    GPathBase.AnchorPoints.prototype._invalidateLeft = function (anchorPt) {
         if (!anchorPt) {
             return;
         }
         // the point should be recalculated if it has auto-handles or connector type.
         // In the case, when it has a smooth type, the left point also should be updated if it has auto-handles
-        if (anchorPt.$ah || anchorPt.$tp == IFPathBase.AnchorPoint.Type.Connector) {
+        if (anchorPt.$ah || anchorPt.$tp == GPathBase.AnchorPoint.Type.Connector) {
             anchorPt._invalidateCalculations();
         }
 
-        if (anchorPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+        if (anchorPt.$tp == GPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
             var leftPt = this.getPreviousPoint(anchorPt);
             if (leftPt && leftPt.$ah) {
                 leftPt._invalidateCalculations();
@@ -969,20 +969,20 @@
     /**
      * Called when the coordinates of the point at left from the passed point have been changed.
      * Then recalculate carefully the passed point, and the point at right from it if needed.
-     * @param {IFPathBase.AnchorPoint} [anchorPt] - the passed point to start recalculations from
+     * @param {GPathBase.AnchorPoint} [anchorPt] - the passed point to start recalculations from
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._invalidateRight = function (anchorPt) {
+    GPathBase.AnchorPoints.prototype._invalidateRight = function (anchorPt) {
         if (!anchorPt) {
             return;
         }
         // the point should be recalculated if it has auto-handles or connector type.
         // In the case, when it has a smooth type, the right point also should be updated if it has auto-handles
-        if (anchorPt.$ah || anchorPt.$tp == IFPathBase.AnchorPoint.Type.Connector) {
+        if (anchorPt.$ah || anchorPt.$tp == GPathBase.AnchorPoint.Type.Connector) {
             anchorPt._invalidateCalculations();
         }
 
-        if (anchorPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+        if (anchorPt.$tp == GPathBase.AnchorPoint.Type.Symmetric || anchorPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
             var rightPt = this.getNextPoint(anchorPt);
             if (rightPt && rightPt.$ah) {
                 rightPt._invalidateCalculations();
@@ -992,12 +992,12 @@
 
     /**
      * Called to generate vertices from this anchor points
-     * @param {IFVertexContainer} target the target vertex container to put vertices into
-     * @param {IFTransform} transform the transformation used for vertice generation, might be null
+     * @param {GVertexContainer} target the target vertex container to put vertices into
+     * @param {GTransform} transform the transformation used for vertice generation, might be null
      * @param {Boolean} styled - indicates if vertices should be calculated for path with styled corners
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._generateVertices = function (target, transform, styled) {
+    GPathBase.AnchorPoints.prototype._generateVertices = function (target, transform, styled) {
         var i;
         var pt;
         var startPtX, startPtY;
@@ -1014,10 +1014,10 @@
         var path = this._parent;
         var aptmp;
         if (!styled ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Asymmetric ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Connector ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Mirror || !path || !path.$closed ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Asymmetric ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Connector ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Mirror || !path || !path.$closed ||
             ap == this.getLastChild()) {
 
             if (transform) {
@@ -1033,7 +1033,7 @@
             startPtY = pt.getY();
         }
 
-        target.addVertex(IFVertex.Command.Move, startPtX, startPtY);
+        target.addVertex(GVertex.Command.Move, startPtX, startPtY);
         if (ap == this.getLastChild()) {
             return;
         }
@@ -1074,7 +1074,7 @@
         if (!nextPt) {
             this._addPathEndVertices(target, transform);
         } else {
-            target.addVertex(IFVertex.Command.Close, 0, 0);
+            target.addVertex(GVertex.Command.Close, 0, 0);
         }
     };
 
@@ -1082,11 +1082,11 @@
      * Calculates and return the first vertex of the path, from which movement to the next point starts
      * Takes into account corner type
      * This function is supposed to be called only when the path is closed
-     * @param {IFTransform} transform - a transformation to apply to anchor points before generating vertices
-     * @returns {IFPoint} starting point of the path
+     * @param {GTransform} transform - a transformation to apply to anchor points before generating vertices
+     * @returns {GPoint} starting point of the path
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._getPathStartPt = function (transform) {
+    GPathBase.AnchorPoints.prototype._getPathStartPt = function (transform) {
         var ap = this.getFirstChild();
         var prevPt = this.getPreviousPoint(ap);
         var nextPt = this.getNextPoint(ap);
@@ -1100,14 +1100,14 @@
         // no second corner shoulder
         if (!ap.$cl || !ap.$cr ||
             // specific corner type is not set
-            ap.$tp == IFPathBase.AnchorPoint.Type.Asymmetric ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Asymmetric ||
             // the point is connector or smooth, no corner here
-            ap.$tp == IFPathBase.AnchorPoint.Type.Connector ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-            ap.$tp == IFPathBase.AnchorPoint.Type.Mirror || !prevPt ||
-            prevPt.$tp == IFPathBase.AnchorPoint.Type.Connector && prevPt.$x == ap.$x && prevPt.$y == ap.$y) {
+            ap.$tp == GPathBase.AnchorPoint.Type.Connector ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+            ap.$tp == GPathBase.AnchorPoint.Type.Mirror || !prevPt ||
+            prevPt.$tp == GPathBase.AnchorPoint.Type.Connector && prevPt.$x == ap.$x && prevPt.$y == ap.$y) {
 
-            return new IFPoint(ap.$x, ap.$y);
+            return new GPoint(ap.$x, ap.$y);
         }
 
         return this._getRightShoulderPoint(ap, nextPt);
@@ -1122,11 +1122,11 @@
      * @param {Number} [pt2x] - x-coordinate of the second point
      * @param {Number} [pt2y] - y-coordinate of the second point
      * @param {Number} [pt2s] - shoulder of the second point
-     * @return {IFPoint} the shoulder end connected to the first point
+     * @return {GPoint} the shoulder end connected to the first point
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._getShoulderPoint = function (pt1x, pt1y, pt1s, pt2x, pt2y, pt2s) {
-        var dist = IFMath.ptDist(pt1x, pt1y, pt2x, pt2y);
+    GPathBase.AnchorPoints.prototype._getShoulderPoint = function (pt1x, pt1y, pt1s, pt2x, pt2y, pt2s) {
+        var dist = GMath.ptDist(pt1x, pt1y, pt2x, pt2y);
         var sptdst;
         var p1s, p2s;
         if (pt1s == null || pt1s <= 0) {
@@ -1148,17 +1148,17 @@
         } else {
             sptdst = dist * p1s / len;
         }
-        return IFMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
+        return GMath.getPointAtLength(pt1x, pt1y, pt2x, pt2y, sptdst);
     };
 
     /**
      * Returns a right shoulder point for the passed point, using the second passed point as a near point at right
-     * @param {IFPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
-     * @param {IFPathBase.AnchorPoint} [nextPt] an anchor point to be use as a near point at right
+     * @param {GPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
+     * @param {GPathBase.AnchorPoint} [nextPt] an anchor point to be use as a near point at right
      * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
-     * @returns {IFPoint} a left shoulder point
+     * @returns {GPoint} a left shoulder point
      */
-    IFPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt, maxLen) {
+    GPathBase.AnchorPoints.prototype._getRightShoulderPoint = function (curPt, nextPt, maxLen) {
         // define corner end
         var hx = null;
         var hy = null;
@@ -1172,13 +1172,13 @@
         var pt;
         if (hx != null) {
             if (maxLen) {
-                pt = new IFPoint(hx, hy);
+                pt = new GPoint(hx, hy);
             } else {
-                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
+                pt = GMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cr);
             }
         } else {
             if (maxLen) {
-                pt = new IFPoint(nextPt.$x, nextPt.$y);
+                pt = new GPoint(nextPt.$x, nextPt.$y);
             } else {
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cr, nextPt.$x, nextPt.$y, nextPt.$cl);
             }
@@ -1188,12 +1188,12 @@
 
     /**
      * Returns a left shoulder point for the passed point, using the second passed point as a near point at left
-     * @param {IFPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
-     * @param {IFPathBase.AnchorPoint} [prevPt] an anchor point to be use as a near point at left
+     * @param {GPathBase.AnchorPoint} [curPt] the current anchor point for which shoulder is needed
+     * @param {GPathBase.AnchorPoint} [prevPt] an anchor point to be use as a near point at left
      * @param {Boolean} maxLen - if true, instead of a real shoulder point, return shoulder point maximal position
-     * @returns {IFPoint} a left shoulder point
+     * @returns {GPoint} a left shoulder point
      */
-    IFPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt, maxLen) {
+    GPathBase.AnchorPoints.prototype._getLeftShoulderPoint = function (curPt, prevPt, maxLen) {
         // define corner end
         var hx = null;
         var hy = null;
@@ -1207,13 +1207,13 @@
         var pt;
         if (hx != null) {
             if (maxLen) {
-                pt = new IFPoint(hx, hy);
+                pt = new GPoint(hx, hy);
             } else {
-                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+                pt = GMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
             }
         } else {
             if (maxLen) {
-                pt = new IFPoint(prevPt.$x, prevPt.$y);
+                pt = new GPoint(prevPt.$x, prevPt.$y);
             } else {
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
             }
@@ -1224,14 +1224,14 @@
     /**
      * Calculate and adds vertices for anchor point
      * Anchor point type is taken into account only if styled corner is needed
-     * @param {IFVertexContainer} target the target vertex container to put vertices into
-     * @param {IFPathBase.AnchorPoint} [curPt] the current anchor point, used as a main source for segment and corner vertices
-     * @param {IFPathBase.AnchorPoint} [prevPt] the previous anchor point, used to correct vertices according to corner type
-     * @param {IFPathBase.AnchorPoint} [nextPt] the next anchor point, used to correct vertices according to corner type
+     * @param {GVertexContainer} target the target vertex container to put vertices into
+     * @param {GPathBase.AnchorPoint} [curPt] the current anchor point, used as a main source for segment and corner vertices
+     * @param {GPathBase.AnchorPoint} [prevPt] the previous anchor point, used to correct vertices according to corner type
+     * @param {GPathBase.AnchorPoint} [nextPt] the next anchor point, used to correct vertices according to corner type
      * @param {Boolean} [styled] used to indicate if styled corner is needed
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._addMiddleVertices = function (target, curPt, prevPt, nextPt, styled) {
+    GPathBase.AnchorPoints.prototype._addMiddleVertices = function (target, curPt, prevPt, nextPt, styled) {
         var hLen, dirLen;
         var h2x = null;
         var h2y = null;
@@ -1255,37 +1255,37 @@
 
         // define curve end point and other corner points if applicable
         if (!styled ||
-            curPt.$tp == IFPathBase.AnchorPoint.Type.Asymmetric ||
-            curPt.$tp == IFPathBase.AnchorPoint.Type.Connector ||
-            curPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric ||
-            curPt.$tp == IFPathBase.AnchorPoint.Type.Mirror ||
+            curPt.$tp == GPathBase.AnchorPoint.Type.Asymmetric ||
+            curPt.$tp == GPathBase.AnchorPoint.Type.Connector ||
+            curPt.$tp == GPathBase.AnchorPoint.Type.Symmetric ||
+            curPt.$tp == GPathBase.AnchorPoint.Type.Mirror ||
             // shoulders are not defined or zero
             !curPt.$cl || !curPt.$cr) {
             // No any specific corner with shoulders
 
             if (hx == null) {
-                target.addVertex(IFVertex.Command.Line, curPt.$x, curPt.$y);
+                target.addVertex(GVertex.Command.Line, curPt.$x, curPt.$y);
             } else if (h2x == null) {
-                target.addVertex(IFVertex.Command.Curve, curPt.$x, curPt.$y);
-                target.addVertex(IFVertex.Command.Curve, hx, hy);
+                target.addVertex(GVertex.Command.Curve, curPt.$x, curPt.$y);
+                target.addVertex(GVertex.Command.Curve, hx, hy);
             } else {
-                target.addVertex(IFVertex.Command.Curve2, curPt.$x, curPt.$y);
-                target.addVertex(IFVertex.Command.Curve2, hx, hy);
-                target.addVertex(IFVertex.Command.Curve2, h2x, h2y);
+                target.addVertex(GVertex.Command.Curve2, curPt.$x, curPt.$y);
+                target.addVertex(GVertex.Command.Curve2, hx, hy);
+                target.addVertex(GVertex.Command.Curve2, h2x, h2y);
             }
         } else { // corner with shoulders
             if (hx == null) {
                 pt = this._getShoulderPoint(curPt.$x, curPt.$y, curPt.$cl, prevPt.$x, prevPt.$y, prevPt.$cr);
-                target.addVertex(IFVertex.Command.Line, pt.getX(), pt.getY());
+                target.addVertex(GVertex.Command.Line, pt.getX(), pt.getY());
             } else if (h2x == null) {
-                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
-                target.addVertex(IFVertex.Command.Curve, pt.getX(), pt.getY());
-                target.addVertex(IFVertex.Command.Curve, hx, hy);
+                pt = GMath.getPointAtLength(curPt.$x, curPt.$y, hx, hy, curPt.$cl);
+                target.addVertex(GVertex.Command.Curve, pt.getX(), pt.getY());
+                target.addVertex(GVertex.Command.Curve, hx, hy);
             } else {
-                pt = IFMath.getPointAtLength(curPt.$x, curPt.$y, h2x, h2y, curPt.$cl);
-                target.addVertex(IFVertex.Command.Curve2, pt.getX(), pt.getY());
-                target.addVertex(IFVertex.Command.Curve2, hx, hy);
-                target.addVertex(IFVertex.Command.Curve2, h2x, h2y);
+                pt = GMath.getPointAtLength(curPt.$x, curPt.$y, h2x, h2y, curPt.$cl);
+                target.addVertex(GVertex.Command.Curve2, pt.getX(), pt.getY());
+                target.addVertex(GVertex.Command.Curve2, hx, hy);
+                target.addVertex(GVertex.Command.Curve2, h2x, h2y);
             }
 
             pt2 = this._getRightShoulderPoint(curPt, nextPt);
@@ -1297,7 +1297,7 @@
 
     /**
      * Adds extra (corner) vertices to _vertices
-     * @param {IFVertexContainer} target the target vertex container to put vertices into
+     * @param {GVertexContainer} target the target vertex container to put vertices into
      * @param {Number} [pt1x] x coordinate of a corner start point
      * @param {Number} [pt1y] y coordinate of a corner start point
      * @param {Number} [pt2x] x coordinate of a corner end point
@@ -1307,7 +1307,7 @@
      * @param {Number} [edgePtType] a type of of a corner anchor point
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._addCornerToVertices = function (target, pt1x, pt1y, pt2x, pt2y, edgePtx, edgePty, edgePtType) {
+    GPathBase.AnchorPoints.prototype._addCornerToVertices = function (target, pt1x, pt1y, pt2x, pt2y, edgePtx, edgePty, edgePtType) {
 
         var endPtX, endPtY, chunk1X, chunk1Y, chunk2X, chunk2Y;
         var edgeForInsetX, edgeForInsetY;
@@ -1315,39 +1315,39 @@
 
         if (pt1x == pt2x && pt1y == pt2y) {
             if (edgePtx != pt1x || edgePty != pt1y) {
-                target.addVertex(IFVertex.Command.Line, edgePtx, edgePty);
-                target.addVertex(IFVertex.Command.Line, pt2x, pt2y);
+                target.addVertex(GVertex.Command.Line, edgePtx, edgePty);
+                target.addVertex(GVertex.Command.Line, pt2x, pt2y);
             }
             return;
         }
 
         if (pt1x == edgePtx && pt1y == edgePty || pt2x == edgePtx && pt2y == edgePty) {
-            target.addVertex(IFVertex.Command.Line, pt2x, pt2y);
+            target.addVertex(GVertex.Command.Line, pt2x, pt2y);
             return;
         }
 
-        if (edgePtType == IFPathBase.CornerType.Rounded ||
-            edgePtType == IFPathBase.CornerType.InverseRounded) {
+        if (edgePtType == GPathBase.CornerType.Rounded ||
+            edgePtType == GPathBase.CornerType.InverseRounded) {
             if ((pt1x == pt2x && pt1x == edgePtx) || (pt1y == pt2y && pt1y == edgePty)) {
-                target.addVertex(IFVertex.Command.Curve, pt2x, pt2y);
-                target.addVertex(IFVertex.Command.Curve, edgePtx, edgePty);
+                target.addVertex(GVertex.Command.Curve, pt2x, pt2y);
+                target.addVertex(GVertex.Command.Curve, edgePtx, edgePty);
             } else {
-                if (edgePtType == IFPathBase.CornerType.Rounded) {
+                if (edgePtType == GPathBase.CornerType.Rounded) {
                     edgeForArcX = edgePtx;
                     edgeForArcY = edgePty;
-                } else { // edgePtType == IFPathBase.AnchorPoint.Type.InverseRounded
+                } else { // edgePtType == GPathBase.AnchorPoint.Type.InverseRounded
                     edgeForArcX = pt1x + pt2x - edgePtx;
                     edgeForArcY = pt1y + pt2y - edgePty;
                 }
-                target.addVertex(IFVertex.Command.Curve2, pt2x, pt2y);
-                target.addVertex(IFVertex.Command.Curve2,
-                    pt1x + (edgeForArcX - pt1x) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
-                    pt1y + (edgeForArcY - pt1y) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
-                target.addVertex(IFVertex.Command.Curve2,
-                    pt2x + (edgeForArcX - pt2x) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
-                    pt2y + (edgeForArcY - pt2y) * IFPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
+                target.addVertex(GVertex.Command.Curve2, pt2x, pt2y);
+                target.addVertex(GVertex.Command.Curve2,
+                    pt1x + (edgeForArcX - pt1x) * GPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
+                    pt1y + (edgeForArcY - pt1y) * GPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
+                target.addVertex(GVertex.Command.Curve2,
+                    pt2x + (edgeForArcX - pt2x) * GPathBase.AnchorPoint.BEST_CIRCLE_COEFF,
+                    pt2y + (edgeForArcY - pt2y) * GPathBase.AnchorPoint.BEST_CIRCLE_COEFF);
             }
-        } else if (edgePtType == IFPathBase.CornerType.Fancy) {
+        } else if (edgePtType == GPathBase.CornerType.Fancy) {
             chunk1X = (pt2x - edgePtx) / 3;
             chunk1Y = (pt2y - edgePty) / 3;
             chunk2X = (edgePtx - pt1x) / 3;
@@ -1355,52 +1355,52 @@
 
             endPtX = pt1x + 2 * chunk1X;
             endPtY = pt1y + 2 * chunk1Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk2X;
             endPtY += 2 * chunk2Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
             endPtX -= chunk1X;
             endPtY -= chunk1Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
             endPtX -= chunk2X;
             endPtY -= chunk2Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk1X;
             endPtY += 2 * chunk1Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
             endPtX += 2 * chunk2X;
             endPtY += 2 * chunk2Y;
-            target.addVertex(IFVertex.Command.Line, endPtX, endPtY);
+            target.addVertex(GVertex.Command.Line, endPtX, endPtY);
 
-        } else if (edgePtType == IFPathBase.CornerType.Bevel) {
-            target.addVertex(IFVertex.Command.Line, pt2x, pt2y);
+        } else if (edgePtType == GPathBase.CornerType.Bevel) {
+            target.addVertex(GVertex.Command.Line, pt2x, pt2y);
 
-        } else if (edgePtType == IFPathBase.CornerType.Inset) {
+        } else if (edgePtType == GPathBase.CornerType.Inset) {
             edgeForInsetX = pt1x + pt2x - edgePtx;
             edgeForInsetY = pt1y + pt2y - edgePty;
 
-            target.addVertex(IFVertex.Command.Line, edgeForInsetX, edgeForInsetY);
-            target.addVertex(IFVertex.Command.Line, pt2x, pt2y);
+            target.addVertex(GVertex.Command.Line, edgeForInsetX, edgeForInsetY);
+            target.addVertex(GVertex.Command.Line, pt2x, pt2y);
 
-        } else {   // use IFPathBase.AnchorPoint.Type.Asymmetric for all the unsupported types
-            target.addVertex(IFVertex.Command.Line, edgePtx, edgePty);
-            target.addVertex(IFVertex.Command.Line, pt2x, pt2y);
+        } else {   // use GPathBase.AnchorPoint.Type.Asymmetric for all the unsupported types
+            target.addVertex(GVertex.Command.Line, edgePtx, edgePty);
+            target.addVertex(GVertex.Command.Line, pt2x, pt2y);
         }
     };
 
     /**
      * Adds path end vertices to the _vertices container, used to finish path
      * This function is supposed to be called only when the path is NOT closed
-     * @param {IFVertexContainer} target the target vertex container to put vertices into
-     * @param {IFTransform} transform - a transformation to apply to anchor points before generating vertices
+     * @param {GVertexContainer} target the target vertex container to put vertices into
+     * @param {GTransform} transform - a transformation to apply to anchor points before generating vertices
      * @private
      */
-    IFPathBase.AnchorPoints.prototype._addPathEndVertices = function (target, transform) {
+    GPathBase.AnchorPoints.prototype._addPathEndVertices = function (target, transform) {
         var hx, hy;
         var endPt = this.getLastChild();
         var prevPt = endPt.getPrevious();
@@ -1411,11 +1411,11 @@
         }
 
         if (endPt.$hlx != null && endPt.$hly != null && prevPt.$hrx != null && prevPt.$hry != null) {
-            target.addVertex(IFVertex.Command.Curve2, endPt.$x, endPt.$y);
-            target.addVertex(IFVertex.Command.Curve2, prevPt.$hrx, prevPt.$hry);
-            target.addVertex(IFVertex.Command.Curve2, endPt.$hlx, endPt.$hly);
+            target.addVertex(GVertex.Command.Curve2, endPt.$x, endPt.$y);
+            target.addVertex(GVertex.Command.Curve2, prevPt.$hrx, prevPt.$hry);
+            target.addVertex(GVertex.Command.Curve2, endPt.$hlx, endPt.$hly);
         } else if ((endPt.$hlx == null || endPt.$hly == null) && (prevPt.$hrx == null || prevPt.$hry == null)) {
-            target.addVertex(IFVertex.Command.Line, endPt.$x, endPt.$y);
+            target.addVertex(GVertex.Command.Line, endPt.$x, endPt.$y);
         } else {
             if (endPt.$hlx != null && endPt.$hly != null) {
                 hx = endPt.$hlx;
@@ -1424,13 +1424,13 @@
                 hx = prevPt.$hrx;
                 hy = prevPt.$hry;
             }
-            target.addVertex(IFVertex.Command.Curve, endPt.$x, endPt.$y);
-            target.addVertex(IFVertex.Command.Curve, hx, hy);
+            target.addVertex(GVertex.Command.Curve, endPt.$x, endPt.$y);
+            target.addVertex(GVertex.Command.Curve, hx, hy);
         }
     };
 
     /** @override */
-    IFPathBase.AnchorPoints.prototype._handleChange = function (change, args) {
+    GPathBase.AnchorPoints.prototype._handleChange = function (change, args) {
         var path = this._parent;
 
         if (path) {
@@ -1438,31 +1438,31 @@
             var anchorPoint = args;
             var hx, hy;
 
-            if (change == IFNode._Change.BeforeChildInsert) {
+            if (change == GNode._Change.BeforeChildInsert) {
                 if (this.getParent()) {
                     this.getParent().beginUpdate();
                 }
-            } else if (change == IFNode._Change.AfterChildInsert) {
+            } else if (change == GNode._Change.AfterChildInsert) {
                 prevPt = this.getPreviousPoint(anchorPoint);
-                if (prevPt && prevPt.$hrx != null && anchorPoint.$tp == IFPathBase.AnchorPoint.Type.Connector) {
-                    hx = anchorPoint.$x + (prevPt.$x - anchorPoint.$x) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    hy = anchorPoint.$y + (prevPt.$y - anchorPoint.$y) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    if (!IFMath.isEqualEps(anchorPoint.$x - hx, 0) || !IFMath.isEqualEps(anchorPoint.$y - hy, 0)) {
+                if (prevPt && prevPt.$hrx != null && anchorPoint.$tp == GPathBase.AnchorPoint.Type.Connector) {
+                    hx = anchorPoint.$x + (prevPt.$x - anchorPoint.$x) * GPathBase.AnchorPoint.HANDLE_COEFF;
+                    hy = anchorPoint.$y + (prevPt.$y - anchorPoint.$y) * GPathBase.AnchorPoint.HANDLE_COEFF;
+                    if (!GMath.isEqualEps(anchorPoint.$x - hx, 0) || !GMath.isEqualEps(anchorPoint.$y - hy, 0)) {
                         anchorPoint.setProperties(['hlx', 'hly'], [hx, hy]);
                     }
                 }
 
                 nextPt = this.getNextPoint(anchorPoint);
-                if (nextPt && nextPt.$hlx != null && anchorPoint.$tp == IFPathBase.AnchorPoint.Type.Connector) {
-                    hx = anchorPoint.$x + (nextPt.$x - anchorPoint.$x) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    hy = anchorPoint.$y + (nextPt.$y - anchorPoint.$y) * IFPathBase.AnchorPoint.HANDLE_COEFF;
-                    if (!IFMath.isEqualEps(anchorPoint.$x - hx, 0) || !IFMath.isEqualEps(anchorPoint.$y - hy, 0)) {
+                if (nextPt && nextPt.$hlx != null && anchorPoint.$tp == GPathBase.AnchorPoint.Type.Connector) {
+                    hx = anchorPoint.$x + (nextPt.$x - anchorPoint.$x) * GPathBase.AnchorPoint.HANDLE_COEFF;
+                    hy = anchorPoint.$y + (nextPt.$y - anchorPoint.$y) * GPathBase.AnchorPoint.HANDLE_COEFF;
+                    if (!GMath.isEqualEps(anchorPoint.$x - hx, 0) || !GMath.isEqualEps(anchorPoint.$y - hy, 0)) {
                         anchorPoint.setProperties(['hrx', 'hry'], [hx, hy]);
                     }
                 }
 
                 if (anchorPoint.$ah ||
-                    anchorPoint.$tp == IFPathBase.AnchorPoint.Type.Connector) {
+                    anchorPoint.$tp == GPathBase.AnchorPoint.Type.Connector) {
 
                     anchorPoint._invalidateCalculations();
                 }
@@ -1472,13 +1472,13 @@
                 if (this.getParent()) {
                     this.getParent().endUpdate();
                 }
-            } else if (change == IFNode._Change.BeforeChildRemove) {
+            } else if (change == GNode._Change.BeforeChildRemove) {
                 if (this.getParent()) {
                     this.getParent().beginUpdate();
                 }
                 this._dirtyPrev = this.getPreviousPoint(anchorPoint);
                 this._dirtyNext = this.getNextPoint(anchorPoint);
-            } else if (change == IFNode._Change.AfterChildRemove) {
+            } else if (change == GNode._Change.AfterChildRemove) {
                 if (this._dirtyPrev) {
                     this._invalidateLeft(this._dirtyPrev);
                 }
@@ -1492,22 +1492,22 @@
             }
         }
 
-        if (path && (change == IFNode._Change.AfterChildInsert || change == IFNode._Change.AfterChildRemove)) {
+        if (path && (change == GNode._Change.AfterChildInsert || change == GNode._Change.AfterChildRemove)) {
             // Notify path parent about the change
-            path._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+            path._notifyChange(GElement._Change.PrepareGeometryUpdate);
             path._verticesDirty = true;
-            path._notifyChange(IFElement._Change.FinishGeometryUpdate);
+            path._notifyChange(GElement._Change.FinishGeometryUpdate);
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * Get next point from given source point
-     * @param {IFPathBase.AnchorPoint} source
+     * @param {GPathBase.AnchorPoint} source
      * @private
      */
-    IFPathBase.AnchorPoints.prototype.getNextPoint = function (source) {
+    GPathBase.AnchorPoints.prototype.getNextPoint = function (source) {
         var nextPt = source ? source.getNext() : null;
         if (!nextPt && this._parent && this._parent.$closed && source == this.getLastChild()) {
             nextPt = this.getFirstChild();
@@ -1517,10 +1517,10 @@
 
     /**
      * Get previous point from given source point
-     * @param {IFPathBase.AnchorPoint} source
+     * @param {GPathBase.AnchorPoint} source
      * @private
      */
-    IFPathBase.AnchorPoints.prototype.getPreviousPoint = function (source) {
+    GPathBase.AnchorPoints.prototype.getPreviousPoint = function (source) {
         var prevPt = source ? source.getPrevious() : null;
         if (!prevPt && this._parent && this._parent.$closed && source == this.getFirstChild()) {
             prevPt = this.getLastChild();
@@ -1530,15 +1530,15 @@
 
     /**
      * Get last related point from given source point
-     * @param {IFPathBase.AnchorPoint} source
+     * @param {GPathBase.AnchorPoint} source
      * @private
      */
-    IFPathBase.AnchorPoints.prototype.getLastRelatedPoint = function (source) {
+    GPathBase.AnchorPoints.prototype.getLastRelatedPoint = function (source) {
         var lastRelPt = source;
         var nextPt = this.getNextPoint(source);
         if (nextPt) {
             lastRelPt = nextPt;
-            if (nextPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric || nextPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+            if (nextPt.$tp == GPathBase.AnchorPoint.Type.Symmetric || nextPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
                 var nextnextPt = this.getNextPoint(nextPt);
                 if (nextnextPt && nextnextPt.$ah && nextnextPt != source) {
                     lastRelPt = nextnextPt;
@@ -1551,15 +1551,15 @@
 
     /**
      * Get first related point from given source point
-     * @param {IFPathBase.AnchorPoint} source
+     * @param {GPathBase.AnchorPoint} source
      * @private
      */
-    IFPathBase.AnchorPoints.prototype.getFirstRelatedPoint = function (source) {
+    GPathBase.AnchorPoints.prototype.getFirstRelatedPoint = function (source) {
         var firstRelPt = source;
         var prevPt = this.getPreviousPoint(source);
         if (prevPt) {
             firstRelPt = prevPt;
-            if (prevPt.$tp == IFPathBase.AnchorPoint.Type.Symmetric || prevPt.$tp == IFPathBase.AnchorPoint.Type.Mirror) {
+            if (prevPt.$tp == GPathBase.AnchorPoint.Type.Symmetric || prevPt.$tp == GPathBase.AnchorPoint.Type.Mirror) {
                 var prevprevPt = this.getPreviousPoint(prevPt);
                 if (prevprevPt && prevprevPt.$ah && prevprevPt != source) {
                     firstRelPt = prevprevPt;
@@ -1571,34 +1571,34 @@
     };
 
     /** @override */
-    IFPathBase.AnchorPoints.prototype.toString = function () {
-        return "[Object IFPathBase.AnchorPoints]";
+    GPathBase.AnchorPoints.prototype.toString = function () {
+        return "[Object GPathBase.AnchorPoints]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFPathBase Class
+    // GPathBase Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {IFVertexContainer}
+     * @type {GVertexContainer}
      * @private
      */
-    IFPathBase.prototype._vertices = null;
+    GPathBase.prototype._vertices = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFPathBase.prototype._verticesDirty = false;
+    GPathBase.prototype._verticesDirty = false;
 
     /**
-     * @type {IFPathBase.AnchorPoints}
+     * @type {GPathBase.AnchorPoints}
      * @private
      */
-    IFPathBase.prototype._anchorPoints = null;
+    GPathBase.prototype._anchorPoints = null;
 
     /** @override */
-    IFPathBase.prototype.rewindVertices = function (index) {
+    GPathBase.prototype.rewindVertices = function (index) {
         if (this._verticesDirty || this._vertices == null || this._vertices.getCount() == 0) {
             this._vertices.clearVertices();
             this._getAnchorPoints()._generateVertices(this._vertices, this.$trf, true);
@@ -1608,20 +1608,20 @@
     };
 
     /** @override */
-    IFPathBase.prototype.readVertex = function (vertex) {
+    GPathBase.prototype.readVertex = function (vertex) {
         return this._vertices.readVertex(vertex);
     };
 
     /**
      * Creates a new empty anchor points set, and returns the old anchor points
-     * @returns {IFPathBase.AnchorPoints} old anchor points
+     * @returns {GPathBase.AnchorPoints} old anchor points
      */
-    IFPathBase.prototype.clearAnchorPoints = function () {
+    GPathBase.prototype.clearAnchorPoints = function () {
         var anchorPoints = this._anchorPoints;
         this._anchorPoints._removalAllowed = true;
         var next = this._anchorPoints.getNext(true);
         this.removeChild(this._anchorPoints);
-        this._anchorPoints = new IFPathBase.AnchorPoints();
+        this._anchorPoints = new GPathBase.AnchorPoints();
         this.appendChild(this._anchorPoints);
 
         return anchorPoints;
@@ -1629,26 +1629,26 @@
 
 
     /** @override */
-    IFPathBase.prototype._isEvenOddFill = function () {
+    GPathBase.prototype._isEvenOddFill = function () {
         return !!this.$evenodd;
     };
 
     /** @override */
-    IFPathBase.prototype._calculateOrigGeometryBBox = function () {
-        var vertices = new IFVertexContainer();
+    GPathBase.prototype._calculateOrigGeometryBBox = function () {
+        var vertices = new GVertexContainer();
         this._getAnchorPoints()._generateVertices(vertices, null, false);
         return ifVertexInfo.calculateBounds(vertices, true);
     };
 
     /** @override */
-    IFPathBase.prototype._handleChange = function (change, args) {
-        this._handleVisualChangeForProperties(change, args, IFPathBase.VisualProperties);
+    GPathBase.prototype._handleChange = function (change, args) {
+        this._handleVisualChangeForProperties(change, args, GPathBase.VisualProperties);
 
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFPathBase.VisualProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFPathBase.VisualProperties);
-        } else if (change === IFNode._Change.AfterPropertiesChange) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GPathBase.VisualProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GPathBase.VisualProperties);
+        } else if (change === GNode._Change.AfterPropertiesChange) {
             // Special handling when changing closed status of path
             if (args.properties.indexOf('closed') >= 0) {
                 var points = this._getAnchorPoints();
@@ -1660,31 +1660,31 @@
             } else if (args.properties.indexOf('trf') >= 0) {
                 this._verticesDirty = true;
             }
-        } else if (change === IFNode._Change.Attached) {
+        } else if (change === GNode._Change.Attached) {
             if (this._anchorPoints) {
                 this._anchorPoints._setScene(this._scene);
             }
-        } else if (change === IFNode._Change.Detach) {
+        } else if (change === GNode._Change.Detach) {
             if (this._anchorPoints) {
                 this._anchorPoints._setScene(null);
             }
         }
 
-        IFShape.prototype._handleChange.call(this, change, args);
+        GShape.prototype._handleChange.call(this, change, args);
     };
 
     /**
-     * @returns {IFPathBase.AnchorPoints}
+     * @returns {GPathBase.AnchorPoints}
      * @private
      */
-    IFPathBase.prototype._getAnchorPoints = function () {
+    GPathBase.prototype._getAnchorPoints = function () {
         return this._anchorPoints;
     };
 
     /** @override */
-    IFPathBase.prototype.toString = function () {
-        return "[IFPathBase]";
+    GPathBase.prototype.toString = function () {
+        return "[GPathBase]";
     };
 
-    _.IFPathBase = IFPathBase;
+    _.GPathBase = GPathBase;
 })(this);

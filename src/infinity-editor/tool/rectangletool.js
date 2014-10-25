@@ -1,38 +1,38 @@
 (function (_) {
     /**
      * The rectangle tool
-     * @class IFRectangleTool
-     * @extends IFShapeTool
+     * @class GRectangleTool
+     * @extends GShapeTool
      * @constructor
      */
-    function IFRectangleTool() {
-        IFShapeTool.call(this, true, true);
+    function GRectangleTool() {
+        GShapeTool.call(this, true, true);
     }
 
-    IFObject.inherit(IFRectangleTool, IFShapeTool);
+    GObject.inherit(GRectangleTool, GShapeTool);
 
     /** @override */
-    IFRectangleTool.prototype._createShape = function () {
-        return new IFRectangle();
+    GRectangleTool.prototype._createShape = function () {
+        return new GRectangle();
     };
 
     /** @override */
-    IFRectangleTool.prototype._updateShape = function (shape, area, line) {
+    GRectangleTool.prototype._updateShape = function (shape, area, line) {
         // Original shape is a rectangle with coordinates x,y: [-1, 1]. Transform it to fit into the area:
         shape.setProperty('trf',
-            new IFTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
+            new GTransform(area.getWidth() / 2, 0, 0, area.getHeight() / 2,
                 area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2));
     };
 
     /** @override */
-    IFRectangleTool.prototype._hasCenterCross = function () {
+    GRectangleTool.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** override */
-    IFRectangleTool.prototype.toString = function () {
-        return "[Object IFRectangleTool]";
+    GRectangleTool.prototype.toString = function () {
+        return "[Object GRectangleTool]";
     };
 
-    _.IFRectangleTool = IFRectangleTool;
+    _.GRectangleTool = GRectangleTool;
 })(this);

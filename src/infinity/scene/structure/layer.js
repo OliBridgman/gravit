@@ -1,27 +1,27 @@
 (function (_) {
     /**
      * An element representing a layer
-     * @class IFLayer
-     * @extends IFBlock
-     * @mixes IFNode.Container
-     * @mixes IFElement.Transform
-     * @mixes IFElement.Stylable
+     * @class GLayer
+     * @extends GBlock
+     * @mixes GNode.Container
+     * @mixes GElement.Transform
+     * @mixes GElement.Stylable
      * @constructor
      */
-    function IFLayer() {
-        IFBlock.call(this);
-        this._setDefaultProperties(IFLayer.VisualProperties, IFLayer.MetaProperties);
+    function GLayer() {
+        GBlock.call(this);
+        this._setDefaultProperties(GLayer.VisualProperties, GLayer.MetaProperties);
     }
 
-    IFNode.inheritAndMix("layer", IFLayer, IFBlock, [IFNode.Container, IFElement.Transform, IFElement.Stylable]);
+    GNode.inheritAndMix("layer", GLayer, GBlock, [GNode.Container, GElement.Transform, GElement.Stylable]);
 
-    IFLayer.GUIDE_COLOR_DEFAULT = new IFRGBColor([0, 255, 255]);
+    GLayer.GUIDE_COLOR_DEFAULT = new GRGBColor([0, 255, 255]);
 
     /**
      * The tp of a layer
      * @enum
      */
-    IFLayer.Type = {
+    GLayer.Type = {
         /**
          * An output layer, will make it into
          * the actual output
@@ -43,48 +43,48 @@
     };
 
     /**
-     * Localized names for IFLayer.Type
+     * Localized names for GLayer.Type
      */
-    IFLayer.TypeName = {
-        'O': new IFLocale.Key(IFLayer, 'type.output'),
-        'D': new IFLocale.Key(IFLayer, 'type.draft'),
-        'G': new IFLocale.Key(IFLayer, 'type.guide')
+    GLayer.TypeName = {
+        'O': new GLocale.Key(GLayer, 'type.output'),
+        'D': new GLocale.Key(GLayer, 'type.draft'),
+        'G': new GLocale.Key(GLayer, 'type.guide')
     };
 
     /**
      * The meta properties of a layer with their default values
      */
-    IFLayer.MetaProperties = {
-        tp: IFLayer.Type.Output
+    GLayer.MetaProperties = {
+        tp: GLayer.Type.Output
     };
 
     /**
      * The visual properties of a layer with their default values
      */
-    IFLayer.VisualProperties = {
+    GLayer.VisualProperties = {
         // Whether layer is outlined or not
         otl: false,
         // The color of the layer
-        cls: new IFRGBColor([0, 168, 255])
+        cls: new GRGBColor([0, 168, 255])
     };
 
     /** @override */
-    IFLayer.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer || parent instanceof IFPage;
+    GLayer.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GLayer || parent instanceof GPage;
     };
 
     /** @override */
-    IFLayer.prototype._preparePaint = function (context) {
-        if (IFBlock.prototype._preparePaint.call(this, context)) {
-            if (this.$tp === IFLayer.Type.Guide) {
+    GLayer.prototype._preparePaint = function (context) {
+        if (GBlock.prototype._preparePaint.call(this, context)) {
+            if (this.$tp === GLayer.Type.Guide) {
                 if (!context.configuration.isGuidesVisible(context)) {
                     return false;
-                } else if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
+                } else if (context.configuration.paintMode !== GScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
                     // Add outline color if not outline to behave like a guide layer means
                     // to paint everything underneath in outline color
                     context.outlineColors.push(this.$cls);
                 }
-            } else if (this.$tp === IFLayer.Type.Draft) {
+            } else if (this.$tp === GLayer.Type.Draft) {
                 if (!context.configuration.isAnnotationsVisible(context)) {
                     return false;
                 }
@@ -92,7 +92,7 @@
                 // TODO : Mark draft layers like changing opacity etc.
             }
 
-            if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && this.$otl) {
+            if (context.configuration.paintMode !== GScenePaintConfiguration.PaintMode.Outline && this.$otl) {
                 context.outlineColors.push(this.$cls);
             }
 
@@ -102,80 +102,80 @@
     };
 
     /** @override */
-    IFLayer.prototype._finishPaint = function (context) {
-        if (this.$tp === IFLayer.Type.Guide && context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
+    GLayer.prototype._finishPaint = function (context) {
+        if (this.$tp === GLayer.Type.Guide && context.configuration.paintMode !== GScenePaintConfiguration.PaintMode.Outline && !this.$otl) {
             // Remove outline color if not outlined
             context.outlineColors.pop();
-        } else if (this.$tp === IFLayer.Type.Draft) {
+        } else if (this.$tp === GLayer.Type.Draft) {
             // TODO : Reset marked draft layers like changed opacity etc.
         }
 
-        if (context.configuration.paintMode !== IFScenePaintConfiguration.PaintMode.Outline && this.$otl) {
+        if (context.configuration.paintMode !== GScenePaintConfiguration.PaintMode.Outline && this.$otl) {
             context.outlineColors.pop();
         }
 
-        IFBlock.prototype._finishPaint.call(this, context);
+        GBlock.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
-    IFLayer.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
+    GLayer.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
         this._paintChildren(context);
     };
 
     /** @override */
-    IFLayer.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return new IFElement.HitResultInfo(this);
+    GLayer.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        return new GElement.HitResultInfo(this);
     };
 
     /** @override */
-    IFLayer.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFLayer.VisualProperties, function (property, value) {
+    GLayer.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFPattern.serialize(value);
+                    return GPattern.serialize(value);
                 }
                 return value;
             });
-            this.storeProperties(args, IFLayer.MetaProperties);
+            this.storeProperties(args, GLayer.MetaProperties);
 
             // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(IFNode.Flag.Active)) {
+            if (this.hasFlag(GNode.Flag.Active)) {
                 args.__active = true;
             }
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFLayer.VisualProperties, function (property, value) {
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GLayer.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFPattern.deserialize(value);
+                    return GPattern.deserialize(value);
                 }
                 return value;
             });
-            this.restoreProperties(args, IFLayer.MetaProperties);
+            this.restoreProperties(args, GLayer.MetaProperties);
 
             // Restore activeness flag which is special to pages and layers
             if (args.__active) {
-                this.setFlag(IFNode.Flag.Active);
+                this.setFlag(GNode.Flag.Active);
             }
         }
         
-        this._handleVisualChangeForProperties(change, args, IFLayer.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GLayer.VisualProperties);
 
-        if (change == IFNode._Change.AfterPropertiesChange) {
+        if (change == GNode._Change.AfterPropertiesChange) {
             var typeIndex = args.properties.indexOf('tp');
             if (typeIndex >= 0) {
                 var oldTypeValue = args.values[typeIndex];
 
                 // Switch tp from guide <-> * must reset colors if defaults are set
-                if (oldTypeValue === IFLayer.Type.Guide && this.$cls === IFLayer.GUIDE_COLOR_DEFAULT) {
-                    this.$cls = IFLayer.VisualProperties.cls;
-                } else if (this.$tp === IFLayer.Type.Guide && this.$cls === IFLayer.VisualProperties.cls) {
-                    this.$cls = IFLayer.GUIDE_COLOR_DEFAULT;
+                if (oldTypeValue === GLayer.Type.Guide && this.$cls === GLayer.GUIDE_COLOR_DEFAULT) {
+                    this.$cls = GLayer.VisualProperties.cls;
+                } else if (this.$tp === GLayer.Type.Guide && this.$cls === GLayer.VisualProperties.cls) {
+                    this.$cls = GLayer.GUIDE_COLOR_DEFAULT;
                 }
-                this._notifyChange(IFElement._Change.InvalidationRequest);
+                this._notifyChange(GElement._Change.InvalidationRequest);
             }
         }
 
-        IFBlock.prototype._handleChange.call(this, change, args);
+        GBlock.prototype._handleChange.call(this, change, args);
     };
 
-    _.IFLayer = IFLayer;
+    _.GLayer = GLayer;
 })(this);

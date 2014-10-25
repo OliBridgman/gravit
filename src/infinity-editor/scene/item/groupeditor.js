@@ -1,30 +1,30 @@
 (function (_) {
     /**
      * An editor for a shapeSet
-     * @param {IFGroup} set the set this editor works on
-     * @class IFGroupEditor
-     * @extends IFBlockEditor
+     * @param {GGroup} set the set this editor works on
+     * @class GGroupEditor
+     * @extends GBlockEditor
      * @constructor
      */
-    function IFGroupEditor(set) {
-        IFBlockEditor.call(this, set);
-        this._flags |= IFBlockEditor.Flag.ResizeAll;
+    function GGroupEditor(set) {
+        GBlockEditor.call(this, set);
+        this._flags |= GBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFGroupEditor, IFBlockEditor);
-    IFElementEditor.exports(IFGroupEditor, IFGroup);
+    GObject.inherit(GGroupEditor, GBlockEditor);
+    GElementEditor.exports(GGroupEditor, GGroup);
 
     /** @override */
-    IFGroupEditor.prototype._prePaint = function (transform, context) {
-        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+    GGroupEditor.prototype._prePaint = function (transform, context) {
+        if (this.hasFlag(GElementEditor.Flag.Selected) || this.hasFlag(GElementEditor.Flag.Highlighted)) {
             this._paintBBoxOutline(transform, context);
         }
-        IFBlockEditor.prototype._prePaint.call(this, transform, context);
+        GBlockEditor.prototype._prePaint.call(this, transform, context);
     };
 
     /** @override */
-    IFGroupEditor.prototype.toString = function () {
-        return "[Object IFGroupEditor]";
+    GGroupEditor.prototype.toString = function () {
+        return "[Object GGroupEditor]";
     };
 
-    _.IFGroupEditor = IFGroupEditor;
+    _.GGroupEditor = GGroupEditor;
 })(this);

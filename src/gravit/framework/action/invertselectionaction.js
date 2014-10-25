@@ -8,10 +8,10 @@
      */
     function GInvertSelectionAction() {
     };
-    IFObject.inherit(GInvertSelectionAction, GAction);
+    GObject.inherit(GInvertSelectionAction, GAction);
 
     GInvertSelectionAction.ID = 'edit.invert-selection';
-    GInvertSelectionAction.TITLE = new IFLocale.Key(GInvertSelectionAction, "title");
+    GInvertSelectionAction.TITLE = new GLocale.Key(GInvertSelectionAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GInvertSelectionAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'A'];
+        return [GKey.Constant.SHIFT, GKey.Constant.META, 'A'];
     };
 
     /**
@@ -71,7 +71,7 @@
 
         var selection = [];
         source.accept(function (node) {
-            if (node instanceof IFItem && node.getParent() instanceof IFLayer && !node.hasFlag(IFNode.Flag.Selected)) {
+            if (node instanceof GItem && node.getParent() instanceof GLayer && !node.hasFlag(GNode.Flag.Selected)) {
                 selection.push(node);
             }
         });

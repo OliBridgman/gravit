@@ -2,12 +2,12 @@
 
     /**
      * A target of vertices
-     * @class IFVertexTarget
+     * @class GVertexTarget
      * @mixin
      * @constructor
      * @version 1.0
      */
-    function IFVertexTarget() {
+    function GVertexTarget() {
     }
 
     /**
@@ -16,18 +16,18 @@
      * @param {Number} [x] x-coordinate of vertex, defaults to 0
      * @param {Number} [y] y-coordinate of vertex, defaults to 0
      */
-    IFVertexTarget.prototype.addVertex = function (command, x, y) {
+    GVertexTarget.prototype.addVertex = function (command, x, y) {
         throw new Error("Not Supported");
     }
 
     /**
      * Append another vertex source to this one
-     * @param {IFVertexSource} source the source to append to this one
+     * @param {GVertexSource} source the source to append to this one
      * @param {Number} [index] optional index to start reading from source, defaults to 0
      */
-    IFVertexTarget.prototype.appendVertices = function (source, index) {
+    GVertexTarget.prototype.appendVertices = function (source, index) {
         if (source.rewindVertices(index ? index : 0)) {
-            var vertex = new IFVertex();
+            var vertex = new GVertex();
             while (source.readVertex(vertex)) {
                 this.addVertex(vertex.command, vertex.x, vertex.y);
             }
@@ -38,14 +38,14 @@
      * Clear all vertices in this target
      * @version 1.0
      */
-    IFVertexTarget.prototype.clearVertices = function () {
+    GVertexTarget.prototype.clearVertices = function () {
         throw new Error('Not Supported.');
     }
 
     /** @override */
-    IFVertexTarget.prototype.toString = function () {
-        return "[Object IFVertexTarget]";
+    GVertexTarget.prototype.toString = function () {
+        return "[Object GVertexTarget]";
     }
 
-    _.IFVertexTarget = IFVertexTarget;
+    _.GVertexTarget = GVertexTarget;
 })(this);

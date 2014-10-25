@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * A class representing the configuration for painting
-     * @class IFPaintConfiguration
+     * @class GPaintConfiguration
      * @constructor
      * @version 1.0
      */
-    function IFPaintConfiguration() {
+    function GPaintConfiguration() {
     }
 
     /** @override */
-    IFPaintConfiguration.prototype.toString = function () {
-        return "[Object IFPaintConfiguration]";
+    GPaintConfiguration.prototype.toString = function () {
+        return "[Object GPaintConfiguration]";
     };
 
-    _.IFPaintConfiguration = IFPaintConfiguration;
+    _.GPaintConfiguration = GPaintConfiguration;
 })(this);

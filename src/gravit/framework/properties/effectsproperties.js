@@ -8,7 +8,7 @@
     function GEffectProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GEffectProperties, GProperties);
+    GObject.inherit(GEffectProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -55,7 +55,7 @@
 
         var effectElements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStylable.PropertySet.Effects) >= 0) {
+            if (elements[i].hasMixin(GStylable) && elements[i].getStylePropertySets().indexOf(GStylable.PropertySet.Effects) >= 0) {
                 effectElements.push(elements[i]);
             }
         }

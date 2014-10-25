@@ -8,10 +8,10 @@
      */
     function GCutAction() {
     };
-    IFObject.inherit(GCutAction, GAction);
+    GObject.inherit(GCutAction, GAction);
 
     GCutAction.ID = 'edit.cut';
-    GCutAction.TITLE = new IFLocale.Key(GCutAction, "title");
+    GCutAction.TITLE = new GLocale.Key(GCutAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GCutAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'X'];
+        return [GKey.Constant.META, 'X'];
     };
 
     /**

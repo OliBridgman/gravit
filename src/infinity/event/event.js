@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * An object representing an event.
-     * @class IFEvent
-     * @extends IFObject
+     * @class GEvent
+     * @extends GObject
      * @constructor
      * @version 1.0
      */
-    function IFEvent() {
+    function GEvent() {
     }
 
-    IFObject.inherit(IFEvent, IFObject);
+    GObject.inherit(GEvent, GObject);
 
     /** @private */
-    IFEvent.prototype._paramsToString = function () {
+    GEvent.prototype._paramsToString = function () {
         return "";
     }
 
-    _.IFEvent = IFEvent;
+    _.GEvent = GEvent;
 })(this);

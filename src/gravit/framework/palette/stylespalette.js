@@ -10,10 +10,10 @@
         GPalette.call(this);
     }
 
-    IFObject.inherit(GStylesPalette, GPalette);
+    GObject.inherit(GStylesPalette, GPalette);
 
     GStylesPalette.ID = "styles";
-    GStylesPalette.TITLE = new IFLocale.Key(GStylesPalette, "title");
+    GStylesPalette.TITLE = new GLocale.Key(GStylesPalette, "title");
 
     /**
      * @type {JQuery}
@@ -85,11 +85,11 @@
             })
             .on('stylechange', function (evt, style) {
                 this._document.getScene().getStyleCollection().acceptChildren(function (node) {
-                    node.removeFlag(IFNode.Flag.Selected);
+                    node.removeFlag(GNode.Flag.Selected);
                 });
 
                 if (style) {
-                    style.setFlag(IFNode.Flag.Selected);
+                    style.setFlag(GNode.Flag.Selected);
                 }
 
                 this._updateControls();
@@ -104,7 +104,7 @@
                 new GStyleDialog(style).open(function (result, assign) {
                     if (result) {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(style, function () {
+                        GEditor.tryRunTransaction(style, function () {
                             assign();
                         }.bind(this), 'Change Style Settings');
                     }
@@ -127,7 +127,7 @@
                     callback: function (value) {
                         if (value) {
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(style, function () {
+                            GEditor.tryRunTransaction(style, function () {
                                 style.disconnectStyle();
                                 style.getParent().removeChild(style);
                             }, 'Delete Style');

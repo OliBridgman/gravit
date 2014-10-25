@@ -2,82 +2,82 @@
 
     var blendModes = [
         {
-            type: IFPaintCanvas.BlendMode.Normal,
+            type: GPaintCanvas.BlendMode.Normal,
             // TODO : I18N
             name: 'Normal'
         },
         {
-            type: IFPaintCanvas.BlendMode.Multiply,
+            type: GPaintCanvas.BlendMode.Multiply,
             // TODO : I18N
             name: 'Multiply'
         },
         {
-            type: IFPaintCanvas.BlendMode.Screen,
+            type: GPaintCanvas.BlendMode.Screen,
             // TODO : I18N
             name: 'Screen'
         },
         {
-            type: IFPaintCanvas.BlendMode.Overlay,
+            type: GPaintCanvas.BlendMode.Overlay,
             // TODO : I18N
             name: 'Overlay'
         },
         {
-            type: IFPaintCanvas.BlendMode.Darken,
+            type: GPaintCanvas.BlendMode.Darken,
             // TODO : I18N
             name: 'Darken'
         },
         {
-            type: IFPaintCanvas.BlendMode.Lighten,
+            type: GPaintCanvas.BlendMode.Lighten,
             // TODO : I18N
             name: 'Lighten'
         },
         {
-            type: IFPaintCanvas.BlendMode.ColorDodge,
+            type: GPaintCanvas.BlendMode.ColorDodge,
             // TODO : I18N
             name: 'Color Dodge'
         },
         {
-            type: IFPaintCanvas.BlendMode.ColorBurn,
+            type: GPaintCanvas.BlendMode.ColorBurn,
             // TODO : I18N
             name: 'Color Burn'
         },
         {
-            type: IFPaintCanvas.BlendMode.HardLight,
+            type: GPaintCanvas.BlendMode.HardLight,
             // TODO : I18N
             name: 'Hard Light'
         },
         {
-            type: IFPaintCanvas.BlendMode.SoftLight,
+            type: GPaintCanvas.BlendMode.SoftLight,
             // TODO : I18N
             name: 'Soft Light'
         },
         {
-            type: IFPaintCanvas.BlendMode.Difference,
+            type: GPaintCanvas.BlendMode.Difference,
             // TODO : I18N
             name: 'Difference'
         },
         {
-            type: IFPaintCanvas.BlendMode.Exclusion,
+            type: GPaintCanvas.BlendMode.Exclusion,
             // TODO : I18N
             name: 'Exclusion'
         },
         {
-            type: IFPaintCanvas.BlendMode.Hue,
+            type: GPaintCanvas.BlendMode.Hue,
             // TODO : I18N
             name: 'Hue'
         },
         {
-            type: IFPaintCanvas.BlendMode.Saturation,
+            type: GPaintCanvas.BlendMode.Saturation,
             // TODO : I18N
             name: 'Saturation'
         },
         {
-            type: IFPaintCanvas.BlendMode.Color,
+            type: GPaintCanvas.BlendMode.Color,
             // TODO : I18N
             name: 'Color'
         },
         {
-            type: IFPaintCanvas.BlendMode.Luminosity,
+            type: GPaintCanvas.BlendMode.Luminosity,
             // TODO : I18N
             name: 'Luminosity'
         }
@@ -110,7 +110,7 @@
 
     /**
      * Adds a translated list of options to a selection that
-     * represents the IFPaintCanvas.BlendMode choices
+     * represents the GPaintCanvas.BlendMode choices
      * TODO : Replace select with visual selector with icons
      */
     $.fn.gBlendMode = function (method) {

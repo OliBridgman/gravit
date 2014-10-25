@@ -8,9 +8,9 @@
      */
     function GDistributeAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GDistributeAction, 'title.' + type);
+        this._title = new GLocale.Key(GDistributeAction, 'title.' + type);
     };
-    IFObject.inherit(GDistributeAction, GAction);
+    GObject.inherit(GDistributeAction, GAction);
 
     /** @enum */
     GDistributeAction.Type = {
@@ -23,7 +23,7 @@
     /** @type {GDistributeAction.Type} */
     GDistributeAction.prototype._type = null;
 
-    /** @type {IFLocale.Key} */
+    /** @type {GLocale.Key} */
     GDistributeAction.prototype._title = null;
 
     /**
@@ -62,12 +62,12 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for distributing, otherwise use paint box. Defaults
      * to false.
-     * @param {IFRect} [referenceBox] a reference box to dstribute within, if not
+     * @param {GRect} [referenceBox] a reference box to dstribute within, if not
      * given uses the element's total bbox
      * @param {Number} [spacing] a fixed spacing value. If not provided or zero then
      * spacing will be calculated automatically using the given box
@@ -82,12 +82,12 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for distributing, otherwise use paint box. Defaults
      * to false.
-     * @param {IFRect} [referenceBox] a reference box to dstribute within, if not
+     * @param {GRect} [referenceBox] a reference box to dstribute within, if not
      * given uses the element's total bbox
      * @param {Number} [spacing] a fixed spacing value. If not provided or zero then
      * spacing will be calculated automatically using the given box
@@ -106,7 +106,7 @@
 
         for (var i = 0; i < tmpElements.length; ++i) {
             var element = tmpElements[i];
-            if (element.hasMixin(IFElement.Transform)) {
+            if (element.hasMixin(GElement.Transform)) {
                 var bbox = geometry ? element.getGeometryBBox() : element.getPaintBBox();
                 if (!bbox || bbox.isEmpty()) {
                     continue;
@@ -145,12 +145,12 @@
                 spacing = (referenceBox.getWidth() - elementsTotal) / (elements.length - 1);
             }
 
-            IFEditor.tryRunTransaction(scene, function () {
+            GEditor.tryRunTransaction(scene, function () {
                 var position = referenceBox.getX();
 
                 for (var i = 0; i < elements.length; ++i) {
                     if (position !== elements[i].bbox.getX()) {
-                        elements[i].element.transform(new IFTransform(1, 0, 0, 1, position - elements[i].bbox.getX(), 0));
+                        elements[i].element.transform(new GTransform(1, 0, 0, 1, position - elements[i].bbox.getX(), 0));
                     }
                     position += elements[i].bbox.getWidth() + spacing;
                 }
@@ -168,12 +168,12 @@
                 spacing = (referenceBox.getHeight() - elementsTotal) / (elements.length - 1);
             }
 
-            IFEditor.tryRunTransaction(scene, function () {
+            GEditor.tryRunTransaction(scene, function () {
                 var position = referenceBox.getY();
 
                 for (var i = 0; i < elements.length; ++i) {
                     if (position !== elements[i].bbox.getY()) {
-                        elements[i].element.transform(new IFTransform(1, 0, 0, 1, 0, position - elements[i].bbox.getY()));
+                        elements[i].element.transform(new GTransform(1, 0, 0, 1, 0, position - elements[i].bbox.getY()));
                     }
                     position += elements[i].bbox.getHeight() + spacing;
                 }

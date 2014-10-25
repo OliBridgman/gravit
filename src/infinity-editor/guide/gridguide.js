@@ -1,23 +1,23 @@
 (function (_) {
     /**
      * The grid guide
-     * @param {IFGuides} guides
-     * @class IFGridGuide
-     * @extends IFGuide
-     * @mixes IFGuide.Visual
-     * @mixes IFGuide.Map
+     * @param {GGuides} guides
+     * @class GGridGuide
+     * @extends GGuide
+     * @mixes GGuide.Visual
+     * @mixes GGuide.Map
      * @constructor
      */
-    function IFGridGuide(guides) {
-        IFGuide.call(this, guides);
+    function GGridGuide(guides) {
+        GGuide.call(this, guides);
     }
 
-    IFObject.inheritAndMix(IFGridGuide, IFGuide, [IFGuide.Visual, IFGuide.Map]);
+    GObject.inheritAndMix(GGridGuide, GGuide, [GGuide.Visual, GGuide.Map]);
 
-    IFGridGuide.MIN_CELL_SPACE = 10;
+    GGridGuide.MIN_CELL_SPACE = 10;
 
     /** @override */
-    IFGridGuide.prototype.paint = function (transform, context) {
+    GGridGuide.prototype.paint = function (transform, context) {
         if (this._scene.getProperty('gridActive') && context.configuration.gridVisible) {
             // Calculate optical cell-size
             var scale  = transform.getScaleFactor();
@@ -27,11 +27,11 @@
             var szH = szHScene * scale;
 
             // Limit mininum. grid size to be optically comfortable.
-            if (szW < IFGridGuide.MIN_CELL_SPACE) {
-                szW *= 1. + Math.floor(IFGridGuide.MIN_CELL_SPACE / szW);
+            if (szW < GGridGuide.MIN_CELL_SPACE) {
+                szW *= 1. + Math.floor(GGridGuide.MIN_CELL_SPACE / szW);
             }
-            if (szH < IFGridGuide.MIN_CELL_SPACE){
-                szH *= 1. + Math.floor(IFGridGuide.MIN_CELL_SPACE / szH);
+            if (szH < GGridGuide.MIN_CELL_SPACE){
+                szH *= 1. + Math.floor(GGridGuide.MIN_CELL_SPACE / szH);
             }
 
             szWScene = szW / scale;
@@ -40,24 +40,24 @@
             var rects = context.dirtyMatcher.getDirtyRectangles();
             for (var i = 0; i < rects.length; ++i) {
                 var rect = rects[i];
-                var tl = new IFPoint(rect.getX(), rect.getY());
+                var tl = new GPoint(rect.getX(), rect.getY());
                 var tlScene = transform.inverted().mapPoint(tl);
                 var startXScene = Math.ceil(tlScene.getX() / szWScene) * szWScene;
                 var startYScene = Math.ceil(tlScene.getY() / szHScene) * szHScene;
-                var tlGridScene = new IFPoint(startXScene, startYScene);
+                var tlGridScene = new GPoint(startXScene, startYScene);
                 var tlGrid = transform.mapPoint(tlGridScene);
                 for (var x = tlGrid.getX(); x - rect.getX() < rect.getWidth(); x += szW) {
-                    context.canvas.fillRect(Math.round(x), rect.getY(), 1, rect.getHeight(), IFRGBColor.BLACK, 0.125);
+                    context.canvas.fillRect(Math.round(x), rect.getY(), 1, rect.getHeight(), GRGBColor.BLACK, 0.125);
                 }
                 for (var y = tlGrid.getY(); y - rect.getY() < rect.getHeight(); y += szH) {
-                    context.canvas.fillRect(rect.getX(), Math.round(y), rect.getWidth(), 1, IFRGBColor.BLACK, 0.125);
+                    context.canvas.fillRect(rect.getX(), Math.round(y), rect.getWidth(), 1, GRGBColor.BLACK, 0.125);
                 }
             }
         }
     };
 
     /** @override */
-    IFGridGuide.prototype.map = function (x, y) {
+    GGridGuide.prototype.map = function (x, y) {
         var result = null;
 
         if (this._scene.getProperty('gridActive')) {
@@ -72,14 +72,14 @@
     };
 
     /** @override */
-    IFGridGuide.prototype.isMappingAllowed = function () {
+    GGridGuide.prototype.isMappingAllowed = function () {
         return !ifPlatform.modifiers.metaKey;
     };
 
     /** @override */
-    IFGridGuide.prototype.toString = function () {
-        return "[Object IFGridGuide]";
+    GGridGuide.prototype.toString = function () {
+        return "[Object GGridGuide]";
     };
 
-    _.IFGridGuide = IFGridGuide;
+    _.GGridGuide = GGridGuide;
 })(this);

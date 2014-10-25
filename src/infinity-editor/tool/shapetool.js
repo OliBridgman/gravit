@@ -1,28 +1,28 @@
 (function (_) {
     /**
-     * The base tool for simple shapes based on IFShape
+     * The base tool for simple shapes based on GShape
      * @param {Boolean} keepRatio if true, the ratio
      * on width/height will be kept if user holds shift-modifier key
      * @param {Boolean} allowFromCenter if true, the drag
      * area will be calculated from center and goes into each
      * direction if user holds option-modifier key
-     * @class IFShapeTool
-     * @extends IFTool
+     * @class GShapeTool
+     * @extends GTool
      * @constructor
      */
-    function IFShapeTool(keepRatio, fromCenter) {
-        IFTool.call(this);
+    function GShapeTool(keepRatio, fromCenter) {
+        GTool.call(this);
         this._keepRatio = keepRatio;
         this._fromCenter = fromCenter;
     }
 
-    IFObject.inherit(IFShapeTool, IFTool);
+    GObject.inherit(GShapeTool, GTool);
 
     /**
      * Options for shape tools
      * @version 1.0
      */
-    IFShapeTool.options = {
+    GShapeTool.options = {
         /**
          * The size of the center cross if any,
          * should be an even number
@@ -34,99 +34,99 @@
 
     /**
      * Dragging start position in scene coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFShapeTool.prototype._dragStart = null;
+    GShapeTool.prototype._dragStart = null;
 
     /**
      * Dragging current position in scene coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFShapeTool.prototype._dragCurrent = null;
+    GShapeTool.prototype._dragCurrent = null;
 
     /**
      * Whether to keep ratio or not
      * @type {Boolean}
      * @private
      */
-    IFShapeTool.prototype._keepRatio = false;
+    GShapeTool.prototype._keepRatio = false;
 
     /**
      * Whether to calculate from center or not
      * @type {Boolean}
      * @private
      */
-    IFShapeTool.prototype._fromCenter = false;
+    GShapeTool.prototype._fromCenter = false;
 
     /**
-     * @type {IFShape}
+     * @type {GShape}
      * @private
      */
-    IFShapeTool.prototype._shape = null;
+    GShapeTool.prototype._shape = null;
 
     /**
      * Current drag area in scene coordinates
-     * @type {IFRect}
+     * @type {GRect}
      * @private
      */
-    IFShapeTool.prototype._dragArea = null;
+    GShapeTool.prototype._dragArea = null;
 
     /**
      * Current drag line in scene coordinates
-     * @type {Array<IFPoint>}
+     * @type {Array<GPoint>}
      * @private
      */
-    IFShapeTool.prototype._dragLine = null;
+    GShapeTool.prototype._dragLine = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFShapeTool.prototype._hasCreatedShape = false;
+    GShapeTool.prototype._hasCreatedShape = false;
 
     /** @override */
-    IFShapeTool.prototype.getCursor = function () {
-        return IFCursor.Cross;
+    GShapeTool.prototype.getCursor = function () {
+        return GCursor.Cross;
     };
 
     /** @override */
-    IFShapeTool.prototype.activate = function (view) {
-        IFTool.prototype.activate.call(this, view);
+    GShapeTool.prototype.activate = function (view) {
+        GTool.prototype.activate.call(this, view);
 
-        view.addEventListener(IFMouseEvent.Move, this._mouseMove, this);
-        view.addEventListener(IFMouseEvent.DragStart, this._mouseDragStart, this);
-        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd, this);
-        view.addEventListener(IFMouseEvent.Down, this._mouseDown, this);
-        view.addEventListener(IFMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(GMouseEvent.Move, this._mouseMove, this);
+        view.addEventListener(GMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(GMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(GMouseEvent.Down, this._mouseDown, this);
+        view.addEventListener(GMouseEvent.Release, this._mouseRelease, this);
 
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
-    IFShapeTool.prototype.deactivate = function (view) {
-        IFTool.prototype.deactivate.call(this, view);
+    GShapeTool.prototype.deactivate = function (view) {
+        GTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(IFMouseEvent.Move, this._mouseMove, this);
-        view.removeEventListener(IFMouseEvent.DragStart, this._mouseDragStart);
-        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd);
-        view.removeEventListener(IFMouseEvent.Down, this._mouseDown);
-        view.removeEventListener(IFMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(GMouseEvent.Move, this._mouseMove, this);
+        view.removeEventListener(GMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(GMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(GMouseEvent.Down, this._mouseDown);
+        view.removeEventListener(GMouseEvent.Release, this._mouseRelease);
 
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
-    IFShapeTool.prototype.isDeactivatable = function () {
+    GShapeTool.prototype.isDeactivatable = function () {
         // cannot deactivate while dragging
         return this._dragStart ? false : true;
     };
 
     /** @override */
-    IFShapeTool.prototype.paint = function (context) {
+    GShapeTool.prototype.paint = function (context) {
         if (this._shape) {
             // Alignment here affects ellipses and handles of curves contained in ellipses,
             // but this is not noticeable, as it is a shape creation and line is just 1 pt width at any zoom
@@ -135,12 +135,12 @@
             // Paint center cross if desired
             if (this._hasCenterCross()) {
                 var geometryBBox = this._shape.getGeometryBBox();
-                var crossSizeMax = IFShapeTool.options.centerCrossSize * 4;
+                var crossSizeMax = GShapeTool.options.centerCrossSize * 4;
 
                 if (geometryBBox && !geometryBBox.isEmpty() &&
                     geometryBBox.getWidth() > crossSizeMax && geometryBBox.getHeight() > crossSizeMax) {
-                    var cs = IFShapeTool.options.centerCrossSize / 2 + 0.5;
-                    var cp = geometryBBox.getSide(IFRect.Side.CENTER);
+                    var cs = GShapeTool.options.centerCrossSize / 2 + 0.5;
+                    var cp = geometryBBox.getSide(GRect.Side.CENTER);
                     var cx = Math.floor(cp.getX()) + 0.5;
                     var cy = Math.floor(cp.getY()) + 0.5;
 
@@ -152,18 +152,18 @@
     };
 
     /** @private */
-    IFShapeTool.prototype._paintOutline = function (context) {
-        context.canvas.putVertices(new IFVertexPixelAligner(this._shape));
+    GShapeTool.prototype._paintOutline = function (context) {
+        context.canvas.putVertices(new GVertexPixelAligner(this._shape));
         context.canvas.strokeVertices(context.selectionOutlineColor);
     };
 
     /**
-     * @param {IFMouseEvent.Down} event
+     * @param {GMouseEvent.Down} event
      * @private
      */
-    IFShapeTool.prototype._mouseDown = function (event) {
+    GShapeTool.prototype._mouseDown = function (event) {
         // Quit if not hitting the left-mouse-button
-        if (event.button !== IFMouseEvent.BUTTON_LEFT) {
+        if (event.button !== GMouseEvent.BUTTON_LEFT) {
             return;
         }
 
@@ -172,10 +172,10 @@
     };
 
     /**
-     * @param {IFMouseEvent.Release} event
+     * @param {GMouseEvent.Release} event
      * @private
      */
-    IFShapeTool.prototype._mouseRelease = function (event) {
+    GShapeTool.prototype._mouseRelease = function (event) {
         if (!this._hasCreatedShape) {
             var position = this._view.getViewTransform().mapPoint(event.client);
             position = this._editor.getGuides().mapPoint(position);
@@ -185,10 +185,10 @@
     };
 
     /**
-     * @param {IFMouseEvent.DragStart} event
+     * @param {GMouseEvent.DragStart} event
      * @private
      */
-    IFShapeTool.prototype._mouseDragStart = function (event) {
+    GShapeTool.prototype._mouseDragStart = function (event) {
         this._hasCreatedShape = false;
         this._dragStart = this._view.getViewTransform().mapPoint(event.client);
         this._editor.getGuides().beginMap();
@@ -203,19 +203,19 @@
     };
 
     /**
-     * @param {IFMouseEvent.Drag} event
+     * @param {GMouseEvent.Drag} event
      * @private
      */
-    IFShapeTool.prototype._mouseDrag = function (event) {
+    GShapeTool.prototype._mouseDrag = function (event) {
         this._dragCurrent = this._view.getViewTransform().mapPoint(event.client);
         this._invalidateShape();
     };
 
     /**
-     * @param {IFMouseEvent.DragEnd} event
+     * @param {GMouseEvent.DragEnd} event
      * @private
      */
-    IFShapeTool.prototype._mouseDragEnd = function (event) {
+    GShapeTool.prototype._mouseDragEnd = function (event) {
         // Reset shape and repaint
         var shape = this._shape;
         this._shape = null;
@@ -239,10 +239,10 @@
     };
 
     /**
-     * @param {IFMouseEvent.Move} event
+     * @param {GMouseEvent.Move} event
      * @private
      */
-    IFShapeTool.prototype._mouseMove = function (event) {
+    GShapeTool.prototype._mouseMove = function (event) {
         // NO-OP
     };
 
@@ -250,7 +250,7 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    IFShapeTool.prototype._modifiersChanged = function (event) {
+    GShapeTool.prototype._modifiersChanged = function (event) {
         if ((this._keepRatio && event.changed.shiftKey) ||
                 (this._fromCenter && event.changed.optionKey) ||
                 event.changed.metaKey) {
@@ -262,12 +262,12 @@
     /**
      * @private
      */
-    IFShapeTool.prototype._invalidateShape = function () {
+    GShapeTool.prototype._invalidateShape = function () {
         if (this._dragStart && this._dragCurrent) {
             this._editor.getGuides().beginMap();
             var dragCurrent = this._editor.getGuides().mapPoint(this._dragCurrent);
             this._editor.getGuides().finishMap();
-            if (IFPoint.equals(this._dragStart, dragCurrent)) {
+            if (GPoint.equals(this._dragStart, dragCurrent)) {
                 this._invalidateShapeArea();
             } else {
                 var x0 = this._dragStart.getX();
@@ -294,18 +294,18 @@
                     }
                 }
 
-                /** @type IFRect */
+                /** @type GRect */
                 var dragArea = null;
-                /** @type Array<IFPoint> */
+                /** @type Array<GPoint> */
                 var dragLine = null;
 
                 if (this._fromCenter && ifPlatform.modifiers.optionKey) {
-                    dragArea = IFRect.fromPoints(new IFPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new IFPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
-                    dragLine = [new IFPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new IFPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
+                    dragArea = GRect.fromPoints(new GPoint(x0 - (x1 - x0), y0 - (y1 - y0)), new GPoint(x0 + (x1 - x0), y0 + (y1 - y0)));
+                    dragLine = [new GPoint(x0 - (x2 - x0), y0 - (y2 - y0)), new GPoint(x0 + (x2 - x0), y0 + (y2 - y0))];
                 }
                 else {
-                    dragArea = IFRect.fromPoints(new IFPoint(x0, y0), new IFPoint(x1, y1));
-                    dragLine = [new IFPoint(x0, y0), new IFPoint(x2, y2)];
+                    dragArea = GRect.fromPoints(new GPoint(x0, y0), new GPoint(x1, y1));
+                    dragLine = [new GPoint(x0, y0), new GPoint(x2, y2)];
                 }
 
                 // Assign area and line in scene coordinates
@@ -326,30 +326,30 @@
 
     /**
      * Called to prepare a shape for appending
-     * @param {IFShape} shape
+     * @param {GShape} shape
      * @private
      */
-    IFShapeTool.prototype._prepareShapeForAppend = function (shape) {
+    GShapeTool.prototype._prepareShapeForAppend = function (shape) {
         // Update shape with scene coordinates before appending
         this._updateShape(shape, this._dragArea, this._dragLine, true);
     };
 
     /**
      * Called to insert a given shape
-     * @param {IFShape} shape
+     * @param {GShape} shape
      * @private
      */
-    IFShapeTool.prototype._insertShape = function (shape) {
+    GShapeTool.prototype._insertShape = function (shape) {
         // Call editor for new insertion
         this._editor.insertElements([shape]);
     };
 
     /**
-     * @param {IFShape} [shape] the shape to invalidate,
+     * @param {GShape} [shape] the shape to invalidate,
      * if not provided defaults to current shape if any
      * @private
      */
-    IFShapeTool.prototype._invalidateShapeArea = function (shape) {
+    GShapeTool.prototype._invalidateShapeArea = function (shape) {
         shape = shape || this._shape;
         if (shape) {
             var geometryBBox = shape.getGeometryBBox();
@@ -361,33 +361,33 @@
 
     /**
      * Called to create a shape manually as it has not yet been created via drag
-     * @param {IFPoint} position the position to create the shape at in scene coordinates
+     * @param {GPoint} position the position to create the shape at in scene coordinates
      * @private
      */
-    IFShapeTool.prototype._createShapeManually = function (position) {
+    GShapeTool.prototype._createShapeManually = function (position) {
         // NO-OP
     };
 
     /**
      * Called to create an instance of the shape for this tool
-     * @return {IFShape}
+     * @return {GShape}
      * @private
      */
-    IFShapeTool.prototype._createShape = function () {
+    GShapeTool.prototype._createShape = function () {
         throw new Error("Not Supported.");
     };
 
     /**
      * Called to update the shape of this tool
-     * @param {IFShape} shape the shape to update
-     * @param {IFRect} area the shape area
-     * @param {Array<IFPoint>} line the shape line
+     * @param {GShape} shape the shape to update
+     * @param {GRect} area the shape area
+     * @param {Array<GPoint>} line the shape line
      * @param {Boolean} scene true if coordinates are in scene coordinates,
      * this usually is only the case before the shape gets appended, otherwise
      * if false, the coordinates are in view coordinates
      * @private
      */
-    IFShapeTool.prototype._updateShape = function (shape, area, line, scene) {
+    GShapeTool.prototype._updateShape = function (shape, area, line, scene) {
         throw new Error("Not Supported.");
     };
 
@@ -396,14 +396,14 @@
      * @return {Boolean} true if a center cross should be painted, false if not (default)
      * @private
      */
-    IFShapeTool.prototype._hasCenterCross = function () {
+    GShapeTool.prototype._hasCenterCross = function () {
         return false;
     };
 
     /** override */
-    IFShapeTool.prototype.toString = function () {
-        return "[Object IFShapeTool]";
+    GShapeTool.prototype.toString = function () {
+        return "[Object GShapeTool]";
     };
 
-    _.IFShapeTool = IFShapeTool;
+    _.GShapeTool = GShapeTool;
 })(this);

@@ -1,23 +1,23 @@
 (function (_) {
     /**
      * The zoom tool
-     * @class IFZoomTool
-     * @extends IFTool
+     * @class GZoomTool
+     * @extends GTool
      * @constructor
      * @version 1.0
      */
-    function IFZoomTool() {
-        IFTool.call(this);
+    function GZoomTool() {
+        GTool.call(this);
     }
 
-    IFObject.inherit(IFZoomTool, IFTool);
+    GObject.inherit(GZoomTool, GTool);
 
     /**
      * Global zoom tool options
      * @type {Object}
      * @version 1.0
      */
-    IFZoomTool.options = {
+    GZoomTool.options = {
         /**
          * The zoom step for zooming in/out. For example,
          * a value of 2.0 doubles the current zoom for each zoom-in
@@ -29,7 +29,7 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFZoomTool
+    // GZoomTool
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
@@ -37,62 +37,62 @@
      * @type {Number}
      * @private
      */
-    IFZoomTool.prototype._zoomMode = false;
+    GZoomTool.prototype._zoomMode = false;
 
     /**
-     * @type {IFRect}
+     * @type {GRect}
      * @private
      */
-    IFZoomTool.prototype._dragArea = null;
+    GZoomTool.prototype._dragArea = null;
 
     /** @override */
-    IFZoomTool.prototype.getCursor = function () {
+    GZoomTool.prototype.getCursor = function () {
         switch (this._zoomMode) {
             case -2:
             case -1:
-                return IFCursor.ZoomMinus;
+                return GCursor.ZoomMinus;
             case +1:
             case +2:
-                return IFCursor.ZoomPlus;
+                return GCursor.ZoomPlus;
             default:
-                return IFCursor.ZoomNone;
+                return GCursor.ZoomNone;
         }
     };
 
     /** @override */
-    IFZoomTool.prototype.activate = function (view) {
-        IFTool.prototype.activate.call(this, view);
+    GZoomTool.prototype.activate = function (view) {
+        GTool.prototype.activate.call(this, view);
 
         this._updateMode();
 
-        view.addEventListener(IFMouseEvent.DragStart, this._mouseDragStart, this);
-        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd, this);
-        view.addEventListener(IFMouseEvent.Release, this._mouseRelease, this);
+        view.addEventListener(GMouseEvent.DragStart, this._mouseDragStart, this);
+        view.addEventListener(GMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GMouseEvent.DragEnd, this._mouseDragEnd, this);
+        view.addEventListener(GMouseEvent.Release, this._mouseRelease, this);
 
         ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
-    IFZoomTool.prototype.deactivate = function (view) {
-        IFTool.prototype.deactivate.call(this, view);
+    GZoomTool.prototype.deactivate = function (view) {
+        GTool.prototype.deactivate.call(this, view);
 
-        view.removeEventListener(IFMouseEvent.DragStart, this._mouseDragStart);
-        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(IFMouseEvent.DragEnd, this._mouseDragEnd);
-        view.removeEventListener(IFMouseEvent.Release, this._mouseRelease);
+        view.removeEventListener(GMouseEvent.DragStart, this._mouseDragStart);
+        view.removeEventListener(GMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GMouseEvent.DragEnd, this._mouseDragEnd);
+        view.removeEventListener(GMouseEvent.Release, this._mouseRelease);
 
         ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
-    IFZoomTool.prototype.isDeactivatable = function () {
+    GZoomTool.prototype.isDeactivatable = function () {
         // cannot deactivate while dragging
         return this._dragArea ? false : true;
     };
 
     /** @override */
-    IFZoomTool.prototype.paint = function (context) {
+    GZoomTool.prototype.paint = function (context) {
         if (this._hasDragArea()) {
             var x = Math.floor(this._dragArea.getX()) + 0.5;
             var y = Math.floor(this._dragArea.getY()) + 0.5;
@@ -103,24 +103,24 @@
     };
 
     /**
-     * @param {IFMouseEvent.DragStart} event
+     * @param {GMouseEvent.DragStart} event
      * @private
      */
-    IFZoomTool.prototype._mouseDragStart = function (event) {
+    GZoomTool.prototype._mouseDragStart = function (event) {
         // NO-OP
     };
 
     /**
-     * @param {IFMouseEvent.Drag} event
+     * @param {GMouseEvent.Drag} event
      * @private
      */
-    IFZoomTool.prototype._mouseDrag = function (event) {
+    GZoomTool.prototype._mouseDrag = function (event) {
         if (this._zoomMode != 0) {
             if (this._hasDragArea()) {
                 this.invalidateArea(this._dragArea);
             }
 
-            this._dragArea = IFRect.fromPoints(event.clientStart, event.client);
+            this._dragArea = GRect.fromPoints(event.clientStart, event.client);
 
             if (this._hasDragArea()) {
                 this.invalidateArea(this._dragArea);
@@ -129,10 +129,10 @@
     };
 
     /**
-     * @param {IFMouseEvent.DragEnd} event
+     * @param {GMouseEvent.DragEnd} event
      * @private
      */
-    IFZoomTool.prototype._mouseDragEnd = function (event) {
+    GZoomTool.prototype._mouseDragEnd = function (event) {
         if (this._zoomMode != 0) {
             if (this._dragArea && !this._dragArea.isEmpty()) {
                 // No need for additional invalidation as we're about to zoom which invalidates everything anyway
@@ -146,24 +146,24 @@
     };
 
     /**
-     * @param {IFMouseEvent.Release} event
+     * @param {GMouseEvent.Release} event
      * @private
      */
-    IFZoomTool.prototype._mouseRelease = function (event) {
+    GZoomTool.prototype._mouseRelease = function (event) {
         if (!this._dragArea || (this._dragArea && this._dragArea.isEmpty())) {
             var newZoom = null;
             switch (this._zoomMode) {
                 case -2:
-                    newZoom = IFView.options.minZoomFactor;
+                    newZoom = GUIView.options.minZoomFactor;
                     break;
                 case -1:
-                    newZoom = this._view.getZoom() / IFZoomTool.options.zoomStep;
+                    newZoom = this._view.getZoom() / GZoomTool.options.zoomStep;
                     break;
                 case +1:
-                    newZoom = this._view.getZoom() * IFZoomTool.options.zoomStep;
+                    newZoom = this._view.getZoom() * GZoomTool.options.zoomStep;
                     break;
                 case +2:
-                    newZoom = IFView.options.maxZoomFactor;
+                    newZoom = GUIView.options.maxZoomFactor;
                     break;
                 default:
                     break;
@@ -181,11 +181,11 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    IFZoomTool.prototype._modifiersChanged = function (event) {
+    GZoomTool.prototype._modifiersChanged = function (event) {
         this._updateMode();
     };
 
-    IFZoomTool.prototype._updateMode = function () {
+    GZoomTool.prototype._updateMode = function () {
         var newMode = 0;
         if (ifPlatform.modifiers.optionKey) {
             newMode = -1;
@@ -200,9 +200,9 @@
         }
 
         // Normalize zoom mode
-        if (newMode < 0 && this._view.getZoom() <= IFView.options.minZoomFactor) {
+        if (newMode < 0 && this._view.getZoom() <= GUIView.options.minZoomFactor) {
             newMode = 0;
-        } else if (newMode > 0 && this._view.getZoom() >= IFView.options.maxZoomFactor) {
+        } else if (newMode > 0 && this._view.getZoom() >= GUIView.options.maxZoomFactor) {
             newMode = 0;
         }
 
@@ -215,14 +215,14 @@
     /**
      * @private
      */
-    IFZoomTool.prototype._hasDragArea = function () {
+    GZoomTool.prototype._hasDragArea = function () {
         return (this._dragArea && (this._dragArea.getHeight() > 0 || this._dragArea.getWidth() > 0));
     };
 
     /** override */
-    IFZoomTool.prototype.toString = function () {
-        return "[Object IFZoomTool]";
+    GZoomTool.prototype.toString = function () {
+        return "[Object GZoomTool]";
     };
 
-    _.IFZoomTool = IFZoomTool;
+    _.GZoomTool = GZoomTool;
 })(this);

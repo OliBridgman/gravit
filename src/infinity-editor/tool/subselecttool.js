@@ -1,54 +1,54 @@
 (function (_) {
     /**
      * The sub selection tool
-     * @class IFSubSelectTool
-     * @extends IFSelectTool
+     * @class GSubSelectTool
+     * @extends GSelectTool
      * @constructor
      * @version 1.0
      */
-    function IFSubSelectTool() {
-        IFSelectTool.call(this);
+    function GSubSelectTool() {
+        GSelectTool.call(this);
     };
 
-    IFObject.inherit(IFSubSelectTool, IFSelectTool);
+    GObject.inherit(GSubSelectTool, GSelectTool);
 
     /** @override */
-    IFSubSelectTool.prototype.getCursor = function () {
-        var result = IFSelectTool.prototype.getCursor.call(this);
-        if (result === IFCursor.Select) {
-            return IFCursor.SelectInverse;
-        } else if (result === IFCursor.SelectDot) {
-            return IFCursor.SelectDotInverse;
+    GSubSelectTool.prototype.getCursor = function () {
+        var result = GSelectTool.prototype.getCursor.call(this);
+        if (result === GCursor.Select) {
+            return GCursor.SelectInverse;
+        } else if (result === GCursor.SelectDot) {
+            return GCursor.SelectDotInverse;
         } else {
             return result;
         }
     };
 
     /** @override */
-    IFSubSelectTool.prototype.activate = function (view) {
-        IFSelectTool.prototype.activate.call(this, view);
+    GSubSelectTool.prototype.activate = function (view) {
+        GSelectTool.prototype.activate.call(this, view);
 
         // Set detail mode for selection for sub-select tool
         this._editor.setSelectionDetail(true);
     };
 
     /** @override */
-    IFSubSelectTool.prototype.deactivate = function (view) {
+    GSubSelectTool.prototype.deactivate = function (view) {
         // Remove detail mode for selection for sub-select tool
         this._editor.setSelectionDetail(false);
 
-        IFSelectTool.prototype.deactivate.call(this, view);
+        GSelectTool.prototype.deactivate.call(this, view);
     };
 
     /** @override */
-    IFSubSelectTool.prototype._mouseDragStart = function (event) {
-        if (this._mode == IFSelectTool._Mode.Move) {
+    GSubSelectTool.prototype._mouseDragStart = function (event) {
+        if (this._mode == GSelectTool._Mode.Move) {
             // Save start
             this._moveStart = event.client;
             this._moveStartTransformed = this._view.getViewTransform().mapPoint(this._moveStart);
 
             // Switch to moving mode
-            this._updateMode(IFSelectTool._Mode.Moving);
+            this._updateMode(GSelectTool._Mode.Moving);
 
             if (this._editorMovePartInfo) {
                 if (this._editorMovePartInfo.isolated) {
@@ -58,7 +58,7 @@
                     var selection = this._editor.getSelection();
                     if (selection && selection.length) {
                         for (var i = 0; i < selection.length; ++i) {
-                            var editor = IFElementEditor.getEditor(selection[i]);
+                            var editor = GElementEditor.getEditor(selection[i]);
                             if (editor) {
                                 var partInfo = editor.subSelectDragStartAction(this._editorMovePartInfo);
                                 if (partInfo) {
@@ -71,19 +71,19 @@
                 }
             }
         } else {
-            IFSelectTool.prototype._mouseDragStart.call(this, event);
+            GSelectTool.prototype._mouseDragStart.call(this, event);
         }
     };
 
     /** @override */
-    IFSubSelectTool.prototype._getSelectableElement = function (element) {
-        return element instanceof IFItem ? element : null;
+    GSubSelectTool.prototype._getSelectableElement = function (element) {
+        return element instanceof GItem ? element : null;
     };
 
     /** override */
-    IFSubSelectTool.prototype.toString = function () {
-        return "[Object IFSubSelectTool]";
+    GSubSelectTool.prototype.toString = function () {
+        return "[Object GSubSelectTool]";
     };
 
-    _.IFSubSelectTool = IFSubSelectTool;
+    _.GSubSelectTool = GSubSelectTool;
 })(this);

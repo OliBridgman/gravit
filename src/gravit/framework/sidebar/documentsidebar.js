@@ -9,10 +9,10 @@
         GSidebar.call(this);
     }
 
-    IFObject.inherit(GDocumentSidebar, GSidebar);
+    GObject.inherit(GDocumentSidebar, GSidebar);
 
     GDocumentSidebar.ID = "document";
-    GDocumentSidebar.TITLE = new IFLocale.Key(GDocumentSidebar, "title");
+    GDocumentSidebar.TITLE = new GLocale.Key(GDocumentSidebar, "title");
 
     /**
      * @type {JQuery}
@@ -102,9 +102,9 @@
                     .attr('data-property', property)
                     .css('width', '3em')
                     .on('change', function () {
-                        var angle = IFLength.parseEquationValue($(this).val());
+                        var angle = GLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = IFMath.normalizeAngleRadians(IFMath.toRadians(angle));
+                            angle = GMath.normalizeAngleRadians(GMath.toRadians(angle));
                             self._assignProperty(property, angle);
                         } else {
                             self._updateProperties();
@@ -258,19 +258,19 @@
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
             var scene = this._document.getScene();
-            scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
             this._document = null;
-            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this.trigger(GPalette.UPDATE_EVENT);
         }
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GDocumentSidebar.prototype._afterPropertiesChange = function (event) {
@@ -292,7 +292,7 @@
         this._htmlElement.find('input[data-property="crDistSmall"]').val(scene.pointToString(scene.getProperty('crDistSmall')));
         this._htmlElement.find('input[data-property="crDistBig"]').val(scene.pointToString(scene.getProperty('crDistBig')));
         this._htmlElement.find('input[data-property="crConstraint"]').val(
-            IFUtil.formatNumber(IFMath.toDegrees(scene.getProperty('crConstraint')), 2));
+            GUtil.formatNumber(GMath.toDegrees(scene.getProperty('crConstraint')), 2));
         this._htmlElement.find('input[data-property="snapDist"]').val(scene.pointToString(scene.getProperty('snapDist')));
         this._htmlElement.find('input[data-property="pickDist"]').val(scene.pointToString(scene.getProperty('pickDist')));
         this._htmlElement.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));

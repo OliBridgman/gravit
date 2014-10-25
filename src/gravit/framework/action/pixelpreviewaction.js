@@ -8,10 +8,10 @@
      */
     function GPixelPreviewAction() {
     };
-    IFObject.inherit(GPixelPreviewAction, GAction);
+    GObject.inherit(GPixelPreviewAction, GAction);
 
     GPixelPreviewAction.ID = 'view.pixel-preview';
-    GPixelPreviewAction.TITLE = new IFLocale.Key(GPixelPreviewAction, 'title');
+    GPixelPreviewAction.TITLE = new GLocale.Key(GPixelPreviewAction, 'title');
 
     /**
      * @override

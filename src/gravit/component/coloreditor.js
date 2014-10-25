@@ -17,8 +17,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex([0, components[1], components[2]]),
-                            IFColor.rgbToHtmlHex([255, components[1], components[2]])
+                            GColor.rgbToHtmlHex([0, components[1], components[2]]),
+                            GColor.rgbToHtmlHex([255, components[1], components[2]])
                         ];
                     }
                 },
@@ -31,8 +31,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex([components[0], 0, components[2]]),
-                            IFColor.rgbToHtmlHex([components[0], 255, components[2]])
+                            GColor.rgbToHtmlHex([components[0], 0, components[2]]),
+                            GColor.rgbToHtmlHex([components[0], 255, components[2]])
                         ];
                     }
                 },
@@ -45,8 +45,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex([components[0], components[1], 0]),
-                            IFColor.rgbToHtmlHex([components[0], components[1], 255])
+                            GColor.rgbToHtmlHex([components[0], components[1], 0]),
+                            GColor.rgbToHtmlHex([components[0], components[1], 255])
                         ];
                     }
                 },
@@ -57,11 +57,11 @@
                     unit: ' ',
                     map: false,
                     componentsToValue: function (components) {
-                        return IFColor.rgbToHtmlHex(components).substr(1);
+                        return GColor.rgbToHtmlHex(components).substr(1);
                     },
                     valueToColor: function (value) {
                         if (value.length > 3) {
-                            return IFRGBColor.fromCSSColor(value);
+                            return GRGBColor.fromCSSColor(value);
                         }
                         return null;
                     }
@@ -77,7 +77,7 @@
                 return color.toScreen();
             },
             colorFromComponents: function (components) {
-                return new IFRGBColor(components);
+                return new GRGBColor(components);
             },
             componentsFromMap: function (component, value, x, y) {
                 switch (component) {
@@ -114,7 +114,7 @@
                         var steps = 60;
                         for (var i = 0; i <= 360; i += steps) {
                             var hsv = [i, components[1], components[2]];
-                            result.push(IFColor.rgbToHtmlHex(IFColor.hsvToRGB(hsv)));
+                            result.push(GColor.rgbToHtmlHex(GColor.hsvToRGB(hsv)));
                         }
                         return result;
                     }
@@ -128,8 +128,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], 0, components[2]])),
-                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], 1, components[2]]))
+                            GColor.rgbToHtmlHex(GColor.hsvToRGB([components[0], 0, components[2]])),
+                            GColor.rgbToHtmlHex(GColor.hsvToRGB([components[0], 1, components[2]]))
                         ];
                     }
                 },
@@ -142,8 +142,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 0])),
-                            IFColor.rgbToHtmlHex(IFColor.hsvToRGB([components[0], components[1], 1]))
+                            GColor.rgbToHtmlHex(GColor.hsvToRGB([components[0], components[1], 0])),
+                            GColor.rgbToHtmlHex(GColor.hsvToRGB([components[0], components[1], 1]))
                         ];
                     }
                 },
@@ -154,11 +154,11 @@
                     unit: ' ',
                     map: false,
                     componentsToValue: function (components) {
-                        return IFColor.rgbToHtmlHex(IFColor.hsvToRGB(components)).substr(1);
+                        return GColor.rgbToHtmlHex(GColor.hsvToRGB(components)).substr(1);
                     },
                     valueToColor: function (value) {
                         if (value.length > 3) {
-                            return IFRGBColor.fromCSSColor(value);
+                            return GRGBColor.fromCSSColor(value);
                         }
                         return null;
                     }
@@ -183,10 +183,10 @@
                 }
             },
             componentsFromColor: function (color) {
-                return IFColor.rgbToHSV(color.toScreen());
+                return GColor.rgbToHSV(color.toScreen());
             },
             colorFromComponents: function (components) {
-                return new IFRGBColor(IFColor.hsvToRGB(components));
+                return new GRGBColor(GColor.hsvToRGB(components));
             },
             componentsFromMap: function (component, value, x, y) {
                 switch (component) {
@@ -220,8 +220,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([0, components[1], components[2], components[3]])),
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([1, components[1], components[2], components[3]]))
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([0, components[1], components[2], components[3]])),
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([1, components[1], components[2], components[3]]))
                         ];
                     }
                 },
@@ -234,8 +234,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], 0, components[2], components[3]])),
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], 1, components[2], components[3]]))
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], 0, components[2], components[3]])),
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], 1, components[2], components[3]]))
                         ];
                     }
                 },
@@ -248,8 +248,8 @@
                     map: true,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], 0, components[3]])),
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], 1, components[3]]))
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], components[1], 0, components[3]])),
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], components[1], 1, components[3]]))
                         ];
                     }
                 },
@@ -262,8 +262,8 @@
                     map: false,
                     stops: function (components) {
                         return [
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], components[2], 0])),
-                            IFColor.rgbToHtmlHex(IFColor.cmykToRGB([components[0], components[1], components[2], 1]))
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], components[1], components[2], 0])),
+                            GColor.rgbToHtmlHex(GColor.cmykToRGB([components[0], components[1], components[2], 1]))
                         ];
                     }
                 }
@@ -275,10 +275,10 @@
                 return value * 100.0;
             },
             componentsFromColor: function (color) {
-                return color instanceof IFCMYKColor ? color.getValue() : IFColor.rgbToCMYK(color.toScreen(true/*no-cms*/));
+                return color instanceof GCMYKColor ? color.getValue() : GColor.rgbToCMYK(color.toScreen(true/*no-cms*/));
             },
             colorFromComponents: function (components) {
-                return new IFCMYKColor(components);
+                return new GCMYKColor(components);
             },
             componentsFromMap: function (component, value, x, y, components) {
                 switch (component) {
@@ -341,7 +341,7 @@
         var segmentAngleDeg = 360 / wheelSegments;
         var segmentAngleRad = segmentAngleDeg * Math.PI / 180;
 
-        var startColor = IFColor.rgbToHSV(data.currentColor.toScreen());
+        var startColor = GColor.rgbToHSV(data.currentColor.toScreen());
         var hueStart = startColor[0];
         var hueHighlights = null;
 
@@ -349,25 +349,25 @@
             hueHighlights = [hueStart];
 
             if ('triadic' === highlight) {
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 120));
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 120));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart - 120));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 120));
             } else if ('tetradic' === highlight) {
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 90));
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 270));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 90));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 180));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 270));
             } else if ('split_complements' === highlight) {
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 150));
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 150));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart - 150));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 150));
             } else if ('analogous' === highlight) {
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart - 30));
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 30));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart - 30));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 30));
             } else if ('complement' === highlight) {
-                hueHighlights.push(IFMath.normalizeAngleDegrees(hueStart + 180));
+                hueHighlights.push(GMath.normalizeAngleDegrees(hueStart + 180));
             }
         }
 
         for (var i = wheelSegments - 1; i >= 0; --i) {
-            var segmentHue = IFMath.normalizeAngleDegrees(startColor[0] + i * segmentAngleDeg);
+            var segmentHue = GMath.normalizeAngleDegrees(startColor[0] + i * segmentAngleDeg);
             var segmentHSV = [segmentHue, startColor[1], startColor[2]];
             var highlightSegment = hueHighlights && hueHighlights.indexOf(segmentHue) >= 0;
 
@@ -481,7 +481,7 @@
                             'visibility': 'hidden'
                         })
                         .on('change', function (evt) {
-                            var color = IFRGBColor.fromCSSColor($(evt.target).val());
+                            var color = GRGBColor.fromCSSColor($(evt.target).val());
                             methods.currentColor.call(self, color);
                             $this.trigger('colorchange', color);
                         }.bind(this)))
@@ -529,7 +529,7 @@
                                     .append($('<div></div>')
                                         .addClass('previous-color')
                                         .gPatternTarget()
-                                        .gPatternTarget('types', [IFColor])
+                                        .gPatternTarget('types', [GColor])
                                         .on('patternchange', function (evt, color) {
                                             if (color) {
                                                 methods.previousColor.call(self, color);
@@ -538,7 +538,7 @@
                                     .append($('<div></div>')
                                         .addClass('current-color')
                                         .gPatternTarget()
-                                        .gPatternTarget('types', [IFColor])
+                                        .gPatternTarget('types', [GColor])
                                         .on('patternchange', function (evt, color) {
                                             if (color) {
                                                 methods.value.call(self, color);
@@ -667,7 +667,7 @@
                                             return;
                                         }
 
-                                        var color = new IFRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
+                                        var color = new GRGBColor([pixels[idx], pixels[idx + 1], pixels[idx + 2]]);
                                         var newColor = methods._convertColor.call(self, color);
 
                                         //methods.currentColor.call(self, newColor);
@@ -677,7 +677,7 @@
                                     .gPatternTarget({
                                         allowDrop: false
                                     })
-                                    .gPatternTarget('types', [IFColor])))));
+                                    .gPatternTarget('types', [GColor])))));
 
                 // Set some initial values
                 methods.colorMode.call(self, 'hsv');
@@ -746,10 +746,10 @@
             if (!arguments.length) {
                 return data.previousColor;
             } else {
-                if (!IFUtil.equals(data.previousColor, previousColor)) {
+                if (!GUtil.equals(data.previousColor, previousColor)) {
                     data.previousColor = previousColor;
                     $this.find('.color-preview > .previous-color')
-                        .css('background', IFPattern.asCSSBackground(data.previousColor))
+                        .css('background', GPattern.asCSSBackground(data.previousColor))
                         .gPatternTarget('value', data.previousColor);
                 }
 
@@ -786,9 +786,9 @@
                 methods.currentColor.call(this, value);
 
                 var colorMode = methods.colorMode.call(this);
-                if (value instanceof IFCMYKColor) {
+                if (value instanceof GCMYKColor) {
                     methods.colorMode.call(this, 'cmyk');
-                } else if (value instanceof IFRGBColor && colorMode === 'cmyk') {
+                } else if (value instanceof GRGBColor && colorMode === 'cmyk') {
                     methods.colorMode.call(this, 'hsv');
                 }
 
@@ -800,9 +800,9 @@
             var $this = $(this);
             var data = $this.data('gcoloreditor');
             data.currentColor = currentColor;
-            $this.find('input[type="color"]').val(IFColor.rgbToHtmlHex(data.currentColor.toScreen()));
+            $this.find('input[type="color"]').val(GColor.rgbToHtmlHex(data.currentColor.toScreen()));
             $this.find('.color-preview > .current-color')
-                .css('background', IFPattern.asCSSBackground(data.currentColor))
+                .css('background', GPattern.asCSSBackground(data.currentColor))
                 .gPatternTarget('value', data.currentColor);
         },
 
@@ -974,7 +974,7 @@
                 ctx.moveTo(cp, cp);
                 ctx.arc(cp, cp, radius + (highlightSegment ? 5 : 0), angleStart, angleEnd);
                 ctx.lineTo(cp, cp);
-                ctx.fillStyle = IFColor.rgbToHtmlHex(IFColor.hsvToRGB(hsvColor));
+                ctx.fillStyle = GColor.rgbToHtmlHex(GColor.hsvToRGB(hsvColor));
                 ctx.fill();
 
                 if (mixes) {
@@ -994,8 +994,8 @@
                         default:
                             var blendAngle = parseInt(mixes);
                             if (!isNaN(blendAngle)) {
-                                var blendHue = IFMath.normalizeAngleDegrees(hsvColor[0] + blendAngle);
-                                ctx.fillStyle = IFColor.rgbToHtmlHex(IFColor.hsvToRGB([blendHue, hsvColor[1], hsvColor[2]]));
+                                var blendHue = GMath.normalizeAngleDegrees(hsvColor[0] + blendAngle);
+                                ctx.fillStyle = GColor.rgbToHtmlHex(GColor.hsvToRGB([blendHue, hsvColor[1], hsvColor[2]]));
                             }
                             break;
                     }

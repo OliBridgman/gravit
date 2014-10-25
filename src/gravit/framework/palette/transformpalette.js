@@ -17,10 +17,10 @@
         };
     }
 
-    IFObject.inherit(GTransformPalette, GPalette);
+    GObject.inherit(GTransformPalette, GPalette);
 
     GTransformPalette.ID = "transform";
-    GTransformPalette.TITLE = new IFLocale.Key(GTransformPalette, "title");
+    GTransformPalette.TITLE = new GLocale.Key(GTransformPalette, "title");
 
     GTransformPalette._TransformMode = {
         Move: {
@@ -37,7 +37,7 @@
 
                 if (tx !== 0 || ty !== 0) {
                     return function (step, element, origin) {
-                        element.transform(new IFTransform(1, 0, 0, 1, tx * step, ty * step));
+                        element.transform(new GTransform(1, 0, 0, 1, tx * step, ty * step));
                     }
                 }
 
@@ -60,7 +60,7 @@
 
                 if (sx !== 1 || sy !== 1) {
                     return function (step, element, origin) {
-                        element.transform(new IFTransform()
+                        element.transform(new GTransform()
                             .translated(-origin.getX(), -origin.getY())
                             .scaled(sx + (sx - 1) * (step - 1), sy + (sy - 1) * (step - 1))
                             .translated(origin.getX(), origin.getY()));
@@ -76,11 +76,11 @@
             },
             pivot: true,
             transformFunc: function (val1, val2, scene) {
-                var angle = IFMath.toRadians(parseFloat(val1)) || 0;
+                var angle = GMath.toRadians(parseFloat(val1)) || 0;
 
                 if (angle !== 0) {
                     return function (step, element, origin) {
-                        element.transform(new IFTransform()
+                        element.transform(new GTransform()
                             .translated(-origin.getX(), -origin.getY())
                             .rotated(-angle * step)
                             .translated(origin.getX(), origin.getY()));
@@ -101,12 +101,12 @@
             },
             pivot: true,
             transformFunc: function (val1, val2, scene) {
-                var sx = IFMath.toRadians(parseFloat(val1)) || 0;
-                var sy = IFMath.toRadians(parseFloat(val2)) || 0;
+                var sx = GMath.toRadians(parseFloat(val1)) || 0;
+                var sy = GMath.toRadians(parseFloat(val2)) || 0;
 
-                if ((sx !== 0 || sy !== 0) && (sx > -IFMath.PIHALF && sy > -IFMath.PIHALF && sx < IFMath.PIHALF && sy < IFMath.PIHALF)) {
+                if ((sx !== 0 || sy !== 0) && (sx > -GMath.PIHALF && sy > -GMath.PIHALF && sx < GMath.PIHALF && sy < GMath.PIHALF)) {
                     return function (step, element, origin) {
-                        element.transform(new IFTransform()
+                        element.transform(new GTransform()
                             .translated(-origin.getX(), -origin.getY())
                             .skewed(sx * step, sy * step)
                             .translated(origin.getX(), origin.getY()));
@@ -124,17 +124,17 @@
             pivot: true,
             transformFunc: function (val1, val2, scene) {
                 var angle = parseFloat(val1) || 0;
-                angle = IFMath.toRadians(-angle);
+                angle = GMath.toRadians(-angle);
                 var cosA = Math.cos(angle);
                 var sinA = Math.sin(angle);
 
                 return function (step, element, origin) {
                     if (step % 2) {
-                        element.transform(new IFTransform()
+                        element.transform(new GTransform()
                             .translated(-origin.getX(), -origin.getY())
-                            .multiplied(new IFTransform(cosA, -sinA, sinA, cosA, 0, 0))
-                            .multiplied(new IFTransform(1, 0, 0, -1, 0, 0))
-                            .multiplied(new IFTransform(cosA, sinA, -sinA, cosA, 0, 0))
+                            .multiplied(new GTransform(cosA, -sinA, sinA, cosA, 0, 0))
+                            .multiplied(new GTransform(1, 0, 0, -1, 0, 0))
+                            .multiplied(new GTransform(cosA, sinA, -sinA, cosA, 0, 0))
                             .translated(origin.getX(), origin.getY()));
                     }
                 }
@@ -155,7 +155,7 @@
     GTransformPalette.prototype._document = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
     GTransformPalette.prototype._elements = null;
@@ -300,7 +300,7 @@
                     'left': '5px'
                 })
                 .gPivot()
-                .gPivot('value', IFRect.Side.CENTER))
+                .gPivot('value', GRect.Side.CENTER))
             .append($('<label></label>')
                 .css({
                     'position': 'absolute',
@@ -333,7 +333,7 @@
             this._document = event.document;
             var editor = this._document.getEditor();
 
-            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            editor.addEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._updateFromSelection();
 
@@ -342,7 +342,7 @@
             var editor = this._document.getEditor();
 
             // Unsubscribe from the editor's events
-            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            editor.removeEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._document = null;
             this._elements = null;
@@ -361,7 +361,7 @@
 
         if (selection) {
             for (var i = 0; i < selection.length; ++i) {
-                if (selection[i].hasMixin(IFElement.Transform)) {
+                if (selection[i].hasMixin(GElement.Transform)) {
                     if (!this._elements) {
                         this._elements = [];
                     }
@@ -421,7 +421,7 @@
 
         if (transformFunc) {
             // TODO : I18N
-            IFEditor.tryRunTransaction(scene, function () {
+            GEditor.tryRunTransaction(scene, function () {
                 var transformElements = [];
                 var bbox = null;
                 for (var i = 0; i < this._elements.length; ++i) {
@@ -437,8 +437,8 @@
                         for (var c = 0; c < copies; ++c) {
                             var clone = element.clone();
                             if (c == copies - 1) {
-                                clone.setFlag(IFNode.Flag.Selected);
-                                element.removeFlag(IFNode.Flag.Selected);
+                                clone.setFlag(GNode.Flag.Selected);
+                                element.removeFlag(GNode.Flag.Selected);
                             }
                             parent.insertChild(clone, insertReference);
                             elementElements.push(clone);

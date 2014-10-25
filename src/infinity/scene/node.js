@@ -1,67 +1,67 @@
 (function (_) {
     /**
      * Base node representing a single item within a scene
-     * @class IFNode
-     * @extends IFObject
+     * @class GNode
+     * @extends GObject
      * @constructor
      * @version 1.0
      */
-    function IFNode() {
+    function GNode() {
     };
 
-    IFObject.inherit(IFNode, IFObject);
+    GObject.inherit(GNode, GObject);
 
     /**
      * Nodes's mime-type
      * @type {string}
      */
-    IFNode.MIME_TYPE = "application/infinity+node";
+    GNode.MIME_TYPE = "application/infinity+node";
 
     /**
-     * IFObject.inherit descendant for nodes
+     * GObject.inherit descendant for nodes
      * @param {String} name the unique name for the node
-     * @see IFObject.inherit
+     * @see GObject.inherit
      */
-    IFNode.inherit = function (name, target, base) {
-        IFObject.inherit(target, base);
-        IFNode._registerNodeClass(name, target);
+    GNode.inherit = function (name, target, base) {
+        GObject.inherit(target, base);
+        GNode._registerNodeClass(name, target);
     };
 
     /**
-     * IFObject.inheritAndMix descendant for nodes
+     * GObject.inheritAndMix descendant for nodes
      * @param {String} name the unique name for the node
-     * @see IFObject.inheritAndMix
+     * @see GObject.inheritAndMix
      */
-    IFNode.inheritAndMix = function (name, target, base, mixins) {
-        IFObject.inheritAndMix(target, base, mixins);
-        IFNode._registerNodeClass(name, target);
+    GNode.inheritAndMix = function (name, target, base, mixins) {
+        GObject.inheritAndMix(target, base, mixins);
+        GNode._registerNodeClass(name, target);
     };
 
     /**
      * Returns the name for a given node or node class
      * @param {Object|Function|Number} node
      */
-    IFNode.getName = function (node) {
-        return IFNode._nodeClassToNameMap[IFObject.getTypeId(node)];
+    GNode.getName = function (node) {
+        return GNode._nodeClassToNameMap[GObject.getTypeId(node)];
     };
 
     /**
      * Called to store a given node into a blob
-     * @param {IFNode} node the node to be stored
+     * @param {GNode} node the node to be stored
      * @returns {*} the stored blob for the node or null on failure
      */
-    IFNode.store = function (node) {
-        if (node.hasMixin(IFNode.Store)) {
+    GNode.store = function (node) {
+        if (node.hasMixin(GNode.Store)) {
             var blob = {
-                '@': IFNode._nodeClassToNameMap[IFObject.getTypeId(node)]
+                '@': GNode._nodeClassToNameMap[GObject.getTypeId(node)]
             };
 
-            node._notifyChange(IFNode._Change.PrepareStore, blob);
+            node._notifyChange(GNode._Change.PrepareStore, blob);
 
-            if (node.hasMixin(IFNode.Container)) {
+            if (node.hasMixin(GNode.Container)) {
                 // Store children
                 for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
-                    var childBlob = IFNode.store(child);
+                    var childBlob = GNode.store(child);
                     if (childBlob) {
                         if (!blob.hasOwnProperty('$')) {
                             blob['$'] = [childBlob];
@@ -72,7 +72,7 @@
                 }
             }
 
-            if (node.hasMixin(IFNode.Properties)) {
+            if (node.hasMixin(GNode.Properties)) {
                 // Store custom properties if any
                 for (var property in node) {
                     if (node.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
@@ -81,12 +81,12 @@
                 }
             }
 
-            if (node.hasMixin(IFNode.Reference) && node._referenceId) {
+            if (node.hasMixin(GNode.Reference) && node._referenceId) {
                 // Restore referenceId
                 blob['#'] = node._referenceId;
             }
 
-            node._notifyChange(IFNode._Change.Store, blob);
+            node._notifyChange(GNode._Change.Store, blob);
 
             return blob;
         }
@@ -96,15 +96,15 @@
     /**
      * Restore a node from a given blob
      * @param {*} blob the blob to restore from
-     * @returns {IFNode} a node instance of the blob-type or
+     * @returns {GNode} a node instance of the blob-type or
      * null for failure
      */
-    IFNode.restore = function (blob) {
+    GNode.restore = function (blob) {
         if (!blob || !blob.hasOwnProperty('@')) {
             return null;
         }
 
-        var nodeClass = IFNode._nameToNodeClassMap[blob['@']];
+        var nodeClass = GNode._nameToNodeClassMap[blob['@']];
         if (!nodeClass) {
             return null;
         }
@@ -112,7 +112,7 @@
         // Create our node instance now and let it restore
         var node = new nodeClass();
 
-        IFNode.restoreInstance(blob, node);
+        GNode.restoreInstance(blob, node);
 
         return node;
     };
@@ -120,17 +120,17 @@
     /**
      * Restore an existing node instance from a given blob
      * @param {*} blob the blob to restore from
-     * @param {IFNode} node the instance to be restored
+     * @param {GNode} node the instance to be restored
      */
-    IFNode.restoreInstance = function (blob, node) {
-        node._notifyChange(IFNode._Change.PrepareRestore, blob);
+    GNode.restoreInstance = function (blob, node) {
+        node._notifyChange(GNode._Change.PrepareRestore, blob);
 
         // Restore children if any
-        if (blob.hasOwnProperty('$') && node.hasMixin(IFNode.Container)) {
+        if (blob.hasOwnProperty('$') && node.hasMixin(GNode.Container)) {
             var children = blob['$'];
             if (children.length > 0) {
                 for (var i = 0; i < children.length; ++i) {
-                    var child = IFNode.restore(children[i]);
+                    var child = GNode.restore(children[i]);
                     if (child) {
                         node.appendChild(child);
                     }
@@ -138,7 +138,7 @@
             }
         }
 
-        if (node.hasMixin(IFNode.Properties)) {
+        if (node.hasMixin(GNode.Properties)) {
             // Restore custom properties if any
             for (var property in blob) {
                 if (blob.hasOwnProperty(property) && property.length > 1 && property.charAt(0) === '@') {
@@ -147,27 +147,27 @@
             }
         }
 
-        if (node.hasMixin(IFNode.Reference) && blob.hasOwnProperty('#')) {
+        if (node.hasMixin(GNode.Reference) && blob.hasOwnProperty('#')) {
             // Restore referenceId
             node._referenceId = blob['#'];
         }
 
-        node._notifyChange(IFNode._Change.Restore, blob);
+        node._notifyChange(GNode._Change.Restore, blob);
     };
 
     /**
      * Serialize a given node or an array of nodes into a string
-     * @param {IFNode|Array<IFNode>} node the node to serialize
+     * @param {GNode|Array<GNode>} node the node to serialize
      * or an array of nodes to serialize
      * @param {Boolean} [beautify] whether to beautify, defaults to false
      * @param {String} serialized json code or null for failure
      */
-    IFNode.serialize = function (node, beautify) {
+    GNode.serialize = function (node, beautify) {
         if (node instanceof Array) {
             var blobs = [];
 
             for (var i = 0; i < node.length; ++i) {
-                var blob = IFNode.store(node[i]);
+                var blob = GNode.store(node[i]);
                 if (blob) {
                     blobs.push(blob);
                 }
@@ -177,7 +177,7 @@
                 return JSON.stringify(blobs, null, beautify ? 4 : null);
             }
         } else {
-            var blob = IFNode.store(node);
+            var blob = GNode.store(node);
             if (blob) {
                 return JSON.stringify(blob, null, beautify ? 4 : null);
             }
@@ -189,10 +189,10 @@
     /**
      * Deserialize a node or any array of nodes from a given json string
      * @param {String} source the json string source to deserialize from
-     * @returns {IFNode|Array<IFNode>} the deserialized node
+     * @returns {GNode|Array<GNode>} the deserialized node
      * or array of nodes or null for failure
      */
-    IFNode.deserialize = function (source) {
+    GNode.deserialize = function (source) {
         if (source) {
             var blob = JSON.parse(source);
 
@@ -200,7 +200,7 @@
                 var nodes = [];
 
                 for (var i = 0; i < blob.length; ++i) {
-                    var node = IFNode.restore(blob[i]);
+                    var node = GNode.restore(blob[i]);
                     if (node) {
                         nodes.push(node);
                     }
@@ -208,7 +208,7 @@
 
                 return nodes && nodes.length > 0 ? nodes : null;
             } else {
-                return IFNode.restore(blob);
+                return GNode.restore(blob);
             }
         }
 
@@ -219,14 +219,14 @@
      * Returns a new array with an ordered direction
      * of a given set of nodes depending on their
      * position in the tree
-     * @param {Array<IFNode>} nodes an array of nodes to be ordered
+     * @param {Array<GNode>} nodes an array of nodes to be ordered
      * @param {Boolean} [reverse] if true, orders the way that
      * parent comes first, last child comes first, otherwise
      * orders that parent comes first, first child comes first,
      * defaults to false
-     * @return {Array<IFNode>} A new, ordered array
+     * @return {Array<GNode>} A new, ordered array
      */
-    IFNode.order = function (nodes, reverse) {
+    GNode.order = function (nodes, reverse) {
         // TODO : Implement this!!
         return nodes.slice();
     };
@@ -236,14 +236,14 @@
      * @type {Object}
      * @private
      */
-    IFNode._nodeClassToNameMap = {};
+    GNode._nodeClassToNameMap = {};
 
     /**
      * Map of names to their node-classes
      * @type {Object}
      * @private
      */
-    IFNode._nameToNodeClassMap = {};
+    GNode._nameToNodeClassMap = {};
 
     /**
      * Register a name for a node class
@@ -251,16 +251,16 @@
      * @param {Function} clazz the node class to be registered
      * @private
      */
-    IFNode._registerNodeClass = function (name, clazz) {
-        IFNode._nodeClassToNameMap[IFObject.getTypeId(clazz)] = name;
-        IFNode._nameToNodeClassMap[name] = clazz;
+    GNode._registerNodeClass = function (name, clazz) {
+        GNode._nodeClassToNameMap[GObject.getTypeId(clazz)] = name;
+        GNode._nameToNodeClassMap[name] = clazz;
     };
 
     /**
      * Known flags for a node
      * @version 1.0
      */
-    IFNode.Flag = {
+    GNode.Flag = {
         /**
          * Flag marking a node to be selected
          * @type {Number}
@@ -294,7 +294,7 @@
      * @enum
      * @private
      */
-    IFNode._Change = {
+    GNode._Change = {
         /**
          * A child is about to be inserted.
          * args = child that will be inserted
@@ -408,316 +408,316 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.BeforeInsertEvent Event
+    // GNode.BeforeInsertEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a future node insertion sent via a scene
-     * @param {IFNode} node the node that will be inserted
-     * @class IFNode.BeforeInsertEvent
-     * @extends IFEvent
+     * @param {GNode} node the node that will be inserted
+     * @class GNode.BeforeInsertEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.BeforeInsertEvent = function (node) {
+    GNode.BeforeInsertEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.BeforeInsertEvent, IFEvent);
+    GObject.inherit(GNode.BeforeInsertEvent, GEvent);
 
     /**
      * The node that has will be inserted
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.BeforeInsertEvent.prototype.node = null;
+    GNode.BeforeInsertEvent.prototype.node = null;
 
     /** @override */
-    IFNode.BeforeInsertEvent.prototype.toString = function () {
-        return "[Event IFNode.BeforeInsertEvent]";
+    GNode.BeforeInsertEvent.prototype.toString = function () {
+        return "[Event GNode.BeforeInsertEvent]";
     };
 
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.AfterInsertEvent Event
+    // GNode.AfterInsertEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for node insertion sent via a scene
-     * @param {IFNode} node the node that was inserted
-     * @class IFNode.AfterInsertEvent
-     * @extends IFEvent
+     * @param {GNode} node the node that was inserted
+     * @class GNode.AfterInsertEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.AfterInsertEvent = function (node) {
+    GNode.AfterInsertEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.AfterInsertEvent, IFEvent);
+    GObject.inherit(GNode.AfterInsertEvent, GEvent);
 
     /**
      * The node that was inserted
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.AfterInsertEvent.prototype.node = null;
+    GNode.AfterInsertEvent.prototype.node = null;
 
     /** @override */
-    IFNode.AfterInsertEvent.prototype.toString = function () {
-        return "[Event IFNode.AfterInsertEvent]";
+    GNode.AfterInsertEvent.prototype.toString = function () {
+        return "[Event GNode.AfterInsertEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.BeforeRemoveEvent Event
+    // GNode.BeforeRemoveEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a future node removal sent via a scene
-     * @param {IFNode} node the node that will be removed
-     * @class IFNode.BeforeRemoveEvent
-     * @extends IFEvent
+     * @param {GNode} node the node that will be removed
+     * @class GNode.BeforeRemoveEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.BeforeRemoveEvent = function (node) {
+    GNode.BeforeRemoveEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.BeforeRemoveEvent, IFEvent);
+    GObject.inherit(GNode.BeforeRemoveEvent, GEvent);
 
     /**
      * The node that will be removed
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.BeforeRemoveEvent.prototype.node = null;
+    GNode.BeforeRemoveEvent.prototype.node = null;
 
     /** @override */
-    IFNode.BeforeRemoveEvent.prototype.toString = function () {
-        return "[Event IFNode.BeforeRemoveEvent]";
+    GNode.BeforeRemoveEvent.prototype.toString = function () {
+        return "[Event GNode.BeforeRemoveEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.AfterRemoveEvent Event
+    // GNode.AfterRemoveEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a node removal sent via a scene
-     * @param {IFNode} node the node that was removed
-     * @class IFNode.AfterRemoveEvent
-     * @extends IFEvent
+     * @param {GNode} node the node that was removed
+     * @class GNode.AfterRemoveEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.AfterRemoveEvent = function (node) {
+    GNode.AfterRemoveEvent = function (node) {
         this.node = node;
     };
-    IFObject.inherit(IFNode.AfterRemoveEvent, IFEvent);
+    GObject.inherit(GNode.AfterRemoveEvent, GEvent);
 
     /**
      * The node that was removed
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.AfterRemoveEvent.prototype.node = null;
+    GNode.AfterRemoveEvent.prototype.node = null;
 
     /** @override */
-    IFNode.AfterRemoveEvent.prototype.toString = function () {
-        return "[Event IFNode.AfterRemoveEvent]";
+    GNode.AfterRemoveEvent.prototype.toString = function () {
+        return "[Event GNode.AfterRemoveEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.BeforePropertiesChangeEvent Event
+    // GNode.BeforePropertiesChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a node properties change sent via a scene before the properties will be changed
-     * @param {IFNode} node the node which' properties are affected by the change
+     * @param {GNode} node the node which' properties are affected by the change
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that will be assigned
-     * @class IFNode.BeforePropertiesChangeEvent
-     * @extends IFEvent
+     * @class GNode.BeforePropertiesChangeEvent
+     * @extends GEvent
      * @constructor
      */
-    IFNode.BeforePropertiesChangeEvent = function (node, properties, values) {
+    GNode.BeforePropertiesChangeEvent = function (node, properties, values) {
         this.node = node;
         this.properties = properties;
         this.values = values;
     };
 
-    IFObject.inherit(IFNode.BeforePropertiesChangeEvent, IFEvent);
+    GObject.inherit(GNode.BeforePropertiesChangeEvent, GEvent);
 
     /**
      * The node which' property is affected by the change
-     * @type IFNode
+     * @type GNode
      */
-    IFNode.BeforePropertiesChangeEvent.prototype.node = null;
+    GNode.BeforePropertiesChangeEvent.prototype.node = null;
     /**
      * The names of the properties affected by the change
      * @type Array<String>
      */
-    IFNode.BeforePropertiesChangeEvent.prototype.properties = null;
+    GNode.BeforePropertiesChangeEvent.prototype.properties = null;
 
     /**
      * The values that will be assigned
      * @type Array<*>
      */
-    IFNode.BeforePropertiesChangeEvent.prototype.values = null;
+    GNode.BeforePropertiesChangeEvent.prototype.values = null;
 
     /** @override */
-    IFNode.BeforePropertiesChangeEvent.prototype.toString = function () {
-        return "[Event IFNode.BeforePropertiesChangeEvent]";
+    GNode.BeforePropertiesChangeEvent.prototype.toString = function () {
+        return "[Event GNode.BeforePropertiesChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.AfterPropertiesChangeEvent Event
+    // GNode.AfterPropertiesChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a node properties change sent via a scene after the property has changed
-     * @param {IFNode} node the node which' properties are affected by the change
+     * @param {GNode} node the node which' properties are affected by the change
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that the properties previously had have
-     * @class IFNode.AfterPropertiesChangeEvent
-     * @extends IFEvent
+     * @class GNode.AfterPropertiesChangeEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.AfterPropertiesChangeEvent = function (node, properties, values) {
+    GNode.AfterPropertiesChangeEvent = function (node, properties, values) {
         this.node = node;
         this.properties = properties;
         this.values = values;
     };
 
-    IFObject.inherit(IFNode.AfterPropertiesChangeEvent, IFEvent);
+    GObject.inherit(GNode.AfterPropertiesChangeEvent, GEvent);
 
     /**
      * The node which' property is affected by the change
-     * @type IFNode
+     * @type GNode
      */
-    IFNode.AfterPropertiesChangeEvent.prototype.node = null;
+    GNode.AfterPropertiesChangeEvent.prototype.node = null;
     /**
      * The names of the properties affected by the change
      * @type Array<String>
      */
-    IFNode.AfterPropertiesChangeEvent.prototype.properties = null;
+    GNode.AfterPropertiesChangeEvent.prototype.properties = null;
 
     /**
      * The values that the properties previously had have
      * @type Array<*>
      */
-    IFNode.AfterPropertiesChangeEvent.prototype.values = null;
+    GNode.AfterPropertiesChangeEvent.prototype.values = null;
 
     /** @override */
-    IFNode.AfterPropertiesChangeEvent.prototype.toString = function () {
-        return "[Event IFNode.AfterPropertiesChangeEvent]";
+    GNode.AfterPropertiesChangeEvent.prototype.toString = function () {
+        return "[Event GNode.AfterPropertiesChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.BeforeFlagChangeEvent Event
+    // GNode.BeforeFlagChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a node flag change sent via a scene before the flag will be changed
-     * @param {IFNode} node the node which' flag is affected by the change
+     * @param {GNode} node the node which' flag is affected by the change
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will be set (true) or cleared/removed (false)
-     * @class IFNode.BeforeFlagChangeEvent
-     * @extends IFEvent
+     * @class GNode.BeforeFlagChangeEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.BeforeFlagChangeEvent = function (node, flag, set) {
+    GNode.BeforeFlagChangeEvent = function (node, flag, set) {
         this.node = node;
         this.flag = flag;
         this.set = set;
     };
 
-    IFObject.inherit(IFNode.BeforeFlagChangeEvent, IFEvent);
+    GObject.inherit(GNode.BeforeFlagChangeEvent, GEvent);
 
     /**
      * The node which' flag is affected by the change
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.BeforeFlagChangeEvent.prototype.node = null;
+    GNode.BeforeFlagChangeEvent.prototype.node = null;
     /**
      * The flag affected by the change
      * @type Number
      * @version 1.0
      */
-    IFNode.BeforeFlagChangeEvent.prototype.flag = null;
+    GNode.BeforeFlagChangeEvent.prototype.flag = null;
 
     /**
      * Whether the flag will be set (true) or cleared/removed (false)
      * @type Boolean
      * @version 1.0
      */
-    IFNode.BeforeFlagChangeEvent.prototype.set = null;
+    GNode.BeforeFlagChangeEvent.prototype.set = null;
 
     /** @override */
-    IFNode.BeforeFlagChangeEvent.prototype.toString = function () {
-        return "[Event IFNode.BeforeFlagChangeEvent]";
+    GNode.BeforeFlagChangeEvent.prototype.toString = function () {
+        return "[Event GNode.BeforeFlagChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.AfterFlagChangeEvent Event
+    // GNode.AfterFlagChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for a node flag change sent via a scene after the flag was changed
-     * @param {IFNode} node the node which' flag was affected by the change
+     * @param {GNode} node the node which' flag was affected by the change
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will was set (true) or cleared/removed (false)
-     * @class IFNode.AfterFlagChangeEvent
-     * @extends IFEvent
+     * @class GNode.AfterFlagChangeEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFNode.AfterFlagChangeEvent = function (node, flag, set) {
+    GNode.AfterFlagChangeEvent = function (node, flag, set) {
         this.node = node;
         this.flag = flag;
         this.set = set;
     };
 
-    IFObject.inherit(IFNode.AfterFlagChangeEvent, IFEvent);
+    GObject.inherit(GNode.AfterFlagChangeEvent, GEvent);
 
     /**
      * The node which' flag was affected by the change
-     * @type IFNode
+     * @type GNode
      * @version 1.0
      */
-    IFNode.AfterFlagChangeEvent.prototype.node = null;
+    GNode.AfterFlagChangeEvent.prototype.node = null;
     /**
      * The flag affected by the change
      * @type Number
      * @version 1.0
      */
-    IFNode.AfterFlagChangeEvent.prototype.flag = null;
+    GNode.AfterFlagChangeEvent.prototype.flag = null;
 
     /**
      * Whether the flag was set (true) or cleared/removed (false)
      * @type Boolean
      * @version 1.0
      */
-    IFNode.AfterFlagChangeEvent.prototype.set = null;
+    GNode.AfterFlagChangeEvent.prototype.set = null;
 
     /** @override */
-    IFNode.AfterFlagChangeEvent.prototype.toString = function () {
-        return "[Event IFNode.AfterFlagChangeEvent]";
+    GNode.AfterFlagChangeEvent.prototype.toString = function () {
+        return "[Event GNode.AfterFlagChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Properties Mixin
+    // GNode.Properties Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become a container for properties
-     * @class IFNode.Properties
+     * @class GNode.Properties
      * @mixin
      * @constructor
      * @version 1.0
      */
-    IFNode.Properties = function () {
+    GNode.Properties = function () {
     };
 
     /**
      * Returns whether a given set of properties equals the same property values in another node
-     * @param {IFNode} other the other node to compare to
+     * @param {GNode} other the other node to compare to
      * @param {Array<String>} properties the property names
      * @param {Boolean} [custom] whether properties are custom one or not, defaults to false
      * @return {*} the property or null if it is not set
      */
-    IFNode.Properties.prototype.arePropertiesEqual = function (other, properties, custom) {
+    GNode.Properties.prototype.arePropertiesEqual = function (other, properties, custom) {
         for (var i = 0; i < properties.length; ++i) {
             var property = properties[i];
             var myHasProp = this.hasProperty(property, custom);
@@ -726,7 +726,7 @@
             if (myHasProp) {
                 if (!otHasProp) {
                     return false;
-                } else if (!IFUtil.equals(this.getProperty(property, custom), other.getProperty(property, custom))) {
+                } else if (!GUtil.equals(this.getProperty(property, custom), other.getProperty(property, custom))) {
                     return false;
                 }
             } else {
@@ -744,7 +744,7 @@
      * @param {Boolean} [custom] whether property is a custom one or not, defaults to false
      * @return {Boolean} true if property is set, false if not
      */
-    IFNode.Properties.prototype.hasProperty = function (property, custom) {
+    GNode.Properties.prototype.hasProperty = function (property, custom) {
         var propName = (custom ? '@' : '$') + property;
         return this.hasOwnProperty(propName);
     };
@@ -756,7 +756,7 @@
      * @param {*} [def] a default value to be returned if property is not set, defaults to null
      * @return {*} the property or null if it is not set
      */
-    IFNode.Properties.prototype.getProperty = function (property, custom, def) {
+    GNode.Properties.prototype.getProperty = function (property, custom, def) {
         var propName = (custom ? '@' : '$') + property;
         return this.hasOwnProperty(propName) ? this[propName] : def;
     };
@@ -769,7 +769,7 @@
      * @param {Array<*>} [def] default values for properties not found, defaults to null
      * @return {Array<*>} the property values in the order of the property names
      */
-    IFNode.Properties.prototype.getProperties = function (properties, custom, def) {
+    GNode.Properties.prototype.getProperties = function (properties, custom, def) {
         var result = [];
 
         for (var i = 0; i < properties.length; ++i) {
@@ -790,7 +790,7 @@
      * it's value hasn't been changed. Defaults to false.
      * @see setProperties
      */
-    IFNode.Properties.prototype.setProperty = function (property, value, custom, force) {
+    GNode.Properties.prototype.setProperty = function (property, value, custom, force) {
         return this.setProperties([property], [value], custom, force);
     };
 
@@ -805,7 +805,7 @@
      * @return {Boolean} true if at least one property has been modified, false if not (i.e. because
      * the property was already set to the specified value)
      */
-    IFNode.Properties.prototype.setProperties = function (properties, values, custom, force) {
+    GNode.Properties.prototype.setProperties = function (properties, values, custom, force) {
         if (properties.length !== values.length) {
             throw new Error('Properties length does not match values length');
         }
@@ -818,7 +818,7 @@
             var propName = (custom ? '@' : '$') + properties[i];
             var oldValue = this[propName];
 
-            if (force || !IFUtil.equals(value, oldValue, false)) {
+            if (force || !GUtil.equals(value, oldValue, false)) {
                 propertiesToModify.push(properties[i]);
                 valuesToModify.push(values[i])
             }
@@ -830,7 +830,7 @@
         }
 
         // Notify before change
-        this._notifyChange(IFNode._Change.BeforePropertiesChange, {
+        this._notifyChange(GNode._Change.BeforePropertiesChange, {
             properties: propertiesToModify,
             values: valuesToModify
         });
@@ -844,7 +844,7 @@
         }
 
         // Notify after change
-        this._notifyChange(IFNode._Change.AfterPropertiesChange, {
+        this._notifyChange(GNode._Change.AfterPropertiesChange, {
             properties: propertiesToModify,
             values: previousValues
         });
@@ -859,14 +859,14 @@
      * @param {Function} [filter] custom filter function (property,value} to return
      * the value to be serialized for a given property
      */
-    IFNode.Properties.prototype.storeProperties = function (blob, properties, filter) {
+    GNode.Properties.prototype.storeProperties = function (blob, properties, filter) {
         filter = filter || function (property, value) {
             return value;
         }
         for (var property in properties) {
             var defaultValue = properties[property];
             var value = this['$' + property];
-            if (!IFUtil.equals(value, defaultValue, true)) {
+            if (!GUtil.equals(value, defaultValue, true)) {
                 var myValue = filter(property, value);
                 blob[property] = myValue;
             }
@@ -881,7 +881,7 @@
      * @param {Function} [filter] custom filter function (property,value} to return
      * the value to be deserialized for a given property
      */
-    IFNode.Properties.prototype.restoreProperties = function (blob, properties, filter) {
+    GNode.Properties.prototype.restoreProperties = function (blob, properties, filter) {
         filter = filter || function (property, value) {
             return value;
         }
@@ -905,11 +905,11 @@
     /**
      * Transfers a given set of properties from a given source node. If the source
      * doesn't contain a given property, the default value will be used instead.
-     * @param {IFNode} node a properties node to transfer from
+     * @param {GNode} node a properties node to transfer from
      * @param {Array<*>} properties array of hashmaps of properties to their default values to be transfered
      * Defaults to false.
      */
-    IFNode.Properties.prototype.transferProperties = function (source, properties) {
+    GNode.Properties.prototype.transferProperties = function (source, properties) {
         var propertiesToSet = [];
         var valuesToSet = [];
 
@@ -932,7 +932,7 @@
      * Assign default properties on this node.
      * Provide a varArg with hashmaps of property-name to default value mappings.
      */
-    IFNode.Properties.prototype._setDefaultProperties = function () {
+    GNode.Properties.prototype._setDefaultProperties = function () {
         for (var i = 0; i < arguments.length; ++i) {
             var properties = arguments[i];
             for (var property in properties) {
@@ -942,16 +942,16 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Identity Mixin
+    // GNode.Identity Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become identifiable (id)
-     * @class IFNode.Identity
+     * @class GNode.Identity
      * @mixin
      * @constructor
      * @version 1.0
      */
-    IFNode.Identity = function () {
+    GNode.Identity = function () {
     };
 
     /**
@@ -959,21 +959,21 @@
      * @return {String}
      * @version 1.0
      */
-    IFNode.Identity.prototype.getId = function () {
+    GNode.Identity.prototype.getId = function () {
         throw new Error("Not Supported.");
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Tag Mixin
+    // GNode.Tag Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become tagable
-     * @class IFNode.Tag
+     * @class GNode.Tag
      * @mixin
      * @constructor
      * @version 1.0
      */
-    IFNode.Tag = function () {
+    GNode.Tag = function () {
     };
 
     /**
@@ -981,66 +981,66 @@
      * @return {String}
      * @version 1.0
      */
-    IFNode.Tag.prototype.getTags = function () {
+    GNode.Tag.prototype.getTags = function () {
         throw new Error("Not Supported.");
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Reference Mixin
+    // GNode.Reference Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become referenceable
-     * @class IFNode.Reference
+     * @class GNode.Reference
      * @mixin
      * @constructor
      */
-    IFNode.Reference = function () {
+    GNode.Reference = function () {
     };
 
-    IFNode.Reference.prototype._referenceId = null;
+    GNode.Reference.prototype._referenceId = null;
 
     /**
      * Returns the reference id of this node used for linking
      * @return {String}
      */
-    IFNode.Reference.prototype.getReferenceId = function () {
+    GNode.Reference.prototype.getReferenceId = function () {
         if (!this._referenceId) {
-            this._referenceId = IFUtil.uuid();
+            this._referenceId = GUtil.uuid();
         }
         return this._referenceId;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Container Mixin
+    // GNode.Container Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become a container for children
-     * @class IFNode.Container
+     * @class GNode.Container
      * @mixin
      * @constructor
      * @version 1.0
      */
-    IFNode.Container = function () {
+    GNode.Container = function () {
     };
 
     /**
-     * @type IFNode
+     * @type GNode
      * @private
      */
-    IFNode.Container.prototype._firstChild = null;
+    GNode.Container.prototype._firstChild = null;
 
     /**
-     * @type IFNode
+     * @type GNode
      * @private
      */
-    IFNode.Container.prototype._lastChild = null;
+    GNode.Container.prototype._lastChild = null;
 
     /**
      * Returns an array of all children within this node
-     * @return {Array<IFNode>} array of all children of this node or
+     * @return {Array<GNode>} array of all children of this node or
      * an empty array if there're no children
      */
-    IFNode.Container.prototype.getChildren = function () {
+    GNode.Container.prototype.getChildren = function () {
         var result = [];
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
             result.push(child);
@@ -1050,34 +1050,34 @@
 
     /**
      * Access the first child of this node if any
-     * @return {IFNode} the first child of this node or null for none
+     * @return {GNode} the first child of this node or null for none
      */
-    IFNode.Container.prototype.getFirstChild = function () {
+    GNode.Container.prototype.getFirstChild = function () {
         return this._firstChild;
     };
 
     /**
      * Access the last child of this node if any
-     * @return {IFNode} the last child of this node or null for none
+     * @return {GNode} the last child of this node or null for none
      */
-    IFNode.Container.prototype.getLastChild = function () {
+    GNode.Container.prototype.getLastChild = function () {
         return this._lastChild;
     };
 
     /**
      * Append a new node as child to this node
-     * @param {IFNode} child the child to append to this one
+     * @param {GNode} child the child to append to this one
      */
-    IFNode.Container.prototype.appendChild = function (child) {
+    GNode.Container.prototype.appendChild = function (child) {
         this.insertChild(child, null);
     };
 
     /**
      * Insert a new child at a certain position
-     * @param {IFNode} child the child to append to into this one
-     * @param {IFNode} reference reference to insert before, can be null to append
+     * @param {GNode} child the child to append to into this one
+     * @param {GNode} reference reference to insert before, can be null to append
      */
-    IFNode.Container.prototype.insertChild = function (child, reference) {
+    GNode.Container.prototype.insertChild = function (child, reference) {
         if (child._scene != null) {
             throw new Error("Child is already appended somewhere else");
         }
@@ -1088,7 +1088,7 @@
             throw new Error("Child insertion validation failed.");
         }
 
-        this._notifyChange(IFNode._Change.BeforeChildInsert, child);
+        this._notifyChange(GNode._Change.BeforeChildInsert, child);
 
         // Link our new child now
         child._setParent(this);
@@ -1132,14 +1132,14 @@
             }
         }
 
-        this._notifyChange(IFNode._Change.AfterChildInsert, child);
+        this._notifyChange(GNode._Change.AfterChildInsert, child);
     };
 
     /**
      * Remove an existing child from this node
-     * @param {IFNode} child the child to remove from this one
+     * @param {GNode} child the child to remove from this one
      */
-    IFNode.Container.prototype.removeChild = function (child) {
+    GNode.Container.prototype.removeChild = function (child) {
         if (child._parent != this) {
             throw new Error("Child is not a child of this node");
         }
@@ -1148,7 +1148,7 @@
         }
 
 
-        this._notifyChange(IFNode._Change.BeforeChildRemove, child);
+        this._notifyChange(GNode._Change.BeforeChildRemove, child);
 
         if (this._firstChild == child) {
             this._firstChild = child._next;
@@ -1176,13 +1176,13 @@
             }
         }
 
-        this._notifyChange(IFNode._Change.AfterChildRemove, child);
+        this._notifyChange(GNode._Change.AfterChildRemove, child);
     };
 
     /**
      * Remove all children of this node
      */
-    IFNode.Container.prototype.clearChildren = function () {
+    GNode.Container.prototype.clearChildren = function () {
         while (this.getFirstChild()) {
             this.removeChild(this.getFirstChild());
         }
@@ -1190,11 +1190,11 @@
 
     /**
      * Gets the index of a child node
-     * @param {IFNode} child the child to get an index for
+     * @param {GNode} child the child to get an index for
      * @return {Number} the child index or a value less than zero
      * if child is not a child of this node
      */
-    IFNode.Container.prototype.getIndexOfChild = function (child) {
+    GNode.Container.prototype.getIndexOfChild = function (child) {
         if (child._parent === this) {
             var index = 0;
             for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
@@ -1211,10 +1211,10 @@
     /**
      * Gets a child of this node by a given index
      * @param {Number} childIndex the index to get a child for
-     * @return {IFNode} the child of this node at given index or
+     * @return {GNode} the child of this node at given index or
      * null if no child was found at the given index
      */
-    IFNode.Container.prototype.getChildByIndex = function (childIndex) {
+    GNode.Container.prototype.getChildByIndex = function (childIndex) {
         var index = 0;
         for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
             if (index === childIndex) {
@@ -1232,7 +1232,7 @@
      * @return {Boolean}
      * @version 1.0
      */
-    IFNode.Container.prototype.acceptChildren = function (visitor) {
+    GNode.Container.prototype.acceptChildren = function (visitor) {
         for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
             if (child.accept(visitor) === false) {
                 return false;
@@ -1242,35 +1242,35 @@
     };
 
     /** @override */
-    IFNode.Container.prototype.toString = function () {
-        return "[Mixin IFNode.Container]";
+    GNode.Container.prototype.toString = function () {
+        return "[Mixin GNode.Container]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode.Store Mixin
+    // GNode.Store Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin to make a node become storable
-     * @class IFNode.Store
+     * @class GNode.Store
      * @mixin
      * @constructor
      * @version 1.0
      */
-    IFNode.Store = function () {
+    GNode.Store = function () {
     };
 
     /**
      * Called to clone this node and return a new instance out of it
-     * @returns {IFNode}
+     * @returns {GNode}
      */
-    IFNode.Store.prototype.clone = function () {
+    GNode.Store.prototype.clone = function () {
         // Serialize and deserialize ourself
-        var serialized = IFNode.serialize(this);
+        var serialized = GNode.serialize(this);
         if (serialized) {
-            var result = IFNode.deserialize(serialized);
+            var result = GNode.deserialize(serialized);
 
             // Make sure to reset referenceid on referenceables
-            if (result.hasMixin(IFNode.Reference)) {
+            if (result.hasMixin(GNode.Reference)) {
                 result._referenceId = null;
             }
 
@@ -1280,46 +1280,46 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFNode
+    // GNode
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type IFScene
+     * @type GScene
      * @private
      */
-    IFNode.prototype._scene = null;
+    GNode.prototype._scene = null;
 
     /**
-     * @type IFNode
+     * @type GNode
      * @private
      */
-    IFNode.prototype._parent = null;
+    GNode.prototype._parent = null;
 
     /**
-     * @type IFNode
+     * @type GNode
      * @private
      */
-    IFNode.prototype._previous = null;
+    GNode.prototype._previous = null;
 
     /**
-     * @type IFNode
+     * @type GNode
      * @private
      */
-    IFNode.prototype._next = null;
+    GNode.prototype._next = null;
 
     /**
      * @type Number
      * @private
      */
-    IFNode.prototype._flags = 0;
+    GNode.prototype._flags = 0;
 
     /**
      * Returns the name of the node type
      * @return {String}
      * @version 1.0
      */
-    IFNode.prototype.getNodeName = function () {
-        return IFNode.getName(this);
+    GNode.prototype.getNodeName = function () {
+        return GNode.getName(this);
     };
 
     /**
@@ -1327,7 +1327,7 @@
      * @return {String}
      * @version 1.0
      */
-    IFNode.prototype.getNodeNameTranslated = function () {
+    GNode.prototype.getNodeNameTranslated = function () {
         return ifLocale.getValue(this, "name", this.getNodeName());
     };
 
@@ -1336,41 +1336,41 @@
      * @return {Boolean} whether the node is attached or not
      * @version 1.0
      */
-    IFNode.prototype.isAttached = function () {
+    GNode.prototype.isAttached = function () {
         return this._scene != null;
     };
 
     /**
      * Access the scene of this node
-     * @return {IFScene}
+     * @return {GScene}
      * @version 1.0
      */
-    IFNode.prototype.getScene = function () {
+    GNode.prototype.getScene = function () {
         return this._scene;
     };
 
     /**
      * Access the parent of this node if any
-     * @return {IFNode} the parent of this node or null for none
+     * @return {GNode} the parent of this node or null for none
      * @version 1.0
      */
-    IFNode.prototype.getParent = function () {
+    GNode.prototype.getParent = function () {
         return this._parent;
     };
 
     /**
      * Access the previous sibling of this node if any
-     * @return {IFNode} the previous sibling of this node or null for none
+     * @return {GNode} the previous sibling of this node or null for none
      */
-    IFNode.prototype.getPrevious = function () {
+    GNode.prototype.getPrevious = function () {
         return this._previous;
     };
 
     /**
      * Access the next sibling of this node if any
-     * @return {IFNode} the next sibling of this node or null for none
+     * @return {GNode} the next sibling of this node or null for none
      */
-    IFNode.prototype.getNext = function () {
+    GNode.prototype.getNext = function () {
         return this._next;
     };
 
@@ -1379,11 +1379,11 @@
      * with a given name or all for pseudo-selector '*'
      * @param {String} nodeName either null or '*' for all or
      * a specific nodeName to look for
-     * @return {Array<IFNode>} an array of found nodes or empty
+     * @return {Array<GNode>} an array of found nodes or empty
      * array for no match
      * @version 1.0
      */
-    IFNode.prototype.getNodesByName = function (nodeName, ignoreSelf) {
+    GNode.prototype.getNodesByName = function (nodeName, ignoreSelf) {
         var result = [];
         this.accept(function (node) {
             if (!nodeName || nodeName == '*' || nodeName === node.getNodeName()) {
@@ -1400,29 +1400,29 @@
      * @param {String} selector a CSS3-compatible selector
      * @returns {Number} the count, zero for none
      */
-    IFNode.prototype.queryCount = function (selector) {
-        var result = IFSelector.queryAll(selector, this);
+    GNode.prototype.queryCount = function (selector) {
+        var result = GSelector.queryAll(selector, this);
         return result ? result.length : 0;
     };
 
     /**
      * Query for all nodes within this one
      * @param {String} selector a CSS3-compatible selector
-     * @returns {Array<IFNode>} all matched nodes or empty array for none
+     * @returns {Array<GNode>} all matched nodes or empty array for none
      * @version 1.0
      */
-    IFNode.prototype.queryAll = function (selector) {
-        return IFSelector.queryAll(selector, this);
+    GNode.prototype.queryAll = function (selector) {
+        return GSelector.queryAll(selector, this);
     };
 
     /**
      * Query for a single node within this one
      * @param {String} selector a CSS3-compatible selector
-     * @returns {IFNode} a matched node or null for no match
+     * @returns {GNode} a matched node or null for no match
      * @version 1.0
      */
-    IFNode.prototype.querySingle = function (selector) {
-        var result = IFSelector.querySingle(selector, this);
+    GNode.prototype.querySingle = function (selector) {
+        var result = GSelector.querySingle(selector, this);
         return result ? result : null;
     };
 
@@ -1434,8 +1434,8 @@
      * @returns {Boolean} true if this node matches the given selector, false if not
      * @see filtered
      */
-    IFNode.prototype.matches = function (selector) {
-        return IFSelector.match(selector, this);
+    GNode.prototype.matches = function (selector) {
+        return GSelector.match(selector, this);
     };
 
     /**
@@ -1447,8 +1447,8 @@
      * @returns {Boolean} true if this node matches the given selector, false if not
      * @see matches
      */
-    IFNode.prototype.filtered = function (selector) {
-        return IFSelector.filter(selector, [this]).length === 1;
+    GNode.prototype.filtered = function (selector) {
+        return GSelector.filter(selector, [this]).length === 1;
     };
 
     /**
@@ -1459,12 +1459,12 @@
      * returning anything else than a Boolean will be ignored.
      * @return {Boolean} result of visiting (false = canceled, true = went through)
      */
-    IFNode.prototype.accept = function (visitor) {
+    GNode.prototype.accept = function (visitor) {
         if (visitor.call(null, this) === false) {
             return false;
         }
 
-        if (this.hasMixin(IFNode.Container)) {
+        if (this.hasMixin(GNode.Container)) {
             return this.acceptChildren(visitor);
         }
 
@@ -1477,7 +1477,7 @@
      * @returns {Boolean}
      * @version 1.0
      */
-    IFNode.prototype.hasFlag = function (flag) {
+    GNode.prototype.hasFlag = function (flag) {
         return (this._flags & flag) != 0;
     };
 
@@ -1486,15 +1486,15 @@
      * @param {Number} flag the flag to set
      * @version 1.0
      */
-    IFNode.prototype.setFlag = function (flag) {
+    GNode.prototype.setFlag = function (flag) {
         // Ensure the flag may be modified
         if (this._canModifyFlag(flag, true)) {
             if ((this._flags & flag) == 0) {
-                this._notifyChange(IFNode._Change.BeforeFlagChange, {flag: flag, set: true});
+                this._notifyChange(GNode._Change.BeforeFlagChange, {flag: flag, set: true});
 
                 this._flags = this._flags | flag;
 
-                this._notifyChange(IFNode._Change.AfterFlagChange, {flag: flag, set: true});
+                this._notifyChange(GNode._Change.AfterFlagChange, {flag: flag, set: true});
             }
         }
     };
@@ -1504,15 +1504,15 @@
      * @param {Number} flag the flag to remove
      * @version 1.0
      */
-    IFNode.prototype.removeFlag = function (flag) {
+    GNode.prototype.removeFlag = function (flag) {
         // Ensure the flag may be modified
         if (this._canModifyFlag(flag, false)) {
             if ((this._flags & flag) != 0) {
-                this._notifyChange(IFNode._Change.BeforeFlagChange, {flag: flag, set: false});
+                this._notifyChange(GNode._Change.BeforeFlagChange, {flag: flag, set: false});
 
                 this._flags = this._flags & ~flag;
 
-                this._notifyChange(IFNode._Change.AfterFlagChange, {flag: flag, set: false});
+                this._notifyChange(GNode._Change.AfterFlagChange, {flag: flag, set: false});
             }
         }
     };
@@ -1521,22 +1521,22 @@
      * Called to assign this node from another one to make
      * it equal. This is i.e. called when a node's type has
      * been changed.
-     * @param {IFNode} other
+     * @param {GNode} other
      */
-    IFNode.prototype.assignFrom = function (other) {
-        if (this.hasMixin(IFNode.Reference) && other.hasMixin(IFNode.Reference)) {
+    GNode.prototype.assignFrom = function (other) {
+        if (this.hasMixin(GNode.Reference) && other.hasMixin(GNode.Reference)) {
             this._referenceId = other._referenceId;
         }
     };
 
     /**
      * Validates whether this node could be inserted into a given parent
-     * @param {IFNode} parent the parent to validate against
-     * @param {IFNode} reference optional reference to insert be for,
+     * @param {GNode} parent the parent to validate against
+     * @param {GNode} reference optional reference to insert be for,
      * defaults to null meaning to append at the end
      * @return {Boolean} true if node could be inserted, false if not
      */
-    IFNode.prototype.validateInsertion = function (parent, reference) {
+    GNode.prototype.validateInsertion = function (parent, reference) {
         // return false by default
         return false;
     };
@@ -1547,7 +1547,7 @@
      * return false
      * @return {Boolean} true if node could be removed, false if not
      */
-    IFNode.prototype.validateRemoval = function () {
+    GNode.prototype.validateRemoval = function () {
         // return true by default
         return true;
     };
@@ -1559,7 +1559,7 @@
      * @return {Boolean} true if flag can be set/cleared, false if not
      * @private
      */
-    IFNode.prototype._canModifyFlag = function (flag, set) {
+    GNode.prototype._canModifyFlag = function (flag, set) {
         // by default, we allow everything
         return true;
     };
@@ -1569,7 +1569,7 @@
      * @param {Array<Number>} changes the array of changes to be blocked
      * @private
      */
-    IFNode.prototype._beginBlockChanges = function (changes) {
+    GNode.prototype._beginBlockChanges = function (changes) {
         if (!(this._blockedChanges)) {
             this._blockedChanges = {};
             this._blockedChanges._counter = 0;
@@ -1591,7 +1591,7 @@
      * @param {Array<Number>} changes the array of changes to be unblocked
      * @private
      */
-    IFNode.prototype._endBlockChanges = function (changes) {
+    GNode.prototype._endBlockChanges = function (changes) {
         if (this._blockedChanges) {
             for (var i = 0; i < changes.length; ++i) {
                 var change = changes[i];
@@ -1611,14 +1611,14 @@
      * @param {Array<*>} eventClasses the array of event classes to be blocked
      * @private
      */
-    IFNode.prototype._beginBlockEvents = function (eventClasses) {
+    GNode.prototype._beginBlockEvents = function (eventClasses) {
         if (!(this._blockedEvents)) {
             this._blockedEvents = {};
             this._blockedEvents._counter = 0;
         }
 
         for (var i = 0; i < eventClasses.length; ++i) {
-            var event_id = IFObject.getTypeId(eventClasses[i]);
+            var event_id = GObject.getTypeId(eventClasses[i]);
             if (event_id in this._blockedEvents) {
                 this._blockedEvents[event_id]++;
             } else {
@@ -1633,10 +1633,10 @@
      * @param {Array<*>} eventClasses the array of event classes to be unblocked
      * @private
      */
-    IFNode.prototype._endBlockEvents = function (eventClasses) {
+    GNode.prototype._endBlockEvents = function (eventClasses) {
         if (this._blockedEvents) {
             for (var i = 0; i < eventClasses.length; ++i) {
-                var event_id = IFObject.getTypeId(eventClasses[i]);
+                var event_id = GObject.getTypeId(eventClasses[i]);
                 if (event_id in this._blockedEvents) {
                     if (--this._blockedEvents[event_id] == 0) {
                         if (--this._blockedEvents._counter == 0) {
@@ -1655,29 +1655,29 @@
      * @param {Boolean} [flags] flag events
      * @private
      */
-    IFNode.prototype._getCompositeEvents = function (structural, properties, flags) {
+    GNode.prototype._getCompositeEvents = function (structural, properties, flags) {
         var events = [];
 
         if (structural) {
             events = events.concat([
-                IFNode.BeforeInsertEvent,
-                IFNode.AfterInsertEvent,
-                IFNode.BeforeRemoveEvent,
-                IFNode.AfterRemoveEvent
+                GNode.BeforeInsertEvent,
+                GNode.AfterInsertEvent,
+                GNode.BeforeRemoveEvent,
+                GNode.AfterRemoveEvent
             ]);
         }
 
         if (properties) {
             events = events.concat([
-                IFNode.BeforePropertiesChangeEvent,
-                IFNode.AfterPropertiesChangeEvent
+                GNode.BeforePropertiesChangeEvent,
+                GNode.AfterPropertiesChangeEvent
             ]);
         }
 
         if (flags) {
             events = events.concat([
-                IFNode.BeforeFlagChangeEvent,
-                IFNode.AfterFlagChangeEvent
+                GNode.BeforeFlagChangeEvent,
+                GNode.AfterFlagChangeEvent
             ]);
         }
 
@@ -1691,7 +1691,7 @@
      * @param {Boolean} [flags] block flag events
      * @private
      */
-    IFNode.prototype._beginBlockCompositeEvents = function (structural, properties, flags) {
+    GNode.prototype._beginBlockCompositeEvents = function (structural, properties, flags) {
         this._beginBlockEvents(this._getCompositeEvents(structural, properties, flags));
     };
 
@@ -1702,7 +1702,7 @@
      * @param {Boolean} [flags] unblock flag events
      * @private
      */
-    IFNode.prototype._endBlockCompositeEvents = function (structural, properties, flags) {
+    GNode.prototype._endBlockCompositeEvents = function (structural, properties, flags) {
         this._endBlockEvents(this._getCompositeEvents(structural, properties, flags));
     };
 
@@ -1715,7 +1715,7 @@
      * @return {Boolean} true if handled, false if blocked
      * @private
      */
-    IFNode.prototype._notifyChange = function (change, args) {
+    GNode.prototype._notifyChange = function (change, args) {
         if (!this._blockedChanges || !this._blockedChanges[change]) {
             this._handleChange(change, args);
             return true;
@@ -1731,7 +1731,7 @@
      * @returns {Boolean}
      * @private
      */
-    IFNode.prototype._canEventBeSend = function (eventClass) {
+    GNode.prototype._canEventBeSend = function (eventClass) {
         if (!this.isAttached()) {
             return false;
         }
@@ -1740,15 +1740,15 @@
             return false;
         }
 
-        var event_id = IFObject.getTypeId(eventClass);
+        var event_id = GObject.getTypeId(eventClass);
         return !this._blockedEvents || !this._blockedEvents[event_id];
     };
 
     /**
      * @private
      */
-    IFNode.prototype._setSceneToChildren = function () {
-        if (this.hasMixin(IFNode.Container)) {
+    GNode.prototype._setSceneToChildren = function () {
+        if (this.hasMixin(GNode.Container)) {
             var scene = this._scene;
             for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child.accept) {
@@ -1761,15 +1761,15 @@
     };
 
     /**
-     * @param {IFScene} scene
+     * @param {GScene} scene
      * @private
      */
-    IFNode.prototype._setScene = function (scene) {
+    GNode.prototype._setScene = function (scene) {
         if (scene !== this._scene) {
             if (this._scene) {
-                this._notifyChange(IFNode._Change.Detach);
+                this._notifyChange(GNode._Change.Detach);
 
-                if (this.hasMixin(IFNode.Reference)) {
+                if (this.hasMixin(GNode.Reference)) {
                     this._scene.removeReference(this);
                 }
 
@@ -1781,38 +1781,38 @@
             this._scene = scene;
 
             if (this._scene) {
-                if (this.hasMixin(IFNode.Reference)) {
+                if (this.hasMixin(GNode.Reference)) {
                     this._scene.addReference(this);
                 }
 
                 this._setSceneToChildren();
 
-                this._notifyChange(IFNode._Change.Attached);
+                this._notifyChange(GNode._Change.Attached);
             }
         }
     };
 
     /**
-     * @param {IFNode} parent
+     * @param {GNode} parent
      * @private
      */
-    IFNode.prototype._setParent = function (parent) {
+    GNode.prototype._setParent = function (parent) {
         this._parent = parent;
     };
 
     /**
-     * @param {IFNode} previous
+     * @param {GNode} previous
      * @private
      */
-    IFNode.prototype._setPrevious = function (previous) {
+    GNode.prototype._setPrevious = function (previous) {
         this._previous = previous;
     };
 
     /**
-     * @param {IFNode} next
+     * @param {GNode} next
      * @private
      */
-    IFNode.prototype._setNext = function (next) {
+    GNode.prototype._setNext = function (next) {
         this._next = next;
     };
 
@@ -1824,61 +1824,61 @@
      * within the change constant type
      * @private
      */
-    IFNode.prototype._handleChange = function (change, args) {
-        if (change == IFNode._Change.BeforeChildInsert) {
-            /** @type {IFNode} */
+    GNode.prototype._handleChange = function (change, args) {
+        if (change == GNode._Change.BeforeChildInsert) {
+            /** @type {GNode} */
             var child = args;
-            if (this._canEventBeSend(IFNode.BeforeInsertEvent)) {
-                this._scene.trigger(new IFNode.BeforeInsertEvent(child));
+            if (this._canEventBeSend(GNode.BeforeInsertEvent)) {
+                this._scene.trigger(new GNode.BeforeInsertEvent(child));
             }
         }
-        else if (change == IFNode._Change.AfterChildInsert) {
-            /** @type {IFNode} */
+        else if (change == GNode._Change.AfterChildInsert) {
+            /** @type {GNode} */
             var child = args;
-            if (this._canEventBeSend(IFNode.AfterInsertEvent)) {
-                this._scene.trigger(new IFNode.AfterInsertEvent(child));
+            if (this._canEventBeSend(GNode.AfterInsertEvent)) {
+                this._scene.trigger(new GNode.AfterInsertEvent(child));
             }
-        } else if (change == IFNode._Change.BeforeChildRemove) {
-            /** @type {IFNode} */
+        } else if (change == GNode._Change.BeforeChildRemove) {
+            /** @type {GNode} */
             var child = args;
-            if (this._canEventBeSend(IFNode.BeforeRemoveEvent)) {
-                this._scene.trigger(new IFNode.BeforeRemoveEvent(child));
+            if (this._canEventBeSend(GNode.BeforeRemoveEvent)) {
+                this._scene.trigger(new GNode.BeforeRemoveEvent(child));
             }
         }
-        else if (change == IFNode._Change.AfterChildRemove) {
-            /** @type {IFNode} */
+        else if (change == GNode._Change.AfterChildRemove) {
+            /** @type {GNode} */
             var child = args;
-            if (this._canEventBeSend(IFNode.AfterRemoveEvent)) {
-                this._scene.trigger(new IFNode.AfterRemoveEvent(child));
+            if (this._canEventBeSend(GNode.AfterRemoveEvent)) {
+                this._scene.trigger(new GNode.AfterRemoveEvent(child));
             }
-        } else if (change == IFNode._Change.BeforePropertiesChange) {
+        } else if (change == GNode._Change.BeforePropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
-            if (this._canEventBeSend(IFNode.BeforePropertiesChangeEvent)) {
-                this._scene.trigger(new IFNode.BeforePropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
+            if (this._canEventBeSend(GNode.BeforePropertiesChangeEvent)) {
+                this._scene.trigger(new GNode.BeforePropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
         }
-        else if (change == IFNode._Change.AfterPropertiesChange) {
+        else if (change == GNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
-            if (this._canEventBeSend(IFNode.AfterPropertiesChangeEvent)) {
-                this._scene.trigger(new IFNode.AfterPropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
+            if (this._canEventBeSend(GNode.AfterPropertiesChangeEvent)) {
+                this._scene.trigger(new GNode.AfterPropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
-        } else if (change == IFNode._Change.BeforeFlagChange) {
+        } else if (change == GNode._Change.BeforeFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
-            if (this._canEventBeSend(IFNode.BeforeFlagChangeEvent)) {
-                this._scene.trigger(new IFNode.BeforeFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
+            if (this._canEventBeSend(GNode.BeforeFlagChangeEvent)) {
+                this._scene.trigger(new GNode.BeforeFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }
-        else if (change == IFNode._Change.AfterFlagChange) {
+        else if (change == GNode._Change.AfterFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
-            if (this._canEventBeSend(IFNode.AfterFlagChangeEvent)) {
-                this._scene.trigger(new IFNode.AfterFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
+            if (this._canEventBeSend(GNode.AfterFlagChangeEvent)) {
+                this._scene.trigger(new GNode.AfterFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }
     };
 
-    _.IFNode = IFNode;
+    _.GNode = GNode;
 })(this);

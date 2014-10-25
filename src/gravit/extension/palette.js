@@ -9,7 +9,7 @@
     function GPalette() {
         GView.call(this);
     };
-    IFObject.inherit(GPalette, GView);
+    GObject.inherit(GPalette, GView);
 
     /**
      * Whether this palette wants to be auto-resized,

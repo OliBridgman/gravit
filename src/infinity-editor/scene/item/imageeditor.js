@@ -1,27 +1,27 @@
 (function (_) {
     /**
      * A base editor for an image
-     * @param {IFImage} image the image this editor works on
-     * @class IFImageEditor
-     * @extends IFShapeEditor
+     * @param {GImage} image the image this editor works on
+     * @class GImageEditor
+     * @extends GShapeEditor
      * @constructor
      */
-    function IFImageEditor(image) {
-        IFShapeEditor.call(this, image);
-        this._flags |= IFBlockEditor.Flag.ResizeAll;
+    function GImageEditor(image) {
+        GShapeEditor.call(this, image);
+        this._flags |= GBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFImageEditor, IFShapeEditor);
-    IFElementEditor.exports(IFImageEditor, IFImage);
+    GObject.inherit(GImageEditor, GShapeEditor);
+    GElementEditor.exports(GImageEditor, GImage);
 
     /** @override */
-    IFImageEditor.prototype.initialSetup = function () {
+    GImageEditor.prototype.initialSetup = function () {
         // NO-OP as image shouldn't gain a default style
     };
 
     /** @override */
-    IFImageEditor.prototype.toString = function () {
-        return "[Object IFImageEditor]";
+    GImageEditor.prototype.toString = function () {
+        return "[Object GImageEditor]";
     };
 
-    _.IFImageEditor = IFImageEditor;
+    _.GImageEditor = GImageEditor;
 })(this);

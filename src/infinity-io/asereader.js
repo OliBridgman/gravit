@@ -28,28 +28,28 @@
 
     /**
      * Reader for Adobe Swatch Exchange files
-     * @class IFASEReader
+     * @class GASEReader
      * @constructor
-     * @extends IFReader
+     * @extends GReader
      */
-    function IFASEReader() {
-        IFReader.call(this);
+    function GASEReader() {
+        GReader.call(this);
     };
-    IFObject.inherit(IFASEReader, IFReader);
+    GObject.inherit(GASEReader, GReader);
 
-    IFASEReader.prototype.getInputType = function () {
-        return IFReader.InputType.ArrayBuffer;
+    GASEReader.prototype.getInputType = function () {
+        return GReader.InputType.ArrayBuffer;
     };
 
-    IFASEReader.prototype.getMimeType = function () {
+    GASEReader.prototype.getMimeType = function () {
         return 'application/x-adobe-ase';
     };
 
-    IFASEReader.prototype.getFileExtensions = function () {
+    GASEReader.prototype.getFileExtensions = function () {
         return ['ase'];
     };
 
-    IFASEReader.prototype.readInput = function (input, callback) {
+    GASEReader.prototype.readInput = function (input, callback) {
         var view = new jDataView(input, undefined, undefined, false/*big-endian*/);
         var result = {};
         var groups = result.groups = [];
@@ -191,5 +191,5 @@
         callback(result);
     };
 
-    IFIO.registerReader(new IFASEReader());
+    GIO.registerReader(new GASEReader());
 })(this);

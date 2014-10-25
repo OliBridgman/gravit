@@ -8,7 +8,7 @@
      */
     function GImageProperties() {
     };
-    IFObject.inherit(GImageProperties, GProperties);
+    GObject.inherit(GImageProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -23,7 +23,7 @@
     GImageProperties.prototype._document = null;
 
     /**
-     * @type {IFImage}
+     * @type {GImage}
      * @private
      */
     GImageProperties.prototype._image = null;
@@ -61,7 +61,7 @@
                     .on('click', function () {
                         image2Base64(this._image.getImage(), function (data) {
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(this._image, function () {
+                            GEditor.tryRunTransaction(this._image, function () {
                                 this._image.setProperty('url', data);
                             }.bind(this), 'Embed Image');
                         }.bind(this));
@@ -71,12 +71,12 @@
                     // TODO : I18N
                     .text('Link')
                     .on('click', function () {
-                        var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                        var topLeft = this._image.getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
                         this._document.getStorage().openResourcePrompt(this._document.getUrl(), ['jpg', 'jpeg', 'png', 'gif'], function (url) {
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(this._image, function () {
+                            GEditor.tryRunTransaction(this._image, function () {
                                 // make url relative to document & reset size
-                                this._image.setProperties(['url', 'trf'], [new URI(url).relativeTo(this._document.getUrl()).toString(), new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY())]);
+                                this._image.setProperties(['url', 'trf'], [new URI(url).relativeTo(this._document.getUrl()).toString(), new GTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY())]);
                             }.bind(this), 'Replace Image');
                         }.bind(this));
                     }.bind(this)))
@@ -99,10 +99,10 @@
                     // TODO : I18N
                     .text('Reset Size')
                     .on('click', function () {
-                        var topLeft = this._image.getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                        var topLeft = this._image.getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(this._image, function () {
-                            this._image.setProperty('trf', new IFTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY()));
+                        GEditor.tryRunTransaction(this._image, function () {
+                            this._image.setProperty('trf', new GTransform(1, 0, 0, 1, topLeft.getX(), topLeft.getY()));
                         }.bind(this), 'Reset Size');
                     }.bind(this))))
             .append($('<hr>')
@@ -144,13 +144,13 @@
                 .gPatternTarget({
                     allowDrop: false
                 })
-                .gPatternTarget('types', [IFColor])
+                .gPatternTarget('types', [GColor])
                 .gPatternTarget('value', color)
                 .css({
                     'display': 'inline-block',
                     'height': '100%',
                     'width': '12.5%',
-                    'background': IFPattern.asCSSBackground(color)
+                    'background': GPattern.asCSSBackground(color)
                 })
                 .appendTo(palettePanel);
         }.bind(this);
@@ -160,16 +160,16 @@
             this._panel.find('[data-image-palette="button"]').css('display', 'none');
 
             var colorThief = new ColorThief();
-            var mainColor = new IFRGBColor(colorThief.getColor(image));
+            var mainColor = new GRGBColor(colorThief.getColor(image));
             _addPaletteColor(mainColor);
 
             var palette = colorThief.getPalette(image, 16);
             var addedColors = 1;
             for (var i = 0; i < palette.length; ++i) {
-                var convertedColor = new IFRGBColor(palette[i]);
+                var convertedColor = new GRGBColor(palette[i]);
 
                 // Take care to avoid duplications with dominant color
-                if (!IFUtil.equals(convertedColor, mainColor)) {
+                if (!GUtil.equals(convertedColor, mainColor)) {
                     _addPaletteColor(convertedColor);
 
                     if (++addedColors >= 8) {
@@ -183,15 +183,15 @@
     /** @override */
     GImageProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().removeEventListener(IFImage.StatusEvent, this._imageStatus, this);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().removeEventListener(GImage.StatusEvent, this._imageStatus, this);
             this._document = null;
         }
 
         this._image = null;
 
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFImage) {
+            if (elements[i] instanceof GImage) {
                 if (this._image) {
                     // We'll work on a single image, only
                     this._image = null;
@@ -204,8 +204,8 @@
 
         if (this._image) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().addEventListener(IFImage.StatusEvent, this._imageStatus, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GImage.StatusEvent, this._imageStatus, this);
             this._updateProperties();
             return true;
         } else {
@@ -214,7 +214,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GImageProperties.prototype._afterPropertiesChange = function (event) {
@@ -224,11 +224,11 @@
     };
 
     /**
-     * @param {IFImage.StatusEvent} event
+     * @param {GImage.StatusEvent} event
      * @private
      */
     GImageProperties.prototype._imageStatus = function (event) {
-        if (event.image === this._image && (event.status === IFImage.ImageStatus.Error || event.status === IFImage.ImageStatus.Loaded)) {
+        if (event.image === this._image && (event.status === GImage.ImageStatus.Error || event.status === GImage.ImageStatus.Loaded)) {
             this._updateProperties();
         }
     };
@@ -241,7 +241,7 @@
         var isData = url.indexOf('data:') === 0;
         var status = this._image.getStatus();
         var image = this._image.getImage();
-        var hasImage = image && status === IFImage.ImageStatus.Loaded;
+        var hasImage = image && status === GImage.ImageStatus.Loaded;
         var imgBBox = this._image.getGeometryBBox();
 
         // TODO : I18N

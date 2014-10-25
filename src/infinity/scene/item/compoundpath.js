@@ -2,49 +2,49 @@
 
     /**
      * A polygon shape
-     * @class IFCompoundPath
-     * @extends IFShape
+     * @class GCompoundPath
+     * @extends GShape
      * @constructor
      */
-    function IFCompoundPath() {
-        IFShape.call(this);
+    function GCompoundPath() {
+        GShape.call(this);
 
         // Add anchor paths
-        this._anchorPaths = new IFCompoundPath.AnchorPaths();
+        this._anchorPaths = new GCompoundPath.AnchorPaths();
         this.appendChild(this._anchorPaths);
         this._anchorPaths._setScene(this._scene);
         this._anchorPaths._removalAllowed = false;
     }
 
-    IFNode.inherit("compoundpath", IFCompoundPath, IFShape);
+    GNode.inherit("compoundpath", GCompoundPath, GShape);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFCompoundPath.AnchorPaths Class
+    // GCompoundPath.AnchorPaths Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFCompoundPath.AnchorPaths
-     * @extends IFNode
-     * @mixes IFNode.Container
+     * @class GCompoundPath.AnchorPaths
+     * @extends GNode
+     * @mixes GNode.Container
      * @constructor
      */
-    IFCompoundPath.AnchorPaths = function () {
+    GCompoundPath.AnchorPaths = function () {
     };
-    IFObject.inheritAndMix(IFCompoundPath.AnchorPaths, IFNode, [IFNode.Container]);
+    GObject.inheritAndMix(GCompoundPath.AnchorPaths, GNode, [GNode.Container]);
 
     /**
      * Used to disallow anchor paths removal
      * @type {Boolean}
      * @private
      */
-    IFCompoundPath.AnchorPaths.prototype._removalAllowed = false;
+    GCompoundPath.AnchorPaths.prototype._removalAllowed = false;
 
     /** @override */
-    IFCompoundPath.AnchorPaths.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFCompoundPath;
+    GCompoundPath.AnchorPaths.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GCompoundPath;
     };
 
     /** @override */
-    IFCompoundPath.AnchorPaths.prototype.validateRemoval = function () {
+    GCompoundPath.AnchorPaths.prototype.validateRemoval = function () {
         return this._removalAllowed ? this._removalAllowed : false;
     };
 
@@ -52,10 +52,10 @@
      * Serializes all points into a stream array
      * @return {Array<*>}
      */
-    IFCompoundPath.AnchorPaths.prototype.serialize = function () {
+    GCompoundPath.AnchorPaths.prototype.serialize = function () {
         var stream = [];
         for (var pt = this.getFirstChild(); pt !== null; pt = pt.getNext()) {
-            stream.push(IFNode.serialize(pt));
+            stream.push(GNode.serialize(pt));
         }
         return stream;
     };
@@ -64,42 +64,42 @@
      * Deserializes all points from a stream array
      * @param {Array<*>} stream
      */
-    IFCompoundPath.AnchorPaths.prototype.deserialize = function (stream) {
+    GCompoundPath.AnchorPaths.prototype.deserialize = function (stream) {
         for (var i = 0; i < stream.length; ++i) {
-            //var pt = new IFPath();
-            var pt = IFNode.deserialize(stream[i]);
+            //var pt = new GPath();
+            var pt = GNode.deserialize(stream[i]);
             this.appendChild(pt);
         }
     };
 
-    IFCompoundPath.AnchorPaths.prototype._handleChange = function (change, args) {
+    GCompoundPath.AnchorPaths.prototype._handleChange = function (change, args) {
         var compoundPath = this._parent;
 
-        if (compoundPath  && (change == IFElement._Change.ChildGeometryUpdate)) {
+        if (compoundPath  && (change == GElement._Change.ChildGeometryUpdate)) {
             // Notify compoundPath parent about the change
-            compoundPath._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+            compoundPath._notifyChange(GElement._Change.PrepareGeometryUpdate);
             compoundPath.rewindVertices(0);
-            compoundPath._notifyChange(IFElement._Change.FinishGeometryUpdate);
+            compoundPath._notifyChange(GElement._Change.FinishGeometryUpdate);
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
 
     /** @override */
-    IFCompoundPath.AnchorPaths.prototype.toString = function () {
-        return "[Object IFCompoundPath.AnchorPaths]";
+    GCompoundPath.AnchorPaths.prototype.toString = function () {
+        return "[Object GCompoundPath.AnchorPaths]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFCompoundPath Class
+    // GCompoundPath Class
     // -----------------------------------------------------------------------------------------------------------------
 
-    IFCompoundPath.prototype._anchorPaths = null;
-    IFCompoundPath.prototype._currentPath = null;
+    GCompoundPath.prototype._anchorPaths = null;
+    GCompoundPath.prototype._currentPath = null;
 
     /** @override */
-    IFCompoundPath.prototype.rewindVertices = function (index) {
+    GCompoundPath.prototype.rewindVertices = function (index) {
         this._currentPath = this._anchorPaths.getFirstChild();
         if (index === 0 && this._currentPath) {
             for (var pt = this._currentPath; pt != null; pt = pt.getNext()) {
@@ -112,7 +112,7 @@
     };
 
     /** @override */
-    IFCompoundPath.prototype.readVertex = function (vertex) {
+    GCompoundPath.prototype.readVertex = function (vertex) {
         if (this._currentPath) {
             if (this._currentPath.readVertex(vertex)) {
                 return true;
@@ -126,15 +126,15 @@
 
     /**
      * Return the anchor paths of the compound path
-     * @returns {IFCompoundPath.AnchorPaths}
+     * @returns {GCompoundPath.AnchorPaths}
      */
-    IFCompoundPath.prototype.getAnchorPaths = function () {
+    GCompoundPath.prototype.getAnchorPaths = function () {
         return this._anchorPaths;
     };
 
     /** @override */
-    IFCompoundPath.prototype._handleChange = function (change, args) {
-        if (change == IFNode._Change.AfterFlagChange) {
+    GCompoundPath.prototype._handleChange = function (change, args) {
+        if (change == GNode._Change.AfterFlagChange) {
             var flagArgs = args;
             this._currentPath = this._anchorPaths.getFirstChild();
             if (flagArgs.set == true) {
@@ -147,18 +147,18 @@
                 }
             }
         }
-        if (change === IFNode._Change.Store) {
+        if (change === GNode._Change.Store) {
             args.paths = this._anchorPaths.serialize();
-        } else if (change === IFNode._Change.Restore) {
+        } else if (change === GNode._Change.Restore) {
             if (args.hasOwnProperty('paths')) {
                 this._anchorPaths.deserialize(args.paths);
             }
         }
-        IFShape.prototype._handleChange.call(this, change, args);
+        GShape.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFCompoundPath.prototype.setTransform = function (transform) {
+    GCompoundPath.prototype.setTransform = function (transform) {
         this.setProperty('trf', transform);
         for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
             pt.setTransform(transform);
@@ -166,7 +166,7 @@
     };
 
     /** @override */
-    IFCompoundPath.prototype.transform = function (transform) {
+    GCompoundPath.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
             this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
             for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
@@ -176,7 +176,7 @@
     };
 
     /** @override */
- /*   IFCompoundPath.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
+ /*   GCompoundPath.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
         tolerance = tolerance || 0;
 
@@ -218,9 +218,9 @@
     };      */
 
     /** @override */
-    IFCompoundPath.prototype.toString = function () {
-        return "[IFCompoundPath]";
+    GCompoundPath.prototype.toString = function () {
+        return "[GCompoundPath]";
     };
 
-    _.IFCompoundPath = IFCompoundPath;
+    _.GCompoundPath = GCompoundPath;
 })(this);

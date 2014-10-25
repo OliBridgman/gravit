@@ -24,10 +24,10 @@
         GPalette.call(this);
     }
 
-    IFObject.inherit(GPagesPalette, GPalette);
+    GObject.inherit(GPagesPalette, GPalette);
 
     GPagesPalette.ID = "pages";
-    GPagesPalette.TITLE = new IFLocale.Key(GPagesPalette, "title");
+    GPagesPalette.TITLE = new GLocale.Key(GPagesPalette, "title");
 
     /**
      * @type {GDocument}
@@ -109,21 +109,21 @@
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
             var scene = this._document.getScene();
-            scene.addEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-            scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-            scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-            scene.addEventListener(IFScene.ReferenceEvent, this._referenceEvent, this);
+            scene.addEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+            scene.addEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+            scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.addEventListener(GScene.ReferenceEvent, this._referenceEvent, this);
             this._clear();
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
             this._document = null;
-            scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-            scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-            scene.removeEventListener(IFScene.ReferenceEvent, this._referenceEvent, this);
+            scene.removeEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+            scene.removeEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+            scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.removeEventListener(GScene.ReferenceEvent, this._referenceEvent, this);
             this._clear();
             this.trigger(GPalette.UPDATE_EVENT);
         }
@@ -135,7 +135,7 @@
         if (this._document) {
             var scene = this._document.getScene();
             for (var child = scene.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFPage) {
+                if (child instanceof GPage) {
                     this._insertPage(child);
                 }
             }
@@ -166,7 +166,7 @@
                 .on('click', function (evt) {
                     evt.stopPropagation();
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(page, function () {
+                    GEditor.tryRunTransaction(page, function () {
                         page.setProperty('visible', !page.getProperty('visible'));
                     }, 'Toggle Page Visibility');
                 })
@@ -179,7 +179,7 @@
                 .on('click', function (evt) {
                     evt.stopPropagation();
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(page, function () {
+                    GEditor.tryRunTransaction(page, function () {
                         page.setProperty('locked', !page.getProperty('locked'));
                     }, 'Toggle Page Lock');
                 })
@@ -192,7 +192,7 @@
                 .on('submitvalue', function (evt, value) {
                     if (value && value.trim() !== '') {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(page, function () {
+                        GEditor.tryRunTransaction(page, function () {
                             page.setProperty('name', value);
                         }, 'Rename Page');
                     }
@@ -258,7 +258,7 @@
                                     var targetIndex = parent.getIndexOfChild(targetPage);
 
                                     // TODO : I18N
-                                    IFEditor.tryRunTransaction(parent, function () {
+                                    GEditor.tryRunTransaction(parent, function () {
                                         if (ifPlatform.modifiers.shiftKey) {
                                             // Clone page
                                             var insertPos = dragPage.getScene().getPageInsertPosition();
@@ -304,8 +304,8 @@
         this._pagesPanel.find('.page-block').each(function (index, element) {
             var $element = $(element);
             if ($element.data('page') === page) {
-                $element.toggleClass('g-active', page.hasFlag(IFNode.Flag.Active));
-                $element.toggleClass('g-selected', page.hasFlag(IFNode.Flag.Selected));
+                $element.toggleClass('g-active', page.hasFlag(GNode.Flag.Active));
+                $element.toggleClass('g-selected', page.hasFlag(GNode.Flag.Selected));
 
                 $element.find('.page-visibility')
                     .toggleClass('grid-icon-default', pageVisible)
@@ -365,56 +365,56 @@
     };
 
     /**
-     * @param {IFNode.AfterInsertEvent} event
+     * @param {GNode.AfterInsertEvent} event
      * @private
      */
     GPagesPalette.prototype._afterNodeInsert = function (event) {
-        if (event.node instanceof IFPage) {
+        if (event.node instanceof GPage) {
             this._insertPage(event.node);
         }
     };
 
     /**
-     * @param {IFNode.BeforeRemoveEvent} event
+     * @param {GNode.BeforeRemoveEvent} event
      * @private
      */
     GPagesPalette.prototype._beforeNodeRemove = function (event) {
-        if (event.node instanceof IFPage) {
+        if (event.node instanceof GPage) {
             this._removePage(event.node);
         }
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPagesPalette.prototype._afterPropertiesChange = function (event) {
-        if (event.node instanceof IFPage) {
+        if (event.node instanceof GPage) {
             this._updatePage(event.node);
         }
     };
 
     /**
-     * @param {IFNode.AfterFlagChangeEvent} event
+     * @param {GNode.AfterFlagChangeEvent} event
      * @private
      */
     GPagesPalette.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof IFPage && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected)) {
+        if (event.node instanceof GPage && (event.flag === GNode.Flag.Active || event.flag === GNode.Flag.Selected)) {
             this._pagesPanel.find('.page-block').each(function (index, element) {
                 var $element = $(element);
                 if ($element.data('page') === event.node) {
-                    $element.toggleClass(event.flag === IFNode.Flag.Active ? 'g-active' : 'g-selected', event.set);
+                    $element.toggleClass(event.flag === GNode.Flag.Active ? 'g-active' : 'g-selected', event.set);
                 }
             });
         }
     };
 
     /**
-     * @param {IFScene.ReferenceEvent} event
+     * @param {GScene.ReferenceEvent} event
      * @private
      */
     GPagesPalette.prototype._referenceEvent = function (event) {
-        if (event.reference instanceof IFPage) {
+        if (event.reference instanceof GPage) {
             this._updatePage(event.reference);
         }
     };

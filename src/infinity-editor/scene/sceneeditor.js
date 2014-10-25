@@ -1,42 +1,42 @@
 (function (_) {
     /**
      * The base for a scene editor
-     * @param {IFScene} scene the scene this editor works on
-     * @class IFSceneEditor
-     * @extends IFElementEditor
+     * @param {GScene} scene the scene this editor works on
+     * @class GSceneEditor
+     * @extends GElementEditor
      * @constructor
      */
-    function IFSceneEditor(scene) {
-        IFElementEditor.call(this, scene);
+    function GSceneEditor(scene) {
+        GElementEditor.call(this, scene);
     };
-    IFObject.inherit(IFSceneEditor, IFElementEditor);
-    IFElementEditor.exports(IFSceneEditor, IFScene);
+    GObject.inherit(GSceneEditor, GElementEditor);
+    GElementEditor.exports(GSceneEditor, GScene);
 
     /**
-     * @type {IFTransformBox}
+     * @type {GTransformBox}
      * @private
      */
-    IFSceneEditor.prototype._transformBox = null;
+    GSceneEditor.prototype._transformBox = null;
 
     /**
      * An array of vusial lines ends, which are used to show snap zones
-     * @type {Array<Array<IFPoint>>} - line ends in view coordinates
+     * @type {Array<Array<GPoint>>} - line ends in view coordinates
      * @private
      */
-    IFSceneEditor.prototype._visuals = null;
+    GSceneEditor.prototype._visuals = null;
 
     /**
      * Area, which is used for painting and cleaning lines of snap zones
-     * @type {IFRect} - visuals area in world coordinates
+     * @type {GRect} - visuals area in world coordinates
      * @private
      */
-    IFSceneEditor.prototype._visualsArea = null;
+    GSceneEditor.prototype._visualsArea = null;
 
     /**
      * The possible modes of transform box functionality
      * @type {{NA: number, PASSIVE: number, TBOXMOVE: number, CNTRMOVE: number, ROTATE: number, RESIZE: number, SKEW: number}}
      */
-    IFSceneEditor.TBoxMode = {
+    GSceneEditor.TBoxMode = {
         NA : 0,
         PASSIVE: 1,
         TBOXMOVE: 2,
@@ -47,26 +47,26 @@
     };
 
     /**
-     * @type {IFSceneEditor.TBoxMode}
+     * @type {GSceneEditor.TBoxMode}
      * @private
      */
-    IFSceneEditor.prototype._tBoxMode = IFSceneEditor.TBoxMode.NA;
+    GSceneEditor.prototype._tBoxMode = GSceneEditor.TBoxMode.NA;
 
     /**
-     * @type {IFElementEditor.PartInfo}
+     * @type {GElementEditor.PartInfo}
      * @private
      */
-    IFSceneEditor.prototype._tBoxData = null;
+    GSceneEditor.prototype._tBoxData = null;
 
     /**
-     * @type {IFElementEditor.PartInfo}
+     * @type {GElementEditor.PartInfo}
      * @private
      */
-    IFSceneEditor.prototype._mouseInfo = null;
+    GSceneEditor.prototype._mouseInfo = null;
 
     /** override */
-    IFSceneEditor.prototype.paint = function (transform, context) {
-        IFElementEditor.prototype.paint.call(this, transform, context);
+    GSceneEditor.prototype.paint = function (transform, context) {
+        GElementEditor.prototype.paint.call(this, transform, context);
         if (this._transformBox) {
             this._transformBox.paint(transform, context);
 
@@ -86,14 +86,14 @@
     };
 
     /** override */
-    IFSceneEditor.prototype.getBBox = function (transform) {
-        var bbox = IFElementEditor.prototype.getBBox.call(this, transform);
+    GSceneEditor.prototype.getBBox = function (transform) {
+        var bbox = GElementEditor.prototype.getBBox.call(this, transform);
         if (this._transformBox) {
             var transBBox = this._transformBox._calculateGeometryBBox();
             if (transBBox && !transBBox.isEmpty()) {
                 transBBox = transform ? transform.mapRect(transBBox) : transBBox;
                 transBBox = transBBox.expanded(
-                    IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE, IFTransformBox.ANNOT_SIZE);
+                    GTransformBox.ANNOT_SIZE, GTransformBox.ANNOT_SIZE, GTransformBox.ANNOT_SIZE, GTransformBox.ANNOT_SIZE);
                 bbox = bbox ? bbox.united(transBBox) : transBBox;
             }
         }
@@ -101,7 +101,7 @@
     };
 
     /** override */
-    IFSceneEditor.prototype._detach = function () {
+    GSceneEditor.prototype._detach = function () {
         if (this._transformBox) {
             this.setTransformBoxActive(false);
         }
@@ -111,25 +111,25 @@
      * Checks if the transform box is currently active
      * @returns {Boolean}
      */
-    IFSceneEditor.prototype.isTransformBoxActive = function () {
+    GSceneEditor.prototype.isTransformBoxActive = function () {
         return (this._transformBox != null);
     };
 
     /**
      * Activates or deactivates the transform box
      * @param {Boolean} activate - when true or not set means activation is needed, when false - deactivation
-     * @param {IFPoint} center - transform box center to set
+     * @param {GPoint} center - transform box center to set
      */
-    IFSceneEditor.prototype.setTransformBoxActive = function (activate, center) {
+    GSceneEditor.prototype.setTransformBoxActive = function (activate, center) {
         if (activate || activate === null) {
             if (!this._transformBox) {
-                this._element.addEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+                this._element.addEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
             }
 
             this._updateSelectionTransformBox(center);
         } else {
             if (this._transformBox) {
-                this._element.removeEventListener(IFElement.GeometryChangeEvent, this._geometryChange, this);
+                this._element.removeEventListener(GElement.GeometryChangeEvent, this._geometryChange, this);
 
                 this.requestInvalidation();
                 this._transformBox = null;
@@ -138,44 +138,44 @@
         }
     };
 
-    IFSceneEditor.prototype.getTransformBox = function () {
+    GSceneEditor.prototype.getTransformBox = function () {
         return this._transformBox;
     };
 
-    IFSceneEditor.prototype.requestInvalidation = function(args) {
+    GSceneEditor.prototype.requestInvalidation = function(args) {
         this._getGraphicEditor().requestInvalidation(this, args);
     };
 
-    IFSceneEditor.prototype.getTBoxMode = function () {
+    GSceneEditor.prototype.getTBoxMode = function () {
         return this._tBoxMode;
     };
 
-    IFSceneEditor.prototype._updateTBoxMode = function(mode) {
+    GSceneEditor.prototype._updateTBoxMode = function(mode) {
         this._tBoxMode = mode;
     };
 
-    IFSceneEditor.prototype.hideTransformBox = function () {
+    GSceneEditor.prototype.hideTransformBox = function () {
         if (this._transformBox) {
             this._transformBox.hide();
         }
         this.requestInvalidation();
     };
 
-    IFSceneEditor.prototype.showTransformBox = function () {
+    GSceneEditor.prototype.showTransformBox = function () {
         if (this._transformBox) {
             this._transformBox.show();
         }
         this.requestInvalidation();
     };
 
-    IFSceneEditor.prototype.getTransformBoxCenter = function () {
+    GSceneEditor.prototype.getTransformBoxCenter = function () {
         if (this._transformBox) {
-            return new IFPoint(this._transformBox.cx, this._transformBox.cy);
+            return new GPoint(this._transformBox.cx, this._transformBox.cy);
         }
         return null;
     };
 
-    IFSceneEditor.prototype._applyTBoxCenterTransform = function () {
+    GSceneEditor.prototype._applyTBoxCenterTransform = function () {
         if (this._transformBox && (this._transformBox.trf || this._transformBox.cTrf)) {
             this._getGraphicEditor().beginTransaction();
             try {
@@ -188,48 +188,48 @@
         }
     };
 
-    IFSceneEditor.prototype.getCursor = function (partInfo) {
-        var cursor = IFCursor.Select;
+    GSceneEditor.prototype.getCursor = function (partInfo) {
+        var cursor = GCursor.Select;
 
         switch (partInfo.id) {
-            case IFTransformBox.INSIDE:
-                cursor = IFCursor.SelectCross;
+            case GTransformBox.INSIDE:
+                cursor = GCursor.SelectCross;
                 break;
-            case IFTransformBox.OUTSIDE:
-                cursor = IFCursor.SelectRotate[partInfo.data];
+            case GTransformBox.OUTSIDE:
+                cursor = GCursor.SelectRotate[partInfo.data];
                 break;
-            case IFTransformBox.OUTLINE:
-                cursor = partInfo.data ? IFCursor.SelectSkewHoriz : IFCursor.SelectSkewVert;
+            case GTransformBox.OUTLINE:
+                cursor = partInfo.data ? GCursor.SelectSkewHoriz : GCursor.SelectSkewVert;
                 break;
-            case IFTransformBox.Handles.TOP_CENTER:
-            case IFTransformBox.Handles.BOTTOM_CENTER:
-                cursor = IFCursor.SelectResizeVert;
+            case GTransformBox.Handles.TOP_CENTER:
+            case GTransformBox.Handles.BOTTOM_CENTER:
+                cursor = GCursor.SelectResizeVert;
                 break;
-            case IFTransformBox.Handles.LEFT_CENTER:
-            case IFTransformBox.Handles.RIGHT_CENTER:
-                cursor = IFCursor.SelectResizeHoriz;
+            case GTransformBox.Handles.LEFT_CENTER:
+            case GTransformBox.Handles.RIGHT_CENTER:
+                cursor = GCursor.SelectResizeHoriz;
                 break;
-            case IFTransformBox.Handles.TOP_LEFT:
-            case IFTransformBox.Handles.BOTTOM_RIGHT:
-                cursor = IFCursor.SelectResizeUpLeftDownRight;
+            case GTransformBox.Handles.TOP_LEFT:
+            case GTransformBox.Handles.BOTTOM_RIGHT:
+                cursor = GCursor.SelectResizeUpLeftDownRight;
                 break;
-            case IFTransformBox.Handles.TOP_RIGHT:
-            case IFTransformBox.Handles.BOTTOM_LEFT:
-                cursor = IFCursor.SelectResizeUpRightDownLeft;
+            case GTransformBox.Handles.TOP_RIGHT:
+            case GTransformBox.Handles.BOTTOM_LEFT:
+                cursor = GCursor.SelectResizeUpRightDownLeft;
                 break;
-            case IFTransformBox.Handles.ROTATION_CENTER:
-                cursor = IFCursor.SelectArrowOnly;
+            case GTransformBox.Handles.ROTATION_CENTER:
+                cursor = GCursor.SelectArrowOnly;
                 break;
         }
 
         return cursor;
     };
 
-    IFSceneEditor.prototype.updateTBoxUnderMouse = function (location, transform, view) {
+    GSceneEditor.prototype.updateTBoxUnderMouse = function (location, transform, view) {
         var pInfo = null;
         if (this._tBoxData) {
-            pInfo = new IFElementEditor.PartInfo(this._tBoxData.editor, this._tBoxData.id, this._tBoxData.data);
-            if (pInfo.id  == IFTransformBox.OUTSIDE) {
+            pInfo = new GElementEditor.PartInfo(this._tBoxData.editor, this._tBoxData.id, this._tBoxData.data);
+            if (pInfo.id  == GTransformBox.OUTSIDE) {
                 pInfo.data = this._transformBox.getRotationSegment(location, transform);
             }
         } else {
@@ -242,9 +242,9 @@
         }
         var bBox = null;
         this._visuals = null;
-        if (this._tBoxMode == IFSceneEditor.TBoxMode.PASSIVE && this._mouseInfo.id == IFTransformBox.INSIDE) {
+        if (this._tBoxMode == GSceneEditor.TBoxMode.PASSIVE && this._mouseInfo.id == GTransformBox.INSIDE) {
             var selection = this._getGraphicEditor().getSelection();
-            var selBBox = IFElement.prototype.getGroupGeometryBBox(selection);
+            var selBBox = GElement.prototype.getGroupGeometryBBox(selection);
             if (selBBox && !selBBox.isEmpty()) {
                 bBox = transform.mapRect(selBBox);
                 var visuals = this._getGraphicEditor().getGuides().getBBoxSnapZones(bBox, location);
@@ -271,30 +271,30 @@
         }
     };
 
-    IFSceneEditor.prototype.getTBoxPartInfoAt = function (location, transform, tolerance) {
+    GSceneEditor.prototype.getTBoxPartInfoAt = function (location, transform, tolerance) {
         return this._transformBox.getPartInfoAt(location, transform, tolerance);
     };
 
-    IFSceneEditor.prototype.startTBoxTransform = function (partInfo) {
+    GSceneEditor.prototype.startTBoxTransform = function (partInfo) {
         if (this._visualsArea) {
             this.requestInvalidation();
             //this._element._invalidateArea(this._visualsArea);
             this._visualsArea = null;
         }
 
-        this._tBoxData = new IFElementEditor.PartInfo(partInfo.editor, partInfo.id,
+        this._tBoxData = new GElementEditor.PartInfo(partInfo.editor, partInfo.id,
             partInfo.data);
 
-        if (this._tBoxData.id  == IFTransformBox.OUTLINE) {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.SKEW);
-        } else if (this._tBoxData.id  == IFTransformBox.OUTSIDE) {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.ROTATE);
-        } else if (this._tBoxData.id >= 0 && this._tBoxData.id < IFTransformBox.Handles.ROTATION_CENTER) {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.RESIZE);
-        } else if (this._tBoxData.id == IFTransformBox.Handles.ROTATION_CENTER) {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.CNTRMOVE);
+        if (this._tBoxData.id  == GTransformBox.OUTLINE) {
+            this._updateTBoxMode(GSceneEditor.TBoxMode.SKEW);
+        } else if (this._tBoxData.id  == GTransformBox.OUTSIDE) {
+            this._updateTBoxMode(GSceneEditor.TBoxMode.ROTATE);
+        } else if (this._tBoxData.id >= 0 && this._tBoxData.id < GTransformBox.Handles.ROTATION_CENTER) {
+            this._updateTBoxMode(GSceneEditor.TBoxMode.RESIZE);
+        } else if (this._tBoxData.id == GTransformBox.Handles.ROTATION_CENTER) {
+            this._updateTBoxMode(GSceneEditor.TBoxMode.CNTRMOVE);
         } else {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.TBOXMOVE);
+            this._updateTBoxMode(GSceneEditor.TBoxMode.TBOXMOVE);
         }
 
         this.hideTransformBox();
@@ -303,19 +303,19 @@
     /**
      * Calculates and makes the on-going transformation of the selection and transform box based on pre-set
      * transform mode, start position of movement and the current position
-     * @param {IFPoint} startPos - the start position of movement
-     * @param {IFPoint} curPos - the current position
+     * @param {GPoint} startPos - the start position of movement
+     * @param {GPoint} curPos - the current position
      * @param {Boolean} option - when set and resizing, the resize is center-symmetric
      * @param {Boolean} ratio - when set and rotate/skew - keep ratioStep, when resize - the scale for X and Y are the same
      * @param {Number} ratioStep - when set and ratio, then this step is used for constraint
      */
-    IFSceneEditor.prototype.transformTBox = function (startPos, curPos, option, ratio, ratioStep) {
-        if (this._tBoxMode != IFSceneEditor.TBoxMode.PASSIVE && this._tBoxMode != IFSceneEditor.TBoxMode.NA) {
+    GSceneEditor.prototype.transformTBox = function (startPos, curPos, option, ratio, ratioStep) {
+        if (this._tBoxMode != GSceneEditor.TBoxMode.PASSIVE && this._tBoxMode != GSceneEditor.TBoxMode.NA) {
             var guides = this._getGraphicEditor().getGuides();
             guides.getShapeBoxGuide().useExclusions(this._getGraphicEditor().getSelection());
             guides.beginMap();
             var rStep = ratioStep;
-            if (!rStep && this._tBoxMode == IFSceneEditor.TBoxMode.SKEW) {
+            if (!rStep && this._tBoxMode == GSceneEditor.TBoxMode.SKEW) {
                 rStep = this._element.getProperty('gridSizeX');
             }
             var transform = this._transformBox.calculateTransformation(this._tBoxData,
@@ -323,7 +323,7 @@
 
             guides.finishMap();
             this.requestInvalidation();
-            if (this._tBoxMode != IFSceneEditor.TBoxMode.CNTRMOVE) {
+            if (this._tBoxMode != GSceneEditor.TBoxMode.CNTRMOVE) {
                 this._transformBox.setTransform(transform);
                 this._getGraphicEditor().transformSelection(transform, null, null);
             } else {
@@ -333,19 +333,19 @@
         }
     };
 
-    IFSceneEditor.prototype.applyTBoxTransform = function (option) {
-        if (this._tBoxMode == IFSceneEditor.TBoxMode.CNTRMOVE) {
+    GSceneEditor.prototype.applyTBoxTransform = function (option) {
+        if (this._tBoxMode == GSceneEditor.TBoxMode.CNTRMOVE) {
             this._applyTBoxCenterTransform();
             this.showTransformBox();
         } else {
             this._getGraphicEditor().applySelectionTransform(option);
         }
-        this._updateTBoxMode(IFSceneEditor.TBoxMode.PASSIVE);
+        this._updateTBoxMode(GSceneEditor.TBoxMode.PASSIVE);
         this._tBoxData = null;
         this._mouseInfo = null;
     };
 
-    IFSceneEditor.prototype._updateSelectionTransformBox = function (center) {
+    GSceneEditor.prototype._updateSelectionTransformBox = function (center) {
         this.requestInvalidation();
         var cx = null;
         var cy = null;
@@ -358,16 +358,16 @@
         }
         this._transformBox = null;
         var selection = this._getGraphicEditor().getSelection();
-        var selBBox = IFElement.prototype.getGroupGeometryBBox(selection);
+        var selBBox = GElement.prototype.getGroupGeometryBBox(selection);
         if (selBBox) {
-            this._transformBox = new IFTransformBox(selBBox, cx, cy);
+            this._transformBox = new GTransformBox(selBBox, cx, cy);
         }
         this.requestInvalidation();
 
         if (this._transformBox) {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.PASSIVE);
+            this._updateTBoxMode(GSceneEditor.TBoxMode.PASSIVE);
         } else {
-            this._updateTBoxMode(IFSceneEditor.TBoxMode.NA);
+            this._updateTBoxMode(GSceneEditor.TBoxMode.NA);
         }
         this._tBoxData = null;
         this._mouseInfo = null;
@@ -377,9 +377,9 @@
         }
     };
 
-    IFSceneEditor.prototype._geometryChange = function (evt) {
-        if (this._transformBox && evt.type == IFElement.GeometryChangeEvent.Type.After &&
-                evt.element.hasFlag(IFNode.Flag.Selected)) {
+    GSceneEditor.prototype._geometryChange = function (evt) {
+        if (this._transformBox && evt.type == GElement.GeometryChangeEvent.Type.After &&
+                evt.element.hasFlag(GNode.Flag.Selected)) {
 
             if (this._transformBox.trf || this._transformBox.cTrf) {
                 this._transformBox.applyCenterTransform();
@@ -388,14 +388,14 @@
         }
     };
 
-    IFSceneEditor.prototype._getGraphicEditor = function () {
+    GSceneEditor.prototype._getGraphicEditor = function () {
         return this._element.__graphic_editor__;
     };
 
     /** @override */
-    IFSceneEditor.prototype.toString = function () {
-        return "[Object IFSceneEditor]";
+    GSceneEditor.prototype.toString = function () {
+        return "[Object GSceneEditor]";
     };
 
-    _.IFSceneEditor = IFSceneEditor;
+    _.GSceneEditor = GSceneEditor;
 })(this);

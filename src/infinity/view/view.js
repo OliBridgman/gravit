@@ -1,12 +1,12 @@
 (function (_) {
     /**
-     * IFView is a widget to paint a scene
-     * @param {IFScene} [scene] the scene this view is bound too, defaults to null
-     * @class IFView
+     * GUIView is a widget to paint a scene
+     * @param {GScene} [scene] the scene this view is bound too, defaults to null
+     * @class GUIView
      * @extends GUIWidget
      * @constructor
      */
-    function IFView(scene) {
+    function GUIView(scene) {
         this._updateViewTransforms(true);
         GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
@@ -18,26 +18,26 @@
 
         // TODO : Move all transformation / view stuff into viewConfiguration!!
         if (!this._viewConfiguration) {
-            this._viewConfiguration = new IFScenePaintConfiguration();
+            this._viewConfiguration = new GScenePaintConfiguration();
         }
 
         // Initialize our stages
         this._initStages();
 
         // Subscribe to some scene events
-        scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        scene.addEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
+        scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        scene.addEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
     }
 
-    IFObject.inherit(IFView, GUIWidget);
+    GObject.inherit(GUIView, GUIWidget);
 
     /**
      * Global view options
      * @type {Object}
      * @version 1.0
      */
-    IFView.options = {
+    GUIView.options = {
         /**
          * The smallest zoom factor allowed whereas 0 = 0% and 1.0 = 100%
          * @type {Number}
@@ -61,106 +61,106 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFView.TransformEvent Event
+    // GUIView.TransformEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever the view's transformation has changed
-     * @class IFView.TransformEvent
-     * @extends IFEvent
+     * @class GUIView.TransformEvent
+     * @extends GEvent
      * @constructor
      */
-    IFView.TransformEvent = function () {
+    GUIView.TransformEvent = function () {
     };
-    IFObject.inherit(IFView.TransformEvent, IFEvent);
+    GObject.inherit(GUIView.TransformEvent, GEvent);
 
     /** @override */
-    IFView.TransformEvent.prototype.toString = function () {
-        return "[Object IFView.TransformEvent]";
+    GUIView.TransformEvent.prototype.toString = function () {
+        return "[Object GUIView.TransformEvent]";
     };
 
-    IFView.TRANSFORMEVENT = new IFView.TransformEvent();
+    GUIView.TRANSFORMEVENT = new GUIView.TransformEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFView Class
+    // GUIView Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
-    IFView.prototype._scene = null;
+    GUIView.prototype._scene = null;
 
     /**
      * An array of stages
-     * @type {Array<IFStage>}
+     * @type {Array<GStage>}
      * @private
      */
-    IFView.prototype._stages = null;
+    GUIView.prototype._stages = null;
 
     /**
      * Left, top, right, bottom offsets
      * @type {Array<Number>}
      * @private
      */
-    IFView.prototype._viewOffset = null;
+    GUIView.prototype._viewOffset = null;
 
     /**
      * Left, top, right, bottom margins
      * @type {Array<Number>}
      * @private
      */
-    IFView.prototype._viewMargin = null;
+    GUIView.prototype._viewMargin = null;
 
     /**
      * The current horizontal scroll of this view
      * @type Number
      * @private
      */
-    IFView.prototype._scrollX = 0;
+    GUIView.prototype._scrollX = 0;
 
     /**
      * The current vertical scroll of this view
      * @type Number
      * @private
      */
-    IFView.prototype._scrollY = 0;
+    GUIView.prototype._scrollY = 0;
 
     /**
      * The current zoom of this view
      * @type Number
      * @private
      */
-    IFView.prototype._zoom = 1.0;
+    GUIView.prototype._zoom = 1.0;
 
     /**
      * World to view transformation
-     * @type {IFTransform}
+     * @type {GTransform}
      * @private
      */
-    IFView.prototype._worldToViewTransform = null;
+    GUIView.prototype._worldToViewTransform = null;
 
     /**
      * View to world transform
-     * @type {IFTransform}
+     * @type {GTransform}
      * @private
      */
-    IFView.prototype._viewToWorldTransform = null;
+    GUIView.prototype._viewToWorldTransform = null;
 
     /**
-     * @type {IFScenePaintConfiguration}
+     * @type {GScenePaintConfiguration}
      * @private
      */
-    IFView.prototype._viewConfiguration = null;
+    GUIView.prototype._viewConfiguration = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    IFView.prototype._pageConfigurations = null;
+    GUIView.prototype._pageConfigurations = null;
 
     /** @override */
-    IFView.prototype.resize = function (width, height) {
+    GUIView.prototype.resize = function (width, height) {
         GUIWidget.prototype.resize.call(this, width, height);
 
         // Resize stages if any
@@ -173,16 +173,16 @@
 
     /**
      * Return the scene this view is painting
-     * @returns {IFScene}
+     * @returns {GScene}
      */
-    IFView.prototype.getScene = function () {
+    GUIView.prototype.getScene = function () {
         return this._scene;
     };
 
     /**
-     * @return {IFScenePaintConfiguration}
+     * @return {GScenePaintConfiguration}
      */
-    IFView.prototype.getViewConfiguration = function () {
+    GUIView.prototype.getViewConfiguration = function () {
         return this._viewConfiguration;
     };
 
@@ -190,7 +190,7 @@
      * Get the current view offset
      * @return {Array<Number>} Left, top, right, bottom
      */
-    IFView.prototype.getViewOffset = function () {
+    GUIView.prototype.getViewOffset = function () {
         return this._viewOffset;
     };
 
@@ -198,7 +198,7 @@
      * Set the current view offset
      * @param {Array<Number>} Offset Left, top, right, bottom
      */
-    IFView.prototype.setViewOffset = function (offset) {
+    GUIView.prototype.setViewOffset = function (offset) {
         this._viewOffset = [0, 0, 0, 0];
         if (offset && offset.length > 0) {
             for (var i = 0; i < Math.min(4, offset.length); ++i) {
@@ -219,7 +219,7 @@
      * @return {Array<Number>} Left, top, right, bottom
      * @version 1.0
      */
-    IFView.prototype.getViewMargin = function () {
+    GUIView.prototype.getViewMargin = function () {
         return this._viewMargin;
     };
 
@@ -228,7 +228,7 @@
      * @param {Array<Number>} margin Left, top, right, bottom
      * @version 1.0
      */
-    IFView.prototype.setViewMargin = function (margin) {
+    GUIView.prototype.setViewMargin = function (margin) {
         this._viewMargin = [0, 0, 0, 0];
         if (margin && margin.length > 0) {
             for (var i = 0; i < Math.min(4, margin.length); ++i) {
@@ -242,7 +242,7 @@
      * @return {Number} The current horizontal scroll position of this view
      * @version 1.0
      */
-    IFView.prototype.getScrollX = function () {
+    GUIView.prototype.getScrollX = function () {
         return this._scrollX;
     };
 
@@ -250,7 +250,7 @@
      * @return {Number} The current vertical scroll position of this view
      * @version 1.0
      */
-    IFView.prototype.getScrollY = function () {
+    GUIView.prototype.getScrollY = function () {
         return this._scrollY;
     };
 
@@ -258,25 +258,25 @@
      * @return {Number} The current zoom of this view
      * @version 1.0
      */
-    IFView.prototype.getZoom = function () {
+    GUIView.prototype.getZoom = function () {
         return this._zoom;
     };
 
     /**
      * Returns the current transformation used for transforming
      * world coordinates into view coordinates
-     * @returns {IFTransform}
+     * @returns {GTransform}
      */
-    IFView.prototype.getWorldTransform = function () {
+    GUIView.prototype.getWorldTransform = function () {
         return this._worldToViewTransform;
     };
 
     /**
      * Returns the current transformation used for transforming
      * view coordinates into world coordinates
-     * @returns {IFTransform}
+     * @returns {GTransform}
      */
-    IFView.prototype.getViewTransform = function () {
+    GUIView.prototype.getViewTransform = function () {
         return this._viewToWorldTransform;
     };
 
@@ -284,12 +284,12 @@
      * Returns the actual viewBox honoring offset and optional margin
      * @param {Boolean} [noMargin] whether to ignore margin or not,
      * defaults to false (= include margin)
-     * @returns {IFRect}
+     * @returns {GRect}
      */
-    IFView.prototype.getViewBox = function (noMargin) {
+    GUIView.prototype.getViewBox = function (noMargin) {
         var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
         var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
-        return new IFRect(
+        return new GRect(
             xOffset,
             yOffset,
             this.getWidth() - (this._viewOffset[2] + (!noMargin ? this._viewMargin[2] : 0) + xOffset),
@@ -303,7 +303,7 @@
      * @param {Number} scrollY the vertical scrolling
      * @param {Number} zoom the zoom
      */
-    IFView.prototype.transform = function (scrollX, scrollY, zoom) {
+    GUIView.prototype.transform = function (scrollX, scrollY, zoom) {
         this._scrollX = scrollX;
         this._scrollY = scrollY;
         this._zoom = zoom;
@@ -312,22 +312,22 @@
 
     /**
      * Zoom and center to a given point
-     * @param {IFPoint} center the center point for the view in world coordinates
+     * @param {GPoint} center the center point for the view in world coordinates
      * which will become the new center point
      * @param {Number} [zoom] the new zoom, defaults to current zoom
      * @version 1.0
      */
-    IFView.prototype.zoomAtCenter = function (center, zoom) {
+    GUIView.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
-        var viewCenter = this.getViewBox().getSide(IFRect.Side.CENTER);
+        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
-        var normalizedZoom = Math.min(IFView.options.maxZoomFactor, Math.max(zoom, IFView.options.minZoomFactor));
-        if (normalizedZoom == this._zoom && IFPoint.equals(viewWorldCenter, viewCenter)) {
+        var normalizedZoom = Math.min(GUIView.options.maxZoomFactor, Math.max(zoom, GUIView.options.minZoomFactor));
+        if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
             return;
         }
 
         // Calculate new scroll position & zoom
-        var tmpTransform = new IFTransform()
+        var tmpTransform = new GTransform()
             .translated(-center.getX(), -center.getY())
             .scaled(normalizedZoom, normalizedZoom)
             .translated(viewCenter.getX(), viewCenter.getY());
@@ -342,32 +342,32 @@
 
     /**
      * Zoom at a specific point
-     * @param {IFPoint} pos the point to zoom at in world coordinates
+     * @param {GPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
      */
-    IFView.prototype.zoomAt = function (pos, zoom) {
-        var viewCenter = this.getViewBox().getSide(IFRect.Side.CENTER);
+    GUIView.prototype.zoomAt = function (pos, zoom) {
+        var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
         var zoomDelta = zoom / this._zoom;
-        this.zoomAtCenter(new IFPoint(pos.getX() + (deltaPos.getX() / zoomDelta), pos.getY() + (deltaPos.getY() / zoomDelta)), zoom);
+        this.zoomAtCenter(new GPoint(pos.getX() + (deltaPos.getX() / zoomDelta), pos.getY() + (deltaPos.getY() / zoomDelta)), zoom);
     };
 
     /**
      * Zoom to fit all in a given rect whereas the center of the rect
      * becomes the new center of the view
-     * @param {IFRect} rect
+     * @param {GRect} rect
      * @param {Boolean} [reverse] if set, the reverse action will be taken so
      * that the view is zoomed out onto the given rect. Defaults to false
      */
-    IFView.prototype.zoomAll = function (rect, reverse) {
-        var center = rect.getSide(IFRect.Side.CENTER);
+    GUIView.prototype.zoomAll = function (rect, reverse) {
+        var center = rect.getSide(GRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
         var vbox = this.getViewBox();
 
         if (reverse) {
-            var viewRect = this._worldToViewTransform.mapRect(new IFRect(center.getX() - width / 2, center.getY() - height / 2, width, height));
+            var viewRect = this._worldToViewTransform.mapRect(new GRect(center.getX() - width / 2, center.getY() - height / 2, width, height));
             var invZoom = this._zoom * Math.min(1.0, Math.max(viewRect.getWidth() / vbox.getWidth(), viewRect.getHeight() / vbox.getHeight()));
             this.zoomAtCenter(center, invZoom);
         } else {
@@ -380,7 +380,7 @@
      * a saved view configuration for the page or it will fit
      * it into the screen depending on the options
      */
-    IFView.prototype.zoomActivePage = function () {
+    GUIView.prototype.zoomActivePage = function () {
         var activePage = this._scene.getActivePage();
         if (activePage) {
             // Look for an existing configuration
@@ -392,10 +392,10 @@
                 // Coming here means we'll do a default action
                 var pageBBox = activePage.getPaintBBox();
                 if (pageBBox && !pageBBox.isEmpty()) {
-                    if (IFView.options.defaultFitActivePage) {
+                    if (GUIView.options.defaultFitActivePage) {
                         this.zoomAll(pageBBox, false);
                     } else {
-                        this.zoomAtCenter(pageBBox.getSide(IFRect.Side.CENTER), 1.0);
+                        this.zoomAtCenter(pageBBox.getSide(GRect.Side.CENTER), 1.0);
                     }
                 }
             }
@@ -408,7 +408,7 @@
      * @param {Number} dy vertical subtract
      * @version 1.0
      */
-    IFView.prototype.scrollBy = function (dx, dy) {
+    GUIView.prototype.scrollBy = function (dx, dy) {
         if (dx != 0 || dy != 0) {
             this._scrollX = this._scrollX + dx;
             this._scrollY = this._scrollY + dy;
@@ -418,13 +418,13 @@
 
     /**
      * Called to invalidate all stages
-     * @param {IFRect} [area] the area to invalidate in view-
+     * @param {GRect} [area] the area to invalidate in view-
      * coordinates. If null then this clears the whole dirty areas
      * and requests a full repaint. Defaults to null.
      * @return {Boolean} true if any invalidation ocurred, false if not
      * @version 1.0
      */
-    IFView.prototype.invalidate = function (area) {
+    GUIView.prototype.invalidate = function (area) {
         var result = false;
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
@@ -436,11 +436,11 @@
 
     /**
      * Add a stage
-     * @param {IFStage} stage
-     * @returns {IFStage} the provided stage
+     * @param {GStage} stage
+     * @returns {GStage} the provided stage
      * @private
      */
-    IFView.prototype.addStage = function (stage) {
+    GUIView.prototype.addStage = function (stage) {
         if (this._stages == null) {
             this._stages = [];
         }
@@ -458,10 +458,10 @@
 
     /**
      * Retrieve a stage
-     * @param {IFStage} stageClass
-     * @returns {IFStage}
+     * @param {GStage} stageClass
+     * @returns {GStage}
      */
-    IFView.prototype.getStage = function (stageClass) {
+    GUIView.prototype.getStage = function (stageClass) {
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
                 if (stageClass.prototype.isPrototypeOf(this._stages[i])) {
@@ -475,10 +475,10 @@
     /**
      * Called to release this view
      */
-    IFView.prototype.release = function () {
-        this._scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        this._scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        this._scene.removeEventListener(IFNode.AfterRemoveEvent, this._afterRemove, this);
+    GUIView.prototype.release = function () {
+        this._scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+        this._scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        this._scene.removeEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
 
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
@@ -493,21 +493,21 @@
      * @param {Boolean} [noEvent] optional, specifies whether to send an event or not
      * @private
      */
-    IFView.prototype._updateViewTransforms = function (noEvent) {
+    GUIView.prototype._updateViewTransforms = function (noEvent) {
         // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
         // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
         this._scrollX = Math.round(this._scrollX);
         this._scrollY = Math.round(this._scrollY);
 
-        var worldToViewTransform = new IFTransform().scaled(this._zoom, this._zoom).translated(-this._scrollX, -this._scrollY);
-        if (!IFTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
+        var worldToViewTransform = new GTransform().scaled(this._zoom, this._zoom).translated(-this._scrollX, -this._scrollY);
+        if (!GTransform.equals(worldToViewTransform, this._worldToViewTransform)) {
             this._worldToViewTransform = worldToViewTransform;
             this._viewToWorldTransform = worldToViewTransform.inverted();
             // Invalidate everything
             this.invalidate();
 
-            if (!noEvent && this.hasEventListeners(IFView.TransformEvent)) {
-                this.trigger(IFView.TRANSFORMEVENT);
+            if (!noEvent && this.hasEventListeners(GUIView.TransformEvent)) {
+                this.trigger(GUIView.TRANSFORMEVENT);
             }
         }
     };
@@ -516,8 +516,8 @@
      * Called to init/add all stages
      * @private
      */
-    IFView.prototype._initStages = function () {
-        this.addStage(new IFSceneStage(this));
+    GUIView.prototype._initStages = function () {
+        this.addStage(new GSceneStage(this));
     };
 
     /**
@@ -525,7 +525,7 @@
      * @param autoCreate
      * @private
      */
-    IFView.prototype._getOrCreatePageConfig = function (page, autoCreate) {
+    GUIView.prototype._getOrCreatePageConfig = function (page, autoCreate) {
         var result = null;
         for (var i = 0; i < this._pageConfigurations.length; ++i) {
             if (this._pageConfigurations[i].page === page) {
@@ -545,13 +545,13 @@
     };
 
     /**
-     * @param {IFNode.AfterFlagChangeEvent} event
+     * @param {GNode.AfterFlagChangeEvent} event
      * @private
      */
-    IFView.prototype._afterFlagChange = function (event) {
+    GUIView.prototype._afterFlagChange = function (event) {
         // Handle single page mode and active page changing
         if (this._scene.getProperty('singlePage')) {
-            if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active) {
+            if (event.node instanceof GPage && event.flag === GNode.Flag.Active) {
                 this.invalidate();
 
                 if (event.set) {
@@ -568,10 +568,10 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    IFView.prototype._afterPropertiesChange = function (event) {
+    GUIView.prototype._afterPropertiesChange = function (event) {
         // Handle single page mode change
         if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
             this.zoomActivePage();
@@ -582,12 +582,12 @@
     };
 
     /**
-     * @param {IFNode.AfterRemoveEvent} event
+     * @param {GNode.AfterRemoveEvent} event
      * @private
      */
-    IFView.prototype._afterRemove = function (event) {
+    GUIView.prototype._afterRemove = function (event) {
         // Removing page must clear our page configuration for it
-        if (event.node instanceof IFPage) {
+        if (event.node instanceof GPage) {
             for (var i = 0; i < this._pageConfigurations.length; ++i) {
                 if (this._pageConfigurations[i].page === event.node) {
                     this._pageConfigurations.splice(i, 1);
@@ -598,10 +598,10 @@
     };
 
     /** @override */
-    IFView.prototype.toString = function () {
-        return "[Object IFView]";
+    GUIView.prototype.toString = function () {
+        return "[Object GUIView]";
     };
 
-    _.IFView = IFView;
+    _.GUIView = GUIView;
 
 })(this);

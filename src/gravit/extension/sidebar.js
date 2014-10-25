@@ -9,7 +9,7 @@
     function GSidebar() {
         GView.call(this);
     };
-    IFObject.inherit(GSidebar, GView);
+    GObject.inherit(GSidebar, GView);
 
     /**
      * Get the icon code of the sidebar

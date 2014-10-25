@@ -2,33 +2,33 @@
     /**
      * Vertex converter that transforms the vertices so that they align with the pixel grid
      * which basically is Math.floor(vertex) + 0.5
-     * @class IFVertexPixelAligner
-     * @extends IFVertexSource
-     * @param {IFVertexSource} source the underyling vertex source to work on
+     * @class GVertexPixelAligner
+     * @extends GVertexSource
+     * @param {GVertexSource} source the underyling vertex source to work on
      * @version 1.0
      * @constructor
      */
-    function IFVertexPixelAligner(source) {
+    function GVertexPixelAligner(source) {
         this._source = source;
     }
 
-    IFObject.inherit(IFVertexPixelAligner, IFVertexSource);
+    GObject.inherit(GVertexPixelAligner, GVertexSource);
 
     /**
-     * @type {IFVertexSource}
+     * @type {GVertexSource}
      * @private
      */
-    IFVertexPixelAligner.prototype._source = null;
+    GVertexPixelAligner.prototype._source = null;
 
     /** @override */
-    IFVertexPixelAligner.prototype.rewindVertices = function (index) {
+    GVertexPixelAligner.prototype.rewindVertices = function (index) {
         return this._source.rewindVertices(index);
     };
 
     /** override */
-    IFVertexPixelAligner.prototype.readVertex = function (vertex) {
+    GVertexPixelAligner.prototype.readVertex = function (vertex) {
         if (this._source.readVertex(vertex)) {
-            if (vertex.command >= IFVertex.Command.Move && vertex.command < IFVertex.Command.Close) {
+            if (vertex.command >= GVertex.Command.Move && vertex.command < GVertex.Command.Close) {
                 vertex.x = Math.floor(vertex.x) + 0.5;
                 vertex.y = Math.floor(vertex.y) + 0.5;
             }
@@ -38,9 +38,9 @@
     };
 
     /** @override */
-    IFVertexPixelAligner.prototype.toString = function () {
-        return "[Object IFVertexPixelAligner]";
+    GVertexPixelAligner.prototype.toString = function () {
+        return "[Object GVertexPixelAligner]";
     };
 
-    _.IFVertexPixelAligner = IFVertexPixelAligner;
+    _.GVertexPixelAligner = GVertexPixelAligner;
 })(this);

@@ -8,10 +8,10 @@
      */
     function GFitCurrentLayerAction() {
     };
-    IFObject.inherit(GFitCurrentLayerAction, GAction);
+    GObject.inherit(GFitCurrentLayerAction, GAction);
 
     GFitCurrentLayerAction.ID = 'view.zoom.fit-current-layer';
-    GFitCurrentLayerAction.TITLE = new IFLocale.Key(GFitCurrentLayerAction, "title");
+    GFitCurrentLayerAction.TITLE = new GLocale.Key(GFitCurrentLayerAction, "title");
 
     /**
      * @override

@@ -1,12 +1,12 @@
 (function (_) {
     /**
      * A class representing a bitmap
-     * @param {Number|Image|HTMLImageElement|IFPaintCanvas|HtmlCanvasElement|CanvasRenderingContext2D} sourceOrWidth
+     * @param {Number|Image|HTMLImageElement|GPaintCanvas|HtmlCanvasElement|CanvasRenderingContext2D} sourceOrWidth
      * @param {Number} height
-     * @class IFBitmap
+     * @class GBitmap
      * @constructor
      */
-    function IFBitmap(sourceOrWidth, height) {
+    function GBitmap(sourceOrWidth, height) {
         var bitmapWidth = 0;
         var bitmapHeight = 0;
         var canvas = null;
@@ -19,7 +19,7 @@
             bitmapWidth = sourceOrWidth.naturalWidth;
             bitmapHeight = sourceOrWidth.naturalHeight;
             content = sourceOrWidth;
-        } else if (sourceOrWidth instanceof IFPaintCanvas) {
+        } else if (sourceOrWidth instanceof GPaintCanvas) {
             canvas = sourceOrWidth._canvasContext.canvas;
         } else if (sourceOrWidth instanceof HTMLCanvasElement) {
             canvas = sourceOrWidth;
@@ -49,7 +49,7 @@
     /**
      * @enum
      */
-    IFBitmap.ImageType = {
+    GBitmap.ImageType = {
         // args: none
         PNG: 'image/png',
 
@@ -62,19 +62,19 @@
      * @type {HtmlCanvasElement}
      * @private
      */
-    IFBitmap.prototype._canvas = null;
+    GBitmap.prototype._canvas = null;
 
     /**
      * The underlying, 2d canvas context
      * @type {CanvasRenderingContext2D}
      */
-    IFBitmap.prototype._canvasContext = null;
+    GBitmap.prototype._canvasContext = null;
 
     /**
      * Returns the width of this bitmap
      * @return {Number}
      */
-    IFBitmap.prototype.getWidth = function () {
+    GBitmap.prototype.getWidth = function () {
         return this._canvas.width;
     };
 
@@ -82,18 +82,18 @@
      * Returns the height of this bitmap
      * @return {Number}
      */
-    IFBitmap.prototype.getHeight = function () {
+    GBitmap.prototype.getHeight = function () {
         return this._canvas.height;
     };
 
     /**
      * Converts and returns the underlying bitmap into an image
      * returned as a base64 encoded data-url
-     * @param {IFBitmap.ImageType} imageType the image type you want
+     * @param {GBitmap.ImageType} imageType the image type you want
      * @param {*} args optional arguments, see image-type
      * @return {String}
      */
-    IFBitmap.prototype.toImageDataUrl = function (imageType, args) {
+    GBitmap.prototype.toImageDataUrl = function (imageType, args) {
         var params = [imageType];
 
         if (args) {
@@ -106,12 +106,12 @@
     /**
      * Converts and returns the underlying bitmap into an image
      * returned as an ArrayBuffer
-     * @param {IFBitmap.ImageType} imageType the image type you want
+     * @param {GBitmap.ImageType} imageType the image type you want
      * @param {Function} available the callback function called with
      * the ArrayBuffer as parameter when available
      * @param {*} args optional arguments, see image-type
      */
-    IFBitmap.prototype.toImageBuffer = function (imageType, available, args) {
+    GBitmap.prototype.toImageBuffer = function (imageType, available, args) {
         var params = [
             function (blob) {
                 var reader = new FileReader();
@@ -133,18 +133,18 @@
     /**
      * Returns an exact copy of this bitmap that can be manipulated
      * independantly from the source bitmap
-     * @param {IFRect} [area] optional area defining the cloned bitmap data,
+     * @param {GRect} [area] optional area defining the cloned bitmap data,
      * if not provided or null, takes the whole bitmap by default
-     * @return {IFBitmap}
+     * @return {GBitmap}
      */
-    IFBitmap.prototype.clone = function (area) {
-        area = area || new IFRect(0, 0, this.getWidth(), this.getHeight());
+    GBitmap.prototype.clone = function (area) {
+        area = area || new GRect(0, 0, this.getWidth(), this.getHeight());
 
         if (area.isEmpty()) {
             return null;
         }
 
-        var clone = new IFBitmap(area.getWidth(), area.getHeight());
+        var clone = new GBitmap(area.getWidth(), area.getHeight());
         var imageData = this._canvasContext.getImageData(area.getX(), area.getY(), area.getWidth(), area.getHeight());
         clone._canvasContext.putImageData(imageData, 0, 0);
 
@@ -158,13 +158,13 @@
      * the width untouched
      * @param {Number} height the new height, set to null or zero to leave
      * the width untouched
-     * @param {IFRect.Side} [pivot] the pivot to resize from. Defaults to top-left
+     * @param {GRect.Side} [pivot] the pivot to resize from. Defaults to top-left
      * and thus expands in right-bottom direction.
      */
-    IFBitmap.prototype.resize = function (width, height, pivot) {
+    GBitmap.prototype.resize = function (width, height, pivot) {
         width = width || 0;
         height = height || 0;
-        pivot = pivot || IFRect.Side.TOP_LEFT;
+        pivot = pivot || GRect.Side.TOP_LEFT;
 
         if (width || height) {
             var dw = width - this.getWidth();
@@ -177,20 +177,20 @@
 
             if (dw !== this.getWidth()) {
                 switch (pivot) {
-                    case IFRect.Side.TOP_LEFT:
-                    case IFRect.Side.LEFT_CENTER:
-                    case IFRect.Side.BOTTOM_LEFT:
+                    case GRect.Side.TOP_LEFT:
+                    case GRect.Side.LEFT_CENTER:
+                    case GRect.Side.BOTTOM_LEFT:
                         right = dw;
                         break;
-                    case IFRect.Side.TOP_CENTER:
-                    case IFRect.Side.CENTER:
-                    case IFRect.Side.BOTTOM_CENTER:
+                    case GRect.Side.TOP_CENTER:
+                    case GRect.Side.CENTER:
+                    case GRect.Side.BOTTOM_CENTER:
                         left = -dw / 2;
                         right = dw / 2;
                         break;
-                    case IFRect.Side.TOP_RIGHT:
-                    case IFRect.Side.RIGHT_CENTER:
-                    case IFRect.Side.BOTTOM_RIGHT:
+                    case GRect.Side.TOP_RIGHT:
+                    case GRect.Side.RIGHT_CENTER:
+                    case GRect.Side.BOTTOM_RIGHT:
                         left = -dw;
                         break;
                 }
@@ -198,22 +198,22 @@
 
             if (dh !== this.getHeight()) {
                 switch (pivot) {
-                    case IFRect.Side.TOP_LEFT:
-                    case IFRect.Side.TOP_CENTER:
-                    case IFRect.Side.TOP_RIGHT:
+                    case GRect.Side.TOP_LEFT:
+                    case GRect.Side.TOP_CENTER:
+                    case GRect.Side.TOP_RIGHT:
                         bottom = dh;
                         break;
 
-                    case IFRect.Side.LEFT_CENTER:
-                    case IFRect.Side.CENTER:
-                    case IFRect.Side.RIGHT_CENTER:
+                    case GRect.Side.LEFT_CENTER:
+                    case GRect.Side.CENTER:
+                    case GRect.Side.RIGHT_CENTER:
                         top = -dh / 2;
                         bottom = dh / 2;
                         break;
 
-                    case IFRect.Side.BOTTOM_LEFT:
-                    case IFRect.Side.BOTTOM_CENTER:
-                    case IFRect.Side.BOTTOM_RIGHT:
+                    case GRect.Side.BOTTOM_LEFT:
+                    case GRect.Side.BOTTOM_CENTER:
+                    case GRect.Side.BOTTOM_RIGHT:
                         top = -dh;
                         break;
                 }
@@ -234,7 +234,7 @@
      * @param {Number} right delta from right-side
      * @param {Number} bottom delta from bottom-side
      */
-    IFBitmap.prototype.crop = function (left, top, right, bottom) {
+    GBitmap.prototype.crop = function (left, top, right, bottom) {
         left = left || 0;
         top = top || 0;
         right = right || 0;
@@ -252,7 +252,7 @@
     /**
      * Trims this bitmap by removing all surrounding transparent pixels
      */
-    IFBitmap.prototype.trim = function () {
+    GBitmap.prototype.trim = function () {
         var imageData = this._canvasContext.getImageData(0, 0, this.getWidth(), this.getHeight());
         var dataLength = imageData.data.length;
         var bounds = {top: null, left: null, right: null, bottom: null};
@@ -296,11 +296,11 @@
      * This is called to modify the underlying bitmap data
      * @param {Function} modifier the modifier function retrieving the bitmap data (32BPP RGBA), the width and the height
      * @param {*} [modifierArgs] optional modifier args supplied to the modifier as last argument
-     * @param {IFRect} [area] optional area defining the bitmap data to be manipulated,
+     * @param {GRect} [area] optional area defining the bitmap data to be manipulated,
      * if not provided or null, takes the whole bitmap by default
      */
-    IFBitmap.prototype.modifyPixels = function (modifier, modifierArgs, area) {
-        area = area || new IFRect(0, 0, this.getWidth(), this.getHeight());
+    GBitmap.prototype.modifyPixels = function (modifier, modifierArgs, area) {
+        area = area || new GRect(0, 0, this.getWidth(), this.getHeight());
 
         if (area.isEmpty()) {
             return;
@@ -320,17 +320,17 @@
      * Apply a filter to this bitmap
      * @param {*} filter the filter class to be applied
      * @param {*} [filterArgs] additional arguments supplied to the filter
-     * @param {IFRect} [extents] optional extents, if not provided or null,
+     * @param {GRect} [extents] optional extents, if not provided or null,
      * takes the whole bitmap by default
      */
-    IFBitmap.prototype.applyFilter = function (filter, filterArgs, extents) {
+    GBitmap.prototype.applyFilter = function (filter, filterArgs, extents) {
         this.modifyPixels(filter.apply, filterArgs, extents);
     };
 
     /** @override */
-    IFBitmap.prototype.toString = function () {
-        return "[Object IFBitmap]";
+    GBitmap.prototype.toString = function () {
+        return "[Object GBitmap]";
     };
 
-    _.IFBitmap = IFBitmap;
+    _.GBitmap = GBitmap;
 })(this);

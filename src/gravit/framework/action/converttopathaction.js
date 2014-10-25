@@ -8,10 +8,10 @@
      */
     function GConvertToPathAction() {
     };
-    IFObject.inherit(GConvertToPathAction, GAction);
+    GObject.inherit(GConvertToPathAction, GAction);
 
     GConvertToPathAction.ID = 'modify.converttopath';
-    GConvertToPathAction.TITLE = new IFLocale.Key(GConvertToPathAction, "title");
+    GConvertToPathAction.TITLE = new GLocale.Key(GConvertToPathAction, "title");
 
     /**
      * @override
@@ -58,8 +58,8 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof IFPathBase && !(selection[i] instanceof IFPath) ||
-                            selection[i].hasMixin(IFVertexSource)) {
+                    if (selection[i] instanceof GPathBase && !(selection[i] instanceof GPath) ||
+                            selection[i].hasMixin(GVertexSource)) {
 
                         return true;
                     }

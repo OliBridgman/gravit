@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * A base editor for shapes
-     * @param {IFBlock} block the block this editor works on
-     * @class IFBlockEditor
-     * @extends IFElementEditor
+     * @param {GBlock} block the block this editor works on
+     * @class GBlockEditor
+     * @extends GElementEditor
      * @constructor
      */
-    function IFBlockEditor(block) {
-        IFElementEditor.call(this, block);
+    function GBlockEditor(block) {
+        GElementEditor.call(this, block);
     };
-    IFObject.inherit(IFBlockEditor, IFElementEditor);
+    GObject.inherit(GBlockEditor, GElementEditor);
 
-    IFBlockEditor.Flag = {
+    GBlockEditor.Flag = {
         /**
          * The editor supports edge resize handles
          * @type Number
@@ -31,21 +31,21 @@
         ResizeAll: (1 << 10) | (1 << 11)
     };
 
-    IFBlockEditor.RESIZE_HANDLE_PART_ID = IFUtil.uuid();
+    GBlockEditor.RESIZE_HANDLE_PART_ID = GUtil.uuid();
 
     /** @override */
-    IFBlockEditor.prototype.getBBoxMargin = function () {
+    GBlockEditor.prototype.getBBoxMargin = function () {
         if (this._showResizeHandles()) {
-            return IFElementEditor.OPTIONS.annotationSizeSmall + 1;
+            return GElementEditor.OPTIONS.annotationSizeSmall + 1;
         }
-        return IFElementEditor.prototype.getBBoxMargin.call(this);
+        return GElementEditor.prototype.getBBoxMargin.call(this);
     };
 
     /** @override */
-    IFBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
-        IFElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
+    GBlockEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GElementEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
-        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
+        if (partId === GBlockEditor.RESIZE_HANDLE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
             newPos = guides.mapPoint(newPos);
             var delta = newPos.subtract(partData.point);
@@ -56,16 +56,16 @@
     };
 
     /** @override */
-    IFBlockEditor.prototype.applyPartMove = function (partId, partData) {
-        if (partId === IFBlockEditor.RESIZE_HANDLE_PART_ID) {
+    GBlockEditor.prototype.applyPartMove = function (partId, partData) {
+        if (partId === GBlockEditor.RESIZE_HANDLE_PART_ID) {
             this.applyTransform(this._element);
         }
-        IFElementEditor.prototype.applyPartMove.call(this, partId, partData);
+        GElementEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */
-    IFBlockEditor.prototype.paint = function (transform, context) {
-        if (this.hasFlag(IFElementEditor.Flag.Selected) || this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+    GBlockEditor.prototype.paint = function (transform, context) {
+        if (this.hasFlag(GElementEditor.Flag.Selected) || this.hasFlag(GElementEditor.Flag.Highlighted)) {
             var targetTransform = transform;
 
             // Pre-multiply internal transformation if any
@@ -79,7 +79,7 @@
             // Paint resize handles if desired
             if (this._showResizeHandles()) {
                 this._iterateResizeHandles(function (point, side) {
-                    this._paintAnnotation(context, transform, point, IFElementEditor.Annotation.Rectangle, false, true);
+                    this._paintAnnotation(context, transform, point, GElementEditor.Annotation.Rectangle, false, true);
                 }.bind(this), transform);
             }
 
@@ -92,13 +92,13 @@
     };
 
     /** @override */
-    IFBlockEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    GBlockEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         // Hit-Test our resize handles if any
         if (this._showResizeHandles()) {
             var result = null;
             this._iterateResizeHandles(function (point, side) {
                 if (this._getAnnotationBBox(transform, point).containsPoint(location)) {
-                    result = new IFElementEditor.PartInfo(this, IFBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
+                    result = new GElementEditor.PartInfo(this, GBlockEditor.RESIZE_HANDLE_PART_ID, {side: side, point: point}, true, false);
                     return true;
                 }
             }.bind(this), transform);
@@ -113,21 +113,21 @@
 
     /**
      * Called for subclasses to do some custom painting beneath of the outline
-     * @param {IFTransform} transform the current transformation in use
-     * @param {IFPaintContext} context the paint context to paint on
+     * @param {GTransform} transform the current transformation in use
+     * @param {GPaintContext} context the paint context to paint on
      * @private
      */
-    IFBlockEditor.prototype._prePaint = function (transform, context) {
+    GBlockEditor.prototype._prePaint = function (transform, context) {
         // NO-OP
     };
 
     /**
      * Called for subclasses to do some custom painting on top of the outline
-     * @param {IFTransform} transform the current transformation in use
-     * @param {IFPaintContext} context the paint context to paint on
+     * @param {GTransform} transform the current transformation in use
+     * @param {GPaintContext} context the paint context to paint on
      * @private
      */
-    IFBlockEditor.prototype._postPaint = function (transform, context) {
+    GBlockEditor.prototype._postPaint = function (transform, context) {
         // NO-OP
     };
 
@@ -135,18 +135,18 @@
      * @returns {Boolean}
      * @private
      */
-    IFBlockEditor.prototype._showResizeHandles = function () {
-        return this._showAnnotations() && (this.hasFlag(IFBlockEditor.Flag.ResizeEdges) || this.hasFlag(IFBlockEditor.Flag.ResizeCenters));
+    GBlockEditor.prototype._showResizeHandles = function () {
+        return this._showAnnotations() && (this.hasFlag(GBlockEditor.Flag.ResizeEdges) || this.hasFlag(GBlockEditor.Flag.ResizeCenters));
     };
 
     /**
      * Iterate all resize handles
-     * @param {Function(point: IFPoint, side: IFRect.Side)} iterator
+     * @param {Function(point: GPoint, side: GRect.Side)} iterator
      * the iterator receiving the parameters. If this returns true then the iteration will be stopped.
-     * @param {IFTransform} transform - current view transformation to check that shape has enough space
+     * @param {GTransform} transform - current view transformation to check that shape has enough space
      * to show resize handles
      */
-    IFBlockEditor.prototype._iterateResizeHandles = function (iterator, transform) {
+    GBlockEditor.prototype._iterateResizeHandles = function (iterator, transform) {
         var bbox = this.getPaintElement().getGeometryBBox();
 
         if (bbox && !bbox.isEmpty()) {
@@ -154,19 +154,19 @@
 
             var transformedBBox = transform ? transform.mapRect(bbox) : bbox;
 
-            if (this.hasFlag(IFBlockEditor.Flag.ResizeEdges) &&
-                    transformedBBox.getHeight() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 2 &&
-                    transformedBBox.getWidth() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 2) {
+            if (this.hasFlag(GBlockEditor.Flag.ResizeEdges) &&
+                    transformedBBox.getHeight() > (GElementEditor.OPTIONS.annotationSizeSmall + 2) * 2 &&
+                    transformedBBox.getWidth() > (GElementEditor.OPTIONS.annotationSizeSmall + 2) * 2) {
 
-                sides = sides.concat([IFRect.Side.TOP_LEFT, IFRect.Side.TOP_RIGHT, IFRect.Side.BOTTOM_LEFT, IFRect.Side.BOTTOM_RIGHT]);
+                sides = sides.concat([GRect.Side.TOP_LEFT, GRect.Side.TOP_RIGHT, GRect.Side.BOTTOM_LEFT, GRect.Side.BOTTOM_RIGHT]);
             }
 
-            if (this.hasFlag(IFBlockEditor.Flag.ResizeCenters)) {
-                if (transformedBBox.getHeight() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
-                    sides = sides.concat([IFRect.Side.RIGHT_CENTER, IFRect.Side.LEFT_CENTER]);
+            if (this.hasFlag(GBlockEditor.Flag.ResizeCenters)) {
+                if (transformedBBox.getHeight() > (GElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
+                    sides = sides.concat([GRect.Side.RIGHT_CENTER, GRect.Side.LEFT_CENTER]);
                 }
-                if (transformedBBox.getWidth() > (IFElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
-                    sides = sides.concat([IFRect.Side.TOP_CENTER, IFRect.Side.BOTTOM_CENTER]);
+                if (transformedBBox.getWidth() > (GElementEditor.OPTIONS.annotationSizeSmall + 2) * 3) {
+                    sides = sides.concat([GRect.Side.TOP_CENTER, GRect.Side.BOTTOM_CENTER]);
                 }
             }
 
@@ -182,13 +182,13 @@
 
     /**
      * Paint bbox outline of underlying element
-     * @param {IFTransform} transform the current transformation in use
-     * @param {IFPaintContext} context the paint context to paint on
-     * @param {IFColor} [color] the color for the outline. If not provided,
+     * @param {GTransform} transform the current transformation in use
+     * @param {GPaintContext} context the paint context to paint on
+     * @param {GColor} [color] the color for the outline. If not provided,
      * uses either selection or highlight color depending on the current state.
      * @private
      */
-    IFBlockEditor.prototype._paintBBoxOutline = function (transform, context, color) {
+    GBlockEditor.prototype._paintBBoxOutline = function (transform, context, color) {
         // Calculate transformed geometry bbox
         var sourceRect = this._element.getGeometryBBox();
         var transformedRect = transform.mapRect(sourceRect);
@@ -202,7 +202,7 @@
 
 
             if (!color) {
-                if (this.hasFlag(IFElementEditor.Flag.Highlighted)) {
+                if (this.hasFlag(GElementEditor.Flag.Highlighted)) {
                     color = context.highlightOutlineColor;
                 } else {
                     color = context.selectionOutlineColor;
@@ -214,9 +214,9 @@
     };
 
     /** @override */
-    IFBlockEditor.prototype.toString = function () {
-        return "[Object IFBlockEditor]";
+    GBlockEditor.prototype.toString = function () {
+        return "[Object GBlockEditor]";
     };
 
-    _.IFBlockEditor = IFBlockEditor;
+    _.GBlockEditor = GBlockEditor;
 })(this);

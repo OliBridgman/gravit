@@ -9,7 +9,7 @@
     function GStyleProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GStyleProperties, GProperties);
+    GObject.inherit(GStyleProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,7 +24,7 @@
     GStyleProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
     GStyleProperties.prototype._elements = null;
@@ -53,7 +53,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var opacity = IFLength.parseEquationValue($(this).val());
+                        var opacity = GLength.parseEquationValue($(this).val());
                         if (opacity !== null && opacity >= 0.0 && opacity <= 100) {
                             self._assignProperty(property, opacity / 100);
                         } else {
@@ -144,7 +144,7 @@
                                 $(evt.target).gOverlay('close');
 
                                 // TODO : I18N
-                                IFEditor.tryRunTransaction(this._elements[0], function () {
+                                GEditor.tryRunTransaction(this._elements[0], function () {
                                     for (var i = 0; i < this._elements.length; ++i) {
                                         this._elements[i].assignStyleFrom(style);
                                         this._elements[i].setProperty('sref', style.getProperty('_sdf') !== null ? null : style.getReferenceId());
@@ -168,14 +168,14 @@
                         .addClass('fa fa-plus'))
                     .on('click', function () {
                         var scene = this._document.getScene();
-                        var newStyle = new IFStyle();
+                        var newStyle = new GStyle();
                         newStyle.setProperty('name', 'Style-' + (scene.getStyleCollection().queryCount('> style')).toString());
                         newStyle.setProperty('ps', this._elements[0].getStylePropertySets().slice());
                         newStyle.assignStyleFrom(this._elements[0]);
                         new GStyleDialog(newStyle).open(function (result, assign) {
                             if (result) {
                                 // TODO : I18N
-                                IFEditor.tryRunTransaction(scene, function () {
+                                GEditor.tryRunTransaction(scene, function () {
                                     assign();
                                     scene.getStyleCollection().appendChild(newStyle);
                                     for (var i = 0; i < this._elements.length; ++i) {
@@ -202,7 +202,7 @@
 
                         if (stylesToUpdate.length) {
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(stylesToUpdate[0].element, function () {
+                            GEditor.tryRunTransaction(stylesToUpdate[0].element, function () {
                                 for (var i = 0; i < stylesToUpdate.length; ++i) {
                                     stylesToUpdate[i].style.assignStyleFrom(stylesToUpdate[i].element);
                                 }
@@ -217,7 +217,7 @@
                         .addClass('fa fa-remove'))
                     .on('click', function () {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(this._elements[0], function () {
+                        GEditor.tryRunTransaction(this._elements[0], function () {
                             for (var i = 0; i < this._elements.length; ++i) {
                                 var style = this._elements[i].getReferencedStyle();
                                 if (style) {
@@ -234,7 +234,7 @@
                         .addClass('fa fa-chain-broken'))
                     .on('click', function () {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(this._elements[0], function () {
+                        GEditor.tryRunTransaction(this._elements[0], function () {
                             for (var i = 0; i < this._elements.length; ++i) {
                                 this._elements[i].setProperty('sref', null);
                             }
@@ -255,7 +255,7 @@
                                     var style = this._elements[0].getReferencedStyle();
                                     if (style) {
                                         // TODO : I18N
-                                        IFEditor.tryRunTransaction(style, function () {
+                                        GEditor.tryRunTransaction(style, function () {
                                             style.disconnectStyle();
                                             style.getParent().removeChild(style);
                                         }, 'Delete Style');
@@ -271,15 +271,15 @@
                         .addClass('fa fa-thumb-tack'))
                     .on('click', function () {
                         var defStyle = null;
-                        if (this._elements[0] instanceof IFText) {
+                        if (this._elements[0] instanceof GText) {
                             defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
-                        } else if (this._elements[0] instanceof IFShape) {
+                        } else if (this._elements[0] instanceof GShape) {
                             defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="shape"]');
                         }
 
                         if (defStyle) {
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(defStyle, function () {
+                            GEditor.tryRunTransaction(defStyle, function () {
                                 defStyle.assignStyleFrom(this._elements[0]);
                             }.bind(this), 'Change Default Style');
                         }
@@ -289,20 +289,20 @@
     /** @override */
     GStyleProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFElement.Stylable) && elements[i].getStylePropertySets().indexOf(IFStylable.PropertySet.Style) >= 0) {
+            if (elements[i].hasMixin(GElement.Stylable) && elements[i].getStylePropertySets().indexOf(GStylable.PropertySet.Style) >= 0) {
                 this._elements.push(elements[i]);
             }
         }
 
         if (this._elements.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -311,7 +311,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GStyleProperties.prototype._afterPropertiesChange = function (event) {
@@ -328,8 +328,8 @@
         var styledElement = this._elements[0];
 
         this._panel.find('[data-property="_sbl"]').val(styledElement.getProperty('_sbl'));
-        this._panel.find('[data-property="_sfop"]').val(IFUtil.formatNumber(styledElement.getProperty('_sfop') * 100, 0));
-        this._panel.find('[data-property="_stop"]').val(IFUtil.formatNumber(styledElement.getProperty('_stop') * 100, 0));
+        this._panel.find('[data-property="_sfop"]').val(GUtil.formatNumber(styledElement.getProperty('_sfop') * 100, 0));
+        this._panel.find('[data-property="_stop"]').val(GUtil.formatNumber(styledElement.getProperty('_stop') * 100, 0));
 
         var style = styledElement.getReferencedStyle();
         // TODO : I18N

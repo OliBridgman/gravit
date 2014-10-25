@@ -1,98 +1,98 @@
 (function (_) {
     /**
      * An object representing a key input event.
-     * @class IFKeyEvent
-     * @extends IFInputEvent
+     * @class GKeyEvent
+     * @extends GInputEvent
      * @constructor
      * @version 1.0
      */
-    function IFKeyEvent() {
+    function GKeyEvent() {
     }
 
-    IFObject.inherit(IFKeyEvent, IFInputEvent);
+    GObject.inherit(GKeyEvent, GInputEvent);
 
     /**
-     * The key for the key event. Might either be one of IFKey.Constant (number)
+     * The key for the key event. Might either be one of GKey.Constant (number)
      * or a String if printable character key
      * @type {String|Number}
      * @version 1.0
-     * @see IFKey.Constant
+     * @see GKey.Constant
      */
-    IFKeyEvent.prototype.key = null;
+    GKeyEvent.prototype.key = null;
 
     /** @override */
-    IFKeyEvent.prototype.toString = function () {
-        return "[Object IFKeyEvent(" + this._paramsToString() + ")]";
+    GKeyEvent.prototype.toString = function () {
+        return "[Object GKeyEvent(" + this._paramsToString() + ")]";
     };
 
     /** @override */
-    IFKeyEvent.prototype.IFKeyEvent = function () {
+    GKeyEvent.prototype.GKeyEvent = function () {
         return "key=" + this.key;
     }
 
-    _.IFKeyEvent = IFKeyEvent;
+    _.GKeyEvent = GKeyEvent;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFKeyEvent.Down
+    // GKeyEvent.Down
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key down event.
-     * @class IFKeyEvent.Down
-     * @extends IFKeyEvent
+     * @class GKeyEvent.Down
+     * @extends GKeyEvent
      * @constructor
      * @version 1.0
      */
-    IFKeyEvent.Down = function () {
+    GKeyEvent.Down = function () {
     }
-    IFObject.inherit(IFKeyEvent.Down, IFKeyEvent);
+    GObject.inherit(GKeyEvent.Down, GKeyEvent);
 
 
     /** @override */
-    IFKeyEvent.Down.prototype.toString = function () {
-        return "[Object IFKeyEvent.Down(" + this._paramsToString() + ")]";
+    GKeyEvent.Down.prototype.toString = function () {
+        return "[Object GKeyEvent.Down(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFKeyEvent.Release
+    // GKeyEvent.Release
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key release event.
-     * @class IFKeyEvent.Release
-     * @extends IFKeyEvent
+     * @class GKeyEvent.Release
+     * @extends GKeyEvent
      * @constructor
      * @version 1.0
      */
-    IFKeyEvent.Release = function () {
+    GKeyEvent.Release = function () {
     }
-    IFObject.inherit(IFKeyEvent.Release, IFKeyEvent);
+    GObject.inherit(GKeyEvent.Release, GKeyEvent);
 
 
     /** @override */
-    IFKeyEvent.Release.prototype.toString = function () {
-        return "[Object IFKeyEvent.Release(" + this._paramsToString() + ")]";
+    GKeyEvent.Release.prototype.toString = function () {
+        return "[Object GKeyEvent.Release(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFKeyEvent.Press
+    // GKeyEvent.Press
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a key press event.
-     * @class IFKeyEvent.Press
-     * @extends IFKeyEvent
+     * @class GKeyEvent.Press
+     * @extends GKeyEvent
      * @constructor
      * @version 1.0
      */
-    IFKeyEvent.Press = function () {
+    GKeyEvent.Press = function () {
     }
-    IFObject.inherit(IFKeyEvent.Press, IFKeyEvent);
+    GObject.inherit(GKeyEvent.Press, GKeyEvent);
 
 
     /** @override */
-    IFKeyEvent.Press.prototype.toString = function () {
-        return "[Object IFKeyEvent.Press(" + this._paramsToString() + ")]";
+    GKeyEvent.Press.prototype.toString = function () {
+        return "[Object GKeyEvent.Press(" + this._paramsToString() + ")]";
     };
 
 })(this);

@@ -5,44 +5,44 @@
 
     /**
      * A base class for patterns like color, gradients, etc.
-     * @mixin IFGradient
+     * @mixin GGradient
      * @constructor
      */
-    function IFPattern() {
+    function GPattern() {
     }
 
     /**
      * Pattern's mime-type
      * @type {string}
      */
-    IFPattern.MIME_TYPE = "application/infinity+pattern";
+    GPattern.MIME_TYPE = "application/infinity+pattern";
 
-    IFPattern.inherit = function (identifier, patternClass, patternSuperClass) {
-        IFObject.inherit(patternClass, patternSuperClass ? patternSuperClass : IFPattern);
-        IFPattern._idClassMap[identifier] = patternClass;
+    GPattern.inherit = function (identifier, patternClass, patternSuperClass) {
+        GObject.inherit(patternClass, patternSuperClass ? patternSuperClass : GPattern);
+        GPattern._idClassMap[identifier] = patternClass;
     };
 
-    IFPattern._idClassMap = {};
+    GPattern._idClassMap = {};
 
-    IFPattern.smartCreate = function (patternClass, templatePattern) {
+    GPattern.smartCreate = function (patternClass, templatePattern) {
         if (!patternClass) {
             return null;
-        } else if (patternClass === IFBackground) {
-            return new IFBackground();
-        } else if (patternClass === IFGradient) {
+        } else if (patternClass === GBackground) {
+            return new GBackground();
+        } else if (patternClass === GGradient) {
             var stops = [
                 {opacity: 1, position: 0},
                 {opacity: 1, position: 1.0},
-                {color: IFRGBColor.WHITE, position: 0},
-                {color: IFRGBColor.BLACK, position: 1.0}];
+                {color: GRGBColor.WHITE, position: 0},
+                {color: GRGBColor.BLACK, position: 1.0}];
 
-            if (templatePattern instanceof IFColor && !IFUtil.equals(templatePattern.toScreen(), stops[3].color.toScreen())) {
+            if (templatePattern instanceof GColor && !GUtil.equals(templatePattern.toScreen(), stops[3].color.toScreen())) {
                 stops[2].color = templatePattern;
             }
 
-            return new IFLinearGradient(stops);
-        } else if (patternClass === IFColor) {
-            if (templatePattern instanceof IFGradient) {
+            return new GLinearGradient(stops);
+        } else if (patternClass === GColor) {
+            if (templatePattern instanceof GGradient) {
                 var stops = templatePattern.getStops();
                 for (var i = 0; i < stops.length; ++i) {
                     if (stops[i].hasOwnProperty('color')) {
@@ -51,7 +51,7 @@
                 }
             }
 
-            return new IFRGBColor();
+            return new GRGBColor();
         } else {
             throw new Error('Unknown pattern class.');
         }
@@ -59,11 +59,11 @@
 
     /**
      * Convert a pattern into a CSS-Compatible background string
-     * @param {IFPattern} pattern
+     * @param {GPattern} pattern
      * @param {Number} [opacity] optional opacity (0..1), defaults to 1
      * @returns {*}
      */
-    IFPattern.asCSSBackground = function (pattern, opacity) {
+    GPattern.asCSSBackground = function (pattern, opacity) {
         opacity = typeof opacity === 'number' ? opacity : 1;
         var result = SVG_CHESSBOARD_CSS_URL;
         if (pattern) {
@@ -74,13 +74,13 @@
 
     /**
      * Serialize a pattern
-     * @param {IFPattern} pattern
+     * @param {GPattern} pattern
      * @returns {String}
      */
-    IFPattern.serialize = function (pattern) {
+    GPattern.serialize = function (pattern) {
         if (pattern) {
-            for (var id in IFPattern._idClassMap) {
-                if (pattern.constructor === IFPattern._idClassMap[id]) {
+            for (var id in GPattern._idClassMap) {
+                if (pattern.constructor === GPattern._idClassMap[id]) {
                     return id + '#' + pattern.serialize();
                 }
             }
@@ -93,15 +93,15 @@
     /**
      * Deserialize a pattern string
      * @param {String} string
-     * @returns {IFPattern}
+     * @returns {GPattern}
      */
-    IFPattern.deserialize = function (string) {
+    GPattern.deserialize = function (string) {
         if (string) {
             var hash = string.indexOf('#');
             if (hash > 0) {
                 var id = string.substr(0, hash);
                 if (id && id.length > 0) {
-                    var clazz = IFPattern._idClassMap[id];
+                    var clazz = GPattern._idClassMap[id];
                     if (!clazz) {
                         throw new Error('Unregistered Pattern Class.');
                     }
@@ -120,7 +120,7 @@
      * @param {Number} opacity
      * @returns {string}
      */
-    IFPattern.prototype.asCSSBackground = function (opacity) {
+    GPattern.prototype.asCSSBackground = function (opacity) {
         throw new Error('Not Supported');
     };
 
@@ -128,7 +128,7 @@
      * Called to serialize the pattern into a string
      * @return {String} the serialized string
      */
-    IFPattern.prototype.serialize = function () {
+    GPattern.prototype.serialize = function () {
         return '';
     };
 
@@ -136,17 +136,17 @@
      * Called to deserialize the pattern from a string
      * @param {String} string the string to deserialize the pattern from
      */
-    IFPattern.prototype.deserialize = function (string) {
+    GPattern.prototype.deserialize = function (string) {
         // NO-OP
     };
 
     /**
      * Should return a clone of this pattern
-     * @return {IFPattern}
+     * @return {GPattern}
      */
-    IFPattern.prototype.clone = function () {
+    GPattern.prototype.clone = function () {
         throw new Error('Not Supported');
     };
 
-    _.IFPattern = IFPattern;
+    _.GPattern = GPattern;
 })(this);

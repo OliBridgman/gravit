@@ -1,16 +1,16 @@
 (function (_) {
 
     /**
-     * @class IFUtil
+     * @class GUtil
      * @constructor
      * @version 1.0
      */
-    function IFUtil() {
+    function GUtil() {
     };
 
     /**
      * This is equal to the Array.indexOf function except that for
-     * comparing the values in the array, the IFUtil.equals function
+     * comparing the values in the array, the GUtil.equals function
      * is used instead
      * @param {Array} array the array to get an index for an element
      * @param {*} element the element to get the index for
@@ -19,9 +19,9 @@
      * @return {Number} a value less than zero if element is not found or
      * the index of the given element in the given array
      */
-    IFUtil.indexOfEquals = function (array, element, objectByValue) {
+    GUtil.indexOfEquals = function (array, element, objectByValue) {
         for (var i = 0; i < array.length; ++i) {
-            if (IFUtil.equals(array[i], element, objectByValue)) {
+            if (GUtil.equals(array[i], element, objectByValue)) {
                 return i;
             }
         }
@@ -32,7 +32,7 @@
      * Compare two objects for equality by their values. Also takes care of null parameters.
      * If the function can not compare the type by value then it'll return false as if
      * the two parameters wouldn't be equal.
-     * Currently supported types: Object, Boolean, Number, String, Array, Date, IFRect, IFPoint, IFTransform.
+     * Currently supported types: Object, Boolean, Number, String, Array, Date, GRect, GPoint, GTransform.
      * For objects this will iterate only the object's own properties to an unnested deepness so
      * take care in using this function for highly complex object structures.
      * For numbers, the epsilon comparison will be used so that very small differences in numbers
@@ -43,7 +43,7 @@
      * not by their reference. Defaults to false if not provided.
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    IFUtil.equals = function (left, right, objectByValue) {
+    GUtil.equals = function (left, right, objectByValue) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -63,7 +63,7 @@
                     }
 
                     for (var i = 0; i < left.length; ++i) {
-                        if (!IFUtil.equals(left[i], right[i], objectByValue)) {
+                        if (!GUtil.equals(left[i], right[i], objectByValue)) {
                             return false;
                         }
                     }
@@ -84,7 +84,7 @@
                     if (isNaN(left) || isNaN(right)) {
                         return isNaN(left) && isNaN(right);
                     } else {
-                        return IFMath.isEqualEps(left, right);
+                        return GMath.isEqualEps(left, right);
                     }
                 } else if (leftType === 'string') {
                     return left.localeCompare(right) === 0;
@@ -97,12 +97,12 @@
                         var leftKeys = Object.keys(left);
                         var rightKeys = Object.keys(right);
 
-                        if (!IFUtil.equals(leftKeys, rightKeys, objectByValue)) {
+                        if (!GUtil.equals(leftKeys, rightKeys, objectByValue)) {
                             return false;
                         }
 
                         for (var i = 0; i < leftKeys.length; ++i) {
-                            if (!IFUtil.equals(left[leftKeys[i]], right[leftKeys[i]]), objectByValue) {
+                            if (!GUtil.equals(left[leftKeys[i]], right[leftKeys[i]]), objectByValue) {
                                 return false;
                             }
                         }
@@ -124,7 +124,7 @@
      * @param {Array<*>} array
      * @param {*} object
      */
-    IFUtil.containsObjectKey = function (array, object) {
+    GUtil.containsObjectKey = function (array, object) {
         for (var key in object) {
             if (array.indexOf(key) >= 0) {
                 return true;
@@ -133,7 +133,7 @@
         return false;
     };
 
-    IFUtil.dictionaryContainsValue = function (dictionary, value) {
+    GUtil.dictionaryContainsValue = function (dictionary, value) {
         for (var key in dictionary) {
             if (dictionary[key] === value) {
                 return true;
@@ -149,7 +149,7 @@
      * @param {Number} [len] the desired length of the uid, defaults to 32
      * @returns {String} more or less unique id depending on the desired length
      */
-    IFUtil.uuid = function (len) {
+    GUtil.uuid = function (len) {
         var chars = CHARS, uuid = [], i;
         var radix = chars.length;
         var len = len ? len : 32;
@@ -166,7 +166,7 @@
      * @param {String} with_ the string to replace with
      * @returns {String}
      */
-    IFUtil.replaceAll = function (string, what_, with_) {
+    GUtil.replaceAll = function (string, what_, with_) {
         var result = string;
         while (result.indexOf(what_) >= 0) {
             result = result.replace(what_, with_);
@@ -176,7 +176,7 @@
 
     // Makes unique sort of array elements, leaving only the elements from [a,b] segment
     // New array is written into newnums
-    IFUtil.uSortSegment = function (a, b, nums, newnums) {
+    GUtil.uSortSegment = function (a, b, nums, newnums) {
         var nElms = 0;
         nums.sort(function (s, k) {
             return s - k;
@@ -206,7 +206,7 @@
      * @param {String} html
      * @returns {String}
      */
-    IFUtil.escape = function (html) {
+    GUtil.escape = function (html) {
         return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     };
 
@@ -215,12 +215,12 @@
      * @param {String} html
      * @returns {String}
      */
-    IFUtil.unescape = function (html) {
-        var result = IFUtil.replaceAll(html, "&lt;", '<');
-        result = IFUtil.replaceAll(result, "&gt;", '>');
-        result = IFUtil.replaceAll(result, "&quot;", '"');
-        result = IFUtil.replaceAll(result, "&#039;", "'");
-        result = IFUtil.replaceAll(result, "&amp;", '&');
+    GUtil.unescape = function (html) {
+        var result = GUtil.replaceAll(html, "&lt;", '<');
+        result = GUtil.replaceAll(result, "&gt;", '>');
+        result = GUtil.replaceAll(result, "&quot;", '"');
+        result = GUtil.replaceAll(result, "&#039;", "'");
+        result = GUtil.replaceAll(result, "&amp;", '&');
         return result;
     };
 
@@ -229,7 +229,7 @@
      * @param {string} string
      * @returns {boolean}
      */
-    IFUtil.isNumeric = function (string) {
+    GUtil.isNumeric = function (string) {
         // parseFloat NaNs numeric-cast false positives (null|true|false|"")
         // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
         // subtraction forces infinities to NaN
@@ -245,10 +245,10 @@
      * if not provided defaults to ','
      * @returns {string}
      */
-    IFUtil.formatNumber = function (number, decimalPlaces, decimalSeparator) {
+    GUtil.formatNumber = function (number, decimalPlaces, decimalSeparator) {
         decimalSeparator = decimalSeparator || ',';
         decimalPlaces = typeof decimalPlaces === 'number' ? decimalPlaces : 3;
-        return IFMath.round(number, false, decimalPlaces).toString().replace('.', decimalSeparator);
+        return GMath.round(number, false, decimalPlaces).toString().replace('.', decimalSeparator);
     };
 
     /**
@@ -256,19 +256,19 @@
      * @param {string} the string to be parsed as number
      * @returns {Number}
      */
-    IFUtil.parseNumber = function (string) {
+    GUtil.parseNumber = function (string) {
         var parseString = "";
         var foundDecSep = false;
         for (var i = string.length; i >= 0; --i) {
             var char = string.charAt(i);
             if (char === ',' && !foundDecSep) {
                 parseString = '.' + parseString;
-            } else if (IFUtil.isNumeric(char) || char === '-' || char === '+') {
+            } else if (GUtil.isNumeric(char) || char === '-' || char === '+') {
                 parseString = char + parseString;
             }
         }
         return parseFloat(parseString);
     };
 
-    _.IFUtil = IFUtil;
+    _.GUtil = GUtil;
 })(this);

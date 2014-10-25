@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * Blur effect
-     * @class IFOverlayEffect
-     * @extends IFEffect
+     * @class GOverlayEffect
+     * @extends GEffect
      * @constructor
      */
-    IFOverlayEffect = function () {
-        IFEffect.call(this);
-        this._setDefaultProperties(IFOverlayEffect.VisualProperties);
+    GOverlayEffect = function () {
+        GEffect.call(this);
+        this._setDefaultProperties(GOverlayEffect.VisualProperties);
     };
-    IFNode.inherit('overlayEffect', IFOverlayEffect, IFEffect);
+    GNode.inherit('overlayEffect', GOverlayEffect, GEffect);
 
-    IFOverlayEffect.equals = function (left, right) {
-        if (left instanceof IFOverlayEffect && right instanceof  IFOverlayEffect) {
-            return left.arePropertiesEqual(right, Object.keys(IFOverlayEffect.VisualProperties));
+    GOverlayEffect.equals = function (left, right) {
+        if (left instanceof GOverlayEffect && right instanceof  GOverlayEffect) {
+            return left.arePropertiesEqual(right, Object.keys(GOverlayEffect.VisualProperties));
         }
         return false;
     };
@@ -21,67 +21,67 @@
     /**
      * Visual properties of an overlay effect
      */
-    IFOverlayEffect.VisualProperties = {
-        /** The overlay pattern (IFPattern) */
-        pat: IFRGBColor.BLACK,
+    GOverlayEffect.VisualProperties = {
+        /** The overlay pattern (GPattern) */
+        pat: GRGBColor.BLACK,
         /** Overlay opacity */
         opc: 0.5
     };
 
     /** @override */
-    IFOverlayEffect.prototype.getEffectType = function () {
-        return IFEffect.Type.Filter;
+    GOverlayEffect.prototype.getEffectType = function () {
+        return GEffect.Type.Filter;
     };
 
     /** @override */
-    IFOverlayEffect.prototype.render = function (contents, output, background, scale) {
+    GOverlayEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$pat && this.$opc > 0.0) {
             // Fill our whole canvas with the overlay pattern clipped by the source
-            var overlayRect = contents.getTransform(false).inverted().mapRect(new IFRect(0, 0, contents.getWidth(), contents.getHeight()));
+            var overlayRect = contents.getTransform(false).inverted().mapRect(new GRect(0, 0, contents.getWidth(), contents.getHeight()));
             var overlay = contents.createPatternPaint(this.$pat, overlayRect);
             if (overlay) {
                 if (overlay.transform) {
                     var oldTransform = contents.setTransform(contents.getTransform(true).preMultiplied(overlay.transform));
-                    contents.fillRect(0, 0, 1, 1, overlay.paint, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
+                    contents.fillRect(0, 0, 1, 1, overlay.paint, this.$opc, GPaintCanvas.CompositeOperator.SourceAtTop);
                     contents.setTransform(oldTransform);
                 } else {
-                    contents.fillRect(overlayRect.getX(), overlayRect.getY(), overlayRect.getWidth(), overlayRect.getHeight(), overlay.paint, this.$opc, IFPaintCanvas.CompositeOperator.SourceAtTop);
+                    contents.fillRect(overlayRect.getX(), overlayRect.getY(), overlayRect.getWidth(), overlayRect.getHeight(), overlay.paint, this.$opc, GPaintCanvas.CompositeOperator.SourceAtTop);
                 }
             }
         }
     };
 
     /** @override */
-    IFOverlayEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFOverlayEffect.VisualProperties, function (property, value) {
+    GOverlayEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GOverlayEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.serialize(value);
+                        return GPattern.serialize(value);
                     }
                 }
                 return value;
             });
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFOverlayEffect.VisualProperties, function (property, value) {
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GOverlayEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.deserialize(value);
+                        return GPattern.deserialize(value);
                     }
                 }
                 return value;
             });
         }
 
-        this._handleVisualChangeForProperties(change, args, IFOverlayEffect.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GOverlayEffect.VisualProperties);
 
-        IFEffect.prototype._handleChange.call(this, change, args);
+        GEffect.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFOverlayEffect.prototype.toString = function () {
-        return "[Object IFOverlayEffect]";
+    GOverlayEffect.prototype.toString = function () {
+        return "[Object GOverlayEffect]";
     };
 
-    _.IFOverlayEffect = IFOverlayEffect;
+    _.GOverlayEffect = GOverlayEffect;
 })(this);

@@ -3,12 +3,12 @@
     /**
      * Base class for a view
      * @class GView
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      */
     function GView() {
     };
-    IFObject.inherit(GView, IFEventTarget);
+    GObject.inherit(GView, GEventTarget);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GView.UpdateEvent Event
@@ -17,12 +17,12 @@
      * An event whenever the view requires an update like changed
      * title or enabled status
      * @class GView.UpdateEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      */
     GView.UpdateEvent = function () {
     };
-    IFObject.inherit(GView.UpdateEvent, IFEvent);
+    GObject.inherit(GView.UpdateEvent, GEvent);
 
     /** @override */
     GView.UpdateEvent.prototype.toString = function () {
@@ -95,7 +95,7 @@
 
     /**
      * Get the title of the view
-     * @return {String|IFLocale.Key}
+     * @return {String|GLocale.Key}
      */
     GView.prototype.getTitle = function () {
         throw new Error("Not Supported");

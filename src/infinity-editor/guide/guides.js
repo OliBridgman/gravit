@@ -1,94 +1,94 @@
 (function (_) {
     /**
      * The guide manager
-     * @param {IFScene} scene
-     * @class IFGuides
-     * @extend IFEventTarget
+     * @param {GScene} scene
+     * @class GGuides
+     * @extend GEventTarget
      * @constructor
      */
-    function IFGuides(scene) {
+    function GGuides(scene) {
         this._scene = scene;
         this._guides = [];
         this._counter = 0;
         this._visuals = [];
 
-        this._shapeBoxGuide = new IFShapeBoxGuide(this);
+        this._shapeBoxGuide = new GShapeBoxGuide(this);
 
         this._addGuide(this._shapeBoxGuide);
-        this._addGuide(new IFPageGuide(this));
-        this._addGuide(new IFGridGuide(this));
-        this._addGuide(new IFUnitGuide(this));
+        this._addGuide(new GPageGuide(this));
+        this._addGuide(new GGridGuide(this));
+        this._addGuide(new GUnitGuide(this));
     }
 
-    IFObject.inherit(IFGuides, IFEventTarget);
+    GObject.inherit(GGuides, GEventTarget);
 
     /**
      * The length of snap zone lines in pixels
      * @type {Number}
      */
-    IFGuides.VISUALS_LENGTH = 10;
+    GGuides.VISUALS_LENGTH = 10;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFGuides.InvalidationRequestEvent Event
+    // GGuides.InvalidationRequestEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for an invalidation request event
-     * @param {IFRect} [area] the area to invalidate
-     * @class IFGuides.InvalidationRequestEvent
-     * @extends IFEvent
+     * @param {GRect} [area] the area to invalidate
+     * @class GGuides.InvalidationRequestEvent
+     * @extends GEvent
      * @constructor
      */
-    IFGuides.InvalidationRequestEvent = function (area) {
+    GGuides.InvalidationRequestEvent = function (area) {
         this.area = area;
     };
-    IFObject.inherit(IFGuides.InvalidationRequestEvent, IFEvent);
+    GObject.inherit(GGuides.InvalidationRequestEvent, GEvent);
 
-    /** @type {IFRect} */
-    IFGuides.InvalidationRequestEvent.prototype.area = null;
+    /** @type {GRect} */
+    GGuides.InvalidationRequestEvent.prototype.area = null;
 
     /** @override */
-    IFGuides.InvalidationRequestEvent.prototype.toString = function () {
-        return "[Event IFGuides.InvalidationRequestEvent]";
+    GGuides.InvalidationRequestEvent.prototype.toString = function () {
+        return "[Event GGuides.InvalidationRequestEvent]";
     };
 
     /**
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
-    IFGuides.prototype._scene = null;
+    GGuides.prototype._scene = null;
 
     /**
-     * @type {Array<IFGuide>}
+     * @type {Array<GGuide>}
      * @private
      */
-    IFGuides.prototype._guides = null;
+    GGuides.prototype._guides = null;
 
     /**
-     * @type {IFShapeBoxGuide}
+     * @type {GShapeBoxGuide}
      * @private
      */
-    IFGuides.prototype._shapeBoxGuide = null;
+    GGuides.prototype._shapeBoxGuide = null;
 
     /**
      * Internal counter of begin/endMap calls
      * @type {number}
      * @private
      */
-    IFGuides.prototype._counter = 0;
+    GGuides.prototype._counter = 0;
 
     /**
      * An array of vusial guides' lines ends in scene coordinates
-     * @type {Array<Array<IFPoint>>}
+     * @type {Array<Array<GPoint>>}
      * @private
      */
-    IFGuides.prototype._visuals = null;
+    GGuides.prototype._visuals = null;
 
     /**
      * Stores the area in scene coordinates, where painting of visual guides occurs
-     * @type {IFRect}
+     * @type {GRect}
      * @private
      */
-    IFGuides.prototype._area = null;
+    GGuides.prototype._area = null;
 
     /**
      * Call this if you want to start mapping. This needs
@@ -96,7 +96,7 @@
      * you just want to map without any visual guides,
      * you don't need to call this.
      */
-    IFGuides.prototype.beginMap = function () {
+    GGuides.prototype.beginMap = function () {
         if (this._counter == 0) {
             this._visuals = [];
             if (this._area && !this._area.isEmpty()) {
@@ -110,7 +110,7 @@
     /**
      * Finish mapping. See beginMap description.
      */
-    IFGuides.prototype.finishMap = function () {
+    GGuides.prototype.finishMap = function () {
         if (this._counter > 0) {
             --this._counter;
             if (this._counter == 0 && this._visuals.length) {
@@ -141,7 +141,7 @@
                 maxx += 1;
                 maxy += 1;
 
-                this._area = new IFRect(minx, miny, maxx - minx, maxy - miny);
+                this._area = new GRect(minx, miny, maxx - minx, maxy - miny);
                 this.invalidate(this._area);
 
                 this._shapeBoxGuide.cleanExclusions();
@@ -151,10 +151,10 @@
 
     /**
      * Map a point to the current snapping options
-     * @param {IFPoint} point the point to map
-     * @returns {IFPoint} a mapped point
+     * @param {GPoint} point the point to map
+     * @returns {GPoint} a mapped point
      */
-    IFGuides.prototype.mapPoint = function (point) {
+    GGuides.prototype.mapPoint = function (point) {
         var resX = null;
         var resY = null;
 
@@ -169,7 +169,7 @@
                     if (res.x && resX === null) {
                         resX = res.x.value;
                         if (this._visuals && res.x.guide) {
-                            if (res.x.guide instanceof IFPoint) {
+                            if (res.x.guide instanceof GPoint) {
                                 targPts.push(res.x.guide);
                             } else {
                                 this._visuals.push(res.x.guide);
@@ -179,7 +179,7 @@
                     if (res.y && resY === null) {
                         resY = res.y.value;
                         if (this._visuals && res.y.guide) {
-                            if (res.y.guide instanceof IFPoint) {
+                            if (res.y.guide instanceof GPoint) {
                                 targPts.push(res.y.guide);
                             } else {
                                 this._visuals.push(res.y.guide);
@@ -198,7 +198,7 @@
         if (resY === null) {
             resY = point.getY();
         }
-        var resPt = new IFPoint(resX, resY);
+        var resPt = new GPoint(resX, resY);
 
         var pt;
         for (var i = 0; i < targPts.length; ++i) {
@@ -213,14 +213,14 @@
 
     /**
      * Called whenever the guides should paint itself
-     * @param {IFTransform} transform the transformation of the scene
-     * @param {IFPaintContext} context
+     * @param {GTransform} transform the transformation of the scene
+     * @param {GPaintContext} context
      */
-    IFGuides.prototype.paint = function (transform, context) {
+    GGuides.prototype.paint = function (transform, context) {
         var guide;
         for (var i = 0; i < this._guides.length; ++i) {
             guide = this._guides[i];
-            if (guide.hasMixin(IFGuide.Visual)) {
+            if (guide.hasMixin(GGuide.Visual)) {
                 guide.paint(transform, context);
             }
         }
@@ -239,14 +239,14 @@
 
     /**
      * Triggers invalidation request of passed area
-     * @param {IFRect} area - an area to invalidate; if empty, last stored area painted with visuals is used
+     * @param {GRect} area - an area to invalidate; if empty, last stored area painted with visuals is used
      */
-    IFGuides.prototype.invalidate = function (area) {
-        if (this.hasEventListeners(IFGuides.InvalidationRequestEvent)) {
+    GGuides.prototype.invalidate = function (area) {
+        if (this.hasEventListeners(GGuides.InvalidationRequestEvent)) {
             if (area && !area.isEmpty()) {
-                this.trigger(new IFGuides.InvalidationRequestEvent(area));
+                this.trigger(new GGuides.InvalidationRequestEvent(area));
             } else if (this._area && !this._area.isEmpty()) {
-                this.trigger(new IFGuides.InvalidationRequestEvent(this._area));
+                this.trigger(new GGuides.InvalidationRequestEvent(this._area));
                 this._area = null;
             }
         }
@@ -254,25 +254,25 @@
 
     /**
      * Returns ShapeBoxGuide
-     * @returns {IFShapeBoxGuide}
+     * @returns {GShapeBoxGuide}
      */
-    IFGuides.prototype.getShapeBoxGuide = function () {
+    GGuides.prototype.getShapeBoxGuide = function () {
         return this._shapeBoxGuide;
     };
 
     /**
      * Calculates and return snap zone lines for a bbox and a location against the bbox.
      * Everything is in scene coordinates
-     * @param {IFRect} bBox
-     * @param {IFPoint} location
-     * @return {Array<Array<IFPoint>>}
+     * @param {GRect} bBox
+     * @param {GPoint} location
+     * @return {Array<Array<GPoint>>}
      */
-    IFGuides.prototype.getBBoxSnapZones = function (bBox, location) {
+    GGuides.prototype.getBBoxSnapZones = function (bBox, location) {
         var visLines = null;
         var snapZonesAllowed = false;
         for (var i = 0; i < this._guides.length && !snapZonesAllowed; ++i) {
             var guide = this._guides[i];
-            if (guide.isMappingAllowed() && !(guide instanceof IFUnitGuide)) {
+            if (guide.isMappingAllowed() && !(guide instanceof GUnitGuide)) {
                 snapZonesAllowed = true;
             }
         }
@@ -281,17 +281,17 @@
             visLines = [];
             var side = bBox.getClosestSideName(location);
             var sidePos = bBox.getSide(side);
-            var tl = bBox.getSide(IFRect.Side.TOP_LEFT);
-            var br = bBox.getSide(IFRect.Side.BOTTOM_RIGHT);
+            var tl = bBox.getSide(GRect.Side.TOP_LEFT);
+            var br = bBox.getSide(GRect.Side.BOTTOM_RIGHT);
             var shapeWidth = Math.abs(br.getX() - tl.getX());
             var shapeHeight = Math.abs(br.getY() - tl.getY());
             var vis1 = null;
             var vis2 = null;
 
             var horV;
-            if (shapeWidth > IFGuides.VISUALS_LENGTH * 2) {
-                horV = IFGuides.VISUALS_LENGTH;
-            } else if (shapeWidth > IFGuides.VISUALS_LENGTH) {
+            if (shapeWidth > GGuides.VISUALS_LENGTH * 2) {
+                horV = GGuides.VISUALS_LENGTH;
+            } else if (shapeWidth > GGuides.VISUALS_LENGTH) {
                 horV = shapeWidth / 2;
             } else {
                 horV = shapeWidth;
@@ -300,24 +300,24 @@
             var y2 = y1;
             var x1 = tl.getX();
             switch (side) {
-                case IFRect.Side.TOP_CENTER:
-                case IFRect.Side.CENTER:
-                case IFRect.Side.BOTTOM_CENTER:
+                case GRect.Side.TOP_CENTER:
+                case GRect.Side.CENTER:
+                case GRect.Side.BOTTOM_CENTER:
                     x1 = sidePos.getX() - horV / 2;
                     break;
-                case IFRect.Side.TOP_RIGHT:
-                case IFRect.Side.RIGHT_CENTER:
-                case IFRect.Side.BOTTOM_RIGHT:
+                case GRect.Side.TOP_RIGHT:
+                case GRect.Side.RIGHT_CENTER:
+                case GRect.Side.BOTTOM_RIGHT:
                     x1 = sidePos.getX() - horV;
                     break;
             }
             var x2 = x1 + horV;
-            visLines.push([new IFPoint(x1, y1), new IFPoint(x2, y2)]);
+            visLines.push([new GPoint(x1, y1), new GPoint(x2, y2)]);
 
             var vertV;
-            if (shapeHeight > IFGuides.VISUALS_LENGTH * 2) {
-                vertV = IFGuides.VISUALS_LENGTH;
-            } else if (shapeHeight > IFGuides.VISUALS_LENGTH) {
+            if (shapeHeight > GGuides.VISUALS_LENGTH * 2) {
+                vertV = GGuides.VISUALS_LENGTH;
+            } else if (shapeHeight > GGuides.VISUALS_LENGTH) {
                 vertV = shapeHeight / 2;
             } else {
                 vertV = shapeHeight;
@@ -326,19 +326,19 @@
             x2 = x1;
             y1 = tl.getY();
             switch (side) {
-                case IFRect.Side.LEFT_CENTER:
-                case IFRect.Side.CENTER:
-                case IFRect.Side.RIGHT_CENTER:
+                case GRect.Side.LEFT_CENTER:
+                case GRect.Side.CENTER:
+                case GRect.Side.RIGHT_CENTER:
                     y1 = sidePos.getY() - vertV / 2;
                     break;
-                case IFRect.Side.BOTTOM_LEFT:
-                case IFRect.Side.BOTTOM_CENTER:
-                case IFRect.Side.BOTTOM_RIGHT:
+                case GRect.Side.BOTTOM_LEFT:
+                case GRect.Side.BOTTOM_CENTER:
+                case GRect.Side.BOTTOM_RIGHT:
                     y1 = sidePos.getY() - vertV;
                     break;
             }
             y2 = y1 + vertV;
-            visLines.push([new IFPoint(x1, y1), new IFPoint(x2, y2)]);
+            visLines.push([new GPoint(x1, y1), new GPoint(x2, y2)]);
         }
 
         return visLines;
@@ -346,16 +346,16 @@
 
     /**
      * Add a guide to this manager
-     * @param {IFGuide} guide
+     * @param {GGuide} guide
      */
-    IFGuides.prototype._addGuide = function (guide) {
+    GGuides.prototype._addGuide = function (guide) {
         this._guides.push(guide);
     };
 
     /** @override */
-    IFGuides.prototype.toString = function () {
-        return "[Object IFGuides]";
+    GGuides.prototype.toString = function () {
+        return "[Object GGuides]";
     };
 
-    _.IFGuides = IFGuides;
+    _.GGuides = GGuides;
 })(this);

@@ -10,10 +10,10 @@
         GPalette.call(this);
     }
 
-    IFObject.inherit(GLayersPalette, GPalette);
+    GObject.inherit(GLayersPalette, GPalette);
 
     GLayersPalette.ID = "layers";
-    GLayersPalette.TITLE = new IFLocale.Key(GLayersPalette, "title");
+    GLayersPalette.TITLE = new GLocale.Key(GLayersPalette, "title");
 
     /**
      * @type {JQuery}
@@ -86,12 +86,12 @@
             })
             .on('tree.open', function (evt) {
                 if (evt.node.layerOrItem) {
-                    evt.node.layerOrItem.setFlag(IFNode.Flag.Expanded);
+                    evt.node.layerOrItem.setFlag(GNode.Flag.Expanded);
                 }
             }.bind(this))
             .on('tree.close', function (evt) {
                 if (evt.node.layerOrItem) {
-                    evt.node.layerOrItem.removeFlag(IFNode.Flag.Expanded);
+                    evt.node.layerOrItem.removeFlag(GNode.Flag.Expanded);
                 }
             }.bind(this))
             .on('tree.click', this._clickLayerTreeNode.bind(this))
@@ -126,19 +126,19 @@
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
             var scene = this._document.getScene();
-            scene.addEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-            scene.addEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-            scene.addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.addEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+            scene.addEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+            scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
             this._clear();
             this.trigger(GPalette.UPDATE_EVENT);
         } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
             var scene = this._document.getScene();
             this._document = null;
-            scene.removeEventListener(IFNode.AfterInsertEvent, this._afterNodeInsert, this);
-            scene.removeEventListener(IFNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
-            scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            scene.removeEventListener(GNode.AfterInsertEvent, this._afterNodeInsert, this);
+            scene.removeEventListener(GNode.BeforeRemoveEvent, this._beforeNodeRemove, this);
+            scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
             this._clear();
             this.trigger(GPalette.UPDATE_EVENT);
         }
@@ -156,7 +156,7 @@
             var activePage = this._document.getScene().getActivePage();
             if (activePage) {
                 for (var child = activePage.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFLayer) {
+                    if (child instanceof GLayer) {
                         this._insertLayer(child);
                     }
                 }
@@ -167,7 +167,7 @@
     /** @private */
     GLayersPalette.prototype._insertLayer = function (layerOrItem) {
         // Create an unique treeId for the new tree node
-        var treeId = IFUtil.uuid();
+        var treeId = GUtil.uuid();
 
         // Either insert before or insert first but ensure to reverse order (last=top)
         var previousNode = layerOrItem.getPrevious() ? this._getLayerTreeNode(layerOrItem.getPrevious()) : null;
@@ -175,7 +175,7 @@
             this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, previousNode);
         } else {
             var parent = layerOrItem.getParent();
-            var parentTreeNode = !parent || parent instanceof IFPage ? null : this._getLayerTreeNode(parent);
+            var parentTreeNode = !parent || parent instanceof GPage ? null : this._getLayerTreeNode(parent);
             var addBeforeNode =  null;
 
             if (parentTreeNode) {
@@ -206,9 +206,9 @@
         this._updateLayer(layerOrItem);
 
         // Iterate children and add them as well
-        if (layerOrItem.hasMixin(IFNode.Container)) {
+        if (layerOrItem.hasMixin(GNode.Container)) {
             for (var child = layerOrItem.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFLayer || child instanceof IFItem) {
+                if (child instanceof GLayer || child instanceof GItem) {
                     this._insertLayer(child);
                 }
             }
@@ -218,12 +218,12 @@
         var treeNode = this._getLayerTreeNode(layerOrItem);
 
         // Select if item and selected
-        if (layerOrItem instanceof IFItem && layerOrItem.hasFlag(IFNode.Flag.Selected)) {
+        if (layerOrItem instanceof GItem && layerOrItem.hasFlag(GNode.Flag.Selected)) {
             this._layersTree.tree('selectNode', treeNode);
         }
 
         // Open entry if collapsed
-        if (layerOrItem.hasFlag(IFNode.Flag.Expanded)) {
+        if (layerOrItem.hasFlag(GNode.Flag.Expanded)) {
             this._layersTree.tree('openNode', treeNode, false);
         }
     };
@@ -249,7 +249,7 @@
 
             // Visit to remove each mapping as well
             layerOrItem.accept(function (node) {
-                if (node instanceof IFLayer || node instanceof IFItem) {
+                if (node instanceof GLayer || node instanceof GItem) {
                     for (var i = 0; i < this._layersTreeNodeMap.length; ++i) {
                         if (this._layersTreeNodeMap[i].node === node) {
                             this._layersTreeNodeMap.splice(i, 1);
@@ -262,11 +262,11 @@
     };
 
     /**
-     * @param {IFNode.AfterInsertEvent} event
+     * @param {GNode.AfterInsertEvent} event
      * @private
      */
     GLayersPalette.prototype._afterNodeInsert = function (event) {
-        if (event.node instanceof IFLayer || event.node instanceof IFItem) {
+        if (event.node instanceof GLayer || event.node instanceof GItem) {
             var activePage = this._document.getScene().getActivePage();
             if (event.node.getPage() === activePage) {
                 this._insertLayer(event.node);
@@ -275,27 +275,27 @@
     };
 
     /**
-     * @param {IFNode.BeforeRemoveEvent} event
+     * @param {GNode.BeforeRemoveEvent} event
      * @private
      */
     GLayersPalette.prototype._beforeNodeRemove = function (event) {
-        if (event.node instanceof IFLayer || event.node instanceof IFItem) {
+        if (event.node instanceof GLayer || event.node instanceof GItem) {
             this._removeLayer(event.node);
 
             // If parent has no more children then update it accordingly
             var parent = event.node.getParent();
 
-            if (parent instanceof IFLayer || parent instanceof IFItem) {
+            if (parent instanceof GLayer || parent instanceof GItem) {
                 var hasChildren = false;
                 for (var child = parent.getFirstChild(); child !== null; child = child.getNext()) {
-                    if ((child instanceof IFLayer || child instanceof IFItem) && child !== event.node) {
+                    if ((child instanceof GLayer || child instanceof GItem) && child !== event.node) {
                         hasChildren = true;
                         break;
                     }
                 }
 
                 if (!hasChildren) {
-                    parent.removeFlag(IFNode.Flag.Expanded);
+                    parent.removeFlag(GNode.Flag.Expanded);
                     this._updateLayer(parent);
                 }
             }
@@ -303,28 +303,28 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GLayersPalette.prototype._afterPropertiesChange = function (event) {
-        if (event.node instanceof IFLayer || event.node instanceof IFItem) {
+        if (event.node instanceof GLayer || event.node instanceof GItem) {
             this._updateLayer(event.node);
         }
     };
 
     /**
-     * @param {IFNode.AfterFlagChangeEvent} event
+     * @param {GNode.AfterFlagChangeEvent} event
      * @private
      */
     GLayersPalette.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof IFPage && event.flag === IFNode.Flag.Active && event.set) {
+        if (event.node instanceof GPage && event.flag === GNode.Flag.Active && event.set) {
             // Page activeness change requires clearing layers
             this._clear();
-        } else if (event.node instanceof IFLayer && (event.flag === IFNode.Flag.Active || event.flag === IFNode.Flag.Selected || event.flag === IFNode.Flag.Expanded)) {
+        } else if (event.node instanceof GLayer && (event.flag === GNode.Flag.Active || event.flag === GNode.Flag.Selected || event.flag === GNode.Flag.Expanded)) {
             this._updateLayer(event.node);
-        } else if (event.node instanceof IFItem && event.flag === IFNode.Flag.Selected) {
+        } else if (event.node instanceof GItem && event.flag === GNode.Flag.Selected) {
             this._updateLayer(event.node);
-        } else if ((event.node instanceof IFLayer || event.node instanceof IFItem) && (event.flag === IFElement.Flag.Hidden || event.flag === IFElement.Flag.Locked)) {
+        } else if ((event.node instanceof GLayer || event.node instanceof GItem) && (event.flag === GElement.Flag.Hidden || event.flag === GElement.Flag.Locked)) {
             this._updateLayer(event.node);
         }
     };
@@ -332,13 +332,13 @@
     /** @private */
     GLayersPalette.prototype._clickLayerTreeNode = function (evt) {
         if (evt.node.layerOrItem) {
-            if (evt.node.layerOrItem instanceof IFLayer) {
+            if (evt.node.layerOrItem instanceof GLayer) {
                 this._document.getScene().setActiveLayer(evt.node.layerOrItem);
-            } else if (evt.node.layerOrItem instanceof IFItem) {
-                if (ifPlatform.modifiers.shiftKey || !evt.node.layerOrItem.hasFlag(IFNode.Flag.Selected)) {
+            } else if (evt.node.layerOrItem instanceof GItem) {
+                if (ifPlatform.modifiers.shiftKey || !evt.node.layerOrItem.hasFlag(GNode.Flag.Selected)) {
                     // Add element to selection
                     this._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [evt.node.layerOrItem]);
-                } else if (evt.node.layerOrItem.hasFlag(IFNode.Flag.Selected)) {
+                } else if (evt.node.layerOrItem.hasFlag(GNode.Flag.Selected)) {
                     // Clear selection leaving only the one element
                     this._document.getEditor().clearSelection([evt.node.layerOrItem]);
                 }
@@ -359,7 +359,7 @@
 
             for (var p = layerOrItem.getParent(); p !== null; p = p.getParent()) {
                 // Stop on page root
-                if (p instanceof IFPage) {
+                if (p instanceof GPage) {
                     break;
                 }
 
@@ -367,7 +367,7 @@
                 parentHidden = p.getProperty('visible') === false || parentHidden;
                 parentLocked = p.getProperty('locked') === true || parentLocked;
 
-                if (p instanceof IFLayer) {
+                if (p instanceof GLayer) {
                     parentOutlined = p.getProperty('otl') === true || parentOutlined;
                 }
 
@@ -376,7 +376,7 @@
 
             var isHidden = parentHidden || layerOrItem.getProperty('visible') === false;
             var isLocked = parentLocked || layerOrItem.getProperty('locked') === true;
-            var isOutlined = parentOutlined || (layerOrItem instanceof IFLayer && layerOrItem.getProperty('otl'));
+            var isOutlined = parentOutlined || (layerOrItem instanceof GLayer && layerOrItem.getProperty('otl'));
 
             // Gather a reference to the element container
             var container = li.find('div.jqtree-element');
@@ -384,15 +384,15 @@
 
             // First, we'll make our title editable and toogle active/selected
             container
-                .toggleClass('g-active', layerOrItem.hasFlag(IFNode.Flag.Active))
-                .toggleClass('g-selected', layerOrItem.hasFlag(IFNode.Flag.Selected))
+                .toggleClass('g-active', layerOrItem.hasFlag(GNode.Flag.Active))
+                .toggleClass('g-selected', layerOrItem.hasFlag(GNode.Flag.Selected))
                 .gAutoEdit({
                     selector: '> .jqtree-title'
                 })
                 .on('submitvalue', function (evt, value) {
                     // TODO : I18M
                     if (value && value.trim() !== '') {
-                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                        GEditor.tryRunTransaction(layerOrItem, function () {
                             layerOrItem.setProperty('name', value);
                         }, 'Rename Layer/Item');
                     }
@@ -407,22 +407,22 @@
 
             // Figure an icon for the item if any
             var icon = null;
-            if (layerOrItem instanceof IFLayer) {
-                icon = layerOrItem.hasFlag(IFNode.Flag.Expanded) ? 'folder-open' : 'folder';
-            } else if (layerOrItem instanceof IFSlice) {
+            if (layerOrItem instanceof GLayer) {
+                icon = layerOrItem.hasFlag(GNode.Flag.Expanded) ? 'folder-open' : 'folder';
+            } else if (layerOrItem instanceof GSlice) {
                 icon = 'crop';
-            } else if (layerOrItem instanceof IFShape) {
-                if (layerOrItem instanceof IFText) {
+            } else if (layerOrItem instanceof GShape) {
+                if (layerOrItem instanceof GText) {
                     icon = 'font';
-                } else if (layerOrItem instanceof IFImage) {
+                } else if (layerOrItem instanceof GImage) {
                     icon = 'image';
-                } else if (layerOrItem instanceof IFEllipse) {
+                } else if (layerOrItem instanceof GEllipse) {
                     icon = 'circle';
-                } else if (layerOrItem instanceof IFRectangle) {
+                } else if (layerOrItem instanceof GRectangle) {
                     icon = 'stop';
-                } else if (layerOrItem instanceof IFPath || layerOrItem instanceof IFCompoundPath) {
+                } else if (layerOrItem instanceof GPath || layerOrItem instanceof GCompoundPath) {
                     icon = 'pencil';
-                } else if (layerOrItem instanceof IFPolygon) {
+                } else if (layerOrItem instanceof GPolygon) {
                     icon = 'star';
                 }
             }
@@ -443,7 +443,7 @@
                     evt.stopPropagation();
                     if (!parentLocked) {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                        GEditor.tryRunTransaction(layerOrItem, function () {
                             layerOrItem.setProperty('locked', !layerOrItem.getProperty('locked'));
                         }, 'Toggle Layer Locked');
                     }
@@ -462,39 +462,39 @@
 
                         // Remove highlight when made invisible
                         if (!show) {
-                            layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                            layerOrItem.removeFlag(GNode.Flag.Highlighted);
                         }
 
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(layerOrItem, function () {
+                        GEditor.tryRunTransaction(layerOrItem, function () {
                             layerOrItem.setProperty('visible', show);
                         }, 'Toggle Layer Visibility');
 
                         // Show highlight when made visible
                         if (show) {
-                            layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                            layerOrItem.setFlag(GNode.Flag.Highlighted);
                         }
                     }
                 })
                 .on('mouseenter', function (evt) {
-                    if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
-                        layerOrItem.setFlag(IFNode.Flag.Highlighted);
+                    if (!layerOrItem.hasFlag(GElement.Flag.Hidden)) {
+                        layerOrItem.setFlag(GNode.Flag.Highlighted);
                     }
                 })
                 .on('mouseleave', function (evt) {
-                    if (!layerOrItem.hasFlag(IFElement.Flag.Hidden)) {
-                        layerOrItem.removeFlag(IFNode.Flag.Highlighted);
+                    if (!layerOrItem.hasFlag(GElement.Flag.Hidden)) {
+                        layerOrItem.removeFlag(GNode.Flag.Highlighted);
                     }
                 })
                 .prependTo(container);
 
             // Do some special handling for layers
-            if (layerOrItem instanceof IFLayer) {
+            if (layerOrItem instanceof GLayer) {
                 // Add layer-type as data-attribute for custom styling
                 container.attr('data-layer-type', layerOrItem.getProperty('tp'));
 
                 // Don't add outline for guide layers
-                if (layerOrItem.getProperty('tp') !== IFLayer.Type.Guide) {
+                if (layerOrItem.getProperty('tp') !== GLayer.Type.Guide) {
                     $('<span></span>')
                         .addClass('layer-outline fa fa-' + (isOutlined ? 'circle-o' : 'circle'))
                         .toggleClass('layer-default', !isOutlined)
@@ -504,7 +504,7 @@
                             evt.stopPropagation();
                             if (!parentHidden) {
                                 // TODO : I18N
-                                IFEditor.tryRunTransaction(layerOrItem, function () {
+                                GEditor.tryRunTransaction(layerOrItem, function () {
                                     layerOrItem.setProperty('otl', !layerOrItem.getProperty('otl'));
                                 }, 'Toggle Layer Outline');
                             }
@@ -514,16 +514,16 @@
 
                 var patternChange = function (evt, color) {
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(layerOrItem, function () {
+                    GEditor.tryRunTransaction(layerOrItem, function () {
                         var myColor = layerOrItem.getProperty('cls');
                         layerOrItem.setProperty('cls', color);
 
                         // Apply color to all child layers recursively that
                         // do have the same color as our layer
                         layerOrItem.acceptChildren(function (node) {
-                            if (node instanceof IFLayer) {
+                            if (node instanceof GLayer) {
                                 var childColor = node.getProperty('cls');
-                                if (IFUtil.equals(childColor, myColor)) {
+                                if (GUtil.equals(childColor, myColor)) {
                                     node.setProperty('cls', color);
                                 }
                             }
@@ -534,9 +534,9 @@
                 $('<span></span>')
                     .addClass('layer-color')
                     .gPatternTarget()
-                    .gPatternTarget('types', [IFColor])
+                    .gPatternTarget('types', [GColor])
                     .gPatternTarget('value', layerOrItem.getProperty('cls'))
-                    .css('background',  IFPattern.asCSSBackground(layerOrItem.getProperty('cls')))
+                    .css('background',  GPattern.asCSSBackground(layerOrItem.getProperty('cls')))
                     .on('click', function (evt) {
                         evt.stopPropagation();
 
@@ -545,7 +545,7 @@
                         $.gPatternPicker.open({
                             target: $target,
                             scene: this._document.getScene(),
-                            types: [IFColor],
+                            types: [GColor],
                             value: $target.gPatternTarget('value'),
                             changeCallback: patternChange
                         });
@@ -570,18 +570,18 @@
 
         if (moveInfo) {
             // TODO : I18N
-            IFEditor.tryRunTransaction(this._document.getScene(), function () {
+            GEditor.tryRunTransaction(this._document.getScene(), function () {
                 moveInfo.source.getParent().removeChild(moveInfo.source);
                 moveInfo.parent.insertChild(moveInfo.source, moveInfo.before);
 
                 // Having dragged something inside requires to expand parent(s) and update 'em'
                 var rootParent = null;
                 for (var parent = moveInfo.parent; parent !== null; parent = parent.getParent()) {
-                    if (parent instanceof IFPage) {
+                    if (parent instanceof GPage) {
                         break;
                     }
 
-                    parent.setFlag(IFNode.Flag.Expanded);
+                    parent.setFlag(GNode.Flag.Expanded);
                     rootParent = parent;
                 }
 
@@ -592,7 +592,7 @@
 
     /**
      * @param event
-     * @return {{parent: IFNode, before: IFNode, source: IFNode}} the result of the move
+     * @return {{parent: GNode, before: GNode, source: GNode}} the result of the move
      * or null if the actual move is not allowed
      * @private
      */
@@ -629,7 +629,7 @@
     };
 
     /**
-     * @param {IFNode} node
+     * @param {GNode} node
      * @return {*}
      * @private
      */
@@ -644,7 +644,7 @@
     };
 
     /**
-     * @param {IFNode} node
+     * @param {GNode} node
      * @return {*}
      * @private
      */

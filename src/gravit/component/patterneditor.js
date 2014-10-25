@@ -46,7 +46,7 @@
                             })
                             .on('swatchchange', function (evt, swatch) {
                                 var pat = swatch.getProperty('pat');
-                                if (pat instanceof IFColor) {
+                                if (pat instanceof GColor) {
                                     $this.find('.g-color-editor').gColorEditor('currentColor', pat);
                                     methods._colorChanged.call(self);
                                 } else if (pat) {
@@ -61,9 +61,9 @@
                     .append($('<div></div>')
                         .addClass('g-list pattern-editor')
                         .append($('<div></div>')
-                            .data('pattern-class', IFGradient)
+                            .data('pattern-class', GGradient)
                             .gGradientEditor()
-                            .gGradientEditor('value', new IFLinearGradient())
+                            .gGradientEditor('value', new GLinearGradient())
                             .on('gradientchange', function () {
                                 methods._firePatternChange.call(self, true);
                             })
@@ -74,7 +74,7 @@
                             .addClass('pattern-type')
                             .gPatternTypePicker()
                             .on('patterntypechange', function (evt, patternClass) {
-                                methods.value.call(self, IFPattern.smartCreate(patternClass, methods.value.call(self)));
+                                methods.value.call(self, GPattern.smartCreate(patternClass, methods.value.call(self)));
                                 methods._firePatternChange.call(self);
                             }))
                         .append($('<label></label>')
@@ -94,13 +94,13 @@
 
                 var builtinColors = $this.find('.builtin-colors');
                 for (var i = 0; i < COLORS.length; ++i) {
-                    var color = IFRGBColor.fromCSSColor(COLORS[i]);
+                    var color = GRGBColor.fromCSSColor(COLORS[i]);
                     $('<div></div>')
                         .css('background', color.toScreenCSS())
                         .gPatternTarget({
                             allowDrop: false
                         })
-                        .gPatternTarget('types', [IFColor])
+                        .gPatternTarget('types', [GColor])
                         .gPatternTarget('value', color)
                         .on('click', function (evt) {
                             $this.find('.g-color-editor').gColorEditor('currentColor', $(evt.target).gPatternTarget('value'));
@@ -177,7 +177,7 @@
                 $this.find('.pattern-editor').css('display', hasPatternEditor ? '' : 'none');
 
                 // Update editor depending on value
-                if (value instanceof IFGradient) {
+                if (value instanceof GGradient) {
                     $this.find('.g-gradient-editor')
                         .gGradientEditor('value', value);
                 }
@@ -213,18 +213,18 @@
             var data = $this.data('gpatterneditor');
             var activeColor = $this.find('.g-color-editor').gColorEditor('value');
 
-            if (!data.value || data.value instanceof IFBackground) {
+            if (!data.value || data.value instanceof GBackground) {
                 var typePicker = $this.find('.pattern-type');
                 var types = typePicker.gPatternTypePicker('types');
                 var types = methods.types.call(this);
-                if (!types || !types.length || (types && types.indexOf(IFColor) >= 0)) {
+                if (!types || !types.length || (types && types.indexOf(GColor) >= 0)) {
                     data.value = activeColor;
-                    typePicker.gPatternTypePicker('value', IFColor);
+                    typePicker.gPatternTypePicker('value', GColor);
                     methods._firePatternChange.call(this, false);
                 }
-            } else if (data.value instanceof IFColor) {
+            } else if (data.value instanceof GColor) {
                 methods._firePatternChange.call(this, true);
-            } else if (data.value instanceof IFGradient) {
+            } else if (data.value instanceof GGradient) {
                 // TODO : Assign selected stop color
             }
         },
@@ -234,9 +234,9 @@
             var data = $this.data('gpatterneditor');
             var activeColor = null;
 
-            if (data.value instanceof IFColor) {
+            if (data.value instanceof GColor) {
                 activeColor = data.value;
-            } else if (data.value instanceof IFGradient) {
+            } else if (data.value instanceof GGradient) {
                 // TODO : Assign selected stop color
             }
 
@@ -251,11 +251,11 @@
 
             if (!patternType) {
                 return null;
-            } else if (patternType === IFBackground) {
-                return new IFBackground();
-            } else if (patternType === IFColor) {
+            } else if (patternType === GBackground) {
+                return new GBackground();
+            } else if (patternType === GColor) {
                 return $this.find('.g-color-editor').gColorEditor('value');
-            } else if (patternType === IFGradient) {
+            } else if (patternType === GGradient) {
                 return $this.find('.g-gradient-editor').gGradientEditor('value');
             } else {
                 throw new Error('Unknown pattern type.');

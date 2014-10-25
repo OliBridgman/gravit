@@ -8,10 +8,10 @@
      */
     function GZoomOutAction() {
     };
-    IFObject.inherit(GZoomOutAction, GAction);
+    GObject.inherit(GZoomOutAction, GAction);
 
     GZoomOutAction.ID = 'zoom.out';
-    GZoomOutAction.TITLE = new IFLocale.Key(GZoomOutAction, "title");
+    GZoomOutAction.TITLE = new GLocale.Key(GZoomOutAction, "title");
     GZoomOutAction.ZOOM_STEP = 2.0;
 
     /**
@@ -46,7 +46,7 @@
      * @override
      */
     GZoomOutAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, '-'];
+        return [GKey.Constant.META, '-'];
     };
 
 
@@ -56,7 +56,7 @@
     GZoomOutAction.prototype.isEnabled = function () {
         var window = gApp.getWindows().getActiveWindow();
         var view = window ? window.getView() : null;
-        return view && view.getZoom() > IFView.options.minZoomFactor;
+        return view && view.getZoom() > GUIView.options.minZoomFactor;
     };
 
     /**
@@ -70,11 +70,11 @@
         if (scene.getProperty('singlePage')) {
             var pageBBox = scene.getActivePage().getGeometryBBox();
             if (pageBBox && !pageBBox.isEmpty()) {
-                zoomPoint = pageBBox.getSide(IFRect.Side.CENTER);
+                zoomPoint = pageBBox.getSide(GRect.Side.CENTER);
             }
         }
         if (!zoomPoint) {
-            zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+            zoomPoint = view.getViewTransform().mapPoint(new GPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
         }
         view.zoomAt(zoomPoint, newZoom);
     };

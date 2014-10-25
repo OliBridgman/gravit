@@ -2,39 +2,39 @@
 
     /**
      * A path shape
-     * @class IFPath
-     * @extends IFPathBase
+     * @class GPath
+     * @extends GPathBase
      * @constructor
      */
-    function IFPath(closed, evenOdd, anchorPoints) {
-        IFPathBase.call(this, evenOdd, anchorPoints);
-        this._setDefaultProperties(IFPath.GeometryProperties);
+    function GPath(closed, evenOdd, anchorPoints) {
+        GPathBase.call(this, evenOdd, anchorPoints);
+        this._setDefaultProperties(GPath.GeometryProperties);
         if (closed) {
             this.setProperty('closed', closed);
         }
     }
 
-    IFNode.inherit("path", IFPath, IFPathBase);
+    GNode.inherit("path", GPath, GPathBase);
 
     /**
      * The geometry properties of a path with their default values
      */
-    IFPath.GeometryProperties = {
+    GPath.GeometryProperties = {
         /** Closed or not */
         closed: false
     };
 
     /**
      * Return the anchor points of the path
-     * @returns {IFPathBase.AnchorPoints}
+     * @returns {GPathBase.AnchorPoints}
      */
-    IFPath.prototype.getAnchorPoints = function () {
+    GPath.prototype.getAnchorPoints = function () {
         return this._getAnchorPoints();
     };
 
     /** @override */
-    IFPath.prototype.clone = function () {
-        var clone = IFPathBase.prototype.clone.call(this);
+    GPath.prototype.clone = function () {
+        var clone = GPathBase.prototype.clone.call(this);
 
         // Transfer selected anchor points as flags are not cloned
         var selectedAnchorPoints = this.getAnchorPoints().queryAll(':selected');
@@ -42,7 +42,7 @@
             var anchorPointIndex = this.getAnchorPoints().getIndexOfChild(selectedAnchorPoints[i]);
             var cloneAnchorPoint = clone.getAnchorPoints().getChildByIndex(anchorPointIndex);
             if (cloneAnchorPoint) {
-                cloneAnchorPoint.setFlag(IFNode.Flag.Selected);
+                cloneAnchorPoint.setFlag(GNode.Flag.Selected);
             }
         }
 
@@ -50,21 +50,21 @@
     };
 
     /** @override */
-    IFPath.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer || parent instanceof IFGroup || parent instanceof IFShape || parent instanceof IFCompoundPath.AnchorPaths;
+    GPath.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GLayer || parent instanceof GGroup || parent instanceof GShape || parent instanceof GCompoundPath.AnchorPaths;
     };
 
     /**
      * Hit-tests the path for the location. Corner styles are not applied.
-     * @param {IFPoint} location
-     * @param {IFTransform} transform - a transformation to be applied to the path before hit-testing in addition to
+     * @param {GPoint} location
+     * @param {GTransform} transform - a transformation to be applied to the path before hit-testing in addition to
      * path internal transformation, if any
      * @param {Boolean} area - indicates if path inside should be tested
      * @param {Boolean} [tolerance] optional hit test tolerance, defaults to zero
-     * @returns {IFElement.HitResultInfo} if hit, or null otherwise; hit result contains all data
+     * @returns {GElement.HitResultInfo} if hit, or null otherwise; hit result contains all data
      * in the path native anchor points coordinates
      */
-    IFPath.prototype.pathHitTest = function (location, transform, area, tolerance) {
+    GPath.prototype.pathHitTest = function (location, transform, area, tolerance) {
         tolerance = tolerance || 0;
         var locationInvTransformed = location;
         var scaleFactor = 1;
@@ -86,16 +86,16 @@
 
         // Generate unstyled vertices
         // TODO : Cache this???
-        var vertices = new IFVertexContainer();
+        var vertices = new GVertexContainer();
         this._getAnchorPoints()._generateVertices(vertices, this.$trf, false);
 
-        var hitResult = new IFVertexInfo.HitResult();
+        var hitResult = new GVertexInfo.HitResult();
         var elemHitRes = null;
         var outlineWidth = scaleFactor * tolerance * 2;
 
         if (ifVertexInfo.hitTest(locationInvTransformed.getX(), locationInvTransformed.getY(),
             vertices, outlineWidth, this.$closed ? area : false, hitResult)) {
-            elemHitRes = new IFElement.HitResultInfo(this, hitResult);
+            elemHitRes = new GElement.HitResultInfo(this, hitResult);
         }
 
         if (origTransform) {
@@ -107,12 +107,12 @@
 
     /**
      * Creates and inserts a new point into the path. The point location is specified in the result of hit-test
-     * @param {IFVertexInfo.HitResult} hitResult
-     * @returns {IFPathBase.AnchorPoint} a newly inserted anchor point, or null if no new point was inserted
+     * @param {GVertexInfo.HitResult} hitResult
+     * @returns {GPathBase.AnchorPoint} a newly inserted anchor point, or null if no new point was inserted
      */
-    IFPath.prototype.insertHitPoint = function (hitResult) {
+    GPath.prototype.insertHitPoint = function (hitResult) {
         if (!hitResult || !hitResult.slope ||
-            IFMath.isEqualEps(hitResult.slope, 0) || IFMath.isEqualEps(hitResult.slope, 1)) {
+            GMath.isEqualEps(hitResult.slope, 0) || GMath.isEqualEps(hitResult.slope, 1)) {
 
             return null;
         }
@@ -137,21 +137,21 @@
             var tpaPrev = aPrev.getProperty('tp');
             var tpaNext = aNext.getProperty('tp');
             var tpaNew;
-            if (tpaPrev == IFPathBase.AnchorPoint.Type.Connector ||
-                tpaPrev == IFPathBase.AnchorPoint.Type.Symmetric ||
-                tpaPrev == IFPathBase.AnchorPoint.Type.Mirror ||
-                tpaNext == IFPathBase.AnchorPoint.Type.Connector ||
-                tpaNext == IFPathBase.AnchorPoint.Type.Symmetric ||
-                tpaNext == IFPathBase.AnchorPoint.Type.Mirror ||
-                (tpaPrev == IFPathBase.AnchorPoint.Type.Asymmetric &&
-                    tpaNext == IFPathBase.AnchorPoint.Type.Asymmetric)) {
+            if (tpaPrev == GPathBase.AnchorPoint.Type.Connector ||
+                tpaPrev == GPathBase.AnchorPoint.Type.Symmetric ||
+                tpaPrev == GPathBase.AnchorPoint.Type.Mirror ||
+                tpaNext == GPathBase.AnchorPoint.Type.Connector ||
+                tpaNext == GPathBase.AnchorPoint.Type.Symmetric ||
+                tpaNext == GPathBase.AnchorPoint.Type.Mirror ||
+                (tpaPrev == GPathBase.AnchorPoint.Type.Asymmetric &&
+                    tpaNext == GPathBase.AnchorPoint.Type.Asymmetric)) {
 
                 // One of near points is smooth or both have no styled corners
-                tpaNew = IFPathBase.AnchorPoint.Type.Asymmetric;
-            } else if (tpaPrev != IFPathBase.AnchorPoint.Type.Symmetric &&
-                tpaPrev != IFPathBase.AnchorPoint.Type.Mirror &&
-                tpaPrev != IFPathBase.AnchorPoint.Type.Connector &&
-                tpaPrev != IFPathBase.AnchorPoint.Type.Asymmetric) {
+                tpaNew = GPathBase.AnchorPoint.Type.Asymmetric;
+            } else if (tpaPrev != GPathBase.AnchorPoint.Type.Symmetric &&
+                tpaPrev != GPathBase.AnchorPoint.Type.Mirror &&
+                tpaPrev != GPathBase.AnchorPoint.Type.Connector &&
+                tpaPrev != GPathBase.AnchorPoint.Type.Asymmetric) {
 
                 // aPrev has styled corner
                 tpaNew = tpaPrev;
@@ -172,12 +172,12 @@
             c2x = aNext.getProperty('hlx');
             c2y = aNext.getProperty('hly');
 
-            var zeroC1 = c1x == null || c1y == null || IFMath.isEqualEps(c1x, p1x) && IFMath.isEqualEps(c1y, p1y);
-            var zeroC2 = c2x == null || c2y == null || IFMath.isEqualEps(c2x, p2x) && IFMath.isEqualEps(c2y, p2y);
+            var zeroC1 = c1x == null || c1y == null || GMath.isEqualEps(c1x, p1x) && GMath.isEqualEps(c1y, p1y);
+            var zeroC2 = c2x == null || c2y == null || GMath.isEqualEps(c2x, p2x) && GMath.isEqualEps(c2y, p2y);
 
             // If line
             if (zeroC1 && zeroC2) {
-                newAPt = new IFPath.AnchorPoint();
+                newAPt = new GPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'],
                     [p1x + slope * (p2x - p1x), p1y + slope * (p2y - p1y), tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
@@ -188,15 +188,15 @@
                 var ctrls1Y = new Float64Array(3);
                 var ctrls2X = new Float64Array(3);
                 var ctrls2Y = new Float64Array(3);
-                IFMath.divideQuadraticCurve(p1x, cx, p2x, slope, ctrls1X, ctrls2X);
-                IFMath.divideQuadraticCurve(p1y, cy, p2y, slope, ctrls1Y, ctrls2Y);
+                GMath.divideQuadraticCurve(p1x, cx, p2x, slope, ctrls1X, ctrls2X);
+                GMath.divideQuadraticCurve(p1y, cy, p2y, slope, ctrls1Y, ctrls2Y);
 
-                newAPt = new IFPath.AnchorPoint();
+                newAPt = new GPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'], [ctrls1X[2], ctrls1Y[2], tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
 
                 if (zeroC1) {
-                    if (IFMath.isEqualEps(ctrls1X[1], ctrls1X[2]) && IFMath.isEqualEps(ctrls1Y[1], ctrls1Y[2])) {
+                    if (GMath.isEqualEps(ctrls1X[1], ctrls1X[2]) && GMath.isEqualEps(ctrls1Y[1], ctrls1Y[2])) {
                         newAPt.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         newAPt.setProperties(['hlx', 'hly'], [ctrls1X[1], ctrls1Y[1]]);
@@ -207,19 +207,19 @@
                     c1y = ctrls2Y[0] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[0]);
                     c2x = ctrls2X[2] + 2 / 3 * (ctrls2X[1] - ctrls2X[2]);
                     c2y = ctrls2Y[2] + 2 / 3 * (ctrls2Y[1] - ctrls2Y[2]);
-                    if (IFMath.isEqualEps(c1x, ctrls2X[0]) && IFMath.isEqualEps(c1y, ctrls2Y[0])) {
+                    if (GMath.isEqualEps(c1x, ctrls2X[0]) && GMath.isEqualEps(c1y, ctrls2Y[0])) {
                         newAPt.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         newAPt.setProperties(['hrx', 'hry'], [c1x, c1y]);
                     }
 
-                    if (IFMath.isEqualEps(c2x, ctrls2X[2]) && IFMath.isEqualEps(c2y, ctrls2Y[2])) {
+                    if (GMath.isEqualEps(c2x, ctrls2X[2]) && GMath.isEqualEps(c2y, ctrls2Y[2])) {
                         aNext.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         aNext.setProperties(['hlx', 'hly'], [c2x, c2y]);
                     }
                 } else { // zeroC2
-                    if (IFMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && IFMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
+                    if (GMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && GMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
                         newAPt.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         newAPt.setProperties(['hrx', 'hry'], [ctrls2X[1], ctrls2Y[1]]);
@@ -230,13 +230,13 @@
                     c1y = ctrls1Y[0] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[0]);
                     c2x = ctrls1X[2] + 2 / 3 * (ctrls1X[1] - ctrls1X[2]);
                     c2y = ctrls1Y[2] + 2 / 3 * (ctrls1Y[1] - ctrls1Y[2]);
-                    if (IFMath.isEqualEps(c2x, ctrls1X[2]) && IFMath.isEqualEps(c2y, ctrls1Y[2])) {
+                    if (GMath.isEqualEps(c2x, ctrls1X[2]) && GMath.isEqualEps(c2y, ctrls1Y[2])) {
                         newAPt.setProperties(['hlx', 'hly'], [null, null]);
                     } else {
                         newAPt.setProperties(['hlx', 'hly'], [c2x, c2y]);
                     }
 
-                    if (IFMath.isEqualEps(c1x, ctrls1X[0]) && IFMath.isEqualEps(c1y, ctrls1Y[0])) {
+                    if (GMath.isEqualEps(c1x, ctrls1X[0]) && GMath.isEqualEps(c1y, ctrls1Y[0])) {
                         aPrev.setProperties(['hrx', 'hry'], [null, null]);
                     } else {
                         aPrev.setProperties(['hrx', 'hry'], [c1x, c1y]);
@@ -248,32 +248,32 @@
                 var ctrls2X = new Float64Array(4);
                 var ctrls2Y = new Float64Array(4);
 
-                IFMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 1, ctrls1X);
-                IFMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 1, ctrls1Y);
-                IFMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 2, ctrls2X);
-                IFMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 2, ctrls2Y);
+                GMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 1, ctrls1X);
+                GMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 1, ctrls1Y);
+                GMath.getCtrlPtsCasteljau(p1x, c1x, c2x, p2x, slope, 2, ctrls2X);
+                GMath.getCtrlPtsCasteljau(p1y, c1y, c2y, p2y, slope, 2, ctrls2Y);
 
-                if (IFMath.isEqualEps(ctrls1X[1], p1x) && IFMath.isEqualEps(ctrls1Y[1], p1y)) {
+                if (GMath.isEqualEps(ctrls1X[1], p1x) && GMath.isEqualEps(ctrls1Y[1], p1y)) {
                     aPrev.setProperties(['hrx', 'hry'], [null, null]);
                 } else {
                     aPrev.setProperties(['hrx', 'hry'], [ctrls1X[1], ctrls1Y[1]]);
                 }
 
-                newAPt = new IFPath.AnchorPoint();
+                newAPt = new GPath.AnchorPoint();
                 newAPt.setProperties(['x', 'y', 'tp'], [ctrls1X[3], ctrls1Y[3], tpaNew]);
                 this.getAnchorPoints().insertChild(newAPt, aNext);
-                if (IFMath.isEqualEps(ctrls1X[2], ctrls1X[3]) && IFMath.isEqualEps(ctrls1Y[2], ctrls1Y[3])) {
+                if (GMath.isEqualEps(ctrls1X[2], ctrls1X[3]) && GMath.isEqualEps(ctrls1Y[2], ctrls1Y[3])) {
                     newAPt.setProperties(['hlx', 'hly'], [null, null]);
                 } else {
                     newAPt.setProperties(['hlx', 'hly'], [ctrls1X[2], ctrls1Y[2]]);
                 }
-                if (IFMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && IFMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
+                if (GMath.isEqualEps(ctrls2X[0], ctrls2X[1]) && GMath.isEqualEps(ctrls2Y[0], ctrls2Y[1])) {
                     newAPt.setProperties(['hrx', 'hry'], [null, null]);
                 } else {
                     newAPt.setProperties(['hrx', 'hry'], [ctrls2X[1], ctrls2Y[1]]);
                 }
 
-                if (IFMath.isEqualEps(ctrls2X[2], ctrls2X[3]) && IFMath.isEqualEps(ctrls2Y[2], ctrls2Y[3])) {
+                if (GMath.isEqualEps(ctrls2X[2], ctrls2X[3]) && GMath.isEqualEps(ctrls2Y[2], ctrls2Y[3])) {
                     aNext.setProperties(['hlx', 'hly'], [null, null]);
                 } else {
                     aNext.setProperties(['hlx', 'hly'], [ctrls2X[2], ctrls2Y[2]]);
@@ -285,32 +285,32 @@
     };
 
     /** @override */
-    IFPath.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFPath.GeometryProperties);
+    GPath.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GPath.GeometryProperties);
             args.pts = this.getAnchorPoints().serialize();
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFPath.GeometryProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GPath.GeometryProperties);
             if (args.hasOwnProperty('pts')) {
                 this.getAnchorPoints().deserialize(args.pts);
             }
         }
 
-        IFPathBase.prototype._handleChange.call(this, change, args);
+        GPathBase.prototype._handleChange.call(this, change, args);
 
-        this._handleGeometryChangeForProperties(change, args, IFPath.GeometryProperties);
-        this._handleGeometryChangeForProperties(change, args, IFPathBase.GeometryProperties);
+        this._handleGeometryChangeForProperties(change, args, GPath.GeometryProperties);
+        this._handleGeometryChangeForProperties(change, args, GPathBase.GeometryProperties);
     };
 
     /** @override */
-    IFPath.prototype._requireMiterLimitApproximation = function () {
+    GPath.prototype._requireMiterLimitApproximation = function () {
         return true;
     };
 
     /** @override */
-    IFPath.prototype.toString = function () {
-        return "[IFPath]";
+    GPath.prototype.toString = function () {
+        return "[GPath]";
     };
 
-    _.IFPath = IFPath;
+    _.GPath = GPath;
 })(this);

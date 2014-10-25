@@ -8,10 +8,10 @@
      */
     function GCloseAllAction() {
     };
-    IFObject.inherit(GCloseAllAction, GAction);
+    GObject.inherit(GCloseAllAction, GAction);
 
     GCloseAllAction.ID = 'file.close-all';
-    GCloseAllAction.TITLE = new IFLocale.Key(GCloseAllAction, "title");
+    GCloseAllAction.TITLE = new GLocale.Key(GCloseAllAction, "title");
 
     /**
      * @override

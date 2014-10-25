@@ -1,19 +1,19 @@
 (function (_) {
     /**
-     * IFEditorView is a widget to render and edit a scene
-     * @param {IFEditor} [editor] the editor this view is bound too, defaults to null
-     * @class IFEditorView
-     * @extends IFView
+     * GEditorView is a widget to render and edit a scene
+     * @param {GEditor} [editor] the editor this view is bound too, defaults to null
+     * @class GEditorView
+     * @extends GUIView
      * @constructor
      * @version 1.0
      */
-    function IFEditorView(editor) {
+    function GEditorView(editor) {
         var args = Array.prototype.slice.call(arguments);
         args[0] = editor.getScene();
         this._editor = editor;
-        this._viewConfiguration = new IFEditorPaintConfiguration(); // !!overwrite
+        this._viewConfiguration = new GEditorPaintConfiguration(); // !!overwrite
 
-        IFView.apply(this, args);
+        GUIView.apply(this, args);
 
         // Register drop events on our view
         $(this._htmlElement)
@@ -38,66 +38,66 @@
             }.bind(this));
     }
 
-    IFObject.inherit(IFEditorView, IFView);
+    GObject.inherit(GEditorView, GUIView);
 
     /**
-     * @type {IFEditor}
+     * @type {GEditor}
      * @private
      */
-    IFEditorView.prototype._editor = null;
+    GEditorView.prototype._editor = null;
 
     /**
-     * @type {IFEditorToolStage}
+     * @type {GEditorToolStage}
      * @private
      */
-    IFEditorView.prototype._toolStage = null;
+    GEditorView.prototype._toolStage = null;
 
     /**
      * Return the editor this view is rendering
-     * @returns {IFEditor}
+     * @returns {GEditor}
      */
-    IFEditorView.prototype.getEditor = function () {
+    GEditorView.prototype.getEditor = function () {
         return this._editor;
     };
 
     /**
      * Return the editor's tool stage
-     * @returns {IFEditorToolStage}
+     * @returns {GEditorToolStage}
      */
-    IFEditorView.prototype.getToolStage = function () {
+    GEditorView.prototype.getToolStage = function () {
         return this._toolStage;
     };
 
     /** @override */
-    IFEditorView.prototype._initStages = function () {
-        this.addStage(new IFEditorBackStage(this));
-        this.addStage(new IFSceneStage(this));
-        this.addStage(new IFEditorFrontStage(this));
-        this.addStage(new IFEditorSceneStage(this));
-        this._toolStage = this.addStage(new IFEditorToolStage(this));
+    GEditorView.prototype._initStages = function () {
+        this.addStage(new GEditorBackStage(this));
+        this.addStage(new GSceneStage(this));
+        this.addStage(new GEditorFrontStage(this));
+        this.addStage(new GEditorSceneStage(this));
+        this._toolStage = this.addStage(new GEditorToolStage(this));
     };
 
     /** @override */
-    IFEditorView.prototype._updateViewTransforms = function () {
-        IFView.prototype._updateViewTransforms.call(this);
+    GEditorView.prototype._updateViewTransforms = function () {
+        GUIView.prototype._updateViewTransforms.call(this);
         this._editor.updateInlineEditorForView(this);
     };
 
     /**
      * Handle a drop on the editor
-     * @param {IFPoint} position screen coordinates position
+     * @param {GPoint} position screen coordinates position
      * @param {DataTransfer} dataTransfer the dataTransfer object
      * @private
      */
-    IFEditorView.prototype._handleDrop = function (position, dataTransfer) {
+    GEditorView.prototype._handleDrop = function (position, dataTransfer) {
         // Convert position into scene coordinates
         var scenePosition = this.getViewTransform().mapPoint(position);
 
         // First we'll check for a file-drop
         if (dataTransfer.files && dataTransfer.files.length > 0) {
-            if (this._editor.hasEventListeners(IFEditor.FileDropEvent)) {
+            if (this._editor.hasEventListeners(GEditor.FileDropEvent)) {
                 for (var i = 0; i < dataTransfer.files.length; ++i) {
-                    this._editor.trigger(new IFEditor.FileDropEvent(dataTransfer.files[i], scenePosition));
+                    this._editor.trigger(new GEditor.FileDropEvent(dataTransfer.files[i], scenePosition));
                 }
             }
         } else if (dataTransfer.items && dataTransfer.items.length > 0) {
@@ -107,16 +107,16 @@
                 var type = null;
                 var source = null;
 
-                if (item.type === IFPattern.MIME_TYPE) {
-                    type = IFElementEditor.DropType.Pattern;
-                    source = dataTransfer.getData(IFPattern.MIME_TYPE);
-                    source = source && source !== "" ? IFPattern.deserialize(source) : null;
-                } else if (item.type === IFNode.MIME_TYPE) {
-                    type = IFElementEditor.DropType.Node;
-                    source = dataTransfer.getData(IFNode.MIME_TYPE);
-                    source = source && source !== "" ? IFNode.deserialize(source) : null;
+                if (item.type === GPattern.MIME_TYPE) {
+                    type = GElementEditor.DropType.Pattern;
+                    source = dataTransfer.getData(GPattern.MIME_TYPE);
+                    source = source && source !== "" ? GPattern.deserialize(source) : null;
+                } else if (item.type === GNode.MIME_TYPE) {
+                    type = GElementEditor.DropType.Node;
+                    source = dataTransfer.getData(GNode.MIME_TYPE);
+                    source = source && source !== "" ? GNode.deserialize(source) : null;
                 } else if (item.type === 'text/plain') {
-                    type = IFElementEditor.DropType.Text;
+                    type = GElementEditor.DropType.Text;
                     source = dataTransfer.getData('text/plain');
                 }
 
@@ -131,7 +131,7 @@
                         for (var j = 0; j < stackedHits.length; ++j) {
                             var hit = stackedHits[j];
                             // Create a temporary editor for the hit element which gets not attached
-                            var editor = IFElementEditor.createEditor(hit.element);
+                            var editor = GElementEditor.createEditor(hit.element);
                             if (editor && editor.acceptDrop(scenePosition, type, source, hit.data)) {
                                 // Drop was accepted so we're done here
                                 acceptedDrop = true;
@@ -142,10 +142,10 @@
 
                     // If drop was not yet accepted, try to do some custom handling here depending on type
                     if (!acceptedDrop) {
-                        if (type === IFElementEditor.DropType.Node && source instanceof IFElement) {
+                        if (type === GElementEditor.DropType.Node && source instanceof GElement) {
                             // Move the element to the drop-position
                             var elBBox = source.getGeometryBBox();
-                            source.transform(new IFTransform(1, 0, 0, 1,
+                            source.transform(new GTransform(1, 0, 0, 1,
                                 scenePosition.getX() - (elBBox ? elBBox.getX() : 0), scenePosition.getY() - (elBBox ? elBBox.getY() : 0)))
 
                             // Insert element and select it
@@ -159,10 +159,10 @@
     };
 
     /** @override */
-    IFEditorView.prototype.toString = function () {
-        return "[Object IFEditorView]";
+    GEditorView.prototype.toString = function () {
+        return "[Object GEditorView]";
     };
 
-    _.IFEditorView = IFEditorView;
+    _.GEditorView = GEditorView;
 
 })(this);

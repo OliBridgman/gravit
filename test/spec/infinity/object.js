@@ -1,16 +1,16 @@
 /*global describe, it */
 'use strict';
 (function () {
-    describe('IFObject', function () {
+    describe('GObject', function () {
         this.bail(false);
 
         it('Inherits correctly', function () {
             function TestObject() {
 
             }
-            IFObject.inherit(TestObject, IFObject);
+            GObject.inherit(TestObject, GObject);
 
-            expect(new TestObject()).to.be.instanceOf(IFObject);
+            expect(new TestObject()).to.be.instanceOf(GObject);
         });
 
         it('Mixes correctly', function () {
@@ -21,9 +21,9 @@
             function TestMixin() {
 
             }
-            IFObject.inheritAndMix(TestObject, IFObject, [TestMixin]);
+            GObject.inheritAndMix(TestObject, GObject, [TestMixin]);
 
-            expect(new TestObject()).to.be.instanceOf(IFObject);
+            expect(new TestObject()).to.be.instanceOf(GObject);
             expect(new TestObject().hasMixin(TestMixin)).to.be.true;
         });
     });

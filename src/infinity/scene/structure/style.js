@@ -1,65 +1,65 @@
 (function (_) {
     /**
      * A style that can be shared and paint itself
-     * @class IFStyle
-     * @extends IFNode
-     * @mixes IFNode.Properties
-     * @mixes IFNode.Store
-     * @mixes IFNode.Reference
-     * @mixes IFStylable
+     * @class GStyle
+     * @extends GNode
+     * @mixes GNode.Properties
+     * @mixes GNode.Store
+     * @mixes GNode.Reference
+     * @mixes GStylable
      * @constructor
      */
-    IFStyle = function () {
-        IFNode.call(this);
-        this._setDefaultProperties(IFStyle.MetaProperties);
+    GStyle = function () {
+        GNode.call(this);
+        this._setDefaultProperties(GStyle.MetaProperties);
         this._setStyleDefaultProperties();
     };
-    IFNode.inheritAndMix('style', IFStyle, IFNode, [IFNode.Properties, IFNode.Store, IFNode.Reference, IFStylable]);
+    GNode.inheritAndMix('style', GStyle, GNode, [GNode.Properties, GNode.Store, GNode.Reference, GStylable]);
 
     /**
      * The meta properties of a style with their default values
      */
-    IFStyle.MetaProperties = {
+    GStyle.MetaProperties = {
         /** Name of the style */
         name: null,
         /** Property-Sets of the style */
         ps: [
-            IFStylable.PropertySet.Style,
-            IFStylable.PropertySet.Effects,
-            IFStylable.PropertySet.Fill,
-            IFStylable.PropertySet.Border,
-            IFStylable.PropertySet.Text,
-            IFStylable.PropertySet.Paragraph
+            GStylable.PropertySet.Style,
+            GStylable.PropertySet.Effects,
+            GStylable.PropertySet.Fill,
+            GStylable.PropertySet.Border,
+            GStylable.PropertySet.Text,
+            GStylable.PropertySet.Paragraph
         ]
     };
 
     /** @override */
-    IFStyle.prototype.assignStyleFrom = function (source, compare) {
+    GStyle.prototype.assignStyleFrom = function (source, compare) {
         var scene = this.getScene();
         if (scene) {
             scene.visitLinks(this, function (link) {
-                if (link !== source && link.hasMixin(IFStylable)) {
+                if (link !== source && link.hasMixin(GStylable)) {
                     link.assignStyleFrom(source, this);
                 }
             }.bind(this));
         }
 
-        this._beginBlockChanges([IFNode._Change.BeforePropertiesChange, IFNode._Change.AfterPropertiesChange]);
+        this._beginBlockChanges([GNode._Change.BeforePropertiesChange, GNode._Change.AfterPropertiesChange]);
         try {
-            IFStylable.prototype.assignStyleFrom.call(this, source);
+            GStylable.prototype.assignStyleFrom.call(this, source);
         } finally {
-            this._endBlockChanges([IFNode._Change.BeforePropertiesChange, IFNode._Change.AfterPropertiesChange]);
+            this._endBlockChanges([GNode._Change.BeforePropertiesChange, GNode._Change.AfterPropertiesChange]);
         }
     };
 
     /**
      * Disconnect this style from all the ones it is linked to
      */
-    IFStyle.prototype.disconnectStyle = function () {
+    GStyle.prototype.disconnectStyle = function () {
         var scene = this.getScene();
         if (scene) {
             scene.visitLinks(this, function (link) {
-                if (link.hasMixin(IFElement.Stylable)) {
+                if (link.hasMixin(GElement.Stylable)) {
                     link.setProperty('sref', null);
                 }
             });
@@ -67,21 +67,21 @@
     };
 
     /** @override */
-    IFStyle.prototype.getStylePropertySets = function () {
+    GStyle.prototype.getStylePropertySets = function () {
         return this.$ps;
     };
 
     /** @override */
-    IFStyle.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFScene.StyleCollection;
+    GStyle.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GScene.StyleCollection;
     };
 
     /** @private */
-    IFStyle.prototype._stylePropertiesUpdated = function (properties, previousValues) {
+    GStyle.prototype._stylePropertiesUpdated = function (properties, previousValues) {
         var scene = this.getScene();
         if (scene) {
             scene.visitLinks(this, function (link) {
-                if (link.hasMixin(IFStylable)) {
+                if (link.hasMixin(GStylable)) {
                     link.assignStyleFrom(this);
                 }
             }.bind(this));
@@ -89,23 +89,23 @@
     };
 
     /** @override */
-    IFStyle.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFStyle.MetaProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFStyle.MetaProperties);
+    GStyle.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GStyle.MetaProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GStyle.MetaProperties);
         }
 
         this._handleStyleChange(change, args);
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
 
     };
 
     /** @override */
-    IFStyle.prototype.toString = function () {
-        return "[Mixin IFStyle]";
+    GStyle.prototype.toString = function () {
+        return "[Mixin GStyle]";
     };
 
-    _.IFStyle = IFStyle;
+    _.GStyle = GStyle;
 })(this);

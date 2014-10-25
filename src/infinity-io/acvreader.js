@@ -1,28 +1,28 @@
 (function (_) {
     /**
      * Reader for Adobe Curve Files
-     * @class IFACVReader
+     * @class GACVReader
      * @constructor
-     * @extends IFReader
+     * @extends GReader
      */
-    function IFACVReader() {
-        IFReader.call(this);
+    function GACVReader() {
+        GReader.call(this);
     };
-    IFObject.inherit(IFACVReader, IFReader);
+    GObject.inherit(GACVReader, GReader);
 
-    IFACVReader.prototype.getInputType = function () {
-        return IFReader.InputType.ArrayBuffer;
+    GACVReader.prototype.getInputType = function () {
+        return GReader.InputType.ArrayBuffer;
     };
 
-    IFACVReader.prototype.getMimeType = function () {
+    GACVReader.prototype.getMimeType = function () {
         return 'application/x-adobe-acv';
     };
 
-    IFACVReader.prototype.getFileExtensions = function () {
+    GACVReader.prototype.getFileExtensions = function () {
         return ['acv'];
     };
 
-    IFACVReader.prototype.readInput = function (input, callback) {
+    GACVReader.prototype.readInput = function (input, callback) {
         var view = new jDataView(input);
 
         var result = {
@@ -64,5 +64,5 @@
         callback(result);
     };
 
-    IFIO.registerReader(new IFACVReader());
+    GIO.registerReader(new GACVReader());
 })(this);

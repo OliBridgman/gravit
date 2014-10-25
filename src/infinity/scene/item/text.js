@@ -1,27 +1,27 @@
 (function (_) {
     /**
      * A text shape
-     * @class IFText
-     * @extends IFShape
+     * @class GText
+     * @extends GShape
      * @constructor
      */
-    function IFText() {
-        IFShape.call(this);
-        this._setDefaultProperties(IFText.GeometryProperties);
+    function GText() {
+        GShape.call(this);
+        this._setDefaultProperties(GText.GeometryProperties);
         this._runs = [];
         this._runsDirty = false;
-        this._tl = new IFPoint(0, 0);
-        this._tr = new IFPoint(1, 0);
-        this._br = new IFPoint(1, 1);
-        this._bl = new IFPoint(0, 1);
+        this._tl = new GPoint(0, 0);
+        this._tr = new GPoint(1, 0);
+        this._br = new GPoint(1, 1);
+        this._bl = new GPoint(0, 1);
     }
 
-    IFNode.inherit("text", IFText, IFShape);
+    GNode.inherit("text", GText, GShape);
 
     /**
      * Vertical align of a text
      */
-    IFText.VerticalAlign = {
+    GText.VerticalAlign = {
         Top: 't',
         Middle: 'm',
         Bottom: 'b'
@@ -30,105 +30,105 @@
     /**
      * The geometry properties of text with their default values
      */
-    IFText.GeometryProperties = {
+    GText.GeometryProperties = {
         /** Auto-width or not */
         aw: true,
         /** Auto-height or not */
         ah: true,
         /** Vertical alignment */
-        va: IFText.VerticalAlign.Top,
+        va: GText.VerticalAlign.Top,
         /** Text transformation (not the same as transformation of the text box, which is $trf) */
         ttrf: null
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Chunk Class
+    // GText.Chunk Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Chunk
-     * @extends IFNode
-     * @mixes IFNode.Store
+     * @class GText.Chunk
+     * @extends GNode
+     * @mixes GNode.Store
      * @private
      */
-    IFText.Chunk = function (content) {
-        IFNode.call(this);
+    GText.Chunk = function (content) {
+        GNode.call(this);
         this._content = content;
     }
 
-    IFNode.inheritAndMix("txChk", IFText.Chunk, IFNode, [IFNode.Store]);
+    GNode.inheritAndMix("txChk", GText.Chunk, GNode, [GNode.Store]);
 
     /**
      * @type {String}
      * @private
      */
-    IFText.Chunk.prototype._content = null;
+    GText.Chunk.prototype._content = null;
 
     /**
      * @returns {String}
      */
-    IFText.Chunk.prototype.getContent = function () {
+    GText.Chunk.prototype.getContent = function () {
         return this._content;
     };
 
     /** @override */
-    IFText.Chunk.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText.Block;
+    GText.Chunk.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText.Block;
     };
 
     /** @override */
-    IFText.Chunk.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
+    GText.Chunk.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
             args.cnt = this._content;
-        } else if (change === IFNode._Change.Restore) {
+        } else if (change === GNode._Change.Restore) {
             this._content = args.cnt;
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Break Class
+    // GText.Break Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Break
-     * @extends IFNode
-     * @mixes IFNode.Store
+     * @class GText.Break
+     * @extends GNode
+     * @mixes GNode.Store
      * @private
      */
-    IFText.Break = function () {
-        IFNode.call(this);
+    GText.Break = function () {
+        GNode.call(this);
     }
 
-    IFNode.inheritAndMix("txBrk", IFText.Break, IFNode, [IFNode.Store]);
+    GNode.inheritAndMix("txBrk", GText.Break, GNode, [GNode.Store]);
 
     /** @override */
-    IFText.Break.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText.Block;
+    GText.Break.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText.Block;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Block Class
+    // GText.Block Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Block
-     * @extends IFNode
-     * @mixes IFNode.Properties
-     * @mixes IFNode.Store
-     * @mixes IFStylable
+     * @class GText.Block
+     * @extends GNode
+     * @mixes GNode.Properties
+     * @mixes GNode.Store
+     * @mixes GStylable
      * @private
      */
-    IFText.Block = function () {
+    GText.Block = function () {
         this._setStyleDefaultProperties();
     };
 
-    IFObject.inheritAndMix(IFText.Block, IFNode, [IFNode.Properties, IFNode.Store, IFStylable]);
+    GObject.inheritAndMix(GText.Block, GNode, [GNode.Properties, GNode.Store, GStylable]);
 
     /** @override */
-    IFText.Block.prototype.getStylePropertySets = function () {
-        return [IFStylable.PropertySet.Text];
+    GText.Block.prototype.getStylePropertySets = function () {
+        return [GStylable.PropertySet.Text];
     };
 
-    IFText.Block.propertyToCss = function (property, value, css) {
+    GText.Block.propertyToCss = function (property, value, css) {
         if (property === '_tff') {
             css['font-family'] = value !== null ? value : '';
         } else if (property === '_tfi') {
@@ -140,10 +140,10 @@
                 css['font-style'] = '';
             } else {
                 switch (value) {
-                    case IFFont.Style.Normal:
+                    case GFont.Style.Normal:
                         css['font-style'] = 'normal';
                         break;
-                    case IFFont.Style.Italic:
+                    case GFont.Style.Italic:
                         css['font-style'] = 'italic';
                         break;
                     default:
@@ -161,7 +161,7 @@
         }
     };
 
-    IFText.Block.cssToProperty = function (property, css) {
+    GText.Block.cssToProperty = function (property, css) {
         if (property === '_tff') {
             if (css['font-family']) {
                 var family = css['font-family'];
@@ -192,19 +192,19 @@
             } else {
                 value = css['font-weight'];
                 if (value === 'normal') {
-                    return IFFont.Weight.Regular;
+                    return GFont.Weight.Regular;
                 } else if (value === 'bold') {
-                    return IFFont.Weight.Bold;
+                    return GFont.Weight.Bold;
                 }
             }
         } else if (property === '_tfs') {
             if (css['font-style'] === 'normal') {
-                return IFFont.Style.Normal;
+                return GFont.Style.Normal;
             } else if (css['font-style'] === 'italic') {
-                return IFFont.Style.Italic;
+                return GFont.Style.Italic;
             }
         } else if (property === 'fc') {
-            var value = IFRGBColor.fromCSSColor(css['color']);
+            var value = GRGBColor.fromCSSColor(css['color']);
             if (value) {
                 return value;
             }
@@ -226,11 +226,11 @@
     };
 
     /**
-     * @return {IFText}
+     * @return {GText}
      */
-    IFText.Block.prototype.getText = function () {
+    GText.Block.prototype.getText = function () {
         for (var parent = this.getParent(); parent !== null; parent = parent.getParent()) {
-            if (parent instanceof IFText) {
+            if (parent instanceof GText) {
                 return parent;
             }
         }
@@ -238,29 +238,29 @@
     };
 
     /** @override */
-    IFText.Block.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText.Block;
+    GText.Block.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText.Block;
     };
 
     /** @override */
-    IFText.Block.prototype._handleChange = function (change, args) {
+    GText.Block.prototype._handleChange = function (change, args) {
         this._handleStyleChange(change, args);
 
         var text = this.getText();
         if (text) {
-            if (change == IFNode._Change.BeforeChildInsert || change == IFNode._Change.BeforeChildRemove) {
+            if (change == GNode._Change.BeforeChildInsert || change == GNode._Change.BeforeChildRemove) {
                 text.beginUpdate();
-            } else if (change == IFNode._Change.AfterChildInsert || change == IFNode._Change.AfterChildRemove) {
+            } else if (change == GNode._Change.AfterChildInsert || change == GNode._Change.AfterChildRemove) {
                 text._runsDirty = true;
                 text.endUpdate();
             }
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFText.Block.prototype._stylePrepareGeometryChange = function () {
+    GText.Block.prototype._stylePrepareGeometryChange = function () {
         var text = this.getText();
         if (text) {
             text._runsDirty = true;
@@ -271,18 +271,18 @@
      * @param {{}} css
      * @returns {{}}
      */
-    IFText.Block.prototype.propertiesToCss = function (css) {
-        return this._propertiesToCss(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.propertyToCss);
+    GText.Block.prototype.propertiesToCss = function (css) {
+        return this._propertiesToCss(css, GStylable.PropertySetInfo[GStylable.PropertySet.Text].geometryProperties, GText.Block.propertyToCss);
     };
 
     /**
      * @param {{}} css
      */
-    IFText.Block.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.cssToProperty);
+    GText.Block.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, GStylable.PropertySetInfo[GStylable.PropertySet.Text].geometryProperties, GText.Block.cssToProperty);
     };
 
-    IFText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
+    GText.Block.prototype._propertiesToCss = function (css, propertyMap, propertyConverter) {
         for (var property in propertyMap) {
             var value = this.getProperty(property);
             if (value !== null) {
@@ -292,7 +292,7 @@
         return css;
     };
 
-    IFText.Block.prototype._cssToProperties = function (css, propertyMap, propertyConverter) {
+    GText.Block.prototype._cssToProperties = function (css, propertyMap, propertyConverter) {
         var properties = [];
         var values = [];
         for (var property in propertyMap) {
@@ -307,46 +307,46 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Span Class
+    // GText.Span Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Span
-     * @extends IFText.Block
-     * @mixes IFNode.Container
+     * @class GText.Span
+     * @extends GText.Block
+     * @mixes GNode.Container
      * @private
      */
-    IFText.Span = function () {
-        IFText.Block.call(this);
+    GText.Span = function () {
+        GText.Block.call(this);
     }
 
-    IFNode.inheritAndMix("txSpan", IFText.Span, IFText.Block, [IFNode.Container]);
+    GNode.inheritAndMix("txSpan", GText.Span, GText.Block, [GNode.Container]);
 
     /** @override */
-    IFText.Span.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText.Paragraph || parent instanceof IFText.Span;
+    GText.Span.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText.Paragraph || parent instanceof GText.Span;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Paragraph Class
+    // GText.Paragraph Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Paragraph
-     * @extends IFText.Block
-     * @mixes IFNode.Container
+     * @class GText.Paragraph
+     * @extends GText.Block
+     * @mixes GNode.Container
      * @private
      */
-    IFText.Paragraph = function () {
-        IFText.Block.call(this);
+    GText.Paragraph = function () {
+        GText.Block.call(this);
     }
 
-    IFNode.inheritAndMix("txPara", IFText.Paragraph, IFText.Block, [IFNode.Container]);
+    GNode.inheritAndMix("txPara", GText.Paragraph, GText.Block, [GNode.Container]);
 
     /** @override */
-    IFText.Paragraph.prototype.getStylePropertySets = function () {
-        return [IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph];
+    GText.Paragraph.prototype.getStylePropertySets = function () {
+        return [GStylable.PropertySet.Text, GStylable.PropertySet.Paragraph];
     };
 
-    IFText.Paragraph.propertyToCss = function (property, value, css) {
+    GText.Paragraph.propertyToCss = function (property, value, css) {
         if (property === '_pcc') {
             value = value !== null ? value : '';
             css['column-count'] = value;
@@ -363,13 +363,13 @@
                 css['word-break'] = '';
             } else {
                 switch (value) {
-                    case IFStylable.ParagraphWrapMode.None:
+                    case GStylable.ParagraphWrapMode.None:
                         css['white-space'] = 'nowrap';
                         break;
-                    case IFStylable.ParagraphWrapMode.Words:
+                    case GStylable.ParagraphWrapMode.Words:
                         css['white-space'] = 'pre-wrap';
                         break;
-                    case IFStylable.ParagraphWrapMode.All:
+                    case GStylable.ParagraphWrapMode.All:
                         css['white-space'] = 'pre-wrap';
                         css['word-break'] = 'break-all';
                         break;
@@ -380,16 +380,16 @@
                 css['text-align'] = '';
             } else {
                 switch (value) {
-                    case IFStylable.ParagraphAlignment.Left:
+                    case GStylable.ParagraphAlignment.Left:
                         css['text-align'] = 'left';
                         break;
-                    case IFStylable.ParagraphAlignment.Center:
+                    case GStylable.ParagraphAlignment.Center:
                         css['text-align'] = 'center';
                         break;
-                    case IFStylable.ParagraphAlignment.Right:
+                    case GStylable.ParagraphAlignment.Right:
                         css['text-align'] = 'right';
                         break;
-                    case IFStylable.ParagraphAlignment.Justify:
+                    case GStylable.ParagraphAlignment.Justify:
                         css['text-align'] = 'justify';
                         break;
                 }
@@ -403,7 +403,7 @@
         }
     };
 
-    IFText.Paragraph.cssToProperty = function (property, css) {
+    GText.Paragraph.cssToProperty = function (property, css) {
         if (property === '_pcc') {
             var str = css['column-count'] || css['-webkit-column-count'] || css['-moz-column-count'];
             var value = parseInt(str);
@@ -422,23 +422,23 @@
 
             if (wspace === 'pre-wrap') {
                 if (wbreak === 'break-all') {
-                    return IFStylable.ParagraphWrapMode.All;
+                    return GStylable.ParagraphWrapMode.All;
                 } else {
-                    return IFStylable.ParagraphWrapMode.Words;
+                    return GStylable.ParagraphWrapMode.Words;
                 }
             } else if (wspace === 'nowrap') {
-                return IFStylable.ParagraphWrapMode.None;
+                return GStylable.ParagraphWrapMode.None;
             }
         } else if (property === '_pal') {
             var value = css['text-align'];
             if (value === 'left') {
-                return IFStylable.ParagraphAlignment.Left;
+                return GStylable.ParagraphAlignment.Left;
             } else if (value === 'center') {
-                return IFStylable.ParagraphAlignment.Center;
+                return GStylable.ParagraphAlignment.Center;
             } else if (value === 'right') {
-                return IFStylable.ParagraphAlignment.Right;
+                return GStylable.ParagraphAlignment.Right;
             } else if (value === 'justify') {
-                return IFStylable.ParagraphAlignment.Justify;
+                return GStylable.ParagraphAlignment.Justify;
             }
         } else if (property === '_pin') {
             var value = parseFloat(css['text-indent']);
@@ -457,47 +457,47 @@
     };
 
     /** @override */
-    IFText.Paragraph.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText.Content;
+    GText.Paragraph.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText.Content;
     };
 
     /** @override */
-    IFText.Paragraph.prototype.propertiesToCss = function (css) {
-        this._propertiesToCss(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.propertyToCss);
-        return IFText.Block.prototype.propertiesToCss.call(this, css);
+    GText.Paragraph.prototype.propertiesToCss = function (css) {
+        this._propertiesToCss(css, GStylable.PropertySetInfo[GStylable.PropertySet.Paragraph].geometryProperties, GText.Paragraph.propertyToCss);
+        return GText.Block.prototype.propertiesToCss.call(this, css);
     };
 
     /**
      * @param {{}} css
      */
-    IFText.Paragraph.prototype.cssToProperties = function (css) {
-        this._cssToProperties(css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.cssToProperty);
-        IFText.Block.prototype.cssToProperties.call(this, css);
+    GText.Paragraph.prototype.cssToProperties = function (css) {
+        this._cssToProperties(css, GStylable.PropertySetInfo[GStylable.PropertySet.Paragraph].geometryProperties, GText.Paragraph.cssToProperty);
+        GText.Block.prototype.cssToProperties.call(this, css);
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText.Content Class
+    // GText.Content Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class IFText.Content
-     * @extends IFNode
-     * @mixes IFNode.Properties
-     * @mixes IFNode.Store
-     * @mixes IFNode.Container
+     * @class GText.Content
+     * @extends GNode
+     * @mixes GNode.Properties
+     * @mixes GNode.Store
+     * @mixes GNode.Container
      * @private
      */
-    IFText.Content = function () {
-        IFNode.call(this);
+    GText.Content = function () {
+        GNode.call(this);
     };
 
-    IFNode.inheritAndMix("txContent", IFText.Content, IFNode, [IFNode.Properties, IFNode.Store, IFNode.Container]);
+    GNode.inheritAndMix("txContent", GText.Content, GNode, [GNode.Properties, GNode.Store, GNode.Container]);
 
     /** @override */
-    IFText.Content.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFText;
+    GText.Content.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GText;
     };
 
-    IFText.Content.prototype.propertiesToCss = function (css) {
+    GText.Content.prototype.propertiesToCss = function (css) {
         // Setup default color taking care of style if any
         css['color'] = 'black';
 
@@ -505,93 +505,93 @@
         if (text) {
             // Take color of fill pattern and assign it to editor if any
             var fillPattern = text.getProperty('_fpt');
-            if (fillPattern && fillPattern instanceof IFColor) {
-                css['color'] = IFColor.rgbToHtmlHex(fillPattern.toScreen());
+            if (fillPattern && fillPattern instanceof GColor) {
+                css['color'] = GColor.rgbToHtmlHex(fillPattern.toScreen());
             }
 
             // Call property convert with our text as property source
-            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Text].geometryProperties, IFText.Block.propertyToCss);
-            IFText.Block.prototype._propertiesToCss.call(text, css, IFStylable.PropertySetInfo[IFStylable.PropertySet.Paragraph].geometryProperties, IFText.Paragraph.propertyToCss);
+            GText.Block.prototype._propertiesToCss.call(text, css, GStylable.PropertySetInfo[GStylable.PropertySet.Text].geometryProperties, GText.Block.propertyToCss);
+            GText.Block.prototype._propertiesToCss.call(text, css, GStylable.PropertySetInfo[GStylable.PropertySet.Paragraph].geometryProperties, GText.Paragraph.propertyToCss);
         }
 
         return css;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFText Class
+    // GText Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @type {IFText.Content}
+     * @type {GText.Content}
      * @private
      */
-    IFText.prototype._content = null;
+    GText.prototype._content = null;
 
     /**
      * The top left point of the text box (after some transformations applied the text box may be not rectangular)
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFText.prototype._tl = null;
+    GText.prototype._tl = null;
 
     /**
      * The top right point of the text box (after some transformations applied the text box may be not rectangular)
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFText.prototype._tr = null;
+    GText.prototype._tr = null;
 
     /**
      * The bottom left point of the text box (after some transformations applied the text box may be not rectangular)
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFText.prototype._bl = null;
+    GText.prototype._bl = null;
 
     /**
      * The bottom right point of the text box (after some transformations applied the text box may be not rectangular)
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
-    IFText.prototype._br = null;
+    GText.prototype._br = null;
 
     /**
      * Used to store the shift of chars between calls of rewindVertices() and following readVertex()
      * @type {Number}
      * @private
      */
-    IFText.prototype._verticalShift = 0;
+    GText.prototype._verticalShift = 0;
 
     /**
      * @type {Array<{}>}
      * @private
      */
-    IFText.prototype._runs = null;
+    GText.prototype._runs = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFText.prototype._runsDirty = false;
+    GText.prototype._runsDirty = false;
 
     /**
      * @type {number}
      * @private
      */
-    IFText.prototype._runItIndex = null;
+    GText.prototype._runItIndex = null;
 
     /**
-     * @type {IFVertexSource}
+     * @type {GVertexSource}
      * @private
      */
-    IFText.prototype._runItOutline = null;
+    GText.prototype._runItOutline = null;
 
     /**
      * Returns the content container of the text node
-     * @returns {IFText.Content}
+     * @returns {GText.Content}
      */
-    IFText.prototype.getContent = function () {
+    GText.prototype.getContent = function () {
         if (!this._content) {
-            this._content = new IFText.Content();
+            this._content = new GText.Content();
             this._content._parent = this;
             this._content._setScene(this._scene);
         }
@@ -601,9 +601,9 @@
 
     /**
      * Returns the bounding box of the content
-     * @return {IFRect} null if there's no bbox or a valid bbox
+     * @return {GRect} null if there's no bbox or a valid bbox
      */
-    IFText.prototype.getContentBBox = function () {
+    GText.prototype.getContentBBox = function () {
         return this._sizeBox ? this._sizeBox : null;
     };
 
@@ -614,7 +614,7 @@
      * Defaults to false.
      * @returns {String}
      */
-    IFText.prototype.asHtml = function (segments) {
+    GText.prototype.asHtml = function (segments) {
         var dummy = $('<div></div>');
         this._asHtml(dummy, this.getContent(), segments);
         return dummy.html();
@@ -625,7 +625,7 @@
      * a given html string
      * @param {String} html
      */
-    IFText.prototype.fromHtml = function (html) {
+    GText.prototype.fromHtml = function (html) {
         this.beginUpdate();
         try {
             var content = this.getContent();
@@ -647,23 +647,23 @@
     };
 
     /** @override */
-    IFText.prototype.transform = function (transform) {
+    GText.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
             this.setProperties(['trf', 'ttrf'],
                 [this.$trf ? this.$trf.multiplied(transform) : transform,
                     this.$ttrf ? this.$ttrf.multiplied(transform) : transform]);
         }
-        IFElement.Transform.prototype._transformChildren.call(this, transform);
+        GElement.Transform.prototype._transformChildren.call(this, transform);
     };
 
     /** @override */
-    IFText.prototype.getStylePropertySets = function () {
-        return IFShape.prototype.getStylePropertySets.call(this).concat(
-            IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph);
+    GText.prototype.getStylePropertySets = function () {
+        return GShape.prototype.getStylePropertySets.call(this).concat(
+            GStylable.PropertySet.Text, GStylable.PropertySet.Paragraph);
     };
 
     /** @override */
-    IFText.prototype.rewindVertices = function (index) {
+    GText.prototype.rewindVertices = function (index) {
         if (this._runsDirty || this._runs == null) {
             this._runs = [];
 
@@ -678,7 +678,7 @@
                 bl = this.$trf.mapPoint(bl);
                 br = this.$trf.mapPoint(br);
             }
-            this._textBox = new IFRect.fromPoints(tl, tr, br, bl);// this.$ah ? this._textBox : new IFRect.fromPoints(tl, tr, br, bl);
+            this._textBox = new GRect.fromPoints(tl, tr, br, bl);// this.$ah ? this._textBox : new GRect.fromPoints(tl, tr, br, bl);
             var textBoxOrig = this._textBox;
             if (this.$ttrf) {
                 var ittrf = this.$ttrf.inverted();
@@ -714,7 +714,7 @@
                 }
 
                 if (maxlx !== null && minrx !== null && maxty !== null && minby !== null) {
-                    textBoxOrig = new IFRect.fromPoints(new IFPoint(maxlx, maxty), new IFPoint(minrx, minby));
+                    textBoxOrig = new GRect.fromPoints(new GPoint(maxlx, maxty), new GPoint(minrx, minby));
                 } else {
                     textBoxOrig = null;
                 }
@@ -758,10 +758,10 @@
                         'font-weight': $span.css('font-weight')
                     };
 
-                    var fontFamily = IFText.Block.cssToProperty('_tff', css);
-                    var fontSize = IFText.Block.cssToProperty('_tfi', css);
-                    var fontStyle = IFText.Block.cssToProperty('_tfs', css);
-                    var fontWeight = IFText.Block.cssToProperty('_tfw', css);
+                    var fontFamily = GText.Block.cssToProperty('_tff', css);
+                    var fontSize = GText.Block.cssToProperty('_tfi', css);
+                    var fontStyle = GText.Block.cssToProperty('_tfs', css);
+                    var fontWeight = GText.Block.cssToProperty('_tfw', css);
                     var fontVariant = ifFont.getVariant(fontFamily, fontStyle, fontWeight);
                     var baseline = ifFont.getGlyphBaseline(fontFamily, fontVariant, fontSize);
 
@@ -777,14 +777,14 @@
                     }
 
                     var charSz = ifFont.getGlyphCharSzRect(fontFamily, fontVariant, fontSize, char);
-                    var charRect = new IFRect(rect.left + charSz.getX(), rect.top, charSz.getWidth(), rect.height);
+                    var charRect = new GRect(rect.left + charSz.getX(), rect.top, charSz.getWidth(), rect.height);
 
                     sizeBox = sizeBox ? sizeBox.united(charRect) : charRect;
                 }.bind(this));
 
                 var verticalShift = 0;
                 if (sizeBox) {
-                    this._sizeBox = new IFRect(sizeBox.getX() + textBoxOrig.getX(), sizeBox.getY() + textBoxOrig.getY(),
+                    this._sizeBox = new GRect(sizeBox.getX() + textBoxOrig.getX(), sizeBox.getY() + textBoxOrig.getY(),
                         sizeBox.getWidth(), sizeBox.getHeight());
 
                     if (this.$ttrf) {
@@ -793,16 +793,16 @@
                     // Calculate vertical shift depending on vertical alignment
                     if (this._sizeBox && this._sizeBox.getHeight() < this._textBox.getHeight()) {
                         switch (this.$va) {
-                            case IFText.VerticalAlign.Top:
+                            case GText.VerticalAlign.Top:
                                 verticalShift = this._textBox.getY() - this._sizeBox.getY();
                                 break;
 
-                            case IFText.VerticalAlign.Middle:
+                            case GText.VerticalAlign.Middle:
                                 verticalShift = this._textBox.getY() - this._sizeBox.getY() +
                                     (this._textBox.getHeight() - this._sizeBox.getHeight()) / 2;
                                 break;
 
-                            case IFText.VerticalAlign.Bottom:
+                            case GText.VerticalAlign.Bottom:
                                 verticalShift = this._textBox.getY() - this._sizeBox.getY() +
                                     this._textBox.getHeight() - this._sizeBox.getHeight();
                                 break;
@@ -834,7 +834,7 @@
                     var h = this.$ah || this._sizeBox.getHeight() > this._textBox.getHeight() ?
                         this._sizeBox.getHeight() : this._textBox.getHeight();
 
-                    this._textBox = new IFRect(lx, ty, w, h);
+                    this._textBox = new GRect(lx, ty, w, h);
                 }
             }
         }
@@ -849,7 +849,7 @@
     };
 
     /** @override */
-    IFText.prototype.readVertex = function (vertex) {
+    GText.prototype.readVertex = function (vertex) {
         if (this._runItOutline) {
             if (this._runItOutline.readVertex(vertex)) {
                 return true;
@@ -869,11 +869,11 @@
             this._runItOutline = ifFont.getGlyphOutline(run.family, run.variant, run.size, run.x, run.y, run.char);
             var transform = this.$ttrf && !this.$ttrf.isIdentity() ? this.$ttrf : null;
             if (this._verticalShift) {
-                var vtrans = new IFTransform(1, 0, 0, 1, 0, this._verticalShift);
+                var vtrans = new GTransform(1, 0, 0, 1, 0, this._verticalShift);
                 transform = transform ? transform.multiplied(vtrans) : vtrans;
             }
             if (transform) {
-                this._runItOutline = new IFVertexTransformer(this._runItOutline, transform);
+                this._runItOutline = new GVertexTransformer(this._runItOutline, transform);
             }
             if (!this._runItOutline.rewindVertices(0)) {
                 throw new Error('Unexpected end of outline');
@@ -884,9 +884,9 @@
 
     /**
      * Intended to be called for text box resize transformations
-     * @param {IFTransform} transform
+     * @param {GTransform} transform
      */
-    IFText.prototype.textBoxTransform = function (transform) {
+    GText.prototype.textBoxTransform = function (transform) {
         if (transform && !transform.isIdentity()) {
             var trf = transform;
             var oldVisualTextBox = this._textBox;
@@ -901,8 +901,8 @@
                 bl = this.$trf.mapPoint(bl);
                 br = this.$trf.mapPoint(br);
             }
-            var textBox = new IFRect.fromPoints(tl, tr, br, bl);
-            trf = new IFTransform()
+            var textBox = new GRect.fromPoints(tl, tr, br, bl);
+            trf = new GTransform()
                 .translated(-textBox.getX(), -textBox.getY())
                 .scaled(newVisualTextBox.getWidth() / textBox.getWidth(),
                     newVisualTextBox.getHeight() / textBox.getHeight())
@@ -917,7 +917,7 @@
      * Remember the current text box as a starting box for all the text transformations,
      * and set the 'trf' property to null
      */
-    IFText.prototype.useTextBoxAsBase = function () {
+    GText.prototype.useTextBoxAsBase = function () {
         var textBox = null;
         if (this._textBox && !this._runsDirty) {
             textBox = this._textBox;
@@ -934,17 +934,17 @@
                 bl = this.$trf.mapPoint(bl);
                 br = this.$trf.mapPoint(br);
             }
-            textBox = new IFRect.fromPoints(tl, tr, br, bl);
+            textBox = new GRect.fromPoints(tl, tr, br, bl);
         }
-        this._tl = textBox.getSide(IFRect.Side.TOP_LEFT);
-        this._tr = textBox.getSide(IFRect.Side.TOP_RIGHT);
-        this._br = textBox.getSide(IFRect.Side.BOTTOM_RIGHT);
-        this._bl = textBox.getSide(IFRect.Side.BOTTOM_LEFT);
+        this._tl = textBox.getSide(GRect.Side.TOP_LEFT);
+        this._tr = textBox.getSide(GRect.Side.TOP_RIGHT);
+        this._br = textBox.getSide(GRect.Side.BOTTOM_RIGHT);
+        this._bl = textBox.getSide(GRect.Side.BOTTOM_LEFT);
         this.setProperty('trf', null);
     };
 
     /** @override */
-    IFText.prototype._calculateGeometryBBox = function () {
+    GText.prototype._calculateGeometryBBox = function () {
         // Always rewind to ensure integrity
         this.rewindVertices(0);
         var bbox = this._textBox;
@@ -955,8 +955,8 @@
     };
 
     /** @override */
-    IFText.prototype._preparePaint = function (context) {
-        if (IFShape.prototype._preparePaint.call(this, context)) {
+    GText.prototype._preparePaint = function (context) {
+        if (GShape.prototype._preparePaint.call(this, context)) {
             // Check if we need to clip rect
             var clipBox = this._getClipBox(context);
             if (clipBox) {
@@ -969,40 +969,40 @@
     };
 
     /** @override */
-    IFText.prototype._finishPaint = function (context) {
+    GText.prototype._finishPaint = function (context) {
         // Reset clipping if done previously
         if (this._getClipBox(context) !== null) {
             context.canvas.resetClip();
         }
 
-        IFShape.prototype._finishPaint.call(this, context);
+        GShape.prototype._finishPaint.call(this, context);
     };
 
     /** @override */
-    IFText.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    GText.prototype._detailHitTest = function (location, transform, tolerance, force) {
         // For now, text is always hit-test by its bbox only so return ourself
         // TODO : Add support for detailed range hit test information here
-        return new IFElement.HitResultInfo(this);
+        return new GElement.HitResultInfo(this);
     };
 
     /** @override */
-    IFText.prototype._stylePrepareGeometryChange = function () {
-        IFShape.prototype._stylePrepareGeometryChange.call(this);
+    GText.prototype._stylePrepareGeometryChange = function () {
+        GShape.prototype._stylePrepareGeometryChange.call(this);
         this._runsDirty = true;
     };
 
     /** @override */
-    IFText.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFText.GeometryProperties, function (property, value) {
+    GText.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GText.GeometryProperties, function (property, value) {
                 if (property === 'ttrf' && value) {
-                    return IFTransform.serialize(value);
+                    return GTransform.serialize(value);
                 }
                 return value;
             });
 
             if (this._content) {
-                args.ct = IFNode.store(this._content);
+                args.ct = GNode.store(this._content);
             }
             args.tlx = this._tl.getX();
             args.tly = this._tl.getY();
@@ -1012,49 +1012,49 @@
             args.bly = this._bl.getY();
             args.brx = this._br.getX();
             args.bry = this._br.getY();
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFText.GeometryProperties, function (property, value) {
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GText.GeometryProperties, function (property, value) {
                 if (property === 'ttrf' && value) {
-                    return IFTransform.deserialize(value);
+                    return GTransform.deserialize(value);
                 }
                 return value;
             });
 
             if (args.ct) {
-                this._content = IFNode.restore(args.ct);
+                this._content = GNode.restore(args.ct);
                 this._content._parent = this;
                 this._content._scene = this._scene;
             }
 
-            this._tl = new IFPoint(args.tlx, args.tly);
-            this._tr = new IFPoint(args.trx, args.try);
-            this._br = new IFPoint(args.brx, args.bry);
-            this._bl = new IFPoint(args.blx, args.bly);
+            this._tl = new GPoint(args.tlx, args.tly);
+            this._tr = new GPoint(args.trx, args.try);
+            this._br = new GPoint(args.brx, args.bry);
+            this._bl = new GPoint(args.blx, args.bly);
             this._runsDirty = true;
-        } else if (change === IFNode._Change.Attached) {
+        } else if (change === GNode._Change.Attached) {
             if (this._content) {
                 this._content._setScene(this._scene);
             }
-        } else if (change === IFNode._Change.Detach) {
+        } else if (change === GNode._Change.Detach) {
             if (this._content) {
                 this._content._setScene(null);
             }
         }
 
-        IFShape.prototype._handleChange.call(this, change, args);
+        GShape.prototype._handleChange.call(this, change, args);
 
-        if ((this._handleGeometryChangeForProperties(change, args, IFText.GeometryProperties) ||
-            this._handleGeometryChangeForProperties(change, args, IFStylable.AllGeometryProperties)) &&
-            change == IFNode._Change.BeforePropertiesChange) {
+        if ((this._handleGeometryChangeForProperties(change, args, GText.GeometryProperties) ||
+            this._handleGeometryChangeForProperties(change, args, GStylable.AllGeometryProperties)) &&
+            change == GNode._Change.BeforePropertiesChange) {
 
             var ahIdx = args.properties.indexOf('ah');
             if (ahIdx >= 0 && args.values[ahIdx] === true && !this.$ah && this._textBox && !this._runsDirty) {
                 // As 'ah' changes to true, we need to substitute our original text box such a way,
                 // that after the transformation it will be identical to our current visual text box.
-                this._tl = this._textBox.getSide(IFRect.Side.TOP_LEFT);
-                this._tr = this._textBox.getSide(IFRect.Side.TOP_RIGHT);
-                this._br = this._textBox.getSide(IFRect.Side.BOTTOM_RIGHT);
-                this._bl = this._textBox.getSide(IFRect.Side.BOTTOM_LEFT);
+                this._tl = this._textBox.getSide(GRect.Side.TOP_LEFT);
+                this._tr = this._textBox.getSide(GRect.Side.TOP_RIGHT);
+                this._br = this._textBox.getSide(GRect.Side.BOTTOM_RIGHT);
+                this._bl = this._textBox.getSide(GRect.Side.BOTTOM_LEFT);
                 if (this.$trf) {
                     var itrf = this.$trf.inverted();
                     this._tl = itrf.mapPoint(this._tl);
@@ -1066,7 +1066,7 @@
             this._runsDirty = true;
         }
 
-        if (change === IFNode._Change.BeforePropertiesChange) {
+        if (change === GNode._Change.BeforePropertiesChange) {
             var transformIdx = args.properties.indexOf('trf');
             if (transformIdx >= 0) {
                 this._runsDirty = true;
@@ -1077,10 +1077,10 @@
     /**
      * Returns a clip-box if required, otherwise null
      * @param context
-     * @returns {IFRect}
+     * @returns {GRect}
      * @private
      */
-    IFText.prototype._getClipBox = function (context) {
+    GText.prototype._getClipBox = function (context) {
         return null;
     };
 
@@ -1091,11 +1091,11 @@
      * @param segments
      * @private
      */
-    IFText.prototype._asHtml = function (parent, node, segments) {
-        if (node instanceof IFText.Break) {
+    GText.prototype._asHtml = function (parent, node, segments) {
+        if (node instanceof GText.Break) {
             $('<br>')
                 .appendTo(parent);
-        } else if (node instanceof IFText.Chunk) {
+        } else if (node instanceof GText.Chunk) {
             var content = node.getContent();
             if (content && content !== "") {
                 if (segments) {
@@ -1108,19 +1108,19 @@
                     parent.append(document.createTextNode(content));
                 }
             }
-        } else if (node instanceof IFText.Content) {
+        } else if (node instanceof GText.Content) {
             // ignore root
-        } else if (node instanceof IFText.Paragraph) {
+        } else if (node instanceof GText.Paragraph) {
             parent = $('<p></p>')
                 .css('margin', '0px') // !!
                 .css(node.propertiesToCss({}))
                 .appendTo(parent);
-        } else if (node instanceof IFText.Span) {
+        } else if (node instanceof GText.Span) {
             parent = $('<span></span>')
                 .css(node.propertiesToCss({}))
                 .appendTo(parent);
         }
-        if (node.hasMixin(IFNode.Container)) {
+        if (node.hasMixin(GNode.Container)) {
             for (var child = node.getFirstChild(); child !== null; child = child.getNext()) {
                 this._asHtml(parent, child, segments);
             }
@@ -1132,28 +1132,28 @@
      * @param parent
      * @private
      */
-    IFText.prototype._fromHtml = function (node, parent) {
+    GText.prototype._fromHtml = function (node, parent) {
         if (node.nodeType === 1) {
             var nodeName = node.nodeName.toLowerCase();
 
             if (nodeName === 'p' || nodeName === 'div') {
-                var paragraph = new IFText.Paragraph();
+                var paragraph = new GText.Paragraph();
                 paragraph.cssToProperties(node.style);
                 parent.appendChild(paragraph);
                 parent = paragraph;
             } else if (nodeName === 'span' || nodeName === 'b' || nodeName === 'strong' || nodeName === 'i') {
-                var span = new IFText.Span();
+                var span = new GText.Span();
                 span.cssToProperties(node.style);
                 parent.appendChild(span);
                 parent = span;
 
                 if (nodeName === 'b' || nodeName === 'strong') {
-                    span.setProperty('_tfw', IFFont.Weight.Bold);
+                    span.setProperty('_tfw', GFont.Weight.Bold);
                 } else if (nodeName === 'i') {
-                    span.setProperty('_tfs', IFFont.Style.Italic);
+                    span.setProperty('_tfs', GFont.Style.Italic);
                 }
             } else if (nodeName === 'br') {
-                parent.appendChild(new IFText.Break());
+                parent.appendChild(new GText.Break());
                 return; // no children for breaks
             } else {
                 // ignore the element alltogether
@@ -1165,20 +1165,20 @@
             }
         } else if (node.nodeType === 3) {
             if (node.textContent !== "") {
-                parent.appendChild(new IFText.Chunk(node.textContent));
+                parent.appendChild(new GText.Chunk(node.textContent));
             }
         }
     };
 
     /** @override */
-    IFText.prototype._requireMiterLimitApproximation = function () {
+    GText.prototype._requireMiterLimitApproximation = function () {
         return true;
     };
 
     /** @override */
-    IFText.prototype.toString = function () {
-        return "[IFText]";
+    GText.prototype.toString = function () {
+        return "[GText]";
     };
 
-    _.IFText = IFText;
+    _.GText = GText;
 })(this);

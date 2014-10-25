@@ -1,34 +1,34 @@
 (function (_) {
     /**
      * The line tool
-     * @class IFLineTool
-     * @extends IFShapeTool
+     * @class GLineTool
+     * @extends GShapeTool
      * @constructor
      */
-    function IFLineTool() {
-        IFShapeTool.call(this, true, true);
+    function GLineTool() {
+        GShapeTool.call(this, true, true);
     }
 
-    IFObject.inherit(IFLineTool, IFShapeTool);
+    GObject.inherit(GLineTool, GShapeTool);
 
     /** @override */
-    IFLineTool.prototype._createShape = function () {
-        var path = new IFPath();
-        path.getAnchorPoints().appendChild(new IFPathBase.AnchorPoint());
-        path.getAnchorPoints().appendChild(new IFPathBase.AnchorPoint());
+    GLineTool.prototype._createShape = function () {
+        var path = new GPath();
+        path.getAnchorPoints().appendChild(new GPathBase.AnchorPoint());
+        path.getAnchorPoints().appendChild(new GPathBase.AnchorPoint());
         return path;
     };
 
     /** @override */
-    IFLineTool.prototype._updateShape = function (shape, area, line) {
+    GLineTool.prototype._updateShape = function (shape, area, line) {
         shape.getAnchorPoints().getChildByIndex(0).setProperties(['x', 'y'], [line[0].getX(), line[0].getY()]);
         shape.getAnchorPoints().getChildByIndex(1).setProperties(['x', 'y'], [line[1].getX(), line[1].getY()]);
     };
 
     /** override */
-    IFLineTool.prototype.toString = function () {
-        return "[Object IFLineTool]";
+    GLineTool.prototype.toString = function () {
+        return "[Object GLineTool]";
     };
 
-    _.IFLineTool = IFLineTool;
+    _.GLineTool = GLineTool;
 })(this);

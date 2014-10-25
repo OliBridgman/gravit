@@ -7,7 +7,7 @@
                 callback: function (value) {
                     if (value) {
                         var blob = JSON.parse(value);
-                        var scene = IFNode.restore(blob);
+                        var scene = GNode.restore(blob);
                         gApp.addDocument(scene, 'From-String');
                     }
                 }

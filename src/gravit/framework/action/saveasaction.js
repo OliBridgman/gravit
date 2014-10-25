@@ -8,10 +8,10 @@
      */
     function GSaveAsAction() {
     };
-    IFObject.inherit(GSaveAsAction, GAction);
+    GObject.inherit(GSaveAsAction, GAction);
 
     GSaveAsAction.ID = 'file.save-as';
-    GSaveAsAction.TITLE = new IFLocale.Key(GSaveAsAction, "title");
+    GSaveAsAction.TITLE = new GLocale.Key(GSaveAsAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GSaveAsAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'S'];
+        return [GKey.Constant.SHIFT, GKey.Constant.META, 'S'];
     };
 
     /**

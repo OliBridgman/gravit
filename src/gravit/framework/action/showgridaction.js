@@ -8,10 +8,10 @@
      */
     function GShowGridAction() {
     };
-    IFObject.inherit(GShowGridAction, GAction);
+    GObject.inherit(GShowGridAction, GAction);
 
     GShowGridAction.ID = 'view.show-grid';
-    GShowGridAction.TITLE = new IFLocale.Key(GShowGridAction, "title");
+    GShowGridAction.TITLE = new GLocale.Key(GShowGridAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GShowGridAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, IFKey.Constant.OPTION, 'G'];
+        return [GKey.Constant.META, GKey.Constant.OPTION, 'G'];
     };
 
     /**

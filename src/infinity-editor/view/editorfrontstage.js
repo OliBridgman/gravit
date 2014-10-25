@@ -1,66 +1,66 @@
 (function (_) {
     /**
      * A stage for rendering the editor foreground
-     * @param {IFView} view
-     * @class IFEditorFrontStage
-     * @extends IFStage
+     * @param {GUIView} view
+     * @class GEditorFrontStage
+     * @extends GStage
      * @constructor
      */
-    function IFEditorFrontStage(view) {
-        IFStage.call(this, view);
-        view.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
-        view.addEventListener(IFMouseEvent.Release, this._cleanGuides, this);
-        view.getEditor().getGuides().addEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
-        //view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    function GEditorFrontStage(view) {
+        GStage.call(this, view);
+        view.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+        view.addEventListener(GMouseEvent.Release, this._cleanGuides, this);
+        view.getEditor().getGuides().addEventListener(GGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        //view.getScene().addEventListener(GScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
-    IFObject.inherit(IFEditorFrontStage, IFStage);
+    GObject.inherit(GEditorFrontStage, GStage);
 
     /** @override */
-    IFEditorFrontStage.prototype.release = function () {
-        this._view.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
-        this._view.getEditor().removeEventListener(IFGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
-        //this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
-        this._view.removeEventListener(IFMouseEvent.Release, this._cleanGuides, this);
+    GEditorFrontStage.prototype.release = function () {
+        this._view.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._sceneAfterPropertiesChanged, this);
+        this._view.getEditor().removeEventListener(GGuides.InvalidationRequestEvent, this._guidesInvalidationRequest, this);
+        //this._view.getScene().removeEventListener(GScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+        this._view.removeEventListener(GMouseEvent.Release, this._cleanGuides, this);
     };
 
     /** @override */
-    IFEditorFrontStage.prototype.paint = function (context) {
+    GEditorFrontStage.prototype.paint = function (context) {
         this._view.getEditor().getGuides().paint(this._view.getWorldTransform(), context);
-        //var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
+        //var sceneEditor = GElementEditor.getEditor(this._view.getScene());
         //if (sceneEditor) {
            // sceneEditor.paint(this._view.getWorldTransform(), context);
         //}
     };
 
-    IFEditorFrontStage.prototype._sceneAfterPropertiesChanged = function (event) {
+    GEditorFrontStage.prototype._sceneAfterPropertiesChanged = function (event) {
         if (event.properties.indexOf('gridSizeX') >= 0 || event.properties.indexOf('gridSizeY') >= 0 ||
             event.properties.indexOf('gridActive') >= 0) {
             this.invalidate();
         }
     };
 
-    IFEditorFrontStage.prototype._guidesInvalidationRequest = function (event) {
+    GEditorFrontStage.prototype._guidesInvalidationRequest = function (event) {
         if (event.area) {
             var area = this._view.getWorldTransform().mapRect(event.area);
             this.invalidate(area);
         }
     };
 
-    IFEditorFrontStage.prototype._sceneInvalidationRequest = function (event) {
+    GEditorFrontStage.prototype._sceneInvalidationRequest = function (event) {
         if (event.area) {
             var area = this._view.getWorldTransform().mapRect(event.area);
             this.invalidate(area);
         }
     };
 
-    IFEditorFrontStage.prototype._cleanGuides = function (event) {
+    GEditorFrontStage.prototype._cleanGuides = function (event) {
         this._view.getEditor().getGuides().invalidate();
     };
 
     /** @override */
-    IFEditorFrontStage.prototype.toString = function () {
-        return "[Object IFEditorFrontStage]";
+    GEditorFrontStage.prototype.toString = function () {
+        return "[Object GEditorFrontStage]";
     };
 
-    _.IFEditorFrontStage = IFEditorFrontStage;
+    _.GEditorFrontStage = GEditorFrontStage;
 })(this);

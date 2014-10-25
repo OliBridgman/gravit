@@ -58,7 +58,7 @@
 
     /**
      * Get the human readable name of this storage
-     * @return {String|IFLocale.Key}
+     * @return {String|GLocale.Key}
      */
     GStorage.prototype.getName = function () {
         throw new Error('Not supported.');

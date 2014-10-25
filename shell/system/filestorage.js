@@ -13,7 +13,7 @@
                 var files = this._fileInput[0].files;
                 if (files && files.length > 0) {
                     var file = this._fileInput[0].files[0];
-                    var location = IFUtil.replaceAll(file.path, '\\', '/');
+                    var location = GUtil.replaceAll(file.path, '\\', '/');
 
                     if (this._fileInputMode === 'open_resource') {
                         this._fileInputCallback(this.getProtocol() + '://' + location);
@@ -34,7 +34,7 @@
             }.bind(this))
             .appendTo($('body'));
     };
-    IFObject.inherit(GFileStorage, GStorage);
+    GObject.inherit(GFileStorage, GStorage);
 
     /**
      * @type {String}
@@ -184,8 +184,8 @@
         if (reference && reference !== '') {
             var directory = new URI(reference).directory();
             if (directory && directory !== '') {
-                if (IFSystem.operatingSystem === IFSystem.OperatingSystem.Windows) {
-                    directory = IFUtil.replaceAll(directory, '/', '\\');
+                if (GSystem.operatingSystem === GSystem.OperatingSystem.Windows) {
+                    directory = GUtil.replaceAll(directory, '/', '\\');
                 }
                 workingDir = directory;
             }

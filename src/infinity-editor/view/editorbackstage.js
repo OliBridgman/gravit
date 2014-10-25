@@ -3,27 +3,27 @@
 
     /**
      * A stage for rendering the editor background
-     * @param {IFView} view
-     * @class IFEditorBackStage
-     * @extends IFStage
+     * @param {GUIView} view
+     * @class GEditorBackStage
+     * @extends GStage
      * @constructor
      */
-    function IFEditorBackStage(view) {
-        IFStage.call(this, view);
-        view.getScene().addEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    function GEditorBackStage(view) {
+        GStage.call(this, view);
+        view.getScene().addEventListener(GScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     }
 
-    IFObject.inherit(IFEditorBackStage, IFStage);
+    GObject.inherit(GEditorBackStage, GStage);
 
-    IFEditorBackStage.MARGIN_OUTLINE = new IFRGBColor([255, 0, 255]);
+    GEditorBackStage.MARGIN_OUTLINE = new GRGBColor([255, 0, 255]);
 
     /** @override */
-    IFEditorBackStage.prototype.release = function () {
-        this._view.getScene().removeEventListener(IFScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
+    GEditorBackStage.prototype.release = function () {
+        this._view.getScene().removeEventListener(GScene.InvalidationRequestEvent, this._sceneInvalidationRequest, this);
     };
 
     /** @override */
-    IFEditorBackStage.prototype.paint = function (context) {
+    GEditorBackStage.prototype.paint = function (context) {
         // View painting
 
         //
@@ -42,10 +42,10 @@
 
     /**
      * Event listener for scene's repaintRequest
-     * @param {IFScene.InvalidationRequestEvent} event the invalidation request event
+     * @param {GScene.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    IFEditorBackStage.prototype._sceneInvalidationRequest = function (event) {
+    GEditorBackStage.prototype._sceneInvalidationRequest = function (event) {
         var area = event.area;
         if (area) {
             // Ensure to map the scene area into view coordinates, first
@@ -59,12 +59,12 @@
      * @param context
      * @private
      */
-    IFEditorBackStage.prototype._renderPages = function (context) {
+    GEditorBackStage.prototype._renderPages = function (context) {
         // We'll leave our canvas in view coordinates for the background
         var singlePage = this._view.getScene().getProperty('singlePage');
         var transform = this._view.getWorldTransform();
         for (var node = this._view.getScene().getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof IFPage && node.isPaintable(context) && (!singlePage || node.hasFlag(IFNode.Flag.Active))) {
+            if (node instanceof GPage && node.isPaintable(context) && (!singlePage || node.hasFlag(GNode.Flag.Active))) {
                 this._renderPage(context, transform, node);
             }
         }
@@ -76,9 +76,9 @@
      * @param page
      * @private
      */
-    IFEditorBackStage.prototype._renderPage = function (context, transform, page) {
+    GEditorBackStage.prototype._renderPage = function (context, transform, page) {
         // Get page rectangle and transform it into world space
-        var pageRect = new IFRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
+        var pageRect = new GRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
         var marginRect = pageRect.expanded(-page.getProperty('ml'), -page.getProperty('mt'), -page.getProperty('mr'), -page.getProperty('mb'));
         var transformedPageRect = transform.mapRect(pageRect).toAlignedRect();
         var transformedMarginRect = transform.mapRect(marginRect).toAlignedRect();
@@ -87,24 +87,24 @@
 
         // Paint page color or chessboard if transparent
         if (!PAGE_CHESSBOARD_FILL) {
-            PAGE_CHESSBOARD_FILL = IFPaintCanvas.createChessboard(8, 'white', 'rgb(205, 205, 205)');
+            PAGE_CHESSBOARD_FILL = GPaintCanvas.createChessboard(8, 'white', 'rgb(205, 205, 205)');
         }
         var chessFill = context.canvas.createTexture(PAGE_CHESSBOARD_FILL);
 
-        context.canvas.setTransform(new IFTransform(1, 0, 0, 1, x, y));
+        context.canvas.setTransform(new GTransform(1, 0, 0, 1, x, y));
         context.canvas.fillRect(0, 0, w, h, chessFill);
         context.canvas.resetTransform();
 
         // Paint margin rect
-        if (!IFRect.equals(pageRect, marginRect)) {
-            context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1, IFEditorBackStage.MARGIN_OUTLINE);
+        if (!GRect.equals(pageRect, marginRect)) {
+            context.canvas.strokeRect(mx + 0.5, my + 0.5, mw, mh, 1, GEditorBackStage.MARGIN_OUTLINE);
         }
     };
 
     /** @override */
-    IFEditorBackStage.prototype.toString = function () {
-        return "[Object IFEditorBackStage]";
+    GEditorBackStage.prototype.toString = function () {
+        return "[Object GEditorBackStage]";
     };
 
-    _.IFEditorBackStage = IFEditorBackStage;
+    _.GEditorBackStage = GEditorBackStage;
 })(this);

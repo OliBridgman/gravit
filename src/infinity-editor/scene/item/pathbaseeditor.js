@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A base editor for a base path
-     * @param {IFPathBase} path the path this editor works on
-     * @class IFPathBaseEditor
-     * @extends IFShapeEditor
+     * @param {GPathBase} path the path this editor works on
+     * @class GPathBaseEditor
+     * @extends GShapeEditor
      * @constructor
      */
-    function IFPathBaseEditor(path) {
-        IFShapeEditor.call(this, path);
+    function GPathBaseEditor(path) {
+        GShapeEditor.call(this, path);
     };
-    IFObject.inherit(IFPathBaseEditor, IFShapeEditor);
+    GObject.inherit(GPathBaseEditor, GShapeEditor);
 
     /** @override */
-    IFPathBaseEditor.prototype.toString = function () {
-        return "[Object IFPathBaseEditor]";
+    GPathBaseEditor.prototype.toString = function () {
+        return "[Object GPathBaseEditor]";
     };
 
-    _.IFPathBaseEditor = IFPathBaseEditor;
+    _.GPathBaseEditor = GPathBaseEditor;
 })(this);

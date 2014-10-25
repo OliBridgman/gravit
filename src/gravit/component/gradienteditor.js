@@ -2,9 +2,9 @@
     // TODO : I18N
     var GRADIENT_TYPES = [
         {
-            clazz: IFLinearGradient,
+            clazz: GLinearGradient,
             name: 'Linear Gradient',
-            cssBackground: new IFLinearGradient().asCSSBackground(),
+            cssBackground: new GLinearGradient().asCSSBackground(),
             initSettings: function (settings, updateCall) {
                 settings
                     .append($('<span></span>')
@@ -24,29 +24,29 @@
                 return true;
             },
             updateSettings: function (settings, gradient) {
-                var angle = IFMath.toDegrees(gradient.getAngle());
-                settings.find('[data-property="angle"]').val(IFUtil.formatNumber(angle, 2));
+                var angle = GMath.toDegrees(gradient.getAngle());
+                settings.find('[data-property="angle"]').val(GUtil.formatNumber(angle, 2));
             },
             createGradient: function (stops, scale, settings) {
                 var angle = 0;
 
                 if (settings) {
-                    angle = IFUtil.parseNumber(settings.find('[data-property="angle"]').val());
+                    angle = GUtil.parseNumber(settings.find('[data-property="angle"]').val());
 
                     if (isNaN(angle)) {
                         angle = 0;
                     } else {
-                        angle = IFMath.toRadians(IFMath.normalizeAngleDegrees(angle));
+                        angle = GMath.toRadians(GMath.normalizeAngleDegrees(angle));
                     }
                 }
 
-                return new IFLinearGradient(stops, scale, angle);
+                return new GLinearGradient(stops, scale, angle);
             }
         },
         {
-            clazz: IFRadialGradient,
+            clazz: GRadialGradient,
             name: 'Radial Gradient',
-            cssBackground: new IFRadialGradient().asCSSBackground(),
+            cssBackground: new GRadialGradient().asCSSBackground(),
             initSettings: function (settings, updateCall) {
                 return false;
             },
@@ -54,7 +54,7 @@
                 // NO-OP
             },
             createGradient: function (stops, scale) {
-                return new IFRadialGradient(stops, scale);
+                return new GRadialGradient(stops, scale);
             }
         }
     ];
@@ -79,7 +79,7 @@
         var stop = $stop.data('stop');
         $stop.css('left', Math.round(stop.position * 100) + '%');
         var tone = Math.round(255 * (1 - stop.opacity));
-        $stop.find('.stop-value').css('background', IFColor.rgbToHtmlHex([tone, tone, tone]));
+        $stop.find('.stop-value').css('background', GColor.rgbToHtmlHex([tone, tone, tone]));
     }
 
     function updateGradient() {
@@ -88,7 +88,7 @@
 
         var gradientClass = $this.find('[data-section="type"] > .g-button.g-active').data('gradientClass');
         var stops = data.gradient.getStops();
-        var scale = IFUtil.parseNumber($this.find('[data-property="scale"]').val());
+        var scale = GUtil.parseNumber($this.find('[data-property="scale"]').val());
         var settings = $this.find('[data-section="settings"]');
 
         if (isNaN(scale) || scale <= 0) {
@@ -138,12 +138,12 @@
                 return a.position > b.position;
             });
 
-            gradient = new IFGradient(stops);
+            gradient = new GGradient(stops);
         }
 
         $this
             .find('.gradient')
-            .css('background', 'linear-gradient(90deg, ' + gradient.toScreenCSS() + '), ' + IFPattern.asCSSBackground(null));
+            .css('background', 'linear-gradient(90deg, ' + gradient.toScreenCSS() + '), ' + GPattern.asCSSBackground(null));
     }
 
     function updateGradientPreviewAndTrigger () {
@@ -445,13 +445,13 @@
                     .append($('<div></div>')
                         .addClass('editor')
                         .gPatternTarget()
-                        .gPatternTarget('types', [IFColor, IFGradient])
+                        .gPatternTarget('types', [GColor, GGradient])
                         .on('patternchange', function (evt) {
                             evt.stopPropagation();
                         })
                         .on('patterndrop', function (evt, pattern, mouseEvent) {
                             evt.stopPropagation();
-                            if (pattern && pattern instanceof IFColor) {
+                            if (pattern && pattern instanceof GColor) {
                                 var $stops = $this.find('.stops');
                                 var stops = $this.gGradientEditor('value').getStops();
                                 stops.push({
@@ -459,7 +459,7 @@
                                     color: pattern
                                 });
                                 updatedStops.call(self);
-                            } else if (pattern instanceof IFGradient) {
+                            } else if (pattern instanceof GGradient) {
                                 methods.value.call(self, pattern.clone());
                                 $this.trigger('gradientchange');
                             }
@@ -477,7 +477,7 @@
                                     var stops = $this.gGradientEditor('value').getStops();
                                     stops.push({
                                         position: position,
-                                        opacity: IFGradient.interpolateOpacity(stops, position)
+                                        opacity: GGradient.interpolateOpacity(stops, position)
                                     });
                                     updatedStops.call(self);
                                 }
@@ -498,7 +498,7 @@
                                     var stops = $this.gGradientEditor('value').getStops();
                                     stops.push({
                                         position: position,
-                                        color: IFGradient.interpolateColor(stops, position)
+                                        color: GGradient.interpolateColor(stops, position)
                                     });
                                     updatedStops.call(self);
                                 }
@@ -625,7 +625,7 @@
                 .gPatternTarget({
                     allowDrag: false
                 })
-                .gPatternTarget('types', [IFColor])
+                .gPatternTarget('types', [GColor])
                 .append($('<div></div>')
                     .addClass('stop-value'))
                 .on('patternchange', stopPatternChange.bind(this))

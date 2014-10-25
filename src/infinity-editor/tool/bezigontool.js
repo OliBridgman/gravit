@@ -1,39 +1,39 @@
 (function (_) {
     /**
      * The bezigon tool
-     * @class IFBezigonTool
-     * @extends IFPathTool
+     * @class GBezigonTool
+     * @extends GPathTool
      * @constructor
      * @version 1.0
      */
-    function IFBezigonTool() {
-        IFPathTool.call(this);
+    function GBezigonTool() {
+        GPathTool.call(this);
     }
 
-    IFObject.inherit(IFBezigonTool, IFPathTool);
+    GObject.inherit(GBezigonTool, GPathTool);
 
     /** @override */
-    IFBezigonTool.prototype.activate = function (view) {
-        IFPathTool.prototype.activate.call(this, view);
-        view.addEventListener(IFMouseEvent.Drag, this._mouseDrag, this);
-        view.addEventListener(IFMouseEvent.Move, this._mouseMove, this);
+    GBezigonTool.prototype.activate = function (view) {
+        GPathTool.prototype.activate.call(this, view);
+        view.addEventListener(GMouseEvent.Drag, this._mouseDrag, this);
+        view.addEventListener(GMouseEvent.Move, this._mouseMove, this);
         this._checkMode();
     };
 
     /** @override */
-    IFBezigonTool.prototype.deactivate = function (view) {
-        IFPathTool.prototype.deactivate.call(this, view);
-        view.removeEventListener(IFMouseEvent.Drag, this._mouseDrag);
-        view.removeEventListener(IFMouseEvent.Move, this._mouseMove);
+    GBezigonTool.prototype.deactivate = function (view) {
+        GPathTool.prototype.deactivate.call(this, view);
+        view.removeEventListener(GMouseEvent.Drag, this._mouseDrag);
+        view.removeEventListener(GMouseEvent.Move, this._mouseMove);
     };
 
     /**
-     * @param {IFMouseEvent.Down} event
+     * @param {GMouseEvent.Down} event
      * @private
      */
-    IFBezigonTool.prototype._mouseDown = function (event) {
+    GBezigonTool.prototype._mouseDown = function (event) {
         var tm = new Date().getTime();
-        if (tm - this._mDownTime < IFPathTool.DBLCLICKTM) {
+        if (tm - this._mDownTime < GPathTool.DBLCLICKTM) {
             // Double-click
             this._mouseDblClick(event);
             return;
@@ -49,53 +49,53 @@
         this._newPoint = null;
         this._editPt = null;
 
-        if (event.button == IFMouseEvent.BUTTON_LEFT ||
-            event.button == IFMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
+        if (event.button == GMouseEvent.BUTTON_LEFT ||
+            event.button == GMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
             this._released = false;
 
             this._blockDeactivation();
             this._checkMode();
 
-            if (this._mode == IFPathTool.Mode.Edit) {
+            if (this._mode == GPathTool.Mode.Edit) {
                 var customizer = function(anchorPt) {
                     if (ifPlatform.modifiers.optionKey &&
-                            anchorPt.getProperty('tp') != IFPathBase.AnchorPoint.Type.Connector) {
+                            anchorPt.getProperty('tp') != GPathBase.AnchorPoint.Type.Connector) {
 
-                        anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
+                        anchorPt.setProperty('tp', GPathBase.AnchorPoint.Type.Symmetric);
                     }
                 }
                 this._mouseDownOnEdit(event, customizer);
             }
 
-            if (this._mode != IFPathTool.Mode.Edit) {
+            if (this._mode != GPathTool.Mode.Edit) {
                 this._renewPreviewLink();
                 clickPt = this._constrainIfNeeded(event.client, this._view.getWorldTransform(), this._pathRef);
                 var otherPt;
                 if (this._pathEditor) {
-                    if (this._mode == IFPathTool.Mode.Append) {
+                    if (this._mode == GPathTool.Mode.Append) {
                         otherPt = this._pathRef.getAnchorPoints().getFirstChild();
-                    } else { // this._mode == IFPathTool.Mode.Prepend
+                    } else { // this._mode == GPathTool.Mode.Prepend
                         otherPt = this._pathRef.getAnchorPoints().getLastChild();
                     }
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-                    this._setCursorForPosition(IFCursor.PenEnd);
-                    this._startTransaction(IFPathTool.Transaction.ModifyPathProperties);
+                    this._setCursorForPosition(GCursor.PenEnd);
+                    this._startTransaction(GPathTool.Transaction.ModifyPathProperties);
                     // Close path
                     this._pathRef.setProperty('closed', true);
                     this._makePointMajor(otherPt);
                     this._pathEditor.setActiveExtendingMode(false);
-                    this._mode = IFPathTool.Mode.Edit;
+                    this._mode = GPathTool.Mode.Edit;
                     this._editPt = this._pathEditor.getPathPointPreview(otherPt);
                     this._pathEditor.requestInvalidation();
                 } else {
-                    this._setCursorForPosition(IFCursor.Pen);
+                    this._setCursorForPosition(GCursor.Pen);
                     var prevPt;
                     if (this._pathEditor) {
-                        if (this._mode == IFPathTool.Mode.Append) {
+                        if (this._mode == GPathTool.Mode.Append) {
                             prevPt = this._pathRef.getAnchorPoints().getLastChild();
-                        } else { // this._mode == IFPathTool.Mode.Prepend
+                        } else { // this._mode == GPathTool.Mode.Prepend
                             prevPt = this._pathRef.getAnchorPoints().getFirstChild();
                         }
                     }
@@ -118,12 +118,12 @@
     };
 
     /**
-     * @param {IFMouseEvent.Move} event
+     * @param {GMouseEvent.Move} event
      * @private
      */
-    IFBezigonTool.prototype._mouseMove = function (event) {
+    GBezigonTool.prototype._mouseMove = function (event) {
         if (!this._released) {
-            if (event.button == IFMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
+            if (event.button == GMouseEvent.BUTTON_RIGHT && ifPlatform.modifiers.optionKey) {
                 this._mouseDrag(event);
             }
             return;
@@ -134,10 +134,10 @@
     };
 
     /**
-     * @param {IFMouseEvent.Drag | IFMouseEvent.Move} event
+     * @param {GMouseEvent.Drag | GMouseEvent.Move} event
      * @private
      */
-    IFBezigonTool.prototype._mouseDrag = function (event) {
+    GBezigonTool.prototype._mouseDrag = function (event) {
         if (this._refPt && !this._released) {
             this._makePointMajor(this._refPt);
             this._editPt = this._pathEditor.getPathPointPreview(this._refPt);
@@ -161,12 +161,12 @@
                 }
 
                 if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
-                    this._setCursorForPosition(IFCursor.PenEnd);
+                    this._setCursorForPosition(GCursor.PenEnd);
                 } else {
-                    this._setCursorForPosition(IFCursor.Pen);
+                    this._setCursorForPosition(GCursor.Pen);
                 }
             } else {
-                this._setCursorForPosition(IFCursor.Pen);
+                this._setCursorForPosition(GCursor.Pen);
             }
 
             this._pathEditor.requestInvalidation();
@@ -176,23 +176,23 @@
 
     /**
      * Constructs new point, specific to Bezigon Tool, with the given position
-     * @param {IFMouseEvent} event used to define pressed button
-     * @param {IFPoint} pt - coordinates to be used for new position in world system
-     * @returns {IFPath.AnchorPoint} newly created anchor point
+     * @param {GMouseEvent} event used to define pressed button
+     * @param {GPoint} pt - coordinates to be used for new position in world system
+     * @returns {GPath.AnchorPoint} newly created anchor point
      * @private
      */
-    IFBezigonTool.prototype._constructNewPoint = function (event, pt) {
-        var anchorPt = new IFPath.AnchorPoint();
+    GBezigonTool.prototype._constructNewPoint = function (event, pt) {
+        var anchorPt = new GPath.AnchorPoint();
         anchorPt.setProperties(['x', 'y', 'ah'], [pt.getX(), pt.getY(), true]);
 
-        if (event.button == IFMouseEvent.BUTTON_LEFT) {
+        if (event.button == GMouseEvent.BUTTON_LEFT) {
             if (ifPlatform.modifiers.optionKey) {
-                anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Symmetric);
+                anchorPt.setProperty('tp', GPathBase.AnchorPoint.Type.Symmetric);
             } else {
-                anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Asymmetric);
+                anchorPt.setProperty('tp', GPathBase.AnchorPoint.Type.Asymmetric);
             }
         } else { // BUTTON_RIGHT && this._AltDown
-            anchorPt.setProperty('tp', IFPathBase.AnchorPoint.Type.Connector);
+            anchorPt.setProperty('tp', GPathBase.AnchorPoint.Type.Connector);
         }
 
         return anchorPt;
@@ -203,46 +203,46 @@
      * And if so, closes the path specific for Bezigon Tool way, and removes that extra point from preview.
      * @private
      */
-    IFBezigonTool.prototype._closeIfNeeded = function () {
+    GBezigonTool.prototype._closeIfNeeded = function () {
         if (this._pathRef &&
             (this._newPoint ||
                 this._pathRef.getAnchorPoints().getFirstChild() != this._pathRef.getAnchorPoints().getLastChild()) &&
-            (this._mode == IFPathTool.Mode.Append || this._mode == IFPathTool.Mode.Prepend)) {
+            (this._mode == GPathTool.Mode.Append || this._mode == GPathTool.Mode.Prepend)) {
 
             var anchorPt;
             var otherPt;
-            if (this._mode == IFPathTool.Mode.Append) {
+            if (this._mode == GPathTool.Mode.Append) {
                 anchorPt = this._dpathRef.getAnchorPoints().getLastChild();
                 otherPt = this._pathRef.getAnchorPoints().getFirstChild();
-            } else { // this._mode == IFPathTool.Mode.Prepend
+            } else { // this._mode == GPathTool.Mode.Prepend
                 anchorPt = this._dpathRef.getAnchorPoints().getFirstChild();
                 otherPt = this._pathRef.getAnchorPoints().getLastChild();
             }
 
-            var location = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+            var location = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
             if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
-                if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
-                    this._startTransaction(IFPathTool.Transaction.ModifyPathProperties);
+                if (this._transactionType == GPathTool.Transaction.NoTransaction) {
+                    this._startTransaction(GPathTool.Transaction.ModifyPathProperties);
                 } else {
-                    this._transactionType = IFPathTool.Transaction.ModifyPathProperties;
+                    this._transactionType = GPathTool.Transaction.ModifyPathProperties;
                 }
                 // Close path
                 this._pathRef.beginUpdate();
                 this._pathEditor.selectOnePoint(otherPt);
                 if (ifPlatform.modifiers.optionKey) {
-                    otherPt.setProperties(['ah', 'tp'], [false, IFPathBase.AnchorPoint.Type.Asymmetric]);
+                    otherPt.setProperties(['ah', 'tp'], [false, GPathBase.AnchorPoint.Type.Asymmetric]);
                 }
                 if (!otherPt.getProperty('ah')) {
                     otherPt.setProperties(['hlx', 'hly'], [anchorPt.getProperty('hlx'), anchorPt.getProperty('hly')]);
                 }
                 this._dpathRef.getAnchorPoints().removeChild(anchorPt);
                 if (!this._newPoint) {
-                    if (this._mode == IFPathTool.Mode.Append) {
+                    if (this._mode == GPathTool.Mode.Append) {
                         anchorPt = this._pathRef.getAnchorPoints().getLastChild();
-                    } else { // this._mode == IFPathTool.Mode.Prepend
+                    } else { // this._mode == GPathTool.Mode.Prepend
                         anchorPt = this._pathRef.getAnchorPoints().getFirstChild();
                     }
                     this._pathRef.getAnchorPoints().removeChild(anchorPt);
@@ -258,41 +258,41 @@
     };
 
     /** @override */
-    IFBezigonTool.prototype._mouseRelease = function (event) {
+    GBezigonTool.prototype._mouseRelease = function (event) {
         if (!this._released) {
             try {
                 this._released = true;
                 //this._editor.updateByMousePosition(event.client, this._view.getWorldTransform());
-                if (this._mode == IFPathTool.Mode.Append || this._mode == IFPathTool.Mode.Prepend) {
+                if (this._mode == GPathTool.Mode.Append || this._mode == GPathTool.Mode.Prepend) {
                     var newPos = this._updatePoint(event.client);
                     this._closeIfNeeded();
                     if (this._pathRef.getProperty('closed')) {
-                        this._setCursorForPosition(IFCursor.PenMinus);
-                        this._mode = IFPathTool.Mode.Edit;
+                        this._setCursorForPosition(GCursor.PenMinus);
+                        this._mode = GPathTool.Mode.Edit;
                     } else if (this._newPoint) {
                         this._addPoint(this._editPt, false, true);
-                        this._setCursorForPosition(IFCursor.Pen);
+                        this._setCursorForPosition(GCursor.Pen);
                     } else if (this._editPt) {
-                        if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
-                            this._startTransaction(IFPathTool.Transaction.MovePoint);
+                        if (this._transactionType == GPathTool.Transaction.NoTransaction) {
+                            this._startTransaction(GPathTool.Transaction.MovePoint);
                         }
                         this._pathEditor.applyTransform(this._pathRef);
-                        this._setCursorForPosition(IFCursor.PenEnd);
+                        this._setCursorForPosition(GCursor.PenEnd);
                     }
                     this._commitChanges();
                     // hit test result becomes invalid if any;
-                    //this._lastHitTest = new IFPathTool.LastHitTest();
-                } else if (this._mode == IFPathTool.Mode.Edit && (this._editPt || this._refPt)) {
+                    //this._lastHitTest = new GPathTool.LastHitTest();
+                } else if (this._mode == GPathTool.Mode.Edit && (this._editPt || this._refPt)) {
                     if (this._dragStarted && this._editPt) {
                         var newPos = this._updatePoint(event.client);
-                        if (this._transactionType == IFPathTool.Transaction.NoTransaction) {
-                            this._startTransaction(IFPathTool.Transaction.MovePoint);
+                        if (this._transactionType == GPathTool.Transaction.NoTransaction) {
+                            this._startTransaction(GPathTool.Transaction.MovePoint);
                         }
                         this._pathEditor.applyTransform(this._pathRef);
                         this._setCursorForPosition(null, newPos);
                         this._commitChanges();
                         // hit test result becomes invalid if any;
-                        //this._lastHitTest = new IFPathTool.LastHitTest();
+                        //this._lastHitTest = new GPathTool.LastHitTest();
                     } else {
                         if (this._editPt) { // The case when path has just been closed on mouseDown
                             this._commitChanges();
@@ -313,9 +313,9 @@
     };
 
     /** override */
-    IFBezigonTool.prototype.toString = function () {
-        return "[Object IFBezigonTool]";
+    GBezigonTool.prototype.toString = function () {
+        return "[Object GBezigonTool]";
     };
 
-    _.IFBezigonTool = IFBezigonTool;
+    _.GBezigonTool = GBezigonTool;
 })(this);

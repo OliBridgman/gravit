@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * A mixin representing the target of an event.
-     * @class IFEventTarget
+     * @class GEventTarget
      * @mixin
      * @constructor
      * @version 1.0
      */
-    function IFEventTarget() {
+    function GEventTarget() {
     }
 
     /**
      * @type Object
      * @private
      */
-    IFEventTarget.prototype._listeners = null;
+    GEventTarget.prototype._listeners = null;
 
     /**
      * Add a new listener for a specific eventClass to this object
@@ -23,8 +23,8 @@
      * @param {Array} [args] optional arguments to be prepended to the listener call
      * @version 1.0
      */
-    IFEventTarget.prototype.addEventListener = function (eventClass, listener, target, args) {
-        var event_id = IFObject.getTypeId(eventClass);
+    GEventTarget.prototype.addEventListener = function (eventClass, listener, target, args) {
+        var event_id = GObject.getTypeId(eventClass);
 
         if (!this._listeners) {
             this._listeners = {};
@@ -58,8 +58,8 @@
      * @param {Object} [target] optional target ("this") for the listener
      * @version 1.0
      */
-    IFEventTarget.prototype.removeEventListener = function (eventClass, listener, target) {
-        var event_id = IFObject.getTypeId(eventClass);
+    GEventTarget.prototype.removeEventListener = function (eventClass, listener, target) {
+        var event_id = GObject.getTypeId(eventClass);
 
         if (this._listeners && event_id in this._listeners) {
             var array = this._listeners[event_id].listeners;
@@ -82,21 +82,21 @@
      * @returns {Boolean} true if there's at least one listener, false if not
      * @version 1.0
      */
-    IFEventTarget.prototype.hasEventListeners = function (eventClass) {
-        var event_id = IFObject.getTypeId(eventClass);
+    GEventTarget.prototype.hasEventListeners = function (eventClass) {
+        var event_id = GObject.getTypeId(eventClass);
         return this._listeners && event_id in this._listeners ? true : false;
     };
 
     /**
      * Trigger an event for this object. Note: You should always check if there
      * is an event listener registered for the given event before triggering.
-     * @param {IFEvent} event the event to trigger
+     * @param {GEvent} event the event to trigger
      * @see hasEventListeners
      * @version 1.0
      */
-    IFEventTarget.prototype.trigger = function (event) {
+    GEventTarget.prototype.trigger = function (event) {
         if (this._listeners) {
-            var event_id = IFObject.getTypeId(event);
+            var event_id = GObject.getTypeId(event);
             if (event_id in this._listeners) {
                 var array = this._listeners[event_id].listeners;
                 for (var i = 0; i < array.length; ++i) {
@@ -107,5 +107,5 @@
         }
     };
 
-    _.IFEventTarget = IFEventTarget;
+    _.GEventTarget = GEventTarget;
 })(this);

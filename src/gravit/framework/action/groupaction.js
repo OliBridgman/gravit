@@ -8,10 +8,10 @@
      */
     function GGroupAction() {
     };
-    IFObject.inherit(GGroupAction, GAction);
+    GObject.inherit(GGroupAction, GAction);
 
     GGroupAction.ID = 'modify.group';
-    GGroupAction.TITLE = new IFLocale.Key(GGroupAction, "title");
+    GGroupAction.TITLE = new GLocale.Key(GGroupAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GGroupAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'G'];
+        return [GKey.Constant.META, 'G'];
     };
 
     /**
@@ -68,7 +68,7 @@
         editor.beginTransaction();
         try {
             // Create our group (= shapeSet)
-            var group = new IFGroup();
+            var group = new GGroup();
 
             // Collect all items to be added to the group
             var itemsToGroup = [];

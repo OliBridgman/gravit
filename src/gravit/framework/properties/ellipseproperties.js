@@ -9,7 +9,7 @@
     function GEllipseProperties() {
         this._ellipses = [];
     };
-    IFObject.inherit(GEllipseProperties, GProperties);
+    GObject.inherit(GEllipseProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,7 +24,7 @@
     GEllipseProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFEllipse>}
+     * @type {Array<GEllipse>}
      * @private
      */
     GEllipseProperties.prototype._ellipses = null;
@@ -39,15 +39,15 @@
                 return $('<select></select>')
                     .attr('data-property', 'etp')
                     .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Arc)
+                        .attr('value', GEllipse.Type.Arc)
                         // TODO : I18N
                         .text('Arc'))
                     .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Chord)
+                        .attr('value', GEllipse.Type.Chord)
                         // TODO : I18N
                         .text('Chord'))
                     .append($('<option></option>')
-                        .attr('value', IFEllipse.Type.Pie)
+                        .attr('value', GEllipse.Type.Pie)
                         // TODO : I18N
                         .text('Pie'))
                     .on('change', function () {
@@ -58,10 +58,10 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var angle = IFLength.parseEquationValue($(this).val());
+                        var angle = GLength.parseEquationValue($(this).val());
                         if (angle !== null) {
-                            angle = IFMath.normalizeAngleRadians(IFMath.toRadians(angle));
-                            self._assignProperty(property, IFMath.PI2 - angle);
+                            angle = GMath.normalizeAngleRadians(GMath.toRadians(angle));
+                            self._assignProperty(property, GMath.PI2 - angle);
                         } else {
                             self._updateProperties();
                         }
@@ -110,21 +110,21 @@
     /** @override */
     GEllipseProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
         // Collect all ellipse elements
         this._ellipses = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFEllipse) {
+            if (elements[i] instanceof GEllipse) {
                 this._ellipses.push(elements[i]);
             }
         }
 
         if (this._ellipses.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -133,7 +133,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GEllipseProperties.prototype._afterPropertiesChange = function (event) {
@@ -151,9 +151,9 @@
         var ellipse = this._ellipses[0];
         this._panel.find('select[data-property="etp"]').val(ellipse.getProperty('etp'));
         this._panel.find('input[data-property="sa"]').val(
-            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - ellipse.getProperty('sa')), 2));
+            GUtil.formatNumber(GMath.toDegrees(GMath.PI2 - ellipse.getProperty('sa')), 2));
         this._panel.find('input[data-property="ea"]').val(
-            IFUtil.formatNumber(IFMath.toDegrees(IFMath.PI2 - ellipse.getProperty('ea')), 2));
+            GUtil.formatNumber(GMath.toDegrees(GMath.PI2 - ellipse.getProperty('ea')), 2));
     };
 
     /**

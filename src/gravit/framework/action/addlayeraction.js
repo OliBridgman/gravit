@@ -8,10 +8,10 @@
      */
     function GAddLayerAction() {
     };
-    IFObject.inherit(GAddLayerAction, GAction);
+    GObject.inherit(GAddLayerAction, GAction);
 
     GAddLayerAction.ID = 'modify.add-layer';
-    GAddLayerAction.TITLE = new IFLocale.Key(GAddLayerAction, "title");
+    GAddLayerAction.TITLE = new GLocale.Key(GAddLayerAction, "title");
 
     /**
      * @override
@@ -56,8 +56,8 @@
         var activePage = scene.getActivePage();
 
         // TODO : I18N
-        IFEditor.tryRunTransaction(activePage, function () {
-            var layer = new IFLayer();
+        GEditor.tryRunTransaction(activePage, function () {
+            var layer = new GLayer();
             layer.setProperty('name', 'Layer ' + scene.queryCount('layer').toString());
             activePage.appendChild(layer);
             scene.setActiveLayer(layer);

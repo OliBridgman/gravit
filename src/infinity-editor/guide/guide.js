@@ -1,66 +1,66 @@
 (function (_) {
     /**
      * Base for a guide
-     * @param {IFGuides} guides the owner guides
-     * @class IFGuide
+     * @param {GGuides} guides the owner guides
+     * @class GGuide
      * @constructor
      */
-    function IFGuide(guides) {
+    function GGuide(guides) {
         this._guides = guides;
         this._scene = guides._scene;
     }
 
-    IFObject.inherit(IFGuide, IFObject);
+    GObject.inherit(GGuide, GObject);
 
     /**
-     * @type {IFGuides}
+     * @type {GGuides}
      * @private
      */
-    IFGuide.prototype._guides = null;
+    GGuide.prototype._guides = null;
 
     /**
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
-    IFGuide.prototype._scene = null;
+    GGuide.prototype._scene = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFGuide.Visual Mixin
+    // GGuide.Visual Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin marking a guide to be paintable
-     * @class IFGuide.Visual
+     * @class GGuide.Visual
      * @constructor
      * @mixin
      */
-    IFGuide.Visual = function () {
+    GGuide.Visual = function () {
         
     };
     
     /**
      * Called whenever the guides should paint itself
-     * @param {IFTransform} transform the transformation of the scene
-     * @param {IFPaintContext} context
+     * @param {GTransform} transform the transformation of the scene
+     * @param {GPaintContext} context
      */
-    IFGuide.Visual.prototype.paint = function (transform, context) {
+    GGuide.Visual.prototype.paint = function (transform, context) {
         // NO-OP
     };
 
     /** @override */
-    IFGuide.Visual.prototype.toString = function () {
-        return "[Mixin IFGuide.Visual]";
+    GGuide.Visual.prototype.toString = function () {
+        return "[Mixin GGuide.Visual]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFGuide.Map Mixin
+    // GGuide.Map Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A mixin marking a guide to be mappable
-     * @class IFGuide.Map
+     * @class GGuide.Map
      * @constructor
      * @mixin
      */
-    IFGuide.Map = function () {
+    GGuide.Map = function () {
 
     };
 
@@ -68,9 +68,9 @@
      * Called to let this guide map horizontal and vertical coordinates
      * @param {Number} x
      * @param {Number} y
-     * @return {{x: {value: Number, guide: IFPoint|Array<IFPoint>}, y: {value: Number, guide: IFPoint|Array<IFPoint>}}}
+     * @return {{x: {value: Number, guide: GPoint|Array<GPoint>}, y: {value: Number, guide: GPoint|Array<GPoint>}}}
      */
-    IFGuide.Map.prototype.map = function (x, y) {
+    GGuide.Map.prototype.map = function (x, y) {
         // NO-OP
     };
 
@@ -79,23 +79,23 @@
      * key modifiers like CTRL, and so on.
      * @returns {Boolean}
      */
-    IFGuide.Map.prototype.isMappingAllowed = function () {
+    GGuide.Map.prototype.isMappingAllowed = function () {
         return true;
     };
 
     /** @override */
-    IFGuide.Map.prototype.toString = function () {
-        return "[Mixin IFGuide.Map]";
+    GGuide.Map.prototype.toString = function () {
+        return "[Mixin GGuide.Map]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFGuide
+    // GGuide
     // -----------------------------------------------------------------------------------------------------------------
 
     /** @override */
-    IFGuide.prototype.toString = function () {
-        return "[Object IFGuide]";
+    GGuide.prototype.toString = function () {
+        return "[Object GGuide]";
     };
 
-    _.IFGuide = IFGuide;
+    _.GGuide = GGuide;
 })(this);

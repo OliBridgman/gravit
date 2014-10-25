@@ -30,7 +30,7 @@
 
         this._clipboardMimeTypes = {};
     };
-    IFObject.inherit(GSystemShell, GShell);
+    GObject.inherit(GSystemShell, GShell);
 
     /**
      * @type {gui.Menu}
@@ -158,188 +158,188 @@
 
             if (typeof key == 'number') {
                 // we want a system-translated key here
-                var key = IFKey.transformKey(key);
+                var key = GKey.transformKey(key);
                 switch (key) {
                     // Modifiers
-                    case IFKey.Constant.CONTROL:
+                    case GKey.Constant.CONTROL:
                         result.modifiers = result.modifiers + (result.modifiers ? '-' : '') + 'ctrl';
                         break;
-                    case IFKey.Constant.SHIFT:
+                    case GKey.Constant.SHIFT:
                         result.modifiers = result.modifiers + (result.modifiers ? '-' : '') + 'shift';
                         break;
-                    case IFKey.Constant.ALT:
+                    case GKey.Constant.ALT:
                         result.modifiers = result.modifiers + (result.modifiers ? '-' : '') + 'alt';
                         break;
-                    case IFKey.Constant.COMMAND:
+                    case GKey.Constant.COMMAND:
                         result.modifiers = result.modifiers + (result.modifiers ? '-' : '') + 'cmd';
                         break;
 
                     // Regular Keys
-                    case IFKey.Constant.SPACE:
+                    case GKey.Constant.SPACE:
                         // TODO
                         result.key = " ";
                         break;
-                    case IFKey.Constant.ENTER:
+                    case GKey.Constant.ENTER:
                         // TODO
                         result.key = "\r";
                         break;
-                    case IFKey.Constant.TAB:
+                    case GKey.Constant.TAB:
                         // TODO
                         result.key = "\t";
                         break;
-                    case IFKey.Constant.BACKSPACE:
+                    case GKey.Constant.BACKSPACE:
                         // TODO
                         result.key = "\b";
                         break;
 
-                    case IFKey.Constant.LEFT:
+                    case GKey.Constant.LEFT:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF702);
                         } else {
                             result.key = "LEFT";
                         }
                         break;
-                    case IFKey.Constant.UP:
+                    case GKey.Constant.UP:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF700);
                         } else {
                             result.key = "UP";
                         }
                         break;
-                    case IFKey.Constant.RIGHT:
+                    case GKey.Constant.RIGHT:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF703);
                         } else {
                             result.key = "RIGHT";
                         }
                         break;
-                    case IFKey.Constant.DOWN:
+                    case GKey.Constant.DOWN:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF701);
                         } else {
                             result.key = "DOWN";
                         }
                         break;
-                    case IFKey.Constant.PAGE_UP:
+                    case GKey.Constant.PAGE_UP:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF72C);
                         } else {
                             result.key = "PAGEUP";
                         }
                         break;
-                    case IFKey.Constant.PAGE_DOWN:
+                    case GKey.Constant.PAGE_DOWN:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF72D);
                         } else {
                             result.key = "PAGEDOWN";
                         }
                         break;
-                    case IFKey.Constant.HOME:
+                    case GKey.Constant.HOME:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF729);
                         } else {
                             result.key = "HOME";
                         }
                         break;
-                    case IFKey.Constant.END:
+                    case GKey.Constant.END:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF72B);
                         } else {
                             result.key = "END";
                         }
                         break;
-                    case IFKey.Constant.INSERT:
+                    case GKey.Constant.INSERT:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF727);
                         } else {
                             result.key = "INSERT";
                         }
                         break;
-                    case IFKey.Constant.DELETE:
+                    case GKey.Constant.DELETE:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF728);
                         } else {
                             result.key = "DELETE";
                         }
                         break;
-                    case IFKey.Constant.F1:
+                    case GKey.Constant.F1:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF704);
                         } else {
                             result.key = "F1";
                         }
                         break;
-                    case IFKey.Constant.F2:
+                    case GKey.Constant.F2:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF705);
                         } else {
                             result.key = "F2";
                         }
                         break;
-                    case IFKey.Constant.F3:
+                    case GKey.Constant.F3:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF706);
                         } else {
                             result.key = "F3";
                         }
                         break;
-                    case IFKey.Constant.F4:
+                    case GKey.Constant.F4:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF707);
                         } else {
                             result.key = "F4";
                         }
                         break;
-                    case IFKey.Constant.F5:
+                    case GKey.Constant.F5:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF708);
                         } else {
                             result.key = "F5";
                         }
                         break;
-                    case IFKey.Constant.F6:
+                    case GKey.Constant.F6:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF709);
                         } else {
                             result.key = "F6";
                         }
                         break;
-                    case IFKey.Constant.F7:
+                    case GKey.Constant.F7:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70A);
                         } else {
                             result.key = "F7";
                         }
                         break;
-                    case IFKey.Constant.F8:
+                    case GKey.Constant.F8:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70B);
                         } else {
                             result.key = "F8";
                         }
                         break;
-                    case IFKey.Constant.F9:
+                    case GKey.Constant.F9:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70C);
                         } else {
                             result.key = "F9";
                         }
                         break;
-                    case IFKey.Constant.F10:
+                    case GKey.Constant.F10:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70D);
                         } else {
                             result.key = "F10";
                         }
                         break;
-                    case IFKey.Constant.F11:
+                    case GKey.Constant.F11:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70E);
                         } else {
                             result.key = "F11";
                         }
                         break;
-                    case IFKey.Constant.F12:
+                    case GKey.Constant.F12:
                         if (process.platform === 'darwin') {
                             result.key = String.fromCharCode(0xF70F);
                         } else {

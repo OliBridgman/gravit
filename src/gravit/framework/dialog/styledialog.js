@@ -2,7 +2,7 @@
     /**
      * Style settings dialog
      * @class GStyleDialog
-     * @param {IFStyle} style the style this dialog works on
+     * @param {GStyle} style the style this dialog works on
      * @constructor
      */
     function GStyleDialog(style) {
@@ -10,7 +10,7 @@
     };
 
     /**
-     * @type {IFStyle}
+     * @type {GStyle}
      * @private
      */
     GStyleDialog.prototype._style = null;
@@ -30,22 +30,22 @@
 
             // TODO : I18N
             switch (propertySet) {
-                case IFStylable.PropertySet.Style:
+                case GStylable.PropertySet.Style:
                     title = "Style Settings";
                     break;
-                case IFStylable.PropertySet.Effects:
+                case GStylable.PropertySet.Effects:
                     title = "Effects";
                     break;
-                case IFStylable.PropertySet.Fill:
+                case GStylable.PropertySet.Fill:
                     title = "Fill";
                     break;
-                case IFStylable.PropertySet.Border:
+                case GStylable.PropertySet.Border:
                     title = "Border";
                     break;
-                case IFStylable.PropertySet.Text:
+                case GStylable.PropertySet.Text:
                     title = "Text";
                     break;
-                case IFStylable.PropertySet.Paragraph:
+                case GStylable.PropertySet.Paragraph:
                     title = "Paragraph";
                     break;
             }
@@ -84,14 +84,14 @@
                     // TODO : I18N
                     .text('Properties:'))
                 .append($('<td></td>')
-                    .append(_createPropertyInput(IFStylable.PropertySet.Style))
-                    .append(_createPropertyInput(IFStylable.PropertySet.Effects))
+                    .append(_createPropertyInput(GStylable.PropertySet.Style))
+                    .append(_createPropertyInput(GStylable.PropertySet.Effects))
                     .append('<br/>')
-                    .append(_createPropertyInput(IFStylable.PropertySet.Fill))
-                    .append(_createPropertyInput(IFStylable.PropertySet.Border))
+                    .append(_createPropertyInput(GStylable.PropertySet.Fill))
+                    .append(_createPropertyInput(GStylable.PropertySet.Border))
                     .append('<br/>')
-                    .append(_createPropertyInput(IFStylable.PropertySet.Text))
-                    .append(_createPropertyInput(IFStylable.PropertySet.Paragraph))));
+                    .append(_createPropertyInput(GStylable.PropertySet.Text))
+                    .append(_createPropertyInput(GStylable.PropertySet.Paragraph))));
 
         vex.dialog.open({
             input: form,
@@ -99,8 +99,8 @@
             callback: function (data) {
                 var assign = function () {
                     var ps = [];
-                    for (var propertySet in IFStylable.PropertySet) {
-                        var propertySetVal = IFStylable.PropertySet[propertySet];
+                    for (var propertySet in GStylable.PropertySet) {
+                        var propertySetVal = GStylable.PropertySet[propertySet];
                         if (form.find('[data-property-set="' + propertySetVal + '"]').is(':checked')) {
                             ps.push(propertySetVal);
                         }

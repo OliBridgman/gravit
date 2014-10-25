@@ -11,10 +11,10 @@
         this._propertyPanels = [];
     }
 
-    IFObject.inherit(GPropertiesPanel, GPanel);
+    GObject.inherit(GPropertiesPanel, GPanel);
 
     GPropertiesPanel.ID = "properties";
-    GPropertiesPanel.TITLE = new IFLocale.Key(GPropertiesPanel, "title");
+    GPropertiesPanel.TITLE = new GLocale.Key(GPropertiesPanel, "title");
 
     /**
      * @type {JQuery}
@@ -36,7 +36,7 @@
     GPropertiesPanel.prototype._document = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
     GPropertiesPanel.prototype._elements = null;
@@ -97,8 +97,8 @@
             var scene = this._document.getScene();
             var editor = this._document.getEditor();
 
-            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
-            scene.addEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            editor.addEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
             this._updateFromSelection();
 
@@ -108,8 +108,8 @@
             var editor = this._document.getEditor();
 
             // Unsubscribe from the editor's events
-            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
-            scene.removeEventListener(IFNode.AfterFlagChangeEvent, this._afterFlagChange, this);
+            editor.removeEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
 
             this._document = null;
             this._elements = null;
@@ -144,7 +144,7 @@
         // Special case - if element's consists of scene only and
         // some element's activeness changes, trigger an update property
         // panels as some panel do some special handling for this case
-        if (evt.flag === IFNode.Flag.Active && this._elements && this._elements.length === 1 && this._elements[0] instanceof IFScene) {
+        if (evt.flag === GNode.Flag.Active && this._elements && this._elements.length === 1 && this._elements[0] instanceof GScene) {
             this._updatePropertyPanels();
         }
     };

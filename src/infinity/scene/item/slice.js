@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * An element representing a slice
-     * @class IFSlice
-     * @extends IFItem
-     * @mixes IFElement.Transform
+     * @class GSlice
+     * @extends GItem
+     * @mixes GElement.Transform
      * @constructor
      */
-    function IFSlice() {
-        IFItem.call(this);
-        this._setDefaultProperties(IFSlice.VisualProperties, IFSlice.GeometryProperties, IFSlice.MetaProperties);
+    function GSlice() {
+        GItem.call(this);
+        this._setDefaultProperties(GSlice.VisualProperties, GSlice.GeometryProperties, GSlice.MetaProperties);
     }
 
-    IFNode.inheritAndMix("slice", IFSlice, IFItem, [IFElement.Transform]);
+    GNode.inheritAndMix("slice", GSlice, GItem, [GElement.Transform]);
 
     /**
      * The meta properties of a slice with their default values
      */
-    IFSlice.MetaProperties = {
+    GSlice.MetaProperties = {
         // Whether to trim on exporting or not
         trm: true
     };
@@ -24,43 +24,43 @@
     /**
      * The geometry properties of a slice with their default values
      */
-    IFSlice.GeometryProperties = {
+    GSlice.GeometryProperties = {
         trf: null
     };
 
     /**
      * The visual properties of a slice with their default values
      */
-    IFSlice.VisualProperties = {
+    GSlice.VisualProperties = {
         // The color of the slice
-        cls: new IFRGBColor([0, 116, 217])
+        cls: new GRGBColor([0, 116, 217])
     };
 
     /** @override */
-    IFSlice.prototype.getTransform = function () {
+    GSlice.prototype.getTransform = function () {
         return this.$trf;
     };
 
     /** @override */
-    IFSlice.prototype.setTransform = function (transform) {
+    GSlice.prototype.setTransform = function (transform) {
         this.setProperty('trf', transform);
     };
 
     /** @override */
-    IFSlice.prototype.transform = function (transform) {
+    GSlice.prototype.transform = function (transform) {
         if (transform && !transform.isIdentity()) {
             this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
         }
-        IFElement.Transform.prototype._transformChildren.call(this, transform);
+        GElement.Transform.prototype._transformChildren.call(this, transform);
     };
 
     /** @override */
-    IFSlice.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer;
+    GSlice.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GLayer;
     };
 
     /** @override */
-    IFPage.prototype._paintToBitmap = function (context) {
+    GPage.prototype._paintToBitmap = function (context) {
         // Paint scene and not ourself
         this.getScene().paint(context);
 
@@ -75,9 +75,9 @@
     };
 
     /** @override */
-    IFSlice.prototype._paint = function (context) {
+    GSlice.prototype._paint = function (context) {
         if (context.configuration.isSlicesVisible(context)) {
-            var sourceBBox = new IFRect(-1, -1, 2, 2);
+            var sourceBBox = new GRect(-1, -1, 2, 2);
             sourceBBox = this.$trf ? this.$trf.mapRect(sourceBBox) : sourceBBox;
 
             if (context.configuration.isOutline(context)) {
@@ -95,62 +95,62 @@
     };
 
     /** @override */
-    IFSlice.prototype._calculateGeometryBBox = function () {
-        var rect = new IFRect(-1, -1, 2, 2);
+    GSlice.prototype._calculateGeometryBBox = function () {
+        var rect = new GRect(-1, -1, 2, 2);
         return this.$trf ? this.$trf.mapRect(rect) : rect;
     };
 
     /** @override */
-    IFSlice.prototype._calculatePaintBBox = function () {
+    GSlice.prototype._calculatePaintBBox = function () {
         return this.getGeometryBBox();
     };
 
     /** @override */
-    IFSlice.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFSlice.VisualProperties, function (property, value) {
+    GSlice.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GSlice.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFPattern.serialize(value);
+                    return GPattern.serialize(value);
                 }
                 return value;
             });
 
-            this.storeProperties(args, IFSlice.GeometryProperties, function (property, value) {
+            this.storeProperties(args, GSlice.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
-                    return IFTransform.serialize(value);
+                    return GTransform.serialize(value);
                 }
                 return value;
             });
 
-            this.storeProperties(args, IFSlice.MetaProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFSlice.VisualProperties, function (property, value) {
+            this.storeProperties(args, GSlice.MetaProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GSlice.VisualProperties, function (property, value) {
                 if (property === 'cls' && value) {
-                    return IFPattern.deserialize(value);
+                    return GPattern.deserialize(value);
                 }
                 return value;
             });
 
-            this.restoreProperties(args, IFSlice.GeometryProperties, function (property, value) {
+            this.restoreProperties(args, GSlice.GeometryProperties, function (property, value) {
                 if (property === 'trf' && value) {
-                    return IFTransform.deserialize(value);
+                    return GTransform.deserialize(value);
                 }
                 return value;
             });
 
-            this.restoreProperties(args, IFSlice.MetaProperties);
+            this.restoreProperties(args, GSlice.MetaProperties);
         }
         
-        this._handleGeometryChangeForProperties(change, args, IFSlice.GeometryProperties);
-        this._handleVisualChangeForProperties(change, args, IFSlice.VisualProperties);
+        this._handleGeometryChangeForProperties(change, args, GSlice.GeometryProperties);
+        this._handleVisualChangeForProperties(change, args, GSlice.VisualProperties);
         
-        IFItem.prototype._handleChange.call(this, change, args);
+        GItem.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFSlice.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return new IFElement.HitResultInfo(this);
+    GSlice.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        return new GElement.HitResultInfo(this);
     };
 
-    _.IFSlice = IFSlice;
+    _.GSlice = GSlice;
 })(this);

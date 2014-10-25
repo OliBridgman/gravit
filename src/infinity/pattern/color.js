@@ -14,15 +14,15 @@
 
     /**
      * A class representing a color
-     * @class IFColor
-     * @extends IFPattern
+     * @class GColor
+     * @extends GPattern
      * @constructor
      */
-    function IFColor(value) {
+    function GColor(value) {
         this._value = value && value instanceof Array ? value.slice() : null;
     }
 
-    IFObject.inherit(IFColor, IFPattern);
+    GObject.inherit(GColor, GPattern);
 
     function round_clamp_byte (byte) {
         return Math.min(255, Math.max(0, Math.round(byte)));
@@ -33,7 +33,7 @@
      * @param {RGB} rgb
      * @return {HSV}
      */
-    IFColor.rgbToHSV = function (rgb) {
+    GColor.rgbToHSV = function (rgb) {
         var r = rgb[0] / 255;
         var g = rgb[1] / 255;
         var b = rgb[2] / 255;
@@ -60,7 +60,7 @@
      * @param {HSV} hsv
      * @return {RGB}
      */
-    IFColor.hsvToRGB = function (hsv) {
+    GColor.hsvToRGB = function (hsv) {
         var c = hsv[2] * hsv[1];
         var h1 = hsv[0] / 60;
         var x = c * (1 - Math.abs((h1 % 2) - 1));
@@ -88,7 +88,7 @@
      * will be used. Defaults to false.
      * @returns {RGB}
      */
-    IFColor.cmykToRGB = function (cmyk, noCMS) {
+    GColor.cmykToRGB = function (cmyk, noCMS) {
         var k = cmyk.length === 4 ? cmyk[3] : 0.0;
         var c = (cmyk[0] * (1 - k) + k);
         var m = (cmyk[1] * (1 - k) + k);
@@ -108,7 +108,7 @@
      * will be used. Defaults to false.
      * @returns {CMYK}
      */
-    IFColor.rgbToCMYK = function (rgb, noCMS) {
+    GColor.rgbToCMYK = function (rgb, noCMS) {
         var c = 1 - (rgb[0] / 255);
         var m = 1 - (rgb[1] / 255);
         var y = 1 - (rgb[2] / 255);
@@ -127,7 +127,7 @@
      * @param {RGB} rgb
      * @returns {string}
      */
-    IFColor.rgbToHtmlHex = function (rgb) {
+    GColor.rgbToHtmlHex = function (rgb) {
         var bin = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
         return '#' + (function (h) {
             return new Array(7 - h.length).join("0") + h
@@ -140,11 +140,11 @@
      * @param {Number} [opacity]
      * @returns {string}
      */
-    IFColor.rgbToCSS = function (rgb, opacity) {
+    GColor.rgbToCSS = function (rgb, opacity) {
         if (typeof opacity === 'number' && opacity !== 1.0) {
             return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + opacity + ')';
         } else {
-            return IFColor.rgbToHtmlHex(rgb);
+            return GColor.rgbToHtmlHex(rgb);
         }
     };
 
@@ -152,23 +152,23 @@
      * @type {Array<{Number}>}
      * @private
      */
-    IFColor.prototype._value = null;
+    GColor.prototype._value = null;
 
     /**
      * Return the underlying color value
      * @returns {Array<{Number}>}
      */
-    IFColor.prototype.getValue = function () {
+    GColor.prototype.getValue = function () {
         return this._value;
     };
 
     /** @override */
-    IFColor.prototype.serialize = function () {
+    GColor.prototype.serialize = function () {
         return this._value ? JSON.stringify(this._value) : '';
     };
 
     /** @override */
-    IFColor.prototype.deserialize = function (string) {
+    GColor.prototype.deserialize = function (string) {
         if (string) {
             this._value = JSON.parse(string);
         }
@@ -178,7 +178,7 @@
      * Converts and returns the underlying color as readable human string
      * @returns {String}
      */
-    IFColor.prototype.toHumanString = function () {
+    GColor.prototype.toHumanString = function () {
         throw new Error('Not Supported.');
     };
 
@@ -188,7 +188,7 @@
      * to convert to screen color
      * @returns {RGB}
      */
-    IFColor.prototype.toScreen = function (noCMS) {
+    GColor.prototype.toScreen = function (noCMS) {
         throw new Error('Not Supported.');
     };
 
@@ -199,20 +199,20 @@
      * to convert to screen color
      * @returns {String}
      */
-    IFColor.prototype.toScreenCSS = function (opacity, noCMS) {
-        return IFColor.rgbToCSS(this.toScreen(noCMS), opacity);
+    GColor.prototype.toScreenCSS = function (opacity, noCMS) {
+        return GColor.rgbToCSS(this.toScreen(noCMS), opacity);
     };
 
     /** @override */
-    IFColor.prototype.asCSSBackground = function (opacity) {
+    GColor.prototype.asCSSBackground = function (opacity) {
         var cssColor = this.toScreenCSS(opacity);
         return 'linear-gradient(' + cssColor + ', ' + cssColor + ')';
     };
 
     /** @override */
-    IFColor.prototype.toString = function () {
-        return "[Object IFColor]";
+    GColor.prototype.toString = function () {
+        return "[Object GColor]";
     };
 
-    _.IFColor = IFColor;
+    _.GColor = GColor;
 })(this);

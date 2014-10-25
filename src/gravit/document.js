@@ -2,29 +2,29 @@
     /**
      * An instance of an opened document
      * @class GDocument
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      */
     function GDocument(scene, url, title) {
         this.setUrl(url);
         this._scene = scene;
-        this._editor = new IFEditor(scene);
+        this._editor = new GEditor(scene);
         this._windows = [];
         this._activeWindow = null;
         // TODO : I18N
         this._title = title;
 
         // Provide an url resolver to our scene
-        this._scene.addEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
+        this._scene.addEventListener(GScene.ResolveUrlEvent, this._resolveUrl, this);
 
         // Provide a listener for dropping resources on editor
-        this._editor.addEventListener(IFEditor.FileDropEvent, this._dropFile, this);
+        this._editor.addEventListener(GEditor.FileDropEvent, this._dropFile, this);
     };
-    IFObject.inherit(GDocument, IFEventTarget);
+    GObject.inherit(GDocument, GEventTarget);
 
     /**
      * The underlying scene
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
     GDocument.prototype._scene = null;
@@ -38,7 +38,7 @@
 
     /**
      * The underlying editor working on the document
-     * @type {IFSceneEditor}
+     * @type {GSceneEditor}
      * @private
      */
     GDocument.prototype._editor = null;
@@ -66,7 +66,7 @@
 
     /**
      * Returns the scene this document is working on
-     * @returns {IFScene}
+     * @returns {GScene}
      */
     GDocument.prototype.getScene = function () {
         return this._scene;
@@ -105,7 +105,7 @@
 
     /**
      * Return the underlying editor
-     * @returns {IFSceneEditor}
+     * @returns {GSceneEditor}
      */
     GDocument.prototype.getEditor = function () {
         return this._editor;
@@ -152,7 +152,7 @@
     GDocument.prototype.save = function () {
         // TODO : Reset undo list/set save point
         if (this._url) {
-            var input = IFNode.serialize(this._scene);
+            var input = GNode.serialize(this._scene);
             var output = pako.gzip(input, {level: 9});
             this._storage.save(this._url, output.buffer, true, function (name) {
                 this._title = name;
@@ -175,7 +175,7 @@
             var addAsImage = function () {
                 var reader = new FileReader();
                 reader.onload = function (event) {
-                    var image = new IFImage();
+                    var image = new GImage();
                     image.setProperties(['name', 'url'], [name, event.target.result]);
                     this._editor.insertElements([image]);
                     callback(image);
@@ -193,7 +193,7 @@
                         if (value) {
                             var page = this._scene.getActivePage();
                             var layer = this._scene.getActiveLayer();
-                            IFIO.read('image/svg+xml', file, function (node) {
+                            GIO.read('image/svg+xml', file, function (node) {
                                 if (node) {
                                     layer.appendChild(node);
                                     callback(node);
@@ -216,14 +216,14 @@
     /**
      * Create and returns a new page
      * @param {Boolean} [noUndo] if set, no undo takes place for adding the page
-     * @return {IFPage}
+     * @return {GPage}
      */
     GDocument.prototype.createNewPage = function (noUndo) {
         var scene = this._scene;
         var insertPos = this._scene.getPageInsertPosition();
 
         // Create page
-        var page = new IFPage();
+        var page = new GPage();
         page.setProperties([
             'name',
             'x',
@@ -237,11 +237,11 @@
             insertPos.getY(),
             800,
             600,
-            IFRGBColor.WHITE
+            GRGBColor.WHITE
         ]);
 
         // Add default layer
-        var layer = new IFLayer();
+        var layer = new GLayer();
         // TODO : I18N
         layer.setProperties(['name'], ['Background']);
         page.appendChild(layer);
@@ -253,7 +253,7 @@
 
         if (!noUndo) {
             // TODO : I18N
-            IFEditor.tryRunTransaction(scene, addPageFunc, 'Add new Page');
+            GEditor.tryRunTransaction(scene, addPageFunc, 'Add new Page');
         } else {
             addPageFunc();
         }
@@ -281,8 +281,8 @@
     GDocument.prototype.release = function () {
         this._editor.release();
 
-        this._scene.removeEventListener(IFScene.ResolveUrlEvent, this._resolveUrl, this);
-        this._editor.removeEventListener(IFEditor.FileDropEvent, this._dropFile, this);
+        this._scene.removeEventListener(GScene.ResolveUrlEvent, this._resolveUrl, this);
+        this._editor.removeEventListener(GEditor.FileDropEvent, this._dropFile, this);
 
         if (this._storage) {
             this._storage.releaseUrl(this._url);
@@ -290,7 +290,7 @@
     };
 
     /**
-     * @param {IFScene.ResolveUrlEvent} evt
+     * @param {GScene.ResolveUrlEvent} evt
      * @private
      */
     GDocument.prototype._resolveUrl = function (evt) {
@@ -313,14 +313,14 @@
     };
 
     /**
-     * @param {IFEditor.FileDropEvent} evt
+     * @param {GEditor.FileDropEvent} evt
      * @private
      */
     GDocument.prototype._dropFile = function (evt) {
         this.importFile(evt.file, function (result) {
             // Translate result if any and if element
-            if (result instanceof IFElement && result.hasMixin(IFElement.Transform)) {
-                result.transform(new IFTransform(1, 0, 0, 1, evt.position.getX(), evt.position.getY()));
+            if (result instanceof GElement && result.hasMixin(GElement.Transform)) {
+                result.transform(new GTransform(1, 0, 0, 1, evt.position.getX(), evt.position.getY()));
             }
         });
     };

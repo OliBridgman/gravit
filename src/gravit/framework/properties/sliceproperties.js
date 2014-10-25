@@ -9,7 +9,7 @@
     function GSliceProperties() {
         this._slices = [];
     };
-    IFObject.inherit(GSliceProperties, GProperties);
+    GObject.inherit(GSliceProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,7 +24,7 @@
     GSliceProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFSlice>}
+     * @type {Array<GSlice>}
      * @private
      */
     GSliceProperties.prototype._slices = null;
@@ -39,7 +39,7 @@
                 return $('<div></div>')
                     .attr('data-property', property)
                     .gPatternPicker()
-                    .gPatternPicker('types', [IFColor])
+                    .gPatternPicker('types', [GColor])
                     .on('patternchange', function (evt, color) {
                         self._assignProperty(property, color);
                     });
@@ -83,21 +83,21 @@
     /** @override */
     GSliceProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._document = null;
         }
 
         this._slices = [];
 
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i] instanceof IFSlice) {
+            if (elements[i] instanceof GSlice) {
                 this._slices.push(elements[i]);
             }
         }
 
         if (this._slices.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -106,7 +106,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GSliceProperties.prototype._afterPropertiesChange = function (event) {

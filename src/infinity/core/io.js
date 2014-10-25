@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * IO Management class
-     * @class IFIO
+     * @class GIO
      * @constructor
      */
-    function IFIO() {
+    function GIO() {
     }
 
-    IFIO._readers = [];
+    GIO._readers = [];
 
-    IFIO.registerReader = function (reader) {
-        IFIO._readers.push(reader);
+    GIO.registerReader = function (reader) {
+        GIO._readers.push(reader);
     };
 
     /**
@@ -22,7 +22,7 @@
      * If the given result argument is null an error may have ocurred.
      * @param {*} [settings] custom settings for the reader
      */
-    IFIO.read = function (mimeTypeOrFileExt, source, callback, settings) {
+    GIO.read = function (mimeTypeOrFileExt, source, callback, settings) {
         var fileExtClean = mimeTypeOrFileExt.toLowerCase();
 
         if (fileExtClean.indexOf('.') > 0) {
@@ -32,8 +32,8 @@
 
         var targetReader = null;
 
-        for (var i = 0; i < IFIO._readers.length; ++i) {
-            var reader = IFIO._readers[i];
+        for (var i = 0; i < GIO._readers.length; ++i) {
+            var reader = GIO._readers[i];
             if (reader.getMimeType() === mimeTypeOrFileExt) {
                 targetReader = reader;
                 break;
@@ -59,7 +59,7 @@
                 }
             }
 
-            if (inputType === IFReader.InputType.String) {
+            if (inputType === GReader.InputType.String) {
                 if (typeof source === 'string') {
                     doRead(source);
                 } else {
@@ -70,7 +70,7 @@
                     };
                     f.readAsText(blob);
                 }
-            } else if (inputType === IFReader.InputType.ArrayBuffer) {
+            } else if (inputType === GReader.InputType.ArrayBuffer) {
                 if (source instanceof ArrayBuffer) {
                     doRead(source);
                 } else {
@@ -89,5 +89,5 @@
         }
     };
 
-    _.IFIO = IFIO;
+    _.GIO = GIO;
 })(this);

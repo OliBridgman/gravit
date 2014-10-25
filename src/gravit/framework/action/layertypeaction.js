@@ -9,13 +9,13 @@
     function GLayerTypeAction(layerType) {
         this._layerType = layerType;
     };
-    IFObject.inherit(GLayerTypeAction, GAction);
+    GObject.inherit(GLayerTypeAction, GAction);
 
     GLayerTypeAction.ID = 'modify.layer-type';
-    GLayerTypeAction.TITLE = new IFLocale.Key(GLayerTypeAction, 'title');
+    GLayerTypeAction.TITLE = new GLocale.Key(GLayerTypeAction, 'title');
 
     /**
-     * @type {IFLayer.Type}
+     * @type {GLayer.Type}
      * @private
      */
     GLayerTypeAction.prototype._layerType = null;
@@ -32,7 +32,7 @@
      */
     GLayerTypeAction.prototype.getTitle = function () {
         return ifLocale.get(GLayerTypeAction.TITLE).replace('%name%',
-            ifLocale.get(IFLayer.TypeName[this._layerType]));
+            ifLocale.get(GLayer.TypeName[this._layerType]));
     };
 
     /**

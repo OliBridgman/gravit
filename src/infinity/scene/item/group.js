@@ -1,32 +1,32 @@
 (function (_) {
     /**
      * The base for a groups
-     * @class IFGroup
-     * @extends IFItem
-     * @mixes IFNode.Container
-     * @mixes IFElement.Transform
-     * @mixes IFElement.Stylable
+     * @class GGroup
+     * @extends GItem
+     * @mixes GNode.Container
+     * @mixes GElement.Transform
+     * @mixes GElement.Stylable
      * @constructor
      */
-    function IFGroup() {
-        IFItem.call(this);
+    function GGroup() {
+        GItem.call(this);
     }
-    IFNode.inheritAndMix('group', IFGroup, IFItem, [IFNode.Container, IFElement.Transform, IFElement.Stylable]);
+    GNode.inheritAndMix('group', GGroup, GItem, [GNode.Container, GElement.Transform, GElement.Stylable]);
 
     /** @override */
-    IFGroup.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFLayer || parent instanceof IFGroup;
+    GGroup.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GLayer || parent instanceof GGroup;
     };
 
     /** @override */
-    IFGroup.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
+    GGroup.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
         this._paintChildren(context);
     };
 
     /** @override */
-    IFGroup.prototype._detailHitTest = function (location, transform, tolerance, force) {
-        return new IFElement.HitResultInfo(this);
+    GGroup.prototype._detailHitTest = function (location, transform, tolerance, force) {
+        return new GElement.HitResultInfo(this);
     };
 
-    _.IFGroup = IFGroup;
+    _.GGroup = GGroup;
 })(this);

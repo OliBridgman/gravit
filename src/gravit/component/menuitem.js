@@ -4,7 +4,7 @@
      * @param {Number} type the type of the menu item.
      * Defaults to GMenuItem.Type.Item
      * @class GMenuItem
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      * @see GMenuItem.Type
      * @version 1.0
@@ -41,7 +41,7 @@
         this._htmlElement.on("mouseup", this._mouseUp.bind(this));
     }
 
-    IFObject.inherit(GMenuItem, IFEventTarget);
+    GObject.inherit(GMenuItem, GEventTarget);
 
     /**
      * The type of a menu item
@@ -77,13 +77,13 @@
     /**
      * An event whenever a menu item is entered
      * @class GMenuItem.EnterEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.EnterEvent = function () {
     };
-    IFObject.inherit(GMenuItem.EnterEvent, IFEvent);
+    GObject.inherit(GMenuItem.EnterEvent, GEvent);
 
     /** @override */
     GMenuItem.EnterEvent.prototype.toString = function () {
@@ -99,13 +99,13 @@
     /**
      * An event whenever a menu item is left
      * @class GMenuItem.LeaveEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.LeaveEvent = function () {
     };
-    IFObject.inherit(GMenuItem.LeaveEvent, IFEvent);
+    GObject.inherit(GMenuItem.LeaveEvent, GEvent);
 
     /** @override */
     GMenuItem.LeaveEvent.prototype.toString = function () {
@@ -121,13 +121,13 @@
     /**
      * An event whenever a menu item was activated
      * @class GMenuItem.ActivateEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.ActivateEvent = function () {
     };
-    IFObject.inherit(GMenuItem.ActivateEvent, IFEvent);
+    GObject.inherit(GMenuItem.ActivateEvent, GEvent);
 
     /** @override */
     GMenuItem.ActivateEvent.prototype.toString = function () {
@@ -143,13 +143,13 @@
     /**
      * An event whenever a menu item should be updated (before it is shown)
      * @class GMenuItem.UpdateEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
     GMenuItem.UpdateEvent = function () {
     };
-    IFObject.inherit(GMenuItem.UpdateEvent, IFEvent);
+    GObject.inherit(GMenuItem.UpdateEvent, GEvent);
 
     /** @override */
     GMenuItem.UpdateEvent.prototype.toString = function () {
@@ -186,7 +186,7 @@
     GMenuItem.prototype._icon = null;
 
     /**
-     * @type {IFLocale.Key|String}
+     * @type {GLocale.Key|String}
      * @private
      */
     GMenuItem.prototype._caption = null;
@@ -258,7 +258,7 @@
     };
 
     /**
-     * @returns {IFLocale.Key|String} the item's caption
+     * @returns {GLocale.Key|String} the item's caption
      * @version 1.0
      */
     GMenuItem.prototype.getCaption = function () {
@@ -267,7 +267,7 @@
 
     /**
      * Assigns the item's the caption
-     * @param {IFLocale.Key|String} caption
+     * @param {GLocale.Key|String} caption
      * @version 1.0
      */
     GMenuItem.prototype.setCaption = function (caption) {
@@ -276,7 +276,7 @@
             var captionElement = this._htmlElement.find('.g-menu-item-caption');
             captionElement.empty();
 
-            if (!this._caption || this._caption instanceof IFLocale.Key || typeof this._caption === 'string') {
+            if (!this._caption || this._caption instanceof GLocale.Key || typeof this._caption === 'string') {
                 captionElement.text(this._caption ? ifLocale.get(this._caption) : "");
             } else {
                 captionElement.append(this._caption);
@@ -300,7 +300,7 @@
         this._shortcutHint = hint;
         var shortcutElement = this._htmlElement.find('.g-menu-item-shortcut');
         if (this._shortcutHint && this._shortcutHint.length > 0) {
-            shortcutElement.text(IFKey.shortcutToString(hint));
+            shortcutElement.text(GKey.shortcutToString(hint));
             shortcutElement.css('display', '');
         } else {
             shortcutElement.empty();
@@ -489,7 +489,7 @@
         //      - or -
         //    Are a root item and part of a menu-bar which' menu is opened
         if (this._type == GMenuItem.Type.Menu &&
-            IFSystem.hardware === IFSystem.Hardware.Desktop &&
+            GSystem.hardware === GSystem.Hardware.Desktop &&
             (!this.isRootItem() || (this.isRootMenuBarItem() && this.getMenuBar().isActive()))) {
             this._openMenu();
         }
@@ -525,13 +525,13 @@
             return;
         }
 
-        if (evt.button == IFMouseEvent.BUTTON_LEFT) {
+        if (evt.button == GMouseEvent.BUTTON_LEFT) {
             // Stop propagation and default handling to not run into our global menu handlers
             evt.stopPropagation();
             evt.preventDefault();
 
             // Open Sub-Menu if we're a Sub-Item and on Root or not on Desktop which doesn't have mouse-over
-            if (this._type === GMenuItem.Type.Menu && (this.isRootItem() || IFSystem.hardware !== IFSystem.Hardware.Desktop)) {
+            if (this._type === GMenuItem.Type.Menu && (this.isRootItem() || GSystem.hardware !== GSystem.Hardware.Desktop)) {
                 // Toggle our menu
                 if (this._htmlElement.hasClass('g-active')) {
                     this.getMenu().close();

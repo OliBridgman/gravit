@@ -3,12 +3,12 @@
     /**
      * Base class for an action
      * @class GAction
-     * @extends IFObject
+     * @extends GObject
      * @constructor
      */
     function GAction() {
     };
-    IFObject.inherit(GAction, IFObject);
+    GObject.inherit(GAction, GObject);
 
     /**
      * Get the id of the action
@@ -21,7 +21,7 @@
 
     /**
      * Get the title of the action
-     * @return {IFLocale.Key|String}
+     * @return {GLocale.Key|String}
      * @version 1.0
      */
     GAction.prototype.getTitle = function () {
@@ -31,7 +31,7 @@
     /**
      * Get the category of the action,
      * returns null by default
-     * @return {IFLocale.Key|String}
+     * @return {GLocale.Key|String}
      * @version 1.0
      */
     GAction.prototype.getCategory = function () {

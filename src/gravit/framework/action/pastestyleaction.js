@@ -8,10 +8,10 @@
      */
     function GPasteStyleAction() {
     };
-    IFObject.inherit(GPasteStyleAction, GAction);
+    GObject.inherit(GPasteStyleAction, GAction);
 
     GPasteStyleAction.ID = 'edit.paste.style';
-    GPasteStyleAction.TITLE = new IFLocale.Key(GPasteStyleAction, "title");
+    GPasteStyleAction.TITLE = new GLocale.Key(GPasteStyleAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GPasteStyleAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.F4];
+        return [GKey.Constant.F4];
     };
 
     /**
@@ -53,13 +53,13 @@
      */
     GPasteStyleAction.prototype.isEnabled = function () {
         var cpMimeTypes = gShell.getClipboardMimeTypes();
-        if (cpMimeTypes && cpMimeTypes.indexOf(IFNode.MIME_TYPE) >= 0) {
+        if (cpMimeTypes && cpMimeTypes.indexOf(GNode.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
             if (document) {
                 var selection = document.getEditor().getSelection();
                 if (selection) {
                     for (var i = 0; i < selection.length; ++i) {
-                        if (selection[i].hasMixin(IFStylable)) {
+                        if (selection[i].hasMixin(GStylable)) {
                             return true;
                         }
                     }
@@ -73,11 +73,11 @@
      * @override
      */
     GPasteStyleAction.prototype.execute = function () {
-        var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
+        var nodes = GNode.deserialize(gShell.getClipboardContent(GNode.MIME_TYPE));
         if (nodes && nodes.length > 0) {
             var stylableSource = null;
             for (var i = 0; i < nodes.length; ++i) {
-                if (nodes[i].hasMixin(IFStylable)) {
+                if (nodes[i].hasMixin(GStylable)) {
                     stylableSource = nodes[i];
                     break;
                 }
@@ -90,7 +90,7 @@
             try {
                 for (var i = 0; i < selection.length; ++i) {
                     var target = selection[i];
-                    if (target.hasMixin(IFStylable)) {
+                    if (target.hasMixin(GStylable)) {
                         target.assignStyleFrom(stylableSource);
                     }
                 }

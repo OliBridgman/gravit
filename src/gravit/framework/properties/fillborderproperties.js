@@ -9,7 +9,7 @@
     function GFillBorderProperties() {
         this._elements = [];
     };
-    IFObject.inherit(GFillBorderProperties, GProperties);
+    GObject.inherit(GFillBorderProperties, GProperties);
 
     /**
      * @type {JQuery}
@@ -24,7 +24,7 @@
     GFillBorderProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFStylable>}
+     * @type {Array<GStylable>}
      * @private
      */
     GFillBorderProperties.prototype._elements = null;
@@ -51,8 +51,8 @@
                     .attr('data-property', property)
                     .gPatternTypePicker()
                     .on('patterntypechange', function (evt, patternClass) {
-                        self._assignProperty('_fpt', IFPattern.smartCreate(patternClass, self._panel.find('[data-property="_fpt"]').gPatternPicker('value')));
-                        if (patternClass && patternClass !== IFBackground) {
+                        self._assignProperty('_fpt', GPattern.smartCreate(patternClass, self._panel.find('[data-property="_fpt"]').gPatternPicker('value')));
+                        if (patternClass && patternClass !== GBackground) {
                             self._panel.find('[data-property="_fpt"]').gPatternPicker('open');
                         }
                     });
@@ -61,7 +61,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var opacity = IFLength.parseEquationValue($(this).val());
+                        var opacity = GLength.parseEquationValue($(this).val());
                         if (opacity !== null && opacity >= 0.0 && opacity <= 100) {
                             self._assignProperty(property, opacity / 100);
                         } else {
@@ -73,7 +73,7 @@
                     .attr('type', 'text')
                     .attr('data-property', property)
                     .on('change', function () {
-                        var value = IFLength.parseEquationValue($(this).val());
+                        var value = GLength.parseEquationValue($(this).val());
                         if (value !== null && value >= 0.0) {
                             self._assignProperty(property, value);
                         } else {
@@ -84,13 +84,13 @@
                 var icon = '';
                 var align = property.substr('_ba-'.length);
                 switch (align) {
-                    case IFStylable.BorderAlignment.Inside:
+                    case GStylable.BorderAlignment.Inside:
                         icon = 'gicon-stroke-inside';
                         break;
-                    case IFStylable.BorderAlignment.Center:
+                    case GStylable.BorderAlignment.Center:
                         icon = 'gicon-stroke-center';
                         break;
-                    case IFStylable.BorderAlignment.Outside:
+                    case GStylable.BorderAlignment.Outside:
                         icon = 'gicon-stroke-outside';
                         break;
                     default:
@@ -108,13 +108,13 @@
                 var icon = '';
                 var cap = property.substr('_blc-'.length);
                 switch (cap) {
-                    case IFPaintCanvas.LineCap.Butt:
+                    case GPaintCanvas.LineCap.Butt:
                         icon = 'gicon-line-cap-butt';
                         break;
-                    case IFPaintCanvas.LineCap.Round:
+                    case GPaintCanvas.LineCap.Round:
                         icon = 'gicon-line-cap-round';
                         break;
-                    case IFPaintCanvas.LineCap.Square:
+                    case GPaintCanvas.LineCap.Square:
                         icon = 'gicon-line-cap-square';
                         break;
                     default:
@@ -132,13 +132,13 @@
                 var icon = '';
                 var join = property.substr('_blj-'.length);
                 switch (join) {
-                    case IFPaintCanvas.LineJoin.Bevel:
+                    case GPaintCanvas.LineJoin.Bevel:
                         icon = 'gicon-line-join-bevel';
                         break;
-                    case IFPaintCanvas.LineJoin.Round:
+                    case GPaintCanvas.LineJoin.Round:
                         icon = 'gicon-line-join-round';
                         break;
-                    case IFPaintCanvas.LineJoin.Miter:
+                    case GPaintCanvas.LineJoin.Miter:
                         icon = 'gicon-line-join-miter';
                         break;
                     default:
@@ -231,13 +231,13 @@
                     'top': '30px',
                     'left': '86px'
                 })
-                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Inside)
+                .append(_createInput('_ba-' + GStylable.BorderAlignment.Inside)
                     // TODO : I18N
                     .attr('title', 'Border Inside'))
-                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Center)
+                .append(_createInput('_ba-' + GStylable.BorderAlignment.Center)
                     // TODO : I18N
                     .attr('title', 'Border Centered'))
-                .append(_createInput('_ba-' + IFStylable.BorderAlignment.Outside)
+                .append(_createInput('_ba-' + GStylable.BorderAlignment.Outside)
                     // TODO : I18N
                     .attr('title', 'Border Outside')))
             .append($('<hr>')
@@ -261,13 +261,13 @@
                     'top': '65px',
                     'left': '50px'
                 })
-                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Butt)
+                .append(_createInput('_blc-' + GPaintCanvas.LineCap.Butt)
                     // TODO : I18N
                     .attr('title', 'Butt'))
-                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Round)
+                .append(_createInput('_blc-' + GPaintCanvas.LineCap.Round)
                     // TODO : I18N
                     .attr('title', 'Round'))
-                .append(_createInput('_blc-' + IFPaintCanvas.LineCap.Square)
+                .append(_createInput('_blc-' + GPaintCanvas.LineCap.Square)
                     // TODO : I18N
                     .attr('title', 'Square')))
             .append($('<label></label>')
@@ -284,13 +284,13 @@
                     'top': '89px',
                     'left': '50px'
                 })
-                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Bevel)
+                .append(_createInput('_blj-' + GPaintCanvas.LineJoin.Bevel)
                     // TODO : I18N
                     .attr('title', 'Bevel'))
-                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Round)
+                .append(_createInput('_blj-' + GPaintCanvas.LineJoin.Round)
                     // TODO : I18N
                     .attr('title', 'Round'))
-                .append(_createInput('_blj-' + IFPaintCanvas.LineJoin.Miter)
+                .append(_createInput('_blj-' + GPaintCanvas.LineJoin.Miter)
                     // TODO : I18N
                     .attr('title', 'Miter'))
                 .append(_createInput('_bml')
@@ -302,20 +302,20 @@
     /** @override */
     GFillBorderProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange);
             this._document = null;
         }
 
         this._elements = [];
         for (var i = 0; i < elements.length; ++i) {
-            if (elements[i].hasMixin(IFStylable) && elements[i].getStylePropertySets().indexOf(IFStylable.PropertySet.Fill) >= 0) {
+            if (elements[i].hasMixin(GStylable) && elements[i].getStylePropertySets().indexOf(GStylable.PropertySet.Fill) >= 0) {
                 this._elements.push(elements[i]);
             }
         }
 
         if (this._elements.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
             this._updateProperties();
             return true;
         } else {
@@ -324,7 +324,7 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GFillBorderProperties.prototype._afterPropertiesChange = function (event) {
@@ -349,14 +349,14 @@
 
         this._panel.find('[data-property="fill-type"]').gPatternTypePicker('value', !fillPattern ? null : fillPattern.constructor);
 
-        this._panel.find('[data-property="_fop"]').val(IFUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
+        this._panel.find('[data-property="_fop"]').val(GUtil.formatNumber(stylable.getProperty('_fop') * 100, 0));
 
         this._panel.find('[data-property="_bpt"]')
             .gPatternPicker('value', stylable.getProperty('_bpt'))
             .gPatternPicker('opacity', stylable.getProperty('_bop'))
             .gPatternPicker('scene', scene);
 
-        this._panel.find('[data-property="_bw"]').val(IFUtil.formatNumber(stylable.getProperty('_bw')));
+        this._panel.find('[data-property="_bw"]').val(GUtil.formatNumber(stylable.getProperty('_bw')));
 
         this._panel.find('[data-property^="_ba"]').each(function (index, element) {
             var $element = $(element);
@@ -377,8 +377,8 @@
         });
 
         this._panel.find('[data-property="_bml"]')
-            .css('display', stylable.getProperty('_blj') === IFPaintCanvas.LineJoin.Miter ? '' : ' none')
-            .val(IFUtil.formatNumber(stylable.getProperty('_bml')));
+            .css('display', stylable.getProperty('_blj') === GPaintCanvas.LineJoin.Miter ? '' : ' none')
+            .val(GUtil.formatNumber(stylable.getProperty('_bml')));
     };
 
     /**

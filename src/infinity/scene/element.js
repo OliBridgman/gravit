@@ -2,23 +2,23 @@
     /**
      * An element represent an elementary node within a scene, something like a layer,
      * a shape, a group of shapes and more
-     * @class IFElement
-     * @extends IFNode
+     * @class GElement
+     * @extends GNode
      * @constructor
      */
-    function IFElement() {
-        if (this.hasMixin(IFElement.Stylable)) {
+    function GElement() {
+        if (this.hasMixin(GElement.Stylable)) {
             this._setStyleDefaultProperties();
         }
     }
 
-    IFObject.inherit(IFElement, IFNode);
+    GObject.inherit(GElement, GNode);
 
     /**
      * Known flags for a geometry
      * @version 1.0
      */
-    IFElement.Flag = {
+    GElement.Flag = {
         /**
          * Defines a flag for being hidden
          * @type {Number}
@@ -44,7 +44,7 @@
      * Known flags for a collision check
      * @version 1.0
      */
-    IFElement.CollisionFlag = {
+    GElement.CollisionFlag = {
         /**
          * Flag that specifies partial collision matching, means
          * that elements that are not fully enclosed by a collision
@@ -75,7 +75,7 @@
      * @enum
      * @private
      */
-    IFElement._Change = {
+    GElement._Change = {
         /**
          * A child's geometry has been updated. This change gets populated up in hierarchy.
          * args = the child which' geometry has been updated
@@ -115,26 +115,26 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.GeometryChangeEvent Event
+    // GElement.GeometryChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event on geometrical changes of an element sent via a scene
-     * @param {IFElement} element the affected element
-     * @param {IFElement.GeometryChangeEvent.Type} type the geometrical change type
-     * @class IFElement.GeometryChangeEvent
-     * @extends IFEvent
+     * @param {GElement} element the affected element
+     * @param {GElement.GeometryChangeEvent.Type} type the geometrical change type
+     * @class GElement.GeometryChangeEvent
+     * @extends GEvent
      * @constructor
      */
-    IFElement.GeometryChangeEvent = function (element, type) {
+    GElement.GeometryChangeEvent = function (element, type) {
         this.element = element;
         this.type = type;
     };
-    IFObject.inherit(IFElement.GeometryChangeEvent, IFEvent);
+    GObject.inherit(GElement.GeometryChangeEvent, GEvent);
 
     /**
      * The type of a geometrical change
      */
-    IFElement.GeometryChangeEvent.Type = {
+    GElement.GeometryChangeEvent.Type = {
         /** Before the element's geometry gets changed */
         Before: 0,
         /** After the element's geometry has been changed */
@@ -145,74 +145,74 @@
 
     /**
      * The affected element
-     * @type IFElement
+     * @type GElement
      */
-    IFElement.GeometryChangeEvent.prototype.element = null;
+    GElement.GeometryChangeEvent.prototype.element = null;
 
     /**
      * The type of the geometrical change
-     * @type {IFElement.GeometryChangeEvent.Type}
+     * @type {GElement.GeometryChangeEvent.Type}
      */
-    IFElement.GeometryChangeEvent.prototype.type = null;
+    GElement.GeometryChangeEvent.prototype.type = null;
 
     /** @override */
-    IFElement.GeometryChangeEvent.prototype.toString = function () {
-        return "[Event IFElement.GeometryChangeEvent]";
+    GElement.GeometryChangeEvent.prototype.toString = function () {
+        return "[Event GElement.GeometryChangeEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.HitResultInfo Class
+    // GElement.HitResultInfo Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A hit result on an element
-     * @param {IFElement} element the element that was hit
+     * @param {GElement} element the element that was hit
      * @param {*} args - other hit-test data
      * @constructor
-     * @class IFElement.HitResultInfo
+     * @class GElement.HitResultInfo
      */
-    IFElement.HitResultInfo = function (element, args) {
+    GElement.HitResultInfo = function (element, args) {
         this.element = element;
         this.data = args;
     };
 
     /**
      * The element that was hit
-     * @type {IFElement}
+     * @type {GElement}
      * @version 1.0
      */
-    IFElement.HitResultInfo.prototype.element = null;
+    GElement.HitResultInfo.prototype.element = null;
 
     /**
      * Additional hit-test data
      * @type {*}
      */
-    IFElement.HitResultInfo.prototype.data = null;
+    GElement.HitResultInfo.prototype.data = null;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.Transform Mixin
+    // GElement.Transform Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Marks an element to be transformable
-     * @class IFElement.Transform
+     * @class GElement.Transform
      * @constructor
      * @mixin
      */
-    IFElement.Transform = function () {
+    GElement.Transform = function () {
     };
 
     /**
      * Returns the actual transformation the element has
-     * @return {IFTransform}
+     * @return {GTransform}
      */
-    IFElement.Transform.prototype.getTransform = function () {
+    GElement.Transform.prototype.getTransform = function () {
         return null;
     };
 
     /**
      * Assigns the actual transformation the element has
-     * @return {IFTransform}
+     * @return {GTransform}
      */
-    IFElement.Transform.prototype.setTransform = function (transform) {
+    GElement.Transform.prototype.setTransform = function (transform) {
         throw new Error("Not Supported.");
     };
 
@@ -221,20 +221,20 @@
      * including multiplication with the existing transformation
      * the element may already have. This will by default simply
      * apply the transformation to all direct children of the element if any
-     * @param {IFTransform} transform the transformation to be applied
+     * @param {GTransform} transform the transformation to be applied
      */
-    IFElement.Transform.prototype.transform = function (transform) {
+    GElement.Transform.prototype.transform = function (transform) {
         this._transformChildren(transform);
     };
 
     /**
-     * @param {IFTransform} transform the transformation to be applied
+     * @param {GTransform} transform the transformation to be applied
      * @private
      */
-    IFElement.Transform.prototype._transformChildren = function (transform) {
-        if (this.hasMixin(IFNode.Container)) {
+    GElement.Transform.prototype._transformChildren = function (transform) {
+        if (this.hasMixin(GNode.Container)) {
             for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
-                if (child instanceof IFElement && child.hasMixin(IFElement.Transform)) {
+                if (child instanceof GElement && child.hasMixin(GElement.Transform)) {
                     child.transform(transform);
                 }
             }
@@ -242,37 +242,37 @@
     };
 
     /** @override */
-    IFElement.Transform.prototype.toString = function () {
-        return "[Mixin IFElement.Transform]";
+    GElement.Transform.prototype.toString = function () {
+        return "[Mixin GElement.Transform]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement.Stylable Mixin
+    // GElement.Stylable Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Mixin to mark an element being stylable
-     * @class IFElement.Stylable
-     * @extends IFStylable
+     * @class GElement.Stylable
+     * @extends GStylable
      * @constructor
      * @mixin
      */
-    IFElement.Stylable = function () {
+    GElement.Stylable = function () {
     };
-    IFObject.inherit(IFElement.Stylable, IFStylable);
+    GObject.inherit(GElement.Stylable, GStylable);
 
     /**
      * Geometry properties
      */
-    IFElement.Stylable.GeometryProperties = {
+    GElement.Stylable.GeometryProperties = {
         // The linked style reference id if any
         sref: null
     };
 
     /** @override */
-    IFElement.Stylable.prototype.assignStyleFrom = function (source, compare) {
+    GElement.Stylable.prototype.assignStyleFrom = function (source, compare) {
         this.beginUpdate();
         try {
-            IFStylable.prototype.assignStyleFrom.call(this, source, compare);
+            GStylable.prototype.assignStyleFrom.call(this, source, compare);
         } finally {
             this.endUpdate();
         }
@@ -280,9 +280,9 @@
 
     /**
      * Return the referenced style if any
-     * @returns {IFStyle}
+     * @returns {GStyle}
      */
-    IFElement.Stylable.prototype.getReferencedStyle = function () {
+    GElement.Stylable.prototype.getReferencedStyle = function () {
         return this.isAttached() && this.$sref ? this.getScene().getReference(this.$sref) : null;
     };
 
@@ -290,7 +290,7 @@
      * Return the ordered style layers for the element
      * @returns {Array<String>}
      */
-    IFElement.Stylable.prototype.getStyleLayers = function () {
+    GElement.Stylable.prototype.getStyleLayers = function () {
         var propertySets = this.getStylePropertySets();
         var styleLayers = null;
 
@@ -299,11 +299,11 @@
             var styleLayer = null;
 
             switch (propertySet) {
-                case IFStylable.PropertySet.Fill:
-                    styleLayer = IFStylable.StyleLayer.Fill;
+                case GStylable.PropertySet.Fill:
+                    styleLayer = GStylable.StyleLayer.Fill;
                     break;
-                case IFStylable.PropertySet.Border:
-                    styleLayer = IFStylable.StyleLayer.Border;
+                case GStylable.PropertySet.Border:
+                    styleLayer = GStylable.StyleLayer.Border;
                     break;
                 default:
                     break;
@@ -323,10 +323,10 @@
 
     /**
      * Called to paint with style
-     * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFRect} contentPaintBBox the paint bbox used for drawing this stylable
+     * @param {GPaintContext} context the context to be used for drawing
+     * @param {GRect} contentPaintBBox the paint bbox used for drawing this stylable
      */
-    IFElement.Stylable.prototype._paintStyle = function (context, contentPaintBBox) {
+    GElement.Stylable.prototype._paintStyle = function (context, contentPaintBBox) {
         var styleLayers = this.getStyleLayers();
         if (context.configuration.isOutline(context)) {
             this._paintStyleFillLayer(context, contentPaintBBox, styleLayers);
@@ -341,7 +341,7 @@
                     if (orderedEffects[i]) {
                         for (var j = 0; j < orderedEffects[i].length; ++j) {
                             var effectType = orderedEffects[i][j].getEffectType();
-                            if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
+                            if (effectType === GEffect.Type.PreEffect || effectType === GEffect.Type.PostEffect) {
                                 effectCanvas = this._createStyleCanvas(context, contentPaintBBox);
                             }
                         }
@@ -349,7 +349,7 @@
                 }
             }
 
-            if (this.$_stop !== 1.0 || this.$_sbl !== IFPaintCanvas.BlendMode.Normal) {
+            if (this.$_stop !== 1.0 || this.$_sbl !== GPaintCanvas.BlendMode.Normal) {
                 // We need to paint on a separate canvas here
                 var styleCanvas = this._createStyleCanvas(context, contentPaintBBox);
                 var sourceCanvas = context.pushCanvas(styleCanvas);
@@ -362,7 +362,7 @@
                             sourceCanvas.clipRect(area.getX(), area.getY(), area.getWidth(), area.getHeight());
                         }
                         try {
-                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, IFPaintCanvas.CompositeOperator.DestinationIn);
+                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, GPaintCanvas.CompositeOperator.DestinationIn);
                         } finally {
                             if (area) {
                                 sourceCanvas.resetClip();
@@ -388,13 +388,13 @@
 
     /**
      * Called to paint the fill layer
-     * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFRect} contentPaintBBox the source bbox used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
+     * @param {GRect} contentPaintBBox the source bbox used for drawing
      * @param {Array<String>} the style layers
      * @param {Array} orderedEffects the ordered effects for all layers
-     * @param {IFPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
+     * @param {GPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
      */
-    IFElement.Stylable.prototype._paintStyleFillLayer = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
+    GElement.Stylable.prototype._paintStyleFillLayer = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
         if (context.configuration.isOutline(context)) {
             this._paintStyleContent(context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas);
         } else {
@@ -424,13 +424,13 @@
 
     /**
      * Called to paint the actual style content
-     * @param {IFPaintContext} context the context to be used for drawing
-     * @param {IFRect} contentPaintBBox the source bbox used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
+     * @param {GRect} contentPaintBBox the source bbox used for drawing
      * @param {Array<String>} the style layers
      * @param {Array} orderedEffects the ordered effects for all layers
-     * @param {IFPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
+     * @param {GPaintCanvas} effectCanvas an effect canvas if there're any pre/post effects
      */
-    IFElement.Stylable.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
+    GElement.Stylable.prototype._paintStyleContent = function (context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas) {
         // By default we'll paint the style layers if there're any
         if (styleLayers && styleLayers.length) {
             var outlined = context.configuration.isOutline(context);
@@ -477,25 +477,25 @@
 
     /**
      * Called to paint and composite effects and contents onto a target
-     * @param {IFPaintCanvas} contents the canvas holding the contents
-     * @param {IFPaintCanvas} background the background canvas
-     * @param {IFPaintCanvas} target the target canvas for compositing everything
+     * @param {GPaintCanvas} contents the canvas holding the contents
+     * @param {GPaintCanvas} background the background canvas
+     * @param {GPaintCanvas} target the target canvas for compositing everything
      * @param {Number} targetOpacity the opacity for painting the contents onto the target
-     * @param {Array<IFEffect>} effects the effects to paint
-     * @param {IFPaintCanvas} effectCanvas the effect canvas if there're any pre/post-effects
+     * @param {Array<GEffect>} effects the effects to paint
+     * @param {GPaintCanvas} effectCanvas the effect canvas if there're any pre/post-effects
      * @private
      */
-    IFElement.Stylable.prototype._paintWithEffects = function (contents, background, target, targetOpacity, effects, effectCanvas) {
+    GElement.Stylable.prototype._paintWithEffects = function (contents, background, target, targetOpacity, effects, effectCanvas) {
         var paintedContents = false;
 
         for (var i = 0; i < effects.length; ++i) {
             var effect = effects[i];
             var effectType = effect.getEffectType();
 
-            if (effectType === IFEffect.Type.Filter) {
+            if (effectType === GEffect.Type.Filter) {
                 effect.render(contents, null, background, contents.getScale());
-            } else if (effectType === IFEffect.Type.PreEffect || effectType === IFEffect.Type.PostEffect) {
-                if (effectType === IFEffect.Type.PostEffect && !paintedContents && targetOpacity > 0.0) {
+            } else if (effectType === GEffect.Type.PreEffect || effectType === GEffect.Type.PostEffect) {
+                if (effectType === GEffect.Type.PostEffect && !paintedContents && targetOpacity > 0.0) {
                     target.drawCanvas(contents, 0, 0, targetOpacity);
                     paintedContents = true;
                 }
@@ -505,10 +505,10 @@
 
                 // Render effect on effects canvas
                 var effectResult = effect.render(contents, effectCanvas, background, effectCanvas.getScale());
-                var effectBlendType = IFPaintCanvas.BlendMode.Normal;
+                var effectBlendType = GPaintCanvas.BlendMode.Normal;
 
                 // Post effects may return a custom blend mode
-                if (effectType === IFEffect.Type.PostEffect && effectResult) {
+                if (effectType === GEffect.Type.PostEffect && effectResult) {
                     effectBlendType = effectResult;
                 }
 
@@ -524,30 +524,30 @@
 
     /**
      * Called whenever this should paint a specific style layer
-     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
      * @param {String} layer the actual layer to be painted
      */
-    IFElement.Stylable.prototype._paintStyleLayer = function (context, layer) {
+    GElement.Stylable.prototype._paintStyleLayer = function (context, layer) {
         // NO-OP
     };
 
     /**
      * Called to test whether a given style layer requires a separate canvas or not
-     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
      * @param {String} layer the actual layer to be painted
      * @return {Boolean} true if layer is separated, false if not
      */
-    IFElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
+    GElement.Stylable.prototype._isSeparateStylePaintLayer = function (context, layer) {
         return false;
     };
 
     /**
      * Should return the clip-area for masked styles
-     * @param {IFPaintContext} context
-     * @return {IFRect}
+     * @param {GPaintContext} context
+     * @return {GRect}
      * @private
      */
-    IFElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
+    GElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
         return null;
     };
 
@@ -555,18 +555,18 @@
      * Creates a temporary canvas for style drawing. This function will actually
      * honor the Fast-Paint-Mode and if set, will return a canvas that paints at
      * 100% instead.
-     * @param {IFPaintContext} context the paint context in use
-     * @param {IFRect} extents the extents for the temporary canvas
-     * @return {IFPaintCanvas}
+     * @param {GPaintContext} context the paint context in use
+     * @param {GRect} extents the extents for the temporary canvas
+     * @return {GPaintCanvas}
      * @private
      */
-    IFElement.Stylable.prototype._createStyleCanvas = function (context, extents) {
-        if (context.configuration.paintMode === IFScenePaintConfiguration.PaintMode.Fast) {
-            var result = new IFPaintCanvas();
+    GElement.Stylable.prototype._createStyleCanvas = function (context, extents) {
+        if (context.configuration.paintMode === GScenePaintConfiguration.PaintMode.Fast) {
+            var result = new GPaintCanvas();
             result.resize(extents.getWidth(), extents.getHeight());
             result.prepare();
 
-            var topLeft = extents.getSide(IFRect.Side.TOP_LEFT);
+            var topLeft = extents.getSide(GRect.Side.TOP_LEFT);
             result.setOrigin(topLeft);
             result.setOffset(topLeft);
 
@@ -579,13 +579,13 @@
     };
 
     /** @override */
-    IFElement.Stylable.prototype._stylePrepareGeometryChange = function (effect) {
-        this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+    GElement.Stylable.prototype._stylePrepareGeometryChange = function (effect) {
+        this._notifyChange(GElement._Change.PrepareGeometryUpdate);
 
-        if (effect && this.hasMixin(IFNode.Container)) {
+        if (effect && this.hasMixin(GNode.Container)) {
             // Invalidate children that may be affected by our effects
             for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
-                if (node instanceof IFElement && node.hasMixin(IFElement.Stylable)) {
+                if (node instanceof GElement && node.hasMixin(GElement.Stylable)) {
                     node._stylePrepareGeometryChange(true);
                 }
             }
@@ -593,13 +593,13 @@
     };
 
     /** @override */
-    IFElement.Stylable.prototype._styleFinishGeometryChange = function (effect) {
-        this._notifyChange(IFElement._Change.FinishGeometryUpdate, 1 /* invalidate only paint bbox */);
+    GElement.Stylable.prototype._styleFinishGeometryChange = function (effect) {
+        this._notifyChange(GElement._Change.FinishGeometryUpdate, 1 /* invalidate only paint bbox */);
 
-        if (effect && this.hasMixin(IFNode.Container)) {
+        if (effect && this.hasMixin(GNode.Container)) {
             // Invalidate children that may be affected by our effects
             for (var node = this.getFirstChild(); node !== null; node = node.getNext()) {
-                if (node instanceof IFElement && node.hasMixin(IFElement.Stylable)) {
+                if (node instanceof GElement && node.hasMixin(GElement.Stylable)) {
                     node._styleFinishGeometryChange(true);
                 }
             }
@@ -607,25 +607,25 @@
     };
 
     /** @override */
-    IFElement.Stylable.prototype._styleRepaint = function () {
-        this._notifyChange(IFElement._Change.InvalidationRequest);
+    GElement.Stylable.prototype._styleRepaint = function () {
+        this._notifyChange(GElement._Change.InvalidationRequest);
     };
 
     /** @override */
-    IFElement.Stylable.prototype._handleStyleChange = function (change, args) {
+    GElement.Stylable.prototype._handleStyleChange = function (change, args) {
         if (this.isAttached()) {
-            if (((change === IFNode._Change.BeforePropertiesChange || change === IFNode._Change.AfterPropertiesChange) && args.properties.indexOf('sref') >= 0) ||
-                change === IFNode._Change.Attached || change === IFNode._Change.Detach) {
+            if (((change === GNode._Change.BeforePropertiesChange || change === GNode._Change.AfterPropertiesChange) && args.properties.indexOf('sref') >= 0) ||
+                change === GNode._Change.Attached || change === GNode._Change.Detach) {
                 var scene = this.getScene();
                 var referencedStyle = this.getReferencedStyle();
                 if (referencedStyle) {
                     switch (change) {
-                        case IFNode._Change.BeforePropertiesChange:
-                        case IFNode._Change.Detach:
+                        case GNode._Change.BeforePropertiesChange:
+                        case GNode._Change.Detach:
                             scene.unlink(referencedStyle, this);
                             break;
-                        case IFNode._Change.AfterPropertiesChange:
-                        case IFNode._Change.Attached:
+                        case GNode._Change.AfterPropertiesChange:
+                        case GNode._Change.Attached:
                             scene.link(referencedStyle, this);
                             break;
                     }
@@ -633,7 +633,7 @@
             }
 
 
-            if (change === IFNode._Change.AfterPropertiesChange) {
+            if (change === GNode._Change.AfterPropertiesChange) {
                 var styleBlendModeIdx = args.properties.indexOf('_sbl');
                 if (styleBlendModeIdx >= 0 && args.values[styleBlendModeIdx] === 'mask' || this.$_sbl === 'mask') {
                     var myPage = this.getPage();
@@ -644,19 +644,19 @@
             }
         }
 
-        if (change === IFNode._Change.Store) {
+        if (change === GNode._Change.Store) {
             if (this.$sref) {
                 args.sref = this.$sref;
             }
-        } else if (change === IFNode._Change.Restore) {
+        } else if (change === GNode._Change.Restore) {
             this.$sref = args.sref;
         }
 
-        IFStylable.prototype._handleStyleChange.call(this, change, args);
+        GStylable.prototype._handleStyleChange.call(this, change, args);
     };
 
     /** @override */
-    IFElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
+    GElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
         var myPage = this.getPage();
         if (myPage) {
             return myPage.getPageClipBBox();
@@ -664,31 +664,31 @@
     };
 
     /** @override */
-    IFElement.Stylable.prototype.toString = function () {
-        return "[Mixin IFElement.Stylable]";
+    GElement.Stylable.prototype.toString = function () {
+        return "[Mixin GElement.Stylable]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFElement
+    // GElement
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @type IFRect
+     * @type GRect
      * @private
      */
-    IFElement.prototype._geometryBBbox = null;
+    GElement.prototype._geometryBBbox = null;
 
     /**
-     * @type IFRect
+     * @type GRect
      * @private
      */
-    IFElement.prototype._paintBBox = null;
+    GElement.prototype._paintBBox = null;
 
     /**
      * Called to get the geometry bbox which usually is the bbox of the underlying shape
-     * @return {IFRect} the geometry bbox, may never be null
+     * @return {GRect} the geometry bbox, may never be null
      * @version 1.0
      */
-    IFElement.prototype.getGeometryBBox = function () {
+    GElement.prototype.getGeometryBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
@@ -703,14 +703,14 @@
     /**
      * Calculates the united geometry bbox of the array of elements
      * @param {Array<*>} group - an array of elements for calculating geometry bbox.
-     * Only IFElement members are taken into account.
-     * @returns {IFRect} the geometry bbox of the group
+     * Only GElement members are taken into account.
+     * @returns {GRect} the geometry bbox of the group
      */
-    IFElement.prototype.getGroupGeometryBBox = function (group) {
+    GElement.prototype.getGroupGeometryBBox = function (group) {
         var groupBBox = null;
         if (group && group.length) {
             for (var i = 0; i < group.length; ++i) {
-                if (group[i] instanceof IFElement) {
+                if (group[i] instanceof GElement) {
                     var bbox = group[i].getGeometryBBox();
                     if (bbox && !bbox.isEmpty()) {
                         groupBBox = groupBBox ? groupBBox.united(bbox) : bbox;
@@ -724,20 +724,20 @@
 
     /**
      * Called to get the united geometry bbox of all children of this node if this node is a container
-     * @return {IFRect} the united geometry bbox of all children or empty rect if this node does not have
+     * @return {GRect} the united geometry bbox of all children or empty rect if this node does not have
      * any children with valid geometry bboxes
      * @version 1.0
      */
-    IFElement.prototype.getChildrenGeometryBBox = function () {
+    GElement.prototype.getChildrenGeometryBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
         }
 
-        if (this.hasMixin(IFNode.Container)) {
+        if (this.hasMixin(GNode.Container)) {
             var result = null;
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof IFElement) {
+                if (node instanceof GElement) {
                     var childBBox = node.getGeometryBBox();
                     if (childBBox && !childBBox.isEmpty()) {
                         result = result ? result.united(childBBox) : childBBox;
@@ -752,10 +752,10 @@
     /**
      * Called to get the paint bbox for this node including all possible
      * artifacts like effects and the such
-     * @return {IFRect} the paint bbox, may never be null
+     * @return {GRect} the paint bbox, may never be null
      * @version 1.0
      */
-    IFElement.prototype.getPaintBBox = function () {
+    GElement.prototype.getPaintBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
@@ -799,27 +799,27 @@
 
     /**
      * Called to get the united paint bbox of all children of this node if this node is a container
-     * @return {IFRect} the united paint bbox of all children or empty rect if this node does not have
+     * @return {GRect} the united paint bbox of all children or empty rect if this node does not have
      * any children with valid paint bboxes
      * @version 1.0
      */
-    IFElement.prototype.getChildrenPaintBBox = function () {
+    GElement.prototype.getChildrenPaintBBox = function () {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return null;
         }
 
-        if (this.hasMixin(IFNode.Container)) {
+        if (this.hasMixin(GNode.Container)) {
             var result = null;
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof IFElement) {
+                if (node instanceof GElement) {
                     var childBBox = node.getPaintBBox();
                     if (childBBox && !childBBox.isEmpty()) {
                         result = result ? result.united(childBBox) : childBBox;
                     }
                 }
             }
-            return result ? result : new IFRect(0, 0, 0, 0);
+            return result ? result : new GRect(0, 0, 0, 0);
         }
         return null;
     };
@@ -834,16 +834,16 @@
      * @see isPaintable
      * @version 1.0
      */
-    IFElement.prototype.isVisible = function () {
-        return (this._flags & IFElement.Flag.Hidden) == 0;
+    GElement.prototype.isVisible = function () {
+        return (this._flags & GElement.Flag.Hidden) == 0;
     };
 
     /**
      * Called whenever a hit-test should be made on this element. Note that
      * this should hit-test against it's sub-elements (bottom-up), first
-     * @param {IFPoint} location the position to trigger the hit test at
+     * @param {GPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
-     * @param {IFTransform} transform the transformation of the scene
+     * @param {GTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
@@ -859,10 +859,10 @@
      * @param {Function} [filter] optional callback function getting called for *every* element
      * that is tested for hitting even if not hit. Should return false to immediately stop testing
      * on this and any element underneath and go on with the testing chain.
-     * @returns {Array<IFElement.HitResultInfo>} either null for no hit or
+     * @returns {Array<GElement.HitResultInfo>} either null for no hit or
      * a certain hit result depending on the element type
      */
-    IFElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force, filter) {
+    GElement.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force, filter) {
         if (typeof level !== 'number') level = -1; // unlimited deepness
         tolerance = tolerance || 0;
 
@@ -890,9 +890,9 @@
         var result = null;
 
         // We might have a possible hit so iterate our children if any
-        if (level !== 0 && this.hasMixin(IFNode.Container)) {
+        if (level !== 0 && this.hasMixin(GNode.Container)) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
-                if (child instanceof IFElement) {
+                if (child instanceof GElement) {
                     var subResult = child.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force, filter);
                     if (subResult) {
                         if (stacked) {
@@ -927,18 +927,18 @@
     /**
      * Gets a list of all coliiding elements including this element and
      * all potential children if it if any
-     * @param {IFVertexSource} area the area to get colissions within
+     * @param {GVertexSource} area the area to get colissions within
      * @param {Number} flags one or more flags to use for collision testing
      * @param {Function} [acceptor] optional callback function getting called
      * for a hit and receiving the currently hit element as it's only parameter.
      * @param {Function} [filter] optional callback function getting called for *every* element
      * that is tested for hitting even if not hit. Should return false to immediately stop testing
      * on this and any element underneath and go on with the testing chain.
-     * @return {Array<IFElement>} an array including all coliding elements or
+     * @return {Array<GElement>} an array including all coliding elements or
      * an empty array for no collisions
-     * @see IFElement.CollisionFlag
+     * @see GElement.CollisionFlag
      */
-    IFElement.prototype.getCollisions = function (area, flags, acceptor, filter) {
+    GElement.prototype.getCollisions = function (area, flags, acceptor, filter) {
         var result = [];
 
         var _addToResult = function (element) {
@@ -948,7 +948,7 @@
         };
 
         // Handle the basic collision modes here
-        if ((flags & IFElement.CollisionFlag.GeometryBBox) != 0 || (flags & IFElement.CollisionFlag.PaintBBox) != 0) {
+        if ((flags & GElement.CollisionFlag.GeometryBBox) != 0 || (flags & GElement.CollisionFlag.PaintBBox) != 0) {
             // First test against our filter if any for fastest sort-out of non-hitting elements
             if (filter && filter.call(null, this) === false) {
                 // done here
@@ -963,7 +963,7 @@
 
                 var areaBounds = ifVertexInfo.calculateBounds(area, true);
 
-                if ((flags & IFElement.CollisionFlag.Partial) != 0) {
+                if ((flags & GElement.CollisionFlag.Partial) != 0) {
                     if (areaBounds.intersectsRect(bbox)) {
                         _addToResult(this);
                     }
@@ -976,9 +976,9 @@
         }
 
         // Test children now
-        if (this.hasMixin(IFNode.Container)) {
+        if (this.hasMixin(GNode.Container)) {
             for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
-                if (child instanceof IFElement) {
+                if (child instanceof GElement) {
                     var subResult = child.getCollisions(area, flags, acceptor, filter);
                     if (subResult && subResult.length) {
                         for (var i = 0; i < subResult.length; ++i) {
@@ -995,9 +995,9 @@
     /**
      * Tests if the collision area contains the full element.
      * Element's children are not tested here.
-     * @param {IFVertexSource} area the area to get collisions within
+     * @param {GVertexSource} area the area to get collisions within
      */
-    IFElement.prototype.isFullUnderCollision = function (area) {
+    GElement.prototype.isFullUnderCollision = function (area) {
         var res = false;
         var bbox = this.getPaintBBox();
         if (bbox && !bbox.isEmpty()) {
@@ -1016,10 +1016,10 @@
      * is recursive, i.e. multiple calls to this functions need to be finished
      * with the corresponding numbers of endUpdate calls.
      */
-    IFElement.prototype.beginUpdate = function () {
+    GElement.prototype.beginUpdate = function () {
         if (!this._updateCounter) {
             this._updateCounter = 1;
-            this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+            this._notifyChange(GElement._Change.PrepareGeometryUpdate);
             this._blockUpdateChanges();
         } else {
             this._updateCounter++;
@@ -1033,10 +1033,10 @@
      * @param {Boolean} [noGeometryInvalidation] if set then does not invalidate the geometry,
      * otherwise this will ensure to invalidate the geometry. Defaults to false.
      */
-    IFElement.prototype.endUpdate = function (noGeometryInvalidation) {
+    GElement.prototype.endUpdate = function (noGeometryInvalidation) {
         if (this._updateCounter != null && --this._updateCounter == 0) {
             this._releaseUpdateChanges();
-            this._notifyChange(IFElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? -1 : 0);
+            this._notifyChange(GElement._Change.FinishGeometryUpdate, noGeometryInvalidation ? -1 : 0);
             delete this._updateCounter;
         }
     };
@@ -1045,12 +1045,12 @@
      * Function to check whether a node is actually rednerable, this includes
      * for example checking for display flag, checking for dirty regions,
      * empty bounding box, visibility and more.
-     * @param {IFPaintContext} [context] the current paint context, if null,
+     * @param {GPaintContext} [context] the current paint context, if null,
      * no check against a context will be made
      * @return {Boolean} true if the node is paintable, false if not
      * @private
      */
-    IFElement.prototype.isPaintable = function (context) {
+    GElement.prototype.isPaintable = function (context) {
         // Immediately return if not visible at all
         if (!this.isVisible()) {
             return false;
@@ -1059,7 +1059,7 @@
         if (!context) {
             // If there's no context we can only paint when attached and having a parent
             // or when we are the scene by ourself
-            return (this.isAttached() && this.getParent()) || (this instanceof IFScene);
+            return (this.isAttached() && this.getParent()) || (this instanceof GScene);
         }
 
         var paintBBox = this.getPaintBBox();
@@ -1081,9 +1081,9 @@
 
     /**
      * Called to paint this element
-     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
      */
-    IFElement.prototype.paint = function (context) {
+    GElement.prototype.paint = function (context) {
         // Prepare paint
         if (!this._preparePaint(context)) {
             return;
@@ -1094,7 +1094,7 @@
         this._finishPaint(context);
     };
 
-    IFElement.PaintLayer = {
+    GElement.PaintLayer = {
         Outline: 'O',
         Background: 'B',
         Content: 'C',
@@ -1103,13 +1103,13 @@
 
     /**
      * Called to paint this element into a new bitmap
-     * @param {Number|IFLength} [width] the width of the bitmap, set to 0|null
+     * @param {Number|GLength} [width] the width of the bitmap, set to 0|null
      * to use the element's bbox as width. Defaults to null. If the value is
-     * a number, it reflects the scale factor, otherwise if it is an IFLength,
+     * a number, it reflects the scale factor, otherwise if it is an GLength,
      * it defines an absolute width.
-     * @param {Number|IFLength} [height] the height of the bitmap, set to 0|null
+     * @param {Number|GLength} [height] the height of the bitmap, set to 0|null
      * to use the element's bbox as height. Defaults to null. If the value is
-     * a number, it reflects the scale factor, otherwise if it is an IFLength,
+     * a number, it reflects the scale factor, otherwise if it is an GLength,
      * it defines an absolute width.
      * @param {Number} [ratio] the ratio mode to be used whereas 0|null
      * means to keep minimum aspect ratio thus eventually adjusting width
@@ -1117,9 +1117,9 @@
      * thus eventually adjusting  width or height and making one larger and
      * 2 means to keep the width/height but center the element on bitmap
      * if it's bbox ratio doesn't match the one of width / height
-     * @return {IFBitmap}
+     * @return {GBitmap}
      */
-    IFElement.prototype.toBitmap = function (width, height, ratio) {
+    GElement.prototype.toBitmap = function (width, height, ratio) {
         var paintArea = this._getBitmapPaintArea();
 
         // Calculate scale & delta offsets
@@ -1133,7 +1133,7 @@
         if (width) {
             if (typeof width === 'number') {
                 scaleX = width;
-            } else if (width instanceof IFLength) {
+            } else if (width instanceof GLength) {
                 scaleX = width.toPoint() / paintArea.getWidth();
             }
         }
@@ -1141,7 +1141,7 @@
         if (height) {
             if (typeof height === 'number') {
                 scaleY = height;
-            } else if (height instanceof IFLength) {
+            } else if (height instanceof GLength) {
                 scaleY = height.toPoint() / paintArea.getHeight();
             }
         }
@@ -1194,20 +1194,20 @@
         }
 
         // Create + Setup Paint-Canvas
-        var paintCanvas = new IFPaintCanvas();
+        var paintCanvas = new GPaintCanvas();
         paintCanvas.resize(canvasWidth, canvasHeight);
 
         // Create + Setup Paint Context & Configuration
-        var paintContext = new IFPaintContext();
+        var paintContext = new GPaintContext();
         paintContext.canvas = paintCanvas;
-        var paintConfig = new IFScenePaintConfiguration();
-        paintConfig.paintMode = IFScenePaintConfiguration.PaintMode.Full;
+        var paintConfig = new GScenePaintConfiguration();
+        paintConfig.paintMode = GScenePaintConfiguration.PaintMode.Full;
         paintConfig.annotations = false;
         paintContext.configuration = paintConfig;
         paintConfig.clipArea = paintArea;
 
         paintCanvas.prepare();
-        paintCanvas.setOrigin(new IFPoint(paintArea.getX() * scale - deltaX, paintArea.getY() * scale - deltaY));
+        paintCanvas.setOrigin(new GPoint(paintArea.getX() * scale - deltaX, paintArea.getY() * scale - deltaY));
         paintCanvas.setScale(scale);
         try {
             return this._paintToBitmap(paintContext);
@@ -1217,43 +1217,43 @@
     };
 
     /** @override */
-    IFElement.prototype.assignFrom = function (other) {
-        IFNode.prototype.assignFrom.call(this, other);
-        if (this.hasMixin(IFStylable) && other.hasMixin(IFStylable)) {
+    GElement.prototype.assignFrom = function (other) {
+        GNode.prototype.assignFrom.call(this, other);
+        if (this.hasMixin(GStylable) && other.hasMixin(GStylable)) {
             this.assignStyleFrom(other);
         }
 
-        if (this.hasMixin(IFElement.Stylable) && other.hasMixin(IFElement.Stylable)) {
+        if (this.hasMixin(GElement.Stylable) && other.hasMixin(GElement.Stylable)) {
             this.$sref = other.$sref;
         }
     };
 
     /**
      * Called to return the area for this element for painting into bitmap
-     * @returns {IFRect}
+     * @returns {GRect}
      * @private
      */
-    IFElement.prototype._getBitmapPaintArea = function () {
+    GElement.prototype._getBitmapPaintArea = function () {
         return this.getPaintBBox();
     };
 
     /**
      * Called to paint this element into a bitmap
-     * @param {IFPaintContext} context
-     * @returns {IFBitmap}
+     * @param {GPaintContext} context
+     * @returns {GBitmap}
      * @private
      */
-    IFElement.prototype._paintToBitmap = function (context) {
+    GElement.prototype._paintToBitmap = function (context) {
         this.paint(context);
         return context.canvas.getBitmap();
     };
 
     /**
      * Called whenever this should paint itself
-     * @param {IFPaintContext} context the context to be used for drawing
+     * @param {GPaintContext} context the context to be used for drawing
      */
-    IFElement.prototype._paint = function (context) {
-        if (this.hasMixin(IFElement.Stylable)) {
+    GElement.prototype._paint = function (context) {
+        if (this.hasMixin(GElement.Stylable)) {
             this._paintStyle(context, this.getPaintBBox());
         } else {
             this._paintChildren(context);
@@ -1262,12 +1262,12 @@
 
     /**
      * Called for preparing a paint
-     * @param {IFPaintContext} context the current paint context
+     * @param {GPaintContext} context the current paint context
      * @return {Boolean} false if painting should be canceled, true otherwise
      * @private
      */
-    IFElement.prototype._preparePaint = function (context) {
-        if (this.hasFlag(IFElement.Flag.NoPaint)) {
+    GElement.prototype._preparePaint = function (context) {
+        if (this.hasFlag(GElement.Flag.NoPaint)) {
             return false;
         }
 
@@ -1276,23 +1276,23 @@
 
     /**
      * Called for finishing a paint
-     * @param {IFPaintContext} context the current paint context
+     * @param {GPaintContext} context the current paint context
      * @private
      */
-    IFElement.prototype._finishPaint = function (context) {
+    GElement.prototype._finishPaint = function (context) {
         // NO-OP
     };
 
     /**
      * Called for painting all children if this element is a container
-     * @param {IFPaintContext} context the current paint context
+     * @param {GPaintContext} context the current paint context
      * @private
      */
-    IFElement.prototype._paintChildren = function (context) {
+    GElement.prototype._paintChildren = function (context) {
         // default paint handling if node is a container
-        if (this.hasMixin(IFNode.Container)) {
+        if (this.hasMixin(GNode.Container)) {
             for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-                if (node instanceof IFElement) {
+                if (node instanceof GElement) {
                     node.paint(context);
                 }
             }
@@ -1301,20 +1301,20 @@
 
     /**
      * Called whenever the underliny geometry bbox needs to be calculated
-     * @return {IFRect} the calculated geometry bbox, may never be null
+     * @return {GRect} the calculated geometry bbox, may never be null
      * @private
      */
-    IFElement.prototype._calculateGeometryBBox = function () {
+    GElement.prototype._calculateGeometryBBox = function () {
         // Default action unites all children geometry bboxes if this is a container
         return this.getChildrenGeometryBBox();
     };
 
     /**
      * Called whenever the underlying paint bbox needs to be calculated
-     * @return {IFRect} the calculated paint bbox, may never be null
+     * @return {GRect} the calculated paint bbox, may never be null
      * @private
      */
-    IFElement.prototype._calculatePaintBBox = function () {
+    GElement.prototype._calculatePaintBBox = function () {
         return this.getChildrenPaintBBox();
     };
 
@@ -1323,17 +1323,17 @@
      * Detail means that the caller has already checked against a valid
      * bounding area of this element as well as that the given location
      * falls within the bounding area.
-     * @param {IFPoint} location the position to trigger the hit test at
+     * @param {GPoint} location the position to trigger the hit test at
      * in transformed view coordinates (see transform parameter)
-     * @param {IFTransform} transform the transformation of the scene
+     * @param {GTransform} transform the transformation of the scene
      * or null if there's none
      * @param {Number} tolerance a tolerance used for hit-testing
      * @param {Boolean} force if true, enforce hitting even if something is not visible
      * or has no area etc.
-     * @returns {IFElement.HitResultInfo} either null for no hit or
+     * @returns {GElement.HitResultInfo} either null for no hit or
      * a certain hit result depending on the element type
      */
-    IFElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    GElement.prototype._detailHitTest = function (location, transform, tolerance, force) {
         return null;
     };
 
@@ -1341,12 +1341,12 @@
      * Blocks all update changes like geometry update, invalidation etc.
      * @private
      */
-    IFElement.prototype._blockUpdateChanges = function () {
+    GElement.prototype._blockUpdateChanges = function () {
         this._beginBlockChanges([
-            IFElement._Change.InvalidationRequest,
-            IFElement._Change.PrepareGeometryUpdate,
-            IFElement._Change.FinishGeometryUpdate,
-            IFElement._Change.ChildGeometryUpdate
+            GElement._Change.InvalidationRequest,
+            GElement._Change.PrepareGeometryUpdate,
+            GElement._Change.FinishGeometryUpdate,
+            GElement._Change.ChildGeometryUpdate
         ]);
     };
 
@@ -1354,21 +1354,21 @@
      * Releases all update changes like geometry update, invalidation etc.
      * @private
      */
-    IFElement.prototype._releaseUpdateChanges = function () {
+    GElement.prototype._releaseUpdateChanges = function () {
         this._endBlockChanges([
-            IFElement._Change.InvalidationRequest,
-            IFElement._Change.PrepareGeometryUpdate,
-            IFElement._Change.FinishGeometryUpdate,
-            IFElement._Change.ChildGeometryUpdate
+            GElement._Change.InvalidationRequest,
+            GElement._Change.PrepareGeometryUpdate,
+            GElement._Change.FinishGeometryUpdate,
+            GElement._Change.ChildGeometryUpdate
         ]);
     };
 
     /**
      * Called to to request a invalidation for a given node
-     * @param {IFElement} node the node to request an invalidation for
+     * @param {GElement} node the node to request an invalidation for
      * @private
      */
-    IFElement.prototype._requestInvalidateNode = function (node) {
+    GElement.prototype._requestInvalidateNode = function (node) {
         if (node.isPaintable()) {
             var repaintArea = node.getPaintBBox();
             if (repaintArea) {
@@ -1380,13 +1380,13 @@
 
     /**
      * Called to request a invalidation for a given area
-     * @param {IFRect} area the area of invalidation
+     * @param {GRect} area the area of invalidation
      * @private
      */
-    IFElement.prototype._requestInvalidationArea = function (area) {
+    GElement.prototype._requestInvalidationArea = function (area) {
         if (this.isAttached()) {
             this._scene._invalidateArea(area);
-            this._handleChange(IFElement._Change.InvalidationRequested, area);
+            this._handleChange(GElement._Change.InvalidationRequested, area);
         }
     };
 
@@ -1394,28 +1394,28 @@
      * Called to request an invalidation for this node
      * @private
      */
-    IFElement.prototype._requestInvalidation = function () {
+    GElement.prototype._requestInvalidation = function () {
         this._requestInvalidateNode(this);
     };
 
     /** @override */
-    IFElement.prototype._handleChange = function (change, args) {
-        if (change == IFElement._Change.InvalidationRequest) {
+    GElement.prototype._handleChange = function (change, args) {
+        if (change == GElement._Change.InvalidationRequest) {
             if (this.isPaintable()) {
                 this._requestInvalidation();
             }
-        } else if (change === IFElement._Change.InvalidationRequested) {
+        } else if (change === GElement._Change.InvalidationRequested) {
             // Deliver invalidation requested up to parent
             if (this.getParent()) {
-                this.getParent()._notifyChange(IFElement._Change.InvalidationRequested, args);
+                this.getParent()._notifyChange(GElement._Change.InvalidationRequested, args);
             }
-        } else if (change == IFElement._Change.PrepareGeometryUpdate) {
+        } else if (change == GElement._Change.PrepareGeometryUpdate) {
             if (this.isVisible()) {
-                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Before));
+                if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Before));
                 }
             }
-        } else if (change == IFElement._Change.FinishGeometryUpdate) {
+        } else if (change == GElement._Change.FinishGeometryUpdate) {
             if (this.isVisible()) {
                 var savedPaintBBox = null;
                 if (this.isPaintable()) {
@@ -1439,11 +1439,11 @@
 
                 if (this.isPaintable()) {
                     var newPaintBBox = this.getPaintBBox();
-                    if (!IFRect.equals(newPaintBBox, savedPaintBBox)) {
+                    if (!GRect.equals(newPaintBBox, savedPaintBBox)) {
 
                         // Deliver child geometry update to parent
                         if (this.getParent()) {
-                            this.getParent()._notifyChange(IFElement._Change.ChildGeometryUpdate, this);
+                            this.getParent()._notifyChange(GElement._Change.ChildGeometryUpdate, this);
                         }
 
                         // Request repaint of old paint bbox if there was any
@@ -1452,23 +1452,23 @@
                         }
 
                         // Request a repaint of our new geometry
-                        this._handleChange(IFElement._Change.InvalidationRequest);
+                        this._handleChange(GElement._Change.InvalidationRequest);
                     } else {
                         // Paintboxes are equal then do a simple invalidation request
                         this._requestInvalidation();
                     }
                 }
 
-                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.After));
+                if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.After));
                 }
             }
-        } else if (change == IFElement._Change.ChildGeometryUpdate) {
+        } else if (change == GElement._Change.ChildGeometryUpdate) {
             if (this.isVisible()) {
                 this._invalidateGeometryForChildUpdate();
 
-                if (this._canEventBeSend(IFElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new IFElement.GeometryChangeEvent(this, IFElement.GeometryChangeEvent.Type.Child));
+                if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
+                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Child));
                 }
 
                 // Forward to parent
@@ -1476,27 +1476,27 @@
                     this.getParent()._notifyChange(change, args);
                 }
             }
-        } else if (change == IFNode._Change.AfterChildInsert) {
+        } else if (change == GNode._Change.AfterChildInsert) {
             // If child is an element, notify about the change
-            if (args instanceof IFElement) {
-                this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
-                args._handleChange(IFElement._Change.InvalidationRequest);
+            if (args instanceof GElement) {
+                this._notifyChange(GElement._Change.ChildGeometryUpdate, args);
+                args._handleChange(GElement._Change.InvalidationRequest);
             }
-        } else if (change == IFNode._Change.BeforeChildRemove) {
+        } else if (change == GNode._Change.BeforeChildRemove) {
 
             // If child is an element, request repaint for it's area
-            if (args instanceof IFElement) {
+            if (args instanceof GElement) {
                 this._requestInvalidateNode(args);
             }
-        } else if (change == IFNode._Change.AfterChildRemove) {
+        } else if (change == GNode._Change.AfterChildRemove) {
 
             // If child is an element, notify about the change
-            if (args instanceof IFElement) {
-                this._notifyChange(IFElement._Change.ChildGeometryUpdate, args);
+            if (args instanceof GElement) {
+                this._notifyChange(GElement._Change.ChildGeometryUpdate, args);
             }
-        } else if (change == IFNode._Change.AfterFlagChange) {
+        } else if (change == GNode._Change.AfterFlagChange) {
             switch (args.flag) {
-                case IFElement.Flag.NoPaint:
+                case GElement.Flag.NoPaint:
                     this._requestInvalidation();
                     break;
                 default:
@@ -1505,11 +1505,11 @@
             }
         }
 
-        if (this.hasMixin(IFElement.Stylable)) {
+        if (this.hasMixin(GElement.Stylable)) {
             this._handleStyleChange(change, args);
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
@@ -1517,8 +1517,8 @@
      * because any of it's child's geometry has been changed
      * @private
      */
-    IFElement.prototype._invalidateGeometryForChildUpdate = function () {
-        if (this.hasMixin(IFNode.Container)) {
+    GElement.prototype._invalidateGeometryForChildUpdate = function () {
+        if (this.hasMixin(GNode.Container)) {
             this._geometryBBbox = null;
             this._paintBBox = null;
         }
@@ -1536,15 +1536,15 @@
      * change of the geometry
      * @private
      */
-    IFElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
-        if (change == IFNode._Change.BeforePropertiesChange || change == IFNode._Change.AfterPropertiesChange) {
-            if (IFUtil.containsObjectKey(args.properties, properties)) {
+    GElement.prototype._handleGeometryChangeForProperties = function (change, args, properties) {
+        if (change == GNode._Change.BeforePropertiesChange || change == GNode._Change.AfterPropertiesChange) {
+            if (GUtil.containsObjectKey(args.properties, properties)) {
                 switch (change) {
-                    case IFNode._Change.BeforePropertiesChange:
-                        this._notifyChange(IFElement._Change.PrepareGeometryUpdate);
+                    case GNode._Change.BeforePropertiesChange:
+                        this._notifyChange(GElement._Change.PrepareGeometryUpdate);
                         break;
-                    case IFNode._Change.AfterPropertiesChange:
-                        this._notifyChange(IFElement._Change.FinishGeometryUpdate);
+                    case GNode._Change.AfterPropertiesChange:
+                        this._notifyChange(GElement._Change.FinishGeometryUpdate);
                         break;
                 }
                 return true;
@@ -1565,16 +1565,16 @@
      * visual change
      * @private
      */
-    IFElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
-        if (change == IFNode._Change.AfterPropertiesChange) {
-            if (IFUtil.containsObjectKey(args.properties, properties)) {
-                this._notifyChange(IFElement._Change.InvalidationRequest);
+    GElement.prototype._handleVisualChangeForProperties = function (change, args, properties) {
+        if (change == GNode._Change.AfterPropertiesChange) {
+            if (GUtil.containsObjectKey(args.properties, properties)) {
+                this._notifyChange(GElement._Change.InvalidationRequest);
                 return true;
             }
         }
         return false;
     };
 
-    _.IFElement = IFElement;
+    _.GElement = GElement;
 })
 (this);

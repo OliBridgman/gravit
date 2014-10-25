@@ -8,10 +8,10 @@
      */
     function GUngroupAction() {
     };
-    IFObject.inherit(GUngroupAction, GAction);
+    GObject.inherit(GUngroupAction, GAction);
 
     GUngroupAction.ID = 'modify.ungroup';
-    GUngroupAction.TITLE = new IFLocale.Key(GUngroupAction, "title");
+    GUngroupAction.TITLE = new GLocale.Key(GUngroupAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GUngroupAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'G'];
+        return [GKey.Constant.SHIFT, GKey.Constant.META, 'G'];
     };
 
     /**
@@ -57,7 +57,7 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof IFGroup) {
+                    if (selection[i] instanceof GGroup) {
                         return true;
                     }
                 }
@@ -77,7 +77,7 @@
 
             for (var i = 0; i < selection.length; ++i) {
                 var item = selection[i];
-                if (item instanceof IFGroup) {
+                if (item instanceof GGroup) {
                     var groupParent = item.getParent();
                     var groupNext = item.getNext();
                     var groupChildren = item.getChildren();

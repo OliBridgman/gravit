@@ -9,7 +9,7 @@
 
     /**
      * @param {String} size ?|({Number}[{Unit|x|w|h}])[@?|({Number}[{Unit|x}])]
-     * @return {{width: Number|IFLength, height: Number|IFLength}}
+     * @return {{width: Number|GLength, height: Number|GLength}}
      */
     GExporter.parseSize = function (size) {
         var width = null;
@@ -22,7 +22,7 @@
                 return null;
             }
 
-            var number = IFUtil.parseNumber(value);
+            var number = GUtil.parseNumber(value);
             if (typeof number != "number") {
                 return null;
             }
@@ -35,7 +35,7 @@
                 }
             }
 
-            return IFLength.parseLength(value);
+            return GLength.parseLength(value);
         }
 
         var width = null;
@@ -90,7 +90,7 @@
     /**
      * Called to let the exporter export a part. This will never be
      * called when the exporter is standalone only
-     * @param {IFElement} part the part to be exported
+     * @param {GElement} part the part to be exported
      * @param {String} size desired see. See GExporter.parseSize
      * @param {GStorage} storage the storage to be used for storing
      * @param {String} url the url to store the part within the storage

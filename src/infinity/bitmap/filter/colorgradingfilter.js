@@ -1,16 +1,16 @@
 (function (_) {
     /**
      * Color grading filter
-     * @class IFColorGradingFilter
+     * @class GColorGradingFilter
      * @constructor
      */
-    function IFColorGradingFilter() {
+    function GColorGradingFilter() {
     };
 
     /**
      * Gets the curve values for the specified set of curve points
      */
-    IFColorGradingFilter.getCurve = function (curvePoints) {
+    GColorGradingFilter.getCurve = function (curvePoints) {
         var curve = [],
             x = [],
             y = [],
@@ -38,7 +38,7 @@
     /**
      * Gets the curves values for the various RGB channels
      */
-    IFColorGradingFilter.getCurves = function (allPoints) {
+    GColorGradingFilter.getCurves = function (allPoints) {
         var getCurves = [],
             curves = {},
             i = 0,
@@ -57,7 +57,7 @@
 
         // Get each curve & add them to the curves array
         for (i in allPoints)
-            getCurves.push(IFColorGradingFilter.getCurve(allPoints[ i ]));
+            getCurves.push(GColorGradingFilter.getCurve(allPoints[ i ]));
 
         // Sort them out
         curves.a = getCurves[0];
@@ -81,8 +81,8 @@
      * @override
      * @param {{rgb:[], r:[], g:[], b:[]}} args color grading curve points
      */
-    IFColorGradingFilter.apply = function (pixels, width, height, args) {
-        var curves = IFColorGradingFilter.getCurves(args);
+    GColorGradingFilter.apply = function (pixels, width, height, args) {
+        var curves = GColorGradingFilter.getCurves(args);
         if (curves) {
             var length = pixels.length;
 
@@ -102,7 +102,7 @@
         }
     };
 
-    _.IFColorGradingFilter = IFColorGradingFilter;
+    _.GColorGradingFilter = GColorGradingFilter;
 
     /*
      * jQuery filter.me is Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.

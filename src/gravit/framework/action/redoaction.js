@@ -8,10 +8,10 @@
      */
     function GRedoAction() {
     };
-    IFObject.inherit(GRedoAction, GAction);
+    GObject.inherit(GRedoAction, GAction);
 
     GRedoAction.ID = 'edit.redo';
-    GRedoAction.TITLE = new IFLocale.Key(GRedoAction, "title");
+    GRedoAction.TITLE = new GLocale.Key(GRedoAction, "title");
 
     /**
      * @override
@@ -50,7 +50,7 @@
      * @override
      */
     GRedoAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'z'];
+        return [GKey.Constant.SHIFT, GKey.Constant.META, 'z'];
     };
 
     /**

@@ -8,10 +8,10 @@
      */
     function GPlaceImageAction() {
     };
-    IFObject.inherit(GPlaceImageAction, GAction);
+    GObject.inherit(GPlaceImageAction, GAction);
 
     GPlaceImageAction.ID = 'file.place-image';
-    GPlaceImageAction.TITLE = new IFLocale.Key(GPlaceImageAction, "title");
+    GPlaceImageAction.TITLE = new GLocale.Key(GPlaceImageAction, "title");
 
     /**
      * @override
@@ -63,10 +63,10 @@
             .on('change', function (evt) {
                 var files = $(evt.target)[0].files;
                 if (files && files.length) {
-                    var imagePos = document.getScene().getActivePage().getGeometryBBox().getSide(IFRect.Side.TOP_LEFT);
+                    var imagePos = document.getScene().getActivePage().getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
                     for (var i = 0; i < files.length; ++i) {
                         document.importFile(files[i], function (element) {
-                            element.transform(new IFTransform(1, 0, 0, 1, imagePos.getX(), imagePos.getY()));
+                            element.transform(new GTransform(1, 0, 0, 1, imagePos.getX(), imagePos.getY()));
                         })
                     }
                     imageInput.remove();

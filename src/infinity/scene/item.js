@@ -1,14 +1,14 @@
 (function (_) {
     /**
      * The base for items like shapes and groups
-     * @class IFItem
-     * @extends IFBlock
+     * @class GItem
+     * @extends GBlock
      * @constructor
      */
-    function IFItem() {
-        IFBlock.call(this);
+    function GItem() {
+        GBlock.call(this);
     }
-    IFObject.inherit(IFItem, IFBlock);
+    GObject.inherit(GItem, GBlock);
 
-    _.IFItem = IFItem;
+    _.GItem = GItem;
 })(this);

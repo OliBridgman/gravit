@@ -3,7 +3,7 @@
     /**
      * @enum
      */
-    var IFCursor = {
+    var GCursor = {
         /**
          * The default/auto cursor
          */
@@ -175,5 +175,5 @@
         Text: "text"
     };
 
-    _.IFCursor = IFCursor;
+    _.GCursor = GCursor;
 })(this);

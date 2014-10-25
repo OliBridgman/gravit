@@ -53,7 +53,7 @@
                         .gPatternPicker({
                             modal: true
                         })
-                        .gPatternPicker('types', [IFColor, IFGradient])
+                        .gPatternPicker('types', [GColor, GGradient])
                         .gPatternPicker('scene', scene)
                         .gPatternPicker('value', pattern)
                         .gPatternPicker('opacity', opacity)
@@ -70,7 +70,7 @@
 
     var EFFECTS = [
         {
-            clazz: IFBlurEffect,
+            clazz: GBlurEffect,
             group: 'raster',
             createSettings: function (effect, assign) {
                 var scene = effect.getScene();
@@ -102,13 +102,13 @@
             }
         },
         {
-            clazz: IFDropShadowEffect,
+            clazz: GDropShadowEffect,
             group: 'raster',
             createSettings: createShadowSettings,
             createPreview: function (preview) {
                 preview
                     .gPatternTarget({
-                        types: [IFColor],
+                        types: [GColor],
                         allowDrop: false
                     });
             },
@@ -117,17 +117,17 @@
                 var opacity = effect.getProperty('opc');
                 preview
                     .gPatternTarget('value', pattern)
-                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
+                    .css('background', GPattern.asCSSBackground(pattern, opacity));
             }
         },
         {
-            clazz: IFInnerShadowEffect,
+            clazz: GInnerShadowEffect,
             group: 'raster',
             createSettings: createShadowSettings,
             createPreview: function (preview) {
                 preview
                     .gPatternTarget({
-                        types: [IFColor],
+                        types: [GColor],
                         allowDrop: false
                     });
             },
@@ -136,17 +136,17 @@
                 var opacity = effect.getProperty('opc');
                 preview
                     .gPatternTarget('value', pattern)
-                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
+                    .css('background', GPattern.asCSSBackground(pattern, opacity));
             }
         },
         {
-            clazz: IFOverlayEffect,
+            clazz: GOverlayEffect,
             group: 'filter',
             openSettings: function (effect, assign, element) {
                 $.gPatternPicker.open({
                     target: element,
                     scene: effect.getScene(),
-                    types: [IFColor, IFGradient],
+                    types: [GColor, GGradient],
                     value: effect.getProperty('pat'),
                     opacity: effect.getProperty('opc'),
                     changeCallback: function (evt, pattern, opacity) {
@@ -161,7 +161,7 @@
             createPreview: function (preview) {
                 preview
                     .gPatternTarget({
-                        types: [IFColor, IFGradient],
+                        types: [GColor, GGradient],
                         allowDrop: false
                     });
             },
@@ -170,11 +170,11 @@
                 var opacity = effect.getProperty('opc');
                 preview
                     .gPatternTarget('value', pattern)
-                    .css('background', IFPattern.asCSSBackground(pattern, opacity));
+                    .css('background', GPattern.asCSSBackground(pattern, opacity));
             }
         },
         {
-            clazz: IFColorGradingEffect,
+            clazz: GColorGradingEffect,
             group: 'filter',
             createSettings: function (effect, assign) {
                 // TODO : Share ACV files, import, export, create custom w/ curve editor
@@ -189,7 +189,7 @@
                         .on('change', function (evt) {
                             var files = $(evt.target)[0].files;
                             if (files && files.length) {
-                                IFIO.read('application/x-adobe-acv', files[0], function (result) {
+                                GIO.read('application/x-adobe-acv', files[0], function (result) {
                                     assign(['cp'], [result]);
                                 });
                             }
@@ -232,7 +232,7 @@
                                     async: false,
                                     dataType: 'arraybuffer',
                                     success: function (data) {
-                                        IFIO.read('application/x-adobe-acv', data, function (result) {
+                                        GIO.read('application/x-adobe-acv', data, function (result) {
                                             assign(['cp'], [result]);
                                         });
                                     }
@@ -251,7 +251,7 @@
 
     function getEffectInfo(effectInstOrClass) {
         var clazz = null;
-        if (effectInstOrClass instanceof IFEffect) {
+        if (effectInstOrClass instanceof GEffect) {
             clazz = effectInstOrClass.constructor;
         } else {
             clazz = effectInstOrClass;
@@ -316,7 +316,7 @@
                     continue;
                 }
 
-                if (IFUtil.equals(elEff, effect) || (elEff.constructor === effect.constructor && elEffects.getIndexOfChild(elEff) === effectIndex)) {
+                if (GUtil.equals(elEff, effect) || (elEff.constructor === effect.constructor && elEffects.getIndexOfChild(elEff) === effectIndex)) {
                     iterator(elEff);
                 }
             }
@@ -326,7 +326,7 @@
     function afterInsertEvent(evt) {
         var $this = $(this);
         var elements = $this.data('geffectpanel').elements;
-        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+        if (evt.node instanceof GEffect && evt.node.getOwnerStylable() === elements[0]) {
             insertEffect.call(this, evt.node);
         }
     };
@@ -334,7 +334,7 @@
     function beforeRemoveEvent(evt) {
         var $this = $(this);
         var elements = $this.data('geffectpanel').elements;
-        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+        if (evt.node instanceof GEffect && evt.node.getOwnerStylable() === elements[0]) {
             removeEffect.call(this, evt.node);
         }
     };
@@ -342,7 +342,7 @@
     function afterPropertiesChangeEvent(evt) {
         var $this = $(this);
         var elements = $this.data('geffectpanel').elements;
-        if (evt.node instanceof IFEffect && evt.node.getOwnerStylable() === elements[0]) {
+        if (evt.node instanceof GEffect && evt.node.getOwnerStylable() === elements[0]) {
             updateEffect.call(this, evt.node);
         }
     };
@@ -395,7 +395,7 @@
                     evt.stopPropagation();
 
                     var assign = function (properties, values) {
-                        IFEditor.tryRunTransaction(effect, function () {
+                        GEditor.tryRunTransaction(effect, function () {
                             iterateEqualEffects.call(self, effect, function (e) {
                                 e.setProperties(properties, values);
                             });
@@ -452,10 +452,10 @@
                                 .toggleClass('g-active', effectLayer === layer)
                                 .css('display', 'block')
                                 .data('layer', layer)
-                                .text(ifLocale.get(IFStylable.StyleLayerName[layer ? layer : '']))
+                                .text(ifLocale.get(GStylable.StyleLayerName[layer ? layer : '']))
                                 .on('click', function (evt) {
                                     var layer = $(evt.target).data('layer') || null;
-                                    IFEditor.tryRunTransaction(effect, function () {
+                                    GEditor.tryRunTransaction(effect, function () {
                                         iterateEqualEffects.call(self, effect, function (e) {
                                             e.setProperty('ly', layer);
                                         });
@@ -479,7 +479,7 @@
                 .on('click', function (evt) {
                     evt.stopPropagation();
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(effect, function () {
+                    GEditor.tryRunTransaction(effect, function () {
                         iterateEqualEffects.call(self, effect, function (e) {
                             e.setProperty('vs', !effect.getProperty('vs'));
                         });
@@ -543,7 +543,7 @@
                                     var targetIndex = parent.getIndexOfChild(targetEffect);
 
                                     // TODO : I18N
-                                    IFEditor.tryRunTransaction(parent, function () {
+                                    GEditor.tryRunTransaction(parent, function () {
                                         if (ifPlatform.modifiers.shiftKey) {
                                             // Clone effect
                                             var effectClone = dragEffect.clone();
@@ -577,7 +577,7 @@
 
                     if (px < x1 || px > x2 || py < y1 || py > y2) {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(dragEffect, function () {
+                        GEditor.tryRunTransaction(dragEffect, function () {
                             iterateEqualEffects.call(self, dragEffect, function (e) {
                                 e.getParent().removeChild(e);
                             });
@@ -610,7 +610,7 @@
                 var effectVisible = effect.getProperty('vs');
                 var effectLayer = effect.getProperty('ly');
 
-                $element.toggleClass('g-selected', effect.hasFlag(IFNode.Flag.Selected));
+                $element.toggleClass('g-selected', effect.hasFlag(GNode.Flag.Selected));
 
                 if (effectInfo.updatePreview) {
                     effectInfo.updatePreview($element.find(".effect-settings>:first-child"), effect);
@@ -626,12 +626,12 @@
                 $element.find('.effect-layer')
                     .toggleClass('grid-icon-default', !effectLayer)
                     // TODO : I18N
-                    .attr('title', 'Applies to ' + ifLocale.get(IFStylable.StyleLayerName[effectLayer ? effectLayer : '']))
+                    .attr('title', 'Applies to ' + ifLocale.get(GStylable.StyleLayerName[effectLayer ? effectLayer : '']))
                     /*!!*/
                     .find('> span')
                     .toggleClass('fa-circle', !effectLayer)
-                    .toggleClass('gicon-fill', effectLayer === IFStylable.StyleLayer.Fill)
-                    .toggleClass('gicon-stroke', effectLayer === IFStylable.StyleLayer.Border)
+                    .toggleClass('gicon-fill', effectLayer === GStylable.StyleLayer.Fill)
+                    .toggleClass('gicon-stroke', effectLayer === GStylable.StyleLayer.Border)
 
                 return false;
             }
@@ -658,7 +658,7 @@
         if (data.elements) {
             var effects = data.elements[0].getEffects();
             for (var child = effects.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFEffect) {
+                if (child instanceof GEffect) {
                     insertEffect.call(this, child);
                 }
             }
@@ -680,7 +680,7 @@
                 .text('All Effects'))
             .append($('<option></option>')
                 .attr('value', '')
-                .text(ifLocale.get(IFStylable.StyleLayerName[''])));
+                .text(ifLocale.get(GStylable.StyleLayerName[''])));
 
         styleLayer.val('*');
 
@@ -693,7 +693,7 @@
                 var layer = styleLayers[i];
                 styleLayer.append($('<option></option>')
                     .attr('value', layer)
-                    .text(ifLocale.get(IFStylable.StyleLayerName[layer])))
+                    .text(ifLocale.get(GStylable.StyleLayerName[layer])))
             }
         }
     };
@@ -743,7 +743,7 @@
                                 var elements = $this.data('geffectpanel').elements;
                                 if (elements && elements.length) {
                                     // TODO : I18N
-                                    IFEditor.tryRunTransaction(elements[0], function () {
+                                    GEditor.tryRunTransaction(elements[0], function () {
                                         for (var i = 0; i < elements.length; ++i) {
                                             var effect = new effectClass();
                                             effect.setProperty('ly', layer);
@@ -761,7 +761,7 @@
                                     var effects = elements[0].getEffects();
 
                                     // TODO : I18N
-                                    IFEditor.tryRunTransaction(effects, function () {
+                                    GEditor.tryRunTransaction(effects, function () {
                                         for (var effect = effects.getFirstChild(); effect !== null; effect = effect.getNext()) {
                                             if (effect.getProperty('vs') === false) {
                                                 iterateEqualEffects.call(self, effect, function (e) {
@@ -786,9 +786,9 @@
                 if (data.elements && data.elements.length) {
                     var scene = data.scene;
                     if (scene) {
-                        scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                        scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                        scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     }
 
                     data.scene = null;
@@ -804,9 +804,9 @@
                 if (data.elements && data.elements.length) {
                     var scene = data.scene;
                     if (scene) {
-                        scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                        scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                        scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                        scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     }
 
                     data.scene = null;
@@ -825,9 +825,9 @@
                         data.afterInsertHandler = afterInsertEvent.bind(this);
                         data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
                         data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                        scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                        scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                        scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                        scene.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        scene.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        scene.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     }
                 }
 

@@ -1,64 +1,64 @@
 (function (_) {
     /**
      * A swatch keeping colors, gradients, etc.
-     * @class IFSwatch
-     * @extends IFNode
-     * @mixes IFNode.Store
-     * @mixes IFNode.Properties
+     * @class GSwatch
+     * @extends GNode
+     * @mixes GNode.Store
+     * @mixes GNode.Properties
      * @constructor
      */
-    function IFSwatch() {
-        IFNode.call(this);
-        this._setDefaultProperties(IFSwatch.VisualProperties, IFSwatch.MetaProperties);
+    function GSwatch() {
+        GNode.call(this);
+        this._setDefaultProperties(GSwatch.VisualProperties, GSwatch.MetaProperties);
     }
 
-    IFNode.inheritAndMix('swatch', IFSwatch, IFNode, [IFNode.Store, IFNode.Properties]);
+    GNode.inheritAndMix('swatch', GSwatch, GNode, [GNode.Store, GNode.Properties]);
 
     /**
      * Visual properties
      */
-    IFSwatch.VisualProperties = {
-        // The pattern of the swatch (IFPattern)
+    GSwatch.VisualProperties = {
+        // The pattern of the swatch (GPattern)
         pat: null
     };
 
     /**
      * Meta properties
      */
-    IFSwatch.MetaProperties = {
+    GSwatch.MetaProperties = {
         name: null
     };
 
     /** @override */
-    IFSwatch.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFScene.SwatchCollection;
+    GSwatch.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GScene.SwatchCollection;
     };
 
     /** @override */
-    IFSwatch.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFSwatch.VisualProperties, function (property, value) {
+    GSwatch.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.serialize(value);
+                        return GPattern.serialize(value);
                     }
                 }
                 return value;
             });
-            this.storeProperties(args, IFSwatch.MetaProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFSwatch.VisualProperties, function (property, value) {
+            this.storeProperties(args, GSwatch.MetaProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GSwatch.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.deserialize(value);
+                        return GPattern.deserialize(value);
                     }
                 }
             });
-            this.restoreProperties(args, IFSwatch.MetaProperties);
+            this.restoreProperties(args, GSwatch.MetaProperties);
         }
 
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
-    _.IFSwatch = IFSwatch;
+    _.GSwatch = GSwatch;
 })(this);

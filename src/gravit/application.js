@@ -2,13 +2,13 @@
     /**
      * The global application class
      * @class GApplication
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
     function GApplication() {
         this._actions = [];
-        this._toolManager = new IFToolManager();
+        this._toolManager = new GToolManager();
         this._documents = [];
 
         document.addEventListener("touchstart", this._touchHandler, true);
@@ -38,29 +38,29 @@
             }
         }, true);
     };
-    IFObject.inherit(GApplication, IFEventTarget);
+    GObject.inherit(GApplication, GEventTarget);
 
     // Constants for pre-defined action categories
-    GApplication.CATEGORY_FILE = new IFLocale.Key(GApplication, "category.file");
-    GApplication.CATEGORY_EDIT = new IFLocale.Key(GApplication, "category.edit");
-    GApplication.CATEGORY_MODIFY = new IFLocale.Key(GApplication, "category.modify");
-    GApplication.CATEGORY_MODIFY_ARRANGE = new IFLocale.Key(GApplication, "category.modify.arrange");
-    GApplication.CATEGORY_MODIFY_ALIGN = new IFLocale.Key(GApplication, "category.modify.align");
-    GApplication.CATEGORY_MODIFY_TRANSFORM = new IFLocale.Key(GApplication, "category.modify.transform");
-    GApplication.CATEGORY_MODIFY_PATHS = new IFLocale.Key(GApplication, "category.modify.paths");
-    GApplication.CATEGORY_MODIFY_PAGE = new IFLocale.Key(GApplication, "category.modify.page");
-    GApplication.CATEGORY_MODIFY_LAYER = new IFLocale.Key(GApplication, "category.modify.layer");
-    GApplication.CATEGORY_VIEW = new IFLocale.Key(GApplication, "category.view");
-    GApplication.CATEGORY_VIEW_MAGNIFICATION = new IFLocale.Key(GApplication, "category.view.magnification");
-    GApplication.CATEGORY_HELP = new IFLocale.Key(GApplication, "category.help");
+    GApplication.CATEGORY_FILE = new GLocale.Key(GApplication, "category.file");
+    GApplication.CATEGORY_EDIT = new GLocale.Key(GApplication, "category.edit");
+    GApplication.CATEGORY_MODIFY = new GLocale.Key(GApplication, "category.modify");
+    GApplication.CATEGORY_MODIFY_ARRANGE = new GLocale.Key(GApplication, "category.modify.arrange");
+    GApplication.CATEGORY_MODIFY_ALIGN = new GLocale.Key(GApplication, "category.modify.align");
+    GApplication.CATEGORY_MODIFY_TRANSFORM = new GLocale.Key(GApplication, "category.modify.transform");
+    GApplication.CATEGORY_MODIFY_PATHS = new GLocale.Key(GApplication, "category.modify.paths");
+    GApplication.CATEGORY_MODIFY_PAGE = new GLocale.Key(GApplication, "category.modify.page");
+    GApplication.CATEGORY_MODIFY_LAYER = new GLocale.Key(GApplication, "category.modify.layer");
+    GApplication.CATEGORY_VIEW = new GLocale.Key(GApplication, "category.view");
+    GApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(GApplication, "category.view.magnification");
+    GApplication.CATEGORY_HELP = new GLocale.Key(GApplication, "category.help");
 
     // Constants for pre-defined tool categories
-    GApplication.TOOL_CATEGORY_SELECT = new IFLocale.Key(GApplication, "tool-category.select");
-    GApplication.TOOL_CATEGORY_IMAGE = new IFLocale.Key(GApplication, "tool-category.image");
-    GApplication.TOOL_CATEGORY_VECTOR = new IFLocale.Key(GApplication, "tool-category.vector");
-    GApplication.TOOL_CATEGORY_OTHER = new IFLocale.Key(GApplication, "tool-category.other");
-    GApplication.TOOL_CATEGORY_COLOR = new IFLocale.Key(GApplication, "tool-category.color");
-    GApplication.TOOL_CATEGORY_VIEW = new IFLocale.Key(GApplication, "tool-category.view");
+    GApplication.TOOL_CATEGORY_SELECT = new GLocale.Key(GApplication, "tool-category.select");
+    GApplication.TOOL_CATEGORY_IMAGE = new GLocale.Key(GApplication, "tool-category.image");
+    GApplication.TOOL_CATEGORY_VECTOR = new GLocale.Key(GApplication, "tool-category.vector");
+    GApplication.TOOL_CATEGORY_OTHER = new GLocale.Key(GApplication, "tool-category.other");
+    GApplication.TOOL_CATEGORY_COLOR = new GLocale.Key(GApplication, "tool-category.color");
+    GApplication.TOOL_CATEGORY_VIEW = new GLocale.Key(GApplication, "tool-category.view");
 
     /**
      * Visual parts of the application
@@ -92,14 +92,14 @@
     /**
      * An event whenever a document event occurrs
      * @class GApplication.DocumentEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      */
     GApplication.DocumentEvent = function (type, document) {
         this.type = type;
         this.document = document;
     };
-    IFObject.inherit(GApplication.DocumentEvent, IFEvent);
+    GObject.inherit(GApplication.DocumentEvent, GEvent);
 
     /**
      * Enumeration of view event types
@@ -140,7 +140,7 @@
     GApplication.prototype._initialized = false;
 
     /**
-     * @type {IFToolManager}
+     * @type {GToolManager}
      * @private
      */
     GApplication.prototype._toolManager = null;
@@ -220,7 +220,7 @@
     GApplication.prototype._actions = null;
 
     /**
-     * @returns {IFToolManager}
+     * @returns {GToolManager}
      */
     GApplication.prototype.getToolManager = function () {
         return this._toolManager;
@@ -420,16 +420,16 @@
      */
     GApplication.prototype.createNewDocument = function () {
         // Create scene, add it and call add page to insert a default page
-        var scene = new IFScene();
+        var scene = new GScene();
 
         // Setup scene defaults
-        scene.setProperty('unit', IFLength.Unit.PX);
+        scene.setProperty('unit', GLength.Unit.PX);
 
         // Add default styles for shapes & text
-        var defShapeStyle = new IFStyle();
-        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border], IFRGBColor.BLACK, IFRGBColor.WHITE]);
-        var defTextStyle = new IFStyle();
-        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects, IFStylable.PropertySet.Fill, IFStylable.PropertySet.Border, IFStylable.PropertySet.Text, IFStylable.PropertySet.Paragraph], IFRGBColor.BLACK]);
+        var defShapeStyle = new GStyle();
+        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [GStylable.PropertySet.Style, GStylable.PropertySet.Effects, GStylable.PropertySet.Fill, GStylable.PropertySet.Border], GRGBColor.BLACK, GRGBColor.WHITE]);
+        var defTextStyle = new GStyle();
+        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [GStylable.PropertySet.Style, GStylable.PropertySet.Effects, GStylable.PropertySet.Fill, GStylable.PropertySet.Border, GStylable.PropertySet.Text, GStylable.PropertySet.Paragraph], GRGBColor.BLACK]);
 
         scene.getStyleCollection().appendChild(defShapeStyle);
         scene.getStyleCollection().appendChild(defTextStyle);
@@ -444,7 +444,7 @@
     /**
      * Add a new document and open up a window for it
      * and mark the view as being active
-     * @param {IFScene} scene the scene to add the document from it
+     * @param {GScene} scene the scene to add the document from it
      * @param {String} [temporaryTitle] optional temporary title to be used
      * for the document if no url is assigned, defaults to null to use
      * the default naming scheme
@@ -479,7 +479,7 @@
             if (storage) {
                 storage.load(url, true, function (data, name) {
                     var _readDocument = function (source) {
-                        var scene = new IFScene();
+                        var scene = new GScene();
                         var document = new GDocument(scene, url, name);
                         try {
                             var blob = JSON.parse(source);
@@ -488,7 +488,7 @@
                                 throw new Error('Unable to parse JSON.');
                             }
 
-                            IFNode.restoreInstance(blob, scene);
+                            GNode.restoreInstance(blob, scene);
                         } catch (e) {
                             document.release();
                             scene = null;
@@ -728,15 +728,15 @@
         this._palettes = new GPalettes(palettesPart);
 
         // Append the corresponding hardware class to our body
-        switch (IFSystem.hardware) {
-            case IFSystem.Hardware.Desktop:
+        switch (GSystem.hardware) {
+            case GSystem.Hardware.Desktop:
                 body.addClass('g-desktop');
                 break;
-            case IFSystem.Hardware.Tablet:
+            case GSystem.Hardware.Tablet:
                 body.addClass('g-touch');
                 body.addClass('g-tablet');
                 break;
-            case IFSystem.Hardware.Phone:
+            case GSystem.Hardware.Phone:
                 body.addClass('g-touch');
                 body.addClass('g-phone');
                 break;
@@ -1107,103 +1107,103 @@
             var key = shortcut[i];
             if (typeof key == 'number') {
                 switch (key) {
-                    case IFKey.Constant.META:
+                    case GKey.Constant.META:
                         result += "meta";
                         break;
-                    case IFKey.Constant.OPTION:
+                    case GKey.Constant.OPTION:
                         result += "option";
                         break;
-                    case IFKey.Constant.REMOVE:
+                    case GKey.Constant.REMOVE:
                         result += "del";
                         break;
-                    case IFKey.Constant.SPACE:
+                    case GKey.Constant.SPACE:
                         result += "space";
                         break;
-                    case IFKey.Constant.ENTER:
+                    case GKey.Constant.ENTER:
                         result += "enter";
                         break;
-                    case IFKey.Constant.TAB:
+                    case GKey.Constant.TAB:
                         result += "tab";
                         break;
-                    case IFKey.Constant.BACKSPACE:
+                    case GKey.Constant.BACKSPACE:
                         result += "backspace";
                         break;
-                    case IFKey.Constant.CONTROL:
+                    case GKey.Constant.CONTROL:
                         result += "ctrl";
                         break;
-                    case IFKey.Constant.SHIFT:
+                    case GKey.Constant.SHIFT:
                         result += "shift";
                         break;
-                    case IFKey.Constant.ALT:
+                    case GKey.Constant.ALT:
                         result += "alt";
                         break;
-                    case IFKey.Constant.LEFT:
+                    case GKey.Constant.LEFT:
                         result += "left";
                         break;
-                    case IFKey.Constant.UP:
+                    case GKey.Constant.UP:
                         result += "up";
                         break;
-                    case IFKey.Constant.RIGHT:
+                    case GKey.Constant.RIGHT:
                         result += "right";
                         break;
-                    case IFKey.Constant.DOWN:
+                    case GKey.Constant.DOWN:
                         result += "down";
                         break;
-                    case IFKey.Constant.PAGE_UP:
+                    case GKey.Constant.PAGE_UP:
                         result += "pageup";
                         break;
-                    case IFKey.Constant.PAGE_DOWN:
+                    case GKey.Constant.PAGE_DOWN:
                         result += "pagedown";
                         break;
-                    case IFKey.Constant.HOME:
+                    case GKey.Constant.HOME:
                         result += "home";
                         break;
-                    case IFKey.Constant.END:
+                    case GKey.Constant.END:
                         result += "end";
                         break;
-                    case IFKey.Constant.INSERT:
+                    case GKey.Constant.INSERT:
                         result += "ins";
                         break;
-                    case IFKey.Constant.DELETE:
+                    case GKey.Constant.DELETE:
                         result += "del";
                         break;
-                    case IFKey.Constant.COMMAND:
+                    case GKey.Constant.COMMAND:
                         result += "meta";
                         break;
-                    case IFKey.Constant.F1:
+                    case GKey.Constant.F1:
                         result += "f1";
                         break;
-                    case IFKey.Constant.F2:
+                    case GKey.Constant.F2:
                         result += "f2";
                         break;
-                    case IFKey.Constant.F3:
+                    case GKey.Constant.F3:
                         result += "f3";
                         break;
-                    case IFKey.Constant.F4:
+                    case GKey.Constant.F4:
                         result += "f4";
                         break;
-                    case IFKey.Constant.F5:
+                    case GKey.Constant.F5:
                         result += "f5";
                         break;
-                    case IFKey.Constant.F6:
+                    case GKey.Constant.F6:
                         result += "f6";
                         break;
-                    case IFKey.Constant.F7:
+                    case GKey.Constant.F7:
                         result += "f7";
                         break;
-                    case IFKey.Constant.F8:
+                    case GKey.Constant.F8:
                         result += "f8";
                         break;
-                    case IFKey.Constant.F9:
+                    case GKey.Constant.F9:
                         result += "f9";
                         break;
-                    case IFKey.Constant.F10:
+                    case GKey.Constant.F10:
                         result += "f10";
                         break;
-                    case IFKey.Constant.F11:
+                    case GKey.Constant.F11:
                         result += "f11";
                         break;
-                    case IFKey.Constant.F12:
+                    case GKey.Constant.F12:
                         result += "f12";
                         break;
                     default:

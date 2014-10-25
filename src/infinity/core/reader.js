@@ -1,32 +1,32 @@
 (function (_) {
     /**
      * IO Reader class
-     * @class IFReader
+     * @class GReader
      * @constructor
      */
-    function IFReader() {
+    function GReader() {
     };
 
-    IFReader.InputType = {
+    GReader.InputType = {
         String: 0,
         ArrayBuffer: 1
     };
 
-    IFReader.prototype.getInputType = function () {
+    GReader.prototype.getInputType = function () {
         throw new Error('Not Supported.');
     };
 
-    IFReader.prototype.getMimeType = function () {
+    GReader.prototype.getMimeType = function () {
         throw new Error('Not Supported.');
     };
 
-    IFReader.prototype.getFileExtensions = function () {
+    GReader.prototype.getFileExtensions = function () {
         throw new Error('Not Supported.');
     };
 
-    IFReader.prototype.readInput = function (input, callback, settings) {
+    GReader.prototype.readInput = function (input, callback, settings) {
         throw new Error('Not Supported.');
     };
 
-    _.IFReader = IFReader;
+    _.GReader = GReader;
 })(this);

@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * Color grading effect
-     * @class IFColorGradingEffect
-     * @extends IFEffect
+     * @class GColorGradingEffect
+     * @extends GEffect
      * @constructor
      */
-    IFColorGradingEffect = function () {
-        IFEffect.call(this);
-        this._setDefaultProperties(IFColorGradingEffect.VisualProperties);
+    GColorGradingEffect = function () {
+        GEffect.call(this);
+        this._setDefaultProperties(GColorGradingEffect.VisualProperties);
     };
-    IFNode.inherit('clGradingEffect', IFColorGradingEffect, IFEffect);
+    GNode.inherit('clGradingEffect', GColorGradingEffect, GEffect);
 
-    IFColorGradingEffect.equals = function (left, right) {
-        if (left instanceof IFColorGradingEffect && right instanceof  IFColorGradingEffect) {
-            return left.arePropertiesEqual(right, Object.keys(IFColorGradingEffect.VisualProperties));
+    GColorGradingEffect.equals = function (left, right) {
+        if (left instanceof GColorGradingEffect && right instanceof  GColorGradingEffect) {
+            return left.arePropertiesEqual(right, Object.keys(GColorGradingEffect.VisualProperties));
         }
         return false;
     };
@@ -21,40 +21,40 @@
     /**
      * Visual properties of a color grading effect
      */
-    IFColorGradingEffect.VisualProperties = {
+    GColorGradingEffect.VisualProperties = {
         /** The curve points {rgb:[], r:[], g:[], b:[]} */
         cp: null
     };
 
     /** @override */
-    IFColorGradingEffect.prototype.getEffectType = function () {
-        return IFEffect.Type.Filter;
+    GColorGradingEffect.prototype.getEffectType = function () {
+        return GEffect.Type.Filter;
     };
 
     /** @override */
-    IFColorGradingEffect.prototype.render = function (contents, output, background, scale) {
+    GColorGradingEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$cp) {
-            contents.getBitmap().applyFilter(IFColorGradingFilter, this.$cp);
+            contents.getBitmap().applyFilter(GColorGradingFilter, this.$cp);
         }
     };
 
     /** @override */
-    IFColorGradingEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFColorGradingEffect.VisualProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFColorGradingEffect.VisualProperties);
+    GColorGradingEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GColorGradingEffect.VisualProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GColorGradingEffect.VisualProperties);
         }
 
-        this._handleVisualChangeForProperties(change, args, IFColorGradingEffect.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GColorGradingEffect.VisualProperties);
 
-        IFEffect.prototype._handleChange.call(this, change, args);
+        GEffect.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFColorGradingEffect.prototype.toString = function () {
-        return "[Object IFColorGradingEffect]";
+    GColorGradingEffect.prototype.toString = function () {
+        return "[Object GColorGradingEffect]";
     };
 
-    _.IFColorGradingEffect = IFColorGradingEffect;
+    _.GColorGradingEffect = GColorGradingEffect;
 })(this);

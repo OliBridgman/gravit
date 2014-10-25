@@ -50,11 +50,11 @@
                             $this.trigger('patterndrag', pattern);
 
                             // Create an invisible div with the pattern as background
-                            dragImage.css('background', IFPattern.asCSSBackground(pattern));
+                            dragImage.css('background', GPattern.asCSSBackground(pattern));
 
                             // Setup our allowDrag-event now
                             event.dataTransfer.effectAllowed = 'move';
-                            event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
+                            event.dataTransfer.setData(GPattern.MIME_TYPE, GPattern.serialize(pattern));
                             event.dataTransfer.setDragImage(dragImage[0], previewBoxSize / 2, previewBoxSize / 2);
                             event.dataTransfer.sourceElement = this;
                         })
@@ -77,9 +77,9 @@
                             evt.stopPropagation();
                             var data = $this.data('gpatterntarget');
                             var event = evt.originalEvent;
-                            var source = event.dataTransfer.getData(IFPattern.MIME_TYPE);
+                            var source = event.dataTransfer.getData(GPattern.MIME_TYPE);
                             if (source) {
-                                source = IFPattern.deserialize(source);
+                                source = GPattern.deserialize(source);
                                 if (source) {
                                     var isCompatible = true;
                                     if (data.types && data.types.length > 0) {
@@ -94,7 +94,7 @@
 
                                     if (isCompatible) {
                                         var myPattern = $this.data('gpatterntarget').pattern;
-                                        if (!IFUtil.equals(source, myPattern)) {
+                                        if (!GUtil.equals(source, myPattern)) {
                                             methods.value.call(self, source);
                                             $this.trigger('patternchange', source);
                                         }
@@ -118,7 +118,7 @@
             if (!arguments.length) {
                 return data.pattern;
             } else {
-                value = typeof value === 'string' ? IFPattern.deserialize(value) : value;
+                value = typeof value === 'string' ? GPattern.deserialize(value) : value;
                 data.pattern = value;
                 return this;
             }

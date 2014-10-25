@@ -9,13 +9,13 @@
     function GPaintModeAction(paintMode) {
         this._paintMode = paintMode;
     };
-    IFObject.inherit(GPaintModeAction, GAction);
+    GObject.inherit(GPaintModeAction, GAction);
 
     GPaintModeAction.ID = 'view.page.decoration';
-    GPaintModeAction.TITLE = new IFLocale.Key(GPaintModeAction, 'title');
+    GPaintModeAction.TITLE = new GLocale.Key(GPaintModeAction, 'title');
 
     /**
-     * @type {IFScenePaintConfiguration.PaintMode}
+     * @type {GScenePaintConfiguration.PaintMode}
      * @private
      */
     GPaintModeAction.prototype._paintMode = null;
@@ -32,7 +32,7 @@
      */
     GPaintModeAction.prototype.getTitle = function () {
         return ifLocale.get(GPaintModeAction.TITLE).replace('%name%',
-            ifLocale.get(IFScenePaintConfiguration.PaintModeName[this._paintMode]));
+            ifLocale.get(GScenePaintConfiguration.PaintModeName[this._paintMode]));
     };
 
     /**

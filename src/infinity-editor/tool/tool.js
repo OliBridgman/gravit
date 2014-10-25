@@ -1,64 +1,64 @@
 (function (_) {
     /**
      * The base for a tool
-     * @class IFTool
-     * @extends IFObject
+     * @class GTool
+     * @extends GObject
      * @constructor
      * @version 1.0
      */
-    function IFTool() {
+    function GTool() {
     }
 
-    IFObject.inherit(IFTool, IFObject);
+    GObject.inherit(GTool, GObject);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFTool Class
+    // GTool Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The manager creating and owning this tool
-     * @type {IFToolManager}
+     * @type {GToolManager}
      * @private
      */
-    IFTool.prototype._manager = null;
+    GTool.prototype._manager = null;
 
     /**
      * The current docuument the tool is activated on, may be null for none
-     * @type {IFScene}
+     * @type {GScene}
      * @private
      */
-    IFTool.prototype._scene = null;
+    GTool.prototype._scene = null;
 
     /**
      * The current editor view the tool is activated on, may be null for none
-     * @type {IFEditorView}
+     * @type {GEditorView}
      * @private
      */
-    IFTool.prototype._view = null;
+    GTool.prototype._view = null;
 
     /**
      * The current graphic editor the tool is activated on, may be null for none
-     * @type {IFEditor}
+     * @type {GEditor}
      * @private
      */
-    IFTool.prototype._editor = null;
+    GTool.prototype._editor = null;
 
     /**
      * Should return the current cursor for this tool.
      * If you need to update the cursor, simply call updateCursor()
      * @returns {String}
-     * @see IFCursor
+     * @see GCursor
      * @version 1.0
      */
-    IFTool.prototype.getCursor = function () {
-        return IFCursor.Default;
+    GTool.prototype.getCursor = function () {
+        return GCursor.Default;
     };
 
     /**
      * Called when this tool got activated for a given view
-     * @param {IFEditorView} view the editor view the tool got activated for
+     * @param {GEditorView} view the editor view the tool got activated for
      */
-    IFTool.prototype.activate = function (view) {
+    GTool.prototype.activate = function (view) {
         this._scene = view ? view.getScene() : null;
         this._view = view;
         this._editor = view.getEditor();
@@ -66,9 +66,9 @@
 
     /**
      * Called when this tool got deactivated for it's current view
-     * @param {IFEditorView} view the editor view the tool got deactivated for
+     * @param {GEditorView} view the editor view the tool got deactivated for
      */
-    IFTool.prototype.deactivate = function (view) {
+    GTool.prototype.deactivate = function (view) {
         if (view.getScene() != this._scene || view != this._view) {
             throw new Error("Not supposed to happen");
         }
@@ -84,17 +84,17 @@
      * @return {Boolean}
      * @version 1.0
      */
-    IFTool.prototype.isDeactivatable = function () {
+    GTool.prototype.isDeactivatable = function () {
         // Always deactivable by default
         return true;
     };
 
     /**
      * Called when this tool should paint itself.
-     * @param {IFPaintContext} context
+     * @param {GPaintContext} context
      * @version 1.0
      */
-    IFTool.prototype.paint = function (context) {
+    GTool.prototype.paint = function (context) {
         // NO-OP
     };
 
@@ -102,7 +102,7 @@
      * Descendant classes should call this to update their cursor
      * @version 1.0
      */
-    IFTool.prototype.updateCursor = function () {
+    GTool.prototype.updateCursor = function () {
         if (this._manager && this == this._manager.getActiveTool()) {
             this._manager._updateActiveToolCursor();
         }
@@ -111,11 +111,11 @@
     /**
      * Descendant classes should call this to invalidate and
      * request a repaint of a certain area
-     * @param {IFRect} [area] the area of invalidation, if not provided
+     * @param {GRect} [area] the area of invalidation, if not provided
      * or null, invalidates the whole area
      * @version 1.0
      */
-    IFTool.prototype.invalidateArea = function (area) {
+    GTool.prototype.invalidateArea = function (area) {
         if (this._manager && this == this._manager.getActiveTool()) {
             this._manager._invalidateActiveToolArea(area);
         }
@@ -125,14 +125,14 @@
      * This may return to supress context menu because
      * the tool handles right clicking differently
      */
-    IFTool.prototype.catchesContextMenu = function () {
+    GTool.prototype.catchesContextMenu = function () {
         return false;
     };
 
     /** override */
-    IFTool.prototype.toString = function () {
-        return "[Object IFTool]";
+    GTool.prototype.toString = function () {
+        return "[Object GTool]";
     };
 
-    _.IFTool = IFTool;
+    _.GTool = GTool;
 })(this);

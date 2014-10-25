@@ -1,10 +1,10 @@
 (function (_) {
 
     /**
-     * @class IFFont
+     * @class GFont
      * @constructor
      */
-    function IFFont() {
+    function GFont() {
         this._types = {};
     };
 
@@ -12,7 +12,7 @@
      * The style of a font
      * @enum
      */
-    IFFont.Style = {
+    GFont.Style = {
         Normal: 'N',
         Italic: 'I'
     };
@@ -21,7 +21,7 @@
      * The weight of a font
      * @enum
      */
-    IFFont.Weight = {
+    GFont.Weight = {
         Thin: 100,
         ExtraLight: 200,
         Light: 300,
@@ -34,25 +34,25 @@
     };
 
     /**
-     * Localized names for IFFont.Weight
+     * Localized names for GFont.Weight
      */
-    IFFont.WeightName = {
-        100: new IFLocale.Key(IFFont, 'weight.thin'),
-        200: new IFLocale.Key(IFFont, 'weight.extra-light'),
-        300: new IFLocale.Key(IFFont, 'weight.light'),
-        400: new IFLocale.Key(IFFont, 'weight.regular'),
-        500: new IFLocale.Key(IFFont, 'weight.medium'),
-        600: new IFLocale.Key(IFFont, 'weight.semi-bold'),
-        700: new IFLocale.Key(IFFont, 'weight.bold'),
-        800: new IFLocale.Key(IFFont, 'weight.extra-bold'),
-        900: new IFLocale.Key(IFFont, 'weight.heavy')
+    GFont.WeightName = {
+        100: new GLocale.Key(GFont, 'weight.thin'),
+        200: new GLocale.Key(GFont, 'weight.extra-light'),
+        300: new GLocale.Key(GFont, 'weight.light'),
+        400: new GLocale.Key(GFont, 'weight.regular'),
+        500: new GLocale.Key(GFont, 'weight.medium'),
+        600: new GLocale.Key(GFont, 'weight.semi-bold'),
+        700: new GLocale.Key(GFont, 'weight.bold'),
+        800: new GLocale.Key(GFont, 'weight.extra-bold'),
+        900: new GLocale.Key(GFont, 'weight.heavy')
     };
 
     /**
      * The category of a font
      * @enum
      */
-    IFFont.Category = {
+    GFont.Category = {
         Other: 0,
         Serif: 100,
         Monospace: 200,
@@ -60,31 +60,31 @@
     };
 
     /**
-     * Localized names for IFFont.Category
+     * Localized names for GFont.Category
      */
-    IFFont.CategoryName = {
-          0: new IFLocale.Key(IFFont, 'category.other'),
-        100: new IFLocale.Key(IFFont, 'category.serif'),
-        200: new IFLocale.Key(IFFont, 'category.monospace'),
-        300: new IFLocale.Key(IFFont, 'category.iconic')
+    GFont.CategoryName = {
+          0: new GLocale.Key(GFont, 'category.other'),
+        100: new GLocale.Key(GFont, 'category.serif'),
+        200: new GLocale.Key(GFont, 'category.monospace'),
+        300: new GLocale.Key(GFont, 'category.iconic')
     };
 
     /**
      * @type {{}}
      * @private
      */
-    IFFont.prototype._types = null;
+    GFont.prototype._types = null;
 
     /**
      * Register a new font type
      * @param {String} family the font-family this type belongs to
-     * @param {IFFont.Style} style the style of the type
-     * @param {IFFont.Weight} weight the weight of the type
+     * @param {GFont.Style} style the style of the type
+     * @param {GFont.Weight} weight the weight of the type
      * @param {String} url the url to load the font-file from
      * @param {Boolean} [category] the font type category. Needs to be called
-     * on the first typeface added only. Defaults to IFFont.Category.Other
+     * on the first typeface added only. Defaults to GFont.Category.Other
      */
-    IFFont.prototype.addType = function (family, style, weight, url, category) {
+    GFont.prototype.addType = function (family, style, weight, url, category) {
         var type = this._types[family];
 
         if (!type) {
@@ -92,7 +92,7 @@
                 styles: {},
                 weights: {},
                 variants: {},
-                category: category || IFFont.Category.Other
+                category: category || GFont.Category.Other
             }
 
             this._types[family] = type;
@@ -104,9 +104,9 @@
 
         var _styleToCss = function (style) {
             switch (style) {
-                case IFFont.Style.Normal:
+                case GFont.Style.Normal:
                     return 'normal';
-                case IFFont.Style.Italic:
+                case GFont.Style.Italic:
                     return 'italic';
                 default:
                     throw new Error('Unknown style');
@@ -162,7 +162,7 @@
      * Returns an alphabetically sorted list of
      * available font families
      */
-    IFFont.prototype.getFamilies = function () {
+    GFont.prototype.getFamilies = function () {
         var families = Object.keys(this._types);
         families.sort();
         return families;
@@ -171,24 +171,24 @@
     /**
      * Returns the typeface category for a given family
      * @param {String} family
-     * @returns {IFFont.Category}
+     * @returns {GFont.Category}
      */
-    IFFont.prototype.getCategory = function (family) {
+    GFont.prototype.getCategory = function (family) {
         var type = this._types[family];
         if (type) {
             return type.category;
         }
-        return IFFont.Category.Other;
+        return GFont.Category.Other;
     };
 
     /**
      * Returns all available styles for a given family
      * @param {String} family the family to query for
-     * @return {Array<IFFont.Style>} null if there's
+     * @return {Array<GFont.Style>} null if there's
      * no such font-family or an array of available styles for the
      * given family
      */
-    IFFont.prototype.getStyles = function (family) {
+    GFont.prototype.getStyles = function (family) {
         var type = this._types[family];
         if (type) {
             return Object.keys(type.styles);
@@ -199,11 +199,11 @@
     /**
      * Returns all available weights for a given family
      * @param {String} family the family to query for
-     * @return {Array<IFFont.Weight>} null if there's
+     * @return {Array<GFont.Weight>} null if there's
      * no such font-family or an array of available weights for the
      * given family
      */
-    IFFont.prototype.getWeights = function (family) {
+    GFont.prototype.getWeights = function (family) {
         var type = this._types[family];
         if (type) {
             var weights = Object.keys(type.weights);
@@ -220,8 +220,8 @@
     /**
      * Returns a variant for a given family, style and weight
      * @param {String} family the family to query for
-     * @param {IFFont.Style} style the style of the variant
-     * @param {IFFont.Weight} weight the weight of the variant
+     * @param {GFont.Style} style the style of the variant
+     * @param {GFont.Weight} weight the weight of the variant
      * @param {Boolean} [matchExact] if set, no variant will be returned
      * if there's no exact match of the parameters, otherwise a closest
      * matching variant will be returned. Defaults to false.
@@ -229,11 +229,11 @@
      * that either exactly matches the given parameters or the closest
      * matching variant if matchExact is set to false
      */
-    IFFont.prototype.getVariant = function (family, style, weight, matchExact) {
+    GFont.prototype.getVariant = function (family, style, weight, matchExact) {
         var type = this._types[family];
         if (type) {
             if (!type.styles.hasOwnProperty(style) && !matchExact) {
-                style = IFFont.Style.Normal;
+                style = GFont.Style.Normal;
             }
 
             weight = typeof weight === 'number' ? weight : parseInt(weight);
@@ -263,7 +263,7 @@
      * @param size
      * @returns {number}
      */
-    IFFont.prototype.getGlyphBaseline = function (family, variant, size) {
+    GFont.prototype.getGlyphBaseline = function (family, variant, size) {
         var font = this._types[family].variants[variant].font;
         var scale = 1 / font.unitsPerEm * size;
         return font.ascender * scale;
@@ -275,15 +275,15 @@
      * @param variant
      * @param size
      * @param char
-     * @returns {IFRect}
+     * @returns {GRect}
      */
-    IFFont.prototype.getGlyphCharSzRect = function (family, variant, size, char) {
+    GFont.prototype.getGlyphCharSzRect = function (family, variant, size, char) {
         var font = this._types[family].variants[variant].font;
         var glyph = font.charToGlyph(char);
         var scale = 1 / font.unitsPerEm * size;
         var height = (glyph.yMax - glyph.yMin) * scale;
         var width = (glyph.xMax - glyph.xMin) * scale;
-        return new IFRect(glyph.xMin * scale, -glyph.yMax * scale, width, height);
+        return new GRect(glyph.xMin * scale, -glyph.yMax * scale, width, height);
     };
 
     /**
@@ -294,9 +294,9 @@
      * @param x
      * @param y
      * @param char
-     * @returns {IFVertexSource}
+     * @returns {GVertexSource}
      */
-    IFFont.prototype.getGlyphOutline = function (family, variant, size, x, y, char) {
+    GFont.prototype.getGlyphOutline = function (family, variant, size, x, y, char) {
         var fontVariant = this._types[family].variants[variant];
         var font = fontVariant.font;
         var outline = fontVariant.outlines[char];
@@ -305,32 +305,32 @@
         if (!outline) {
             var glyph = font.charToGlyph(char);
             var path = glyph.getPath(0, 0, font.unitsPerEm);
-            outline = new IFVertexContainer();
+            outline = new GVertexContainer();
             fontVariant.outlines[char] = outline;
 
             for (var i = 0; i < path.commands.length; i += 1) {
                 var cmd = path.commands[i];
                 if (cmd.type === 'M') {
-                    outline.addVertex(IFVertex.Command.Move, cmd.x, cmd.y);
+                    outline.addVertex(GVertex.Command.Move, cmd.x, cmd.y);
                 } else if (cmd.type === 'L') {
-                    outline.addVertex(IFVertex.Command.Line, cmd.x, cmd.y);
+                    outline.addVertex(GVertex.Command.Line, cmd.x, cmd.y);
                 } else if (cmd.type === 'C') {
-                    outline.addVertex(IFVertex.Command.Curve2, cmd.x, cmd.y);
-                    outline.addVertex(IFVertex.Command.Curve2, cmd.x1, cmd.y1);
-                    outline.addVertex(IFVertex.Command.Curve2, cmd.x2, cmd.y2);
+                    outline.addVertex(GVertex.Command.Curve2, cmd.x, cmd.y);
+                    outline.addVertex(GVertex.Command.Curve2, cmd.x1, cmd.y1);
+                    outline.addVertex(GVertex.Command.Curve2, cmd.x2, cmd.y2);
                 } else if (cmd.type === 'Q') {
-                    outline.addVertex(IFVertex.Command.Curve, cmd.x, cmd.y);
-                    outline.addVertex(IFVertex.Command.Curve, cmd.x1, cmd.y1);
+                    outline.addVertex(GVertex.Command.Curve, cmd.x, cmd.y);
+                    outline.addVertex(GVertex.Command.Curve, cmd.x1, cmd.y1);
                 } else if (cmd.type === 'Z') {
-                    outline.addVertex(IFVertex.Command.Close);
+                    outline.addVertex(GVertex.Command.Close);
                 }
             }
         }
 
-        return new IFVertexTransformer(outline, new IFTransform(scale, 0, 0, scale, x, y));
+        return new GVertexTransformer(outline, new GTransform(scale, 0, 0, scale, x, y));
     };
 
 
-    _.IFFont = IFFont;
-    _.ifFont = new IFFont();
+    _.GFont = GFont;
+    _.ifFont = new GFont();
 })(this);

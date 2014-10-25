@@ -1,11 +1,11 @@
 (function (_) {
     /**
      * A class representing a color gradient
-     * @class IFGradient
-     * @extends IFPattern
+     * @class GGradient
+     * @extends GPattern
      * @constructor
      */
-    function IFGradient(stops, scale) {
+    function GGradient(stops, scale) {
         if (stops) {
             this._stops = [];
             for (var i = 0; i < stops.length; ++i) {
@@ -26,15 +26,15 @@
             this._stops = [
                 {opacity: 1, position: 0},
                 {opacity: 1, position: 1.0},
-                {color: IFRGBColor.WHITE, position: 0},
-                {color: IFRGBColor.BLACK, position: 1.0}
+                {color: GRGBColor.WHITE, position: 0},
+                {color: GRGBColor.BLACK, position: 1.0}
             ];
         }
 
         this._scale = typeof scale === 'number' ? scale : 1.0;
     }
 
-    IFObject.inherit(IFGradient, IFPattern);
+    GObject.inherit(GGradient, GPattern);
 
     function interpolateStops(stops, position, filter, callback) {
         var prevStop = null;
@@ -60,7 +60,7 @@
         return callback(prevStop, nextStop);
     };
 
-    IFGradient.interpolateOpacity = function (stops, position) {
+    GGradient.interpolateOpacity = function (stops, position) {
         return interpolateStops(stops, position, function (s) {
             return s.hasOwnProperty('opacity')
         }, function (prev, next) {
@@ -74,7 +74,7 @@
         });
     }
 
-    IFGradient.interpolateColor = function (stops, position, nullForMatch, noCMS) {
+    GGradient.interpolateColor = function (stops, position, nullForMatch, noCMS) {
         return interpolateStops(stops, position, function (s) {
             return s.hasOwnProperty('color')
         }, function (prev, next) {
@@ -87,7 +87,7 @@
                 var c1 = next.color.toScreen(noCMS);
                 var c2 = prev.color.toScreen(noCMS);
 
-                return new IFRGBColor([
+                return new GRGBColor([
                     Math.round(c1[0] * position + c2[0] * (1 - position)),
                     Math.round(c1[1] * position + c2[1] * (1 - position)),
                     Math.round(c1[2] * position + c2[2] * (1 - position))
@@ -99,7 +99,7 @@
     /**
      * Returns the interpolated (aka real) screen colors
      */
-    IFGradient.interpolateStops = function (stops, noCMS) {
+    GGradient.interpolateStops = function (stops, noCMS) {
         var result = [];
 
         for (var i = 0; i < stops.length; ++i) {
@@ -108,10 +108,10 @@
                 result.push({
                     position: stop.position,
                     color: stop.color,
-                    opacity: IFGradient.interpolateOpacity(stops, stop.position, true)
+                    opacity: GGradient.interpolateOpacity(stops, stop.position, true)
                 });
             } else if (stop.hasOwnProperty('opacity')) {
-                var color = IFGradient.interpolateColor(stops, stop.position, true, noCMS);
+                var color = GGradient.interpolateColor(stops, stop.position, true, noCMS);
                 if (color !== null) {
                     result.push({
                         position: stop.position,
@@ -130,13 +130,13 @@
     /**
      * Compare two gradients for equality Also takes care of null parameters.
      * Note that this does not compare the type of the gradient.
-     * @param {IFGradient} left left side gradient
-     * @param {IFGradient} right right side gradient
+     * @param {GGradient} left left side gradient
+     * @param {GGradient} right right side gradient
      * @param {Boolean} [stopsOnly] if set, gradients are equal if their stop
      * values are equal no matter of their type, defaults to false
      * @return {Boolean} true if left and right are equal (also if they're null!)
      */
-    IFGradient.equals = function (left, right, stopsOnly) {
+    GGradient.equals = function (left, right, stopsOnly) {
         if (!left && left === right) {
             return true;
         } else if (left && right) {
@@ -166,7 +166,7 @@
                         }
                     }
                 } else {
-                    if (!IFUtil.equals(s1[i].color, s2[i].color)) {
+                    if (!GUtil.equals(s1[i].color, s2[i].color)) {
                         return false;
                     }
                 }
@@ -176,42 +176,42 @@
     };
 
     /**
-     * @type {Array<{{position: Number, color: IFColor}}>}
+     * @type {Array<{{position: Number, color: GColor}}>}
      * @private
      */
-    IFGradient.prototype._stops = null;
+    GGradient.prototype._stops = null;
 
     /**
      * @type {number}
      * @private
      */
-    IFGradient.prototype._scale = null;
+    GGradient.prototype._scale = null;
 
     /**
      * Returns the interpolated colors
-     * @return {Array<{{color: IFColor, opacity: Number, position: Number}}>}
+     * @return {Array<{{color: GColor, opacity: Number, position: Number}}>}
      */
-    IFGradient.prototype.getInterpolatedStops = function (noCMS) {
-        return IFGradient.interpolateStops(this._stops, noCMS);
+    GGradient.prototype.getInterpolatedStops = function (noCMS) {
+        return GGradient.interpolateStops(this._stops, noCMS);
     };
 
     /**
      * You may modify the return value though this class
      * is supposed to be immutable so ensure you know what
      * you are actually doing!!
-     * @returns {Array<{{position: Number, color: IFColor, opacity: Number}}>}
+     * @returns {Array<{{position: Number, color: GColor, opacity: Number}}>}
      */
-    IFGradient.prototype.getStops = function () {
+    GGradient.prototype.getStops = function () {
         return this._stops;
     };
 
     /** @override */
-    IFGradient.prototype.serialize = function () {
+    GGradient.prototype.serialize = function () {
         return JSON.stringify(this._serializeToBlob());
     };
 
     /** @override */
-    IFGradient.prototype.deserialize = function (string) {
+    GGradient.prototype.deserialize = function (string) {
         var blob = JSON.parse(string);
 
         if (blob) {
@@ -223,7 +223,7 @@
      * Returns the scale of the pattern
      * @returns {number}
      */
-    IFGradient.prototype.getScale = function () {
+    GGradient.prototype.getScale = function () {
         return this._scale;
     };
 
@@ -233,7 +233,7 @@
      * @param {Number} opacity
      * @return {String}
      */
-    IFGradient.prototype.toScreenCSS = function (opacity, noCMS) {
+    GGradient.prototype.toScreenCSS = function (opacity, noCMS) {
         var stops = this.getInterpolatedStops();
         var cssStops = [];
         for (var i = 0; i < stops.length; ++i) {
@@ -252,7 +252,7 @@
      * @returns {{*}}
      * @private
      */
-    IFGradient.prototype._serializeToBlob = function () {
+    GGradient.prototype._serializeToBlob = function () {
         var blob = {};
 
         if (this._scale && this._scale !== 1.0) {
@@ -269,7 +269,7 @@
             };
 
             if (stop.hasOwnProperty('color')) {
-                obj.c = IFPattern.serialize(stop.color);
+                obj.c = GPattern.serialize(stop.color);
             } else if (stop.hasOwnProperty('opacity')) {
                 obj.o = stop.opacity;
             }
@@ -284,7 +284,7 @@
      * @param {{*}} blob
      * @private
      */
-    IFGradient.prototype._deserializeFromBlob = function (blob) {
+    GGradient.prototype._deserializeFromBlob = function (blob) {
         this._scale = blob.hasOwnProperty('s') ? blob.s : 1;
 
         this._stops = [];
@@ -296,7 +296,7 @@
             };
 
             if (obj.hasOwnProperty('c')) {
-                stop.color = IFPattern.deserialize(obj.c);
+                stop.color = GPattern.deserialize(obj.c);
             } else if (obj.hasOwnProperty('o')) {
                 stop.opacity = obj.o
             }
@@ -306,9 +306,9 @@
     };
 
     /** @override */
-    IFGradient.prototype.toString = function () {
-        return "[Object IFGradient]";
+    GGradient.prototype.toString = function () {
+        return "[Object GGradient]";
     };
 
-    _.IFGradient = IFGradient;
+    _.GGradient = GGradient;
 })(this);

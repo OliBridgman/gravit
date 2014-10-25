@@ -1,31 +1,31 @@
 (function (_) {
     /**
      * A paint configuration for editor painting
-     * @class IFEditorPaintConfiguration
+     * @class GEditorPaintConfiguration
      * @constructor
-     * @extends IFScenePaintConfiguration
+     * @extends GScenePaintConfiguration
      */
-    function IFEditorPaintConfiguration() {
+    function GEditorPaintConfiguration() {
     }
 
-    IFObject.inherit(IFEditorPaintConfiguration, IFScenePaintConfiguration);
+    GObject.inherit(GEditorPaintConfiguration, GScenePaintConfiguration);
 
     /**
      * Whether to render pages or not
      * @type {Boolean}
      */
-    IFEditorPaintConfiguration.prototype.pagesVisible = true;
+    GEditorPaintConfiguration.prototype.pagesVisible = true;
 
     /**
      * Whether to render the grid or not if it is active
      * @type {Boolean}
      */
-    IFEditorPaintConfiguration.prototype.gridVisible = true;
+    GEditorPaintConfiguration.prototype.gridVisible = true;
 
     /** @override */
-    IFEditorPaintConfiguration.prototype.toString = function () {
-        return "[Object IFEditorPaintConfiguration]";
+    GEditorPaintConfiguration.prototype.toString = function () {
+        return "[Object GEditorPaintConfiguration]";
     };
 
-    _.IFEditorPaintConfiguration = IFEditorPaintConfiguration;
+    _.GEditorPaintConfiguration = GEditorPaintConfiguration;
 })(this);

@@ -8,10 +8,10 @@
      */
     function GJoinPathsAction() {
     };
-    IFObject.inherit(GJoinPathsAction, GAction);
+    GObject.inherit(GJoinPathsAction, GAction);
 
     GJoinPathsAction.ID = 'modify.join-paths';
-    GJoinPathsAction.TITLE = new IFLocale.Key(GJoinPathsAction, "title");
+    GJoinPathsAction.TITLE = new GLocale.Key(GJoinPathsAction, "title");
 
     /**
      * @override
@@ -42,7 +42,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -52,7 +52,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -66,10 +66,10 @@
             elements = selection;
         }
 
-        elements = IFNode.order(elements, true/*reverse*/);
+        elements = GNode.order(elements, true/*reverse*/);
 
         // TODO : I18N
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
                 var parent = element.getParent();

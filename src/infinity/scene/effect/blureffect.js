@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * Blur effect
-     * @class IFBlurEffect
-     * @extends IFEffect
+     * @class GBlurEffect
+     * @extends GEffect
      * @constructor
      */
-    IFBlurEffect = function () {
-        IFEffect.call(this);
-        this._setDefaultProperties(IFBlurEffect.GeometryProperties);
+    GBlurEffect = function () {
+        GEffect.call(this);
+        this._setDefaultProperties(GBlurEffect.GeometryProperties);
     };
-    IFNode.inherit('blurEffect', IFBlurEffect, IFEffect);
+    GNode.inherit('blurEffect', GBlurEffect, GEffect);
 
-    IFBlurEffect.equals = function (left, right) {
-        if (left instanceof IFBlurEffect && right instanceof  IFBlurEffect) {
-            return left.arePropertiesEqual(right, Object.keys(IFBlurEffect.GeometryProperties));
+    GBlurEffect.equals = function (left, right) {
+        if (left instanceof GBlurEffect && right instanceof  GBlurEffect) {
+            return left.arePropertiesEqual(right, Object.keys(GBlurEffect.GeometryProperties));
         }
         return false;
     };
@@ -21,45 +21,45 @@
     /**
      * Geometry properties of a blur effect
      */
-    IFBlurEffect.GeometryProperties = {
+    GBlurEffect.GeometryProperties = {
         /** The blur radius */
         'r': 5
     };
 
     /** @override */
-    IFBlurEffect.prototype.getEffectType = function () {
-        return IFEffect.Type.Filter;
+    GBlurEffect.prototype.getEffectType = function () {
+        return GEffect.Type.Filter;
     };
 
     /** @override */
-    IFBlurEffect.prototype.getEffectPadding = function () {
+    GBlurEffect.prototype.getEffectPadding = function () {
         return this.$r;
     };
 
     /** @override */
-    IFBlurEffect.prototype.render = function (contents, output, background, scale) {
+    GBlurEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$r) {
-            contents.getBitmap().applyFilter(IFStackBlurFilter, this.$r * scale);
+            contents.getBitmap().applyFilter(GStackBlurFilter, this.$r * scale);
         }
     };
 
     /** @override */
-    IFBlurEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFBlurEffect.GeometryProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFBlurEffect.GeometryProperties);
+    GBlurEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GBlurEffect.GeometryProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GBlurEffect.GeometryProperties);
         }
 
-        this._handleGeometryChangeForProperties(change, args, IFBlurEffect.GeometryProperties);
+        this._handleGeometryChangeForProperties(change, args, GBlurEffect.GeometryProperties);
 
-        IFEffect.prototype._handleChange.call(this, change, args);
+        GEffect.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFBlurEffect.prototype.toString = function () {
-        return "[Object IFBlurEffect]";
+    GBlurEffect.prototype.toString = function () {
+        return "[Object GBlurEffect]";
     };
 
-    _.IFBlurEffect = IFBlurEffect;
+    _.GBlurEffect = GBlurEffect;
 })(this);

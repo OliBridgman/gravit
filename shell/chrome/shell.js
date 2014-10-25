@@ -9,7 +9,7 @@
         this._menuBar = new GMenuBar();
         this._clipboardMimeTypes = {};
     };
-    IFObject.inherit(GChromeShell, GShell);
+    GObject.inherit(GChromeShell, GShell);
 
     /**
      * @type {GMenuBar}

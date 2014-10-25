@@ -8,9 +8,9 @@
      */
     function GAlignAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GAlignAction, 'title.' + type);
+        this._title = new GLocale.Key(GAlignAction, 'title.' + type);
     };
-    IFObject.inherit(GAlignAction, GAction);
+    GObject.inherit(GAlignAction, GAction);
 
     /** @enum */
     GAlignAction.Type = {
@@ -29,7 +29,7 @@
     /** @type {GAlignAction.Type} */
     GAlignAction.prototype._type = null;
 
-    /** @type {IFLocale.Key} */
+    /** @type {GLocale.Key} */
     GAlignAction.prototype._title = null;
 
     /**
@@ -85,14 +85,14 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @param {Boolean} [compound] if provided, aligns the whole element's bbox,
      * otherwise if false (default), aligns each element individually
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for alignment, otherwise use paint box. Defaults
      * to false.
-     * @param {IFRect} [referenceBox] a reference box to align to, if not
+     * @param {GRect} [referenceBox] a reference box to align to, if not
      * given uses the element's total bbox
      * @override
      */
@@ -105,14 +105,14 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @param {Boolean} [compound] if provided, aligns the whole element's bbox,
      * otherwise if false (default), aligns each element individually
      * @param {Boolean} [geometry] if provided, specifies whether to
      * use geometry box for alignment, otherwise use paint box. Defaults
      * to false.
-     * @param {IFRect} [referenceBox] a reference box to align to, if not
+     * @param {GRect} [referenceBox] a reference box to align to, if not
      * given uses the element's total bbox
      * @override
      */
@@ -130,7 +130,7 @@
         var elementsBBox = null;
         for (var i = 0; i < tmpElements.length; ++i) {
             var element = tmpElements[i];
-            if (element.hasMixin(IFElement.Transform)) {
+            if (element.hasMixin(GElement.Transform)) {
                 var bbox = geometry ? element.getGeometryBBox() : element.getPaintBBox();
                 if (!bbox || bbox.isEmpty()) {
                     continue;
@@ -158,17 +158,17 @@
             return;
         }
 
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             for (var i = 0; i < elements.length; ++i) {
                 var bbox = compound ? elementsBBox : elements[i].bbox;
                 var element = elements[i].element;
-                var elemEditor = IFElementEditor.getEditor(element);
+                var elemEditor = GElementEditor.getEditor(element);
 
                 switch (this._type) {
                     case GAlignAction.Type.AlignLeft:
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (referenceBox.getX() !== bbox.getX()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
+                                element.transform(new GTransform(1, 0, 0, 1, referenceBox.getX() - bbox.getX(), 0));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignLeft, referenceBox.getX(), null);
@@ -179,7 +179,7 @@
                         var center = referenceBox.getX() + referenceBox.getWidth() / 2;
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (center !== bbox.getX() + bbox.getWidth() / 2) {
-                                element.transform(new IFTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
+                                element.transform(new GTransform(1, 0, 0, 1, center - bbox.getX() - bbox.getWidth() / 2, 0));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignCenter, center, null);
@@ -190,7 +190,7 @@
                         var right = referenceBox.getX() + referenceBox.getWidth();
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (right !== bbox.getX() + bbox.getWidth()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
+                                element.transform(new GTransform(1, 0, 0, 1, right - bbox.getWidth() - bbox.getX(), 0));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignRight, right, null);
@@ -200,7 +200,7 @@
                     case GAlignAction.Type.AlignTop:
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (referenceBox.getY() !== bbox.getY()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
+                                element.transform(new GTransform(1, 0, 0, 1, 0, referenceBox.getY() - bbox.getY()));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignTop, null, referenceBox.getY());
@@ -211,7 +211,7 @@
                         var center = referenceBox.getY() + referenceBox.getHeight() / 2;
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (center !== bbox.getY() + bbox.getHeight() / 2) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
+                                element.transform(new GTransform(1, 0, 0, 1, 0, center - bbox.getY() - bbox.getHeight() / 2));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignMiddle, null, center);
@@ -222,7 +222,7 @@
                         var bottom = referenceBox.getY() + referenceBox.getHeight();
                         if (!elemEditor || !elemEditor.isAlignPartsAllowed()) {
                             if (bottom !== bbox.getY() + bbox.getHeight()) {
-                                element.transform(new IFTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
+                                element.transform(new GTransform(1, 0, 0, 1, 0, bottom - bbox.getHeight() - bbox.getY()));
                             }
                         } else {
                             elemEditor.alignParts(GAlignAction.Type.AlignBottom, null, bottom);
@@ -232,7 +232,7 @@
                     case GAlignAction.Type.AlignJustifyHorizontal:
                         if (referenceBox.getX() !== bbox.getX() || bbox.getWidth() !== referenceBox.getWidth()) {
                             element.transform(
-                                new IFTransform(1, 0, 0, 1, 0, 0)
+                                new GTransform(1, 0, 0, 1, 0, 0)
                                     .translated(-bbox.getX(), -bbox.getY())
                                     .scaled(referenceBox.getWidth() / bbox.getWidth(), 1)
                                     .translated(bbox.getX(), bbox.getY())
@@ -243,7 +243,7 @@
                     case GAlignAction.Type.AlignJustifyVertical:
                         if (referenceBox.getY() !== bbox.getY() || bbox.getHeight() !== referenceBox.getHeight()) {
                             element.transform(
-                                new IFTransform(1, 0, 0, 1, 0, 0)
+                                new GTransform(1, 0, 0, 1, 0, 0)
                                     .translated(-bbox.getX(), -bbox.getY())
                                     .scaled(1, referenceBox.getHeight() / bbox.getHeight())
                                     .translated(bbox.getX(), bbox.getY())

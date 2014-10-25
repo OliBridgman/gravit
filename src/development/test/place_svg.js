@@ -8,7 +8,7 @@
                     if (value) {
                         var doc = gApp.getActiveDocument();
                         var page = doc.getScene().getActivePage();
-                        IFIO.read('test.svg', value, function (node) {
+                        GIO.read('test.svg', value, function (node) {
                             if (node) {
                                 doc.getScene().getActiveLayer().appendChild(node);
                             }

@@ -1,74 +1,74 @@
 (function (_) {
     /**
      * A stage (layer) within a view
-     * @param {IFView} view
-     * @class IFStage
+     * @param {GUIView} view
+     * @class GStage
      * @constructor
      */
-    function IFStage(view) {
+    function GStage(view) {
         this._view = view;
-        this._canvas = new IFPaintCanvas();
-        this._paintContext = new IFPaintContext();
+        this._canvas = new GPaintCanvas();
+        this._paintContext = new GPaintContext();
         this._paintContext.configuration = view.getViewConfiguration() ?
-            view.getViewConfiguration() : new IFPaintConfiguration();
+            view.getViewConfiguration() : new GPaintConfiguration();
         this._paintContext.canvas = this._canvas;
-        this._dirtyList = new IFDirtyList();
+        this._dirtyList = new GDirtyList();
     }
 
     /**
-     * @type {IFView}
+     * @type {GUIView}
      * @private
      */
-    IFStage.prototype._view = null;
+    GStage.prototype._view = null;
 
     /**
-     * @type {IFPaintCanvas}
+     * @type {GPaintCanvas}
      * @private
      */
-    IFStage.prototype._canvas = null;
+    GStage.prototype._canvas = null;
 
     /**
-     * @type {IFPaintContext}
+     * @type {GPaintContext}
      * @private
      */
-    IFStage.prototype._paintContext = null;
+    GStage.prototype._paintContext = null;
 
     /**
-     * @type IFDirtyList
+     * @type GDirtyList
      * @private
      */
-    IFStage.prototype._dirtyList = null;
+    GStage.prototype._dirtyList = null;
 
     /**
      * Id of next frame for repainting
      * @type {Number}
      * @private
      */
-    IFStage.prototype._repaintRequestFrameId = null;
+    GStage.prototype._repaintRequestFrameId = null;
 
-    IFStage.prototype.show = function () {
+    GStage.prototype.show = function () {
         this._canvas._canvasContext.canvas.style.visibility = '';
     };
 
-    IFStage.prototype.hide = function () {
+    GStage.prototype.hide = function () {
         this._canvas._canvasContext.canvas.style.visibility = 'hidden';
     };
 
     /**
      * Called to release the stage
      */
-    IFStage.prototype.release = function () {
+    GStage.prototype.release = function () {
         // NO-OP
     };
 
     /**
      * Called to invalidate this paint widget or only a part of it
-     * @param {IFRect} [area] the area to invalidate. If null (default),
+     * @param {GRect} [area] the area to invalidate. If null (default),
      * then this clears the whole dirty areas and requests a full repaint
      * @return {Boolean} true if an invalidation ocurred, false if not
      * @version 1.0
      */
-    IFStage.prototype.invalidate = function (area) {
+    GStage.prototype.invalidate = function (area) {
         if (!area || area.isEmpty()) {
             // reset any previous dirty areas and add the whole view area
             this._dirtyList.reset();
@@ -91,10 +91,10 @@
      * Called whenever this widget should paint itself. Note that the canvas'
      * prepare / finish methods are automatically called and the clipping
      * region of the canvas is already set correctly.
-     * @param {IFPaintContext} context the paint context to paint into
+     * @param {GPaintContext} context the paint context to paint into
      * @private
      */
-    IFStage.prototype.paint = function (context) {
+    GStage.prototype.paint = function (context) {
         // NO-OP by default
     };
 
@@ -103,7 +103,7 @@
      * @param {Number} width
      * @param {Number} height
      */
-    IFStage.prototype.resize = function (width, height) {
+    GStage.prototype.resize = function (width, height) {
         this._canvas.resize(width, height);
         this.updateViewArea();
     };
@@ -111,9 +111,9 @@
     /**
      * Called to update the view area
      */
-    IFStage.prototype.updateViewArea = function () {
-        var viewArea = new IFRect(0, 0, this._view.getWidth(), this._view.getHeight());
-        if (!IFRect.equals(this._dirtyList.getArea(), viewArea)) {
+    GStage.prototype.updateViewArea = function () {
+        var viewArea = new GRect(0, 0, this._view.getWidth(), this._view.getHeight());
+        if (!GRect.equals(this._dirtyList.getArea(), viewArea)) {
             this._dirtyList.setArea(viewArea);
             this.invalidate();
         }
@@ -123,7 +123,7 @@
      * Called to repaint all dirty regions
      * @private
      */
-    IFStage.prototype._repaint = function () {
+    GStage.prototype._repaint = function () {
         // Get and flush existing dirty areas
         var dirtyListMatcher = this._dirtyList.flush();
         if (dirtyListMatcher != null) {
@@ -147,9 +147,9 @@
     };
 
     /** @override */
-    IFStage.prototype.toString = function () {
-        return "[Object IFStage]";
+    GStage.prototype.toString = function () {
+        return "[Object GStage]";
     };
 
-    _.IFStage = IFStage;
+    _.GStage = GStage;
 })(this);

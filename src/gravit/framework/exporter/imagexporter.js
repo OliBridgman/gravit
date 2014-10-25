@@ -8,7 +8,7 @@
     function GImageExporter() {
         GExporter.call(this);
     };
-    IFObject.inherit(GImageExporter, GExporter);
+    GObject.inherit(GImageExporter, GExporter);
 
     /** @override */
     GImageExporter.prototype.isStandalone = function () {
@@ -39,14 +39,14 @@
 
     /**
      * @param {String} ext
-     * @returns {IFBitmap.ImageType}
+     * @returns {GBitmap.ImageType}
      * @private
      */
     GImageExporter.prototype._getImageTypeByExt = function (extension) {
         if (extension === 'png') {
-            return IFBitmap.ImageType.PNG;
+            return GBitmap.ImageType.PNG;
         } else if (extension === 'jpg') {
-            return IFBitmap.ImageType.JPEG;
+            return GBitmap.ImageType.JPEG;
         } else {
             throw new Error('Unknown image extension - ' + extension);
         }

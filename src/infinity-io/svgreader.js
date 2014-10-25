@@ -1,27 +1,27 @@
 (function (_) {
     /**
-     * @class IFSVGReader
+     * @class GSVGReader
      * @constructor
-     * @extends IFReader
+     * @extends GReader
      */
-    function IFSVGReader() {
-        IFReader.call(this);
+    function GSVGReader() {
+        GReader.call(this);
     };
-    IFObject.inherit(IFSVGReader, IFReader);
+    GObject.inherit(GSVGReader, GReader);
 
-    IFSVGReader.prototype.getInputType = function () {
-        return IFReader.InputType.ArrayBuffer;
+    GSVGReader.prototype.getInputType = function () {
+        return GReader.InputType.ArrayBuffer;
     };
 
-    IFSVGReader.prototype.getMimeType = function () {
+    GSVGReader.prototype.getMimeType = function () {
         return 'image/svg+xml';
     };
 
-    IFSVGReader.prototype.getFileExtensions = function () {
+    GSVGReader.prototype.getFileExtensions = function () {
         return ['svg', 'svgz'];
     };
 
-    IFSVGReader.prototype.readInput = function (input, callback, settings) {
+    GSVGReader.prototype.readInput = function (input, callback, settings) {
         var uint8Array = new Uint8Array(input);
 
         // Test for gzip
@@ -38,7 +38,7 @@
         }
     };
 
-    IFSVGReader.prototype._read = function (source, callback, settings) {
+    GSVGReader.prototype._read = function (source, callback, settings) {
         // Parse source as xml
         //try {
         var svgDoc = null;
@@ -96,7 +96,7 @@
         //}
     };
 
-    IFIO.registerReader(new IFSVGReader());
+    GIO.registerReader(new GSVGReader());
 
 
     /*
@@ -257,7 +257,7 @@
         svg.Property.prototype.addOpacity = function (opacityProp) {
             var newValue = this.value;
             if (opacityProp.value != null && opacityProp.value != '' && typeof(this.value) == 'string') { // can only add opacity to colors, not patterns
-                var color = this.value ? IFRGBColor.parseCSSColor(this.value) : null;
+                var color = this.value ? GRGBColor.parseCSSColor(this.value) : null;
                 if (color) {
                     newValue = 'rgba(' + color[0] + ', ' + color[1] + ', ' + color[2] + ', ' + opacityProp.numValue() + ')';
                 }
@@ -530,7 +530,7 @@
             this.Type.matrix = function (s) {
                 this.m = svg.ToNumberArray(s);
                 this.apply = function (ctx) {
-                    ctx.transform = ctx.transform.multiplied(new IFTransform(this.m[0], this.m[1], this.m[2], this.m[3], this.m[4], this.m[5]));
+                    ctx.transform = ctx.transform.multiplied(new GTransform(this.m[0], this.m[1], this.m[2], this.m[3], this.m[4], this.m[5]));
                 }
                 this.unapply = function (ctx) {
                     var a = this.m[0];
@@ -543,7 +543,7 @@
                     var h = 0.0;
                     var i = 1.0;
                     var det = 1 / (a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g));
-                    ctx.transform = ctx.transform.multiplied(new IFTransform(
+                    ctx.transform = ctx.transform.multiplied(new GTransform(
                         det * (e * i - f * h),
                         det * (f * g - d * i),
                         det * (c * h - b * i),
@@ -723,14 +723,14 @@
                 var node = this.createSceneNode();
 
                 if (node) {
-                    if (node instanceof IFBlock) {
+                    if (node instanceof GBlock) {
                         if (this.style('display').value == 'none' || this.style('visibility').value == 'hidden') {
                             element.setProperty('visible', false);
                         }
                     }
 
                     var context = {
-                        transform: stack.length ? stack[stack.length - 1].transform : new IFTransform()
+                        transform: stack.length ? stack[stack.length - 1].transform : new GTransform()
                     };
                     stack.push(context);
 
@@ -877,28 +877,28 @@
                     transform.apply(ctx);
                 }
 
-                if (node instanceof IFBlock && this.attribute('id').hasValue()) {
+                if (node instanceof GBlock && this.attribute('id').hasValue()) {
                     node.setProperty('name', this.attribute('id').value);
                 }
 
-                if (node && node.hasMixin(IFElement.Transform)) {
+                if (node && node.hasMixin(GElement.Transform)) {
                     if (!ctx.transform.isIdentity()) {
                         node.transform(ctx.transform);
                     }
                 }
 
-                if (node && node.hasMixin(IFStylable)) {
+                if (node && node.hasMixin(GStylable)) {
                     var propertySets = node.getStylePropertySets();
 
                     var propertiesToSet = {};
 
-                    if (propertySets.indexOf(IFStylable.PropertySet.Style) >= 0) {
+                    if (propertySets.indexOf(GStylable.PropertySet.Style) >= 0) {
                         if (this.style('opacity').hasValue()) {
                             propertiesToSet['_stop'] = this.style('opacity').numValue();
                         }
                     }
 
-                    if (propertySets.indexOf(IFStylable.PropertySet.Fill) >= 0) {
+                    if (propertySets.indexOf(GStylable.PropertySet.Fill) >= 0) {
                         if (this.style('fill').isUrlDefinition()) {
                             // TODO
                             //var fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
@@ -912,15 +912,15 @@
                                 if (fillStyle.value == 'currentColor')
                                     fillStyle.value = this.style('color').value;
 
-                                var rgba = IFRGBColor.parseCSSColor(fillStyle.value);
+                                var rgba = GRGBColor.parseCSSColor(fillStyle.value);
                                 if (rgba) {
-                                    propertiesToSet['_fpt'] = new IFRGBColor(rgba.slice(0, 3));
+                                    propertiesToSet['_fpt'] = new GRGBColor(rgba.slice(0, 3));
                                     propertiesToSet['_fop'] = rgba[3];
                                 }
                             }
                         } else {
                             // default
-                            propertiesToSet['_fpt'] = IFRGBColor.BLACK;
+                            propertiesToSet['_fpt'] = GRGBColor.BLACK;
                             propertiesToSet['_fop'] = 1.0;
                         }
 
@@ -930,7 +930,7 @@
                         }
                     }
 
-                    if (propertySets.indexOf(IFStylable.PropertySet.Border) >= 0) {
+                    if (propertySets.indexOf(GStylable.PropertySet.Border) >= 0) {
                         if (this.style('stroke').isUrlDefinition()) {
                             // TODO
                             //var fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
@@ -944,9 +944,9 @@
                                 if (strokeStyle.value == 'currentColor')
                                     strokeStyle.value = this.style('color').value;
 
-                                var rgba = IFRGBColor.parseCSSColor(strokeStyle.value);
+                                var rgba = GRGBColor.parseCSSColor(strokeStyle.value);
                                 if (rgba) {
-                                    propertiesToSet['_bpt'] = new IFRGBColor(rgba.slice(0, 3));
+                                    propertiesToSet['_bpt'] = new GRGBColor(rgba.slice(0, 3));
                                     propertiesToSet['_bop'] = rgba[3];
                                 }
                             }
@@ -979,37 +979,37 @@
                         if (this.style('stroke-linecap').hasValue()) {
                             switch (this.style('stroke-linecap').value) {
                                 case 'round':
-                                    propertiesToSet['_blc'] = IFPaintCanvas.LineCap.Round;
+                                    propertiesToSet['_blc'] = GPaintCanvas.LineCap.Round;
                                     break;
                                 case 'square':
-                                    propertiesToSet['_blc'] = IFPaintCanvas.LineCap.Square;
+                                    propertiesToSet['_blc'] = GPaintCanvas.LineCap.Square;
                                     break;
                                 case 'butt':
                                 default:
-                                    propertiesToSet['_blc'] = IFPaintCanvas.LineCap.Butt;
+                                    propertiesToSet['_blc'] = GPaintCanvas.LineCap.Butt;
                                     break;
                             }
                         } else {
                             // default
-                            propertiesToSet['_blc'] = IFPaintCanvas.LineCap.Butt;
+                            propertiesToSet['_blc'] = GPaintCanvas.LineCap.Butt;
                         }
 
                         if (this.style('stroke-linejoin').hasValue()) {
                             switch (this.style('stroke-linejoin').value) {
                                 case 'round':
-                                    propertiesToSet['_blj'] = IFPaintCanvas.LineJoin.Round;
+                                    propertiesToSet['_blj'] = GPaintCanvas.LineJoin.Round;
                                     break;
                                 case 'bevel':
-                                    propertiesToSet['_blj'] = IFPaintCanvas.LineJoin.Bevel;
+                                    propertiesToSet['_blj'] = GPaintCanvas.LineJoin.Bevel;
                                     break;
                                 case 'miter':
                                 default:
-                                    propertiesToSet['_blj'] = IFPaintCanvas.LineJoin.Miter;
+                                    propertiesToSet['_blj'] = GPaintCanvas.LineJoin.Miter;
                                     break;
                             }
                         } else {
                             // default
-                            propertiesToSet['_blj'] = IFPaintCanvas.LineJoin.Miter;
+                            propertiesToSet['_blj'] = GPaintCanvas.LineJoin.Miter;
                         }
 
                         if (this.style('stroke-miterlimit').hasValue()) {
@@ -1027,7 +1027,7 @@
                         }
                     }
 
-                    if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0) {
+                    if (propertySets.indexOf(GStylable.PropertySet.Text) >= 0) {
                         // TODO : Font
                         /*
                          if (typeof(ctx.font) != 'undefined') {
@@ -1072,7 +1072,7 @@
             this.setSceneContext = function (ctx, node) {
                 this.baseSetSceneContext(ctx, node);
 
-                if (node instanceof IFCompoundPath) {
+                if (node instanceof GCompoundPath) {
                     for (var path = node.getAnchorPaths().getFirstChild(); path !== null; path = path.getNext()) {
                         this._setPathSceneContext(ctx, path);
                     }
@@ -1082,7 +1082,7 @@
             };
 
             this._setPathSceneContext = function (ctx, node) {
-                if (node instanceof IFPathBase) {
+                if (node instanceof GPathBase) {
                     if (this.style('fill-rule').valueOrDefault('inherit') != 'inherit') {
                         node.setProperty('evenodd', this.style('fill-rule').value === 'evenodd');
                     }
@@ -1137,7 +1137,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                return new IFGroup();
+                return new GGroup();
             }
 
             this.baseClearSceneContext = this.clearSceneContext;
@@ -1286,7 +1286,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                var result = new IFRectangle();
+                var result = new GRectangle();
 
                 var x = this.attribute('x').toPixels('x');
                 var y = this.attribute('y').toPixels('y');
@@ -1299,7 +1299,7 @@
                 rx = Math.min(rx, width / 2.0);
                 ry = Math.min(ry, height / 2.0);
 
-                result.setProperties(['trf', 'tl_sx', 'tl_sy'], [new IFTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2), rx, ry]);
+                result.setProperties(['trf', 'tl_sx', 'tl_sy'], [new GTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2), rx, ry]);
 
                 return result;
             }
@@ -1312,7 +1312,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                var result = new IFEllipse();
+                var result = new GEllipse();
 
                 var cx = this.attribute('cx').toPixels('x');
                 var cy = this.attribute('cy').toPixels('y');
@@ -1322,7 +1322,7 @@
                 var width = r * 2;
                 var height = r * 2;
 
-                result.setProperty('trf', new IFTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2));
+                result.setProperty('trf', new GTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2));
 
                 return result;
             }
@@ -1335,7 +1335,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                var result = new IFEllipse();
+                var result = new GEllipse();
 
                 var rx = this.attribute('rx').toPixels('x');
                 var ry = this.attribute('ry').toPixels('y');
@@ -1346,7 +1346,7 @@
                 var width = rx * 2;
                 var height = ry * 2;
 
-                result.setProperty('trf', new IFTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2));
+                result.setProperty('trf', new GTransform(width / 2, 0, 0, height / 2, x + width / 2, y + height / 2));
 
                 return result;
             }
@@ -1365,13 +1365,13 @@
             }
 
             this.createSceneNode = function () {
-                var result = new IFPath();
+                var result = new GPath();
                 var anchorPoints = result.getAnchorPoints();
 
                 var points = this.getPoints();
                 for (var i = 0; i < points.length; ++i) {
                     var pt = points[i];
-                    var apt = new IFPathBase.AnchorPoint();
+                    var apt = new GPathBase.AnchorPoint();
                     anchorPoints.appendChild(apt);
                     apt.setProperties(['x', 'y'], [pt.x, pt.y]);
                 }
@@ -1395,12 +1395,12 @@
             this.points = svg.CreatePath(this.attribute('points').value);
 
             this.createSceneNode = function () {
-                var result = new IFPath();
+                var result = new GPath();
                 var anchorPoints = result.getAnchorPoints();
 
                 for (var i = 0; i < this.points.length; ++i) {
                     var pt = this.points[i];
-                    var apt = new IFPathBase.AnchorPoint();
+                    var apt = new GPathBase.AnchorPoint();
                     anchorPoints.appendChild(apt);
                     apt.setProperties(['x', 'y'], [pt.x, pt.y]);
                 }
@@ -1575,12 +1575,12 @@
             })(d);
 
             this.createSceneNode = function () {
-                var result = new IFPath();
+                var result = new GPath();
                 var anchorPoints = result.getAnchorPoints();
 
                 for (var i = 0; i < this.points.length; ++i) {
                     var pt = this.points[i];
-                    var apt = new IFPathBase.AnchorPoint();
+                    var apt = new GPathBase.AnchorPoint();
                     anchorPoints.appendChild(apt);
                     apt.setProperties(['x', 'y'], [pt.x, pt.y]);
                 }
@@ -1593,7 +1593,7 @@
                 pp.reset();
 
                 // Step 1: Convert our path into vertices
-                var vertices = new IFVertexContainer();
+                var vertices = new GVertexContainer();
                 while (!pp.isEnd()) {
                     pp.nextCommand();
                     switch (pp.command) {
@@ -1601,12 +1601,12 @@
                         case 'm':
                             var p = pp.getAsCurrentPoint();
                             pp.addMarker(p);
-                            vertices.addVertex(IFVertex.Command.Move, p.x, p.y);
+                            vertices.addVertex(GVertex.Command.Move, p.x, p.y);
                             pp.start = pp.current;
                             while (!pp.isCommandOrEnd()) {
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, pp.start);
-                                vertices.addVertex(IFVertex.Command.Move, p.x, p.y);
+                                vertices.addVertex(GVertex.Command.Move, p.x, p.y);
                             }
                             break;
                         case 'L':
@@ -1615,7 +1615,7 @@
                                 var c = pp.current;
                                 var p = pp.getAsCurrentPoint();
                                 pp.addMarker(p, c);
-                                vertices.addVertex(IFVertex.Command.Line, p.x, p.y);
+                                vertices.addVertex(GVertex.Command.Line, p.x, p.y);
                             }
                             break;
                         case 'H':
@@ -1624,7 +1624,7 @@
                                 var newP = new svg.Point((pp.isRelativeCommand() ? pp.current.x : 0) + pp.getScalar(), pp.current.y);
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                vertices.addVertex(IFVertex.Command.Line, pp.current.x, pp.current.y);
+                                vertices.addVertex(GVertex.Command.Line, pp.current.x, pp.current.y);
                             }
                             break;
                         case 'V':
@@ -1633,7 +1633,7 @@
                                 var newP = new svg.Point(pp.current.x, (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar());
                                 pp.addMarker(newP, pp.current);
                                 pp.current = newP;
-                                vertices.addVertex(IFVertex.Command.Line, pp.current.x, pp.current.y);
+                                vertices.addVertex(GVertex.Command.Line, pp.current.x, pp.current.y);
                             }
                             break;
                         case 'C':
@@ -1643,9 +1643,9 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-                                vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
-                                vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
-                                vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
+                                vertices.addVertex(GVertex.Command.Curve2, cp.x, cp.y);
+                                vertices.addVertex(GVertex.Command.Curve2, p1.x, p1.y);
+                                vertices.addVertex(GVertex.Command.Curve2, cntrl.x, cntrl.y);
                             }
                             break;
                         case 'S':
@@ -1655,9 +1655,9 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, p1);
-                                vertices.addVertex(IFVertex.Command.Curve2, cp.x, cp.y);
-                                vertices.addVertex(IFVertex.Command.Curve2, p1.x, p1.y);
-                                vertices.addVertex(IFVertex.Command.Curve2, cntrl.x, cntrl.y);
+                                vertices.addVertex(GVertex.Command.Curve2, cp.x, cp.y);
+                                vertices.addVertex(GVertex.Command.Curve2, p1.x, p1.y);
+                                vertices.addVertex(GVertex.Command.Curve2, cntrl.x, cntrl.y);
                             }
                             break;
                         case 'Q':
@@ -1666,8 +1666,8 @@
                                 var cntrl = pp.getAsControlPoint();
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-                                vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
-                                vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
+                                vertices.addVertex(GVertex.Command.Curve, cp.x, cp.y);
+                                vertices.addVertex(GVertex.Command.Curve, cntrl.x, cntrl.y);
                             }
                             break;
                         case 'T':
@@ -1677,8 +1677,8 @@
                                 pp.control = cntrl;
                                 var cp = pp.getAsCurrentPoint();
                                 pp.addMarker(cp, cntrl, cntrl);
-                                vertices.addVertex(IFVertex.Command.Curve, cp.x, cp.y);
-                                vertices.addVertex(IFVertex.Command.Curve, cntrl.x, cntrl.y);
+                                vertices.addVertex(GVertex.Command.Curve, cp.x, cp.y);
+                                vertices.addVertex(GVertex.Command.Curve, cntrl.x, cntrl.y);
                             }
                             break;
                         case 'A':
@@ -1748,18 +1748,18 @@
                                 var rd = rx > ry ? rx : ry;
                                 var sx = rx > ry ? 1 : rx / ry;
                                 var sy = rx > ry ? ry / rx : 1;
-                                var trf = new IFTransform()
+                                var trf = new GTransform()
                                     //.scaled(rd * sx, rd * sy)
                                     .scaled(rx, ry)
                                     .rotated(xAxisRotation)
                                     .translated(centp.x, centp.y);
-                                var arc = new IFEllipse();
+                                var arc = new GEllipse();
                                 // TODO: honor sweepFlag and largeArcFlag correctly
                                 var sa = a1;
                                 var ea = (1 - sweepFlag) ? a1 + ad - Math.PI * 2 : a1 + ad;
                                 arc.setProperties(['sa', 'ea', 'etp', 'trf'],
-                                    [sa, ea, IFEllipse.Type.Arc, trf]);
-                                var vertex = new IFVertex();
+                                    [sa, ea, GEllipse.Type.Arc, trf]);
+                                var vertex = new GVertex();
                                 arc.rewindVertices(0);
                                 if (arc.readVertex(vertex)) {
                                     while (arc.readVertex(vertex)) {
@@ -1770,14 +1770,14 @@
                             break;
                         case 'Z':
                         case 'z':
-                            vertices.addVertex(IFVertex.Command.Close);
+                            vertices.addVertex(GVertex.Command.Close);
                             pp.current = pp.start;
                             break;
                     }
                 }
 
                 // Return the converted vertices into a path
-                return IFPathBase.createPathFromVertexSource(vertices);
+                return GPathBase.createPathFromVertexSource(vertices);
             }
 
             this.getMarkers = function () {
@@ -2215,9 +2215,9 @@
                         ctx.transform = ctx.transform.scaled(scale, -scale);
                         var lw = ctx.lineWidth;
                         ctx.lineWidth = ctx.lineWidth * customFont.fontFace.unitsPerEm / fontSize;
-                        if (fontStyle == 'italic') ctx.transform = ctx.transform.multiplied(new IFTransform(1, 0, .4, 1, 0, 0));
+                        if (fontStyle == 'italic') ctx.transform = ctx.transform.multiplied(new GTransform(1, 0, .4, 1, 0, 0));
                         glyph.render(ctx);
-                        if (fontStyle == 'italic') ctx.transform = ctx.transform.multiplied(new IFTransform(1, 0, -.4, 1, 0, 0));
+                        if (fontStyle == 'italic') ctx.transform = ctx.transform.multiplied(new GTransform(1, 0, -.4, 1, 0, 0));
                         ctx.lineWidth = lw;
                         ctx.transform = ctx.transform.scaled(1 / scale, -1 / scale);
                         ctx.transform = ctx.transform.translated(-this.x, -this.y);
@@ -2400,7 +2400,7 @@
             this.base(node);
 
             this.createSceneNode = function () {
-                return new IFGroup();
+                return new GGroup();
             }
         }
         svg.Element.g.prototype = new svg.Element.RenderedElementBase;

@@ -10,10 +10,10 @@
         GPalette.call(this);
     }
 
-    IFObject.inherit(GSwatchesPalette, GPalette);
+    GObject.inherit(GSwatchesPalette, GPalette);
 
     GSwatchesPalette.ID = "swatches";
-    GSwatchesPalette.TITLE = new IFLocale.Key(GSwatchesPalette, "title");
+    GSwatchesPalette.TITLE = new GLocale.Key(GSwatchesPalette, "title");
 
     /**
      * @type {GDocument}
@@ -75,7 +75,7 @@
             .on('change', function (evt) {
                 var files = $(evt.target)[0].files;
                 if (files && files.length) {
-                    IFIO.read('application/x-adobe-ase', files[0], function (result) {
+                    GIO.read('application/x-adobe-ase', files[0], function (result) {
                         if (result && result.colors) {
                             var swatches = self._document.getScene().getSwatchCollection();
                             for (var i = 0; i < result.colors.length; ++i) {
@@ -83,13 +83,13 @@
                                 var pattern = null;
 
                                 if (swatch.model === 'RGB') {
-                                    pattern = new IFRGBColor([swatch.color[0] * 255, swatch.color[1] * 255, swatch.color[2] * 255]);
+                                    pattern = new GRGBColor([swatch.color[0] * 255, swatch.color[1] * 255, swatch.color[2] * 255]);
                                 } else if (swatch.model === 'CMYK') {
-                                    pattern = new IFCMYKColor(swatch.color);
+                                    pattern = new GCMYKColor(swatch.color);
                                 }
 
                                 if (pattern) {
-                                    var node = new IFSwatch();
+                                    var node = new GSwatch();
                                     node.setProperties(['name', 'pat'], [swatch.name, pattern]);
                                     swatches.appendChild(node);
                                 }
@@ -110,11 +110,11 @@
             })
             .on('swatchchange', function (evt, swatch) {
                 this._document.getScene().getSwatchCollection().acceptChildren(function (node) {
-                    node.removeFlag(IFNode.Flag.Selected);
+                    node.removeFlag(GNode.Flag.Selected);
                 });
 
                 if (swatch) {
-                    swatch.setFlag(IFNode.Flag.Selected);
+                    swatch.setFlag(GNode.Flag.Selected);
                 }
 
                 this._updateControls();

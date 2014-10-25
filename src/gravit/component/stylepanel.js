@@ -1,23 +1,23 @@
 (function ($) {
     function createStylePreviewImage (style, width, height) {
         // Create either a temporary rectangle or text depending on the property sets
-        var previewBox = new IFRect(0, 0, width, height);
+        var previewBox = new GRect(0, 0, width, height);
         var propertySets = style.getStylePropertySets();
 
         var previewElement = null;
-        if (propertySets.indexOf(IFStylable.PropertySet.Text) >= 0 || propertySets.indexOf(IFStylable.PropertySet.Paragraph) >= 0) {
-            previewElement = new IFText();
+        if (propertySets.indexOf(GStylable.PropertySet.Text) >= 0 || propertySets.indexOf(GStylable.PropertySet.Paragraph) >= 0) {
+            previewElement = new GText();
             previewElement.fromHtml('<p style="font-size:30">A</p>');
         } else {
-            previewElement = new IFRectangle();
+            previewElement = new GRectangle();
             var rectWidth = previewBox.getWidth() - previewBox.getX();
             var rectHeight = previewBox.getHeight() - previewBox.getY();
-            previewElement.setProperty('trf', new IFTransform(rectWidth / 2, 0, 0, rectHeight / 2, rectWidth / 2, rectHeight / 2));
+            previewElement.setProperty('trf', new GTransform(rectWidth / 2, 0, 0, rectHeight / 2, rectWidth / 2, rectHeight / 2));
         }
 
         previewElement.assignFrom(style);
 
-        return previewElement.toBitmap(new IFLength(width), new IFLength(height), 2).toImageDataUrl(IFBitmap.ImageType.PNG);
+        return previewElement.toBitmap(new GLength(width), new GLength(height), 2).toImageDataUrl(GBitmap.ImageType.PNG);
     };
 
     function updateSelectedStyle($this, style) {
@@ -52,7 +52,7 @@
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+        if (evt.node instanceof GStyle && evt.node.getParent() === container) {
             insertStyle.call(this, evt.node);
         }
     };
@@ -60,7 +60,7 @@
     function beforeRemoveEvent(evt) {
         var $this = $(this);
         var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof IFStyle && evt.node.getParent() === container) {
+        if (evt.node instanceof GStyle && evt.node.getParent() === container) {
             removeStyle.call(this, evt.node);
         }
     };
@@ -73,7 +73,7 @@
         }
     };
 
-    /** @type {IFStyle} */
+    /** @type {GStyle} */
     var dragStyle = null;
 
     function canDrop($this, target) {
@@ -140,7 +140,7 @@
                 .on('submitvalue', function (evt, value) {
                     if (value && value.trim() !== '') {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(style, function () {
+                        GEditor.tryRunTransaction(style, function () {
                             style.setProperty('name', value);
                         }, 'Rename Style');
                     }
@@ -161,7 +161,7 @@
 
                         // Setup our drag-event now
                         event.dataTransfer.effectAllowed = 'move';
-                        event.dataTransfer.setData(IFNode.MIME_TYPE, IFNode.serialize(style));
+                        event.dataTransfer.setData(GNode.MIME_TYPE, GNode.serialize(style));
                         event.dataTransfer.setDragImage(block.find('.style-preview > img')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
                     }
                 })
@@ -219,7 +219,7 @@
                             var targetIndex = parent.getIndexOfChild(targetStyle);
 
                             // TODO : I18N
-                            IFEditor.tryRunTransaction(parent, function () {
+                            GEditor.tryRunTransaction(parent, function () {
                                 if (ifPlatform.modifiers.shiftKey) {
                                     // Clone style
                                     var styleClone = dragStyle.clone();
@@ -351,7 +351,7 @@
 
             if (container) {
                 for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof IFStyle) {
+                    if (child instanceof GStyle) {
                         insertStyle.call(this, child);
                     }
                 }
@@ -362,9 +362,9 @@
                     data.afterInsertHandler = afterInsertEvent.bind(this);
                     data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
                     data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    scene.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                 }
             }
             return this;
@@ -379,9 +379,9 @@
                 // Unsubscribe from container
                 var scene = container.getScene();
                 if (scene) {
-                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                 }
             }
 

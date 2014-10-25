@@ -8,10 +8,10 @@
      */
     function GUndoAction() {
     };
-    IFObject.inherit(GUndoAction, GAction);
+    GObject.inherit(GUndoAction, GAction);
 
     GUndoAction.ID = 'edit.undo';
-    GUndoAction.TITLE = new IFLocale.Key(GUndoAction, "title");
+    GUndoAction.TITLE = new GLocale.Key(GUndoAction, "title");
 
     /**
      * @override
@@ -50,7 +50,7 @@
      * @override
      */
     GUndoAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'z'];
+        return [GKey.Constant.META, 'z'];
     };
 
     /**

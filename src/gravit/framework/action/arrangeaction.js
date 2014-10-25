@@ -8,9 +8,9 @@
      */
     function GArrangeAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GArrangeAction, 'title.' + type);
+        this._title = new GLocale.Key(GArrangeAction, 'title.' + type);
     };
-    IFObject.inherit(GArrangeAction, GAction);
+    GObject.inherit(GArrangeAction, GAction);
 
     /** @enum */
     GArrangeAction.Type = {
@@ -25,7 +25,7 @@
     /** @type {GArrangeAction.Type} */
     GArrangeAction.prototype._type = null;
 
-    /** @type {IFLocale.Key} */
+    /** @type {GLocale.Key} */
     GArrangeAction.prototype._title = null;
 
     /**
@@ -62,19 +62,19 @@
     GArrangeAction.prototype.getShortcut = function () {
         switch (this._type) {
             case GArrangeAction.Type.SendToFront:
-                return [IFKey.Constant.SHIFT, IFKey.Constant.META, IFKey.Constant.UP];
+                return [GKey.Constant.SHIFT, GKey.Constant.META, GKey.Constant.UP];
             case GArrangeAction.Type.BringForward:
-                return [IFKey.Constant.META, IFKey.Constant.UP];
+                return [GKey.Constant.META, GKey.Constant.UP];
             case GArrangeAction.Type.SendBackward:
-                return [IFKey.Constant.META, IFKey.Constant.DOWN];
+                return [GKey.Constant.META, GKey.Constant.DOWN];
             case GArrangeAction.Type.SendToBack:
-                return [IFKey.Constant.SHIFT, IFKey.Constant.META, IFKey.Constant.DOWN];
+                return [GKey.Constant.SHIFT, GKey.Constant.META, GKey.Constant.DOWN];
         }
         return null;
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -84,7 +84,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -98,10 +98,10 @@
             elements = selection;
         }
 
-        elements = IFNode.order(elements, true/*reverse*/);
+        elements = GNode.order(elements, true/*reverse*/);
 
         // TODO : I18N
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
                 var parent = element.getParent();

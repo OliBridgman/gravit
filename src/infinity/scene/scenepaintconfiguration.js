@@ -1,20 +1,20 @@
 (function (_) {
     /**
      * A paint configuration for model painting
-     * @class IFScenePaintConfiguration
+     * @class GScenePaintConfiguration
      * @constructor
-     * @extends IFPaintConfiguration
+     * @extends GPaintConfiguration
      */
-    function IFScenePaintConfiguration() {
+    function GScenePaintConfiguration() {
     }
 
-    IFObject.inherit(IFScenePaintConfiguration, IFPaintConfiguration);
+    GObject.inherit(GScenePaintConfiguration, GPaintConfiguration);
 
     /**
      * The paint mode of painting
      * @enum
      */
-    IFScenePaintConfiguration.PaintMode = {
+    GScenePaintConfiguration.PaintMode = {
         /**
          * Full painting in highest quality
          * including annotations
@@ -42,65 +42,65 @@
     };
 
     /**
-     * Localized names for IFScenePaintConfiguration.PaintMode
+     * Localized names for GScenePaintConfiguration.PaintMode
      */
-    IFScenePaintConfiguration.PaintModeName = {
-        'F': new IFLocale.Key(IFScenePaintConfiguration, 'paint.full'),
-        'S': new IFLocale.Key(IFScenePaintConfiguration, 'paint.fast'),
-        'L': new IFLocale.Key(IFScenePaintConfiguration, 'paint.outline'),
-        'O': new IFLocale.Key(IFScenePaintConfiguration, 'paint.output')
+    GScenePaintConfiguration.PaintModeName = {
+        'F': new GLocale.Key(GScenePaintConfiguration, 'paint.full'),
+        'S': new GLocale.Key(GScenePaintConfiguration, 'paint.fast'),
+        'L': new GLocale.Key(GScenePaintConfiguration, 'paint.outline'),
+        'O': new GLocale.Key(GScenePaintConfiguration, 'paint.output')
     };
 
     /**
      * The current paint mode
-     * @type {IFScenePaintConfiguration.PaintMode}
+     * @type {GScenePaintConfiguration.PaintMode}
      */
-    IFScenePaintConfiguration.prototype.paintMode = IFScenePaintConfiguration.PaintMode.Fast;
+    GScenePaintConfiguration.prototype.paintMode = GScenePaintConfiguration.PaintMode.Fast;
 
     /**
      * Whether to paint in pixel mode or not
      * @type {Boolean}
      */
-    IFScenePaintConfiguration.prototype.pixelMode = false;
+    GScenePaintConfiguration.prototype.pixelMode = false;
 
     /**
      * Whether to clip pages or not
      * @type {Boolean}
      */
-    IFScenePaintConfiguration.prototype.pagesClip = false;
+    GScenePaintConfiguration.prototype.pagesClip = false;
 
     /**
      * Whether to show guides or not
      * @type {Boolean}
      */
-    IFScenePaintConfiguration.prototype.guides = true;
+    GScenePaintConfiguration.prototype.guides = true;
 
     /**
      * Whether to show slices or not
      * @type {Boolean}
      */
-    IFScenePaintConfiguration.prototype.slices = true;
+    GScenePaintConfiguration.prototype.slices = true;
 
     /**
      * Whether to show annotations or not (guides, slices, margins, etc.)
      * @type {Boolean}
      */
-    IFScenePaintConfiguration.prototype.annotations = true;
+    GScenePaintConfiguration.prototype.annotations = true;
 
     /**
      * A clip area defining the area of paint for the scene
-     * @type {IFRect}
+     * @type {GRect}
      */
-    IFScenePaintConfiguration.prototype.clipArea = null;
+    GScenePaintConfiguration.prototype.clipArea = null;
 
     /**
      * Checks and returns whether to paint outlined or not
-     * @param {IFPaintContext} [context] optional context
+     * @param {GPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    IFScenePaintConfiguration.prototype.isOutline = function (context) {
-        if (this.paintMode === IFScenePaintConfiguration.PaintMode.Outline) {
+    GScenePaintConfiguration.prototype.isOutline = function (context) {
+        if (this.paintMode === GScenePaintConfiguration.PaintMode.Outline) {
             return true;
         }
         if (context && context.isOutline()) {
@@ -111,12 +111,12 @@
 
     /**
      * Checks and returns whether to paint annotations or not
-     * @param {IFPaintContext} [context] optional context
+     * @param {GPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    IFScenePaintConfiguration.prototype.isAnnotationsVisible = function (context) {
-        if (!this.annotations || this.paintMode === IFScenePaintConfiguration.PaintMode.Output) {
+    GScenePaintConfiguration.prototype.isAnnotationsVisible = function (context) {
+        if (!this.annotations || this.paintMode === GScenePaintConfiguration.PaintMode.Output) {
             return false;
         }
         return true;
@@ -124,11 +124,11 @@
 
     /**
      * Checks and returns whether to paint guides or not
-     * @param {IFPaintContext} [context] optional context
+     * @param {GPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    IFScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
+    GScenePaintConfiguration.prototype.isGuidesVisible = function (context) {
         if (!this.guides || !this.isAnnotationsVisible()) {
             return false;
         }
@@ -137,11 +137,11 @@
 
     /**
      * Checks and returns whether to paint slices or not
-     * @param {IFPaintContext} [context] optional context
+     * @param {GPaintContext} [context] optional context
      * to include when checking
      * @returns {boolean}
      */
-    IFScenePaintConfiguration.prototype.isSlicesVisible = function (context) {
+    GScenePaintConfiguration.prototype.isSlicesVisible = function (context) {
         if (!this.slices || !this.isAnnotationsVisible()) {
             return false;
         }
@@ -152,14 +152,14 @@
      * Tests and returns wether pages should be clipped or not
      * @param context
      */
-    IFScenePaintConfiguration.prototype.isPagesClip = function (context) {
-        return (this.pagesClip || this.paintMode === IFScenePaintConfiguration.PaintMode.Output);
+    GScenePaintConfiguration.prototype.isPagesClip = function (context) {
+        return (this.pagesClip || this.paintMode === GScenePaintConfiguration.PaintMode.Output);
     };
 
     /** @override */
-    IFScenePaintConfiguration.prototype.toString = function () {
-        return "[Object IFScenePaintConfiguration]";
+    GScenePaintConfiguration.prototype.toString = function () {
+        return "[Object GScenePaintConfiguration]";
     };
 
-    _.IFScenePaintConfiguration = IFScenePaintConfiguration;
+    _.GScenePaintConfiguration = GScenePaintConfiguration;
 })(this);

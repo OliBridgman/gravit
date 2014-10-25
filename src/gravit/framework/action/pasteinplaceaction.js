@@ -8,10 +8,10 @@
      */
     function GPasteInPlaceAction() {
     };
-    IFObject.inherit(GPasteInPlaceAction, GPasteAction);
+    GObject.inherit(GPasteInPlaceAction, GPasteAction);
 
     GPasteInPlaceAction.ID = 'edit.paste.in-place';
-    GPasteInPlaceAction.TITLE = new IFLocale.Key(GPasteInPlaceAction, "title");
+    GPasteInPlaceAction.TITLE = new GLocale.Key(GPasteInPlaceAction, "title");
 
     /**
      * @override
@@ -42,15 +42,15 @@
             document.execCommand('paste');
         } else {
             // TODO : Support pasting other formats like raster images
-            var nodes = IFNode.deserialize(gShell.getClipboardContent(IFNode.MIME_TYPE));
+            var nodes = GNode.deserialize(gShell.getClipboardContent(GNode.MIME_TYPE));
             if (nodes && nodes.length > 0) {
                 var elements = [];
                 var page = gApp.getActiveDocument().getScene().querySingle('page:active');
                 for (var i = 0; i < nodes.length; ++i) {
-                    if (nodes[i] instanceof IFElement) {
+                    if (nodes[i] instanceof GElement) {
                         var element = nodes[i];
                         element.transform(
-                            new IFTransform(1, 0, 0, 1, page.getProperty('x'), page.getProperty('y')));
+                            new GTransform(1, 0, 0, 1, page.getProperty('x'), page.getProperty('y')));
                         elements.push(element);
                     }
                 }

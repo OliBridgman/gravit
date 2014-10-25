@@ -1,26 +1,26 @@
 (function (_) {
     /**
      * Mixin to mark something containing a style
-     * @class IFStylable
+     * @class GStylable
      * @constructor
      * @mixin
-     * @extends IFObject
+     * @extends GObject
      */
-    IFStylable = function () {
+    GStylable = function () {
     };
-    IFObject.inherit(IFStylable, IFObject);
+    GObject.inherit(GStylable, GObject);
 
     /**
-     * @type {IFStylable.Effects}
+     * @type {GStylable.Effects}
      * @private
      */
-    IFStylable._effects = null;
+    GStylable._effects = null;
 
     /**
      * Style layer
      * @enum
      */
-    IFStylable.StyleLayer = {
+    GStylable.StyleLayer = {
         /**
          * Fill Layer
          */
@@ -33,19 +33,19 @@
     };
 
     /**
-     * Localized names for IFStylable.StyleLayer
+     * Localized names for GStylable.StyleLayer
      */
-    IFStylable.StyleLayerName = {
-        '': new IFLocale.Key(IFStylable, 'layer.element'),
-        'F': new IFLocale.Key(IFStylable, 'layer.fill'),
-        'B': new IFLocale.Key(IFStylable, 'layer.border')
+    GStylable.StyleLayerName = {
+        '': new GLocale.Key(GStylable, 'layer.element'),
+        'F': new GLocale.Key(GStylable, 'layer.fill'),
+        'B': new GLocale.Key(GStylable, 'layer.border')
     };
 
     /**
      * Style layer
      * @enum
      */
-    IFStylable.StyleLayer = {
+    GStylable.StyleLayer = {
         /**
          * Fill Layer
          */
@@ -61,7 +61,7 @@
      * Alignment of a border
      * @enum
      */
-    IFStylable.BorderAlignment = {
+    GStylable.BorderAlignment = {
         /**
          * Center alignment
          */
@@ -82,7 +82,7 @@
      * Alignment of a paragraph
      * @enum
      */
-    IFStylable.ParagraphAlignment = {
+    GStylable.ParagraphAlignment = {
         Left: 'l',
         Center: 'c',
         Right: 'r',
@@ -93,7 +93,7 @@
      * Wrap-Mode of a paragraph
      * @enum
      */
-    IFStylable.ParagraphWrapMode = {
+    GStylable.ParagraphWrapMode = {
         /**
          * No word-break
          */
@@ -114,7 +114,7 @@
      * The property set of a style
      * @enum
      */
-    IFStylable.PropertySet = {
+    GStylable.PropertySet = {
         Style: 'S',
         Effects: 'E',
         Fill: 'F',
@@ -123,13 +123,13 @@
         Paragraph: 'P'
     };
 
-    IFStylable.PropertySetInfo = {
+    GStylable.PropertySetInfo = {
         'S': {
             visualProperties: {
                 /** Internal default style marker */
                 _sdf: null,
-                /** Blend Mode (IFPaintCanvas.BlendMode|'mask') */
-                _sbl: IFPaintCanvas.BlendMode.Normal,
+                /** Blend Mode (GPaintCanvas.BlendMode|'mask') */
+                _sbl: GPaintCanvas.BlendMode.Normal,
                 /** Fill Opacity (= w/o effects) */
                 _sfop: 1,
                 /** Opacity (= total opacity w/ effects) */
@@ -139,21 +139,21 @@
         'E': {},
         'F': {
             visualProperties: {
-                /** Fill pattern (IFPattern) */
+                /** Fill pattern (GPattern) */
                 _fpt: null,
                 /** Fill opacity */
                 _fop: 1
             },
             geometryProperties: {
-                /** Fill pattern transformation (IFTransform) */
+                /** Fill pattern transformation (GTransform) */
                 _fpx: null
             },
             storeFilter: function (property, value) {
                 if (value) {
                     if (property === '_fpt') {
-                        return IFPattern.serialize(value);
+                        return GPattern.serialize(value);
                     } else if (property === '_fpx') {
-                        return IFTransform.serialize(value);
+                        return GTransform.serialize(value);
                     }
                 }
                 return value;
@@ -161,9 +161,9 @@
             restoreFilter: function (property, value) {
                 if (value) {
                     if (property === '_fpt') {
-                        return IFPattern.deserialize(value);
+                        return GPattern.deserialize(value);
                     } else if (property === '_fpx') {
-                        return IFTransform.deserialize(value);
+                        return GTransform.deserialize(value);
                     }
                 }
                 return value;
@@ -175,27 +175,27 @@
                 _bop: 1
             },
             geometryProperties: {
-                /** Border pattern (IFPattern) */
+                /** Border pattern (GPattern) */
                 _bpt: null,
-                /** Border pattern transformation (IFTransform) */
+                /** Border pattern transformation (GTransform) */
                 _bpx: null,
                 /** Border Width */
                 _bw: 1,
                 /** Border Alignment */
-                _ba: IFStylable.BorderAlignment.Center,
+                _ba: GStylable.BorderAlignment.Center,
                 /** Line-Caption */
-                _blc: IFPaintCanvas.LineCap.Square,
+                _blc: GPaintCanvas.LineCap.Square,
                 /** Line-Join */
-                _blj: IFPaintCanvas.LineJoin.Miter,
+                _blj: GPaintCanvas.LineJoin.Miter,
                 /** Miter-Limit */
                 _bml: 3
             },
             storeFilter: function (property, value) {
                 if (value) {
                     if (property === '_bpt') {
-                        return IFPattern.serialize(value);
+                        return GPattern.serialize(value);
                     } else if (property === '_bpx') {
-                        return IFTransform.serialize(value);
+                        return GTransform.serialize(value);
                     }
                 }
                 return value;
@@ -203,9 +203,9 @@
             restoreFilter: function (property, value) {
                 if (value) {
                     if (property === '_bpt') {
-                        return IFPattern.deserialize(value);
+                        return GPattern.deserialize(value);
                     } else if (property === '_bpx') {
-                        return IFTransform.deserialize(value);
+                        return GTransform.deserialize(value);
                     }
                 }
                 return value;
@@ -217,10 +217,10 @@
                 _tff: 'Open Sans',
                 /** The font size */
                 _tfi: 20,
-                /** The font-weight (IFFont.Weight) */
-                _tfw: IFFont.Weight.Regular,
-                /** The font-style (IFFont.Style) */
-                _tfs: IFFont.Style.Normal,
+                /** The font-weight (GFont.Weight) */
+                _tfw: GFont.Weight.Regular,
+                /** The font-style (GFont.Style) */
+                _tfs: GFont.Style.Normal,
                 /** The character spacing */
                 _tcs: null,
                 /** The word spacing */
@@ -233,9 +233,9 @@
                 _pcc: null,
                 /** Column gap */
                 _pcg: null,
-                /** Wrap-Mode of a paragraph (IFStylable.ParagraphWrapMode) */
-                _pwm: IFStylable.ParagraphWrapMode.Words,
-                /** The paragraph's alignment (IFStylable.ParagraphAlignment) */
+                /** Wrap-Mode of a paragraph (GStylable.ParagraphWrapMode) */
+                _pwm: GStylable.ParagraphWrapMode.Words,
+                /** The paragraph's alignment (GStylable.ParagraphAlignment) */
                 _pal: null,
                 /** The first line intendation */
                 _pin: null,
@@ -245,37 +245,37 @@
         }
     };
 
-    IFStylable.AllVisualProperties = {};
-    IFStylable.AllGeometryProperties = {};
+    GStylable.AllVisualProperties = {};
+    GStylable.AllGeometryProperties = {};
 
-    for (var propertySet in IFStylable.PropertySetInfo) {
-        var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+    for (var propertySet in GStylable.PropertySetInfo) {
+        var propertySetInfo = GStylable.PropertySetInfo[propertySet];
         if (propertySetInfo.visualProperties) {
             for (var property in propertySetInfo.visualProperties) {
-                IFStylable.AllVisualProperties[property] = propertySetInfo.visualProperties[property];
+                GStylable.AllVisualProperties[property] = propertySetInfo.visualProperties[property];
             }
         }
         if (propertySetInfo.geometryProperties) {
             for (var property in propertySetInfo.geometryProperties) {
-                IFStylable.AllGeometryProperties[property] = propertySetInfo.geometryProperties[property];
+                GStylable.AllGeometryProperties[property] = propertySetInfo.geometryProperties[property];
             }
         }
     }
 
     // --------------------------------------------------------------------------------------------
-    // IFStylable.Effects Class
+    // GStylable.Effects Class
     // --------------------------------------------------------------------------------------------
     /**
      * Effects Class
-     * @class IFStylable.Effects
-     * @inherit IFNode
-     * @mixes IFNode.Container
-     * @mixes IFNode.Store
+     * @class GStylable.Effects
+     * @inherit GNode
+     * @mixes GNode.Container
+     * @mixes GNode.Store
      * @constructor
      */
-    IFStylable.Effects = function () {
+    GStylable.Effects = function () {
     };
-    IFNode.inheritAndMix('effects', IFStylable.Effects, IFNode, [IFNode.Container, IFNode.Store]);
+    GNode.inheritAndMix('effects', GStylable.Effects, GNode, [GNode.Container, GNode.Store]);
 
     /**
      * Returns an ordered list of effects for each given layer if any.
@@ -284,7 +284,7 @@
      * @returns {Array} array keeping an ordered list of layers and their effects
      * array or null if there're no effects for that layer. The last layer is the "null" layer.
      */
-    IFStylable.Effects.prototype.getLayersEffects = function (layers, visibleOnly) {
+    GStylable.Effects.prototype.getLayersEffects = function (layers, visibleOnly) {
         if (layers && layers.length) {
             var result = [];
             for (var pl = 0; pl <= layers.length; ++pl) {
@@ -301,13 +301,13 @@
      * Returns all effects for a given layer
      * @param {String} [layer] layer to get effects for, defaults to null
      * @param {Boolean} [visibleOnly] if set, only visible effects will be returned.
-     * @returns {Array<IFEffect>} an array of effects or null if there're no effects
+     * @returns {Array<GEffect>} an array of effects or null if there're no effects
      */
-    IFStylable.Effects.prototype.getEffectsForLayer = function (layer, visibleOnly) {
+    GStylable.Effects.prototype.getEffectsForLayer = function (layer, visibleOnly) {
         layer = layer || null;
         var result = null;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFEffect) {
+            if (child instanceof GEffect) {
                 var childLayer = child.getProperty('ly');
                 if (visibleOnly && child.getProperty('vs') === false) {
                     continue;
@@ -325,44 +325,44 @@
     };
 
     /** @override */
-    IFStylable.Effects.prototype.insertChild = function (child, reference) {
-        if (child instanceof IFEffect && child.getEffectType() === IFEffect.Type.PreEffect) {
+    GStylable.Effects.prototype.insertChild = function (child, reference) {
+        if (child instanceof GEffect && child.getEffectType() === GEffect.Type.PreEffect) {
             for (var prev = reference ? reference : this.getLastChild(); prev !== null; prev = prev.getPrevious()) {
-                if (prev instanceof IFEffect) {
-                    if (prev.getEffectType() === IFEffect.Type.PreEffect) {
+                if (prev instanceof GEffect) {
+                    if (prev.getEffectType() === GEffect.Type.PreEffect) {
                         reference = prev.getNext();
                         break;
-                    } else if (prev.getEffectType() === IFEffect.Type.PostEffect) {
+                    } else if (prev.getEffectType() === GEffect.Type.PostEffect) {
                         reference = prev;
                     }
                 }
             }
         }
 
-        IFNode.Container.prototype.insertChild.call(this, child, reference);
+        GNode.Container.prototype.insertChild.call(this, child, reference);
     };
 
     /** @override */
-    IFStylable.Effects.prototype._handleChange = function (change, args) {
+    GStylable.Effects.prototype._handleChange = function (change, args) {
         var ownerStyle = this.getParent();
-        if (ownerStyle && ownerStyle.hasMixin(IFStylable)) {
-            if ((change == IFNode._Change.BeforeChildInsert || change === IFNode._Change.BeforeChildRemove) && args instanceof IFEffect) {
+        if (ownerStyle && ownerStyle.hasMixin(GStylable)) {
+            if ((change == GNode._Change.BeforeChildInsert || change === GNode._Change.BeforeChildRemove) && args instanceof GEffect) {
                 ownerStyle._stylePrepareGeometryChange(true);
             }
-            if ((change == IFNode._Change.AfterChildInsert || change === IFNode._Change.AfterChildRemove) && args instanceof IFEffect) {
+            if ((change == GNode._Change.AfterChildInsert || change === GNode._Change.AfterChildRemove) && args instanceof GEffect) {
                 ownerStyle._styleFinishGeometryChange(true);
             }
         }
-        IFNode.prototype._handleChange.call(this, change, args);
+        GNode.prototype._handleChange.call(this, change, args);
     };
 
     /**
      * Returns an effect bbox
-     * @param {IFRect} bbox the source bbox
+     * @param {GRect} bbox the source bbox
      * @param {String} [layer] layer to get effects for, defaults to null
      * @returns {Array}
      */
-    IFStylable.Effects.prototype.getEffectsBBox = function (bbox, layer) {
+    GStylable.Effects.prototype.getEffectsBBox = function (bbox, layer) {
         var padding = this.getEffectsPadding(layer);
         if (padding) {
             return bbox.expanded(padding[0], padding[1], padding[2], padding[3]);
@@ -375,7 +375,7 @@
      * @param {String} [layer] layer to get effects for, defaults to null
      * @returns {Array}
      */
-    IFStylable.Effects.prototype.getEffectsPadding = function (layer) {
+    GStylable.Effects.prototype.getEffectsPadding = function (layer) {
         var effects = this.getEffectsForLayer(layer, true);
         if (!effects) {
             return null;
@@ -397,8 +397,8 @@
             }
 
             switch (effect.getEffectType()) {
-                case IFEffect.Type.PreEffect:
-                case IFEffect.Type.PostEffect:
+                case GEffect.Type.PreEffect:
+                case GEffect.Type.PostEffect:
                     // Effects approximate
                     approxEffectPadding = [
                         Math.max(approxEffectPadding[0], currEffectPadding[0]),
@@ -408,10 +408,10 @@
                     ];
                     break;
 
-                case IFEffect.Type.Filter:
+                case GEffect.Type.Filter:
                     // If we had a non-filter effect before this one then
                     // add the approximated sum before our filter padding
-                    if (lastEffect && lastEffect.getEffectType() !== IFEffect.Type.Filter) {
+                    if (lastEffect && lastEffect.getEffectType() !== GEffect.Type.Filter) {
                         effectPadding = [
                             effectPadding[0] + approxEffectPadding[0],
                             effectPadding[1] + approxEffectPadding[1],
@@ -436,7 +436,7 @@
 
         // If we had a non-filter effect as last one then
         // add the approximated sum to our effect paddings
-        if (lastEffect && lastEffect.getEffectType() !== IFEffect.Type.Filter) {
+        if (lastEffect && lastEffect.getEffectType() !== GEffect.Type.Filter) {
             effectPadding = [
                 effectPadding[0] + approxEffectPadding[0],
                 effectPadding[1] + approxEffectPadding[1],
@@ -449,28 +449,28 @@
     };
 
     // --------------------------------------------------------------------------------------------
-    // IFStylable Mixin
+    // GStylable Mixin
     // --------------------------------------------------------------------------------------------
 
     /**
      * The property-sets this stylable supports
-     * @returns {Array<IFStylable.PropertySet>} list of supported
+     * @returns {Array<GStylable.PropertySet>} list of supported
      * property sets
      * @private
      */
-    IFStylable.prototype.getStylePropertySets = function () {
-        return [IFStylable.PropertySet.Style, IFStylable.PropertySet.Effects];
+    GStylable.prototype.getStylePropertySets = function () {
+        return [GStylable.PropertySet.Style, GStylable.PropertySet.Effects];
     };
 
     /**
      * Returns the style effects. If the style doesn't support effects
      * then this will return null.
-     * @returns {IFStylable.Effects}
+     * @returns {GStylable.Effects}
      */
-    IFStylable.prototype.getEffects = function () {
-        if (this.getStylePropertySets().indexOf(IFStylable.PropertySet.Effects) >= 0) {
+    GStylable.prototype.getEffects = function () {
+        if (this.getStylePropertySets().indexOf(GStylable.PropertySet.Effects) >= 0) {
             if (!this._effects) {
-                this._effects = new IFStylable.Effects();
+                this._effects = new GStylable.Effects();
                 this._effects._parent = this;
                 this._effects._setScene(this._scene);
             }
@@ -480,10 +480,10 @@
 
     /**
      * Assign style from a source style
-     * @param {IFStylable} source
-     * @param {IFStylable} [compare] a compare style, defaults to null
+     * @param {GStylable} source
+     * @param {GStylable} [compare] a compare style, defaults to null
      */
-    IFStylable.prototype.assignStyleFrom = function (source, compare) {
+    GStylable.prototype.assignStyleFrom = function (source, compare) {
         // Collect union property sets
         var sourcePS = source.getStylePropertySets();
         var myPS = this.getStylePropertySets();
@@ -502,14 +502,14 @@
 
         if (unionPS.length > 0) {
             // Handle effects
-            if (unionPS.indexOf(IFStylable.PropertySet.Effects) >= 0) {
+            if (unionPS.indexOf(GStylable.PropertySet.Effects) >= 0) {
                 var myEffects = this.getEffects();
                 var srcEffects = source.getEffects();
                 var sentEffectPrepare = false;
-                myEffects._beginBlockChanges([IFNode._Change.BeforeChildRemove, IFNode._Change.AfterChildRemove, IFNode._Change.BeforeChildInsert, IFNode._Change.AfterChildInsert]);
+                myEffects._beginBlockChanges([GNode._Change.BeforeChildRemove, GNode._Change.AfterChildRemove, GNode._Change.BeforeChildInsert, GNode._Change.AfterChildInsert]);
 
                 try {
-                    if (compare && comparePS.indexOf(IFStylable.PropertySet.Effects)) {
+                    if (compare && comparePS.indexOf(GStylable.PropertySet.Effects)) {
                         // TODO : Improve diffing and delete/insert styles as well
                         var cmpEffects = compare.getEffects();
 
@@ -517,7 +517,7 @@
                         for (var srcEff = srcEffects.getFirstChild(); srcEff !== null; srcEff = srcEff.getNext()) {
                             var myEff = myEffects.getChildByIndex(index);
                             var cmpEff = cmpEffects.getChildByIndex(index);
-                            if (myEff && cmpEff && IFUtil.equals(myEff, cmpEff)) {
+                            if (myEff && cmpEff && GUtil.equals(myEff, cmpEff)) {
                                 if (!sentEffectPrepare) {
                                     this._stylePrepareGeometryChange(true);
                                     sentEffectPrepare = true;
@@ -550,7 +550,7 @@
                         }
                     }
                 } finally {
-                    myEffects._endBlockChanges([IFNode._Change.BeforeChildRemove, IFNode._Change.AfterChildRemove, IFNode._Change.BeforeChildInsert, IFNode._Change.AfterChildInsert]);
+                    myEffects._endBlockChanges([GNode._Change.BeforeChildRemove, GNode._Change.AfterChildRemove, GNode._Change.BeforeChildInsert, GNode._Change.AfterChildInsert]);
 
                     if (sentEffectPrepare) {
                         this._styleFinishGeometryChange(true);
@@ -561,7 +561,7 @@
             // Handle style properties
             var sourceProperties = [];
             for (var p = 0; p < unionPS.length; ++p) {
-                var propertySetInfo = IFStylable.PropertySetInfo[unionPS[p]];
+                var propertySetInfo = GStylable.PropertySetInfo[unionPS[p]];
                 var properties = [];
                 if (propertySetInfo.visualProperties) {
                     properties = properties.concat(Object.keys(propertySetInfo.visualProperties));
@@ -580,7 +580,7 @@
                         var myPropVal = this.getProperty(property);
                         var diffPropVal = compare.getProperty(property);
                         var srcPropVal = source.getProperty(property);
-                        addProperty = compare.hasProperty(property) && (IFUtil.equals(myPropVal, diffPropVal) || IFUtil.equals(myPropVal, srcPropVal));
+                        addProperty = compare.hasProperty(property) && (GUtil.equals(myPropVal, diffPropVal) || GUtil.equals(myPropVal, srcPropVal));
                     }
 
                     if (addProperty && property !== '_sdf') {
@@ -600,7 +600,7 @@
      * Returns whether a paintable border is available or not
      * @returns {boolean}
      */
-    IFStylable.prototype.hasStyleBorder = function () {
+    GStylable.prototype.hasStyleBorder = function () {
         return !!this.$_bpt && this.$_bw > 0.0 && this.$_bop > 0.0;
     };
 
@@ -608,7 +608,7 @@
      * Returns whether a paintable fill is available or not
      * @returns {boolean}
      */
-    IFStylable.prototype.hasStyleFill = function () {
+    GStylable.prototype.hasStyleFill = function () {
         return !!this.$_fpt && this.$_fop > 0.0;
     };
 
@@ -616,11 +616,11 @@
      * Returns the required padding for the currently setup border
      * @returns {Number}
      */
-    IFStylable.prototype.getStyleBorderPadding = function () {
+    GStylable.prototype.getStyleBorderPadding = function () {
         // Padding depends on border-width and alignment and miter limit if miter join is used
-        if (this.$_ba === IFStylable.BorderAlignment.Center) {
+        if (this.$_ba === GStylable.BorderAlignment.Center) {
             return this.$_bw / 2;
-        } else if (this.$_ba === IFStylable.BorderAlignment.Outside) {
+        } else if (this.$_ba === GStylable.BorderAlignment.Outside) {
             return this.$_bw;
         }
         return 0;
@@ -629,10 +629,10 @@
     /**
      * Set the style default properties
      */
-    IFStylable.prototype._setStyleDefaultProperties = function () {
+    GStylable.prototype._setStyleDefaultProperties = function () {
         var propertySets = this.getStylePropertySets();
         for (var p = 0; p < propertySets.length; ++p) {
-            var propertySetInfo = IFStylable.PropertySetInfo[propertySets[p]];
+            var propertySetInfo = GStylable.PropertySetInfo[propertySets[p]];
             if (propertySetInfo.visualProperties) {
                 this._setDefaultProperties(propertySetInfo.visualProperties);
             }
@@ -647,23 +647,23 @@
      * @param {Number} change
      * @param {*} args
      */
-    IFStylable.prototype._handleStyleChange = function (change, args) {
-        if (change === IFNode._Change.BeforePropertiesChange || change === IFNode._Change.AfterPropertiesChange) {
+    GStylable.prototype._handleStyleChange = function (change, args) {
+        if (change === GNode._Change.BeforePropertiesChange || change === GNode._Change.AfterPropertiesChange) {
             var visualChange = false;
             var geometryChange = false;
             for (var i = 0; i < args.properties.length; ++i) {
                 var property = args.properties[i];
-                if (IFStylable.AllGeometryProperties.hasOwnProperty(property)) {
+                if (GStylable.AllGeometryProperties.hasOwnProperty(property)) {
                     geometryChange = true;
-                    if (change === IFNode._Change.BeforePropertiesChange) {
+                    if (change === GNode._Change.BeforePropertiesChange) {
                         this._stylePrepareGeometryChange();
                     } else {
                         this._styleFinishGeometryChange();
                         this._stylePropertiesUpdated(args.properties, args.values);
                     }
                     break;
-                } else if (IFStylable.AllVisualProperties.hasOwnProperty(property)) {
-                    if (change === IFNode._Change.AfterPropertiesChange) {
+                } else if (GStylable.AllVisualProperties.hasOwnProperty(property)) {
+                    if (change === GNode._Change.AfterPropertiesChange) {
                         visualChange = true;
                     }
                 }
@@ -673,16 +673,16 @@
                 this._styleRepaint();
                 this._stylePropertiesUpdated(args.properties, args.values);
             }
-        } else if (change === IFNode._Change.Store) {
+        } else if (change === GNode._Change.Store) {
             var propertySets = this.getStylePropertySets();
             for (var p = 0; p < propertySets.length; ++p) {
                 var propertySet = propertySets[p];
-                if (propertySet === IFStylable.PropertySet.Effects) {
+                if (propertySet === GStylable.PropertySet.Effects) {
                     if (this._effects) {
-                        args._eff = IFNode.store(this._effects);
+                        args._eff = GNode.store(this._effects);
                     }
                 } else {
-                    var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+                    var propertySetInfo = GStylable.PropertySetInfo[propertySet];
                     if (propertySetInfo.visualProperties) {
                         this.storeProperties(args, propertySetInfo.visualProperties, propertySetInfo.storeFilter);
                     }
@@ -691,18 +691,18 @@
                     }
                 }
             }
-        } else if (change === IFNode._Change.Restore) {
+        } else if (change === GNode._Change.Restore) {
             var propertySets = this.getStylePropertySets();
             for (var p = 0; p < propertySets.length; ++p) {
                 var propertySet = propertySets[p];
-                if (propertySet === IFStylable.PropertySet.Effects) {
+                if (propertySet === GStylable.PropertySet.Effects) {
                     if (args._eff) {
-                        this._effects = IFNode.restore(args._eff);
+                        this._effects = GNode.restore(args._eff);
                         this._effects._parent = this;
                         this._effects._setScene(this._scene);
                     }
                 } else {
-                    var propertySetInfo = IFStylable.PropertySetInfo[propertySet];
+                    var propertySetInfo = GStylable.PropertySetInfo[propertySet];
                     if (propertySetInfo.visualProperties) {
                         this.restoreProperties(args, propertySetInfo.visualProperties, propertySetInfo.restoreFilter);
                     }
@@ -711,11 +711,11 @@
                     }
                 }
             }
-        } else if (change === IFNode._Change.Attached) {
+        } else if (change === GNode._Change.Attached) {
             if (this._effects) {
                 this._effects._setScene(this._scene);
             }
-        } else if (change === IFNode._Change.Detach) {
+        } else if (change === GNode._Change.Detach) {
             if (this._effects) {
                 this._effects._setScene(null);
             }
@@ -726,7 +726,7 @@
      * @param {Boolean} [effect] whether the call comes from effects or not
      * @private
      */
-    IFStylable.prototype._stylePrepareGeometryChange = function (effect) {
+    GStylable.prototype._stylePrepareGeometryChange = function (effect) {
         // NO-OP
     };
 
@@ -734,24 +734,24 @@
      * @param {Boolean} [effect] whether the call comes from effects or not
      * @private
      */
-    IFStylable.prototype._styleFinishGeometryChange = function (effect) {
+    GStylable.prototype._styleFinishGeometryChange = function (effect) {
         // NO-OP
     };
 
     /** @private */
-    IFStylable.prototype._styleRepaint = function () {
+    GStylable.prototype._styleRepaint = function () {
         // NO-OP
     };
 
     /** @private */
-    IFStylable.prototype._stylePropertiesUpdated = function (properties, previousValues) {
+    GStylable.prototype._stylePropertiesUpdated = function (properties, previousValues) {
         // NO-OP
     };
 
     /** @override */
-    IFStylable.prototype.toString = function () {
-        return "[Mixin IFStylable]";
+    GStylable.prototype.toString = function () {
+        return "[Mixin GStylable]";
     };
 
-    _.IFStylable = IFStylable;
+    _.GStylable = GStylable;
 })(this);

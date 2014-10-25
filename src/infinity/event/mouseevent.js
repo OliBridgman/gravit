@@ -1,303 +1,303 @@
 (function (_) {
     /**
      * An object representing a mouse input event.
-     * @class IFMouseEvent
-     * @extends IFInputEvent
+     * @class GMouseEvent
+     * @extends GInputEvent
      * @constructor
      * @version 1.0
      */
-    function IFMouseEvent() {
+    function GMouseEvent() {
     }
 
-    IFObject.inherit(IFMouseEvent, IFInputEvent);
+    GObject.inherit(GMouseEvent, GInputEvent);
 
     /**
      * Constant defining the left mouse button
      * @type {Number}
      * @version 1.0
      */
-    IFMouseEvent.BUTTON_LEFT = 0;
+    GMouseEvent.BUTTON_LEFT = 0;
 
     /**
      * Constant defining the middle mouse button
      * @type {Number}
      * @version 1.0
      */
-    IFMouseEvent.BUTTON_MIDDLE = 1;
+    GMouseEvent.BUTTON_MIDDLE = 1;
 
     /**
      * Constant defining the right mouse button
      * @type {Number}
      * @version 1.0
      */
-    IFMouseEvent.BUTTON_RIGHT = 2;
+    GMouseEvent.BUTTON_RIGHT = 2;
 
     /**
      * Tests and returns whether a given event class is a drag event or not
-     * @param {Function|IFMouseEvent} event the event class or event instance to test
+     * @param {Function|GMouseEvent} event the event class or event instance to test
      * @returns {Boolean} true if event is a drag event, false if not
      * @version 1.0
      */
-    IFMouseEvent.isDragEvent = function (event) {
-        return ((event instanceof IFMouseEvent &&
-            (event instanceof IFMouseEvent.DragStart || event instanceof IFMouseEvent.Drag || event instanceof IFMouseEvent.DragEnd)) ||
-            (event == IFMouseEvent.DragStart || event == IFMouseEvent.Drag || event == IFMouseEvent.DragEnd));
+    GMouseEvent.isDragEvent = function (event) {
+        return ((event instanceof GMouseEvent &&
+            (event instanceof GMouseEvent.DragStart || event instanceof GMouseEvent.Drag || event instanceof GMouseEvent.DragEnd)) ||
+            (event == GMouseEvent.DragStart || event == GMouseEvent.Drag || event == GMouseEvent.DragEnd));
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent Class
+    // GMouseEvent Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The position of the cursor in client (widget) -coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      * @version 1.0
      */
-    IFMouseEvent.prototype.client = 0;
+    GMouseEvent.prototype.client = 0;
 
     /**
      * The mouse button number held down
      * @type {Number}
      * @version 1.0
      */
-    IFMouseEvent.prototype.button = 0;
+    GMouseEvent.prototype.button = 0;
 
     /** @override */
-    IFMouseEvent.prototype.toString = function () {
-        return "[Object IFMouseEvent(" + this._paramsToString() + ")]";
+    GMouseEvent.prototype.toString = function () {
+        return "[Object GMouseEvent(" + this._paramsToString() + ")]";
     };
 
     /** @override */
-    IFMouseEvent.prototype._paramsToString = function () {
-        return "client=" + this.client.toString() + ", " + IFInputEvent.prototype._paramsToString.call(this);
+    GMouseEvent.prototype._paramsToString = function () {
+        return "client=" + this.client.toString() + ", " + GInputEvent.prototype._paramsToString.call(this);
     }
 
-    _.IFMouseEvent = IFMouseEvent;
+    _.GMouseEvent = GMouseEvent;
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Move
+    // GMouseEvent.Move
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse move event.
      * Note that this will always be fired before any drag events.
-     * @class IFMouseEvent.Move
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Move
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Move = function () {
+    GMouseEvent.Move = function () {
     }
-    IFObject.inherit(IFMouseEvent.Move, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Move, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Move.prototype.toString = function () {
-        return "[Object IFMouseEvent.Move(" + this._paramsToString() + ")]";
+    GMouseEvent.Move.prototype.toString = function () {
+        return "[Object GMouseEvent.Move(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Enter
+    // GMouseEvent.Enter
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse enter event.
-     * @class IFMouseEvent.Enter
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Enter
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Enter = function () {
+    GMouseEvent.Enter = function () {
     }
-    IFObject.inherit(IFMouseEvent.Enter, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Enter, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Enter.prototype.toString = function () {
-        return "[Object IFMouseEvent.Enter(" + this._paramsToString() + ")]";
+    GMouseEvent.Enter.prototype.toString = function () {
+        return "[Object GMouseEvent.Enter(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Leave
+    // GMouseEvent.Leave
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse leave event.
-     * @class IFMouseEvent.Leave
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Leave
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Leave = function () {
+    GMouseEvent.Leave = function () {
     }
-    IFObject.inherit(IFMouseEvent.Leave, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Leave, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Leave.prototype.toString = function () {
-        return "[Object IFMouseEvent.Leave(" + this._paramsToString() + ")]";
+    GMouseEvent.Leave.prototype.toString = function () {
+        return "[Object GMouseEvent.Leave(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Down
+    // GMouseEvent.Down
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse down event.
      * Note that this will always be fired before any drag events.
-     * @class IFMouseEvent.Down
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Down
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Down = function () {
+    GMouseEvent.Down = function () {
     }
-    IFObject.inherit(IFMouseEvent.Down, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Down, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Down.prototype.toString = function () {
-        return "[Object IFMouseEvent.Down(" + this._paramsToString() + ")]";
+    GMouseEvent.Down.prototype.toString = function () {
+        return "[Object GMouseEvent.Down(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Release
+    // GMouseEvent.Release
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse release (up) event.
      * Note that this will always be fired before any drag events.
-     * @class IFMouseEvent.Release
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Release
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Release = function () {
+    GMouseEvent.Release = function () {
     }
-    IFObject.inherit(IFMouseEvent.Release, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Release, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Release.prototype.toString = function () {
-        return "[Object IFMouseEvent.Release(" + this._paramsToString() + ")]";
+    GMouseEvent.Release.prototype.toString = function () {
+        return "[Object GMouseEvent.Release(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Click
+    // GMouseEvent.Click
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse click event.
-     * @class IFMouseEvent.Click
-     * @extends IFMouseEvent
+     * @class GMouseEvent.Click
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Click = function () {
+    GMouseEvent.Click = function () {
     }
-    IFObject.inherit(IFMouseEvent.Click, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Click, GMouseEvent);
 
 
     /** @override */
-    IFMouseEvent.Click.prototype.toString = function () {
-        return "[Object IFMouseEvent.Click(" + this._paramsToString() + ")]";
+    GMouseEvent.Click.prototype.toString = function () {
+        return "[Object GMouseEvent.Click(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.DblClick
+    // GMouseEvent.DblClick
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse double-click event.
-     * @class IFMouseEvent.DblClick
-     * @extends IFMouseEvent
+     * @class GMouseEvent.DblClick
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.DblClick = function () {
+    GMouseEvent.DblClick = function () {
     }
-    IFObject.inherit(IFMouseEvent.DblClick, IFMouseEvent);
+    GObject.inherit(GMouseEvent.DblClick, GMouseEvent);
 
     /** @override */
-    IFMouseEvent.DblClick.prototype.toString = function () {
-        return "[Object IFMouseEvent.DblClick(" + this._paramsToString() + ")]";
+    GMouseEvent.DblClick.prototype.toString = function () {
+        return "[Object GMouseEvent.DblClick(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.DragStart
+    // GMouseEvent.DragStart
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse drag-start event
-     * Note that this will always be fired after a IFMouseEvent.Move event.
-     * @class IFMouseEvent.DragStart
-     * @extends IFMouseEvent
+     * Note that this will always be fired after a GMouseEvent.Move event.
+     * @class GMouseEvent.DragStart
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.DragStart = function () {
+    GMouseEvent.DragStart = function () {
     }
-    IFObject.inherit(IFMouseEvent.DragStart, IFMouseEvent);
+    GObject.inherit(GMouseEvent.DragStart, GMouseEvent);
 
     /** @override */
-    IFMouseEvent.DragStart.prototype.toString = function () {
-        return "[Object IFMouseEvent.DragStart(" + this._paramsToString() + ")]";
+    GMouseEvent.DragStart.prototype.toString = function () {
+        return "[Object GMouseEvent.DragStart(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.Drag
+    // GMouseEvent.Drag
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse drag (move) event
-     * Note that this will always be fired after a IFMouseEvent.Move event.
-     * @class IFMouseEvent.Drag
-     * @extends IFMouseEvent
+     * Note that this will always be fired after a GMouseEvent.Move event.
+     * @class GMouseEvent.Drag
+     * @extends GMouseEvent
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.Drag = function () {
+    GMouseEvent.Drag = function () {
     }
-    IFObject.inherit(IFMouseEvent.Drag, IFMouseEvent);
+    GObject.inherit(GMouseEvent.Drag, GMouseEvent);
 
     /**
      * The drag start position in client (widget) -coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      * @version 1.0
      */
-    IFMouseEvent.prototype.clientStart = 0;
+    GMouseEvent.prototype.clientStart = 0;
 
     /**
      * The drag subtract (current to previous pos) in client (widget) -coordinates
-     * @type {IFPoint}
+     * @type {GPoint}
      * @version 1.0
      */
-    IFMouseEvent.prototype.clientDelta = 0;
+    GMouseEvent.prototype.clientDelta = 0;
 
     /** @override */
-    IFMouseEvent.Drag.prototype.toString = function () {
-        return "[Object IFMouseEvent.Drag(" + this._paramsToString() + ")]";
+    GMouseEvent.Drag.prototype.toString = function () {
+        return "[Object GMouseEvent.Drag(" + this._paramsToString() + ")]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFMouseEvent.DragEnd
+    // GMouseEvent.DragEnd
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing a mouse drag-end event
-     * Note that this will always be fired after a IFMouseEvent.Release event.
-     * @class IFMouseEvent.DragEnd
-     * @extends IFMouseEvent.Drag
+     * Note that this will always be fired after a GMouseEvent.Release event.
+     * @class GMouseEvent.DragEnd
+     * @extends GMouseEvent.Drag
      * @constructor
      * @version 1.0
      */
-    IFMouseEvent.DragEnd = function () {
+    GMouseEvent.DragEnd = function () {
     }
-    IFObject.inherit(IFMouseEvent.DragEnd, IFMouseEvent.Drag);
+    GObject.inherit(GMouseEvent.DragEnd, GMouseEvent.Drag);
 
     /** @override */
-    IFMouseEvent.DragEnd.prototype.toString = function () {
-        return "[Object IFMouseEvent.DragEnd(" + this._paramsToString() + ")]";
+    GMouseEvent.DragEnd.prototype.toString = function () {
+        return "[Object GMouseEvent.DragEnd(" + this._paramsToString() + ")]";
     };
 
 })(this);

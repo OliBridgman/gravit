@@ -10,7 +10,7 @@
         this._magnification = magnification;
         this._shortcut = shortcut;
     };
-    IFObject.inherit(GMagnificationAction, GAction);
+    GObject.inherit(GMagnificationAction, GAction);
 
     GMagnificationAction.ID = 'view.magnification';
 
@@ -79,11 +79,11 @@
         if (scene.getProperty('singlePage')) {
             var pageBBox = scene.getActivePage().getGeometryBBox();
             if (pageBBox && !pageBBox.isEmpty()) {
-                zoomPoint = pageBBox.getSide(IFRect.Side.CENTER);
+                zoomPoint = pageBBox.getSide(GRect.Side.CENTER);
             }
         }
         if (!zoomPoint) {
-            zoomPoint = view.getViewTransform().mapPoint(new IFPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
+            zoomPoint = view.getViewTransform().mapPoint(new GPoint(view.getWidth() / 2.0, view.getHeight() / 2.0));
         }
         view.zoomAt(zoomPoint, newZoom);
     };

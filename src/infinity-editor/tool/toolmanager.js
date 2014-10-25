@@ -1,101 +1,101 @@
 (function (_) {
     /**
      * The manager for tools
-     * @class IFToolManager
-     * @extends IFObject
-     * @mixes IFEventTarget
+     * @class GToolManager
+     * @extends GObject
+     * @mixes GEventTarget
      * @constructor
      * @version 1.0
      */
-    function IFToolManager() {
+    function GToolManager() {
         this._tools = [];
         this._typeIdToIndexMap = {};
         this._paintLink = this._paint.bind(this);
     }
 
-    IFObject.inheritAndMix(IFToolManager, IFObject, [IFEventTarget]);
+    GObject.inheritAndMix(GToolManager, GObject, [GEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFToolManager.ToolChangedEvent Event
+    // GToolManager.ToolChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * An event for tool activation/deactivation
-     * @param {IFTool} previousTool previous tool instance, may be null for no previous tool
-     * @param {IFTool} newTool new tool instance, may be null for deactivation only
-     * @class IFToolManager.ToolChangedEvent
-     * @extends IFEvent
+     * @param {GTool} previousTool previous tool instance, may be null for no previous tool
+     * @param {GTool} newTool new tool instance, may be null for deactivation only
+     * @class GToolManager.ToolChangedEvent
+     * @extends GEvent
      * @constructor
      * @version 1.0
      */
-    IFToolManager.ToolChangedEvent = function (previousTool, newTool) {
+    GToolManager.ToolChangedEvent = function (previousTool, newTool) {
         this.previousTool = previousTool;
         this.newTool = newTool;
     };
-    IFObject.inherit(IFToolManager.ToolChangedEvent, IFEvent);
+    GObject.inherit(GToolManager.ToolChangedEvent, GEvent);
 
-    /** @type IFTool */
-    IFToolManager.ToolChangedEvent.prototype.previousTool = null;
-    /** @type IFTool */
-    IFToolManager.ToolChangedEvent.prototype.newTool = null;
+    /** @type GTool */
+    GToolManager.ToolChangedEvent.prototype.previousTool = null;
+    /** @type GTool */
+    GToolManager.ToolChangedEvent.prototype.newTool = null;
 
     /** @override */
-    IFToolManager.ToolChangedEvent.prototype.toString = function () {
-        return "[Event IFToolManager.ToolChangedEvent]";
+    GToolManager.ToolChangedEvent.prototype.toString = function () {
+        return "[Event GToolManager.ToolChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFToolManager Class
+    // GToolManager Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type {Array<IFTool>}
+     * @type {Array<GTool>}
      * @private
      */
-    IFToolManager.prototype._tools = null;
+    GToolManager.prototype._tools = null;
 
     /**
      * @type {Object}
      * @private
      */
-    IFToolManager.prototype._typeIdToIndexMap = null;
+    GToolManager.prototype._typeIdToIndexMap = null;
 
     /**
-     * @type {IFTool}
+     * @type {GTool}
      * @private
      */
-    IFToolManager.prototype._activeTool = null;
+    GToolManager.prototype._activeTool = null;
 
     /**
-     * @type {IFEditorView}
+     * @type {GEditorView}
      * @private
      */
-    IFToolManager.prototype._view = null;
+    GToolManager.prototype._view = null;
 
     /**
-     * @type {IFStage}
+     * @type {GStage}
      * @private
      */
-    IFToolManager.prototype._viewStage = null;
+    GToolManager.prototype._viewStage = null;
 
     /**
-     * @type {IFTool}
+     * @type {GTool}
      * @private
      */
-    IFToolManager.prototype._temporaryActiveTool = null;
+    GToolManager.prototype._temporaryActiveTool = null;
 
     /**
      * @type {boolean}
      * @private
      */
-    IFToolManager.prototype._temporarySubselect = false;
+    GToolManager.prototype._temporarySubselect = false;
 
     /**
      * Add a new tool at the end of this manager. Note that the tool
      * will automatically be activated if the manager does not yet have an active one.
-     * @param {IFTool} tool the tool to add
+     * @param {GTool} tool the tool to add
      * @version 1.0
      */
-    IFToolManager.prototype.addTool = function (tool) {
+    GToolManager.prototype.addTool = function (tool) {
         if (tool._manager) {
             throw new Error('Tool is already registered');
         }
@@ -108,7 +108,7 @@
         this._typeIdToIndexMap = {};
         for (var i = 0; i < this._tools.length; ++i) {
             var tool = this._tools[i];
-            this._typeIdToIndexMap[IFObject.getTypeId(tool)] = i;
+            this._typeIdToIndexMap[GObject.getTypeId(tool)] = i;
         }
 
         if (!this._activeTool) {
@@ -122,14 +122,14 @@
      * @return {Boolean} true if available, false if not
      * @version 1.0
      */
-    IFToolManager.prototype.hasTool = function (tool) {
-        return this._typeIdToIndexMap.hasOwnProperty(IFObject.getTypeId(tool));
+    GToolManager.prototype.hasTool = function (tool) {
+        return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool));
     };
 
     /**
      * @returns {Number} the total count of tools in this manager
      */
-    IFToolManager.prototype.getToolCount = function () {
+    GToolManager.prototype.getToolCount = function () {
         return this._tools.length;
     };
 
@@ -137,39 +137,39 @@
      * @param {Function} tool the tool class to get an index for
      * @returns {Number} the index of the tool class or -1 if there's none
      */
-    IFToolManager.prototype.indexOf = function (tool) {
-        return this._typeIdToIndexMap.hasOwnProperty(IFObject.getTypeId(tool)) ?
-            this._typeIdToIndexMap[IFObject.getTypeId(tool)] : -1;
+    GToolManager.prototype.indexOf = function (tool) {
+        return this._typeIdToIndexMap.hasOwnProperty(GObject.getTypeId(tool)) ?
+            this._typeIdToIndexMap[GObject.getTypeId(tool)] : -1;
     };
 
     /**
      * @param {Number} index the tool-index to get an instance for
-     * @returns {IFTool} the tool or null if index is out of range
+     * @returns {GTool} the tool or null if index is out of range
      */
-    IFToolManager.prototype.getTool = function (index) {
+    GToolManager.prototype.getTool = function (index) {
         return index >= 0 && index < this._tools.length ? this._tools[index] : null;
     };
 
     /**
-     * @return {IFTool} the active tool or null for none
+     * @return {GTool} the active tool or null for none
      */
-    IFToolManager.prototype.getActiveTool = function () {
+    GToolManager.prototype.getActiveTool = function () {
         return this._activeTool;
     };
 
     /**
-     * @returns {IFTool} the temporary active tool if any
+     * @returns {GTool} the temporary active tool if any
      */
-    IFToolManager.prototype.getTemporaryActiveTool = function () {
+    GToolManager.prototype.getTemporaryActiveTool = function () {
         return this._temporaryActiveTool;
     };
 
     /**
      * Activate a tool
-     * @param {Function|IFTool} tool the tool class or instance to get activate
+     * @param {Function|GTool} tool the tool class or instance to get activate
      * @return {Boolean} true if activated, false if not
      */
-    IFToolManager.prototype.activateTool = function (tool) {
+    GToolManager.prototype.activateTool = function (tool) {
         if (!this._temporaryActiveTool) {
             return this._activateTool(tool);
         }
@@ -178,10 +178,10 @@
 
     /**
      * Assign the view this tool manager is operating on
-     * @param {IFEditorView} view the editor view this tool manager
+     * @param {GEditorView} view the editor view this tool manager
      * is operating on, may also be null to remove all views
      */
-    IFToolManager.prototype.setView = function (view) {
+    GToolManager.prototype.setView = function (view) {
         if (view != this._view) {
 
             if (this._view) {
@@ -211,13 +211,13 @@
     /**
      * @private
      */
-    IFToolManager.prototype._activateTool = function (tool) {
+    GToolManager.prototype._activateTool = function (tool) {
         // Stop here if current tool is not deactivatable
         if (this._activeTool && !this._activeTool.isDeactivatable()) {
             return false;
         }
 
-        if (!(tool instanceof IFTool)) {
+        if (!(tool instanceof GTool)) {
             tool = this.getTool(this.indexOf(tool));
         }
 
@@ -227,8 +227,8 @@
             var oldTool = this._activeTool;
             this._activeTool = tool;
 
-            if (this.hasEventListeners(IFToolManager.ToolChangedEvent)) {
-                this.trigger(new IFToolManager.ToolChangedEvent(oldTool, tool));
+            if (this.hasEventListeners(GToolManager.ToolChangedEvent)) {
+                this.trigger(new GToolManager.ToolChangedEvent(oldTool, tool));
             }
 
             this._addActiveToolToView();
@@ -241,7 +241,7 @@
     /**
      * @private
      */
-    IFToolManager.prototype._addActiveToolToView = function () {
+    GToolManager.prototype._addActiveToolToView = function () {
         if (this._activeTool && this._view) {
             // Let tool activate on the view
             this._activeTool.activate(this._view);
@@ -254,7 +254,7 @@
     /**
      * @private
      */
-    IFToolManager.prototype._removeActiveToolFromView = function () {
+    GToolManager.prototype._removeActiveToolFromView = function () {
         if (this._activeTool && this._view) {
             // Let tool deactivate on the view
             this._activeTool.deactivate(this._view);
@@ -272,7 +272,7 @@
      * This is usually called from the tools
      * @private
      */
-    IFToolManager.prototype._updateActiveToolCursor = function () {
+    GToolManager.prototype._updateActiveToolCursor = function () {
         if (this._activeTool && this._view) {
             this._view.setCursor(this._activeTool.getCursor());
         }
@@ -280,11 +280,11 @@
 
     /**
      * Invalidate and request a repaint of active tool area
-     * @param {IFRect} [area] the area of invalidation, if not provided
+     * @param {GRect} [area] the area of invalidation, if not provided
      * or null, invalidates the whole area
      * @private
      */
-    IFToolManager.prototype._invalidateActiveToolArea = function (area) {
+    GToolManager.prototype._invalidateActiveToolArea = function (area) {
         if (this._activeTool && this._view) {
             this._viewStage.invalidate(area);
         }
@@ -292,10 +292,10 @@
 
     /**
      * Called when this toolmanager should paint itself.
-     * @param {IFPaintContext} context
+     * @param {GPaintContext} context
      * @version 1.0
      */
-    IFToolManager.prototype._paint = function (context) {
+    GToolManager.prototype._paint = function (context) {
         if (this._activeTool) {
             this._activeTool.paint(context);
         }
@@ -304,16 +304,16 @@
     /**
      * @private
      */
-    IFToolManager.prototype._updateTemporaryTool = function () {
+    GToolManager.prototype._updateTemporaryTool = function () {
         // Don't allow temporary tool switching when our editor is in inline editor mode
         if (this._view.getEditor().isInlineEditing()) {
             return;
         }
 
-        var pointerToolInstance = this.getTool(this.indexOf(IFPointerTool));
-        var subselectToolInstance = this.getTool(this.indexOf(IFSubSelectTool));
-        var handToolInstance = this.getTool(this.indexOf(IFHandTool));
-        var zoomToolInstance = this.getTool(this.indexOf(IFZoomTool));
+        var pointerToolInstance = this.getTool(this.indexOf(GPointerTool));
+        var subselectToolInstance = this.getTool(this.indexOf(GSubSelectTool));
+        var handToolInstance = this.getTool(this.indexOf(GHandTool));
+        var zoomToolInstance = this.getTool(this.indexOf(GZoomTool));
 
         var temporaryTool = null;
 
@@ -335,7 +335,7 @@
         // .) Option Key is hold
         // .) The active tool is the pointer tool or the temporaryTool is the pointer tool or the temporary active tool is the pointer tool
         //
-        if (ifPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof IFPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
+        if (ifPlatform.modifiers.optionKey && (temporaryTool === pointerToolInstance || this._activeTool instanceof GPointerTool || this._temporaryActiveTool === pointerToolInstance)) {
             temporaryTool = subselectToolInstance;
         }
 
@@ -356,7 +356,7 @@
         // .) Meta Key is hold
         // .) The active tool is the hand tool or the temporaryTool is the hand tool
         //
-        if (ifPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof IFHandTool)) {
+        if (ifPlatform.modifiers.metaKey && (temporaryTool === handToolInstance || this._activeTool instanceof GHandTool)) {
             temporaryTool = zoomToolInstance;
         }
 
@@ -379,15 +379,15 @@
      * @param {GUIPlatform.ModifiersChangedEvent} event
      * @private
      */
-    IFToolManager.prototype._modifiersChanged = function (event) {
+    GToolManager.prototype._modifiersChanged = function (event) {
         // Update temporary tool
         this._updateTemporaryTool();
     };
 
     /** override */
-    IFToolManager.prototype.toString = function () {
-        return "[Object IFToolManager]";
+    GToolManager.prototype.toString = function () {
+        return "[Object GToolManager]";
     };
 
-    _.IFToolManager = IFToolManager;
+    _.GToolManager = GToolManager;
 })(this);

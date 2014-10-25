@@ -8,9 +8,9 @@
      */
     function GSnapUnitAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GSnapUnitAction, 'title.' + type);
+        this._title = new GLocale.Key(GSnapUnitAction, 'title.' + type);
     };
-    IFObject.inherit(GSnapUnitAction, GAction);
+    GObject.inherit(GSnapUnitAction, GAction);
 
     /** @enum */
     GSnapUnitAction.Type = {
@@ -23,7 +23,7 @@
     /** @type {GSnapUnitAction.Type} */
     GSnapUnitAction.prototype._type = null;
 
-    /** @type {IFLocale.Key} */
+    /** @type {GLocale.Key} */
     GSnapUnitAction.prototype._title = null;
 
     /**
@@ -62,7 +62,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -73,7 +73,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -86,10 +86,10 @@
         }
 
         // TODO : I18N
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
-                if (!element.hasMixin(IFElement.Transform)) {
+                if (!element.hasMixin(GElement.Transform)) {
                     continue;
                 }
 
@@ -98,10 +98,10 @@
                     continue;
                 }
 
-                var x = IFMath.round(bbox.getX(), true);
-                var y = IFMath.round(bbox.getY(), true);
-                var w = IFMath.round(bbox.getWidth(), true);
-                var h = IFMath.round(bbox.getHeight(), true);
+                var x = GMath.round(bbox.getX(), true);
+                var y = GMath.round(bbox.getY(), true);
+                var w = GMath.round(bbox.getWidth(), true);
+                var h = GMath.round(bbox.getHeight(), true);
 
                 if (this._type === GSnapUnitAction.Type.HalfUnit) {
                     x += 0.5;
@@ -110,7 +110,7 @@
                     h += 0.5;
                 }
 
-                var transform = new IFTransform()
+                var transform = new GTransform()
                     .translated(-bbox.getX(), -bbox.getY())
                     .scaled(w / bbox.getWidth(), h / bbox.getHeight())
                     .translated(bbox.getX(), bbox.getY())

@@ -1,36 +1,36 @@
 (function (_) {
     /**
      * A radial gradient
-     * @class IFRadialGradient
-     * @extends IFGradient
+     * @class GRadialGradient
+     * @extends GGradient
      * @constructor
      */
-    function IFRadialGradient(stops, scale) {
-        IFGradient.call(
+    function GRadialGradient(stops, scale) {
+        GGradient.call(
             this,
             stops,
             scale
         );
     }
 
-    IFPattern.inherit('R', IFRadialGradient, IFGradient);
+    GPattern.inherit('R', GRadialGradient, GGradient);
 
-    IFRadialGradient.equals = function (left, right, stopsOnly) {
-        if (left instanceof IFRadialGradient && right instanceof  IFRadialGradient) {
-            return IFGradient.equals(left, right, stopsOnly);
+    GRadialGradient.equals = function (left, right, stopsOnly) {
+        if (left instanceof GRadialGradient && right instanceof  GRadialGradient) {
+            return GGradient.equals(left, right, stopsOnly);
         }
         return false;
     };
 
     /** @override */
-    IFRadialGradient.prototype.asCSSBackground = function (opacity) {
+    GRadialGradient.prototype.asCSSBackground = function (opacity) {
         return 'radial-gradient(ellipse at center, ' + this.toScreenCSS(opacity) + ')';
     };
 
     /** @override */
-    IFRadialGradient.prototype.toString = function () {
-        return "[Object IFRadialGradient]";
+    GRadialGradient.prototype.toString = function () {
+        return "[Object GRadialGradient]";
     };
 
-    _.IFRadialGradient = IFRadialGradient;
+    _.GRadialGradient = GRadialGradient;
 })(this);

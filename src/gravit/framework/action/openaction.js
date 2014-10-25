@@ -8,10 +8,10 @@
      */
     function GOpenAction() {
     };
-    IFObject.inherit(GOpenAction, GAction);
+    GObject.inherit(GOpenAction, GAction);
 
     GOpenAction.ID = 'file.open';
-    GOpenAction.TITLE = new IFLocale.Key(GOpenAction, "title");
+    GOpenAction.TITLE = new GLocale.Key(GOpenAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GOpenAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'O'];
+        return [GKey.Constant.META, 'O'];
     };
 
     /**

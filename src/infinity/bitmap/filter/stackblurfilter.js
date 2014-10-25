@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * StackBlur filter
-     * @class IFStackBlurFilter
+     * @class GStackBlurFilter
      * @constructor
      */
-    function IFStackBlurFilter() {
+    function GStackBlurFilter() {
     };
 
     /**
      * @override
      * @param {Number} args radius of the blur
      */
-    IFStackBlurFilter.apply = function (pixels, width, height, args) {
+    GStackBlurFilter.apply = function (pixels, width, height, args) {
         var radius = args || 0;
         if (isNaN(radius) || radius < 1) return;
         radius |= 0;
@@ -312,5 +312,5 @@
         this.next = null;
     }
 
-    _.IFStackBlurFilter = IFStackBlurFilter;
+    _.GStackBlurFilter = GStackBlurFilter;
 })(this);

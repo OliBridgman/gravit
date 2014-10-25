@@ -34,7 +34,7 @@
     function afterInsertEvent(evt) {
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
-        if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
+        if (evt.node instanceof GSwatch && evt.node.getParent() === container) {
             insertSwatch.call(this, evt.node);
         }
     };
@@ -42,7 +42,7 @@
     function beforeRemoveEvent(evt) {
         var $this = $(this);
         var container = $this.data('gswatchpanel').container;
-        if (evt.node instanceof IFSwatch && evt.node.getParent() === container) {
+        if (evt.node instanceof GSwatch && evt.node.getParent() === container) {
             removeSwatch.call(this, evt.node);
         }
     };
@@ -55,7 +55,7 @@
         }
     };
 
-    /** @type {IFSwatch} */
+    /** @type {GSwatch} */
     var dragSwatch = null;
 
     function canDrop($this, target) {
@@ -152,7 +152,7 @@
                 .on('submitvalue', function (evt, value) {
                     if (value && value.trim() !== '') {
                         // TODO : I18N
-                        IFEditor.tryRunTransaction(swatch, function () {
+                        GEditor.tryRunTransaction(swatch, function () {
                             swatch.setProperty('name', value);
                         }, 'Rename Swatch');
                     }
@@ -178,7 +178,7 @@
 
                         // Setup our drag-event now
                         event.dataTransfer.effectAllowed = 'move';
-                        event.dataTransfer.setData(IFPattern.MIME_TYPE, IFPattern.serialize(pattern));
+                        event.dataTransfer.setData(GPattern.MIME_TYPE, GPattern.serialize(pattern));
                         event.dataTransfer.setDragImage(block.find('.swatch-preview > div')[0], data.options.previewWidth / 2, data.options.previewHeight / 2);
                     }
                 })
@@ -236,7 +236,7 @@
                                 var sourceIndex = parent.getIndexOfChild(dragSwatch);
                                 var targetIndex = parent.getIndexOfChild(targetSwatch);
 
-                                IFEditor.tryRunTransaction(parent, function () {
+                                GEditor.tryRunTransaction(parent, function () {
                                     parent.removeChild(dragSwatch);
                                     parent.insertChild(dragSwatch, sourceIndex < targetIndex ? targetSwatch.getNext() : targetSwatch);
                                 }, 'Move Swatch');
@@ -269,7 +269,7 @@
             if ($element.data('swatch') === swatch) {
                 $element
                     .find('.swatch-preview > div')
-                    .css('background', IFPattern.asCSSBackground(swatch.getProperty('pat')));
+                    .css('background', GPattern.asCSSBackground(swatch.getProperty('pat')));
 
                 var name = swatch.getProperty('name');
 
@@ -324,7 +324,7 @@
 
         if (data.container) {
             for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child instanceof IFSwatch) {
+                if (child instanceof GSwatch) {
                     insertSwatch.call(this, child);
                 }
             }
@@ -386,9 +386,9 @@
                         }
 
                         var scene = data.container.getScene();
-                        var sourcePattern = event.dataTransfer.getData(IFPattern.MIME_TYPE);
+                        var sourcePattern = event.dataTransfer.getData(GPattern.MIME_TYPE);
                         if (sourcePattern) {
-                            var pattern = IFPattern.deserialize(sourcePattern);
+                            var pattern = GPattern.deserialize(sourcePattern);
                             if (pattern) {
                                 methods.createSwatch.call(self, pattern);
                             }
@@ -430,10 +430,10 @@
             var $this = $(this);
             var data = $this.data('gswatchpanel');
             var scene = data.container.getScene();
-            var name = pattern instanceof IFColor ? pattern.toHumanString() : '';
+            var name = pattern instanceof GColor ? pattern.toHumanString() : '';
 
-            IFEditor.tryRunTransaction(scene, function () {
-                var swatch = new IFSwatch();
+            GEditor.tryRunTransaction(scene, function () {
+                var swatch = new GSwatch();
                 swatch.setProperties(['name', 'pat'], [name, pattern]);
                 scene.getSwatchCollection().appendChild(swatch);
             }, 'Add Swatch');
@@ -453,8 +453,8 @@
 
                     // Add pattern as swatch
                     // TODO : I18N
-                    IFEditor.tryRunTransaction(scene, function () {
-                        var swatch = new IFSwatch();
+                    GEditor.tryRunTransaction(scene, function () {
+                        var swatch = new GSwatch();
                         swatch.setProperties(['name', 'pat'], [name, pattern]);
                         scene.getSwatchCollection().appendChild(swatch);
                     }, 'Add Swatch');
@@ -480,9 +480,9 @@
                     data.afterInsertHandler = afterInsertEvent.bind(this);
                     data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
                     data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    scene.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                 }
             }
             return this;
@@ -497,9 +497,9 @@
                 // Unsubscribe from container
                 var scene = container.getScene();
                 if (scene) {
-                    scene.removeEventListener(IFNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(IFNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(IFNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                    scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                    scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                 }
             }
 

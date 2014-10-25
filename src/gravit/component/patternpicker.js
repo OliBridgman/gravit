@@ -209,7 +209,7 @@
                 $this.gPatternTarget('value', value);
 
                 if (!data.options.transient) {
-                    $this.css('background', IFPattern.asCSSBackground(value, typeof data.opacity === 'number' ? data.opacity : 1));
+                    $this.css('background', GPattern.asCSSBackground(value, typeof data.opacity === 'number' ? data.opacity : 1));
                 }
 
                 if (data.opened && !data.manualChangeEvent) {

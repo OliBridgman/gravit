@@ -1,21 +1,21 @@
 (function (_) {
     /**
      * The pointer selection tool
-     * @class IFPointerTool
-     * @extends IFSelectTool
+     * @class GPointerTool
+     * @extends GSelectTool
      * @constructor
      * @version 1.0
      */
-    function IFPointerTool() {
-        IFSelectTool.call(this);
+    function GPointerTool() {
+        GSelectTool.call(this);
     };
 
-    IFObject.inherit(IFPointerTool, IFSelectTool);
+    GObject.inherit(GPointerTool, GSelectTool);
 
     /** override */
-    IFPointerTool.prototype.toString = function () {
-        return "[Object IFPointerTool]";
+    GPointerTool.prototype.toString = function () {
+        return "[Object GPointerTool]";
     };
 
-    _.IFPointerTool = IFPointerTool;
+    _.GPointerTool = GPointerTool;
 })(this);

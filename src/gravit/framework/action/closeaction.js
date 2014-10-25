@@ -8,10 +8,10 @@
      */
     function GCloseAction() {
     };
-    IFObject.inherit(GCloseAction, GAction);
+    GObject.inherit(GCloseAction, GAction);
 
     GCloseAction.ID = "file.close";
-    GCloseAction.TITLE = new IFLocale.Key(GCloseAction, "title");
+    GCloseAction.TITLE = new GLocale.Key(GCloseAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GCloseAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, 'Q'];
+        return [GKey.Constant.META, 'Q'];
     };
 
     /**

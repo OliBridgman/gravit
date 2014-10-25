@@ -1,25 +1,25 @@
 (function (_) {
     /**
      * A stage for rendering the scene editors
-     * @param {IFEditorView} view
-     * @class IFEditorSceneStage
-     * @extends IFStage
+     * @param {GEditorView} view
+     * @class GEditorSceneStage
+     * @extends GStage
      * @constructor
      */
-    function IFEditorSceneStage(view) {
-        IFStage.call(this, view);
-        view.getEditor().addEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
+    function GEditorSceneStage(view) {
+        GStage.call(this, view);
+        view.getEditor().addEventListener(GEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
     }
-    IFObject.inherit(IFEditorSceneStage, IFStage);
+    GObject.inherit(GEditorSceneStage, GStage);
 
     /** @override */
-    IFEditorSceneStage.prototype.release = function () {
-        this._view.getEditor().removeEventListener(IFEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
+    GEditorSceneStage.prototype.release = function () {
+        this._view.getEditor().removeEventListener(GEditor.InvalidationRequestEvent, this._editorInvalidationRequest, this);
     };
 
     /** @override */
-    IFEditorSceneStage.prototype.paint = function (context) {
-        var sceneEditor = IFElementEditor.getEditor(this._view.getScene());
+    GEditorSceneStage.prototype.paint = function (context) {
+        var sceneEditor = GElementEditor.getEditor(this._view.getScene());
         if (sceneEditor) {
             sceneEditor.paint(this._view.getWorldTransform(), context);
         }
@@ -27,10 +27,10 @@
 
     /**
      * Event listener for editor's repaintRequest
-     * @param {IFEditor.InvalidationRequestEvent} event the invalidation request event
+     * @param {GEditor.InvalidationRequestEvent} event the invalidation request event
      * @private
      */
-    IFEditorSceneStage.prototype._editorInvalidationRequest = function (event) {
+    GEditorSceneStage.prototype._editorInvalidationRequest = function (event) {
         if (event.editor) {
             var area = event.editor.invalidate(this._view.getWorldTransform(), event.args);
             if (area) {
@@ -40,9 +40,9 @@
     };
 
     /** @override */
-    IFEditorSceneStage.prototype.toString = function () {
-        return "[Object IFEditorSceneStage]";
+    GEditorSceneStage.prototype.toString = function () {
+        return "[Object GEditorSceneStage]";
     };
 
-    _.IFEditorSceneStage = IFEditorSceneStage;
+    _.GEditorSceneStage = GEditorSceneStage;
 })(this);

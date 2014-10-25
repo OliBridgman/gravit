@@ -1,22 +1,22 @@
 (function (_) {
     /**
-     * IFObject is the base object for everything and all
-     * @class IFObject
+     * GObject is the base object for everything and all
+     * @class GObject
      * @constructor
      * @version 1.0
      */
-    function IFObject() {
+    function GObject() {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFObject.getTypeId Function
+    // GObject.getTypeId Function
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Tries to gather the type id of a given object
      * @param {Object|Function|Number} object
      * @return {Number} the type id or null if none was found
      */
-    IFObject.getTypeId = function (object) {
+    GObject.getTypeId = function (object) {
         if (typeof object === 'number') {
             return object;
         } else if (typeof object === 'function' && object.prototype.hasOwnProperty('__gtype_id__')) {
@@ -29,14 +29,14 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFObject.getName Function
+    // GObject.getName Function
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Tries to gather the name of a given source. Falls back to the toString() method.
      * @param {Object|Function|Number} object
      * @return {String} the name of the object or null for none
      */
-    IFObject.getName = function (object) {
+    GObject.getName = function (object) {
         if (object) {
             if (typeof object == 'object') {
                 object = object.constructor;
@@ -55,7 +55,7 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFObject.inherit Function
+    // GObject.inherit Function
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * Inherit from another base including fixing the constructor
@@ -63,9 +63,9 @@
      * @param {Object} base the base the other class should inherit from
      * @version 1.0
      */
-    IFObject.inherit = function (target, base) {
+    GObject.inherit = function (target, base) {
         target.prototype = Object.create(base.prototype);
-        target.prototype.__gtype_id__ = IFObject._internalTypeIdCounter++;
+        target.prototype.__gtype_id__ = GObject._internalTypeIdCounter++;
         target.prototype.constructor = target;
 
         // Delete any existing mixins property to avoid writing to the same
@@ -80,7 +80,7 @@
         }
 
         // Mix properties of constructor here as they may contain constants and the such
-        if (base != IFObject) {
+        if (base != GObject) {
             for (var prop in base) {
                 if (prop && prop.length > 0 && prop !== "constructor" && prop != "__gmixins__" && prop != "toString" && prop.charAt(0) != "_" && !target[prop]) {
                     target[prop] = base[prop];
@@ -95,8 +95,8 @@
      * @param {Array} mixins array if mixins to mix into
      * @version 1.0
      */
-    IFObject.mix = function (target, mixins) {
-        IFObject.inheritAndMix(target, null, mixins);
+    GObject.mix = function (target, mixins) {
+        GObject.inheritAndMix(target, null, mixins);
     };
 
     /**
@@ -106,7 +106,7 @@
      * @param {Array} [mixins] array if mixins to mix into
      * @version 1.0
      */
-    IFObject.inheritAndMix = function (target, base, mixins) {
+    GObject.inheritAndMix = function (target, base, mixins) {
         // Inherit from base (if any), first
         if (base) {
             this.inherit(target, base);
@@ -130,7 +130,7 @@
                 }
 
                 if (!mixinPrototype.__gtype_id__) {
-                    mixinPrototype.__gtype_id__ = IFObject._internalTypeIdCounter++;
+                    mixinPrototype.__gtype_id__ = GObject._internalTypeIdCounter++;
                 }
 
                 target.prototype.__gmixins__[mixinPrototype.__gtype_id__] = true;
@@ -148,7 +148,7 @@
                      superProto = Object.getPrototypeOf(superProto)) {
 
                     if (!superProto.__gtype_id__) {
-                        superProto.__gtype_id__ = IFObject._internalTypeIdCounter++;
+                        superProto.__gtype_id__ = GObject._internalTypeIdCounter++;
                     }
 
                     target.prototype.__gmixins__[superProto.__gtype_id__] = true;
@@ -161,19 +161,19 @@
      * @type {Number}
      * @private
      */
-    IFObject._internalTypeIdCounter = 0;
+    GObject._internalTypeIdCounter = 0;
 
     /**
      * @type {Number}
      * @private
      */
-    IFObject.prototype.__gtype_id__ = -1;
+    GObject.prototype.__gtype_id__ = -1;
 
     /**
      * @type {Object}
      * @private
      */
-    IFObject.prototype.__gmixins__ = null;
+    GObject.prototype.__gmixins__ = null;
 
     /**
      * Returns whether the instance contains a given mixin
@@ -181,16 +181,16 @@
      * @return {Boolean} true if this instance contains the given mixin
      * @version 1.0
      */
-    IFObject.prototype.hasMixin = function (mixin) {
+    GObject.prototype.hasMixin = function (mixin) {
         return this.__gmixins__ && this.__gmixins__[mixin.prototype.__gtype_id__] ? true : false;
     };
 
     /** @override */
-    IFObject.prototype.toString = function () {
+    GObject.prototype.toString = function () {
         var cname = this.constructor.toString().match(/^function ([^\(]*)/);
         return "[Object " + (cname ? cname[1] : 'object') + "]";
     };
 
-    _.IFObject = IFObject;
+    _.GObject = GObject;
 
 })(this);

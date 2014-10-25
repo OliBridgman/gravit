@@ -2,11 +2,11 @@
     gDevelopment.tests.push({
         title: 'Serialize Scene',
         test: function () {
-            var jsonCode = IFNode.serialize(gApp.getActiveDocument().getScene());
+            var jsonCode = GNode.serialize(gApp.getActiveDocument().getScene());
 
             vex.dialog.prompt({
                 message: 'Serializd JSON String:',
-                value: IFUtil.replaceAll(jsonCode, '"', '&quot;')
+                value: GUtil.replaceAll(jsonCode, '"', '&quot;')
             });
         }
     });

@@ -1,79 +1,79 @@
 (function (_) {
     /**
      * An editor for an rectangle
-     * @param {IFRectangle} rectangle the rectangle this editor works on
-     * @class IFRectangleEditor
-     * @extends IFPathBaseEditor
+     * @param {GRectangle} rectangle the rectangle this editor works on
+     * @class GRectangleEditor
+     * @extends GPathBaseEditor
      * @constructor
      */
-    function IFRectangleEditor(rectangle) {
-        IFPathBaseEditor.call(this, rectangle);
-        this._flags |= IFBlockEditor.Flag.ResizeAll;
+    function GRectangleEditor(rectangle) {
+        GPathBaseEditor.call(this, rectangle);
+        this._flags |= GBlockEditor.Flag.ResizeAll;
     };
-    IFObject.inherit(IFRectangleEditor, IFPathBaseEditor);
-    IFElementEditor.exports(IFRectangleEditor, IFRectangle);
+    GObject.inherit(GRectangleEditor, GPathBaseEditor);
+    GElementEditor.exports(GRectangleEditor, GRectangle);
 
-    IFRectangleEditor.LEFT_SHOULDER_PART_ID = IFUtil.uuid();
-    IFRectangleEditor.RIGHT_SHOULDER_PART_ID = IFUtil.uuid();
-    IFRectangleEditor.ANY_SHOULDER_PART_ID = IFUtil.uuid();
+    GRectangleEditor.LEFT_SHOULDER_PART_ID = GUtil.uuid();
+    GRectangleEditor.RIGHT_SHOULDER_PART_ID = GUtil.uuid();
+    GRectangleEditor.ANY_SHOULDER_PART_ID = GUtil.uuid();
 
     /** @override */
-    IFEllipseEditor.prototype.getBBoxMargin = function () {
-        var source = IFPathBaseEditor.prototype.getBBoxMargin.call(this);
+    GEllipseEditor.prototype.getBBoxMargin = function () {
+        var source = GPathBaseEditor.prototype.getBBoxMargin.call(this);
         if (this._showSegmentDetails()) {
-            return Math.max(IFElementEditor.OPTIONS.annotationSizeRegular + 1, source);
+            return Math.max(GElementEditor.OPTIONS.annotationSizeRegular + 1, source);
         }
         return source;
     };
 
     /** @override */
-    IFRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
-        IFPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
+    GRectangleEditor.prototype.movePart = function (partId, partData, position, viewToWorldTransform, guides, shift, option) {
+        GPathBaseEditor.prototype.movePart.call(this, partId, partData, position, viewToWorldTransform, guides, shift, option);
 
-        if (partId.id === IFRectangleEditor.LEFT_SHOULDER_PART_ID ||
-                partId.id === IFRectangleEditor.RIGHT_SHOULDER_PART_ID ||
-                partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
+        if (partId.id === GRectangleEditor.LEFT_SHOULDER_PART_ID ||
+                partId.id === GRectangleEditor.RIGHT_SHOULDER_PART_ID ||
+                partId.id === GRectangleEditor.ANY_SHOULDER_PART_ID) {
 
             var newPos = viewToWorldTransform.mapPoint(position);
 
             if (!this._elementPreview) {
-                this._elementPreview = new IFRectangle();
+                this._elementPreview = new GRectangle();
                 this._elementPreview.transferProperties(this._element,
-                    [IFShape.GeometryProperties, IFRectangle.GeometryProperties], true);
+                    [GShape.GeometryProperties, GRectangle.GeometryProperties], true);
             }
 
             var sourceTransform = this._element.getTransform();
-            var sourcePosition = new IFPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
+            var sourcePosition = new GPoint(partId.ap.getProperty('x'), partId.ap.getProperty('y'));
             if (sourceTransform) {
                 sourcePosition = sourceTransform.mapPoint(sourcePosition);
             }
             var newLVal = null;
             var newRVal = null;
 
-            if (partId.id == IFRectangleEditor.LEFT_SHOULDER_PART_ID ||
-                    partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
+            if (partId.id == GRectangleEditor.LEFT_SHOULDER_PART_ID ||
+                    partId.id === GRectangleEditor.ANY_SHOULDER_PART_ID) {
 
                 var nearPt = this._element.getAnchorPoints().getPreviousPoint(partId.ap);
-                var nearLPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
+                var nearLPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearLPosition = sourceTransform ? sourceTransform.mapPoint(nearLPosition) : nearLPosition;
 
-                var newLShoulderPt = IFMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newLShoulderPt = GMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearLPosition.getX(), nearLPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newLVal = IFMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
+                newLVal = GMath.ptDist(newLShoulderPt.getX(), newLShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
-            if (partId.id === IFRectangleEditor.RIGHT_SHOULDER_PART_ID ||
-                    partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
+            if (partId.id === GRectangleEditor.RIGHT_SHOULDER_PART_ID ||
+                    partId.id === GRectangleEditor.ANY_SHOULDER_PART_ID) {
 
                 var nearPt = this._element.getAnchorPoints().getNextPoint(partId.ap);
-                var nearRPosition = new IFPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
+                var nearRPosition = new GPoint(nearPt.getProperty('x'), nearPt.getProperty('y'));
                 nearRPosition = sourceTransform ? sourceTransform.mapPoint(nearRPosition) : nearRPosition;
 
-                var newRShoulderPt = IFMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
+                var newRShoulderPt = GMath.getVectorProjection(sourcePosition.getX(), sourcePosition.getY(),
                     nearRPosition.getX(), nearRPosition.getY(), newPos.getX(), newPos.getY(), true);
 
-                newRVal = IFMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
+                newRVal = GMath.ptDist(newRShoulderPt.getX(), newRShoulderPt.getY(),
                     sourcePosition.getX(), sourcePosition.getY());
             }
 
@@ -93,11 +93,11 @@
             var element = this.getPaintElement();
             // We do not apply element's transform to shoulders when generating vertices,
             // assign new value directly to preview corner shoulder without any further transforms
-            var prefix = IFRectangle.getGeometryPropertiesSidePrefix(partId.side);
+            var prefix = GRectangle.getGeometryPropertiesSidePrefix(partId.side);
             if (shift) {
                 this.getPaintElement().setProperties([prefix + '_sx', prefix + '_sy'], [newVal, newVal]);
-            } else if (partId.id == IFRectangleEditor.LEFT_SHOULDER_PART_ID ||
-                    partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID && newVal == newLVal) {
+            } else if (partId.id == GRectangleEditor.LEFT_SHOULDER_PART_ID ||
+                    partId.id === GRectangleEditor.ANY_SHOULDER_PART_ID && newVal == newLVal) {
 
                 this.getPaintElement().setProperty(prefix + '_sx', newVal);
             } else { // right shoulder
@@ -109,41 +109,41 @@
     };
 
     /** @override */
-    IFRectangleEditor.prototype.applyPartMove = function (partId, partData) {
-        if (partId.id === IFRectangleEditor.LEFT_SHOULDER_PART_ID ||
-                partId.id === IFRectangleEditor.RIGHT_SHOULDER_PART_ID ||
-                partId.id === IFRectangleEditor.ANY_SHOULDER_PART_ID) {
+    GRectangleEditor.prototype.applyPartMove = function (partId, partData) {
+        if (partId.id === GRectangleEditor.LEFT_SHOULDER_PART_ID ||
+                partId.id === GRectangleEditor.RIGHT_SHOULDER_PART_ID ||
+                partId.id === GRectangleEditor.ANY_SHOULDER_PART_ID) {
 
-            this._element.transferProperties(this._elementPreview, [IFRectangle.GeometryProperties]);
+            this._element.transferProperties(this._elementPreview, [GRectangle.GeometryProperties]);
         }
-        IFPathBaseEditor.prototype.applyPartMove.call(this, partId, partData);
+        GPathBaseEditor.prototype.applyPartMove.call(this, partId, partData);
     };
 
     /** @override */
-    IFRectangleEditor.prototype.applyTransform = function (element) {
+    GRectangleEditor.prototype.applyTransform = function (element) {
         if (element && this._elementPreview) {
-            element.transferProperties(this._elementPreview, [IFShape.GeometryProperties, IFRectangle.GeometryProperties]);
+            element.transferProperties(this._elementPreview, [GShape.GeometryProperties, GRectangle.GeometryProperties]);
             this.resetTransform();
         } else {
-            IFPathBaseEditor.prototype.applyTransform.call(this, element);
+            GPathBaseEditor.prototype.applyTransform.call(this, element);
         }
     };
 
     /** @override */
-    IFRectangleEditor.prototype._hasCenterCross = function () {
+    GRectangleEditor.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** @override */
-    IFRectangleEditor.prototype._postPaint = function (transform, context) {
-        IFPathBaseEditor.prototype._postPaint.call(this, transform, context);
+    GRectangleEditor.prototype._postPaint = function (transform, context) {
+        GPathBaseEditor.prototype._postPaint.call(this, transform, context);
         // If we have segments then paint 'em
         if (this._showSegmentDetails()) {
             this.getPaintElement().iterateSegments(function (point, side, ct, sl, sr, idx) {
                 var element = this.getPaintElement();
-                var leftPartId = {id: IFRectangleEditor.LEFT_SHOULDER_PART_ID, side: side};
-                var rightPartId = {id: IFRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side};
-                var anyPartId = {id: IFRectangleEditor.ANY_SHOULDER_PART_ID, side: side};
+                var leftPartId = {id: GRectangleEditor.LEFT_SHOULDER_PART_ID, side: side};
+                var rightPartId = {id: GRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side};
+                var anyPartId = {id: GRectangleEditor.ANY_SHOULDER_PART_ID, side: side};
 
                 if (sl != 0 || sr != 0) {
                     var anchorPt = element.getAnchorPoints().getChildByIndex(idx);
@@ -153,11 +153,11 @@
                         anchorPt.getLeftShoulderPoint(true);
 
                     if (!leftShoulder) {
-                        leftShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        leftShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         leftShoulder = sourceTransform ? sourceTransform.mapPoint(leftShoulder) : leftShoulder;
                     }
 
-                    this._paintAnnotation(context, transform, leftShoulder, IFElementEditor.Annotation.Diamond,
+                    this._paintAnnotation(context, transform, leftShoulder, GElementEditor.Annotation.Diamond,
                         this.isPartSelected(leftPartId), false);
 
                     var rightShoulder = sourceTransform ?
@@ -165,14 +165,14 @@
                         anchorPt.getRightShoulderPoint(true);
 
                     if (!rightShoulder) {
-                        rightShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        rightShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         rightShoulder = sourceTransform ? sourceTransform.mapPoint(rightShoulder) : rightShoulder;
                     }
 
-                    this._paintAnnotation(context, transform, rightShoulder, IFElementEditor.Annotation.Diamond,
+                    this._paintAnnotation(context, transform, rightShoulder, GElementEditor.Annotation.Diamond,
                         this.isPartSelected(rightPartId), false);
                 } else {
-                    this._paintAnnotation(context, transform, point, IFElementEditor.Annotation.Diamond,
+                    this._paintAnnotation(context, transform, point, GElementEditor.Annotation.Diamond,
                         this.isPartSelected(leftPartId) || this.isPartSelected(rightPartId) ||
                             this.isPartSelected(anyPartId), false);
                 }
@@ -181,7 +181,7 @@
     };
 
     /** @override */
-    IFRectangleEditor.prototype._partIdAreEqual = function (a, b) {
+    GRectangleEditor.prototype._partIdAreEqual = function (a, b) {
         var eqs = (a === b) || (a.id === b.id);
         if (eqs && a.id) {
             eqs = (a.side === b.side);
@@ -190,7 +190,7 @@
     };
 
     /** @override */
-    IFRectangleEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
+    GRectangleEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         // If we have segment details then hit-test 'em first
         if (this._showSegmentDetails()) {
             var result = null;
@@ -204,14 +204,14 @@
                         anchorPt.getLeftShoulderPoint(true);
 
                     if (!leftShoulder) {
-                        leftShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        leftShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         leftShoulder = sourceTransform ? sourceTransform.mapPoint(leftShoulder) : leftShoulder;
                     }
 
                     if (this._getAnnotationBBox(transform, leftShoulder)
                         .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-                        result = new IFElementEditor.PartInfo(this,
-                            {id: IFRectangleEditor.LEFT_SHOULDER_PART_ID, side: side,
+                        result = new GElementEditor.PartInfo(this,
+                            {id: GRectangleEditor.LEFT_SHOULDER_PART_ID, side: side,
                                 ap: anchorPt, point: leftShoulder},
                             null, true, true);
                         return true;
@@ -222,14 +222,14 @@
                         anchorPt.getRightShoulderPoint(true);
 
                     if (!rightShoulder) {
-                        rightShoulder = new IFPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
+                        rightShoulder = new GPoint(anchorPt.getProperty('x'), anchorPt.getProperty('y'));
                         rightShoulder = sourceTransform ? sourceTransform.mapPoint(rightShoulder) : rightShoulder;
                     }
 
                     if (this._getAnnotationBBox(transform, rightShoulder)
                         .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-                        result = new IFElementEditor.PartInfo(this,
-                            {id: IFRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side,
+                        result = new GElementEditor.PartInfo(this,
+                            {id: GRectangleEditor.RIGHT_SHOULDER_PART_ID, side: side,
                                 ap: anchorPt, point: rightShoulder},
                             null, true, true);
                         return true;
@@ -238,8 +238,8 @@
                     if (this._getAnnotationBBox(transform, point, true)
                         .expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
 
-                        result = new IFElementEditor.PartInfo(this,
-                            {id: IFRectangleEditor.ANY_SHOULDER_PART_ID, side: side, ap: anchorPt, point: point},
+                        result = new GElementEditor.PartInfo(this,
+                            {id: GRectangleEditor.ANY_SHOULDER_PART_ID, side: side, ap: anchorPt, point: point},
                             null, true, true);
                         return true;
                     }
@@ -251,21 +251,21 @@
             }
         }
 
-        return IFPathBaseEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
+        return GPathBaseEditor.prototype._getPartInfoAt.call(this, location, transform, tolerance);
     };
 
     /**
      * @returns {Boolean}
      * @private
      */
-    IFRectangleEditor.prototype._showSegmentDetails = function () {
-        return this._showAnnotations() && this.hasFlag(IFElementEditor.Flag.Detail) && !this._elementPreview;
+    GRectangleEditor.prototype._showSegmentDetails = function () {
+        return this._showAnnotations() && this.hasFlag(GElementEditor.Flag.Detail) && !this._elementPreview;
     };
 
     /** @override */
-    IFRectangleEditor.prototype.toString = function () {
-        return "[Object IFRectangleEditor]";
+    GRectangleEditor.prototype.toString = function () {
+        return "[Object GRectangleEditor]";
     };
 
-    _.IFRectangleEditor = IFRectangleEditor;
+    _.GRectangleEditor = GRectangleEditor;
 })(this);

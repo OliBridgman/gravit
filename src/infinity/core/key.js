@@ -1,18 +1,18 @@
 (function (_) {
 
     /**
-     * @class IFKey
+     * @class GKey
      * @constructor
      * @version 1.0
      */
-    function IFKey() {
+    function GKey() {
     };
 
     /**
      * Enumeration of available key code constants
      * @version 1.0
      */
-    IFKey.Constant = {
+    GKey.Constant = {
         /**
          * A printable character
          * @version 1.0
@@ -207,95 +207,95 @@
         REMOVE: 102
     };
 
-    IFKey.translateKey = function (keyCode) {
+    GKey.translateKey = function (keyCode) {
         var result = null;
         switch (keyCode) {
             case 32 :
-                result = IFKey.Constant.SPACE;
+                result = GKey.Constant.SPACE;
                 break;
             case 13 :
-                result = IFKey.Constant.ENTER;
+                result = GKey.Constant.ENTER;
                 break;
             case 9 :
-                result = IFKey.Constant.TAB;
+                result = GKey.Constant.TAB;
                 break;
             case 8 :
-                result = IFKey.Constant.BACKSPACE;
+                result = GKey.Constant.BACKSPACE;
                 break;
             case 16 :
-                result = IFKey.Constant.SHIFT;
+                result = GKey.Constant.SHIFT;
                 break;
             case 17:
-                result = IFKey.Constant.CONTROL;
+                result = GKey.Constant.CONTROL;
                 break;
             case 18:
-                result = IFKey.Constant.ALT;
+                result = GKey.Constant.ALT;
                 break;
             case 37 :
-                result = IFKey.Constant.LEFT;
+                result = GKey.Constant.LEFT;
                 break;
             case 38 :
-                result = IFKey.Constant.UP;
+                result = GKey.Constant.UP;
                 break;
             case 39 :
-                result = IFKey.Constant.RIGHT;
+                result = GKey.Constant.RIGHT;
                 break;
             case 40 :
-                result = IFKey.Constant.DOWN;
+                result = GKey.Constant.DOWN;
                 break;
             case 33 :
-                result = IFKey.Constant.PAGE_UP;
+                result = GKey.Constant.PAGE_UP;
                 break;
             case 34 :
-                result = IFKey.Constant.PAGE_DOWN;
+                result = GKey.Constant.PAGE_DOWN;
                 break;
             case 36 :
-                result = IFKey.Constant.HOME;
+                result = GKey.Constant.HOME;
                 break;
             case 35 :
-                result = IFKey.Constant.END;
+                result = GKey.Constant.END;
                 break;
             case 45 :
-                result = IFKey.Constant.INSERT;
+                result = GKey.Constant.INSERT;
                 break;
             case 46 :
-                result = IFKey.Constant.DELETE;
+                result = GKey.Constant.DELETE;
                 break;
             case 112 :
-                result = IFKey.Constant.F1;
+                result = GKey.Constant.F1;
                 break;
             case 113 :
-                result = IFKey.Constant.F2;
+                result = GKey.Constant.F2;
                 break;
             case 114 :
-                result = IFKey.Constant.F3;
+                result = GKey.Constant.F3;
                 break;
             case 115 :
-                result = IFKey.Constant.F4;
+                result = GKey.Constant.F4;
                 break;
             case 116 :
-                result = IFKey.Constant.F5;
+                result = GKey.Constant.F5;
                 break;
             case 117 :
-                result = IFKey.Constant.F6;
+                result = GKey.Constant.F6;
                 break;
             case 118 :
-                result = IFKey.Constant.F7;
+                result = GKey.Constant.F7;
                 break;
             case 119 :
-                result = IFKey.Constant.F8;
+                result = GKey.Constant.F8;
                 break;
             case 120 :
-                result = IFKey.Constant.F9;
+                result = GKey.Constant.F9;
                 break;
             case 121 :
-                result = IFKey.Constant.F10;
+                result = GKey.Constant.F10;
                 break;
             case 122 :
-                result = IFKey.Constant.F11;
+                result = GKey.Constant.F11;
                 break;
             case 123 :
-                result = IFKey.Constant.F12;
+                result = GKey.Constant.F12;
                 break;
             default:
                 break;
@@ -308,72 +308,72 @@
         return result;
     };
 
-    IFKey.transformKey = function (keyCode) {
-        if (keyCode === IFKey.Constant.META || keyCode === IFKey.Constant.COMMAND) {
-            if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
-                return IFKey.Constant.COMMAND;
+    GKey.transformKey = function (keyCode) {
+        if (keyCode === GKey.Constant.META || keyCode === GKey.Constant.COMMAND) {
+            if (GSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && GSystem.hardware === GSystem.Hardware.Desktop) {
+                return GKey.Constant.COMMAND;
             } else {
-                return IFKey.Constant.CONTROL;
+                return GKey.Constant.CONTROL;
             }
-        } else if (keyCode === IFKey.Constant.OPTION) {
-            return IFKey.Constant.ALT;
-        } else if (keyCode === IFKey.Constant.REMOVE) {
-            if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS) {
-                return IFKey.Constant.BACKSPACE;
+        } else if (keyCode === GKey.Constant.OPTION) {
+            return GKey.Constant.ALT;
+        } else if (keyCode === GKey.Constant.REMOVE) {
+            if (GSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS) {
+                return GKey.Constant.BACKSPACE;
             } else {
-                return IFKey.Constant.DELETE;
+                return GKey.Constant.DELETE;
             }
         } else {
             return keyCode;
         }
     };
 
-    IFKey.toLocalizedName = function (keyCode) {
-        keyCode = IFKey.transformKey(keyCode);
-        return ifLocale.getValue(IFKey, "key." + keyCode.toString());
+    GKey.toLocalizedName = function (keyCode) {
+        keyCode = GKey.transformKey(keyCode);
+        return ifLocale.getValue(GKey, "key." + keyCode.toString());
     };
 
-    IFKey.toLocalizedShort = function (keyCode) {
+    GKey.toLocalizedShort = function (keyCode) {
         // Handle special chars on mac
-        if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
-            if (keyCode == IFKey.Constant.TAB) {
+        if (GSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && GSystem.hardware === GSystem.Hardware.Desktop) {
+            if (keyCode == GKey.Constant.TAB) {
                 return '\u21E5';
-            } else if (keyCode == IFKey.Constant.OPTION || keyCode == IFKey.Constant.ALT) {
+            } else if (keyCode == GKey.Constant.OPTION || keyCode == GKey.Constant.ALT) {
                 return '\u2325';
-            } else if (keyCode == IFKey.Constant.META || keyCode == IFKey.Constant.COMMAND) {
+            } else if (keyCode == GKey.Constant.META || keyCode == GKey.Constant.COMMAND) {
                 return '\u2318';
-            } else if (keyCode == IFKey.Constant.SHIFT) {
+            } else if (keyCode == GKey.Constant.SHIFT) {
                 return '\u21E7';
-            } else if (keyCode == IFKey.Constant.CONTROL) {
+            } else if (keyCode == GKey.Constant.CONTROL) {
                 return '\u2303';
-            } else if (keyCode == IFKey.Constant.SPACE) {
+            } else if (keyCode == GKey.Constant.SPACE) {
                 return '\u2423';
-            } else if (keyCode == IFKey.Constant.ENTER) {
+            } else if (keyCode == GKey.Constant.ENTER) {
                 return '\u23CE';
-            } else if (keyCode == IFKey.Constant.REMOVE) {
+            } else if (keyCode == GKey.Constant.REMOVE) {
                 return '\u232B';
-            } else if (keyCode == IFKey.Constant.UP) {
+            } else if (keyCode == GKey.Constant.UP) {
                 return '\u2191';
-            } else if (keyCode == IFKey.Constant.DOWN) {
+            } else if (keyCode == GKey.Constant.DOWN) {
                 return '\u2193';
-            } else if (keyCode == IFKey.Constant.LEFT) {
+            } else if (keyCode == GKey.Constant.LEFT) {
                 return '\u2190';
-            } else if (keyCode == IFKey.Constant.RIGHT) {
+            } else if (keyCode == GKey.Constant.RIGHT) {
                 return '\u2192';
             }
         }
 
-        keyCode = IFKey.transformKey(keyCode);
-        var name = ifLocale.getValue(IFKey, "key." + keyCode.toString() + ".short", null);
+        keyCode = GKey.transformKey(keyCode);
+        var name = ifLocale.getValue(GKey, "key." + keyCode.toString() + ".short", null);
         if (!name) {
-            return ifLocale.getValue(IFKey, "key." + keyCode.toString());
+            return ifLocale.getValue(GKey, "key." + keyCode.toString());
         } else {
             return name;
         }
     };
 
-    IFKey.toSystemShortcut = function (character) {
-        if (IFSystem.operatingSystem === IFSystem.OperatingSystem.OSX_IOS && IFSystem.hardware === IFSystem.Hardware.Desktop) {
+    GKey.toSystemShortcut = function (character) {
+        if (GSystem.operatingSystem === GSystem.OperatingSystem.OSX_IOS && GSystem.hardware === GSystem.Hardware.Desktop) {
             if (character === '-') {
                 return '\u2212';
             } else if (character === '+') {
@@ -383,24 +383,24 @@
         return character.toUpperCase();
     }
 
-    IFKey.shortcutToString = function (shortcut) {
+    GKey.shortcutToString = function (shortcut) {
         var result = "";
         for (var i = 0; i < shortcut.length; ++i) {
             if (i > 0) {
                 // On platform others than mac we'll use a separator
-                if (IFSystem.operatingSystem != IFSystem.OperatingSystem.OSX_IOS) {
+                if (GSystem.operatingSystem != GSystem.OperatingSystem.OSX_IOS) {
                     result += "+";
                 }
             }
             if (typeof shortcut[i] == 'number') {
-                result += IFKey.toLocalizedShort(shortcut[i]);
+                result += GKey.toLocalizedShort(shortcut[i]);
             } else {
                 // Return uppercase chars
-                result += IFKey.toSystemShortcut(shortcut[i]);
+                result += GKey.toSystemShortcut(shortcut[i]);
             }
         }
         return result;
     };
 
-    _.IFKey = IFKey;
+    _.GKey = GKey;
 })(this);

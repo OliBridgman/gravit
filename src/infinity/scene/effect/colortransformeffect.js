@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * Color transform effect
-     * @class IFColorTransformEffect
-     * @extends IFEffect
+     * @class GColorTransformEffect
+     * @extends GEffect
      * @constructor
      */
-    IFColorTransformEffect = function () {
-        IFEffect.call(this);
-        this._setDefaultProperties(IFColorTransformEffect.VisualProperties);
+    GColorTransformEffect = function () {
+        GEffect.call(this);
+        this._setDefaultProperties(GColorTransformEffect.VisualProperties);
     };
-    IFNode.inherit('clTransformEffect', IFColorTransformEffect, IFEffect);
+    GNode.inherit('clTransformEffect', GColorTransformEffect, GEffect);
 
-    IFColorTransformEffect.equals = function (left, right) {
-        if (left instanceof IFColorTransformEffect && right instanceof  IFColorTransformEffect) {
-            return left.arePropertiesEqual(right, Object.keys(IFColorTransformEffect.VisualProperties));
+    GColorTransformEffect.equals = function (left, right) {
+        if (left instanceof GColorTransformEffect && right instanceof  GColorTransformEffect) {
+            return left.arePropertiesEqual(right, Object.keys(GColorTransformEffect.VisualProperties));
         }
         return false;
     };
@@ -21,7 +21,7 @@
     /**
      * Visual properties of a color grading effect
      */
-    IFColorTransformEffect.VisualProperties = {
+    GColorTransformEffect.VisualProperties = {
         /** The rgba multipliers (Array<Number>) */
         m: null,
         /** The rgba offsets (Array<Number>) */
@@ -29,34 +29,34 @@
     };
 
     /** @override */
-    IFColorTransformEffect.prototype.getEffectType = function () {
-        return IFEffect.Type.Filter;
+    GColorTransformEffect.prototype.getEffectType = function () {
+        return GEffect.Type.Filter;
     };
 
     /** @override */
-    IFColorTransformEffect.prototype.render = function (contents, output, background, scale) {
+    GColorTransformEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$m && this.$o) {
-            contents.getBitmap().applyFilter(IFColorMatrixFilter, {multiplier: this.$m, offsets: this.$o});
+            contents.getBitmap().applyFilter(GColorMatrixFilter, {multiplier: this.$m, offsets: this.$o});
         }
     };
 
     /** @override */
-    IFColorTransformEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFColorTransformEffect.VisualProperties);
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFColorTransformEffect.VisualProperties);
+    GColorTransformEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GColorTransformEffect.VisualProperties);
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GColorTransformEffect.VisualProperties);
         }
 
-        this._handleVisualChangeForProperties(change, args, IFColorTransformEffect.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GColorTransformEffect.VisualProperties);
 
-        IFEffect.prototype._handleChange.call(this, change, args);
+        GEffect.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFColorTransformEffect.prototype.toString = function () {
-        return "[Object IFColorTransformEffect]";
+    GColorTransformEffect.prototype.toString = function () {
+        return "[Object GColorTransformEffect]";
     };
 
-    _.IFColorTransformEffect = IFColorTransformEffect;
+    _.GColorTransformEffect = GColorTransformEffect;
 })(this);

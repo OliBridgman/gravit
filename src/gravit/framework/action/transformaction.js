@@ -8,9 +8,9 @@
      */
     function GTransformAction(type) {
         this._type = type;
-        this._title = new IFLocale.Key(GTransformAction, 'title.' + type);
+        this._title = new GLocale.Key(GTransformAction, 'title.' + type);
     };
-    IFObject.inherit(GTransformAction, GAction);
+    GObject.inherit(GTransformAction, GAction);
 
     /** @enum */
     GTransformAction.Type = {
@@ -29,7 +29,7 @@
     /** @type {GTransformAction.Type} */
     GTransformAction.prototype._type = null;
 
-    /** @type {IFLocale.Key} */
+    /** @type {GLocale.Key} */
     GTransformAction.prototype._title = null;
 
     /**
@@ -87,7 +87,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -97,7 +97,7 @@
     };
 
     /**
-     * @param {Array<IFElement>} [elements] optional elements, if not given
+     * @param {Array<GElement>} [elements] optional elements, if not given
      * uses the selection
      * @override
      */
@@ -109,13 +109,13 @@
             elements = document.getEditor().getSelection();
         }
 
-        IFEditor.tryRunTransaction(scene, function () {
+        GEditor.tryRunTransaction(scene, function () {
             for (var i = 0; i < elements.length; ++i) {
                 var element = elements[i];
                 var bbox = element.getGeometryBBox();
 
-                if (element.hasMixin(IFElement.Transform) && bbox && !bbox.isEmpty()) {
-                    var center = bbox.getSide(IFRect.Side.CENTER);
+                if (element.hasMixin(GElement.Transform) && bbox && !bbox.isEmpty()) {
+                    var center = bbox.getSide(GRect.Side.CENTER);
                     var rotation = 0;
                     var scaleX = 1;
                     var scaleY = 1;
@@ -154,10 +154,10 @@
                             break;
                     }
 
-                    var transform = new IFTransform()
+                    var transform = new GTransform()
                         .translated(-center.getX(), -center.getY())
                         .scaled(scaleX, scaleY)
-                        .rotated(IFMath.toRadians(rotation))
+                        .rotated(GMath.toRadians(rotation))
                         .translated(center.getX(), center.getY());
 
                     element.transform(transform);

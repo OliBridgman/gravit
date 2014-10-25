@@ -2,14 +2,14 @@
     /**
      * The global window container class
      * @class GWindows
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      */
     function GWindows(htmlElement) {
         this._htmlElement = htmlElement;
         this._windows = [];
     };
-    IFObject.inherit(GWindows, IFEventTarget);
+    GObject.inherit(GWindows, GEventTarget);
 
     // -----------------------------------------------------------------------------------------------------------------
     // GWindows.WindowEvent Event
@@ -18,14 +18,14 @@
     /**
      * An event whenever a window event occurrs
      * @class GWindows.WindowEvent
-     * @extends IFEvent
+     * @extends GEvent
      * @constructor
      */
     GWindows.WindowEvent = function (type, window) {
         this.type = type;
         this.window = window;
     };
-    IFObject.inherit(GWindows.WindowEvent, IFEvent);
+    GObject.inherit(GWindows.WindowEvent, GEvent);
 
     /**
      * Enumeration of window event types

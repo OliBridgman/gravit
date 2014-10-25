@@ -1,27 +1,27 @@
 (function (_) {
     /**
      * Color matrix filter
-     * @class IFColorMatrixFilter
+     * @class GColorMatrixFilter
      * @constructor
      */
-    function IFColorMatrixFilter() {
+    function GColorMatrixFilter() {
     };
 
-    IFColorMatrixFilter.COLOR_MATRIX_IDENTITY = [
+    GColorMatrixFilter.COLOR_MATRIX_IDENTITY = [
         1, 0, 0, 0, 0,
         0, 1, 0, 0, 0,
         0, 0, 1, 0, 0,
         0, 0, 0, 1, 0
     ];
 
-    IFColorMatrixFilter.COLOR_MATRIX_INVERT = [
+    GColorMatrixFilter.COLOR_MATRIX_INVERT = [
         -1, 0, 0, 0, 255,
         0, -1, 0, 0, 255,
         0, 0, -1, 0, 255,
         0, 0, 0, 1, 0
     ];
 
-    IFColorMatrixFilter.COLOR_MATRIX_GRAYSCALE = [
+    GColorMatrixFilter.COLOR_MATRIX_GRAYSCALE = [
         0.33, 0.33, 0.33, 0, 0,
         0.33, 0.33, 0.33, 0, 0,
         0.33, 0.33, 0.33, 0, 0,
@@ -40,7 +40,7 @@
      *
      * @param {Array<Number>} args the color matrix to be applied (4x5)
      */
-    IFColorMatrixFilter.apply = function (pixels, width, height, args) {
+    GColorMatrixFilter.apply = function (pixels, width, height, args) {
         for (var y = 0; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
                 var index = (y * width + x) * 4;
@@ -58,5 +58,5 @@
         }
     };
 
-    _.IFColorMatrixFilter = IFColorMatrixFilter;
+    _.GColorMatrixFilter = GColorMatrixFilter;
 })(this);

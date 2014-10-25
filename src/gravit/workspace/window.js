@@ -2,14 +2,14 @@
     /**
      * An instance of an opened window
      * @class GWindow
-     * @extends IFEventTarget
+     * @extends GEventTarget
      * @constructor
      * @version 1.0
      */
     function GWindow(document) {
         this._container = $('<div></div>');
         this._document = document;
-        this._view = new IFEditorView(this._document.getEditor());
+        this._view = new GEditorView(this._document.getEditor());
         this._view.setViewMargin([GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN]);
         this._container.append(this._view._htmlElement);
 
@@ -27,13 +27,13 @@
                 return;
             }
 
-            this._contextMenuClientPosition = new IFPoint(evt.clientX, evt.clientY);
+            this._contextMenuClientPosition = new GPoint(evt.clientX, evt.clientY);
             contextMenu.open({x: evt.pageX, y: evt.pageY});
             return true;
         }.bind(this));
 
     };
-    IFObject.inherit(GWindow, IFEventTarget);
+    GObject.inherit(GWindow, GEventTarget);
 
     /**
      * Constant defining the additional margin for the view
@@ -57,7 +57,7 @@
 
     /**
      * The underlying view
-     * @type {IFEditorView}
+     * @type {GEditorView}
      * @private
      */
     GWindow.prototype._view = null;
@@ -65,7 +65,7 @@
     /**
      * The current clientX/clientY position triggered
      * by the contextmenu DOM-Event
-     * @type {IFPoint}
+     * @type {GPoint}
      * @private
      */
     GWindow.prototype._contextMenuClientPosition = null;
@@ -80,7 +80,7 @@
 
     /**
      * Returns the underlying editor view this window is bound to
-     * @return {IFEditorView}
+     * @return {GEditorView}
      */
     GWindow.prototype.getView = function () {
         return this._view;
@@ -153,19 +153,19 @@
                 for (var i = 0; i < elementHits.length; ++i) {
                     var self = this;
                     var element = elementHits[i].element;
-                    var name = element instanceof IFBlock ? element.getLabel() : element.getNodeNameTranslated();
+                    var name = element instanceof GBlock ? element.getLabel() : element.getNodeNameTranslated();
 
                     selectItem.getMenu().createAddItem(
                         (i + 1).toString() + '. ' + name,
                         function () {
-                            this.element.removeFlag(IFNode.Flag.Highlighted);
+                            this.element.removeFlag(GNode.Flag.Highlighted);
                             self._document.getEditor().updateSelection(ifPlatform.modifiers.shiftKey, [this.element]);
                         },
                         function () {
-                            this.element.setFlag(IFNode.Flag.Highlighted);
+                            this.element.setFlag(GNode.Flag.Highlighted);
                         },
                         function () {
-                            this.element.removeFlag(IFNode.Flag.Highlighted);
+                            this.element.removeFlag(GNode.Flag.Highlighted);
                         }
                     ).element = element;
                 }

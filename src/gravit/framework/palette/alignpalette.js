@@ -10,10 +10,10 @@
         GPalette.call(this);
     }
 
-    IFObject.inherit(GAlignPalette, GPalette);
+    GObject.inherit(GAlignPalette, GPalette);
 
     GAlignPalette.ID = "align";
-    GAlignPalette.TITLE = new IFLocale.Key(GAlignPalette, "title");
+    GAlignPalette.TITLE = new GLocale.Key(GAlignPalette, "title");
     
     /** @enum */
     GAlignPalette._AlignTo = {
@@ -38,7 +38,7 @@
     GAlignPalette.prototype._document = null;
 
     /**
-     * @type {Array<IFElement>}
+     * @type {Array<GElement>}
      * @private
      */
     GAlignPalette.prototype._elements = null;
@@ -264,7 +264,7 @@
             this._document = event.document;
             var editor = this._document.getEditor();
 
-            editor.addEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            editor.addEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._updateFromSelection();
 
@@ -273,7 +273,7 @@
             var editor = this._document.getEditor();
 
             // Unsubscribe from the editor's events
-            editor.removeEventListener(IFEditor.SelectionChangedEvent, this._updateFromSelection, this);
+            editor.removeEventListener(GEditor.SelectionChangedEvent, this._updateFromSelection, this);
 
             this._document = null;
             this._elements = null;
@@ -292,7 +292,7 @@
 
         if (selection) {
             for (var i = 0; i < selection.length; ++i) {
-                if (selection[i].hasMixin(IFElement.Transform)) {
+                if (selection[i].hasMixin(GElement.Transform)) {
                     if (!this._elements) {
                         this._elements = [];
                     }

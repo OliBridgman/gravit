@@ -9,7 +9,7 @@
     function GPageProperties() {
         this._pages = [];
     };
-    IFObject.inherit(GPageProperties, GProperties);
+    GObject.inherit(GPageProperties, GProperties);
 
     GPageProperties.SIZE_PRESETS = [
         {
@@ -95,7 +95,7 @@
     GPageProperties.prototype._document = null;
 
     /**
-     * @type {Array<IFPage>}
+     * @type {Array<GPage>}
      * @private
      */
     GPageProperties.prototype._pages = null;
@@ -156,7 +156,7 @@
                 return $('<div></div>')
                     .attr('data-property', property)
                     .gPatternPicker()
-                    .gPatternPicker('types', [null, IFColor, IFGradient])
+                    .gPatternPicker('types', [null, GColor, GGradient])
                     .on('patternchange', function (evt, pattern, opacity) {
                         if (typeof opacity === 'number') {
                             self._assignProperties([property, 'bop'], [pattern, opacity]);
@@ -355,9 +355,9 @@
     /** @override */
     GPageProperties.prototype.update = function (document, elements) {
         if (this._document) {
-            this._document.getScene().removeEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().removeEventListener(IFNode.AfterInsertEvent, this._updatePages, this);
-            this._document.getScene().removeEventListener(IFNode.AfterRemoveEvent, this._updatePages, this);
+            this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().removeEventListener(GNode.AfterInsertEvent, this._updatePages, this);
+            this._document.getScene().removeEventListener(GNode.AfterRemoveEvent, this._updatePages, this);
             this._document = null;
         }
 
@@ -365,14 +365,14 @@
 
         // Special case: if only scene is in node selection,
         // then select the currently active page by default
-        if (elements.length === 1 && elements[0] instanceof IFScene) {
+        if (elements.length === 1 && elements[0] instanceof GScene) {
             var activePage = elements[0].getActivePage();
             if (activePage) {
                 this._pages.push(activePage);
             }
         } else {
             for (var i = 0; i < elements.length; ++i) {
-                if (elements[i] instanceof IFPage) {
+                if (elements[i] instanceof GPage) {
                     this._pages.push(elements[i]);
                 }
             }
@@ -380,9 +380,9 @@
 
         if (this._pages.length === elements.length) {
             this._document = document;
-            this._document.getScene().addEventListener(IFNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().addEventListener(IFNode.AfterInsertEvent, this._updatePages, this);
-            this._document.getScene().addEventListener(IFNode.AfterRemoveEvent, this._updatePages, this);
+            this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+            this._document.getScene().addEventListener(GNode.AfterInsertEvent, this._updatePages, this);
+            this._document.getScene().addEventListener(GNode.AfterRemoveEvent, this._updatePages, this);
             this._updateProperties();
             return true;
         } else {
@@ -391,12 +391,12 @@
     };
 
     /**
-     * @param {IFNode.AfterPropertiesChangeEvent} event
+     * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
     GPageProperties.prototype._afterPropertiesChange = function (event) {
         // Update ourself if our first element is changed or the scene's unit
-        if (this._pages.length > 0 && (this._pages[0] === event.node || (event.node instanceof IFScene && event.properties.indexOf('unit') >= 0))) {
+        if (this._pages.length > 0 && (this._pages[0] === event.node || (event.node instanceof GScene && event.properties.indexOf('unit') >= 0))) {
             this._updateProperties();
         }
     };
@@ -444,7 +444,7 @@
             .appendTo(select);
 
         for (var node = scene.getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof IFPage && this._pages.indexOf(node) < 0) {
+            if (node instanceof GPage && this._pages.indexOf(node) < 0) {
                 $('<option></option>')
                     .attr('value', node.getReferenceId())
                     .text(node.getLabel())

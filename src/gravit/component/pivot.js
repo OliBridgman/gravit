@@ -27,9 +27,9 @@
                     .appendTo($this);
 
                 // Add button for each side
-                for (var side in IFRect.Side) {
-                    if (IFRect.Side.hasOwnProperty(side)) {
-                        var value = IFRect.Side[side];
+                for (var side in GRect.Side) {
+                    if (GRect.Side.hasOwnProperty(side)) {
+                        var value = GRect.Side[side];
                         if (typeof value === 'string') {
                             _addSide(value);
                         }
@@ -38,7 +38,7 @@
             });
         },
 
-        // = IFRect.Side
+        // = GRect.Side
         value: function (value) {
             var $this = $(this);
             var data = $this.data('gpivot');

@@ -1,22 +1,22 @@
 (function (_) {
     /**
      * An element representing a page
-     * @class IFPage
-     * @extends IFBlock
-     * @mixes IFNode.Container
-     * @mixes IFNode.Reference
+     * @class GPage
+     * @extends GBlock
+     * @mixes GNode.Container
+     * @mixes GNode.Reference
      * @constructor
      */
-    function IFPage() {
-        IFBlock.call(this);
-        this._setDefaultProperties(IFPage.GeometryProperties, IFPage.VisualProperties);
+    function GPage() {
+        GBlock.call(this);
+        this._setDefaultProperties(GPage.GeometryProperties, GPage.VisualProperties);
     };
-    IFNode.inheritAndMix("page", IFPage, IFBlock, [IFNode.Container, IFNode.Reference]);
+    GNode.inheritAndMix("page", GPage, GBlock, [GNode.Container, GNode.Reference]);
 
     /**
      * The geometry properties of a page with their default values
      */
-    IFPage.GeometryProperties = {
+    GPage.GeometryProperties = {
         /** Master-Page reference */
         msref: null,
         /** Page position */
@@ -37,30 +37,30 @@
     /**
      * The visual properties of a page with their default values
      */
-    IFPage.VisualProperties = {
-        /** Page background (IFPattern) */
+    GPage.VisualProperties = {
+        /** Page background (GPattern) */
         bck: null,
         /** Page background opacity */
         bop: 1.0
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFPage Class
+    // GPage Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns whether this page is a master page or not (always returns false if not attached)
      * @returns {boolean}
      */
-    IFPage.prototype.isMaster = function () {
+    GPage.prototype.isMaster = function () {
         return this.isAttached() ? this.getScene().hasLinks(this) : false;
     };
 
     /**
      * Returns the master page if attached and the page has a master
-     * @returns {IFNode.Reference}
+     * @returns {GNode.Reference}
      */
-    IFPage.prototype.getMasterPage = function () {
+    GPage.prototype.getMasterPage = function () {
         var result = this.$msref && this.isAttached() ? this.getScene().getReference(this.$msref) : null;
 
         // try to avoid returning ourself
@@ -74,9 +74,9 @@
     /**
      * Returns the page's clip box which always is the page's
      * geometry bbox plus additional bleeding if any
-     * @return {IFRect}
+     * @return {GRect}
      */
-    IFPage.prototype.getPageClipBBox = function () {
+    GPage.prototype.getPageClipBBox = function () {
         var bbox = this.getGeometryBBox();
         if (bbox && !bbox.isEmpty()) {
             var bl = this.$bl || 0;
@@ -86,25 +86,25 @@
     };
 
     /** @override */
-    IFPage.prototype._getBitmapPaintArea = function () {
+    GPage.prototype._getBitmapPaintArea = function () {
         return this.getPageClipBBox();
     };
 
     /** @override */
-    IFPage.prototype._paintToBitmap = function (context) {
+    GPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
         paintConfig.pagesClip = true;
-        return IFBlock.prototype._paintToBitmap(context);
+        return GBlock.prototype._paintToBitmap(context);
     };
 
     /** @override */
-    IFPage.prototype._paint = function (context) {
+    GPage.prototype._paint = function (context) {
         var canvas = context.canvas;
         
         // Figure if we have any contents
         var hasContents = false;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof IFElement) {
+            if (child instanceof GElement) {
                 hasContents = true;
                 break;
             }
@@ -120,7 +120,7 @@
         var canvasTransform = canvas.resetTransform();
 
         // Get page rectangle and transform it into world space
-        var pageRect = new IFRect(this.$x, this.$y, this.$w, this.$h);
+        var pageRect = new GRect(this.$x, this.$y, this.$w, this.$h);
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
@@ -156,13 +156,13 @@
             var my = masterPage.getProperty('y');
             var dx = this.$x - mx;
             var dy = this.$y - my;
-            var masterTransform = new IFTransform(1, 0, 0, 1, dx, dy);
+            var masterTransform = new GTransform(1, 0, 0, 1, dx, dy);
 
             // Prepare master paint:
             // 1.) Translate canvas to our own x,y coordinates
             // 2.) Reverse translate dirty areas with our own x,y coordinates
             canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
-            context.dirtyMatcher.transform(new IFTransform(1, 0, 0, 1, -dx, -dy));
+            context.dirtyMatcher.transform(new GTransform(1, 0, 0, 1, -dx, -dy));
 
             // Let our master paint now
             masterPage.paint(context);
@@ -184,30 +184,30 @@
     };
 
     /** @override */
-    IFPage.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof IFScene;
+    GPage.prototype.validateInsertion = function (parent, reference) {
+        return parent instanceof GScene;
     };
 
     /** @override */
-    IFPage.prototype._calculateGeometryBBox = function () {
-        return new IFRect(this.$x, this.$y, this.$w, this.$h);
+    GPage.prototype._calculateGeometryBBox = function () {
+        return new GRect(this.$x, this.$y, this.$w, this.$h);
     };
 
     /** @override */
-    IFPage.prototype._calculatePaintBBox = function () {
+    GPage.prototype._calculatePaintBBox = function () {
         var bbox = this.getGeometryBBox();
 
         if (this.$bl && this.$bl > 0) {
             bbox = bbox.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
         }
 
-        var superBBox = IFBlock.prototype._calculatePaintBBox.call(this);
+        var superBBox = GBlock.prototype._calculatePaintBBox.call(this);
 
         return superBBox ? superBBox.united(bbox) : bbox;
     };
 
     /** @override */
-    IFPage.prototype._detailHitTest = function (location, transform, tolerance, force) {
+    GPage.prototype._detailHitTest = function (location, transform, tolerance, force) {
         var geoBox = this.getGeometryBBox();
 
         if (transform) {
@@ -215,48 +215,48 @@
         }
 
         if (geoBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return new IFElement.HitResultInfo(this);
+            return new GElement.HitResultInfo(this);
         }
 
-        return IFBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
+        return GBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
     };
 
     /** @override */
-    IFPage.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFPage.GeometryProperties);
-            this.storeProperties(args, IFPage.VisualProperties, function (property, value) {
+    GPage.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GPage.GeometryProperties);
+            this.storeProperties(args, GPage.VisualProperties, function (property, value) {
                 if (property === 'bck' && value) {
-                    return IFPattern.serialize(value);
+                    return GPattern.serialize(value);
                 }
                 return value;
             });
 
             // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(IFNode.Flag.Active)) {
+            if (this.hasFlag(GNode.Flag.Active)) {
                 args.__active = true;
             }
-        } else if (change === IFNode._Change.PrepareRestore) {
+        } else if (change === GNode._Change.PrepareRestore) {
             // Ugly hack to prevent transforming children when restoring
             this.__restoring = true;
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFPage.GeometryProperties);
-            this.restoreProperties(args, IFPage.VisualProperties, function (property, value) {
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GPage.GeometryProperties);
+            this.restoreProperties(args, GPage.VisualProperties, function (property, value) {
                 if (property === 'bck' && value) {
-                    return IFPattern.deserialize(value);
+                    return GPattern.deserialize(value);
                 }
                 return value;
             });
 
             // Restore activeness flag which is special to pages and layers
             if (args.__active) {
-                this.setFlag(IFNode.Flag.Active);
+                this.setFlag(GNode.Flag.Active);
             }
             delete this.__restoring;
         }
 
-        if (this._handleGeometryChangeForProperties(change, args, IFPage.GeometryProperties)) {
-            if (change === IFNode._Change.BeforePropertiesChange && !this.__restoring) {
+        if (this._handleGeometryChangeForProperties(change, args, GPage.GeometryProperties)) {
+            if (change === GNode._Change.BeforePropertiesChange && !this.__restoring) {
                 // Check for position change in page
                 var xIndex = args.properties.indexOf('x');
                 var yIndex = args.properties.indexOf('y');
@@ -266,9 +266,9 @@
                     var dy = yIndex >= 0 ? args.values[yIndex] - this.$y : 0;
 
                     if (dx !== 0 || dy !== 0) {
-                        var transform = new IFTransform(1, 0, 0, 1, dx, dy);
+                        var transform = new GTransform(1, 0, 0, 1, dx, dy);
                         for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
-                            if (child instanceof IFElement && child.hasMixin(IFElement.Transform)) {
+                            if (child instanceof GElement && child.hasMixin(GElement.Transform)) {
                                 child.transform(transform);
                             }
                         }
@@ -280,10 +280,10 @@
                 var masterPage = this.getMasterPage();
                 if (masterPage) {
                     switch (change) {
-                        case IFNode._Change.BeforePropertiesChange:
+                        case GNode._Change.BeforePropertiesChange:
                             this.getScene().unlink(masterPage, this);
                             break;
-                        case IFNode._Change.AfterPropertiesChange:
+                        case GNode._Change.AfterPropertiesChange:
                             this.getScene().link(masterPage, this);
                             break;
                     }
@@ -291,10 +291,10 @@
             }
         }
 
-        this._handleVisualChangeForProperties(change, args, IFPage.VisualProperties);
+        this._handleVisualChangeForProperties(change, args, GPage.VisualProperties);
 
-        if (change === IFElement._Change.InvalidationRequested) {
-            /** @type IFRect */
+        if (change === GElement._Change.InvalidationRequested) {
+            /** @type GRect */
             var area = args;
 
             // Handle invalidation if we're a master
@@ -304,7 +304,7 @@
                 var clipBBox = this.getPageClipBBox();
                 if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
                     this.getScene().visitLinks(this, function (link) {
-                        if (link instanceof IFPage && link.isPaintable()) {
+                        if (link instanceof GPage && link.isPaintable()) {
                             // Move invalidation area relative to the linked page and let the
                             // page invalidate the area which by itself my trigger more invalidations
                             // when the linked page is also a master
@@ -317,11 +317,11 @@
             }
         }
 
-        IFBlock.prototype._handleChange.call(this, change, args);
+        GBlock.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFPage.prototype._setScene = function (scene) {
+    GPage.prototype._setScene = function (scene) {
         if (scene !== this._scene) {
             if (scene) {
                 var masterPage = scene.getReference(this.$msref);
@@ -335,8 +335,8 @@
                 }
             }
         }
-        IFBlock.prototype._setScene.call(this, scene);
+        GBlock.prototype._setScene.call(this, scene);
     };
 
-    _.IFPage = IFPage;
+    _.GPage = GPage;
 })(this);

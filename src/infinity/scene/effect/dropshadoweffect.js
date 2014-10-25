@@ -1,19 +1,19 @@
 (function (_) {
     /**
      * Drop Shadow effect
-     * @class IFDropShadowEffect
-     * @extends IFEffect
+     * @class GDropShadowEffect
+     * @extends GEffect
      * @constructor
      */
-    IFDropShadowEffect = function () {
-        IFEffect.call(this);
-        this._setDefaultProperties(IFDropShadowEffect.GeometryProperties, IFDropShadowEffect.VisualProperties);
+    GDropShadowEffect = function () {
+        GEffect.call(this);
+        this._setDefaultProperties(GDropShadowEffect.GeometryProperties, GDropShadowEffect.VisualProperties);
     };
-    IFNode.inherit('dropShadowEffect', IFDropShadowEffect, IFEffect);
+    GNode.inherit('dropShadowEffect', GDropShadowEffect, GEffect);
 
-    IFDropShadowEffect.equals = function (left, right) {
-        if (left instanceof IFDropShadowEffect && right instanceof  IFDropShadowEffect) {
-            return left.arePropertiesEqual(right, Object.keys(IFDropShadowEffect.GeometryProperties).concat(Object.keys(IFDropShadowEffect.VisualProperties)));
+    GDropShadowEffect.equals = function (left, right) {
+        if (left instanceof GDropShadowEffect && right instanceof  GDropShadowEffect) {
+            return left.arePropertiesEqual(right, Object.keys(GDropShadowEffect.GeometryProperties).concat(Object.keys(GDropShadowEffect.VisualProperties)));
         }
         return false;
     };
@@ -21,7 +21,7 @@
     /**
      * Geometry properties of a shadow effect
      */
-    IFDropShadowEffect.GeometryProperties = {
+    GDropShadowEffect.GeometryProperties = {
         /** The radius of the shadow */
         r: 5,
         /** The horizontal shift of the shadow */
@@ -33,28 +33,28 @@
     /**
      * Geometry properties of a shadow effect
      */
-    IFDropShadowEffect.VisualProperties = {
-        /** The pattern of the shadow (IFPattern) */
-        pat: IFRGBColor.BLACK,
+    GDropShadowEffect.VisualProperties = {
+        /** The pattern of the shadow (GPattern) */
+        pat: GRGBColor.BLACK,
         /** The opacity of the shadow */
         opc: 0.5
     };
 
     /** @override */
-    IFDropShadowEffect.prototype.getEffectType = function () {
-        return IFEffect.Type.PreEffect;
+    GDropShadowEffect.prototype.getEffectType = function () {
+        return GEffect.Type.PreEffect;
     };
 
     /** @override */
-    IFDropShadowEffect.prototype.getEffectPadding = function () {
+    GDropShadowEffect.prototype.getEffectPadding = function () {
         return [this.$r - this.$x, this.$r - this.$y, this.$r + this.$x, this.$r + this.$y];
     };
 
     /** @override */
-    IFDropShadowEffect.prototype.render = function (contents, output, background, scale) {
+    GDropShadowEffect.prototype.render = function (contents, output, background, scale) {
         if (this.$pat && this.$opc > 0) {
             // Fill our whole output with the shadow pattern
-            var fillRect = output.getTransform(false).inverted().mapRect(new IFRect(0, 0, output.getWidth(), output.getHeight()));
+            var fillRect = output.getTransform(false).inverted().mapRect(new GRect(0, 0, output.getWidth(), output.getHeight()));
             var fill = output.createPatternPaint(this.$pat, fillRect);
             if (fill) {
                 if (fill.transform) {
@@ -71,48 +71,48 @@
             var y = this.$y * scale;
             var r = this.$r * scale;
 
-            output.drawCanvas(contents, x, y, 1, IFPaintCanvas.CompositeOperator.DestinationIn);
+            output.drawCanvas(contents, x, y, 1, GPaintCanvas.CompositeOperator.DestinationIn);
 
             if (r > 0) {
-                output.getBitmap().applyFilter(IFStackBlurFilter, r);
+                output.getBitmap().applyFilter(GStackBlurFilter, r);
             }
         }
     };
 
     /** @override */
-    IFDropShadowEffect.prototype._handleChange = function (change, args) {
-        if (change === IFNode._Change.Store) {
-            this.storeProperties(args, IFDropShadowEffect.GeometryProperties);
-            this.storeProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
+    GDropShadowEffect.prototype._handleChange = function (change, args) {
+        if (change === GNode._Change.Store) {
+            this.storeProperties(args, GDropShadowEffect.GeometryProperties);
+            this.storeProperties(args, GDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat') {
-                        return IFPattern.serialize(value);
+                        return GPattern.serialize(value);
                     }
                 }
                 return value;
             });
-        } else if (change === IFNode._Change.Restore) {
-            this.restoreProperties(args, IFDropShadowEffect.GeometryProperties);
-            this.restoreProperties(args, IFDropShadowEffect.VisualProperties, function (property, value) {
+        } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GDropShadowEffect.GeometryProperties);
+            this.restoreProperties(args, GDropShadowEffect.VisualProperties, function (property, value) {
                 if (value) {
                     if (property === 'pat' && value) {
-                        return IFPattern.deserialize(value);
+                        return GPattern.deserialize(value);
                     }
                 }
                 return value;
             });
         }
 
-        this._handleGeometryChangeForProperties(change, args, IFDropShadowEffect.GeometryProperties);
-        this._handleVisualChangeForProperties(change, args, IFDropShadowEffect.VisualProperties);
+        this._handleGeometryChangeForProperties(change, args, GDropShadowEffect.GeometryProperties);
+        this._handleVisualChangeForProperties(change, args, GDropShadowEffect.VisualProperties);
 
-        IFEffect.prototype._handleChange.call(this, change, args);
+        GEffect.prototype._handleChange.call(this, change, args);
     };
 
     /** @override */
-    IFDropShadowEffect.prototype.toString = function () {
-        return "[Object IFDropShadowEffect]";
+    GDropShadowEffect.prototype.toString = function () {
+        return "[Object GDropShadowEffect]";
     };
 
-    _.IFDropShadowEffect = IFDropShadowEffect;
+    _.GDropShadowEffect = GDropShadowEffect;
 })(this);

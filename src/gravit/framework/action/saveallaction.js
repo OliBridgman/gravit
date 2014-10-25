@@ -8,10 +8,10 @@
      */
     function GSaveAllAction() {
     };
-    IFObject.inherit(GSaveAllAction, GAction);
+    GObject.inherit(GSaveAllAction, GAction);
 
     GSaveAllAction.ID = 'file.save-all';
-    GSaveAllAction.TITLE = new IFLocale.Key(GSaveAllAction, "title");
+    GSaveAllAction.TITLE = new GLocale.Key(GSaveAllAction, "title");
 
     /**
      * @override

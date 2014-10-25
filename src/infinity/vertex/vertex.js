@@ -2,21 +2,21 @@
 
     /**
      * A vertex class
-     * @class IFVertex
+     * @class GVertex
      * @constructor
      * @version 1.0
      */
-    function IFVertex() {
+    function GVertex() {
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFVertex.Command
+    // GVertex.Command
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * A list of vertex commands
-     * @see IFVertex.verticeCount
+     * @see GVertex.verticeCount
      */
-    IFVertex.Command = {
+    GVertex.Command = {
         /**
          * A move command
          * Vertices: [x,y=point]
@@ -54,26 +54,26 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFVertex Class
+    // GVertex Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * The command of the vertex
      * @type {Number}
      */
-    IFVertex.prototype.command = null;
+    GVertex.prototype.command = null;
 
     /**
      * The x-coordinate of the vertex
      * @type {Number}
      */
-    IFVertex.prototype.x = null;
+    GVertex.prototype.x = null;
 
     /**
      * The y-coordinate of the vertex
      * @type {Number}
      */
-    IFVertex.prototype.y = null;
+    GVertex.prototype.y = null;
 
-    _.IFVertex = IFVertex;
+    _.GVertex = GVertex;
 })(this);

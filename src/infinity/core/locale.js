@@ -1,29 +1,29 @@
 (function (_) {
 
     /**
-     * @class IFLocale
-     * @extends IFObject
+     * @class GLocale
+     * @extends GObject
      * @constructor
      * @version 1.0
      */
-    function IFLocale() {
+    function GLocale() {
         this._values = {};
         this._functions = {};
 
         // Try to setup default language using system
-        if ("en" === IFSystem.language) {
-            this.setLanguage(IFLocale.Language.English);
-        } else if ("de" === IFSystem.language) {
-            this.setLanguage(IFLocale.Language.German);
+        if ("en" === GSystem.language) {
+            this.setLanguage(GLocale.Language.English);
+        } else if ("de" === GSystem.language) {
+            this.setLanguage(GLocale.Language.German);
         }
     };
-    IFObject.inheritAndMix(IFLocale, IFObject);
+    GObject.inheritAndMix(GLocale, GObject);
 
     /**
      * Enumeration of supported languages
      * @enum
      */
-    IFLocale.Language = {
+    GLocale.Language = {
         /**
          * English language
          * @type {Number}
@@ -47,76 +47,76 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFLocale.Key Class
+    // GLocale.Key Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * @param {Function|Object} clazz
      * @param {String} key
-     * @class IFLocale.Key
+     * @class GLocale.Key
      * @constructor
      */
-    IFLocale.Key = function (clazz, key) {
-        this._type_id = IFObject.getTypeId(clazz);
+    GLocale.Key = function (clazz, key) {
+        this._type_id = GObject.getTypeId(clazz);
         this._key = key;
     };
 
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFLocale Constants
+    // GLocale Constants
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Enumeration of builtin language constants
      * @enum
      */
-    IFLocale.Constant = {
-        Create: new IFLocale.Key(IFLocale, "create"),
-        Add: new IFLocale.Key(IFLocale, "add"),
-        Edit: new IFLocale.Key(IFLocale, "edit"),
-        Remove: new IFLocale.Key(IFLocale, "remove"),
-        Delete: new IFLocale.Key(IFLocale, "delete"),
-        Open: new IFLocale.Key(IFLocale, "open"),
-        Save: new IFLocale.Key(IFLocale, "save"),
-        Cancel: new IFLocale.Key(IFLocale, "cancel"),
-        Ok: new IFLocale.Key(IFLocale, "ok"),
-        Close: new IFLocale.Key(IFLocale, "close"),
-        Loading: new IFLocale.Key(IFLocale, "loading"),
-        LoadingOf: new IFLocale.Key(IFLocale, "loading_of"),
-        Saving: new IFLocale.Key(IFLocale, "saving"),
-        SavingOf: new IFLocale.Key(IFLocale, "saving_of"),
-        Success: new IFLocale.Key(IFLocale, "success"),
-        Failure: new IFLocale.Key(IFLocale, "failure"),
-        Waiting: new IFLocale.Key(IFLocale, "waiting")
+    GLocale.Constant = {
+        Create: new GLocale.Key(GLocale, "create"),
+        Add: new GLocale.Key(GLocale, "add"),
+        Edit: new GLocale.Key(GLocale, "edit"),
+        Remove: new GLocale.Key(GLocale, "remove"),
+        Delete: new GLocale.Key(GLocale, "delete"),
+        Open: new GLocale.Key(GLocale, "open"),
+        Save: new GLocale.Key(GLocale, "save"),
+        Cancel: new GLocale.Key(GLocale, "cancel"),
+        Ok: new GLocale.Key(GLocale, "ok"),
+        Close: new GLocale.Key(GLocale, "close"),
+        Loading: new GLocale.Key(GLocale, "loading"),
+        LoadingOf: new GLocale.Key(GLocale, "loading_of"),
+        Saving: new GLocale.Key(GLocale, "saving"),
+        SavingOf: new GLocale.Key(GLocale, "saving_of"),
+        Success: new GLocale.Key(GLocale, "success"),
+        Failure: new GLocale.Key(GLocale, "failure"),
+        Waiting: new GLocale.Key(GLocale, "waiting")
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // IFLocale Class
+    // GLocale Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {Number}
      * @private
      */
-    IFLocale.prototype._language = 0;
+    GLocale.prototype._language = 0;
 
     /**
      * @type {{}}
      * @private
      */
-    IFLocale.prototype._values = null;
+    GLocale.prototype._values = null;
 
     /**
      * @type {{}}
      * @private
      */
-    IFLocale.prototype._functions = null;
+    GLocale.prototype._functions = null;
 
     /**
      * Get the locale's current language
      * @returns {Number}
      * @version 1.0
      */
-    IFLocale.prototype.getLanguage = function () {
+    GLocale.prototype.getLanguage = function () {
         return this._language;
     };
 
@@ -125,7 +125,7 @@
      * @param {Number} language
      * @version 1.0
      */
-    IFLocale.prototype.setLanguage = function (language) {
+    GLocale.prototype.setLanguage = function (language) {
         if (language != this._language) {
             this._language = language;
         }
@@ -133,14 +133,14 @@
 
     /**
      * Get a localized value by using a given key. If the given key
-     * is an instance of IFLocale.Key then a lookup with the key takes
+     * is an instance of GLocale.Key then a lookup with the key takes
      * place. Otherwise, the key itself will be returned which allows
-     * i.e. to provider either a string or a IFLocale.Key to this function.
-     * @param {IFLocale.Key|*} key
+     * i.e. to provider either a string or a GLocale.Key to this function.
+     * @param {GLocale.Key|*} key
      * @version 1.0
      */
-    IFLocale.prototype.get = function (key) {
-        return key != null && key instanceof IFLocale.Key ? this.getValueByKey(key) : key;
+    GLocale.prototype.get = function (key) {
+        return key != null && key instanceof GLocale.Key ? this.getValueByKey(key) : key;
     };
 
     /**
@@ -153,15 +153,15 @@
      * @return {String} a localized value
      * @throws Error when the value was not found
      */
-    IFLocale.prototype.getValue = function (clazz, key, default_) {
-        var type_id = IFObject.getTypeId(clazz);
+    GLocale.prototype.getValue = function (clazz, key, default_) {
+        var type_id = GObject.getTypeId(clazz);
 
         var result = this._getValue(this._language, type_id, key);
-        if (!result && this._language != IFLocale.Language.Default/* && typeof default_ == 'undefined'*/) {
-            result = this._getValue(IFLocale.Language.Default, type_id, key);
+        if (!result && this._language != GLocale.Language.Default/* && typeof default_ == 'undefined'*/) {
+            result = this._getValue(GLocale.Language.Default, type_id, key);
         }
         if (!result && typeof default_ == 'undefined') {
-            throw new Error("No value found for " + IFObject.getName(clazz) + " and key " + key);
+            throw new Error("No value found for " + GObject.getName(clazz) + " and key " + key);
         } else if (!result) {
             return default_;
         }
@@ -170,11 +170,11 @@
 
     /**
      * Get a localized value by using a given key
-     * @param {IFLocale.Key} localeKey
+     * @param {GLocale.Key} localeKey
      * @see getValue(clazz, key)
      * @version 1.0
      */
-    IFLocale.prototype.getValueByKey = function (localeKey) {
+    GLocale.prototype.getValueByKey = function (localeKey) {
         return this.getValue(localeKey._type_id, localeKey._key);
     };
 
@@ -186,8 +186,8 @@
      * @param {Array<String>} values an array of values to register
      * @version 1.0
      */
-    IFLocale.prototype.setValues = function (clazz, language, keys, values) {
-        var typeId = IFObject.getTypeId(clazz);
+    GLocale.prototype.setValues = function (clazz, language, keys, values) {
+        var typeId = GObject.getTypeId(clazz);
 
         var locale = this._values[language];
         if (!locale) {
@@ -210,7 +210,7 @@
      * @return {String}
      * @private
      */
-    IFLocale.prototype._getValue = function (language, type_id, key) {
+    GLocale.prototype._getValue = function (language, type_id, key) {
         var locale = this._values[language];
         if (locale) {
             var vals = locale[type_id];
@@ -227,7 +227,7 @@
      * @param {Function} func the function to register
      * @version 1.0
      */
-    IFLocale.prototype.setFunction = function (language, key, func) {
+    GLocale.prototype.setFunction = function (language, key, func) {
         var functions = this._functions[language];
         if (!functions) {
             functions = this._functions[language] = {};
@@ -242,7 +242,7 @@
      * @param {String} key the key of the function to get
      * @return {Function}
      */
-    IFLocale.prototype.getFunction = function (key) {
+    GLocale.prototype.getFunction = function (key) {
         var functions = this._functions[this._language];
         if (functions) {
             if (functions.hasOwnProperty(key)) {
@@ -250,8 +250,8 @@
             }
         }
 
-        if (this._language != IFLocale.Language.Default) {
-            var functions = this._functions[IFLocale.Language.Default];
+        if (this._language != GLocale.Language.Default) {
+            var functions = this._functions[GLocale.Language.Default];
             if (functions) {
                 if (functions.hasOwnProperty(key)) {
                     return functions[key];
@@ -263,10 +263,10 @@
     };
 
     /** @override */
-    IFLocale.prototype.toString = function () {
-        return "[Object IFLocale]";
+    GLocale.prototype.toString = function () {
+        return "[Object GLocale]";
     };
 
-    _.IFLocale = IFLocale;
-    _.ifLocale = new IFLocale();
+    _.GLocale = GLocale;
+    _.ifLocale = new GLocale();
 })(this);

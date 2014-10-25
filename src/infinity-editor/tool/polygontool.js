@@ -1,48 +1,48 @@
 (function (_) {
     /**
      * The polygon tool
-     * @class IFPolygonTool
-     * @extends IFShapeTool
+     * @class GPolygonTool
+     * @extends GShapeTool
      * @constructor
      * @version 1.0
      */
-    function IFPolygonTool() {
-        IFShapeTool.call(this, false, false);
+    function GPolygonTool() {
+        GShapeTool.call(this, false, false);
     }
 
-    IFObject.inherit(IFPolygonTool, IFShapeTool);
+    GObject.inherit(GPolygonTool, GShapeTool);
 
     /**
      * @type {number}
      * @private
      */
-    IFPolygonTool.prototype._numberOfPoints = 6;
+    GPolygonTool.prototype._numberOfPoints = 6;
 
     /**
      * @type {number}
      * @private
      */
-    IFPolygonTool.prototype._innerRadiusFactor = 0.5;
+    GPolygonTool.prototype._innerRadiusFactor = 0.5;
 
     /** @override */
-    IFPolygonTool.prototype._modifiersChanged = function (event) {
+    GPolygonTool.prototype._modifiersChanged = function (event) {
         if (event.changed.shiftKey || event.changed.optionKey) {
             this._invalidateShape();
         }
-        IFShapeTool.prototype._modifiersChanged.call(this, event);
+        GShapeTool.prototype._modifiersChanged.call(this, event);
     };
 
     /** @override */
-    IFPolygonTool.prototype._createShape = function () {
-        return new IFPolygon();
+    GPolygonTool.prototype._createShape = function () {
+        return new GPolygon();
     };
 
     /** @override */
-    IFPolygonTool.prototype._updateShape = function (shape, area, line) {
+    GPolygonTool.prototype._updateShape = function (shape, area, line) {
         var deltaX = line[1].getX() - line[0].getX();
         var deltaY = line[1].getY() - line[0].getY();
-        var angle = IFMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
-        var distance = IFMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
+        var angle = GMath.normalizeAngleRadians(Math.atan2(deltaY, deltaX));
+        var distance = GMath.ptDist(line[1].getX(), line[1].getY(), line[0].getX(), line[0].getY());
 
         // Lock angle to 15° if desired
         if (ifPlatform.modifiers.shiftKey) {
@@ -50,7 +50,7 @@
         }
 
         var outerAngle = angle;
-        var innerAngle = IFMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
+        var innerAngle = GMath.normalizeAngleRadians(angle + Math.PI / this._numberOfPoints);
 
         var outerRadius = distance;
         var innerRadius = distance * Math.cos(Math.PI / this._numberOfPoints);
@@ -64,14 +64,14 @@
     };
 
     /** @override */
-    IFPolygonTool.prototype._hasCenterCross = function () {
+    GPolygonTool.prototype._hasCenterCross = function () {
         return true;
     };
 
     /** override */
-    IFPolygonTool.prototype.toString = function () {
-        return "[Object IFPolygonTool]";
+    GPolygonTool.prototype.toString = function () {
+        return "[Object GPolygonTool]";
     };
 
-    _.IFPolygonTool = IFPolygonTool;
+    _.GPolygonTool = GPolygonTool;
 })(this);

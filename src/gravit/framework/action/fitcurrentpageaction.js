@@ -8,10 +8,10 @@
      */
     function GFitCurrentPageAction() {
     };
-    IFObject.inherit(GFitCurrentPageAction, GAction);
+    GObject.inherit(GFitCurrentPageAction, GAction);
 
     GFitCurrentPageAction.ID = 'view.zoom.fit-current-page';
-    GFitCurrentPageAction.TITLE = new IFLocale.Key(GFitCurrentPageAction, "title");
+    GFitCurrentPageAction.TITLE = new GLocale.Key(GFitCurrentPageAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GFitCurrentPageAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.META, IFKey.Constant.SHIFT, 'W'];
+        return [GKey.Constant.META, GKey.Constant.SHIFT, 'W'];
     };
 
     /**

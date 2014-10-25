@@ -8,10 +8,10 @@
      */
     function GCloneAction() {
     };
-    IFObject.inherit(GCloneAction, GAction);
+    GObject.inherit(GCloneAction, GAction);
 
     GCloneAction.ID = 'edit.clone';
-    GCloneAction.TITLE = new IFLocale.Key(GCloneAction, "title");
+    GCloneAction.TITLE = new GLocale.Key(GCloneAction, "title");
 
     /**
      * @override
@@ -45,7 +45,7 @@
      * @override
      */
     GCloneAction.prototype.getShortcut = function () {
-        return [IFKey.Constant.SHIFT, IFKey.Constant.META, 'D'];
+        return [GKey.Constant.SHIFT, GKey.Constant.META, 'D'];
     };
 
     /**
