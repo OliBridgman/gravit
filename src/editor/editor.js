@@ -1581,12 +1581,12 @@
             // Close the editor for the previously selected node if it has any
             var editor = GElementEditor.getEditor(node);
             if (editor && editor.hasFlag(GElementEditor.Flag.Selected)) {
+                var selectionChangeAllowed = editor.validateSelectionChange();
                 editor.removeFlag(GElementEditor.Flag.Selected);
                 this._tryCloseEditor(node);
 
-
                 // Remove the node from our selection array if we find it
-                if (this._selection && editor.validateSelectionChange()) {
+                if (this._selection && selectionChangeAllowed) {
                     var sameParentInSelection = false;
                     var removeIndex = -1;
 
