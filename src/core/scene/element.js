@@ -1094,13 +1094,6 @@
         this._finishPaint(context);
     };
 
-    GElement.PaintLayer = {
-        Outline: 'O',
-        Background: 'B',
-        Content: 'C',
-        Foreground: 'F'
-    }
-
     /**
      * Called to paint this element into a new bitmap
      * @param {Number|GLength} [width] the width of the bitmap, set to 0|null
