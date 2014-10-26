@@ -139,6 +139,7 @@ module.exports = function (grunt) {
             options: {
                 sassDir: 'style',
                 cssDir: '<%= cfg.tmp %>',
+                importPath: 'bower_components',
                 generatedImagesDir: '<%= cfg.tmp %>/image/generated',
                 imagesDir: 'assets/image/images',
                 javascriptsDir: 'src',
