@@ -51,25 +51,24 @@
     };
 
     /** @override */
+    GSystemHost.prototype.init = function () {
+        gravit.storages.push(new GFileStorage());
+    };
+
+    /** @override */
     GSystemHost.prototype.start = function () {
         var win = gui.Window.get();
-        win.menu = _.gShell._menuBar;
+        win.menu = _.gHost._menuBar;
         win.show();
         win.focus();
 
-        var hasOpenedDocuments = false;
         var argv = gui.App.argv;
         if (argv && argv.length) {
             for (var i = 0; i < argv.length; ++i) {
                 if (argv[i].charAt(0) !== '-') {
                     gApp.openDocument('file://' + argv[i]);
-                    hasOpenedDocuments = true;
                 }
             }
-        }
-
-        if (!hasOpenedDocuments) {
-            GHost.prototype.start.call(this);
         }
     };
 
@@ -361,20 +360,13 @@
         return result.key !== null ? result : null;
     };
 
-    _.gShell = new GSystemHost;
+    _.gHost = new GSystemHost;
 
     $(document).ready(function () {
-        // Open dev console if desired
+        // Open dev console if desired at earliest convince
         var argv = gui.App.argv;
-        if (_.gShell.isDevelopment() || argv.indexOf('-console') >= 0) {
+        if (_.gHost.isDevelopment() || argv.indexOf('-console') >= 0) {
             win.showDevTools();
         }
-
-        gShellReady();
-    });
-
-    $(window).load(function () {
-        gravit.storages.push(new GFileStorage());
-        gShellFinished();
     });
 })(this);

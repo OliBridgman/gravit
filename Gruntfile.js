@@ -437,8 +437,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dist', function (target) {
         grunt.task.run([
-            //'test',
-            //'app',
+            'test',
+            'app',
             'clean:dist',
              '_dist_osx',
              '_dist_linux',

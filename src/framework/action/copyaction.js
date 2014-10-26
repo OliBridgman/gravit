@@ -77,7 +77,7 @@
             // Make sure to serialize ordered
             var selection = GNode.order(gApp.getActiveDocument().getEditor().getSelectionCopy());
             var serializedSelection = GNode.serialize(selection);
-            gShell.setClipboardContent(GNode.MIME_TYPE, serializedSelection);
+            gHost.setClipboardContent(GNode.MIME_TYPE, serializedSelection);
         }
     };
 

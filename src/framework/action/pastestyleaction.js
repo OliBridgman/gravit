@@ -52,7 +52,7 @@
      * @override
      */
     GPasteStyleAction.prototype.isEnabled = function () {
-        var cpMimeTypes = gShell.getClipboardMimeTypes();
+        var cpMimeTypes = gHost.getClipboardMimeTypes();
         if (cpMimeTypes && cpMimeTypes.indexOf(GNode.MIME_TYPE) >= 0) {
             var document = gApp.getActiveDocument();
             if (document) {
@@ -73,7 +73,7 @@
      * @override
      */
     GPasteStyleAction.prototype.execute = function () {
-        var nodes = GNode.deserialize(gShell.getClipboardContent(GNode.MIME_TYPE));
+        var nodes = GNode.deserialize(gHost.getClipboardContent(GNode.MIME_TYPE));
         if (nodes && nodes.length > 0) {
             var stylableSource = null;
             for (var i = 0; i < nodes.length; ++i) {

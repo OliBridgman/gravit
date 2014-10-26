@@ -20,6 +20,16 @@
         // whenever a key is hit down (in capture phase) and
         // if not an editable element is active!
         document.addEventListener('keydown', function (evt) {
+            if (document.activeElement && $(document.activeElement).is(":button") &&
+                (event.keyCode == 13 || event.keyCode == 32)) {
+
+                // By default Enter and Space keys fire up 'onclick' mouse event for active element
+                // We use this trick to disable this default behavior for panel buttons,
+                // which have been just pressed and released before Space or Enter has been pressed
+                event.preventDefault();
+                document.activeElement.blur();
+            }
+
             var activeWindow = this._windows.getActiveWindow();
             if (activeWindow && (!document.activeElement || !$(document.activeElement).is(":editable"))) {
                 activeWindow.getView().focus();
@@ -514,7 +524,7 @@
 
                     // Test for gzip
                     if (uint8Array[0] === 0x1F && uint8Array[1] === 0x8B && uint8Array[2] === 0x08) {
-                        var source = pako.ungzip(uint8Array, { to: 'string' });
+                        var source = pako.ungzip(uint8Array, {to: 'string'});
                         _readDocument(source);
                     } else {
                         // Assume plain string
@@ -675,7 +685,15 @@
     };
 
     /**
+     * Called to prepare the app
+     */
+    GApplication.prototype.prepare = function () {
+        // NO-OP
+    };
+
+    /**
      * Called to initialize the application
+     * @return {*} a promise when the app is initialized
      */
     GApplication.prototype.init = function () {
         var body = $('body');
@@ -814,6 +832,16 @@
 
         // Subscribe to window events
         this._windows.addEventListener(GWindows.WindowEvent, this._windowEvent, this);
+
+        return $.Deferred().resolve().promise();
+    };
+
+    /**
+     * Called to start the app
+     * @return {*} a promise when the app is started
+     */
+    GApplication.prototype.start = function () {
+        return $.Deferred().resolve().promise();
     };
 
     /**
@@ -964,9 +992,7 @@
                         item = {
                             type: 'menu',
                             caption: category,
-                            items: [],
-                            windowMenu: GApplication.CATEGORY_WINDOW === action.getCategory() &&
-                                currentTree === treeRoot
+                            items: []
                         };
                         _addItemGroupAndDivider(currentTree, item, group);
 
@@ -990,9 +1016,9 @@
             if (item.type === 'menu') {
                 item.menu = _createMenu(item, parentMenu);
             } else if (item.type === 'divider') {
-                item.separator = gShell.addMenuSeparator(parentMenu);
+                item.separator = gHost.addMenuSeparator(parentMenu);
             } else if (item.type === 'item') {
-                item.item = gShell.addMenuItem(parentMenu, ifLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
+                item.item = gHost.addMenuItem(parentMenu, ifLocale.get(item.action.getTitle()), item.action.isCheckable(), item.action.getShortcut(),
                     function () {
                         this.executeAction(item.action.getId());
                     }.bind(this));
@@ -1001,11 +1027,11 @@
 
         // Initiate our menu structure now using our shell
         var _createMenu = function (tree, parentMenu) {
-            var menu = gShell.addMenu(parentMenu, tree.caption, function () {
+            var menu = gHost.addMenu(parentMenu, tree.caption, function () {
                 for (var i = 0; i < tree.items.length; ++i) {
                     var item = tree.items[i];
                     if (item.type === 'item') {
-                        gShell.updateMenuItem(item.item, ifLocale.get(item.action.getTitle()),
+                        gHost.updateMenuItem(item.item, ifLocale.get(item.action.getTitle()),
                             item.action.isEnabled(), item.action.isCheckable() ? item.action.isChecked() : false);
                     }
                 }

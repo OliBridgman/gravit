@@ -2,7 +2,7 @@
     "name": "%name%",
     "description": "%description%",
     "version": "%version%",
-    "main": "index.html",
+    "main": "app://gravit/index.html",
     "window": {
         "toolbar": false,
         "resizable": true,

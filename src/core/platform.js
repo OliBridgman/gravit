@@ -10,20 +10,9 @@
     function GPlatform() {
         document.addEventListener("keydown", function (event) {
             if (!document.activeElement ||
-                    ((!$(document.activeElement).is(":input") ||
-                            $(document.activeElement).is(":button")) &&
-                        !document.activeElement.isContentEditable)) {
-
-                if (document.activeElement && $(document.activeElement).is(":button") &&
-                        (event.keyCode == 13 || event.keyCode == 32)) {
-
-                    // By default Enter and Space keys fire up 'onclick' mouse event for active element
-                    // We use this trick to disable this default behavior for panel buttons,
-                    // which have been just pressed and released before Space or Enter has been pressed
-                    event.preventDefault();
-                    document.activeElement.blur();
-                }
-
+                ((!$(document.activeElement).is(":input") ||
+                $(document.activeElement).is(":button")) &&
+                !document.activeElement.isContentEditable)) {
                 this._updateModifiers(event);
             }
         }.bind(this), true);

@@ -42,7 +42,7 @@
             document.execCommand('paste');
         } else {
             // TODO : Support pasting other formats like raster images
-            var nodes = GNode.deserialize(gShell.getClipboardContent(GNode.MIME_TYPE));
+            var nodes = GNode.deserialize(gHost.getClipboardContent(GNode.MIME_TYPE));
             if (nodes && nodes.length > 0) {
                 var elements = [];
                 var page = gApp.getActiveDocument().getScene().querySingle('page:active');

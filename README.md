@@ -35,13 +35,9 @@ version.
 ## Quick Overview
 
 + assets - contains all relevant assets like fonts, images, etc.
-+ shell - contains platform-specific code for standalone version
++ lib - contains all the compiled code
 + src - contains all source code
-  + gravit - contains the gravit application
-  + development - contains the development addon automatically loaded when developing
-  + infinity - contains the core rendering engine as well as core classes used everywhere else
-  + infinity-editor - contains editors, tools, guides and more based on infinity
-+ style - contains all styling files for the application
++ style - contains all styling files
 + test - contains all test files
 
 ## Community

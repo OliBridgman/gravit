@@ -83,6 +83,7 @@
      * @param {String} url the url to load the font-file from
      * @param {Boolean} [category] the font type category. Needs to be called
      * on the first typeface added only. Defaults to GFont.Category.Other
+     * @return {*} returns a promise
      */
     GFont.prototype.addType = function (family, style, weight, url, category) {
         var type = this._types[family];
@@ -114,48 +115,49 @@
         };
 
         // Start loading of font and add variant when done
-        var request = new XMLHttpRequest();
-        request.open('get', url);
-        request.responseType = 'arraybuffer';
-        request.onload = function () {
-            if (request.response && request.response instanceof ArrayBuffer) {
-                var font = opentype.parse(request.response);
-                if (font && font.supported) {
-                    // Insert our variant
-                    type.variants[variant] = {
-                        url: url,
-                        font: font,
-                        outlines: {}
-                    };
+        return $.ajax({
+            type: 'GET',
+            url: url,
+            dataType: 'arraybuffer'
+        })
+            .done(function (result) {
+                if (result instanceof ArrayBuffer) {
+                    var font = opentype.parse(result);
+                    if (font && font.supported) {
+                        // Insert our variant
+                        type.variants[variant] = {
+                            url: url,
+                            font: font,
+                            outlines: {}
+                        };
 
-                    // Inject a new font-face style
-                    $('<style></style>')
-                        .attr('type', 'text/css')
-                        .text('@font-face {' +
+                        // Inject a new font-face style
+                        $('<style></style>')
+                            .attr('type', 'text/css')
+                            .text('@font-face {' +
                             'font-family: "' + family + '";' +
                             'src: url("' + url + '");' +
                             'font-weight: ' + weight.toString() + ';' +
                             'font-style: ' + _styleToCss(style) + ';' +
                             '} ')
-                        .appendTo($('body'));
+                            .appendTo($('body'));
 
-                    // Sucks but inject an invisible span to ensure the font gets loaded
-                    $('<span></span>')
-                        .css({
-                            'position': 'absolute',
-                            'left': '0px',
-                            'top': '0px',
-                            'opacity': '0',
-                            'font-family': family,
-                            'font-weight': weight.toString(),
-                            'font-style': _styleToCss(style)
-                        })
-                        .text('.')
-                        .appendTo($('body'));
+                        // Sucks but inject an invisible span to ensure the font gets loaded
+                        $('<span></span>')
+                            .css({
+                                'position': 'absolute',
+                                'left': '0px',
+                                'top': '0px',
+                                'opacity': '0',
+                                'font-family': family,
+                                'font-weight': weight.toString(),
+                                'font-style': _styleToCss(style)
+                            })
+                            .text('.')
+                            .appendTo($('body'));
+                    }
                 }
-            }
-        };
-        request.send();
+            });
     };
 
     /**

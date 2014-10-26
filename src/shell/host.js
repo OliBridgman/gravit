@@ -10,7 +10,7 @@
     GObject.inherit(GHost, GEventTarget);
 
     /**
-     * Called to check whether shell is in development mode or not
+     * Called to check whether host is in development mode or not
      * @return {Boolean}
      */
     GHost.prototype.isDevelopment = function () {
@@ -18,20 +18,19 @@
     };
 
     /**
-     * Called to let the shell prepare itself. This is called
-     * *after* the app has been initialized.
+     * Called to let the host prepare init. This is called
+     * *before* the app gets initialized.
      */
-    GHost.prototype.prepare = function () {
+    GHost.prototype.init = function () {
         // NO-OP
     };
 
     /**
-     * Called to let the shell start. This is the last
-     * point in the startup sequence and by default
-     * this will simply create a new document
+     * Called to let the host start. This will be called
+     * after the app is initialized but not yet started.
      */
     GHost.prototype.start = function () {
-        gApp.createNewDocument();
+        // NO-OP
     };
 
     /**
@@ -40,7 +39,7 @@
      * @param {String} title the title of the menu item
      * @param {Function} [callback] called whenever the menu opens to
      * prepare for any item updates before showing it
-     * @return {*} a shell-specific menu instance
+     * @return {*} a host-specific menu instance
      */
     GHost.prototype.addMenu = function (parentMenu, title, callback) {
         throw new Error("Not Supported.");
@@ -49,7 +48,7 @@
     /**
      * Called whenever a menu separator shall be added
      * @param {*} parentMenu parent menu to add the separator, may not be null
-     * @return {*} a shell-specific menu separator instance
+     * @return {*} a host-specific menu separator instance
      */
     GHost.prototype.addMenuSeparator = function (parentMenu) {
         throw new Error("Not Supported.");
@@ -62,7 +61,7 @@
      * @param {Boolean} checkable whether the item is a checkable one or not
      * @param {Array<*>} shortcut the shortcut for the item
      * @param {Function} [callback] called whenever the item is activated
-     * @return {*} a shell-specific menu item instance
+     * @return {*} a host-specific menu item instance
      */
     GHost.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         throw new Error("Not Supported.");
@@ -70,7 +69,7 @@
 
     /**
      * Called whenever a menu item shall be updated
-     * @param {*} item the shell-specific menu item instance to update
+     * @param {*} item the host-specific menu item instance to update
      * @param {String} title the title of the item
      * @param {Boolean} enabled whether the item is enabled or not
      * @param {Boolean} checked whether the item is checked or not
@@ -116,5 +115,4 @@
     };
 
     _.GHost = GHost;
-    _.gShell = null; // initialized by client
 })(this);

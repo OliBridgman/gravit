@@ -1,23 +1,21 @@
 (function (_) {
     /**
-     * Gravit Framework Module
-     * @class FrameworkModule
+     * Gravit Module
+     * @class GravitModule
      * @constructor
      * @extends GModule
      */
-    function FrameworkModule() {
+    function GravitModule() {
     }
 
-    GObject.inherit(FrameworkModule, GModule);
+    GObject.inherit(GravitModule, GModule);
 
     /** @override */
-    FrameworkModule.prototype.init = function () {
-        // Register default exporters
+    GravitModule.prototype.init = function () {
         gravit.exporters.push(
             new GImageExporter()
         );
 
-        // Register default palettes
         gravit.palettes.push(
             new GLayersPalette(),
             new GPagesPalette(),
@@ -28,12 +26,10 @@
             new GStylesPalette()
         );
 
-        // Register default panels
         gravit.panels.push(
             new GPropertiesPanel()
         );
 
-        // Register default sidebars
         gravit.sidebars.push(
             new GDocumentSidebar()
         );
@@ -171,7 +167,6 @@
             }
         );
 
-        // Register default properties
         gravit.properties.push(
             // first
             new GInfoProperties(),
@@ -192,7 +187,6 @@
             new GStyleProperties()
         );
 
-        // Register default actions
         gravit.actions.push(
             // File
             new GNewAction(),
@@ -309,9 +303,9 @@
     };
 
     /** @override */
-    FrameworkModule.prototype.toString = function () {
+    GravitModule.prototype.toString = function () {
         return '[Module Gravit]';
     };
 
-    gravit.modules.push(new FrameworkModule());
+    gravit.modules.push(new GravitModule());
 })(this);

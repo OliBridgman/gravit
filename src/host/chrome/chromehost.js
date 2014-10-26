@@ -29,7 +29,12 @@
     };
 
     /** @override */
-    GChromeHost.prototype.prepare = function () {
+    GChromeHost.prototype.init = function () {
+        gravit.storages.push(new GFileStorage());
+    };
+
+    /** @override */
+    GChromeHost.prototype.start = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -108,14 +113,5 @@
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GChromeHost;
-
-    $(document).ready(function () {
-        gShellReady();
-    });
-
-    $(window).load(function () {
-        gravit.storages.push(new GFileStorage());
-        gShellFinished();
-    });
+    _.gHost = new GChromeHost;
 })(this);

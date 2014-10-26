@@ -29,7 +29,7 @@
     };
 
     /** @override */
-    GBrowserHost.prototype.prepare = function () {
+    GBrowserHost.prototype.start = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -108,13 +108,5 @@
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GBrowserHost;
-
-    $(document).ready(function () {
-        gShellReady();
-    });
-
-    $(window).load(function () {
-        gShellFinished();
-    });
+    _.gHost = new GBrowserHost;
 })(this);

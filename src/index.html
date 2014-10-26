@@ -383,12 +383,19 @@
 <!-- I18N -->
 <script src="framework/i18n/i18n_en.js"></script>
 <script src="framework/i18n/i18n_de.js"></script>
-<!-- Root -->
-<script src="framework/framework.js"></script>
 <!-- endbuild -->
 
-<!-- Development stuff -->
+<!-- ############################################################## -->
+<!-- # Gravit Application ######################################### -->
+<!-- ############################################################## -->
+<!-- build:js application/gravit.application.js -->
+<script src="application/gravitapplication.js"></script>
+<script src="application/gravitmodule.js"></script>
+<!-- endbuild -->
 
+<!-- ############################################################## -->
+<!-- # Gravit Development ######################################### -->
+<!-- ############################################################## -->
 <script src="development/bootstrap.js"></script>
 <!-- Tests -->
 <script src="development/test/clone_scene.js"></script>
@@ -401,14 +408,6 @@
 <!-- Root -->
 <script src="development/testaction.js"></script>
 <script src="development/development.js"></script>
-
-<!-- ############################################################## -->
-<!-- # Gravit Application ######################################### -->
-<!-- ############################################################## -->
-<!-- build:js application/gravit.application.js -->
-<!-- Extension -->
-<script src="application/bootstrap.js"></script>
-<!-- endbuild -->
 
 <!-- Include the proper shell for development -->
 <script type="text/javascript">
