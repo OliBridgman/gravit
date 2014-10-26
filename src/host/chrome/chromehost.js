@@ -1,35 +1,35 @@
 (function (_) {
     /**
-     * The chrome shell
-     * @class GChromeShell
-     * @extends GShell
+     * The chrome host
+     * @class GChromeHost
+     * @extends GHost
      * @constructor
      */
-    function GChromeShell() {
+    function GChromeHost() {
         this._menuBar = new GMenuBar();
         this._clipboardMimeTypes = {};
     };
-    GObject.inherit(GChromeShell, GShell);
+    GObject.inherit(GChromeHost, GHost);
 
     /**
      * @type {GMenuBar}
      * @private
      */
-    GChromeShell.prototype._menuBar = null;
+    GChromeHost.prototype._menuBar = null;
 
     /**
      * @type {*}
      * @private
      */
-    GChromeShell.prototype._clipboardMimeTypes = null;
+    GChromeHost.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GChromeShell.prototype.isDevelopment = function () {
+    GChromeHost.prototype.isDevelopment = function () {
         return document.location.hostname === 'localhost' || document.location.hostname === '127.0.0.1';
     };
 
     /** @override */
-    GChromeShell.prototype.prepare = function () {
+    GChromeHost.prototype.prepare = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -38,7 +38,7 @@
     };
 
     /** @override */
-    GChromeShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GChromeHost.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar.getMenu();
         var item = new GMenuItem(GMenuItem.Type.Menu);
         item.setCaption(title);
@@ -52,14 +52,14 @@
     };
 
     /** @override */
-    GChromeShell.prototype.addMenuSeparator = function (parentMenu) {
+    GChromeHost.prototype.addMenuSeparator = function (parentMenu) {
         var item = new GMenuItem(GMenuItem.Type.Divider);
         parentMenu.addItem(item);
         return item;
     };
 
     /** @override */
-    GChromeShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GChromeHost.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var item = new GMenuItem(GMenuItem.Type.Item);
         if (callback) {
             item.addEventListener(GMenuItem.ActivateEvent, callback);
@@ -79,24 +79,24 @@
     };
 
     /** @override */
-    GChromeShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GChromeHost.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.setCaption(title);
         item.setEnabled(enabled);
         item.setChecked(checked);
     };
 
     /** @override */
-    GChromeShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GChromeHost.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.removeItem(parentMenu.indexOf(child));
     };
 
     /** @override */
-    GChromeShell.prototype.getClipboardMimeTypes = function () {
+    GChromeHost.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GChromeShell.prototype.getClipboardContent = function (mimeType) {
+    GChromeHost.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -104,11 +104,11 @@
     };
 
     /** @override */
-    GChromeShell.prototype.setClipboardContent = function (mimeType, content) {
+    GChromeHost.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GChromeShell;
+    _.gShell = new GChromeHost;
 
     $(document).ready(function () {
         gShellReady();

@@ -1,19 +1,19 @@
 (function (_) {
     /**
-     * The global shell class
-     * @class GShell
+     * The global host class
+     * @class GHost
      * @extends GEventTarget
      * @constructor
      */
-    function GShell() {
+    function GHost() {
     };
-    GObject.inherit(GShell, GEventTarget);
+    GObject.inherit(GHost, GEventTarget);
 
     /**
      * Called to check whether shell is in development mode or not
      * @return {Boolean}
      */
-    GShell.prototype.isDevelopment = function () {
+    GHost.prototype.isDevelopment = function () {
         return false;
     };
 
@@ -21,7 +21,7 @@
      * Called to let the shell prepare itself. This is called
      * *after* the app has been initialized.
      */
-    GShell.prototype.prepare = function () {
+    GHost.prototype.prepare = function () {
         // NO-OP
     };
 
@@ -30,7 +30,7 @@
      * point in the startup sequence and by default
      * this will simply create a new document
      */
-    GShell.prototype.start = function () {
+    GHost.prototype.start = function () {
         gApp.createNewDocument();
     };
 
@@ -42,7 +42,7 @@
      * prepare for any item updates before showing it
      * @return {*} a shell-specific menu instance
      */
-    GShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GHost.prototype.addMenu = function (parentMenu, title, callback) {
         throw new Error("Not Supported.");
     };
 
@@ -51,7 +51,7 @@
      * @param {*} parentMenu parent menu to add the separator, may not be null
      * @return {*} a shell-specific menu separator instance
      */
-    GShell.prototype.addMenuSeparator = function (parentMenu) {
+    GHost.prototype.addMenuSeparator = function (parentMenu) {
         throw new Error("Not Supported.");
     };
 
@@ -64,7 +64,7 @@
      * @param {Function} [callback] called whenever the item is activated
      * @return {*} a shell-specific menu item instance
      */
-    GShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GHost.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         throw new Error("Not Supported.");
     };
 
@@ -75,7 +75,7 @@
      * @param {Boolean} enabled whether the item is enabled or not
      * @param {Boolean} checked whether the item is checked or not
      */
-    GShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GHost.prototype.updateMenuItem = function (item, title, enabled, checked) {
         throw new Error("Not Supported.");
     };
 
@@ -84,7 +84,7 @@
      * @param {*} parentMenu the parent menu to remove a child from
      * @param {*} child the child to be removed
      */
-    GShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GHost.prototype.removeMenuItem = function (parentMenu, child) {
         throw new Error("Not Supported.");
     };
 
@@ -93,7 +93,7 @@
      * @return {Array<String>} a list of mime-types available on clipboard
      * or null if there's nothing
      */
-    GShell.prototype.getClipboardMimeTypes = function () {
+    GHost.prototype.getClipboardMimeTypes = function () {
         throw new Error("Not Supported.");
     };
 
@@ -102,7 +102,7 @@
      * @return {*} the clipboard contents of the given mime-type
      * or null if there's none
      */
-    GShell.prototype.getClipboardContent = function (mimeType) {
+    GHost.prototype.getClipboardContent = function (mimeType) {
         throw new Error("Not Supported.");
     };
 
@@ -111,10 +111,10 @@
      * @param {String} mimeType the mime-type of the contents
      * @param {*} content the contents to push into clipboard
      */
-    GShell.prototype.setClipboardContent = function (mimeType, content) {
+    GHost.prototype.setClipboardContent = function (mimeType, content) {
         throw new Error("Not Supported.");
     };
 
-    _.GShell = GShell;
+    _.GHost = GHost;
     _.gShell = null; // initialized by client
 })(this);

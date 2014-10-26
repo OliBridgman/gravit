@@ -1,35 +1,35 @@
 (function (_) {
     /**
-     * The browser shell
-     * @class GBrowserShell
-     * @extends GShell
+     * The browser host
+     * @class GBrowserHost
+     * @extends GHost
      * @constructor
      */
-    function GBrowserShell() {
+    function GBrowserHost() {
         this._menuBar = new GMenuBar();
         this._clipboardMimeTypes = {};
     };
-    GObject.inherit(GBrowserShell, GShell);
+    GObject.inherit(GBrowserHost, GHost);
 
     /**
      * @type {GMenuBar}
      * @private
      */
-    GBrowserShell.prototype._menuBar = null;
+    GBrowserHost.prototype._menuBar = null;
 
     /**
      * @type {*}
      * @private
      */
-    GBrowserShell.prototype._clipboardMimeTypes = null;
+    GBrowserHost.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GBrowserShell.prototype.isDevelopment = function () {
+    GBrowserHost.prototype.isDevelopment = function () {
         return document.location.hostname === 'localhost' || document.location.hostname === '127.0.0.1';
     };
 
     /** @override */
-    GBrowserShell.prototype.prepare = function () {
+    GBrowserHost.prototype.prepare = function () {
         // Append our menu bar element as first child of header
         var menuElement = this._menuBar._htmlElement;
         menuElement
@@ -38,7 +38,7 @@
     };
 
     /** @override */
-    GBrowserShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GBrowserHost.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar.getMenu();
         var item = new GMenuItem(GMenuItem.Type.Menu);
         item.setCaption(title);
@@ -52,14 +52,14 @@
     };
 
     /** @override */
-    GBrowserShell.prototype.addMenuSeparator = function (parentMenu) {
+    GBrowserHost.prototype.addMenuSeparator = function (parentMenu) {
         var item = new GMenuItem(GMenuItem.Type.Divider);
         parentMenu.addItem(item);
         return item;
     };
 
     /** @override */
-    GBrowserShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GBrowserHost.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var item = new GMenuItem(GMenuItem.Type.Item);
         if (callback) {
             item.addEventListener(GMenuItem.ActivateEvent, callback);
@@ -79,24 +79,24 @@
     };
 
     /** @override */
-    GBrowserShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GBrowserHost.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.setCaption(title);
         item.setEnabled(enabled);
         item.setChecked(checked);
     };
 
     /** @override */
-    GBrowserShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GBrowserHost.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.removeItem(parentMenu.indexOf(child));
     };
 
     /** @override */
-    GBrowserShell.prototype.getClipboardMimeTypes = function () {
+    GBrowserHost.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GBrowserShell.prototype.getClipboardContent = function (mimeType) {
+    GBrowserHost.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -104,11 +104,11 @@
     };
 
     /** @override */
-    GBrowserShell.prototype.setClipboardContent = function (mimeType, content) {
+    GBrowserHost.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
-    _.gShell = new GBrowserShell;
+    _.gShell = new GBrowserHost;
 
     $(document).ready(function () {
         gShellReady();

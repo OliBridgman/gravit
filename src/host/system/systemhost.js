@@ -14,11 +14,11 @@
 
     /**
      * The system shell
-     * @class GSystemShell
-     * @extends GShell
+     * @class GSystemHost
+     * @extends GHost
      * @constructor
      */
-    function GSystemShell() {
+    function GSystemHost() {
         this._menuBar = new gui.Menu({type: "menubar"});
 
         if (process.platform === 'darwin') {
@@ -30,28 +30,28 @@
 
         this._clipboardMimeTypes = {};
     };
-    GObject.inherit(GSystemShell, GShell);
+    GObject.inherit(GSystemHost, GHost);
 
     /**
      * @type {gui.Menu}
      * @private
      */
-    GSystemShell.prototype._menuBar = null;
+    GSystemHost.prototype._menuBar = null;
 
     /**
      * @type {*}
      * @private
      */
-    GSystemShell.prototype._clipboardMimeTypes = null;
+    GSystemHost.prototype._clipboardMimeTypes = null;
 
     /** @override */
-    GSystemShell.prototype.isDevelopment = function () {
+    GSystemHost.prototype.isDevelopment = function () {
         var argv = gui.App.argv;
         return argv.indexOf('-dev') >= 0;
     };
 
     /** @override */
-    GSystemShell.prototype.start = function () {
+    GSystemHost.prototype.start = function () {
         var win = gui.Window.get();
         win.menu = _.gShell._menuBar;
         win.show();
@@ -69,12 +69,12 @@
         }
 
         if (!hasOpenedDocuments) {
-            GShell.prototype.start.call(this);
+            GHost.prototype.start.call(this);
         }
     };
 
     /** @override */
-    GSystemShell.prototype.addMenu = function (parentMenu, title, callback) {
+    GSystemHost.prototype.addMenu = function (parentMenu, title, callback) {
         parentMenu = parentMenu || this._menuBar;
         var item = new gui.MenuItem({
             label: title,
@@ -90,14 +90,14 @@
     };
 
     /** @override */
-    GSystemShell.prototype.addMenuSeparator = function (parentMenu) {
+    GSystemHost.prototype.addMenuSeparator = function (parentMenu) {
         var item = new gui.MenuItem({type: 'separator'});
         parentMenu.append(item);
         return item;
     };
 
     /** @override */
-    GSystemShell.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
+    GSystemHost.prototype.addMenuItem = function (parentMenu, title, checkable, shortcut, callback) {
         var shortcut = shortcut ? this._shortcutToShellShortcut(shortcut) : null;
 
         var item = new gui.MenuItem({
@@ -113,24 +113,24 @@
     };
 
     /** @override */
-    GSystemShell.prototype.updateMenuItem = function (item, title, enabled, checked) {
+    GSystemHost.prototype.updateMenuItem = function (item, title, enabled, checked) {
         item.label = title;
         item.enabled = enabled;
         item.checked = checked;
     };
 
     /** @override */
-    GSystemShell.prototype.removeMenuItem = function (parentMenu, child) {
+    GSystemHost.prototype.removeMenuItem = function (parentMenu, child) {
         parentMenu.remove(child);
     };
 
     /** @override */
-    GSystemShell.prototype.getClipboardMimeTypes = function () {
+    GSystemHost.prototype.getClipboardMimeTypes = function () {
         return this._clipboardMimeTypes ? Object.keys(this._clipboardMimeTypes) : null;
     };
 
     /** @override */
-    GSystemShell.prototype.getClipboardContent = function (mimeType) {
+    GSystemHost.prototype.getClipboardContent = function (mimeType) {
         if (this._clipboardMimeTypes && this._clipboardMimeTypes.hasOwnProperty(mimeType)) {
             return this._clipboardMimeTypes[mimeType];
         }
@@ -138,7 +138,7 @@
     };
 
     /** @override */
-    GSystemShell.prototype.setClipboardContent = function (mimeType, content) {
+    GSystemHost.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
     };
 
@@ -147,7 +147,7 @@
      * @param {Array<*>} shortcut
      * @returns {{key: String, modifiers: String}}
      */
-    GSystemShell.prototype._shortcutToShellShortcut = function (shortcut) {
+    GSystemHost.prototype._shortcutToShellShortcut = function (shortcut) {
         var result = {
             key: null,
             modifiers: ''
@@ -361,7 +361,7 @@
         return result.key !== null ? result : null;
     };
 
-    _.gShell = new GSystemShell;
+    _.gShell = new GSystemHost;
 
     $(document).ready(function () {
         // Open dev console if desired

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
+    <title>Gravit Dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
     <!-- build:css(tmp) gravit.css -->
@@ -258,7 +258,6 @@
 <!-- # Gravit Shell ############################################### -->
 <!-- ############################################################## -->
 <!-- build:js gravit.shell.js -->
-<!-- Action -->
 <!-- Extension -->
 <script src="shell/extension/action.js"></script>
 <script src="shell/extension/exporter.js"></script>
@@ -282,10 +281,10 @@
 <script src="shell/util/image.js"></script>
 <script src="shell/util/jqueryext.js"></script>
 <!-- Root -->
-<script src="shell/shell.js"></script>
+<script src="shell/bootstrap.js"></script>
+<script src="shell/host.js"></script>
 <script src="shell/application.js"></script>
 <script src="shell/document.js"></script>
-<script src="shell/bootstrap.js"></script>
 <!-- I18N -->
 <script src="shell/i18n/i18n_en.js"></script>
 <script src="shell/i18n/i18n_de.js"></script>
@@ -398,14 +397,22 @@
 <script src="development/testaction.js"></script>
 <script src="development/development.js"></script>
 
+<!-- ############################################################## -->
+<!-- # Gravit Application ######################################### -->
+<!-- ############################################################## -->
+<!-- build:js gravit.application.js -->
+<!-- Extension -->
+<script src="application/bootstrap.js"></script>
+<!-- endbuild -->
+
 <!-- Include the proper shell for development -->
 <script type="text/javascript">
     if (this['process'] && this['require']) {
-        document.writeln("<script src=\"/shell/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/system/winstate.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/system/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"host/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"host/system/winstate.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"host/system/systemhost.js\" type=\"text\/javascript\"><\/script>");
     } else {
-        document.writeln("<script src=\"/shell/browser/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"host/browser/browserhost.js\" type=\"text\/javascript\"><\/script>");
     }
 </script>
 </body>

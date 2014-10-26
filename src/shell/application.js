@@ -220,6 +220,13 @@
     GApplication.prototype._actions = null;
 
     /**
+     * Source document title
+     * @type {String}
+     * @private
+     */
+    GApplication.prototype._sourceTitle = null;
+
+    /**
      * @returns {GToolManager}
      */
     GApplication.prototype.getToolManager = function () {
@@ -1042,11 +1049,17 @@
 
     /** @private */
     GApplication.prototype._updateTitle = function () {
-        var title = 'Gravit';
+        if (!this._sourceTitle) {
+            this._sourceTitle = document.title;
+        }
+
+        var title = this._sourceTitle;
+
         var window = this.getWindows().getActiveWindow();
         if (window) {
             title += ' - ' + window.getTitle();
         }
+
         document.title = title;
     }
 
