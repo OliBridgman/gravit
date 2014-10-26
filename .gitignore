@@ -1,9 +1,8 @@
 .idea
-.tmp
 .sass-cache
+.tmp
 node_modules
 node-webkit
 bower_components
-build
-dist
+app
 tmp
