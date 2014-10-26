@@ -355,7 +355,7 @@ module.exports = function (grunt) {
         // TODO : Build installer
         var done = this.async();
 
-        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.build + '/system-binaries/Gravit/win'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.app + '/system/win'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -368,7 +368,7 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_linux', function () {
         var done = this.async();
 
-        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.build + '/system-binaries/Gravit/linux64'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.app + '/system/linux64'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -381,7 +381,7 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_chrome', function () {
         var done = this.async();
 
-        exec('zip -r -X ../../' + cfg.dist + '/gravit-chrome.zip *', {cwd: cfg.build + '/chrome'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../' + cfg.dist + '/gravit-chrome.zip *', {cwd: cfg.app + '/chrome'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -437,8 +437,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dist', function (target) {
         grunt.task.run([
-            'test',
-            'app',
+            //'test',
+            //'app',
             'clean:dist',
              '_dist_osx',
              '_dist_linux',

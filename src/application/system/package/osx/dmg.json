@@ -4,7 +4,7 @@
     "background": "background.tiff",
     "icon-size": 120,
     "contents": [
-        { "x": 284, "y": 20, "type": "file", "path": "../../../../build/system-binaries/Gravit/osx/Gravit.app" },
+        { "x": 284, "y": 20, "type": "file", "path": "../../../../../app/system/osx/Gravit.app" },
         { "x": 483, "y": 20, "type": "link", "path": "/Applications" }
     ]
 }
