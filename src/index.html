@@ -6,16 +6,16 @@
     <title>Gravit Dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
-    <!-- build:css(tmp) gravit.editor.css -->
+    <!-- build:css(tmp) editor/gravit.editor.css -->
     <link rel="stylesheet" href="editor.css">
     <!-- endbuild -->
-    <!-- build:css(tmp) gravit.component.css -->
+    <!-- build:css(tmp) component/gravit.component.css -->
     <link rel="stylesheet" href="component.css">
     <!-- endbuild -->
-    <!-- build:css(tmp) gravit.framework.css -->
+    <!-- build:css(tmp) framework/gravit.framework.css -->
     <link rel="stylesheet" href="framework.css">
     <!-- endbuild -->
-    <!-- build:css(tmp) gravit.shell.css -->
+    <!-- build:css(tmp) shell/gravit.shell.css -->
     <link rel="stylesheet" href="shell.css">
     <!-- endbuild -->
 </head>
@@ -24,9 +24,9 @@
 <script src="../bower_components/jquery/dist/jquery.js"></script>
 
 <!-- ############################################################## -->
-<!-- # Infinity Libs ############################################## -->
+<!-- # Gravit Core Libs ########################################### -->
 <!-- ############################################################## -->
-<!-- build:js infinity-libraries.js -->
+<!-- build:js core/gravit.core.libs.js -->
 <script src="../bower_components/opentype.js/opentype.js"></script>
 
 <script src="../bower_components/rangy/rangy-core.js"></script>
@@ -39,15 +39,12 @@
 <script src="../bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
 
 <script src="../bower_components/jdataview/dist/browser/jdataview.js"></script>
-
-<script src="../bower_components/vex/js/vex.js"></script>
-<script src="../bower_components/vex/js/vex.dialog.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
 <!-- # Gravit Core ################################################ -->
 <!-- ############################################################## -->
-<!-- build:js gravit.core.js -->
+<!-- build:js core/gravit.core.js -->
 <!-- Core -->
 <script src="core/object.js"></script>
 <script src="core/event.js"></script>
@@ -145,7 +142,7 @@
 <!-- ############################################################## -->
 <!-- # Gravit Format ############################################## -->
 <!-- ############################################################## -->
-<!-- build:js gravit.format.js -->
+<!-- build:js format/gravit.format.js -->
 <script src="format/acvreader.js"></script>
 <script src="format/asereader.js"></script>
 <script src="format/svgreader.js"></script>
@@ -154,7 +151,7 @@
 <!-- ############################################################## -->
 <!-- # Gravit Editor ############################################## -->
 <!-- ############################################################## -->
-<!-- build:js gravit.editor.js -->
+<!-- build:js editor/gravit.editor.js -->
 <!-- Guide -->
 <script src="editor/guide/guides.js"></script>
 <script src="editor/guide/guide.js"></script>
@@ -217,29 +214,11 @@
 <script src="editor/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
-<!-- ############################################################## -->
-<!-- # Gravit Libs ################################################ -->
-<!-- ############################################################## -->
-<!-- build:js gravit-libraries.js -->
-<script src="../bower_components/jqtree/tree.jquery.js"></script>
-
-<script src="../bower_components/mousetrap/mousetrap.js"></script>
-
-<script src="../bower_components/color-thief/src/color-thief.js"></script>
-
-<script src="../bower_components/uri.js/src/URI.js"></script>
-
-<script src="../bower_components/jdataview/dist/browser/jdataview.js"></script>
-
-<script src="../bower_components/vex/js/vex.js"></script>
-<script src="../bower_components/vex/js/vex.dialog.js"></script>
-<!-- endbuild -->
-
 
 <!-- ############################################################## -->
 <!-- # Gravit Component ########################################### -->
 <!-- ############################################################## -->
-<!-- build:js gravit.component.js -->
+<!-- build:js component/gravit.component.js -->
 <script src="component/autoedit.js"></script>
 <script src="component/panel.js"></script>
 <script src="component/patterntarget.js"></script>
@@ -264,9 +243,26 @@
 
 
 <!-- ############################################################## -->
+<!-- # Gravit Shell Libraries ##################################### -->
+<!-- ############################################################## -->
+<!-- build:js shell/gravit.shell.libs.js -->
+<script src="../bower_components/jqtree/tree.jquery.js"></script>
+
+<script src="../bower_components/mousetrap/mousetrap.js"></script>
+
+<script src="../bower_components/color-thief/src/color-thief.js"></script>
+
+<script src="../bower_components/uri.js/src/URI.js"></script>
+
+<script src="../bower_components/vex/js/vex.js"></script>
+<script src="../bower_components/vex/js/vex.dialog.js"></script>
+<!-- endbuild -->
+
+
+<!-- ############################################################## -->
 <!-- # Gravit Shell ############################################### -->
 <!-- ############################################################## -->
-<!-- build:js gravit.shell.js -->
+<!-- build:js shell/gravit.shell.js -->
 <!-- Extension -->
 <script src="shell/extension/action.js"></script>
 <script src="shell/extension/exporter.js"></script>
@@ -303,7 +299,7 @@
 <!-- ############################################################## -->
 <!-- # Gravit Framework ########################################### -->
 <!-- ############################################################## -->
-<!-- build:js gravit.framework.js -->
+<!-- build:js framework/gravit.framework.js -->
 <!-- Action -->
 <script src="framework/action/addlayeraction.js"></script>
 <script src="framework/action/deletelayeraction.js"></script>
@@ -409,7 +405,7 @@
 <!-- ############################################################## -->
 <!-- # Gravit Application ######################################### -->
 <!-- ############################################################## -->
-<!-- build:js gravit.application.js -->
+<!-- build:js application/gravit.application.js -->
 <!-- Extension -->
 <script src="application/bootstrap.js"></script>
 <!-- endbuild -->
