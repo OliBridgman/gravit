@@ -56,7 +56,7 @@
     GZoomOutAction.prototype.isEnabled = function () {
         var window = gApp.getWindows().getActiveWindow();
         var view = window ? window.getView() : null;
-        return view && view.getZoom() > GUIView.options.minZoomFactor;
+        return view && view.getZoom() > GSceneWidget.options.minZoomFactor;
     };
 
     /**

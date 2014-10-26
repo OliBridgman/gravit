@@ -120,7 +120,7 @@
         view.addEventListener(GKeyEvent.Down, this._keyDown, this);
         view.addEventListener(GKeyEvent.Release, this._keyRelease, this);
 
-        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -144,7 +144,7 @@
         view.removeEventListener(GKeyEvent.Down, this._keyDown);
         view.removeEventListener(GKeyEvent.Release, this._keyRelease);
 
-        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged);
 
         GTool.prototype.deactivate.call(this, view);
     };
@@ -574,7 +574,7 @@
     };
 
     /**
-     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @param {GPlatform.ModifiersChangedEvent} event
      * @private
      */
     GSelectTool.prototype._modifiersChanged = function (event) {

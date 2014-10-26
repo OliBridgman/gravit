@@ -1,7 +1,7 @@
 (function (_) {
     /**
      * The scene stage
-     * @param {GUIView} view
+     * @param {GSceneWidget} view
      * @class GSceneStage
      * @extends GStage
      * @constructor

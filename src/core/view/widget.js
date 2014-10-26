@@ -3,13 +3,13 @@
      * The base class for all widgets. This will trigger most of the available
      * input events like mouse or key events.
      * @param {HTMLDivElement} [container] optional container to append this widget into
-     * @class GUIWidget
+     * @class GWidget
      * @extends GObject
      * @mixes GEventTarget
      * @constructor
      * @version 1.0
      */
-    function GUIWidget(container) {
+    function GWidget(container) {
         this._htmlElement = this._createHTMLElement();
 
         if (container != null) {
@@ -18,7 +18,7 @@
         }
     }
 
-    GObject.inheritAndMix(GUIWidget, GObject, [GEventTarget]);
+    GObject.inheritAndMix(GWidget, GObject, [GEventTarget]);
 
     /**
      * Convert a DOM-Mouse-Event client position to internal coordinates
@@ -26,7 +26,7 @@
      * @param mouseEvent
      * @returns {GPoint}
      */
-    GUIWidget.convertClientPositionFromMousePosition = function (htmlElement, mouseEvent) {
+    GWidget.convertClientPositionFromMousePosition = function (htmlElement, mouseEvent) {
         var posX = null;
         var posY = null;
         if (mouseEvent.target == htmlElement) {
@@ -55,70 +55,70 @@
      * @type {HTMLElement}
      * @private
      */
-    GUIWidget.prototype._htmlElement = null;
+    GWidget.prototype._htmlElement = null;
 
     /**
      * Internal cache of input events
      * @type {Object}
      * @private
      */
-    GUIWidget.prototype._inputEventCache = null;
+    GWidget.prototype._inputEventCache = null;
 
     /**
      * Counter of registered drag event listeners
      * @type {Number}
      * @private
      */
-    GUIWidget.prototype._dragEventCounter = 0;
+    GWidget.prototype._dragEventCounter = 0;
 
     /**
      * @type {String}
      * @private
      */
-    GUIWidget.prototype._id = null;
+    GWidget.prototype._id = null;
 
     /**
-     * @type {GUIWidget}
+     * @type {GWidget}
      * @private
      */
-    GUIWidget.prototype._parent = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    GUIWidget.prototype._x = 0;
-
+    GWidget.prototype._parent = null;
 
     /**
      * @type {number}
      * @private
      */
-    GUIWidget.prototype._y = 0;
+    GWidget.prototype._x = 0;
+
 
     /**
      * @type {number}
      * @private
      */
-    GUIWidget.prototype._width = 0;
+    GWidget.prototype._y = 0;
 
     /**
      * @type {number}
      * @private
      */
-    GUIWidget.prototype._height = 0;
+    GWidget.prototype._width = 0;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    GWidget.prototype._height = 0;
 
     /**
      * @type {String}
      * @private
      */
-    GUIWidget.prototype._cursor = null;
+    GWidget.prototype._cursor = null;
 
     /**
      * Return the x-position of this widget
      * @return {Number}
      */
-    GUIWidget.prototype.getX = function () {
+    GWidget.prototype.getX = function () {
         return this._x;
     };
 
@@ -126,7 +126,7 @@
      * Return the y-position of this widget
      * @return {Number}
      */
-    GUIWidget.prototype.getY = function () {
+    GWidget.prototype.getY = function () {
         return this._y;
     };
 
@@ -134,7 +134,7 @@
      * Return the width of this widget
      * @return {Number}
      */
-    GUIWidget.prototype.getWidth = function () {
+    GWidget.prototype.getWidth = function () {
         return this._htmlElement.offsetWidth ? this._htmlElement.offsetWidth : this._width;
     };
 
@@ -142,7 +142,7 @@
      * Return the height of this widget
      * @return {Number}
      */
-    GUIWidget.prototype.getHeight = function () {
+    GWidget.prototype.getHeight = function () {
         return this._htmlElement.offsetHeight ? this._htmlElement.offsetHeight : this._height;
     };
 
@@ -151,7 +151,7 @@
      * @param {Number} x new x-position
      * @param {Number} y new y-position
      */
-    GUIWidget.prototype.move = function (x, y) {
+    GWidget.prototype.move = function (x, y) {
         if (typeof x == "number") {
             this._htmlElement.style.left = x.toString() + 'px';
         } else {
@@ -178,7 +178,7 @@
      * @param {Number} width the new width
      * @param {Number} height the new height
      */
-    GUIWidget.prototype.resize = function (width, height) {
+    GWidget.prototype.resize = function (width, height) {
         if (width) {
             this._htmlElement.style.width = width.toString() + 'px';
         } else {
@@ -210,7 +210,7 @@
      * @return {String} the cursor in use
      * @see GCursor
      */
-    GUIWidget.prototype.getCursor = function () {
+    GWidget.prototype.getCursor = function () {
         return this._cursor;
     };
 
@@ -220,7 +220,7 @@
      * @param {String} cursor the cursor to use, null will inherit from parent
      * @see GCursor
      */
-    GUIWidget.prototype.setCursor = function (cursor) {
+    GWidget.prototype.setCursor = function (cursor) {
         if (this._cursor != cursor) {
             if (this._cursor) {
                 this._removeCSSClass("g-cursor-" + this._cursor, true);
@@ -239,7 +239,7 @@
      * @return {Boolean} true if enabled, false if not
      * @version 1.0
      */
-    GUIWidget.prototype.isEnabled = function () {
+    GWidget.prototype.isEnabled = function () {
         return this._htmlElement.className == null || this._htmlElement.className.indexOf("g-disabled") < 0;
     };
 
@@ -248,7 +248,7 @@
      * @param {Boolean} enabled true to make enabled, false to disable
      * @version 1.0
      */
-    GUIWidget.prototype.setEnabled = function (enabled) {
+    GWidget.prototype.setEnabled = function (enabled) {
         if (enabled != this.isEnabled()) {
             if (enabled) {
                 this._removeCSSClass("g-disabled", true);
@@ -263,7 +263,7 @@
      * @return {Boolean} true if displayed, false if not
      * @version 1.0
      */
-    GUIWidget.prototype.isDisplayed = function () {
+    GWidget.prototype.isDisplayed = function () {
         return "none" != this._htmlElement.style.display;
     };
 
@@ -275,12 +275,12 @@
      * @param {Boolean} displayed true to make displayed, false to make none-displayed
      * @version 1.0
      */
-    GUIWidget.prototype.setDisplayed = function (displayed) {
+    GWidget.prototype.setDisplayed = function (displayed) {
         this._htmlElement.style.display = displayed ? "" : "none";
     };
 
     /** @override */
-    GUIWidget.prototype.trigger = function (event) {
+    GWidget.prototype.trigger = function (event) {
         // Handle drag release before mouse release
         if (this._dragEventCounter > 0 && event instanceof GMouseEvent.Release) {
             this._dragMouseRelease(event);
@@ -300,7 +300,7 @@
     }
 
     /** @override */
-    GUIWidget.prototype.addEventListener = function (eventClass, listener, target, args) {
+    GWidget.prototype.addEventListener = function (eventClass, listener, target, args) {
         GEventTarget.prototype.addEventListener.call(this, eventClass, listener, target, args);
 
         if (GInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
@@ -320,7 +320,7 @@
     };
 
     /** @override */
-    GUIWidget.prototype.removeEventListener = function (eventClass, listener) {
+    GWidget.prototype.removeEventListener = function (eventClass, listener) {
         GEventTarget.prototype.removeEventListener.call(this, eventClass, listener);
 
         if (GInputEvent.prototype.isPrototypeOf(eventClass.prototype)) {
@@ -343,7 +343,7 @@
      * do actually support focusing
      * @return {Boolean} true if widget was focused, false if not
      */
-    GUIWidget.prototype.focus = function () {
+    GWidget.prototype.focus = function () {
         if (this.isDisplayed()) {
             try {
                 this._htmlElement.focus();
@@ -359,7 +359,7 @@
      * @param {Function} eventClass
      * @private
      */
-    GUIWidget.prototype._registerInputEventListener = function (eventClass) {
+    GWidget.prototype._registerInputEventListener = function (eventClass) {
         // Check if event is a drag event
         var isDragEvent = GMouseEvent.isDragEvent(eventClass);
         var event_id = GObject.getTypeId(eventClass);
@@ -383,7 +383,7 @@
      * @param {Function} eventClass
      * @private
      */
-    GUIWidget.prototype._unregisterInputEventListener = function (eventClass) {
+    GWidget.prototype._unregisterInputEventListener = function (eventClass) {
         // Check if event is a drag event
         var isDragEvent = GMouseEvent.isDragEvent(eventClass);
         var event_id = GObject.getTypeId(eventClass);
@@ -409,7 +409,7 @@
      * @param {Function} eventClass the input event class to start listening for
      * @private
      */
-    GUIWidget.prototype._startListeningInputEvent = function (eventClass) {
+    GWidget.prototype._startListeningInputEvent = function (eventClass) {
         var event_id = GObject.getTypeId(eventClass);
 
         var domListener = function (event) {
@@ -428,7 +428,7 @@
      * @param {*} eventClass the input event class to stop listening for
      * @private
      */
-    GUIWidget.prototype._stopListeningInputEvent = function (eventClass) {
+    GWidget.prototype._stopListeningInputEvent = function (eventClass) {
         var event_id = GObject.getTypeId(eventClass);
         var domEventName = this._getDomEventNameForEventClass(eventClass);
         this._htmlElement.removeEventListener(domEventName, this._inputEventCache[event_id].domListener);
@@ -439,7 +439,7 @@
      * @param {GMouseEvent} event
      * @private
      */
-    GUIWidget.prototype._dragMouseDown = function (event) {
+    GWidget.prototype._dragMouseDown = function (event) {
         if (event.button == GMouseEvent.BUTTON_LEFT) {
             this._dragStartPosition = event.client;
             this._dragIsDragging = false;
@@ -450,7 +450,7 @@
      * @param {GMouseEvent} event
      * @private
      */
-    GUIWidget.prototype._dragMouseMove = function (event) {
+    GWidget.prototype._dragMouseMove = function (event) {
         if (this._dragStartPosition) {
             // If not yet dragging, we need to fire an initial drag start event
             if (!this._dragIsDragging) {
@@ -490,7 +490,7 @@
      * @param {GMouseEvent} event
      * @private
      */
-    GUIWidget.prototype._dragMouseRelease = function (event) {
+    GWidget.prototype._dragMouseRelease = function (event) {
         if (event.button == GMouseEvent.BUTTON_LEFT) {
             if (this._dragIsDragging) {
                 /** @type GMouseEvent.DragEnd */
@@ -511,7 +511,7 @@
      * @param {GMouseEvent} dragEvent
      * @private
      */
-    GUIWidget.prototype._dragAssignMouseEvent = function (sourceEvent, dragEvent) {
+    GWidget.prototype._dragAssignMouseEvent = function (sourceEvent, dragEvent) {
         dragEvent.client = sourceEvent.client;
         dragEvent.button = sourceEvent.button;
     };
@@ -521,23 +521,23 @@
      * @param {GMouseEvent} currentEvent
      * @private
      */
-    GUIWidget.prototype._dragAssignDragEvent = function (dragEvent, currentEvent) {
+    GWidget.prototype._dragAssignDragEvent = function (dragEvent, currentEvent) {
         dragEvent.clientStart = this._dragStartPosition;
         dragEvent.clientDelta = currentEvent.client.subtract(this._dragPreviousPosition);
     };
 
     /**
-     * @param {GUIWidget} parent
+     * @param {GWidget} parent
      * @private
      */
-    GUIWidget.prototype._setParent = function (parent) {
+    GWidget.prototype._setParent = function (parent) {
         this._parent = parent;
     };
 
     /**
      * @private
      */
-    GUIWidget.prototype._updateLocale = function () {
+    GWidget.prototype._updateLocale = function () {
         var hint = null;
         if (this._hint) {
             hint = this._hint.asHtml();
@@ -558,7 +558,7 @@
      * is made. Defaults to false
      * @private
      */
-    GUIWidget.prototype._triggerWidgetEventFromDom = function (domEvent, widgetEvent, ignoreTarget) {
+    GWidget.prototype._triggerWidgetEventFromDom = function (domEvent, widgetEvent, ignoreTarget) {
         // Handle capturing of mouse for down/release events
         // TODO : Fix checking for left button and let triggered event result decide wether
         // to capture other buttons than left one too
@@ -574,7 +574,7 @@
     /**
      * @private
      */
-    GUIWidget.prototype._updateAndTriggerInputEvent = function (domEvent, eventClass) {
+    GWidget.prototype._updateAndTriggerInputEvent = function (domEvent, eventClass) {
         // Ignore this alltogether if we're actually disabled!
         if (!this.isEnabled()) {
             return;
@@ -605,10 +605,10 @@
      * @param {Number} event_id the id of the event
      * @private
      */
-    GUIWidget.prototype._updateAndTriggerMouseEvent = function (domEvent, event_id) {
+    GWidget.prototype._updateAndTriggerMouseEvent = function (domEvent, event_id) {
         /** @type GMouseEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
-        cachedEvent.client = GUIWidget.convertClientPositionFromMousePosition(this._htmlElement, domEvent);
+        cachedEvent.client = GWidget.convertClientPositionFromMousePosition(this._htmlElement, domEvent);
         cachedEvent.button = domEvent.button;
         this._triggerWidgetEventFromDom(domEvent, cachedEvent);
     };
@@ -619,7 +619,7 @@
      * @param {Number} event_id the id of the event
      * @private
      */
-    GUIWidget.prototype._updateAndTriggerKeyEvent = function (domEvent, event_id) {
+    GWidget.prototype._updateAndTriggerKeyEvent = function (domEvent, event_id) {
         /** @type GKeyEvent */
         var cachedEvent = this._inputEventCache[event_id].event;
 
@@ -634,7 +634,7 @@
      * @returns {String}
      * @private
      */
-    GUIWidget.prototype._getDomEventNameForEventClass = function (eventClass) {
+    GWidget.prototype._getDomEventNameForEventClass = function (eventClass) {
         switch (eventClass) {
             case GMouseEvent.Move:
                 return "mousemove";
@@ -666,7 +666,7 @@
 
     var CAPTURE_EVENTS = [GMouseEvent.Move, GMouseEvent.Release, GKeyEvent.Down, GKeyEvent.Release, GKeyEvent.Press];
 
-    GUIWidget.prototype._setCapture = function () {
+    GWidget.prototype._setCapture = function () {
         // Try the hand setCapture/releaseCapture combo, first
         //if (this._htmlElement.setCapture && document.releaseCapture) {
         //    this._htmlElement.setCapture(true);
@@ -703,7 +703,7 @@
         //}
     };
 
-    GUIWidget.prototype._releaseCapture = function () {
+    GWidget.prototype._releaseCapture = function () {
         // Try the hand setCapture/releaseCapture combo, first
         //if (this._htmlElement.setCapture && document.releaseCapture) {
         //    document.releaseCapture();
@@ -726,7 +726,7 @@
      * @param {Boolean} noPrefix if set, no prefix will be added, defaults to false
      * @private
      */
-    GUIWidget.prototype._addCSSClass = function (cssClass, noPrefix) {
+    GWidget.prototype._addCSSClass = function (cssClass, noPrefix) {
         if (!noPrefix && this._BASE_CSS_CLASS) {
             cssClass = this._BASE_CSS_CLASS + "-" + cssClass;
         }
@@ -757,7 +757,7 @@
      * @param {Boolean} noPrefix if set, no prefix will be added, defaults to false
      * @private
      */
-    GUIWidget.prototype._removeCSSClass = function (cssClass, noPrefix) {
+    GWidget.prototype._removeCSSClass = function (cssClass, noPrefix) {
         if (!noPrefix && this._BASE_CSS_CLASS) {
             cssClass = this._BASE_CSS_CLASS + "-" + cssClass;
         }
@@ -783,16 +783,16 @@
      * Called to create the underlying html element
      * @private
      */
-    GUIWidget.prototype._createHTMLElement = function () {
+    GWidget.prototype._createHTMLElement = function () {
         var result = document.createElement("div");
         result.setAttribute('tabindex', '0');
         return result;
     };
 
     /** @override */
-    GUIWidget.prototype.toString = function () {
-        return "[Object GUIWidget]";
+    GWidget.prototype.toString = function () {
+        return "[Object GWidget]";
     };
 
-    _.GUIWidget = GUIWidget;
+    _.GWidget = GWidget;
 })(this);

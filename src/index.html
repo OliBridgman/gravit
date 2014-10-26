@@ -36,103 +36,101 @@
 <!-- endbuild -->
 
 <!-- ############################################################## -->
-<!-- # Infinity Core ############################################## -->
+<!-- # Gravit Core ############################################## -->
 <!-- ############################################################## -->
-<!-- build:js infinity-core.js -->
+<!-- build:js gravit.core.js -->
 <!-- Core -->
-<script src="infinity/core/object.js"></script>
-<script src="infinity/core/system.js"></script>
-<script src="infinity/core/cursor.js"></script>
-<script src="infinity/core/key.js"></script>
-<script src="infinity/core/locale.js"></script>
-<script src="infinity/core/math.js"></script>
-<script src="infinity/core/util.js"></script>
-<script src="infinity/core/reader.js"></script>
-<script src="infinity/core/io.js"></script>
-<!-- Event -->
-<script src="infinity/event/event.js"></script>
-<script src="infinity/event/eventtarget.js"></script>
-<script src="infinity/event/inputevent.js"></script>
-<script src="infinity/event/keyevent.js"></script>
-<script src="infinity/event/mouseevent.js"></script>
+<script src="core/object.js"></script>
+<script src="core/event.js"></script>
+<script src="core/eventtarget.js"></script>
+<script src="core/system.js"></script>
+<script src="core/key.js"></script>
+<script src="core/locale.js"></script>
+<script src="core/math.js"></script>
+<script src="core/util.js"></script>
+<script src="core/reader.js"></script>
+<script src="core/io.js"></script>
+<script src="core/platform.js"></script>
 <!-- Geometry -->
-<script src="infinity/geometry/length.js"></script>
-<script src="infinity/geometry/point.js"></script>
-<script src="infinity/geometry/rect.js"></script>
-<script src="infinity/geometry/transform.js"></script>
+<script src="core/geometry/length.js"></script>
+<script src="core/geometry/point.js"></script>
+<script src="core/geometry/rect.js"></script>
+<script src="core/geometry/transform.js"></script>
 <!-- Vertex -->
-<script src="infinity/vertex/vertex.js"></script>
-<script src="infinity/vertex/vertexsource.js"></script>
-<script src="infinity/vertex/vertextarget.js"></script>
-<script src="infinity/vertex/vertexcontainer.js"></script>
-<script src="infinity/vertex/vertexinfo.js"></script>
-<script src="infinity/vertex/vertexpixelaligner.js"></script>
-<script src="infinity/vertex/vertextransformer.js"></script>
-<script src="infinity/vertex/vertexoffsetter.js"></script>
+<script src="core/vertex/vertex.js"></script>
+<script src="core/vertex/vertexsource.js"></script>
+<script src="core/vertex/vertextarget.js"></script>
+<script src="core/vertex/vertexcontainer.js"></script>
+<script src="core/vertex/vertexinfo.js"></script>
+<script src="core/vertex/vertexpixelaligner.js"></script>
+<script src="core/vertex/vertextransformer.js"></script>
+<script src="core/vertex/vertexoffsetter.js"></script>
 <!-- Bitmap -->
-<script src="infinity/bitmap/filter/colorgradingfilter.js"></script>
-<script src="infinity/bitmap/filter/colormatrixfilter.js"></script>
-<script src="infinity/bitmap/filter/colortransformfilter.js"></script>
-<script src="infinity/bitmap/filter/stackblurfilter.js"></script>
-<script src="infinity/bitmap/bitmap.js"></script>
+<script src="core/bitmap/filter/colorgradingfilter.js"></script>
+<script src="core/bitmap/filter/colormatrixfilter.js"></script>
+<script src="core/bitmap/filter/colortransformfilter.js"></script>
+<script src="core/bitmap/filter/stackblurfilter.js"></script>
+<script src="core/bitmap/bitmap.js"></script>
 <!-- Pattern -->
-<script src="infinity/pattern/pattern.js"></script>
-<script src="infinity/pattern/background.js"></script>
-<script src="infinity/pattern/color.js"></script>
-<script src="infinity/pattern/rgbcolor.js"></script>
-<script src="infinity/pattern/cmykcolor.js"></script>
-<script src="infinity/pattern/gradient.js"></script>
-<script src="infinity/pattern/lineargradient.js"></script>
-<script src="infinity/pattern/radialgradient.js"></script>
+<script src="core/pattern/pattern.js"></script>
+<script src="core/pattern/background.js"></script>
+<script src="core/pattern/color.js"></script>
+<script src="core/pattern/rgbcolor.js"></script>
+<script src="core/pattern/cmykcolor.js"></script>
+<script src="core/pattern/gradient.js"></script>
+<script src="core/pattern/lineargradient.js"></script>
+<script src="core/pattern/radialgradient.js"></script>
 <!-- Paint -->
-<script src="infinity/paint/annotation.js"></script>
-<script src="infinity/paint/font.js"></script>
-<script src="infinity/paint/dirtylist.js"></script>
-<script src="infinity/paint/paintcanvas.js"></script>
-<script src="infinity/paint/paintconfiguration.js"></script>
-<script src="infinity/paint/paintcontext.js"></script>
+<script src="core/paint/annotation.js"></script>
+<script src="core/paint/font.js"></script>
+<script src="core/paint/dirtylist.js"></script>
+<script src="core/paint/paintcanvas.js"></script>
+<script src="core/paint/paintconfiguration.js"></script>
+<script src="core/paint/paintcontext.js"></script>
 <!-- Scene -->
-<script src="infinity/scene/node.js"></script>
-<script src="infinity/scene/stylable.js"></script>
-<script src="infinity/scene/element.js"></script>
-<script src="infinity/scene/block.js"></script>
-<script src="infinity/scene/item.js"></script>
-<script src="infinity/scene/scene.js"></script>
-<script src="infinity/scene/scenepaintconfiguration.js"></script>
-<script src="infinity/scene/selector.js"></script>
-<script src="infinity/scene/effect/effect.js"></script>
-<script src="infinity/scene/effect/blureffect.js"></script>
-<script src="infinity/scene/effect/colorgradingeffect.js"></script>
-<script src="infinity/scene/effect/colormatrixeffect.js"></script>
-<script src="infinity/scene/effect/colortransformeffect.js"></script>
-<script src="infinity/scene/effect/dropshadoweffect.js"></script>
-<script src="infinity/scene/effect/innershadoweffect.js"></script>
-<script src="infinity/scene/effect/overlayeffect.js"></script>
-<script src="infinity/scene/structure/page.js"></script>
-<script src="infinity/scene/structure/layer.js"></script>
-<script src="infinity/scene/structure/style.js"></script>
-<script src="infinity/scene/structure/swatch.js"></script>
-<script src="infinity/scene/item/group.js"></script>
-<script src="infinity/scene/item/shape.js"></script>
-<script src="infinity/scene/item/pathbase.js"></script>
-<script src="infinity/scene/item/image.js"></script>
-<script src="infinity/scene/item/polygon.js"></script>
-<script src="infinity/scene/item/rectangle.js"></script>
-<script src="infinity/scene/item/ellipse.js"></script>
-<script src="infinity/scene/item/path.js"></script>
-<script src="infinity/scene/item/text.js"></script>
-<script src="infinity/scene/item/compoundpath.js"></script>
-<script src="infinity/scene/item/slice.js"></script>
+<script src="core/scene/node.js"></script>
+<script src="core/scene/stylable.js"></script>
+<script src="core/scene/element.js"></script>
+<script src="core/scene/block.js"></script>
+<script src="core/scene/item.js"></script>
+<script src="core/scene/scene.js"></script>
+<script src="core/scene/scenepaintconfiguration.js"></script>
+<script src="core/scene/selector.js"></script>
+<script src="core/scene/effect/effect.js"></script>
+<script src="core/scene/effect/blureffect.js"></script>
+<script src="core/scene/effect/colorgradingeffect.js"></script>
+<script src="core/scene/effect/colormatrixeffect.js"></script>
+<script src="core/scene/effect/colortransformeffect.js"></script>
+<script src="core/scene/effect/dropshadoweffect.js"></script>
+<script src="core/scene/effect/innershadoweffect.js"></script>
+<script src="core/scene/effect/overlayeffect.js"></script>
+<script src="core/scene/structure/page.js"></script>
+<script src="core/scene/structure/layer.js"></script>
+<script src="core/scene/structure/style.js"></script>
+<script src="core/scene/structure/swatch.js"></script>
+<script src="core/scene/item/group.js"></script>
+<script src="core/scene/item/shape.js"></script>
+<script src="core/scene/item/pathbase.js"></script>
+<script src="core/scene/item/image.js"></script>
+<script src="core/scene/item/polygon.js"></script>
+<script src="core/scene/item/rectangle.js"></script>
+<script src="core/scene/item/ellipse.js"></script>
+<script src="core/scene/item/path.js"></script>
+<script src="core/scene/item/text.js"></script>
+<script src="core/scene/item/compoundpath.js"></script>
+<script src="core/scene/item/slice.js"></script>
 <!-- View -->
-<script src="infinity/view/stage.js"></script>
-<script src="infinity/view/scenestage.js"></script>
-<script src="infinity/view/widget.js"></script>
-<script src="infinity/view/view.js"></script>
-<!-- Root -->
-<script src="infinity/platform.js"></script>
+<script src="core/view/cursor.js"></script>
+<script src="core/view/inputevent.js"></script>
+<script src="core/view/keyevent.js"></script>
+<script src="core/view/mouseevent.js"></script>
+<script src="core/view/stage.js"></script>
+<script src="core/view/scenestage.js"></script>
+<script src="core/view/widget.js"></script>
+<script src="core/view/scenewidget.js"></script>
 <!-- I18N -->
-<script src="infinity/i18n/i18n_en.js"></script>
-<script src="infinity/i18n/i18n_de.js"></script>
+<script src="core/i18n/i18n_en.js"></script>
+<script src="core/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
@@ -201,7 +199,7 @@
 <script src="infinity-editor/view/editorscenestage.js"></script>
 <script src="infinity-editor/view/editortoolstage.js"></script>
 <script src="infinity-editor/view/editorfrontstage.js"></script>
-<script src="infinity-editor/view/editorview.js"></script>
+<script src="infinity-editor/view/editorwidget.js"></script>
 <!-- Root -->
 <script src="infinity-editor/editor.js"></script>
 <script src="infinity-editor/editorpaintconfiguration.js"></script>

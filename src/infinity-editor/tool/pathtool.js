@@ -183,7 +183,7 @@
         view.addEventListener(GMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GMouseEvent.Release, this._mouseRelease, this);
         view.addEventListener(GKeyEvent.Down, this._keyDown, this);
-        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
 
         this._cursor = GCursor.PenStart;
         this._transactionType = GPathTool.Transaction.NoTransaction;
@@ -205,7 +205,7 @@
         view.removeEventListener(GMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GMouseEvent.Release, this._mouseRelease);
         view.removeEventListener(GKeyEvent.Down, this._keyDown);
-        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -520,7 +520,7 @@
     };
 
     /**
-     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @param {GPlatform.ModifiersChangedEvent} event
      * @private
      */
     GPathTool.prototype._modifiersChanged = function (event) {

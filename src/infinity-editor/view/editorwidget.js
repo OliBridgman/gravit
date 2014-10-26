@@ -1,19 +1,19 @@
 (function (_) {
     /**
-     * GEditorView is a widget to render and edit a scene
+     * GEditorWidget is a widget to render and edit a scene
      * @param {GEditor} [editor] the editor this view is bound too, defaults to null
-     * @class GEditorView
-     * @extends GUIView
+     * @class GEditorWidget
+     * @extends GSceneWidget
      * @constructor
      * @version 1.0
      */
-    function GEditorView(editor) {
+    function GEditorWidget(editor) {
         var args = Array.prototype.slice.call(arguments);
         args[0] = editor.getScene();
         this._editor = editor;
         this._viewConfiguration = new GEditorPaintConfiguration(); // !!overwrite
 
-        GUIView.apply(this, args);
+        GSceneWidget.apply(this, args);
 
         // Register drop events on our view
         $(this._htmlElement)
@@ -32,31 +32,31 @@
                 var event = evt.originalEvent;
                 event.preventDefault();
                 event.stopPropagation();
-                var client = GUIWidget.convertClientPositionFromMousePosition(this._htmlElement, event);
+                var client = GWidget.convertClientPositionFromMousePosition(this._htmlElement, event);
                 this._handleDrop(client, event.dataTransfer);
                 return false;
             }.bind(this));
     }
 
-    GObject.inherit(GEditorView, GUIView);
+    GObject.inherit(GEditorWidget, GSceneWidget);
 
     /**
      * @type {GEditor}
      * @private
      */
-    GEditorView.prototype._editor = null;
+    GEditorWidget.prototype._editor = null;
 
     /**
      * @type {GEditorToolStage}
      * @private
      */
-    GEditorView.prototype._toolStage = null;
+    GEditorWidget.prototype._toolStage = null;
 
     /**
      * Return the editor this view is rendering
      * @returns {GEditor}
      */
-    GEditorView.prototype.getEditor = function () {
+    GEditorWidget.prototype.getEditor = function () {
         return this._editor;
     };
 
@@ -64,12 +64,12 @@
      * Return the editor's tool stage
      * @returns {GEditorToolStage}
      */
-    GEditorView.prototype.getToolStage = function () {
+    GEditorWidget.prototype.getToolStage = function () {
         return this._toolStage;
     };
 
     /** @override */
-    GEditorView.prototype._initStages = function () {
+    GEditorWidget.prototype._initStages = function () {
         this.addStage(new GEditorBackStage(this));
         this.addStage(new GSceneStage(this));
         this.addStage(new GEditorFrontStage(this));
@@ -78,8 +78,8 @@
     };
 
     /** @override */
-    GEditorView.prototype._updateViewTransforms = function () {
-        GUIView.prototype._updateViewTransforms.call(this);
+    GEditorWidget.prototype._updateViewTransforms = function () {
+        GSceneWidget.prototype._updateViewTransforms.call(this);
         this._editor.updateInlineEditorForView(this);
     };
 
@@ -89,7 +89,7 @@
      * @param {DataTransfer} dataTransfer the dataTransfer object
      * @private
      */
-    GEditorView.prototype._handleDrop = function (position, dataTransfer) {
+    GEditorWidget.prototype._handleDrop = function (position, dataTransfer) {
         // Convert position into scene coordinates
         var scenePosition = this.getViewTransform().mapPoint(position);
 
@@ -159,10 +159,10 @@
     };
 
     /** @override */
-    GEditorView.prototype.toString = function () {
-        return "[Object GEditorView]";
+    GEditorWidget.prototype.toString = function () {
+        return "[Object GEditorWidget]";
     };
 
-    _.GEditorView = GEditorView;
+    _.GEditorWidget = GEditorWidget;
 
 })(this);

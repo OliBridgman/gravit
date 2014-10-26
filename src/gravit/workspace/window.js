@@ -9,7 +9,7 @@
     function GWindow(document) {
         this._container = $('<div></div>');
         this._document = document;
-        this._view = new GEditorView(this._document.getEditor());
+        this._view = new GEditorWidget(this._document.getEditor());
         this._view.setViewMargin([GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN, GWindow.VIEW_MARGIN]);
         this._container.append(this._view._htmlElement);
 
@@ -57,7 +57,7 @@
 
     /**
      * The underlying view
-     * @type {GEditorView}
+     * @type {GEditorWidget}
      * @private
      */
     GWindow.prototype._view = null;
@@ -80,7 +80,7 @@
 
     /**
      * Returns the underlying editor view this window is bound to
-     * @return {GEditorView}
+     * @return {GEditorWidget}
      */
     GWindow.prototype.getView = function () {
         return this._view;

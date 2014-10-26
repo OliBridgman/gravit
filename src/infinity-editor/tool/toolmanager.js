@@ -66,7 +66,7 @@
     GToolManager.prototype._activeTool = null;
 
     /**
-     * @type {GEditorView}
+     * @type {GEditorWidget}
      * @private
      */
     GToolManager.prototype._view = null;
@@ -178,7 +178,7 @@
 
     /**
      * Assign the view this tool manager is operating on
-     * @param {GEditorView} view the editor view this tool manager
+     * @param {GEditorWidget} view the editor view this tool manager
      * is operating on, may also be null to remove all views
      */
     GToolManager.prototype.setView = function (view) {
@@ -190,7 +190,7 @@
                 // Remove ourself from the view tool layer's paint
                 this._viewStage.paint = null;
                 // Unregister ourself from global modifiers change event
-                ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+                ifPlatform.removeEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged);
             }
 
             this._view = view;
@@ -203,7 +203,7 @@
                 // Assign ourself to the view tool layer's paint
                 this._viewStage.paint = this._paintLink;
                 // Register ourself to global modifiers change event
-                ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+                ifPlatform.addEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
             }
         }
     };
@@ -376,7 +376,7 @@
     };
 
     /**
-     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @param {GPlatform.ModifiersChangedEvent} event
      * @private
      */
     GToolManager.prototype._modifiersChanged = function (event) {

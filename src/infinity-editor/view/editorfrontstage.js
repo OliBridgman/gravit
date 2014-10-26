@@ -1,7 +1,7 @@
 (function (_) {
     /**
      * A stage for rendering the editor foreground
-     * @param {GUIView} view
+     * @param {GSceneWidget} view
      * @class GEditorFrontStage
      * @extends GStage
      * @constructor

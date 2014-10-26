@@ -1,7 +1,7 @@
 (function (_) {
     /**
      * A stage (layer) within a view
-     * @param {GUIView} view
+     * @param {GSceneWidget} view
      * @class GStage
      * @constructor
      */
@@ -16,7 +16,7 @@
     }
 
     /**
-     * @type {GUIView}
+     * @type {GSceneWidget}
      * @private
      */
     GStage.prototype._view = null;

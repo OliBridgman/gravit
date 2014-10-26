@@ -1280,7 +1280,7 @@
     /**
      * Called to open an inline editor for a given node and view
      * @param {GNode} node
-     * @param {GEditorView} view
+     * @param {GEditorWidget} view
      * @param {GPoint} [position] optional position in screen cordinates,
      * defaults to null
      * @return {Boolean} true if an inline editor was opened, false if not
@@ -1311,7 +1311,7 @@
 
     /**
      * Called to update any active inline editor for a given view
-     * @param {GEditorView} view
+     * @param {GEditorWidget} view
      */
     GEditor.prototype.updateInlineEditorForView = function (view) {
         if (this._currentInlineEditorNode) {

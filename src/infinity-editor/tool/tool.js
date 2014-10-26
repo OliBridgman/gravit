@@ -31,7 +31,7 @@
 
     /**
      * The current editor view the tool is activated on, may be null for none
-     * @type {GEditorView}
+     * @type {GEditorWidget}
      * @private
      */
     GTool.prototype._view = null;
@@ -56,7 +56,7 @@
 
     /**
      * Called when this tool got activated for a given view
-     * @param {GEditorView} view the editor view the tool got activated for
+     * @param {GEditorWidget} view the editor view the tool got activated for
      */
     GTool.prototype.activate = function (view) {
         this._scene = view ? view.getScene() : null;
@@ -66,7 +66,7 @@
 
     /**
      * Called when this tool got deactivated for it's current view
-     * @param {GEditorView} view the editor view the tool got deactivated for
+     * @param {GEditorWidget} view the editor view the tool got deactivated for
      */
     GTool.prototype.deactivate = function (view) {
         if (view.getScene() != this._scene || view != this._view) {

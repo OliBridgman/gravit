@@ -70,7 +70,7 @@
         view.addEventListener(GMouseEvent.DragEnd, this._mouseDragEnd, this);
         view.addEventListener(GMouseEvent.Release, this._mouseRelease, this);
 
-        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -82,7 +82,7 @@
         view.removeEventListener(GMouseEvent.DragEnd, this._mouseDragEnd);
         view.removeEventListener(GMouseEvent.Release, this._mouseRelease);
 
-        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -154,7 +154,7 @@
             var newZoom = null;
             switch (this._zoomMode) {
                 case -2:
-                    newZoom = GUIView.options.minZoomFactor;
+                    newZoom = GSceneWidget.options.minZoomFactor;
                     break;
                 case -1:
                     newZoom = this._view.getZoom() / GZoomTool.options.zoomStep;
@@ -163,7 +163,7 @@
                     newZoom = this._view.getZoom() * GZoomTool.options.zoomStep;
                     break;
                 case +2:
-                    newZoom = GUIView.options.maxZoomFactor;
+                    newZoom = GSceneWidget.options.maxZoomFactor;
                     break;
                 default:
                     break;
@@ -178,7 +178,7 @@
     };
 
     /**
-     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @param {GPlatform.ModifiersChangedEvent} event
      * @private
      */
     GZoomTool.prototype._modifiersChanged = function (event) {
@@ -200,9 +200,9 @@
         }
 
         // Normalize zoom mode
-        if (newMode < 0 && this._view.getZoom() <= GUIView.options.minZoomFactor) {
+        if (newMode < 0 && this._view.getZoom() <= GSceneWidget.options.minZoomFactor) {
             newMode = 0;
-        } else if (newMode > 0 && this._view.getZoom() >= GUIView.options.maxZoomFactor) {
+        } else if (newMode > 0 && this._view.getZoom() >= GSceneWidget.options.maxZoomFactor) {
             newMode = 0;
         }
 

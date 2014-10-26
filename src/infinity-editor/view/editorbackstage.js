@@ -3,7 +3,7 @@
 
     /**
      * A stage for rendering the editor background
-     * @param {GUIView} view
+     * @param {GSceneWidget} view
      * @class GEditorBackStage
      * @extends GStage
      * @constructor

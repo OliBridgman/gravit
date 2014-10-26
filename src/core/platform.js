@@ -1,13 +1,13 @@
 (function (_) {
     /**
      * Instance of a platform implementation
-     * @class GUIPlatform
+     * @class GPlatform
      * @extends GObject
      * @mixes GEventTarget
      * @constructor
      * @version 1.0
      */
-    function GUIPlatform() {
+    function GPlatform() {
         document.addEventListener("keydown", function (event) {
             if (!document.activeElement ||
                     ((!$(document.activeElement).is(":input") ||
@@ -32,12 +32,12 @@
         }.bind(this), true);
     }
 
-    GObject.inheritAndMix(GUIPlatform, GObject, [GEventTarget]);
+    GObject.inheritAndMix(GPlatform, GObject, [GEventTarget]);
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIPlatform.Modifiers Class
+    // GPlatform.Modifiers Class
     // -----------------------------------------------------------------------------------------------------------------
-    GUIPlatform.Modifiers = function () {
+    GPlatform.Modifiers = function () {
     };
 
     /**
@@ -45,79 +45,79 @@
      * @type {Boolean}
      * @version 1.0
      */
-    GUIPlatform.Modifiers.metaKey = false;
+    GPlatform.Modifiers.metaKey = false;
 
     /**
      * Whether the shift-key is held down or not
      * @type {Boolean}
      * @version 1.0
      */
-    GUIPlatform.Modifiers.shiftKey = false;
+    GPlatform.Modifiers.shiftKey = false;
 
     /**
      * Whether the option-key is held down or not
      * @type {Boolean}
      * @version 1.0
      */
-    GUIPlatform.Modifiers.optionKey = false;
+    GPlatform.Modifiers.optionKey = false;
 
     /**
      * Whether the space-key is held down or not
      * @type {Boolean}
      * @version 1.0
      */
-    GUIPlatform.Modifiers.spaceKey = false;
+    GPlatform.Modifiers.spaceKey = false;
 
     /** @override */
-    GUIPlatform.Modifiers.prototype.toString = function () {
-        return "[Object GUIPlatform.Modifiers]";
+    GPlatform.Modifiers.prototype.toString = function () {
+        return "[Object GPlatform.Modifiers]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIPlatform.ModifiersChangedEvent Event
+    // GPlatform.ModifiersChangedEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An object representing an event when one or more modifiers have been changed globally
-     * @class GUIPlatform.ModifiersChangedEvent
+     * @class GPlatform.ModifiersChangedEvent
      * @extends GEvent
      * @constructor
      * @version 1.0
-     * @see GUIPlatform.modifiers
+     * @see GPlatform.modifiers
      */
-    GUIPlatform.ModifiersChangedEvent = function () {
-        this.changed = new GUIPlatform.Modifiers();
+    GPlatform.ModifiersChangedEvent = function () {
+        this.changed = new GPlatform.Modifiers();
     }
-    GObject.inherit(GUIPlatform.ModifiersChangedEvent, GEvent);
+    GObject.inherit(GPlatform.ModifiersChangedEvent, GEvent);
 
     /**
      * The modifiers that have been changed
-     * @type {GUIPlatform.Modifiers}
+     * @type {GPlatform.Modifiers}
      * @version 1.0
      */
-    GUIPlatform.ModifiersChangedEvent.prototype.changed = null;
+    GPlatform.ModifiersChangedEvent.prototype.changed = null;
 
     /** @override */
-    GUIPlatform.ModifiersChangedEvent.prototype.toString = function () {
-        return "[Object GUIPlatform.ModifiersChangedEvent]";
+    GPlatform.ModifiersChangedEvent.prototype.toString = function () {
+        return "[Object GPlatform.ModifiersChangedEvent]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIPlatform Class
+    // GPlatform Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
      * The globally accessible active modifiers
-     * @type {GUIPlatform.Modifiers}
+     * @type {GPlatform.Modifiers}
      * @version 1.0
      */
-    GUIPlatform.prototype.modifiers = new GUIPlatform.Modifiers();
+    GPlatform.prototype.modifiers = new GPlatform.Modifiers();
 
     /**
      * Cached modifiers changed event
-     * @type {GUIPlatform.ModifiersChangedEvent}
+     * @type {GPlatform.ModifiersChangedEvent}
      * @private
      */
-    GUIPlatform.prototype._modifiersChangedEventCache = new GUIPlatform.ModifiersChangedEvent();
+    GPlatform.prototype._modifiersChangedEventCache = new GPlatform.ModifiersChangedEvent();
 
     /**
      * Schedule a new frame callback
@@ -125,7 +125,7 @@
      * @return {Object} an scheduleId which can be used to cancel the request
      * @version 1.0
      */
-    GUIPlatform.prototype.scheduleFrame = function (callback) {
+    GPlatform.prototype.scheduleFrame = function (callback) {
         return window.requestAnimationFrame(callback);
     };
 
@@ -134,7 +134,7 @@
      * @param {Object} scheduleId the id retrieved when calling scheduleFrame
      * @version 1.0
      */
-    GUIPlatform.prototype.cancelFrame = function (scheduleId) {
+    GPlatform.prototype.cancelFrame = function (scheduleId) {
         window.cancelRequestAnimationFrame(scheduleId);
     };
 
@@ -142,7 +142,7 @@
      * @param {KeyboardEvent} event
      * @private
      */
-    GUIPlatform.prototype._updateModifiers = function (event) {
+    GPlatform.prototype._updateModifiers = function (event) {
         var optionKey = false;
         var shiftKey = false;
         var metaKey = false;
@@ -176,7 +176,7 @@
         }
 
         if (metaKey || optionKey || shiftKey || metaKey || spaceKey) {
-            if (this.hasEventListeners(GUIPlatform.ModifiersChangedEvent)) {
+            if (this.hasEventListeners(GPlatform.ModifiersChangedEvent)) {
                 this._modifiersChangedEventCache.changed.metaKey = metaKey;
                 this._modifiersChangedEventCache.changed.optionKey = optionKey;
                 this._modifiersChangedEventCache.changed.shiftKey = shiftKey;
@@ -186,8 +186,8 @@
         }
     };
 
-    _.GUIPlatform = GUIPlatform;
-    _.ifPlatform = new GUIPlatform();
+    _.GPlatform = GPlatform;
+    _.ifPlatform = new GPlatform();
 
     /**
      * Fixture for the various requestAnimationFrame implementations on the browsers

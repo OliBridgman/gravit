@@ -55,7 +55,7 @@
     GZoomInAction.prototype.isEnabled = function () {
         var window = gApp.getWindows().getActiveWindow();
         var view = window ? window.getView() : null;
-        return view && view.getZoom() < GUIView.options.maxZoomFactor;
+        return view && view.getZoom() < GSceneWidget.options.maxZoomFactor;
     };
 
     /**

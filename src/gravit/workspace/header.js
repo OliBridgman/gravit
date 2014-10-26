@@ -77,13 +77,13 @@
                 this._removeWindowTab(evt.window);
                 break;
             case GWindows.WindowEvent.Type.Activated:
-                evt.window.getView().addEventListener(GUIView.TransformEvent, this._updateZoomFromWindow, this);
+                evt.window.getView().addEventListener(GSceneWidget.TransformEvent, this._updateZoomFromWindow, this);
                 this._updateView();
                 this._updateZoomFromWindow();
                 this._updateActiveWindowTab();
                 break;
             case GWindows.WindowEvent.Type.Deactivated:
-                evt.window.getView().removeEventListener(GUIView.TransformEvent, this._updateZoomFromWindow, this);
+                evt.window.getView().removeEventListener(GSceneWidget.TransformEvent, this._updateZoomFromWindow, this);
                 this._updateView();
                 this._updateZoomFromWindow();
                 this._updateActiveWindowTab();

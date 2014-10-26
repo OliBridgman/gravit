@@ -1,7 +1,7 @@
 (function (_) {
     /**
      * A stage for rendering the scene editors
-     * @param {GEditorView} view
+     * @param {GEditorWidget} view
      * @class GEditorSceneStage
      * @extends GStage
      * @constructor

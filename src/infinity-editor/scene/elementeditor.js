@@ -892,7 +892,7 @@
 
     /**
      * Called to let the editor do some inline editing
-     * @param {GEditorView} view the view the inline editing should
+     * @param {GEditorWidget} view the view the inline editing should
      * take place within
      * @param {HTMLElement} container the container any editor element
      * should be attached to relative to the view
@@ -905,7 +905,7 @@
      * Called whenever something in the view has changed and the inline
      * editor should adjust itself. This will also called immediately
      * after the beginInlineEdit call.
-     * @param {GEditorView} view the view the inline editing takes place
+     * @param {GEditorWidget} view the view the inline editing takes place
      * @param {GPoint} [position] optional position in screen cordinates,
      * defaults to null
      */

@@ -1,14 +1,14 @@
 (function (_) {
     /**
-     * GUIView is a widget to paint a scene
+     * GSceneWidget is a widget to paint a scene
      * @param {GScene} [scene] the scene this view is bound too, defaults to null
-     * @class GUIView
-     * @extends GUIWidget
+     * @class GSceneWidget
+     * @extends GWidget
      * @constructor
      */
-    function GUIView(scene) {
+    function GSceneWidget(scene) {
         this._updateViewTransforms(true);
-        GUIWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
+        GWidget.apply(this, arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : null);
 
         this._scene = scene;
 
@@ -30,14 +30,14 @@
         scene.addEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
     }
 
-    GObject.inherit(GUIView, GUIWidget);
+    GObject.inherit(GSceneWidget, GWidget);
 
     /**
      * Global view options
      * @type {Object}
      * @version 1.0
      */
-    GUIView.options = {
+    GSceneWidget.options = {
         /**
          * The smallest zoom factor allowed whereas 0 = 0% and 1.0 = 100%
          * @type {Number}
@@ -61,107 +61,107 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIView.TransformEvent Event
+    // GSceneWidget.TransformEvent Event
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * An event whenever the view's transformation has changed
-     * @class GUIView.TransformEvent
+     * @class GSceneWidget.TransformEvent
      * @extends GEvent
      * @constructor
      */
-    GUIView.TransformEvent = function () {
+    GSceneWidget.TransformEvent = function () {
     };
-    GObject.inherit(GUIView.TransformEvent, GEvent);
+    GObject.inherit(GSceneWidget.TransformEvent, GEvent);
 
     /** @override */
-    GUIView.TransformEvent.prototype.toString = function () {
-        return "[Object GUIView.TransformEvent]";
+    GSceneWidget.TransformEvent.prototype.toString = function () {
+        return "[Object GSceneWidget.TransformEvent]";
     };
 
-    GUIView.TRANSFORMEVENT = new GUIView.TransformEvent();
+    GSceneWidget.TRANSFORMEVENT = new GSceneWidget.TransformEvent();
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GUIView Class
+    // GSceneWidget Class
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * @type {GScene}
      * @private
      */
-    GUIView.prototype._scene = null;
+    GSceneWidget.prototype._scene = null;
 
     /**
      * An array of stages
      * @type {Array<GStage>}
      * @private
      */
-    GUIView.prototype._stages = null;
+    GSceneWidget.prototype._stages = null;
 
     /**
      * Left, top, right, bottom offsets
      * @type {Array<Number>}
      * @private
      */
-    GUIView.prototype._viewOffset = null;
+    GSceneWidget.prototype._viewOffset = null;
 
     /**
      * Left, top, right, bottom margins
      * @type {Array<Number>}
      * @private
      */
-    GUIView.prototype._viewMargin = null;
+    GSceneWidget.prototype._viewMargin = null;
 
     /**
      * The current horizontal scroll of this view
      * @type Number
      * @private
      */
-    GUIView.prototype._scrollX = 0;
+    GSceneWidget.prototype._scrollX = 0;
 
     /**
      * The current vertical scroll of this view
      * @type Number
      * @private
      */
-    GUIView.prototype._scrollY = 0;
+    GSceneWidget.prototype._scrollY = 0;
 
     /**
      * The current zoom of this view
      * @type Number
      * @private
      */
-    GUIView.prototype._zoom = 1.0;
+    GSceneWidget.prototype._zoom = 1.0;
 
     /**
      * World to view transformation
      * @type {GTransform}
      * @private
      */
-    GUIView.prototype._worldToViewTransform = null;
+    GSceneWidget.prototype._worldToViewTransform = null;
 
     /**
      * View to world transform
      * @type {GTransform}
      * @private
      */
-    GUIView.prototype._viewToWorldTransform = null;
+    GSceneWidget.prototype._viewToWorldTransform = null;
 
     /**
      * @type {GScenePaintConfiguration}
      * @private
      */
-    GUIView.prototype._viewConfiguration = null;
+    GSceneWidget.prototype._viewConfiguration = null;
 
     /**
      * @type {Array<*>}
      * @private
      */
-    GUIView.prototype._pageConfigurations = null;
+    GSceneWidget.prototype._pageConfigurations = null;
 
     /** @override */
-    GUIView.prototype.resize = function (width, height) {
-        GUIWidget.prototype.resize.call(this, width, height);
+    GSceneWidget.prototype.resize = function (width, height) {
+        GWidget.prototype.resize.call(this, width, height);
 
         // Resize stages if any
         if (this._stages) {
@@ -175,14 +175,14 @@
      * Return the scene this view is painting
      * @returns {GScene}
      */
-    GUIView.prototype.getScene = function () {
+    GSceneWidget.prototype.getScene = function () {
         return this._scene;
     };
 
     /**
      * @return {GScenePaintConfiguration}
      */
-    GUIView.prototype.getViewConfiguration = function () {
+    GSceneWidget.prototype.getViewConfiguration = function () {
         return this._viewConfiguration;
     };
 
@@ -190,7 +190,7 @@
      * Get the current view offset
      * @return {Array<Number>} Left, top, right, bottom
      */
-    GUIView.prototype.getViewOffset = function () {
+    GSceneWidget.prototype.getViewOffset = function () {
         return this._viewOffset;
     };
 
@@ -198,7 +198,7 @@
      * Set the current view offset
      * @param {Array<Number>} Offset Left, top, right, bottom
      */
-    GUIView.prototype.setViewOffset = function (offset) {
+    GSceneWidget.prototype.setViewOffset = function (offset) {
         this._viewOffset = [0, 0, 0, 0];
         if (offset && offset.length > 0) {
             for (var i = 0; i < Math.min(4, offset.length); ++i) {
@@ -219,7 +219,7 @@
      * @return {Array<Number>} Left, top, right, bottom
      * @version 1.0
      */
-    GUIView.prototype.getViewMargin = function () {
+    GSceneWidget.prototype.getViewMargin = function () {
         return this._viewMargin;
     };
 
@@ -228,7 +228,7 @@
      * @param {Array<Number>} margin Left, top, right, bottom
      * @version 1.0
      */
-    GUIView.prototype.setViewMargin = function (margin) {
+    GSceneWidget.prototype.setViewMargin = function (margin) {
         this._viewMargin = [0, 0, 0, 0];
         if (margin && margin.length > 0) {
             for (var i = 0; i < Math.min(4, margin.length); ++i) {
@@ -242,7 +242,7 @@
      * @return {Number} The current horizontal scroll position of this view
      * @version 1.0
      */
-    GUIView.prototype.getScrollX = function () {
+    GSceneWidget.prototype.getScrollX = function () {
         return this._scrollX;
     };
 
@@ -250,7 +250,7 @@
      * @return {Number} The current vertical scroll position of this view
      * @version 1.0
      */
-    GUIView.prototype.getScrollY = function () {
+    GSceneWidget.prototype.getScrollY = function () {
         return this._scrollY;
     };
 
@@ -258,7 +258,7 @@
      * @return {Number} The current zoom of this view
      * @version 1.0
      */
-    GUIView.prototype.getZoom = function () {
+    GSceneWidget.prototype.getZoom = function () {
         return this._zoom;
     };
 
@@ -267,7 +267,7 @@
      * world coordinates into view coordinates
      * @returns {GTransform}
      */
-    GUIView.prototype.getWorldTransform = function () {
+    GSceneWidget.prototype.getWorldTransform = function () {
         return this._worldToViewTransform;
     };
 
@@ -276,7 +276,7 @@
      * view coordinates into world coordinates
      * @returns {GTransform}
      */
-    GUIView.prototype.getViewTransform = function () {
+    GSceneWidget.prototype.getViewTransform = function () {
         return this._viewToWorldTransform;
     };
 
@@ -286,7 +286,7 @@
      * defaults to false (= include margin)
      * @returns {GRect}
      */
-    GUIView.prototype.getViewBox = function (noMargin) {
+    GSceneWidget.prototype.getViewBox = function (noMargin) {
         var xOffset = this._viewOffset[0] + (!noMargin ? this._viewMargin[0] : 0);
         var yOffset = this._viewOffset[1] + (!noMargin ? this._viewMargin[1] : 0);
         return new GRect(
@@ -303,7 +303,7 @@
      * @param {Number} scrollY the vertical scrolling
      * @param {Number} zoom the zoom
      */
-    GUIView.prototype.transform = function (scrollX, scrollY, zoom) {
+    GSceneWidget.prototype.transform = function (scrollX, scrollY, zoom) {
         this._scrollX = scrollX;
         this._scrollY = scrollY;
         this._zoom = zoom;
@@ -317,11 +317,11 @@
      * @param {Number} [zoom] the new zoom, defaults to current zoom
      * @version 1.0
      */
-    GUIView.prototype.zoomAtCenter = function (center, zoom) {
+    GSceneWidget.prototype.zoomAtCenter = function (center, zoom) {
         zoom = zoom || this._zoom;
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._worldToViewTransform.mapPoint(center);
-        var normalizedZoom = Math.min(GUIView.options.maxZoomFactor, Math.max(zoom, GUIView.options.minZoomFactor));
+        var normalizedZoom = Math.min(GSceneWidget.options.maxZoomFactor, Math.max(zoom, GSceneWidget.options.minZoomFactor));
         if (normalizedZoom == this._zoom && GPoint.equals(viewWorldCenter, viewCenter)) {
             return;
         }
@@ -345,7 +345,7 @@
      * @param {GPoint} pos the point to zoom at in world coordinates
      * @param {Number} zoom the new zoom value
      */
-    GUIView.prototype.zoomAt = function (pos, zoom) {
+    GSceneWidget.prototype.zoomAt = function (pos, zoom) {
         var viewCenter = this.getViewBox().getSide(GRect.Side.CENTER);
         var viewWorldCenter = this._viewToWorldTransform.mapPoint(viewCenter);
         var deltaPos = viewWorldCenter.subtract(pos);
@@ -360,7 +360,7 @@
      * @param {Boolean} [reverse] if set, the reverse action will be taken so
      * that the view is zoomed out onto the given rect. Defaults to false
      */
-    GUIView.prototype.zoomAll = function (rect, reverse) {
+    GSceneWidget.prototype.zoomAll = function (rect, reverse) {
         var center = rect.getSide(GRect.Side.CENTER);
         var width = rect.getWidth();
         var height = rect.getHeight();
@@ -380,7 +380,7 @@
      * a saved view configuration for the page or it will fit
      * it into the screen depending on the options
      */
-    GUIView.prototype.zoomActivePage = function () {
+    GSceneWidget.prototype.zoomActivePage = function () {
         var activePage = this._scene.getActivePage();
         if (activePage) {
             // Look for an existing configuration
@@ -392,7 +392,7 @@
                 // Coming here means we'll do a default action
                 var pageBBox = activePage.getPaintBBox();
                 if (pageBBox && !pageBBox.isEmpty()) {
-                    if (GUIView.options.defaultFitActivePage) {
+                    if (GSceneWidget.options.defaultFitActivePage) {
                         this.zoomAll(pageBBox, false);
                     } else {
                         this.zoomAtCenter(pageBBox.getSide(GRect.Side.CENTER), 1.0);
@@ -408,7 +408,7 @@
      * @param {Number} dy vertical subtract
      * @version 1.0
      */
-    GUIView.prototype.scrollBy = function (dx, dy) {
+    GSceneWidget.prototype.scrollBy = function (dx, dy) {
         if (dx != 0 || dy != 0) {
             this._scrollX = this._scrollX + dx;
             this._scrollY = this._scrollY + dy;
@@ -424,7 +424,7 @@
      * @return {Boolean} true if any invalidation ocurred, false if not
      * @version 1.0
      */
-    GUIView.prototype.invalidate = function (area) {
+    GSceneWidget.prototype.invalidate = function (area) {
         var result = false;
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
@@ -440,7 +440,7 @@
      * @returns {GStage} the provided stage
      * @private
      */
-    GUIView.prototype.addStage = function (stage) {
+    GSceneWidget.prototype.addStage = function (stage) {
         if (this._stages == null) {
             this._stages = [];
         }
@@ -461,7 +461,7 @@
      * @param {GStage} stageClass
      * @returns {GStage}
      */
-    GUIView.prototype.getStage = function (stageClass) {
+    GSceneWidget.prototype.getStage = function (stageClass) {
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
                 if (stageClass.prototype.isPrototypeOf(this._stages[i])) {
@@ -475,7 +475,7 @@
     /**
      * Called to release this view
      */
-    GUIView.prototype.release = function () {
+    GSceneWidget.prototype.release = function () {
         this._scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
         this._scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
         this._scene.removeEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
@@ -493,7 +493,7 @@
      * @param {Boolean} [noEvent] optional, specifies whether to send an event or not
      * @private
      */
-    GUIView.prototype._updateViewTransforms = function (noEvent) {
+    GSceneWidget.prototype._updateViewTransforms = function (noEvent) {
         // Calculate new view/scene mapping transformations. Make sure to round scrolling values to avoid floating point issues
         // TODO : Correct the zoom values to fixed values to avoid floating point errors during rendering!?
         this._scrollX = Math.round(this._scrollX);
@@ -506,8 +506,8 @@
             // Invalidate everything
             this.invalidate();
 
-            if (!noEvent && this.hasEventListeners(GUIView.TransformEvent)) {
-                this.trigger(GUIView.TRANSFORMEVENT);
+            if (!noEvent && this.hasEventListeners(GSceneWidget.TransformEvent)) {
+                this.trigger(GSceneWidget.TRANSFORMEVENT);
             }
         }
     };
@@ -516,7 +516,7 @@
      * Called to init/add all stages
      * @private
      */
-    GUIView.prototype._initStages = function () {
+    GSceneWidget.prototype._initStages = function () {
         this.addStage(new GSceneStage(this));
     };
 
@@ -525,7 +525,7 @@
      * @param autoCreate
      * @private
      */
-    GUIView.prototype._getOrCreatePageConfig = function (page, autoCreate) {
+    GSceneWidget.prototype._getOrCreatePageConfig = function (page, autoCreate) {
         var result = null;
         for (var i = 0; i < this._pageConfigurations.length; ++i) {
             if (this._pageConfigurations[i].page === page) {
@@ -548,7 +548,7 @@
      * @param {GNode.AfterFlagChangeEvent} event
      * @private
      */
-    GUIView.prototype._afterFlagChange = function (event) {
+    GSceneWidget.prototype._afterFlagChange = function (event) {
         // Handle single page mode and active page changing
         if (this._scene.getProperty('singlePage')) {
             if (event.node instanceof GPage && event.flag === GNode.Flag.Active) {
@@ -571,7 +571,7 @@
      * @param {GNode.AfterPropertiesChangeEvent} event
      * @private
      */
-    GUIView.prototype._afterPropertiesChange = function (event) {
+    GSceneWidget.prototype._afterPropertiesChange = function (event) {
         // Handle single page mode change
         if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
             this.zoomActivePage();
@@ -585,7 +585,7 @@
      * @param {GNode.AfterRemoveEvent} event
      * @private
      */
-    GUIView.prototype._afterRemove = function (event) {
+    GSceneWidget.prototype._afterRemove = function (event) {
         // Removing page must clear our page configuration for it
         if (event.node instanceof GPage) {
             for (var i = 0; i < this._pageConfigurations.length; ++i) {
@@ -598,10 +598,10 @@
     };
 
     /** @override */
-    GUIView.prototype.toString = function () {
-        return "[Object GUIView]";
+    GSceneWidget.prototype.toString = function () {
+        return "[Object GSceneWidget]";
     };
 
-    _.GUIView = GUIView;
+    _.GSceneWidget = GSceneWidget;
 
 })(this);

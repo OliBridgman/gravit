@@ -59,7 +59,7 @@
         view.addEventListener(GMouseEvent.Down, this._mouseDown, this);
         view.addEventListener(GMouseEvent.Release, this._mouseRelease, this);
 
-        ifPlatform.addEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
+        ifPlatform.addEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged, this);
     };
 
     /** @override */
@@ -72,7 +72,7 @@
         view.removeEventListener(GMouseEvent.Down, this._mouseDown);
         view.removeEventListener(GMouseEvent.Release, this._mouseRelease);
 
-        ifPlatform.removeEventListener(GUIPlatform.ModifiersChangedEvent, this._modifiersChanged);
+        ifPlatform.removeEventListener(GPlatform.ModifiersChangedEvent, this._modifiersChanged);
     };
 
     /** @override */
@@ -175,7 +175,7 @@
     };
 
     /**
-     * @param {GUIPlatform.ModifiersChangedEvent} event
+     * @param {GPlatform.ModifiersChangedEvent} event
      * @private
      */
     GSliceTool.prototype._modifiersChanged = function (event) {
