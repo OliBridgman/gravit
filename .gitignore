@@ -6,3 +6,4 @@ node-webkit
 bower_components
 app
 tmp
+dist
