@@ -226,149 +226,161 @@
 <script src="../bower_components/vex/js/vex.dialog.js"></script>
 <!-- endbuild -->
 
-<!-- build:js gravit.js -->
-<!-- Component -->
-<script src="gravit/component/autoedit.js"></script>
-<script src="gravit/component/panel.js"></script>
-<script src="gravit/component/patterntarget.js"></script>
-<script src="gravit/component/patterneditor.js"></script>
-<script src="gravit/component/patternpicker.js"></script>
-<script src="gravit/component/patterntypepicker.js"></script>
-<script src="gravit/component/coloreditor.js"></script>
-<script src="gravit/component/cornertypepicker.js"></script>
-<script src="gravit/component/blendmode.js"></script>
-<script src="gravit/component/unit.js"></script>
-<script src="gravit/component/gradienteditor.js"></script>
-<script src="gravit/component/overlay.js"></script>
-<script src="gravit/component/pivot.js"></script>
-<script src="gravit/component/effectpanel.js"></script>
-<script src="gravit/component/stylepanel.js"></script>
-<script src="gravit/component/swatchpanel.js"></script>
-<script src="gravit/component/menu.js"></script>
-<script src="gravit/component/menubar.js"></script>
-<script src="gravit/component/menuitem.js"></script>
-<script src="gravit/component/menubutton.js"></script>
-<!-- Extension -->
-<script src="gravit/extension/action.js"></script>
-<script src="gravit/extension/exporter.js"></script>
-<script src="gravit/extension/module.js"></script>
-<script src="gravit/extension/view.js"></script>
-<script src="gravit/extension/palette.js"></script>
-<script src="gravit/extension/panel.js"></script>
-<script src="gravit/extension/properties.js"></script>
-<script src="gravit/extension/sidebar.js"></script>
-<script src="gravit/extension/storage.js"></script>
-<!-- Workspace -->
-<script src="gravit/workspace/header.js"></script>
-<script src="gravit/workspace/palettes.js"></script>
-<script src="gravit/workspace/panels.js"></script>
-<script src="gravit/workspace/sidebars.js"></script>
-<script src="gravit/workspace/toolbar.js"></script>
-<script src="gravit/workspace/window.js"></script>
-<script src="gravit/workspace/windows.js"></script>
-<!-- Util -->
-<script src="gravit/util/ciede2000.js"></script>
-<script src="gravit/util/image.js"></script>
-<script src="gravit/util/jqueryext.js"></script>
-<!-- Root -->
-<script src="gravit/shell.js"></script>
-<script src="gravit/application.js"></script>
-<script src="gravit/document.js"></script>
-<script src="gravit/bootstrap.js"></script>
-<!-- I18N -->
-<script src="gravit/i18n/i18n_en.js"></script>
-<script src="gravit/i18n/i18n_de.js"></script>
-<!-- ############# -->
-<!-- BEGIN: Framework -->
-<!-- ############# -->
+
+<!-- ############################################################## -->
+<!-- # Gravit Component ########################################### -->
+<!-- ############################################################## -->
+<!-- build:js gravit.component.js -->
+<script src="component/autoedit.js"></script>
+<script src="component/panel.js"></script>
+<script src="component/patterntarget.js"></script>
+<script src="component/patterneditor.js"></script>
+<script src="component/patternpicker.js"></script>
+<script src="component/patterntypepicker.js"></script>
+<script src="component/coloreditor.js"></script>
+<script src="component/cornertypepicker.js"></script>
+<script src="component/blendmode.js"></script>
+<script src="component/unit.js"></script>
+<script src="component/gradienteditor.js"></script>
+<script src="component/overlay.js"></script>
+<script src="component/pivot.js"></script>
+<script src="component/effectpanel.js"></script>
+<script src="component/stylepanel.js"></script>
+<script src="component/swatchpanel.js"></script>
+<script src="component/menu.js"></script>
+<script src="component/menubar.js"></script>
+<script src="component/menuitem.js"></script>
+<script src="component/menubutton.js"></script>
+<!-- endbuild -->
+
+
+<!-- ############################################################## -->
+<!-- # Gravit Shell ############################################### -->
+<!-- ############################################################## -->
+<!-- build:js gravit.shell.js -->
 <!-- Action -->
-<script src="gravit/framework/action/addlayeraction.js"></script>
-<script src="gravit/framework/action/deletelayeraction.js"></script>
-<script src="gravit/framework/action/addpageaction.js"></script>
-<script src="gravit/framework/action/alignaction.js"></script>
-<script src="gravit/framework/action/cloneaction.js"></script>
-<script src="gravit/framework/action/converttopathaction.js"></script>
-<script src="gravit/framework/action/closeaction.js"></script>
-<script src="gravit/framework/action/closeallaction.js"></script>
-<script src="gravit/framework/action/copyaction.js"></script>
-<script src="gravit/framework/action/cutaction.js"></script>
-<script src="gravit/framework/action/deleteaction.js"></script>
-<script src="gravit/framework/action/deletepageaction.js"></script>
-<script src="gravit/framework/action/distributeaction.js"></script>
-<script src="gravit/framework/action/duplicateaction.js"></script>
-<script src="gravit/framework/action/fitallaction.js"></script>
-<script src="gravit/framework/action/fitcurrentlayeraction.js"></script>
-<script src="gravit/framework/action/fitcurrentpageaction.js"></script>
-<script src="gravit/framework/action/fitselectionaction.js"></script>
-<script src="gravit/framework/action/groupaction.js"></script>
-<script src="gravit/framework/action/joinpathsaction.js"></script>
-<script src="gravit/framework/action/placeimageaction.js"></script>
-<script src="gravit/framework/action/invertselectionaction.js"></script>
-<script src="gravit/framework/action/layertypeaction.js"></script>
-<script src="gravit/framework/action/magnificationaction.js"></script>
-<script src="gravit/framework/action/newaction.js"></script>
-<script src="gravit/framework/action/newwindowaction.js"></script>
-<script src="gravit/framework/action/openaction.js"></script>
-<script src="gravit/framework/action/arrangeaction.js"></script>
-<script src="gravit/framework/action/originalviewaction.js"></script>
-<script src="gravit/framework/action/pixelpreviewaction.js"></script>
-<script src="gravit/framework/action/paintmodeaction.js"></script>
-<script src="gravit/framework/action/pasteaction.js"></script>
-<script src="gravit/framework/action/pasteinplaceaction.js"></script>
-<script src="gravit/framework/action/pasteinsideaction.js"></script>
-<script src="gravit/framework/action/pastestyleaction.js"></script>
-<script src="gravit/framework/action/redoaction.js"></script>
-<script src="gravit/framework/action/saveaction.js"></script>
-<script src="gravit/framework/action/saveallaction.js"></script>
-<script src="gravit/framework/action/saveasaction.js"></script>
-<script src="gravit/framework/action/showrulersaction.js"></script>
-<script src="gravit/framework/action/selectallaction.js"></script>
-<script src="gravit/framework/action/showallpagesaction.js"></script>
-<script src="gravit/framework/action/showgridaction.js"></script>
-<script src="gravit/framework/action/slicefromselection.js"></script>
-<script src="gravit/framework/action/snapunitaction.js"></script>
-<script src="gravit/framework/action/transformaction.js"></script>
-<script src="gravit/framework/action/undoaction.js"></script>
-<script src="gravit/framework/action/ungroupaction.js"></script>
-<script src="gravit/framework/action/zoominaction.js"></script>
-<script src="gravit/framework/action/zoomoutaction.js"></script>
-<!-- Dialog -->
-<script src="gravit/framework/dialog/styledialog.js"></script>
-<!-- Exporter -->
-<script src="gravit/framework/exporter/imagexporter.js"></script>
-<!-- Palette -->
-<script src="gravit/framework/palette/alignpalette.js"></script>
-<script src="gravit/framework/palette/exportpalette.js"></script>
-<script src="gravit/framework/palette/layerspalette.js"></script>
-<script src="gravit/framework/palette/pagespalette.js"></script>
-<script src="gravit/framework/palette/stylespalette.js"></script>
-<script src="gravit/framework/palette/swatchespalette.js"></script>
-<script src="gravit/framework/palette/transformpalette.js"></script>
-<!-- Panel -->
-<script src="gravit/framework/panel/propertiespanel.js"></script>
-<!-- Properties -->
-<script src="gravit/framework/properties/effectsproperties.js"></script>
-<script src="gravit/framework/properties/polygonproperties.js"></script>
-<script src="gravit/framework/properties/pathproperties.js"></script>
-<script src="gravit/framework/properties/rectangleproperties.js"></script>
-<script src="gravit/framework/properties/ellipseproperties.js"></script>
-<script src="gravit/framework/properties/imageproperties.js"></script>
-<script src="gravit/framework/properties/infoproperties.js"></script>
-<script src="gravit/framework/properties/pageproperties.js"></script>
-<script src="gravit/framework/properties/textproperties.js"></script>
-<script src="gravit/framework/properties/fillborderproperties.js"></script>
-<script src="gravit/framework/properties/styleproperties.js"></script>
-<script src="gravit/framework/properties/sliceproperties.js"></script>
-<!-- Sidebar -->
-<script src="gravit/framework/sidebar/documentsidebar.js"></script>
-<!-- I18N -->
-<script src="gravit/framework/i18n/i18n_en.js"></script>
-<script src="gravit/framework/i18n/i18n_de.js"></script>
+<!-- Extension -->
+<script src="shell/extension/action.js"></script>
+<script src="shell/extension/exporter.js"></script>
+<script src="shell/extension/module.js"></script>
+<script src="shell/extension/view.js"></script>
+<script src="shell/extension/palette.js"></script>
+<script src="shell/extension/panel.js"></script>
+<script src="shell/extension/properties.js"></script>
+<script src="shell/extension/sidebar.js"></script>
+<script src="shell/extension/storage.js"></script>
+<!-- Workspace -->
+<script src="shell/workspace/header.js"></script>
+<script src="shell/workspace/palettes.js"></script>
+<script src="shell/workspace/panels.js"></script>
+<script src="shell/workspace/sidebars.js"></script>
+<script src="shell/workspace/toolbar.js"></script>
+<script src="shell/workspace/window.js"></script>
+<script src="shell/workspace/windows.js"></script>
+<!-- Util -->
+<script src="shell/util/ciede2000.js"></script>
+<script src="shell/util/image.js"></script>
+<script src="shell/util/jqueryext.js"></script>
 <!-- Root -->
-<script src="gravit/framework/framework.js"></script>
-<!-- ############# -->
-<!-- END: Framework -->
-<!-- ############# -->
+<script src="shell/shell.js"></script>
+<script src="shell/application.js"></script>
+<script src="shell/document.js"></script>
+<script src="shell/bootstrap.js"></script>
+<!-- I18N -->
+<script src="shell/i18n/i18n_en.js"></script>
+<script src="shell/i18n/i18n_de.js"></script>
+<!-- endbuild -->
+
+
+<!-- ############################################################## -->
+<!-- # Gravit Framework ########################################### -->
+<!-- ############################################################## -->
+<!-- build:js gravit.framework.js -->
+<!-- Action -->
+<script src="framework/action/addlayeraction.js"></script>
+<script src="framework/action/deletelayeraction.js"></script>
+<script src="framework/action/addpageaction.js"></script>
+<script src="framework/action/alignaction.js"></script>
+<script src="framework/action/cloneaction.js"></script>
+<script src="framework/action/converttopathaction.js"></script>
+<script src="framework/action/closeaction.js"></script>
+<script src="framework/action/closeallaction.js"></script>
+<script src="framework/action/copyaction.js"></script>
+<script src="framework/action/cutaction.js"></script>
+<script src="framework/action/deleteaction.js"></script>
+<script src="framework/action/deletepageaction.js"></script>
+<script src="framework/action/distributeaction.js"></script>
+<script src="framework/action/duplicateaction.js"></script>
+<script src="framework/action/fitallaction.js"></script>
+<script src="framework/action/fitcurrentlayeraction.js"></script>
+<script src="framework/action/fitcurrentpageaction.js"></script>
+<script src="framework/action/fitselectionaction.js"></script>
+<script src="framework/action/groupaction.js"></script>
+<script src="framework/action/joinpathsaction.js"></script>
+<script src="framework/action/placeimageaction.js"></script>
+<script src="framework/action/invertselectionaction.js"></script>
+<script src="framework/action/layertypeaction.js"></script>
+<script src="framework/action/magnificationaction.js"></script>
+<script src="framework/action/newaction.js"></script>
+<script src="framework/action/newwindowaction.js"></script>
+<script src="framework/action/openaction.js"></script>
+<script src="framework/action/arrangeaction.js"></script>
+<script src="framework/action/originalviewaction.js"></script>
+<script src="framework/action/pixelpreviewaction.js"></script>
+<script src="framework/action/paintmodeaction.js"></script>
+<script src="framework/action/pasteaction.js"></script>
+<script src="framework/action/pasteinplaceaction.js"></script>
+<script src="framework/action/pasteinsideaction.js"></script>
+<script src="framework/action/pastestyleaction.js"></script>
+<script src="framework/action/redoaction.js"></script>
+<script src="framework/action/saveaction.js"></script>
+<script src="framework/action/saveallaction.js"></script>
+<script src="framework/action/saveasaction.js"></script>
+<script src="framework/action/showrulersaction.js"></script>
+<script src="framework/action/selectallaction.js"></script>
+<script src="framework/action/showallpagesaction.js"></script>
+<script src="framework/action/showgridaction.js"></script>
+<script src="framework/action/slicefromselection.js"></script>
+<script src="framework/action/snapunitaction.js"></script>
+<script src="framework/action/transformaction.js"></script>
+<script src="framework/action/undoaction.js"></script>
+<script src="framework/action/ungroupaction.js"></script>
+<script src="framework/action/zoominaction.js"></script>
+<script src="framework/action/zoomoutaction.js"></script>
+<!-- Dialog -->
+<script src="framework/dialog/styledialog.js"></script>
+<!-- Exporter -->
+<script src="framework/exporter/imagexporter.js"></script>
+<!-- Palette -->
+<script src="framework/palette/alignpalette.js"></script>
+<script src="framework/palette/exportpalette.js"></script>
+<script src="framework/palette/layerspalette.js"></script>
+<script src="framework/palette/pagespalette.js"></script>
+<script src="framework/palette/stylespalette.js"></script>
+<script src="framework/palette/swatchespalette.js"></script>
+<script src="framework/palette/transformpalette.js"></script>
+<!-- Panel -->
+<script src="framework/panel/propertiespanel.js"></script>
+<!-- Properties -->
+<script src="framework/properties/effectsproperties.js"></script>
+<script src="framework/properties/polygonproperties.js"></script>
+<script src="framework/properties/pathproperties.js"></script>
+<script src="framework/properties/rectangleproperties.js"></script>
+<script src="framework/properties/ellipseproperties.js"></script>
+<script src="framework/properties/imageproperties.js"></script>
+<script src="framework/properties/infoproperties.js"></script>
+<script src="framework/properties/pageproperties.js"></script>
+<script src="framework/properties/textproperties.js"></script>
+<script src="framework/properties/fillborderproperties.js"></script>
+<script src="framework/properties/styleproperties.js"></script>
+<script src="framework/properties/sliceproperties.js"></script>
+<!-- Sidebar -->
+<script src="framework/sidebar/documentsidebar.js"></script>
+<!-- I18N -->
+<script src="framework/i18n/i18n_en.js"></script>
+<script src="framework/i18n/i18n_de.js"></script>
+<!-- Root -->
+<script src="framework/framework.js"></script>
 <!-- endbuild -->
 
 <!-- Development stuff -->
