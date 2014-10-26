@@ -30,7 +30,7 @@ module.exports = function (grunt) {
                     'src/*.html',
                     '<%= cfg.tmp %>/{,*/}*.css',
                     '{<%= cfg.tmp %>,src/{,*/}*.js,test/{,*/}*.js',
-                    'assets/image/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    'assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -45,7 +45,9 @@ module.exports = function (grunt) {
                     open: true,
                     base: [
                         '<%= cfg.tmp %>',
-                        'assets',
+                        'assets/application',
+                        'assets/editor',
+                        'assets/framework',
                         'src',
                         '.'
                     ]
@@ -55,7 +57,9 @@ module.exports = function (grunt) {
                 options: {
                     base: [
                         '<%= cfg.tmp %>',
-                        'assets',
+                        'assets/application',
+                        'assets/editor',
+                        'assets/framework',
                         'test',
                         'src',
                         '.'

@@ -1,4 +1,5 @@
-@import '../variables';
+@import "compass/css3/box-sizing";
+@import '../../variables';
 
 #toolbar {
   @include box-sizing(border-box);

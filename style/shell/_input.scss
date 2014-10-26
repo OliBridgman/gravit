@@ -1,4 +1,5 @@
-@import 'variables';
+@import "compass/css3/box-sizing";
+@import '../variables';
 
 button, .g-button, input, textArea, select, .g-input, .g-list, .g-grid {
   appearance: none;

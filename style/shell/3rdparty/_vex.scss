@@ -1,7 +1,7 @@
-@import '../../bower_components/vex/sass/vex.sass';
 @import 'compass/css3';
 @import 'compass/utilities/general/clearfix';
-@import '../variables';
+@import '../../../bower_components/vex/sass/vex.sass';
+@import '../../variables';
 
 .vex {
   padding-top: 160px;

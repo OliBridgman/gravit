@@ -40,10 +40,6 @@
           z-index: 1;
           margin-left: -4px;
 
-          &, * {
-            @include g-cursor(select-dot);
-          }
-
           > .stop-value {
             background: $textColor;
             border: 1px solid $borderColor;
