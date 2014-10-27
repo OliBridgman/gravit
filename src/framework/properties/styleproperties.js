@@ -39,9 +39,13 @@
                 return $('<select></select>')
                     .attr('data-property', property)
                     .append($('<option></option>')
-                        .attr('value', 'mask')
+                        .attr('value', 'm')
                         // TODO : I18N
                         .text('Mask'))
+                    .append($('<option></option>')
+                        .attr('value', '!m')
+                        // TODO : I18N
+                        .text('Inverse Mask'))
                     // TODO : I18N
                     .append($('<optgroup label="Blending"></optgroup>'))
                     .gBlendMode()

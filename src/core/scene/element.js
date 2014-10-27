@@ -356,13 +356,13 @@
                 try {
                     this._paintStyleFillLayer(context, contentPaintBBox, styleLayers, orderedEffects, effectCanvas);
 
-                    if (this.$_sbl === 'mask') {
+                    if (this.$_sbl === 'm' || this.$_sbl === '!m') {
                         var area = this._getStyleMaskClipArea();
                         if (area) {
                             sourceCanvas.clipRect(area.getX(), area.getY(), area.getWidth(), area.getHeight());
                         }
                         try {
-                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, GPaintCanvas.CompositeOperator.DestinationIn);
+                            sourceCanvas.drawCanvas(styleCanvas, 0, 0, this.$_stop, this.$_sbl === 'm' ? GPaintCanvas.CompositeOperator.DestinationIn : GPaintCanvas.CompositeOperator.DestinationOut);
                         } finally {
                             if (area) {
                                 sourceCanvas.resetClip();
@@ -635,7 +635,9 @@
 
             if (change === GNode._Change.AfterPropertiesChange) {
                 var styleBlendModeIdx = args.properties.indexOf('_sbl');
-                if (styleBlendModeIdx >= 0 && args.values[styleBlendModeIdx] === 'mask' || this.$_sbl === 'mask') {
+                var newBlendMode = args.values[styleBlendModeIdx];
+                var oldBlendMode = this.$_sbl;
+                if (styleBlendModeIdx >= 0 && newBlendMode === 'm' || newBlendMode === '!m' || oldBlendMode === 'm' || oldBlendMode === '!m') {
                     var myPage = this.getPage();
                     if (myPage) {
                         myPage._requestInvalidation();

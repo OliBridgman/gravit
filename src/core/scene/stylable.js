@@ -128,7 +128,7 @@
             visualProperties: {
                 /** Internal default style marker */
                 _sdf: null,
-                /** Blend Mode (GPaintCanvas.BlendMode|'mask') */
+                /** Blend Mode (GPaintCanvas.BlendMode|'m'=mask|'!m'=inverse mask) */
                 _sbl: GPaintCanvas.BlendMode.Normal,
                 /** Fill Opacity (= w/o effects) */
                 _sfop: 1,
