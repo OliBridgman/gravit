@@ -216,8 +216,6 @@
                     $.gPatternPicker.value($this.gPatternTarget('value'));
                 }
 
-                $.gPatternPicker.relayout();
-
                 return this;
             }
         }

@@ -76,6 +76,7 @@
                             .on('patterntypechange', function (evt, patternClass) {
                                 methods.value.call(self, GPattern.smartCreate(patternClass, methods.value.call(self)));
                                 methods._firePatternChange.call(self);
+                                methods._relayout.call(self);
                             }))
                         .append($('<label></label>')
                             .addClass('pattern-opacity')
@@ -271,6 +272,13 @@
             }
 
             $this.trigger('patternchange', [data.value, methods.opacity.call(this)]);
+        },
+
+        _relayout: function () {
+            var $this = $(this);
+            if ($this.data().hasOwnProperty('goverlay')) {
+                $this.gOverlay('relayout');
+            }
         }
     };
 
