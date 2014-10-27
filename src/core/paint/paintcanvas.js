@@ -663,7 +663,7 @@
             var scale = pattern.getScale();
 
             if (pattern instanceof GLinearGradient) {
-                var angle = -pattern.getAngle();
+                var angle = pattern.getAngle();
                 paint = this._canvasContext.createLinearGradient(
                     0.5 - Math.cos(angle) / 2 * scale, 0.5 - Math.sin(angle) / 2 * scale,
                     0.5 + Math.cos(angle) / 2 * scale, 0.5 + Math.sin(angle) / 2 * scale);
