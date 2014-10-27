@@ -17,6 +17,13 @@
                 {style: GFont.Style.Normal, weight: GFont.Weight.ExtraBold, url: 'font/OpenSans-ExtraBold.ttf'},
                 {style: GFont.Style.Italic, weight: GFont.Weight.ExtraBold, url: 'font/OpenSans-ExtraBoldItalic.ttf'}
             ]
+        },
+        {
+            family: 'Source Sans Pro',
+            category: GFont.Category.Serif,
+            substitutes: [
+                {style: GFont.Style.Normal, weight: GFont.Weight.Regular, url: 'font/SourceSansPro-Regular.ttf'}
+            ]
         }
     ]
 
