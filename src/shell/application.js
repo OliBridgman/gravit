@@ -917,7 +917,13 @@
         }
 
         // Add a window for the document making it activated by default
-        this._windows.addWindow(document);
+        var window = this._windows.addWindow(document);
+
+        // Fit page if set to singlePageMode
+        if (document.getScene().getProperty('singlePage') === true) {
+            var currentPage = document.getScene().getActivePage();
+            window.getView().zoomAll(currentPage.getPageClipBBox(), false);
+        }
     };
 
     /**
