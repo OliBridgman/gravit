@@ -543,11 +543,10 @@
 
     /**
      * Should return the clip-area for masked styles
-     * @param {GPaintContext} context
      * @return {GRect}
      * @private
      */
-    GElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
+    GElement.Stylable.prototype._getStyleMaskClipArea = function () {
         return null;
     };
 
@@ -638,10 +637,7 @@
                 var newBlendMode = args.values[styleBlendModeIdx];
                 var oldBlendMode = this.$_sbl;
                 if (styleBlendModeIdx >= 0 && newBlendMode === 'm' || newBlendMode === '!m' || oldBlendMode === 'm' || oldBlendMode === '!m') {
-                    var myPage = this.getPage();
-                    if (myPage) {
-                        myPage._requestInvalidation();
-                    }
+                    this._requestInvalidationArea(this._getStyleMaskClipArea());
                 }
             }
         }
@@ -658,11 +654,15 @@
     };
 
     /** @override */
-    GElement.Stylable.prototype._getStyleMaskClipArea = function (context) {
-        var myPage = this.getPage();
-        if (myPage) {
-            return myPage.getPageClipBBox();
+    GElement.Stylable.prototype._getStyleMaskClipArea = function () {
+        // Clip to our page if attached and not in single mode
+        if (this.isAttached() && this.getScene().getProperty('singlePage') === false) {
+            var myPage = this.getPage();
+            if (myPage) {
+                return myPage.getPageClipBBox();
+            }
         }
+        return null;
     };
 
     /** @override */
