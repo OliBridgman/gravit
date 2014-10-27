@@ -920,10 +920,9 @@
         var window = this._windows.addWindow(document);
 
         // Fit page if set to singlePageMode
-        if (document.getScene().getProperty('singlePage') === true) {
-            var currentPage = document.getScene().getActivePage();
-            window.getView().zoomAll(currentPage.getPageClipBBox(), false);
-        }
+        //if (document.getScene().getProperty('singlePage') === true) {
+        //    window.getView().zoomActivePage();
+        //}
     };
 
     /**

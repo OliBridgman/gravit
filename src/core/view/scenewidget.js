@@ -390,7 +390,7 @@
                 this.transform(pageConfig.scrollX, pageConfig.scrollY, pageConfig.zoom);
             } else {
                 // Coming here means we'll do a default action
-                var pageBBox = activePage.getPaintBBox();
+                var pageBBox = activePage.getPageClipBBox();
                 if (pageBBox && !pageBBox.isEmpty()) {
                     if (GSceneWidget.options.defaultFitActivePage) {
                         this.zoomAll(pageBBox, false);

@@ -53,9 +53,10 @@
      */
     GFitCurrentPageAction.prototype.isEnabled = function () {
         var document = gApp.getActiveDocument();
-        var currentPage = document ? document.getScene().getActivePage() : null;
+        return document && document.getScene().getActivePage();
+        var clipBox = document ? document.getScene().getActivePage().getPageClipBBox() : null;
 
-        return (currentPage && currentPage.getPaintBBox() && !currentPage.getPaintBBox().isEmpty());
+        return (clipBox && !!clipBox && !clipBox.isEmpty());
     };
 
     /**
