@@ -123,7 +123,7 @@
                 // If we've extracted a type, then try to let an editor handle it now
                 if (type !== null) {
                     // Try to gather a stacked hit list underneath drop position
-                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, this._scene.getProperty('pickDist'), true);
+                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, this._scene.getProperty('pickDist'), true, this._dropHitFilter);
 
                     // If we had have one or more hits, iterate them
                     var acceptedDrop = false;
@@ -156,6 +156,26 @@
                 }
             }
         }
+    };
+
+    /**
+     * Filtering while doing hit-testing for dnd
+     * @param {Array<GElement>} element element to be filtered
+     * @return {Boolean} false to filter element out stopping detection
+     * on any element underneath or true to go on
+     * @private
+     */
+    GEditorWidget.prototype._dropHitFilter = function (element) {
+        // Let DND fall-through locked, non-active draft-layers and through guide layers
+        if (element instanceof GLayer) {
+            if (element.getProperty('tp') === GLayer.Type.Guide) {
+                return false;
+            } else if (element.getProperty('tp') === GLayer.Type.Draft && element.hasFlag(GElement.Flag.Locked) && !element.hasFlag(GNode.Flag.Active)) {
+                return false;
+            }
+        }
+
+        return true;
     };
 
     /** @override */
