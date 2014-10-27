@@ -26,7 +26,7 @@
                     overlay.gOverlay('close');
                 }
             }
-        });
+        }, true);
 
     var methods = {
         init: function (options) {
