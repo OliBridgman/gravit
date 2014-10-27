@@ -75,11 +75,25 @@
     GCompoundPath.AnchorPaths.prototype._handleChange = function (change, args) {
         var compoundPath = this._parent;
 
-        if (compoundPath  && (change == GElement._Change.ChildGeometryUpdate)) {
-            // Notify compoundPath parent about the change
-            compoundPath._notifyChange(GElement._Change.PrepareGeometryUpdate);
-            compoundPath.rewindVertices(0);
-            compoundPath._notifyChange(GElement._Change.FinishGeometryUpdate);
+        if (compoundPath) {
+            switch (change) {
+                case GNode._Change.BeforeChildRemove:
+                case GNode._Change.BeforeChildInsert:
+                    compoundPath._notifyChange(GElement._Change.PrepareGeometryUpdate);
+                    break;
+
+                case GNode._Change.AfterChildRemove:
+                case GNode._Change.AfterChildInsert:
+                    compoundPath.rewindVertices(0);
+                    compoundPath._notifyChange(GElement._Change.FinishGeometryUpdate);
+                    break;
+
+                case GElement._Change.ChildGeometryUpdate:
+                    compoundPath._notifyChange(GElement._Change.PrepareGeometryUpdate);
+                    compoundPath.rewindVertices(0);
+                    compoundPath._notifyChange(GElement._Change.FinishGeometryUpdate);
+                    break;
+            }
         }
 
         GNode.prototype._handleChange.call(this, change, args);
@@ -167,55 +181,31 @@
 
     /** @override */
     GCompoundPath.prototype.transform = function (transform) {
-        if (transform && !transform.isIdentity()) {
-            this.setProperty('trf', this.$trf ? this.$trf.multiplied(transform) : transform);
-            for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
-                pt.transform(transform);
+        this.beginUpdate();
+        try {
+            GShape.prototype.transform.call(this, transform);
+            if (transform && !transform.isIdentity()) {
+                for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
+                    pt.transform(transform);
+                }
             }
+        } finally {
+            this.endUpdate();
         }
     };
 
     /** @override */
- /*   GCompoundPath.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force) {
-        if (typeof level !== 'number') level = -1; // unlimited deepness
-        tolerance = tolerance || 0;
-
-        // Quick-Test -> if location doesn't fall into our bounding-area
-        // or we don't have a bounding area, then we can certainly not
-        // have any hit at all. We'll however extend our paint bbox by
-        // the pick distance to provide better pick-up of objects
-        var paintBBox = this.getPaintBBox();
-        if (!paintBBox || paintBBox.isEmpty()) {
-            return null;
-        }
-        if (transform) {
-            paintBBox = transform.mapRect(paintBBox);
-        }
-
-        if (!paintBBox.expanded(tolerance, tolerance, tolerance, tolerance).containsPoint(location)) {
-            return null;
-        }
-
+    GCompoundPath.prototype._calculateGeometryBBox = function () {
+        // Sum up our anchor pathes
         var result = null;
-
-        // We might have a possible hit so iterate our children if any
-        for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
-            var subResult = pt.hitTest(location, transform, acceptor, stacked, level - 1, tolerance, force);
-            if (subResult) {
-                if (stacked) {
-                    if (result) {
-                        Array.prototype.push.apply(result, subResult);
-                    } else {
-                        result = subResult;
-                    }
-                } else {
-                    return subResult;
-                }
+        for (var node = this._anchorPaths.getFirstChild(); node != null; node = node.getNext()) {
+            var childBBox = node.getGeometryBBox();
+            if (childBBox && !childBBox.isEmpty()) {
+                result = result ? result.united(childBBox) : childBBox;
             }
         }
-
-        return result;
-    };      */
+        return result ? result : null;
+    };
 
     /** @override */
     GCompoundPath.prototype.toString = function () {
