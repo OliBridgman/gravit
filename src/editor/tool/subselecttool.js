@@ -77,7 +77,7 @@
 
     /** @override */
     GSubSelectTool.prototype._getSelectableElement = function (element) {
-        return element instanceof GItem ? element : null;
+        return element instanceof GItem && !(element instanceof GGroup) ? element : null;
     };
 
     /** override */
