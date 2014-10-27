@@ -961,11 +961,6 @@
                 this.commitTransaction('Insert Element(s)');
             }
         }
-
-        // The next weird call of view.invalidate() is the fix for the issue with disappearing first shape in Chrome.
-        // It should be removed just after the better fix will be found.
-        // For unknown reasons calling just editor.requestInvalidation() does not help.
-        gApp._windows.getActiveWindow().getView().invalidate();
     };
 
     /**
