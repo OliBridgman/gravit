@@ -838,10 +838,9 @@
 
     /**
      * Called to start the app
-     * @return {*} a promise when the app is started
      */
     GApplication.prototype.start = function () {
-        return $.Deferred().resolve().promise();
+        // NO-OP
     };
 
     /**

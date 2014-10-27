@@ -63,11 +63,7 @@
 
     /** @override */
     GravitApplication.prototype.start = function () {
-        var promise = GApplication.prototype.start.call(this);
-
         this._loader.remove();
-
-        return promise;
     };
 
     _.GravitApplication = GravitApplication;

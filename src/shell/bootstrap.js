@@ -82,11 +82,10 @@ $(window).load(function () {
             // Let host start
             gHost.start();
 
+            // Layout our app
+            gApp.relayout();
+
             // Let app start
-            gApp.start()
-                .always(function () {
-                    // Layout our app
-                    gApp.relayout();
-                })
+            gApp.start();
         });
 });
