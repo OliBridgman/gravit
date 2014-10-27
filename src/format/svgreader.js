@@ -40,60 +40,70 @@
 
     GSVGReader.prototype._read = function (source, callback, settings) {
         // Parse source as xml
-        //try {
-        var svgDoc = null;
-        if (typeof(Windows) != 'undefined' && typeof(Windows.Data) != 'undefined' && typeof(Windows.Data.Xml) != 'undefined') {
-            var svgDoc = new Windows.Data.Xml.Dom.XmlDocument();
-            var settings = new Windows.Data.Xml.Dom.XmlLoadSettings();
-            settings.prohibitDtd = false;
-            svgDoc.loadXml(xml, settings);
-        }
-        else if (window.DOMParser) {
-            var parser = new DOMParser();
-            svgDoc = parser.parseFromString(source, 'text/xml');
-        }
-        else {
-            var xml = source.replace(/<!DOCTYPE svg[^>]*>/, '');
-            svgDoc = new ActiveXObject('Microsoft.XMLDOM');
-            svgDoc.async = 'false';
-            svgDoc.loadXML(xml);
-        }
+        try {
+            var svgDoc = null;
+            if (typeof(Windows) != 'undefined' && typeof(Windows.Data) != 'undefined' && typeof(Windows.Data.Xml) != 'undefined') {
+                var svgDoc = new Windows.Data.Xml.Dom.XmlDocument();
+                var settings = new Windows.Data.Xml.Dom.XmlLoadSettings();
+                settings.prohibitDtd = false;
+                svgDoc.loadXml(xml, settings);
+            }
+            else if (window.DOMParser) {
+                var parser = new DOMParser();
+                svgDoc = parser.parseFromString(source, 'text/xml');
+            }
+            else {
+                var xml = source.replace(/<!DOCTYPE svg[^>]*>/, '');
+                svgDoc = new ActiveXObject('Microsoft.XMLDOM');
+                svgDoc.async = 'false';
+                svgDoc.loadXML(xml);
+            }
 
-        if (!svgDoc || svgDoc.documentElement.nodeName !== 'svg') {
-            throw new Error('Invalid svg doc');
-        }
+            if (!svgDoc || svgDoc.documentElement.nodeName !== 'svg') {
+                throw new Error('Invalid svg doc');
+            }
 
-        settings = $.extend({
-            baseWidth: 400,
-            baseHeight: 400
-        }, settings);
+            settings = $.extend({
+                baseWidth: 400,
+                baseHeight: 400
+            }, settings);
 
-        // Create svg context
-        var context = build({});
+            // Create svg context
+            var context = build({});
 
-        // Create root element
-        var svgElement = context.CreateElement(svgDoc.documentElement);
-        svgElement.root = true;
+            // Create root element
+            var svgElement = context.CreateElement(svgDoc.documentElement);
+            svgElement.root = true;
 
-        // Setup initial viewport
-        context.ViewPort.Clear();
-        context.ViewPort.SetCurrent(settings.baseWidth, settings.baseHeight);
-        if (svgElement.style('width').hasValue() && svgElement.style('height').hasValue()) {
-            var width = svgElement.style('width').toPixels('x');
-            var height = svgElement.style('height').toPixels('y');
+            // Setup initial viewport
             context.ViewPort.Clear();
-            context.ViewPort.SetCurrent(width, height);
+            context.ViewPort.SetCurrent(settings.baseWidth, settings.baseHeight);
+            if (svgElement.style('width').hasValue() && svgElement.style('height').hasValue()) {
+                var width = svgElement.style('width').toPixels('x');
+                var height = svgElement.style('height').toPixels('y');
+                context.ViewPort.Clear();
+                context.ViewPort.SetCurrent(width, height);
+            }
+
+            // Convert root element to scene now
+            var result = svgElement.toScene([]);
+
+            // Not having any children will fail
+            if (!result.getFirstChild()) {
+                result = null;
+            } else if (result.getFirstChild() === result.getLastChild()) {
+                // There's only one children so make that one the result
+                var firstChild = result.getFirstChild();
+                result.removeChild(firstChild);
+                result = firstChild;
+            }
+
+            // Done here:
+            callback(!!result ? result : null);
+        } catch (e) {
+            callback(null);
+            console.log(e);
         }
-
-        // Convert root element to scene now
-        var result = svgElement.toScene([]);
-
-        // Done here:
-        callback(!!result ? result : null);
-        //} catch (e) {
-        //    callback(null);
-        //    console.log(e);
-        //}
     };
 
     GIO.registerReader(new GSVGReader());
@@ -1703,16 +1713,16 @@
                                     -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
                                 );
                                 // adjust radii
-                                var l = Math.pow(currp.x,2)/Math.pow(rx,2)+Math.pow(currp.y,2)/Math.pow(ry,2);
+                                var l = Math.pow(currp.x, 2) / Math.pow(rx, 2) + Math.pow(currp.y, 2) / Math.pow(ry, 2);
                                 if (l > 1) {
                                     rx *= Math.sqrt(l);
                                     ry *= Math.sqrt(l);
                                 }
                                 // cx', cy'
                                 var s = (largeArcFlag == sweepFlag ? -1 : 1) * Math.sqrt(
-                                    ((Math.pow(rx,2)*Math.pow(ry,2))-(Math.pow(rx,2)*Math.pow(currp.y,2))-(Math.pow(ry,2)*Math.pow(currp.x,2))) /
-                                        (Math.pow(rx,2)*Math.pow(currp.y,2)+Math.pow(ry,2)*Math.pow(currp.x,2))
-                                );
+                                        ((Math.pow(rx, 2) * Math.pow(ry, 2)) - (Math.pow(rx, 2) * Math.pow(currp.y, 2)) - (Math.pow(ry, 2) * Math.pow(currp.x, 2))) /
+                                        (Math.pow(rx, 2) * Math.pow(currp.y, 2) + Math.pow(ry, 2) * Math.pow(currp.x, 2))
+                                    );
                                 if (isNaN(s)) s = 0;
                                 var cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
                                 // cx, cy
@@ -1721,19 +1731,25 @@
                                     (curr.y + cp.y) / 2.0 + Math.sin(xAxisRotation) * cpp.x + Math.cos(xAxisRotation) * cpp.y
                                 );
                                 // vector magnitude
-                                var m = function(v) { return Math.sqrt(Math.pow(v[0],2) + Math.pow(v[1],2)); }
+                                var m = function (v) {
+                                    return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
+                                }
                                 // ratio between two vectors
-                                var r = function(u, v) { return (u[0]*v[0]+u[1]*v[1]) / (m(u)*m(v)) }
+                                var r = function (u, v) {
+                                    return (u[0] * v[0] + u[1] * v[1]) / (m(u) * m(v))
+                                }
                                 // angle between two vectors
-                                var a = function(u, v) { return (u[0]*v[1] < u[1]*v[0] ? -1 : 1) * Math.acos(r(u,v)); }
+                                var a = function (u, v) {
+                                    return (u[0] * v[1] < u[1] * v[0] ? -1 : 1) * Math.acos(r(u, v));
+                                }
                                 // initial angle
-                                var a1 = a([1,0], [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry]);
+                                var a1 = a([1, 0], [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry]);
                                 // angle delta
-                                var u = [(currp.x-cpp.x)/rx,(currp.y-cpp.y)/ry];
-                                var v = [(-currp.x-cpp.x)/rx,(-currp.y-cpp.y)/ry];
+                                var u = [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry];
+                                var v = [(-currp.x - cpp.x) / rx, (-currp.y - cpp.y) / ry];
                                 var ad = a(u, v);
-                                if (r(u,v) <= -1) ad = Math.PI;
-                                if (r(u,v) >= 1) ad = 0;
+                                if (r(u, v) <= -1) ad = Math.PI;
+                                if (r(u, v) >= 1) ad = 0;
 
                                 // for markers
                                 var dir = 1 - sweepFlag ? 1.0 : -1.0;
