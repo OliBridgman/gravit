@@ -64,7 +64,7 @@
     GFitCurrentPageAction.prototype.execute = function () {
         var document = gApp.getActiveDocument();
         var currentPage = document.getScene().getActivePage();
-        document.getActiveWindow().getView().zoomAll(currentPage.getPaintBBox(), false);
+        document.getActiveWindow().getView().zoomAll(currentPage.getPageClipBBox(), false);
     };
 
     /** @override */
