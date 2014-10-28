@@ -535,6 +535,26 @@
     };
 
     /**
+     * Update the selected parts in some component editor
+     * @param {Boolean} toggle whether to toggle selection (true) or overwrite it (false)
+     * @param {Array<GElementEditor.partInfo>} partInfosToSelect the partInfos for new parts selection to be assigned
+     */
+    GElementEditor.prototype.updateOwnedPartsSelection = function (toggle, partInfosToSelect) {
+        if (partInfosToSelect) {
+            var selection = [];
+            for (var i = 0; i < partInfosToSelect.length; ++i) {
+                var partInfo = partInfosToSelect[i];
+                if (partInfo.data.ownerEditor === this) {
+                    selection.push(partInfo.id);
+                }
+            }
+            if (selection.length) {
+                this.updatePartSelection(toggle, selection);
+            }
+        }
+    };
+
+    /**
      * If parts selection allowed based on collision area
      * @returns {Boolean} true is allowed
      */

@@ -249,8 +249,13 @@
 
                         // Only update part selection if we're either holding shift
                         // or when we didn't actually retreieve an already selected part
-                        if (ifPlatform.modifiers.shiftKey || (!editor.isPartSelected(partId) && selectable)) {
-                            editor.updatePartSelection(ifPlatform.modifiers.shiftKey, [partId]);
+                        var toggle = ifPlatform.modifiers.shiftKey;
+                        if (toggle || (!editor.isPartSelected(partId) && selectable)) {
+                            if (partInfo.data && partInfo.data.ownerEditor) {
+                                partInfo.data.ownerEditor.updateOwnedPartsSelection(toggle, [partInfo]);
+                            } else {
+                                editor.updatePartSelection(toggle, [partId]);
+                            }
                         }
 
                         // Save the editor part that initiated the movement

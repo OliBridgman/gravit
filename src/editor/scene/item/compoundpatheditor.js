@@ -85,12 +85,29 @@
     };
 
     /** @override */
+    GCompoundPathEditor.prototype.getPartInfoAt = function (location, transform, acceptor, tolerance) {
+        var res = GShapeEditor.prototype.getPartInfoAt.call(this, location, transform, acceptor, tolerance);
+        if (res) {
+            if (!res.data) {
+                res.data = {};
+            }
+            res.data.ownerEditor = this;
+            return res;
+        }
+        return null;
+    };
+
+    /** @override */
     GCompoundPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         var res = null;
         for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             res = pathEditor._getPartInfoAt(location, transform, tolerance);
             if (res) {
+                if (!res.data) {
+                    res.data = {};
+                }
+                res.data.ownerEditor = this;
                 return res;
             }
         }
@@ -144,6 +161,27 @@
         if (!selection && this.hasFlag(GElementEditor.Flag.Selected)) {
             for (var i = 0; i < this._editors.length; ++i) {
                 this._editors[i].updatePartSelection(toggle, null);
+            }
+        }
+    };
+
+    /** @override */
+    GCompoundPathEditor.prototype.updateOwnedPartsSelection = function (toggle, partInfosToSelect) {
+        if (partInfosToSelect && partInfosToSelect.length) {
+            var lastPartInfo = null;
+            for (var i = 0; i < partInfosToSelect.length; ++i) {
+                var partInfo = partInfosToSelect[i];
+                if (partInfo.data.ownerEditor === this) {
+                    if (toggle) {
+                        partInfo.editor.updatePartSelection(toggle, [partInfo.id]);
+                    } else {
+                        lastPartInfo = partInfo;
+                    }
+                }
+            }
+            if (lastPartInfo) {
+                this.updatePartSelection(false);
+                lastPartInfo.editor.updatePartSelection(false, [lastPartInfo.id]);
             }
         }
     };
