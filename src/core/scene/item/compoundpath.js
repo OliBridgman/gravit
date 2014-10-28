@@ -6,8 +6,13 @@
      * @extends GShape
      * @constructor
      */
-    function GCompoundPath() {
+    function GCompoundPath(evenOdd) {
         GShape.call(this);
+
+        this._setDefaultProperties(GCompoundPath.VisualProperties);
+        if (evenOdd !== null) {
+            this.$evenodd = evenOdd;
+        }
 
         // Add anchor paths
         this._anchorPaths = new GCompoundPath.AnchorPaths();
@@ -17,6 +22,14 @@
     }
 
     GNode.inherit("compoundpath", GCompoundPath, GShape);
+
+    /**
+     * The visual properties of a compound path with their default values
+     */
+    GCompoundPath.VisualProperties = {
+        /** Even-Odd fill */
+        evenodd: false
+    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GCompoundPath.AnchorPaths Class
@@ -148,6 +161,7 @@
 
     /** @override */
     GCompoundPath.prototype._handleChange = function (change, args) {
+        this._handleVisualChangeForProperties(change, args, GCompoundPath.VisualProperties);
         if (change == GNode._Change.AfterFlagChange) {
             var flagArgs = args;
             this._currentPath = this._anchorPaths.getFirstChild();
@@ -162,8 +176,10 @@
             }
         }
         if (change === GNode._Change.Store) {
+            this.storeProperties(args, GCompoundPath.VisualProperties);
             args.paths = this._anchorPaths.serialize();
         } else if (change === GNode._Change.Restore) {
+            this.restoreProperties(args, GCompoundPath.VisualProperties);
             if (args.hasOwnProperty('paths')) {
                 this._anchorPaths.deserialize(args.paths);
             }
@@ -205,6 +221,11 @@
             }
         }
         return result ? result : null;
+    };
+
+    /** @override */
+    GCompoundPath.prototype._isEvenOddFill = function () {
+        return !!this.$evenodd;
     };
 
     /** @override */

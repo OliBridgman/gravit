@@ -62,6 +62,27 @@
     };
 
     /** @override */
+    GCompoundPathEditor.prototype.getBBox = function (transform) {
+        var result = GShapeEditor.prototype.getBBox.call(this, transform);
+        if (this.hasFlag(GElementEditor.Flag.Selected) || this.hasFlag(GElementEditor.Flag.Highlighted)) {
+            var targetTransform = transform;
+
+            // Pre-multiply internal transformation if any
+            if (this._transform) {
+                targetTransform = this._transform.multiplied(transform);
+            }
+            for (var i = 0; i < this._editors.length; ++i) {
+                var childBBox = this._editors[i].getBBox(targetTransform);
+                if (childBBox && !childBBox.isEmpty()) {
+                    result = result ? result.united(childBBox) : childBBox;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    /** @override */
     GCompoundPathEditor.prototype._attach = function () {
         var scene = this._element.getScene();
         if (scene != null) {
@@ -249,10 +270,21 @@
      * @private
      */
     GCompoundPathEditor.prototype._geometryChange = function (evt) {
-        if (evt.type == GElement.GeometryChangeEvent.Type.After && evt.element == this._element) {
-            //if (this._elementPreview) {
+        if (evt.type == GElement.GeometryChangeEvent.Type.Before || evt.type == GElement.GeometryChangeEvent.Type.After) {
+            var invalidate = evt.element == this._element;
+            if (!invalidate && evt.element instanceof GPath) {
+                for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !invalidate; pt = pt.getNext()) {
+                    if (pt == evt.element) {
+                        invalidate = true;
+                    }
+                }
+            }
+            if (invalidate) {
+                if (evt.type == GElement.GeometryChangeEvent.Type.After) {
+                    this.releasePathPreview();
+                }
                 this.requestInvalidation();
-            //}
+            }
         }
     };
 
