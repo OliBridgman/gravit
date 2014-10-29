@@ -46,7 +46,7 @@ Issues are being tracked here on GitHub.
 
 ## License
 
-`Gravit`'s code in this repo uses the Creative Commons Attribution 4.0 International License, see our `LICENSE` file for detailed information.
+`Gravit`'s code in this repo uses the Creative Commons Attribution-NonCommercial 4.0, see our `LICENSE` file for detailed information.
 In short this means:
 
 *You are free to*
